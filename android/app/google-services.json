@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1084162491451",
+    "project_id": "getspotbook",
+    "storage_bucket": "getspotbook.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1084162491451:android:ce8f2971f8646be618881e",
+        "android_client_info": {
+          "package_name": "com.spotbook.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCYOhuXViMHPDr9Lj22MRDwmV7BrJYQYWM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

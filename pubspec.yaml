@@ -1,0 +1,137 @@
+name: spotbook
+
+description: Spotbook — Book, Watch, Experience.
+
+version: 1.0.0+1
+
+
+environment:
+
+  sdk: ">=3.2.0 <4.0.0"
+
+
+dependencies:
+
+  flutter:
+
+    sdk: flutter
+
+  flutter_localizations:
+
+    sdk: flutter
+
+
+  # Backend
+
+  supabase_flutter: ^2.5.0
+
+  firebase_core: ^4.5.0
+
+  firebase_messaging: ^16.1.2
+
+
+  # State management
+
+  flutter_riverpod: ^3.3.1
+
+  riverpod_annotation: ^4.0.2
+
+
+  # Navigation
+
+  go_router: ^17.1.0
+
+
+  # Auth
+
+  google_sign_in: ^7.2.0
+
+
+  # Payments
+
+  flutter_stripe: ^12.4.0
+
+
+  # Video
+
+  better_player_plus: ^1.1.5
+
+  video_compress: ^3.1.2
+
+  image_picker: ^1.1.2
+
+
+  # QR
+
+  qr_flutter: ^4.1.0
+
+  mobile_scanner: ^7.2.0
+
+
+  # UI
+
+  cached_network_image: ^3.3.1
+
+  shimmer: ^3.0.0
+
+  lottie: ^3.1.0
+
+  fl_chart: ^1.2.0
+
+  share_plus: ^12.0.1
+
+  add_2_calendar: ^3.0.1
+
+
+  # Storage locale
+
+  hive_flutter: ^1.1.0
+
+  flutter_secure_storage: ^10.0.0
+
+
+  # Utilitaires
+
+  connectivity_plus: ^7.0.0
+
+  geolocator: ^14.0.2
+
+  local_auth: ^3.0.1
+
+  app_links: ^6.1.1
+
+  intl: ^0.20.2
+
+  posthog_flutter: ^5.20.0
+
+  sentry_flutter: ^9.15.0
+
+
+dev_dependencies:
+
+  flutter_test:
+
+    sdk: flutter
+
+  build_runner: ^2.4.9
+
+  riverpod_generator: ^4.0.3
+
+  flutter_lints: ^6.0.0
+
+  flutter_launcher_icons: ^0.14.4
+
+  flutter_native_splash: ^2.4.0
+
+
+flutter:
+
+  uses-material-design: true
+
+  generate: true
+
+  assets:
+
+    - assets/images/
+
+    - assets/animations/
