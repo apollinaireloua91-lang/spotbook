@@ -24,7 +24,7 @@ final proProfileProvider =
 final proApprovedVideosProvider =
     FutureProvider.family<List<VideoModel>, String>((ref, proId) async {
   final videos = await ref.read(videoRepositoryProvider).getProVideos(proId);
-  return videos.where((video) => video.status == 'approved').toList();
+  return videos.where((v) => v.status == 'approved').toList();
 });
 
 final proServicesProvider =
@@ -35,7 +35,7 @@ final proServicesProvider =
 final proEventsProvider =
     FutureProvider.family<List<EventModel>, String>((ref, proId) async {
   final events = await ref.read(eventRepositoryProvider).getEvents();
-  return events.where((event) => event.proId == proId).toList();
+  return events.where((e) => e.proId == proId).toList();
 });
 
 class ProProfileScreen extends ConsumerWidget {
@@ -64,16 +64,20 @@ class ProProfileScreen extends ConsumerWidget {
         data: (profile) {
           if (profile == null) {
             return const Center(
-              child: Text('Pro introuvable',
-                  style: TextStyle(color: AppColors.gris)),
+              child: Text(
+                'Pro introuvable',
+                style: TextStyle(color: AppColors.gris),
+              ),
             );
           }
           return _ProfileContent(profile: profile);
         },
         loading: () => const _ProProfileShimmer(),
         error: (err, _) => Center(
-          child: Text('Error: $err',
-              style: const TextStyle(color: AppColors.error)),
+          child: Text(
+            'Erreur : $err',
+            style: const TextStyle(color: AppColors.error),
+          ),
         ),
       ),
     );
@@ -91,7 +95,7 @@ class _ProfileContent extends ConsumerWidget {
     final servicesAsync = ref.watch(proServicesProvider(profile.id));
     final eventsAsync = ref.watch(proEventsProvider(profile.id));
     final visibleSocials = profile.socialConnections
-        .where((connection) => connection.followersCount >= 10000)
+        .where((c) => c.followersCount >= 10000)
         .toList();
 
     return DefaultTabController(
@@ -105,27 +109,9 @@ class _ProfileContent extends ConsumerWidget {
                   SizedBox(
                     height: 220,
                     child: Stack(
+                      clipBehavior: Clip.none,
                       children: [
-                        SizedBox(
-                          height: 180,
-                          width: double.infinity,
-                          child: profile.coverUrl == null
-                              ? Container(color: AppColors.surface)
-                              : CachedNetworkImage(
-                                  imageUrl: profile.coverUrl!,
-                                  fit: BoxFit.cover,
-                                  placeholder: (_, __) => Shimmer.fromColors(
-                                    baseColor: AppColors.surface,
-                                    highlightColor: AppColors.surfaceAlt,
-                                    child: Container(color: AppColors.surface),
-                                  ),
-                                  errorWidget: (_, __, ___) => Container(
-                                    color: AppColors.surface,
-                                    child: const Icon(Icons.image_not_supported,
-                                        color: AppColors.blanc),
-                                  ),
-                                ),
-                        ),
+                        _CoverImage(url: profile.coverUrl),
                         Positioned(
                           left: 0,
                           right: 0,
@@ -148,8 +134,11 @@ class _ProfileContent extends ConsumerWidget {
                                             profile.avatarUrl!)
                                         : null,
                                     child: profile.avatarUrl == null
-                                        ? const Icon(Icons.person,
-                                            size: 40, color: AppColors.gris)
+                                        ? const Icon(
+                                            Icons.person,
+                                            size: 40,
+                                            color: AppColors.gris,
+                                          )
                                         : null,
                                   ),
                                 ),
@@ -163,8 +152,11 @@ class _ProfileContent extends ConsumerWidget {
                                       color: AppColors.blanc,
                                       shape: BoxShape.circle,
                                     ),
-                                    child: const Icon(Icons.check,
-                                        color: AppColors.fond, size: 16),
+                                    child: const Icon(
+                                      Icons.check,
+                                      color: AppColors.fond,
+                                      size: 16,
+                                    ),
                                   ),
                                 ),
                               ],
@@ -196,7 +188,9 @@ class _ProfileContent extends ConsumerWidget {
                         const SizedBox(width: 8),
                         Container(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 8, vertical: 4),
+                            horizontal: 8,
+                            vertical: 4,
+                          ),
                           decoration: BoxDecoration(
                             color: AppColors.blanc,
                             borderRadius: BorderRadius.circular(4),
@@ -218,21 +212,29 @@ class _ProfileContent extends ConsumerWidget {
                     Text(
                       '@${profile.username}',
                       textAlign: TextAlign.center,
-                      style:
-                          const TextStyle(color: AppColors.gris, fontSize: 14),
+                      style: const TextStyle(
+                        color: AppColors.gris,
+                        fontSize: 14,
+                      ),
                     ),
                   ],
                   const SizedBox(height: 4),
                   Text(
                     _categoryAndCity(profile),
                     textAlign: TextAlign.center,
-                    style: const TextStyle(color: AppColors.gris, fontSize: 13),
+                    style: const TextStyle(
+                      color: AppColors.gris,
+                      fontSize: 13,
+                    ),
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    '⭐ ${profile.rating.toStringAsFixed(1)} (${profile.reviewsCount} avis)',
+                    '\u2B50 ${profile.rating.toStringAsFixed(1)} (${profile.reviewsCount} avis)',
                     textAlign: TextAlign.center,
-                    style: const TextStyle(color: AppColors.gris, fontSize: 13),
+                    style: const TextStyle(
+                      color: AppColors.gris,
+                      fontSize: 13,
+                    ),
                   ),
                   if (visibleSocials.isNotEmpty) ...[
                     const SizedBox(height: 12),
@@ -244,7 +246,7 @@ class _ProfileContent extends ConsumerWidget {
                         scrollDirection: Axis.horizontal,
                         itemCount: visibleSocials.length,
                         separatorBuilder: (_, __) => const SizedBox(width: 16),
-                        itemBuilder: (context, index) {
+                        itemBuilder: (_, index) {
                           final social = visibleSocials[index];
                           return SocialBadgeWidget(
                             platform: social.platform,
@@ -264,7 +266,10 @@ class _ProfileContent extends ConsumerWidget {
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
-                            color: AppColors.blanc, fontSize: 14, height: 1.5),
+                          color: AppColors.blanc,
+                          fontSize: 14,
+                          height: 1.5,
+                        ),
                       ),
                     ),
                   ],
@@ -291,11 +296,12 @@ class _ProfileContent extends ConsumerWidget {
             ),
             SliverPersistentHeader(
               pinned: true,
-              delegate: _SliverAppBarDelegate(
+              delegate: _TabBarDelegate(
                 const TabBar(
                   indicatorColor: AppColors.blanc,
                   labelColor: AppColors.blanc,
                   unselectedLabelColor: AppColors.gris,
+                  indicatorWeight: 2,
                   tabs: [
                     Tab(text: 'Vidéos'),
                     Tab(text: 'Services'),
@@ -311,18 +317,18 @@ class _ProfileContent extends ConsumerWidget {
             videosAsync.when(
               data: (videos) => _VideosTab(videos: videos),
               loading: () => const _GridShimmer(),
-              error: (err, _) => _ErrorTab(message: '$err'),
+              error: (err, _) => _ErrorPlaceholder(message: '$err'),
             ),
             servicesAsync.when(
               data: (services) =>
                   _ServicesTab(profile: profile, services: services),
               loading: () => const _ListShimmer(),
-              error: (err, _) => _ErrorTab(message: '$err'),
+              error: (err, _) => _ErrorPlaceholder(message: '$err'),
             ),
             eventsAsync.when(
               data: (events) => _EventsTab(events: events),
               loading: () => const _ListShimmer(),
-              error: (err, _) => _ErrorTab(message: '$err'),
+              error: (err, _) => _ErrorPlaceholder(message: '$err'),
             ),
           ],
         ),
@@ -330,9 +336,41 @@ class _ProfileContent extends ConsumerWidget {
     );
   }
 
-  String _categoryAndCity(ProProfile profile) {
+  static String _categoryAndCity(ProProfile profile) {
     if (profile.city == null || profile.city!.isEmpty) return profile.category;
-    return '${profile.category} • ${profile.city}';
+    return '${profile.category} \u2022 ${profile.city}';
+  }
+}
+
+class _CoverImage extends StatelessWidget {
+  const _CoverImage({this.url});
+
+  final String? url;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 180,
+      width: double.infinity,
+      child: url != null
+          ? CachedNetworkImage(
+              imageUrl: url!,
+              fit: BoxFit.cover,
+              placeholder: (_, __) => Shimmer.fromColors(
+                baseColor: AppColors.surface,
+                highlightColor: AppColors.surfaceAlt,
+                child: Container(color: AppColors.surface),
+              ),
+              errorWidget: (_, __, ___) => Container(
+                color: AppColors.surface,
+                child: const Icon(
+                  Icons.image_not_supported,
+                  color: AppColors.blanc,
+                ),
+              ),
+            )
+          : Container(color: AppColors.surface),
+    );
   }
 }
 
@@ -344,7 +382,7 @@ class _VideosTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (videos.isEmpty) {
-      return const _EmptyTab(message: 'Aucune vidéo approuvée');
+      return const _EmptyPlaceholder(message: 'Aucune vidéo approuvée');
     }
 
     return GridView.builder(
@@ -369,8 +407,9 @@ class _VideosTab extends StatelessWidget {
             children: [
               Expanded(
                 child: ClipRRect(
-                  borderRadius:
-                      const BorderRadius.vertical(top: Radius.circular(16)),
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(16),
+                  ),
                   child: Stack(
                     fit: StackFit.expand,
                     children: [
@@ -385,22 +424,28 @@ class _VideosTab extends StatelessWidget {
                           ),
                           errorWidget: (_, __, ___) => Container(
                             color: AppColors.surface,
-                            child: const Icon(Icons.broken_image,
-                                color: AppColors.blanc),
+                            child: const Icon(
+                              Icons.broken_image,
+                              color: AppColors.blanc,
+                            ),
                           ),
                         )
                       else
                         Container(
                           color: AppColors.surfaceAlt,
-                          child:
-                              const Icon(Icons.videocam, color: AppColors.gris),
+                          child: const Icon(
+                            Icons.videocam,
+                            color: AppColors.gris,
+                          ),
                         ),
                       Positioned(
                         right: 8,
                         bottom: 8,
                         child: Container(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 8, vertical: 4),
+                            horizontal: 8,
+                            vertical: 4,
+                          ),
                           decoration: BoxDecoration(
                             color: AppColors.fond,
                             borderRadius: BorderRadius.circular(8),
@@ -439,7 +484,7 @@ class _VideosTab extends StatelessWidget {
     );
   }
 
-  String _formatDuration(double? durationSeconds) {
+  static String _formatDuration(double? durationSeconds) {
     if (durationSeconds == null || durationSeconds <= 0) return '--:--';
     final total = durationSeconds.round();
     final minutes = total ~/ 60;
@@ -457,7 +502,7 @@ class _ServicesTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (services.isEmpty) {
-      return const _EmptyTab(message: 'Aucun service disponible');
+      return const _EmptyPlaceholder(message: 'Aucun service disponible');
     }
 
     return ListView.separated(
@@ -491,9 +536,11 @@ class _ServicesTab extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      '${service.durationMinutes} min • ${_formatPrice(service.price)}',
-                      style:
-                          const TextStyle(color: AppColors.gris, fontSize: 13),
+                      '${service.durationMinutes} min \u2022 ${_formatPrice(service.price)}',
+                      style: const TextStyle(
+                        color: AppColors.gris,
+                        fontSize: 13,
+                      ),
                     ),
                   ],
                 ),
@@ -513,7 +560,7 @@ class _ServicesTab extends StatelessWidget {
     );
   }
 
-  String _formatPrice(double price) {
+  static String _formatPrice(double price) {
     if (price == price.roundToDouble()) {
       return '\$${price.toStringAsFixed(0)}';
     }
@@ -529,7 +576,7 @@ class _EventsTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (events.isEmpty) {
-      return const _EmptyTab(message: 'Aucun événement actif');
+      return const _EmptyPlaceholder(message: 'Aucun événement actif');
     }
 
     return ListView.separated(
@@ -548,15 +595,19 @@ class _EventsTab extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               ClipRRect(
-                borderRadius:
-                    const BorderRadius.vertical(top: Radius.circular(16)),
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(16),
+                ),
                 child: SizedBox(
                   height: 140,
                   width: double.infinity,
                   child: event.coverUrl == null
                       ? Container(
                           color: AppColors.surfaceAlt,
-                          child: const Icon(Icons.event, color: AppColors.gris),
+                          child: const Icon(
+                            Icons.event,
+                            color: AppColors.gris,
+                          ),
                         )
                       : CachedNetworkImage(
                           imageUrl: event.coverUrl!,
@@ -568,8 +619,10 @@ class _EventsTab extends StatelessWidget {
                           ),
                           errorWidget: (_, __, ___) => Container(
                             color: AppColors.surfaceAlt,
-                            child: const Icon(Icons.image_not_supported,
-                                color: AppColors.blanc),
+                            child: const Icon(
+                              Icons.image_not_supported,
+                              color: AppColors.blanc,
+                            ),
                           ),
                         ),
                 ),
@@ -591,9 +644,11 @@ class _EventsTab extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      '${_formatDate(event.eventDate)} • ${_formatPrice(event.minPrice)}',
-                      style:
-                          const TextStyle(color: AppColors.gris, fontSize: 13),
+                      '${_formatDate(event.eventDate)} \u2022 ${_formatPrice(event.minPrice)}',
+                      style: const TextStyle(
+                        color: AppColors.gris,
+                        fontSize: 13,
+                      ),
                     ),
                   ],
                 ),
@@ -605,7 +660,7 @@ class _EventsTab extends StatelessWidget {
     );
   }
 
-  String _formatDate(DateTime? date) {
+  static String _formatDate(DateTime? date) {
     if (date == null) return 'Date à confirmer';
     final day = date.day.toString().padLeft(2, '0');
     final month = date.month.toString().padLeft(2, '0');
@@ -613,7 +668,7 @@ class _EventsTab extends StatelessWidget {
     return '$day/$month/$year';
   }
 
-  String _formatPrice(double price) {
+  static String _formatPrice(double price) {
     if (price <= 0) return 'Prix à confirmer';
     if (price == price.roundToDouble()) {
       return '\$${price.toStringAsFixed(0)}';
@@ -622,8 +677,8 @@ class _EventsTab extends StatelessWidget {
   }
 }
 
-class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
-  _SliverAppBarDelegate(this._tabBar);
+class _TabBarDelegate extends SliverPersistentHeaderDelegate {
+  const _TabBarDelegate(this._tabBar);
 
   final TabBar _tabBar;
 
@@ -635,12 +690,15 @@ class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
 
   @override
   Widget build(
-      BuildContext context, double shrinkOffset, bool overlapsContent) {
+    BuildContext context,
+    double shrinkOffset,
+    bool overlapsContent,
+  ) {
     return Container(color: AppColors.fond, child: _tabBar);
   }
 
   @override
-  bool shouldRebuild(_SliverAppBarDelegate oldDelegate) => false;
+  bool shouldRebuild(_TabBarDelegate oldDelegate) => false;
 }
 
 class _GridShimmer extends StatelessWidget {
@@ -720,20 +778,28 @@ class _ProProfileShimmer extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           Center(
-              child: Container(
-                  width: 200, height: 20, color: AppColors.surfaceAlt)),
+            child: Container(
+              width: 200,
+              height: 20,
+              color: AppColors.surfaceAlt,
+            ),
+          ),
           const SizedBox(height: 8),
           Center(
-              child: Container(
-                  width: 140, height: 14, color: AppColors.surfaceAlt)),
+            child: Container(
+              width: 140,
+              height: 14,
+              color: AppColors.surfaceAlt,
+            ),
+          ),
         ],
       ),
     );
   }
 }
 
-class _EmptyTab extends StatelessWidget {
-  const _EmptyTab({required this.message});
+class _EmptyPlaceholder extends StatelessWidget {
+  const _EmptyPlaceholder({required this.message});
 
   final String message;
 
@@ -745,8 +811,8 @@ class _EmptyTab extends StatelessWidget {
   }
 }
 
-class _ErrorTab extends StatelessWidget {
-  const _ErrorTab({required this.message});
+class _ErrorPlaceholder extends StatelessWidget {
+  const _ErrorPlaceholder({required this.message});
 
   final String message;
 
