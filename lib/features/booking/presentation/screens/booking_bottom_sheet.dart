@@ -7,6 +7,7 @@ import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:lottie/lottie.dart';
 
 import '../../../../shared/theme/app_colors.dart';
+import '../../../../shared/utils/analytics_service.dart';
 import '../../../profile/domain/profile_models.dart';
 import '../../data/booking_notifier.dart';
 import '../../domain/booking_models.dart';
@@ -789,6 +790,13 @@ class _Step5Payment extends ConsumerWidget {
 
                     // Step 1: Create booking + get clientSecret
                     if (state.bookingResult == null) {
+                      await AnalyticsService.instance.capture(
+                        'booking_started',
+                        properties: {
+                          'pro_id': state.selectedSlot?.proId ?? '',
+                          'service_id': state.selectedService?.id ?? '',
+                        },
+                      );
                       await ref
                           .read(bookingFlowProvider.notifier)
                           .createBooking();
@@ -806,8 +814,22 @@ class _Step5Payment extends ConsumerWidget {
                         ),
                       );
                       // Payment succeeded — go to confirmation
+                      await AnalyticsService.instance.capture(
+                        'booking_completed',
+                        properties: {
+                          'booking_id': flowState.bookingResult?['bookingId']?.toString() ?? '',
+                          'pro_id': state.selectedSlot?.proId ?? '',
+                        },
+                      );
                       ref.read(bookingFlowProvider.notifier).nextStep();
                     } on StripeException catch (e) {
+                      await AnalyticsService.instance.capture(
+                        'payment_failed',
+                        properties: {
+                          'booking_id': flowState.bookingResult?['bookingId']?.toString() ?? '',
+                          'error': e.error.localizedMessage ?? 'payment_failed',
+                        },
+                      );
                       if (!context.mounted) return;
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(

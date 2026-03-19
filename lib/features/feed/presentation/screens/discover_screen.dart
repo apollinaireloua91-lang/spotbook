@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../shared/theme/app_colors.dart';
+import '../../../../shared/utils/analytics_service.dart';
 import '../../../profile/presentation/widgets/social_badge_widget.dart';
 import '../../data/discover_notifier.dart';
 import '../../domain/video_model.dart';
@@ -75,6 +76,10 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
                       onSubmitted: (v) {
                         _focusNode.unfocus();
                         n.search(v);
+                        AnalyticsService.instance.capture('search_performed', properties: {
+                          'query_length': v.length,
+                          'source': 'submit',
+                        });
                       },
                       style: const TextStyle(color: AppColors.blanc, fontSize: 14),
                       decoration: InputDecoration(
@@ -144,6 +149,10 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
                             _searchCtrl.text = query;
                             _focusNode.unfocus();
                             n.search(query);
+                            AnalyticsService.instance.capture('search_performed', properties: {
+                              'query_length': query.length,
+                              'source': 'history',
+                            });
                           },
                         )),
                   ],

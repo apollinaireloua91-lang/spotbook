@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../shared/theme/app_colors.dart';
+import '../../../../shared/utils/analytics_service.dart';
 import '../../data/auth_repository.dart';
 import '../../data/user_setup_repository.dart';
 
@@ -26,6 +27,9 @@ class _SignUpNotifier extends Notifier<_SignUpState> {
     try {
       await ref.read(authRepositoryProvider).signUpWithEmail(email: email, password: password, fullName: fullName, phone: phone, age: age, address: address, role: state.selectedRole);
       await ref.read(userSetupRepositoryProvider).setupNewUser();
+      await AnalyticsService.instance.capture('signup_completed', properties: {
+        'role': state.selectedRole,
+      });
       state = state.copyWith(isLoading: false);
     } catch (e) {
       state = state.copyWith(isLoading: false);
