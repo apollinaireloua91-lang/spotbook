@@ -32,8 +32,13 @@ import '../features/profile/presentation/screens/edit_profile_screen.dart';
 import '../features/profile/presentation/screens/pro_profile_screen.dart';
 import '../features/settings/presentation/screens/delete_account_screen.dart';
 import '../features/chat/presentation/screens/chat_screen.dart';
+import '../features/favorites/presentation/screens/favorites_screen.dart';
+import '../features/moderation/presentation/screens/blocked_users_screen.dart';
 import '../features/notifications/presentation/screens/notification_history_screen.dart';
 import '../features/notifications/presentation/screens/notification_settings_screen.dart';
+import '../features/promo/presentation/screens/create_promo_code_screen.dart';
+import '../features/promo/presentation/screens/referral_screen.dart';
+import '../features/reviews/presentation/screens/review_screen.dart';
 import '../features/settings/presentation/screens/settings_screen.dart';
 import '../shared/widgets/placeholder_screen.dart';
 import 'client_shell.dart';
@@ -284,6 +289,33 @@ final appRouter = GoRouter(
       path: '/subscription-checkout',
       builder: (context, state) =>
           StripeCheckoutWebview(url: state.extra as String? ?? ''),
+    ),
+    GoRoute(
+      path: '/review',
+      builder: (context, state) {
+        final args = state.extra! as Map<String, String>;
+        return ReviewScreen(
+          bookingId: args['bookingId']!,
+          proId: args['proId']!,
+          serviceName: args['serviceName'],
+        );
+      },
+    ),
+    GoRoute(
+      path: '/favorites',
+      builder: (context, state) => const FavoritesScreen(),
+    ),
+    GoRoute(
+      path: '/promo-codes',
+      builder: (context, state) => const CreatePromoCodeScreen(),
+    ),
+    GoRoute(
+      path: '/referral',
+      builder: (context, state) => const ReferralScreen(),
+    ),
+    GoRoute(
+      path: '/blocked-users',
+      builder: (context, state) => const BlockedUsersScreen(),
     ),
   ],
 );
