@@ -11,6 +11,23 @@ import '../../domain/video_model.dart';
 import 'comments_sheet.dart';
 import 'like_animation.dart';
 
+class _ShowLikeAnimNotifier extends Notifier<bool> {
+  @override
+  bool build() => false;
+
+  void trigger() {
+    state = true;
+    Future.delayed(const Duration(milliseconds: 800), () {
+      state = false;
+    });
+  }
+}
+
+final _showLikeAnimProvider = NotifierProvider<_ShowLikeAnimNotifier, bool>(
+  _ShowLikeAnimNotifier.new,
+  isAutoDispose: true,
+);
+
 class VideoFeedItem extends ConsumerStatefulWidget {
   const VideoFeedItem({
     super.key,
@@ -29,7 +46,6 @@ class VideoFeedItem extends ConsumerStatefulWidget {
 
 class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
   BetterPlayerController? _controller;
-  bool _showLikeAnim = false;
   bool _viewCounted = false;
 
   @override
@@ -100,10 +116,7 @@ class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
     if (!widget.video.isLiked) {
       _toggleLike();
     }
-    setState(() => _showLikeAnim = true);
-    Future.delayed(const Duration(milliseconds: 800), () {
-      if (mounted) setState(() => _showLikeAnim = false);
-    });
+    ref.read(_showLikeAnimProvider.notifier).trigger();
   }
 
   void _openComments() {
@@ -117,6 +130,8 @@ class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
 
   @override
   Widget build(BuildContext context) {
+    final showLikeAnim = ref.watch(_showLikeAnimProvider);
+
     return GestureDetector(
       onDoubleTap: _onDoubleTap,
       onHorizontalDragEnd: (details) {
@@ -127,7 +142,6 @@ class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
       child: Stack(
         fit: StackFit.expand,
         children: [
-          // Video player
           if (_controller != null)
             BetterPlayer(controller: _controller!)
           else if (widget.video.thumbnailUrl != null)
@@ -139,7 +153,6 @@ class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
           else
             Container(color: AppColors.fond),
 
-          // Gradient overlay
           const Positioned(
             bottom: 0,
             left: 0,
@@ -156,7 +169,6 @@ class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
             ),
           ),
 
-          // Bottom-left: Pro info
           Positioned(
             bottom: 80,
             left: 16,
@@ -175,19 +187,14 @@ class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
                             ? CachedNetworkImageProvider(widget.video.proAvatarUrl!)
                             : null,
                         child: widget.video.proAvatarUrl == null
-                            ? const Icon(Icons.person,
-                                size: 18, color: AppColors.gris)
+                            ? const Icon(Icons.person, size: 18, color: AppColors.gris)
                             : null,
                       ),
                       const SizedBox(width: 10),
                       Expanded(
                         child: Text(
                           widget.video.proName ?? 'Pro',
-                          style: const TextStyle(
-                            color: AppColors.blanc,
-                            fontSize: 15,
-                            fontWeight: FontWeight.w600,
-                          ),
+                          style: const TextStyle(color: AppColors.blanc, fontSize: 15, fontWeight: FontWeight.w600),
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
@@ -197,10 +204,7 @@ class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
                 const SizedBox(height: 8),
                 Text(
                   widget.video.title,
-                  style: const TextStyle(
-                    color: AppColors.blanc,
-                    fontSize: 14,
-                  ),
+                  style: const TextStyle(color: AppColors.blanc, fontSize: 14),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -208,10 +212,7 @@ class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
                   const SizedBox(height: 4),
                   Text(
                     widget.video.hashtags.map((h) => '#$h').join(' '),
-                    style: const TextStyle(
-                      color: AppColors.grisClair,
-                      fontSize: 12,
-                    ),
+                    style: const TextStyle(color: AppColors.grisClair, fontSize: 12),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -220,20 +221,15 @@ class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
             ),
           ),
 
-          // Right sidebar: actions
           Positioned(
             bottom: 80,
             right: 12,
             child: Column(
               children: [
                 _ActionButton(
-                  icon: widget.video.isLiked
-                      ? Icons.favorite
-                      : Icons.favorite_border,
+                  icon: widget.video.isLiked ? Icons.favorite : Icons.favorite_border,
                   label: _formatCount(widget.video.likesCount),
-                  color: widget.video.isLiked
-                      ? AppColors.error
-                      : AppColors.blanc,
+                  color: widget.video.isLiked ? AppColors.error : AppColors.blanc,
                   onTap: _toggleLike,
                 ),
                 const SizedBox(height: 20),
@@ -252,8 +248,7 @@ class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
             ),
           ),
 
-          // Like animation
-          if (_showLikeAnim) const Center(child: LikeAnimation()),
+          if (showLikeAnim) const Center(child: LikeAnimation()),
         ],
       ),
     );
@@ -289,11 +284,7 @@ class _ActionButton extends StatelessWidget {
           const SizedBox(height: 4),
           Text(
             label,
-            style: const TextStyle(
-              color: AppColors.blanc,
-              fontSize: 11,
-              fontWeight: FontWeight.w500,
-            ),
+            style: const TextStyle(color: AppColors.blanc, fontSize: 11, fontWeight: FontWeight.w500),
           ),
         ],
       ),
