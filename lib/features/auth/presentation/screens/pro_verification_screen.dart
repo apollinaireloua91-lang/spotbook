@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:image_picker/image_picker.dart';
 
 import '../../../../shared/theme/app_colors.dart';
-import '../../data/profile_repository.dart';
+import '../../data/pro_verification_notifier.dart';
 
 class ProVerificationScreen extends ConsumerStatefulWidget {
   const ProVerificationScreen({super.key});
@@ -15,49 +14,49 @@ class ProVerificationScreen extends ConsumerStatefulWidget {
 
 class _ProVerificationScreenState extends ConsumerState<ProVerificationScreen> {
   final _phoneCtrl = TextEditingController();
-  String? _documentName;
-  bool _isUploading = false;
-  bool _isSubmitting = false;
 
   @override
-  void dispose() { _phoneCtrl.dispose(); super.dispose(); }
+  void dispose() {
+    _phoneCtrl.dispose();
+    super.dispose();
+  }
 
   Future<void> _pickDocument() async {
-    final image = await ImagePicker().pickImage(source: ImageSource.gallery, maxWidth: 2048, imageQuality: 90);
-    if (image == null) return;
-    setState(() => _isUploading = true);
     try {
-      final bytes = await image.readAsBytes();
-      final ext = image.name.split('.').last;
-      await ref.read(profileRepositoryProvider).uploadKycDocument(bytes, ext);
-      setState(() => _documentName = image.name);
+      await ref.read(proVerificationProvider.notifier).pickAndUploadDocument();
     } catch (_) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Upload failed'), backgroundColor: AppColors.error));
-    } finally {
-      if (mounted) setState(() => _isUploading = false);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Upload failed'), backgroundColor: AppColors.error),
+        );
+      }
     }
   }
 
   Future<void> _submit() async {
-    if (_documentName == null) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please upload your ID document'), backgroundColor: AppColors.error));
+    final s = ref.read(proVerificationProvider);
+    if (s.documentName == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please upload your ID document'), backgroundColor: AppColors.error),
+      );
       return;
     }
-    setState(() => _isSubmitting = true);
     try {
-      await ref.read(profileRepositoryProvider).submitKycVerification(_phoneCtrl.text.trim());
+      await ref.read(proVerificationProvider.notifier).submit(_phoneCtrl.text.trim());
       if (!mounted) return;
       context.go('/pro/stripe-connect');
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString()), backgroundColor: AppColors.error));
-    } finally {
-      if (mounted) setState(() => _isSubmitting = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.toString()), backgroundColor: AppColors.error),
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final s = ref.watch(proVerificationProvider);
+
     return Scaffold(
       backgroundColor: AppColors.fondDark,
       appBar: AppBar(
@@ -100,14 +99,14 @@ class _ProVerificationScreenState extends ConsumerState<ProVerificationScreen> {
         const Text('Please upload a clear photo of your government-issued ID (Driver\'s License, Passport, or National ID) to activate your provider account.', style: TextStyle(color: AppColors.gris, fontSize: 13)),
         const SizedBox(height: 16),
         GestureDetector(
-          onTap: _isUploading ? null : _pickDocument,
+          onTap: s.isUploading ? null : _pickDocument,
           child: Container(width: double.infinity, padding: const EdgeInsets.symmetric(vertical: 32), decoration: BoxDecoration(borderRadius: BorderRadius.circular(16), border: Border.all(color: AppColors.accent.withAlpha(77), width: 1.5, strokeAlign: BorderSide.strokeAlignInside)),
             child: Column(children: [
-              if (_isUploading) const CircularProgressIndicator(color: AppColors.accent, strokeWidth: 2)
-              else if (_documentName != null) ...[
+              if (s.isUploading) const CircularProgressIndicator(color: AppColors.accent, strokeWidth: 2)
+              else if (s.documentName != null) ...[
                 const Icon(Icons.check_circle, color: AppColors.accentGreen, size: 36),
                 const SizedBox(height: 8),
-                Text(_documentName!, style: const TextStyle(color: AppColors.blanc, fontSize: 13)),
+                Text(s.documentName!, style: const TextStyle(color: AppColors.blanc, fontSize: 13)),
               ] else ...[
                 const Icon(Icons.cloud_upload_outlined, color: AppColors.accent, size: 36),
                 const SizedBox(height: 8),
@@ -126,9 +125,9 @@ class _ProVerificationScreenState extends ConsumerState<ProVerificationScreen> {
           ])),
         const SizedBox(height: 32),
         SizedBox(width: double.infinity, height: 52, child: ElevatedButton(
-          onPressed: _isSubmitting ? null : _submit,
+          onPressed: s.isSubmitting ? null : _submit,
           style: ElevatedButton.styleFrom(backgroundColor: AppColors.accent, foregroundColor: AppColors.fondDark, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
-          child: _isSubmitting ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.fondDark)) : const Text('Submit Documents', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+          child: s.isSubmitting ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.fondDark)) : const Text('Submit Documents', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
         )),
         const SizedBox(height: 32),
       ]))),

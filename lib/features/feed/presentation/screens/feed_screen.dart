@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../shared/theme/app_colors.dart';
-import '../../data/video_repository.dart';
-import '../../domain/video_model.dart';
+import '../../data/feed_notifier.dart';
 import '../widgets/video_feed_item.dart';
 
 class FeedScreen extends ConsumerStatefulWidget {
@@ -15,16 +14,6 @@ class FeedScreen extends ConsumerStatefulWidget {
 
 class _FeedScreenState extends ConsumerState<FeedScreen> {
   final _pageController = PageController();
-  final List<VideoModel> _videos = [];
-  int _currentIndex = 0;
-  bool _isLoading = true;
-  bool _isLoadingMore = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _loadInitial();
-  }
 
   @override
   void dispose() {
@@ -32,48 +21,19 @@ class _FeedScreenState extends ConsumerState<FeedScreen> {
     super.dispose();
   }
 
-  Future<void> _loadInitial() async {
-    try {
-      final videos = await ref.read(videoRepositoryProvider).getScoredVideos();
-      if (mounted) {
-        setState(() {
-          _videos.addAll(videos);
-          _isLoading = false;
-        });
-      }
-    } catch (_) {
-      if (mounted) setState(() => _isLoading = false);
-    }
-  }
-
-  Future<void> _loadMore() async {
-    if (_isLoadingMore) return;
-    _isLoadingMore = true;
-    try {
-      final more = await ref.read(videoRepositoryProvider).getMoreVideos(offset: _videos.length);
-      if (mounted) setState(() => _videos.addAll(more));
-    } catch (_) {
-      // Silently fail
-    } finally {
-      _isLoadingMore = false;
-    }
-  }
-
-  void _onPageChanged(int index) {
-    setState(() => _currentIndex = index);
-    if (index > _videos.length - 3) _loadMore();
-  }
-
   @override
   Widget build(BuildContext context) {
-    if (_isLoading) {
+    final s = ref.watch(feedProvider);
+    final n = ref.read(feedProvider.notifier);
+
+    if (s.isLoading) {
       return const Scaffold(
         backgroundColor: AppColors.fond,
         body: Center(child: CircularProgressIndicator(color: AppColors.blanc)),
       );
     }
 
-    if (_videos.isEmpty) {
+    if (s.videos.isEmpty) {
       return Scaffold(
         backgroundColor: AppColors.fond,
         body: Center(child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
@@ -92,26 +52,13 @@ class _FeedScreenState extends ConsumerState<FeedScreen> {
       body: PageView.builder(
         controller: _pageController,
         scrollDirection: Axis.vertical,
-        itemCount: _videos.length,
-        onPageChanged: _onPageChanged,
+        itemCount: s.videos.length,
+        onPageChanged: n.setCurrentIndex,
         itemBuilder: (context, index) {
           return VideoFeedItem(
-            video: _videos[index],
-            isActive: index == _currentIndex,
-            onLikeToggled: (liked) {
-              setState(() {
-                final v = _videos[index];
-                _videos[index] = VideoModel(
-                  id: v.id, proId: v.proId, cloudflareId: v.cloudflareId,
-                  streamUrl: v.streamUrl, thumbnailUrl: v.thumbnailUrl,
-                  title: v.title, description: v.description, category: v.category,
-                  hashtags: v.hashtags, status: v.status, rejectionReason: v.rejectionReason,
-                  likesCount: v.likesCount + (liked ? 1 : -1), commentsCount: v.commentsCount,
-                  viewsCount: v.viewsCount, flagCount: v.flagCount, createdAt: v.createdAt,
-                  proName: v.proName, proAvatarUrl: v.proAvatarUrl, proCity: v.proCity, isLiked: liked,
-                );
-              });
-            },
+            video: s.videos[index],
+            isActive: index == s.currentIndex,
+            onLikeToggled: (liked) => n.toggleLike(index, liked),
           );
         },
       ),

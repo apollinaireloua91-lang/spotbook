@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../shared/theme/app_colors.dart';
+import '../../data/client_interest_categories_notifier.dart';
 
 class _Category {
   const _Category({required this.icon, required this.label});
@@ -20,20 +22,14 @@ const _categories = [
   _Category(icon: Icons.palette, label: 'Design'),
 ];
 
-class ClientInterestCategoriesScreen extends StatefulWidget {
+class ClientInterestCategoriesScreen extends ConsumerWidget {
   const ClientInterestCategoriesScreen({super.key});
 
   @override
-  State<ClientInterestCategoriesScreen> createState() =>
-      _ClientInterestCategoriesScreenState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final selected = ref.watch(clientInterestCategoriesProvider);
+    final notifier = ref.read(clientInterestCategoriesProvider.notifier);
 
-class _ClientInterestCategoriesScreenState
-    extends State<ClientInterestCategoriesScreen> {
-  final _selected = <int>{};
-
-  @override
-  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.fondDark,
       appBar: AppBar(
@@ -55,52 +51,37 @@ class _ClientInterestCategoriesScreenState
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 8),
-              // Step badge + progress
               Row(
                 children: [
                   Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(12),
                       color: AppColors.accent.withAlpha(26),
                     ),
                     child: const Text(
                       'STEP 1 OF 3',
-                      style: TextStyle(
-                        color: AppColors.accent,
-                        fontSize: 11,
-                        fontWeight: FontWeight.w600,
-                        letterSpacing: 0.5,
-                      ),
+                      style: TextStyle(color: AppColors.accent, fontSize: 11, fontWeight: FontWeight.w600, letterSpacing: 0.5),
                     ),
                   ),
                   const Spacer(),
-                  const Text(
-                    '33% Complete',
-                    style: TextStyle(color: AppColors.gris, fontSize: 12),
-                  ),
+                  const Text('33% Complete', style: TextStyle(color: AppColors.gris, fontSize: 12)),
                 ],
               ),
               const SizedBox(height: 8),
               ClipRRect(
                 borderRadius: BorderRadius.circular(4),
-                child: LinearProgressIndicator(
+                child: const LinearProgressIndicator(
                   value: 0.33,
                   backgroundColor: AppColors.surfaceAuth,
-                  valueColor:
-                      const AlwaysStoppedAnimation<Color>(AppColors.accent),
+                  valueColor: AlwaysStoppedAnimation<Color>(AppColors.accent),
                   minHeight: 4,
                 ),
               ),
               const SizedBox(height: 24),
               const Text(
                 'What are you looking for?',
-                style: TextStyle(
-                  color: AppColors.blanc,
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(color: AppColors.blanc, fontSize: 24, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
               const Text(
@@ -111,36 +92,20 @@ class _ClientInterestCategoriesScreenState
               Expanded(
                 child: GridView.builder(
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    crossAxisSpacing: 12,
-                    mainAxisSpacing: 12,
-                    childAspectRatio: 1.3,
+                    crossAxisCount: 2, crossAxisSpacing: 12, mainAxisSpacing: 12, childAspectRatio: 1.3,
                   ),
                   itemCount: _categories.length,
                   itemBuilder: (context, index) {
                     final cat = _categories[index];
-                    final isSelected = _selected.contains(index);
+                    final isSelected = selected.contains(index);
                     return GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          if (isSelected) {
-                            _selected.remove(index);
-                          } else {
-                            _selected.add(index);
-                          }
-                        });
-                      },
+                      onTap: () => notifier.toggle(index),
                       child: AnimatedContainer(
                         duration: const Duration(milliseconds: 200),
                         decoration: BoxDecoration(
                           color: AppColors.surfaceAuth,
                           borderRadius: BorderRadius.circular(16),
-                          border: Border.all(
-                            color: isSelected
-                                ? AppColors.accent
-                                : Colors.transparent,
-                            width: 2,
-                          ),
+                          border: Border.all(color: isSelected ? AppColors.accent : Colors.transparent, width: 2),
                         ),
                         child: Stack(
                           children: [
@@ -148,33 +113,14 @@ class _ClientInterestCategoriesScreenState
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Icon(cat.icon,
-                                      color: isSelected
-                                          ? AppColors.accent
-                                          : AppColors.blanc,
-                                      size: 32),
+                                  Icon(cat.icon, color: isSelected ? AppColors.accent : AppColors.blanc, size: 32),
                                   const SizedBox(height: 8),
-                                  Text(
-                                    cat.label,
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      color: isSelected
-                                          ? AppColors.accent
-                                          : AppColors.blanc,
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
+                                  Text(cat.label, textAlign: TextAlign.center, style: TextStyle(color: isSelected ? AppColors.accent : AppColors.blanc, fontSize: 13, fontWeight: FontWeight.w500)),
                                 ],
                               ),
                             ),
                             if (isSelected)
-                              const Positioned(
-                                top: 8,
-                                right: 8,
-                                child: Icon(Icons.check_circle,
-                                    color: AppColors.accent, size: 20),
-                              ),
+                              const Positioned(top: 8, right: 8, child: Icon(Icons.check_circle, color: AppColors.accent, size: 20)),
                           ],
                         ),
                       ),
@@ -187,35 +133,22 @@ class _ClientInterestCategoriesScreenState
                 width: double.infinity,
                 height: 52,
                 child: ElevatedButton(
-                  onPressed: _selected.isNotEmpty
-                      ? () => context.go('/client/goals')
-                      : null,
+                  onPressed: selected.isNotEmpty ? () => context.go('/client/goals') : null,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.accent,
                     foregroundColor: AppColors.fondDark,
                     disabledBackgroundColor: AppColors.accent.withAlpha(77),
                     disabledForegroundColor: AppColors.fondDark.withAlpha(128),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
-                  child: const Text(
-                    'Continue →',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
+                  child: const Text('Continue →', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
                 ),
               ),
               const SizedBox(height: 12),
               Center(
                 child: GestureDetector(
                   onTap: () => context.go('/client/goals'),
-                  child: const Text(
-                    'Skip for now',
-                    style: TextStyle(color: AppColors.gris, fontSize: 14),
-                  ),
+                  child: const Text('Skip for now', style: TextStyle(color: AppColors.gris, fontSize: 14)),
                 ),
               ),
               const SizedBox(height: 24),

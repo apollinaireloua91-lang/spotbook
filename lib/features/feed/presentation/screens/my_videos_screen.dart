@@ -3,31 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../shared/theme/app_colors.dart';
-import '../../data/video_repository.dart';
+import '../../data/my_videos_notifier.dart';
 import '../../domain/video_model.dart';
 
-class MyVideosScreen extends ConsumerStatefulWidget {
+class MyVideosScreen extends ConsumerWidget {
   const MyVideosScreen({super.key});
 
-  @override
-  ConsumerState<MyVideosScreen> createState() => _MyVideosScreenState();
-}
-
-class _MyVideosScreenState extends ConsumerState<MyVideosScreen> {
-  List<VideoModel>? _videos;
-
-  @override
-  void initState() {
-    super.initState();
-    _load();
-  }
-
-  Future<void> _load() async {
-    final videos = await ref.read(videoRepositoryProvider).getMyVideos();
-    if (mounted) setState(() => _videos = videos);
-  }
-
-  Future<void> _delete(String videoId) async {
+  Future<void> _delete(BuildContext context, WidgetRef ref, String videoId) async {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -40,25 +22,26 @@ class _MyVideosScreenState extends ConsumerState<MyVideosScreen> {
       ),
     );
     if (confirmed == true) {
-      await ref.read(videoRepositoryProvider).deleteVideo(videoId);
-      _load();
+      ref.read(myVideosProvider.notifier).deleteVideo(videoId);
     }
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final videos = ref.watch(myVideosProvider);
+
     return Scaffold(
       backgroundColor: AppColors.fond,
       appBar: AppBar(backgroundColor: AppColors.fond, title: const Text('My Videos'), centerTitle: true),
-      body: _videos == null
+      body: videos == null
           ? const Center(child: CircularProgressIndicator(color: AppColors.blanc))
-          : _videos!.isEmpty
+          : videos.isEmpty
               ? const Center(child: Text('No videos yet', style: TextStyle(color: AppColors.gris, fontSize: 15)))
               : ListView.builder(
-                  padding: const EdgeInsets.all(16), itemCount: _videos!.length,
+                  padding: const EdgeInsets.all(16), itemCount: videos.length,
                   itemBuilder: (context, index) {
-                    final v = _videos![index];
-                    return _VideoCard(video: v, onDelete: () => _delete(v.id));
+                    final v = videos[index];
+                    return _VideoCard(video: v, onDelete: () => _delete(context, ref, v.id));
                   },
                 ),
     );
