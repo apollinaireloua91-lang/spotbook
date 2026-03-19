@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shimmer/shimmer.dart';
 
 import '../../../../shared/theme/app_colors.dart';
+import '../../../../shared/utils/analytics_service.dart';
 import '../../data/review_repository.dart';
 
 class _ReviewState {
@@ -41,6 +43,11 @@ class _ReviewNotifier extends Notifier<_ReviewState> {
         rating: state.rating,
         comment: comment?.trim().isEmpty == true ? null : comment?.trim(),
       );
+      await AnalyticsService.instance.capture('review_submitted', properties: {
+        'booking_id': bookingId,
+        'pro_id': proId,
+        'rating': state.rating,
+      });
       state = state.copyWith(isSubmitting: false, submitted: true);
     } catch (_) {
       state = state.copyWith(isSubmitting: false);
@@ -239,7 +246,18 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 ),
                 child: state.isSubmitting
-                    ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: AppColors.gris, strokeWidth: 2))
+                    ? Shimmer.fromColors(
+                        baseColor: AppColors.surface,
+                        highlightColor: AppColors.surfaceAlt,
+                        child: Container(
+                          width: 64,
+                          height: 12,
+                          decoration: BoxDecoration(
+                            color: AppColors.surface,
+                            borderRadius: BorderRadius.circular(999),
+                          ),
+                        ),
+                      )
                     : const Text('Publier', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
               ),
             ),

@@ -110,4 +110,18 @@ class PromoRepository {
     if (amounts.isEmpty) return 0;
     return amounts.reduce((a, b) => a + b);
   }
+
+  Future<List<ReferralModel>> getReferralHistory() async {
+    final uid = _uid;
+    if (uid == null) return [];
+    final data = await _supabase
+        .from('referrals')
+        .select()
+        .eq('referrer_id', uid)
+        .order('created_at', ascending: false)
+        .limit(50);
+    return (data as List)
+        .map((e) => ReferralModel.fromJson(e as Map<String, dynamic>))
+        .toList();
+  }
 }

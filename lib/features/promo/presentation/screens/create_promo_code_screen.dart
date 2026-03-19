@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shimmer/shimmer.dart';
 
 import '../../../../shared/theme/app_colors.dart';
 import '../../data/promo_repository.dart';
@@ -74,12 +75,14 @@ class _CreatePromoCodeScreenState extends ConsumerState<CreatePromoCodeScreen> {
   final _codeCtrl = TextEditingController();
   final _discountCtrl = TextEditingController();
   final _maxUsesCtrl = TextEditingController();
+  final _expiresCtrl = TextEditingController();
 
   @override
   void dispose() {
     _codeCtrl.dispose();
     _discountCtrl.dispose();
     _maxUsesCtrl.dispose();
+    _expiresCtrl.dispose();
     super.dispose();
   }
 
@@ -131,6 +134,12 @@ class _CreatePromoCodeScreenState extends ConsumerState<CreatePromoCodeScreen> {
                     Expanded(child: _buildField(_maxUsesCtrl, 'Utilisations max', TextInputType.number)),
                   ],
                 ),
+                const SizedBox(height: 10),
+                _buildField(
+                  _expiresCtrl,
+                  'Expiration YYYY-MM-DD (optionnel)',
+                  TextInputType.datetime,
+                ),
                 const SizedBox(height: 14),
                 SizedBox(
                   width: double.infinity,
@@ -155,10 +164,12 @@ class _CreatePromoCodeScreenState extends ConsumerState<CreatePromoCodeScreen> {
                                   code: code,
                                   discountPercent: discount,
                                   maxUses: int.tryParse(_maxUsesCtrl.text),
+                                  expiresAt: _parseDate(_expiresCtrl.text),
                                 );
                             _codeCtrl.clear();
                             _discountCtrl.clear();
                             _maxUsesCtrl.clear();
+                            _expiresCtrl.clear();
                           },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.blanc,
@@ -167,7 +178,18 @@ class _CreatePromoCodeScreenState extends ConsumerState<CreatePromoCodeScreen> {
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     ),
                     child: state.isCreating
-                        ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: AppColors.gris, strokeWidth: 2))
+                        ? Shimmer.fromColors(
+                            baseColor: AppColors.surface,
+                            highlightColor: AppColors.surfaceAlt,
+                            child: Container(
+                              width: 52,
+                              height: 12,
+                              decoration: BoxDecoration(
+                                color: AppColors.surface,
+                                borderRadius: BorderRadius.circular(999),
+                              ),
+                            ),
+                          )
                         : const Text('Créer', style: TextStyle(fontWeight: FontWeight.bold)),
                   ),
                 ),
@@ -177,7 +199,22 @@ class _CreatePromoCodeScreenState extends ConsumerState<CreatePromoCodeScreen> {
           // List
           Expanded(
             child: state.isLoading
-                ? const Center(child: SizedBox(height: 24, width: 24, child: CircularProgressIndicator(color: AppColors.blanc, strokeWidth: 2)))
+                ? Shimmer.fromColors(
+                    baseColor: AppColors.surface,
+                    highlightColor: AppColors.surfaceAlt,
+                    child: ListView.builder(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      itemCount: 6,
+                      itemBuilder: (_, __) => Container(
+                        margin: const EdgeInsets.symmetric(vertical: 4),
+                        height: 74,
+                        decoration: BoxDecoration(
+                          color: AppColors.surface,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                    ),
+                  )
                 : state.codes.isEmpty
                     ? const Center(
                         child: Text('Aucun code promo', style: TextStyle(color: AppColors.gris, fontSize: 15)),
@@ -262,5 +299,20 @@ class _CreatePromoCodeScreenState extends ConsumerState<CreatePromoCodeScreen> {
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide.none),
       ),
     );
+  }
+
+  DateTime? _parseDate(String raw) {
+    final value = raw.trim();
+    if (value.isEmpty) return null;
+    try {
+      final parts = value.split('-');
+      if (parts.length != 3) return null;
+      final y = int.parse(parts[0]);
+      final m = int.parse(parts[1]);
+      final d = int.parse(parts[2]);
+      return DateTime(y, m, d, 23, 59, 59);
+    } catch (_) {
+      return null;
+    }
   }
 }

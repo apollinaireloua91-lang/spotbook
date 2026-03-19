@@ -3,32 +3,38 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:shimmer/shimmer.dart';
 
 import '../../../../shared/theme/app_colors.dart';
 import '../../data/promo_repository.dart';
+import '../../domain/promo_models.dart';
 
 class _ReferralState {
   const _ReferralState({
     this.code,
     this.referralCount = 0,
     this.totalCredits = 0,
+    this.history = const [],
     this.isLoading = true,
   });
   final String? code;
   final int referralCount;
   final double totalCredits;
+  final List<ReferralModel> history;
   final bool isLoading;
 
   _ReferralState copyWith({
     String? code,
     int? referralCount,
     double? totalCredits,
+    List<ReferralModel>? history,
     bool? isLoading,
   }) =>
       _ReferralState(
         code: code ?? this.code,
         referralCount: referralCount ?? this.referralCount,
         totalCredits: totalCredits ?? this.totalCredits,
+        history: history ?? this.history,
         isLoading: isLoading ?? this.isLoading,
       );
 }
@@ -45,12 +51,19 @@ class _ReferralNotifier extends Notifier<_ReferralState> {
     final code = await repo.getReferralCode();
     final count = await repo.getReferralCount();
     final credits = await repo.getTotalCredits();
+    final history = await repo.getReferralHistory();
     state = state.copyWith(
       code: code,
       referralCount: count,
       totalCredits: credits,
+      history: history,
       isLoading: false,
     );
+  }
+
+  Future<void> refresh() async {
+    state = state.copyWith(isLoading: true);
+    await _load();
   }
 }
 
@@ -80,23 +93,32 @@ class ReferralScreen extends ConsumerWidget {
             },
           ),
         ),
-        title: const Text('Parrainage',
-            style: TextStyle(color: AppColors.blanc, fontWeight: FontWeight.bold)),
+        title: const Text(
+          'Parrainage',
+          style: TextStyle(color: AppColors.blanc, fontWeight: FontWeight.bold),
+        ),
         centerTitle: true,
       ),
       body: state.isLoading
-          ? const Center(
-              child: SizedBox(height: 24, width: 24, child: CircularProgressIndicator(color: AppColors.blanc, strokeWidth: 2)),
-            )
-          : SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Column(
+          ? _buildShimmer()
+          : RefreshIndicator(
+              color: AppColors.blanc,
+              backgroundColor: AppColors.surface,
+              onRefresh: () => ref.read(_referralProvider.notifier).refresh(),
+              child: ListView(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
                 children: [
                   const SizedBox(height: 32),
                   const Icon(Icons.card_giftcard, color: AppColors.blanc, size: 56),
                   const SizedBox(height: 16),
-                  const Text('Parrainez, gagnez !',
-                      style: TextStyle(color: AppColors.blanc, fontSize: 24, fontWeight: FontWeight.bold)),
+                  const Text(
+                    'Parrainez, gagnez !',
+                    style: TextStyle(
+                      color: AppColors.blanc,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                   const SizedBox(height: 8),
                   const Text(
                     'Invitez vos amis et recevez 10 CA\$ de crédit pour chaque inscription validée.',
@@ -104,7 +126,6 @@ class ReferralScreen extends ConsumerWidget {
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 32),
-                  // Code card
                   Container(
                     width: double.infinity,
                     padding: const EdgeInsets.all(20),
@@ -115,8 +136,7 @@ class ReferralScreen extends ConsumerWidget {
                     ),
                     child: Column(
                       children: [
-                        const Text('Votre code',
-                            style: TextStyle(color: AppColors.gris, fontSize: 13)),
+                        const Text('Votre code', style: TextStyle(color: AppColors.gris, fontSize: 13)),
                         const SizedBox(height: 8),
                         Text(
                           state.code ?? '---',
@@ -147,8 +167,10 @@ class ReferralScreen extends ConsumerWidget {
                                     }
                                   },
                                   icon: const Icon(Icons.copy, color: AppColors.blanc, size: 18),
-                                  label: const Text('Copier',
-                                      style: TextStyle(color: AppColors.blanc, fontWeight: FontWeight.w500)),
+                                  label: const Text(
+                                    'Copier',
+                                    style: TextStyle(color: AppColors.blanc, fontWeight: FontWeight.w500),
+                                  ),
                                   style: OutlinedButton.styleFrom(
                                     side: const BorderSide(color: AppColors.border),
                                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -165,13 +187,12 @@ class ReferralScreen extends ConsumerWidget {
                                     HapticFeedback.mediumImpact();
                                     SharePlus.instance.share(
                                       ShareParams(
-                                        text: 'Rejoins Spotbook avec mon code ${state.code} et gagne 10 CA\$ de crédit ! 🎉',
+                                        text: 'Rejoins Spotbook avec mon code ${state.code} et gagne 10 CA\$ de crédit !',
                                       ),
                                     );
                                   },
                                   icon: const Icon(Icons.share, size: 18),
-                                  label: const Text('Partager',
-                                      style: TextStyle(fontWeight: FontWeight.w600)),
+                                  label: const Text('Partager', style: TextStyle(fontWeight: FontWeight.w600)),
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: AppColors.blanc,
                                     foregroundColor: AppColors.fond,
@@ -186,7 +207,6 @@ class ReferralScreen extends ConsumerWidget {
                     ),
                   ),
                   const SizedBox(height: 24),
-                  // Stats
                   Row(
                     children: [
                       Expanded(
@@ -206,10 +226,84 @@ class ReferralScreen extends ConsumerWidget {
                       ),
                     ],
                   ),
+                  const SizedBox(height: 24),
+                  const Text(
+                    'Historique',
+                    style: TextStyle(color: AppColors.blanc, fontSize: 16, fontWeight: FontWeight.w600),
+                  ),
+                  const SizedBox(height: 8),
+                  if (state.history.isEmpty)
+                    const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 16),
+                      child: Text(
+                        'Aucun parrainage pour le moment',
+                        style: TextStyle(color: AppColors.gris, fontSize: 14),
+                      ),
+                    )
+                  else
+                    ...state.history.map(
+                      (item) => Container(
+                        margin: const EdgeInsets.symmetric(vertical: 4),
+                        padding: const EdgeInsets.all(14),
+                        decoration: BoxDecoration(
+                          color: AppColors.surface,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: AppColors.border),
+                        ),
+                        child: Row(
+                          children: [
+                            const Icon(Icons.person_add_alt_1, color: AppColors.blanc, size: 18),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: Text(
+                                item.referredId.isEmpty
+                                    ? 'Inscription en attente'
+                                    : 'Ami inscrit (${item.referredId.substring(0, 6)})',
+                                style: const TextStyle(color: AppColors.blanc, fontSize: 14),
+                              ),
+                            ),
+                            Text(
+                              '${item.creditAmount.toStringAsFixed(0)} CA\$',
+                              style: TextStyle(
+                                color: item.credited ? AppColors.success : AppColors.gris,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
                   const SizedBox(height: 32),
                 ],
               ),
             ),
+    );
+  }
+
+  Widget _buildShimmer() {
+    return Shimmer.fromColors(
+      baseColor: AppColors.surface,
+      highlightColor: AppColors.surfaceAlt,
+      child: ListView(
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        children: [
+          const SizedBox(height: 24),
+          Container(height: 24, width: 180, color: AppColors.surface),
+          const SizedBox(height: 12),
+          Container(
+            height: 120,
+            decoration: BoxDecoration(color: AppColors.surface, borderRadius: BorderRadius.circular(16)),
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Expanded(child: Container(height: 100, color: AppColors.surface)),
+              const SizedBox(width: 12),
+              Expanded(child: Container(height: 100, color: AppColors.surface)),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }
