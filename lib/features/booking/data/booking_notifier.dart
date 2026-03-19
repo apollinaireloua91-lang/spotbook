@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../payment/data/payment_repository.dart';
 import '../domain/booking_models.dart';
 import 'booking_repository.dart';
 
@@ -19,7 +20,9 @@ class BookingFlowState {
     this.selectedSlot,
     this.isLoading = false,
     this.isCreating = false,
+    this.isPaying = false,
     this.bookingResult,
+    this.clientSecret,
     this.error,
   });
 
@@ -34,7 +37,9 @@ class BookingFlowState {
   final TimeSlotModel? selectedSlot;
   final bool isLoading;
   final bool isCreating;
+  final bool isPaying;
   final Map<String, dynamic>? bookingResult;
+  final String? clientSecret;
   final String? error;
 
   double get totalPrice {
@@ -64,7 +69,9 @@ class BookingFlowState {
     TimeSlotModel? selectedSlot,
     bool? isLoading,
     bool? isCreating,
+    bool? isPaying,
     Map<String, dynamic>? bookingResult,
+    String? clientSecret,
     String? error,
   }) =>
       BookingFlowState(
@@ -79,7 +86,9 @@ class BookingFlowState {
         selectedSlot: selectedSlot ?? this.selectedSlot,
         isLoading: isLoading ?? this.isLoading,
         isCreating: isCreating ?? this.isCreating,
+        isPaying: isPaying ?? this.isPaying,
         bookingResult: bookingResult ?? this.bookingResult,
+        clientSecret: clientSecret ?? this.clientSecret,
         error: error,
       );
 }
@@ -185,9 +194,31 @@ class BookingFlowNotifier extends Notifier<BookingFlowState> {
         promoCodeId: state.promoCode?.id,
       );
       state = state.copyWith(bookingResult: result, isCreating: false);
+
+      // Fetch clientSecret for Stripe payment
+      final bookingId = result['bookingId'] as String?;
+      if (bookingId != null) {
+        final paymentRepo = ref.read(paymentRepositoryProvider);
+        final secret = await paymentRepo.createPaymentIntent(bookingId);
+        state = state.copyWith(clientSecret: secret);
+      }
     } catch (e) {
       state = state.copyWith(
           isCreating: false, error: e.toString());
+    }
+  }
+
+  Future<bool> confirmPayment() async {
+    if (state.clientSecret == null) return false;
+    state = state.copyWith(isPaying: true, error: null);
+    try {
+      // Payment is confirmed via Stripe SDK in the UI layer
+      // This method is called after successful confirmation
+      state = state.copyWith(isPaying: false);
+      return true;
+    } catch (e) {
+      state = state.copyWith(isPaying: false, error: e.toString());
+      return false;
     }
   }
 

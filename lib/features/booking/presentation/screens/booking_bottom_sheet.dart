@@ -1,6 +1,7 @@
 import 'package:add_2_calendar/add_2_calendar.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:lottie/lottie.dart';
@@ -779,16 +780,43 @@ class _Step5Payment extends ConsumerWidget {
         const SizedBox(height: 32),
         SizedBox(
           width: double.infinity,
+          height: 52,
           child: ElevatedButton(
-            onPressed: state.isCreating
+            onPressed: (state.isCreating || state.isPaying)
                 ? null
                 : () async {
-                    await ref
-                        .read(bookingFlowProvider.notifier)
-                        .createBooking();
-                    final newState = ref.read(bookingFlowProvider);
-                    if (newState.bookingResult != null) {
+                    HapticFeedback.mediumImpact();
+
+                    // Step 1: Create booking + get clientSecret
+                    if (state.bookingResult == null) {
+                      await ref
+                          .read(bookingFlowProvider.notifier)
+                          .createBooking();
+                    }
+                    final flowState = ref.read(bookingFlowProvider);
+                    final clientSecret = flowState.clientSecret;
+                    if (clientSecret == null) return;
+
+                    // Step 2: Confirm payment via Stripe SDK
+                    try {
+                      await Stripe.instance.confirmPayment(
+                        paymentIntentClientSecret: clientSecret,
+                        data: const PaymentMethodParams.card(
+                          paymentMethodData: PaymentMethodData(),
+                        ),
+                      );
+                      // Payment succeeded — go to confirmation
                       ref.read(bookingFlowProvider.notifier).nextStep();
+                    } on StripeException catch (e) {
+                      if (!context.mounted) return;
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            e.error.localizedMessage ?? 'Paiement échoué',
+                          ),
+                          backgroundColor: AppColors.error,
+                        ),
+                      );
                     }
                   },
             style: ElevatedButton.styleFrom(
@@ -797,9 +825,8 @@ class _Step5Payment extends ConsumerWidget {
               disabledBackgroundColor: AppColors.surfaceAlt,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12)),
-              padding: const EdgeInsets.symmetric(vertical: 16),
             ),
-            child: state.isCreating
+            child: (state.isCreating || state.isPaying)
                 ? const SizedBox(
                     height: 20,
                     width: 20,
@@ -807,7 +834,7 @@ class _Step5Payment extends ConsumerWidget {
                         color: AppColors.gris, strokeWidth: 2),
                   )
                 : Text(
-                    'Confirmer ${state.depositPrice.toStringAsFixed(2)} CA\$',
+                    'Payer ${state.depositPrice.toStringAsFixed(2)} CA\$',
                     style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
           ),
