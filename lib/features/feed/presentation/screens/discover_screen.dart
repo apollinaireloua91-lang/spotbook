@@ -22,11 +22,33 @@ class DiscoverScreen extends ConsumerStatefulWidget {
 
 class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
   final _searchCtrl = TextEditingController();
+  final _focusNode = FocusNode();
+  bool _showHistory = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _focusNode.addListener(() {
+      setState(() => _showHistory = _focusNode.hasFocus);
+    });
+  }
 
   @override
   void dispose() {
     _searchCtrl.dispose();
+    _focusNode.dispose();
     super.dispose();
+  }
+
+  void _openFilters() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: AppColors.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => const _FiltersSheet(),
+    );
   }
 
   @override
@@ -41,21 +63,87 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
           children: [
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
-              child: TextField(
-                controller: _searchCtrl,
-                onSubmitted: n.search,
-                style: const TextStyle(color: AppColors.blanc, fontSize: 14),
-                decoration: InputDecoration(
-                  hintText: 'Search professionals, services...',
-                  hintStyle: const TextStyle(color: AppColors.gris),
-                  prefixIcon: const Icon(Icons.search, color: AppColors.gris, size: 20),
-                  filled: true,
-                  fillColor: AppColors.surface,
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: _searchCtrl,
+                      focusNode: _focusNode,
+                      onChanged: n.onSearchChanged,
+                      onSubmitted: (v) {
+                        _focusNode.unfocus();
+                        n.search(v);
+                      },
+                      style: const TextStyle(color: AppColors.blanc, fontSize: 14),
+                      decoration: InputDecoration(
+                        hintText: 'Search professionals, services...',
+                        hintStyle: const TextStyle(color: AppColors.gris),
+                        prefixIcon: const Icon(Icons.search, color: AppColors.gris, size: 20),
+                        suffixIcon: _searchCtrl.text.isNotEmpty
+                            ? IconButton(
+                                icon: const Icon(Icons.clear, color: AppColors.gris, size: 18),
+                                onPressed: () {
+                                  _searchCtrl.clear();
+                                  n.search('');
+                                },
+                              )
+                            : null,
+                        filled: true,
+                        fillColor: AppColors.surface,
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  IconButton(
+                    onPressed: _openFilters,
+                    icon: const Icon(Icons.tune, color: AppColors.blanc),
+                    style: IconButton.styleFrom(
+                      backgroundColor: AppColors.surface,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    ),
+                  ),
+                ],
               ),
             ),
+            if (_showHistory && s.searchHistory.isNotEmpty)
+              Container(
+                margin: const EdgeInsets.symmetric(horizontal: 16),
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                decoration: BoxDecoration(
+                  color: AppColors.surface,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text('Recent Searches', style: TextStyle(color: AppColors.gris, fontSize: 12)),
+                          GestureDetector(
+                            onTap: n.clearHistory,
+                            child: const Text('Clear', style: TextStyle(color: AppColors.accent, fontSize: 12)),
+                          ),
+                        ],
+                      ),
+                    ),
+                    ...s.searchHistory.map((query) => ListTile(
+                          leading: const Icon(Icons.history, color: AppColors.gris, size: 20),
+                          title: Text(query, style: const TextStyle(color: AppColors.blanc, fontSize: 14)),
+                          dense: true,
+                          onTap: () {
+                            _searchCtrl.text = query;
+                            _focusNode.unfocus();
+                            n.search(query);
+                          },
+                        )),
+                  ],
+                ),
+              ),
             SizedBox(
               height: 36,
               child: ListView.separated(
@@ -65,9 +153,9 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
                 separatorBuilder: (_, __) => const SizedBox(width: 8),
                 itemBuilder: (context, index) {
                   final cat = _filterCategories[index];
-                  final selected = s.selectedFilter == cat;
+                  final selected = s.selectedCategory == cat;
                   return GestureDetector(
-                    onTap: () => n.setFilter(cat),
+                    onTap: () => n.setCategory(cat),
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                       decoration: BoxDecoration(
@@ -105,6 +193,124 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _FiltersSheet extends ConsumerStatefulWidget {
+  const _FiltersSheet();
+
+  @override
+  ConsumerState<_FiltersSheet> createState() => _FiltersSheetState();
+}
+
+class _FiltersSheetState extends ConsumerState<_FiltersSheet> {
+  late double _distance;
+  late double _rating;
+  late bool _availableToday;
+  late double _price;
+
+  @override
+  void initState() {
+    super.initState();
+    final s = ref.read(discoverProvider);
+    _distance = s.maxDistance;
+    _rating = s.minRating;
+    _availableToday = s.availableToday;
+    _price = s.maxPrice;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text('Filters', style: TextStyle(color: AppColors.blanc, fontSize: 20, fontWeight: FontWeight.bold)),
+          const SizedBox(height: 24),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text('Max Distance', style: TextStyle(color: AppColors.blanc, fontSize: 16)),
+              Text('${_distance.toInt()} km', style: const TextStyle(color: AppColors.accent, fontSize: 16)),
+            ],
+          ),
+          Slider(
+            value: _distance,
+            min: 1,
+            max: 100,
+            activeColor: AppColors.accent,
+            inactiveColor: AppColors.surfaceAlt,
+            onChanged: (v) => setState(() => _distance = v),
+          ),
+          const SizedBox(height: 16),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text('Min Rating', style: TextStyle(color: AppColors.blanc, fontSize: 16)),
+              Text(_rating.toStringAsFixed(1), style: const TextStyle(color: AppColors.accent, fontSize: 16)),
+            ],
+          ),
+          Slider(
+            value: _rating,
+            min: 0,
+            max: 5,
+            divisions: 10,
+            activeColor: AppColors.accent,
+            inactiveColor: AppColors.surfaceAlt,
+            onChanged: (v) => setState(() => _rating = v),
+          ),
+          const SizedBox(height: 16),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text('Max Price', style: TextStyle(color: AppColors.blanc, fontSize: 16)),
+              Text('\$${_price.toInt()}', style: const TextStyle(color: AppColors.accent, fontSize: 16)),
+            ],
+          ),
+          Slider(
+            value: _price,
+            min: 10,
+            max: 500,
+            activeColor: AppColors.accent,
+            inactiveColor: AppColors.surfaceAlt,
+            onChanged: (v) => setState(() => _price = v),
+          ),
+          const SizedBox(height: 16),
+          SwitchListTile(
+            title: const Text('Available Today', style: TextStyle(color: AppColors.blanc, fontSize: 16)),
+            value: _availableToday,
+            activeTrackColor: AppColors.accent.withAlpha(128),
+            contentPadding: EdgeInsets.zero,
+            onChanged: (v) => setState(() => _availableToday = v),
+          ),
+          const SizedBox(height: 24),
+          SizedBox(
+            width: double.infinity,
+            height: 52,
+            child: ElevatedButton(
+              onPressed: () {
+                ref.read(discoverProvider.notifier).setFilters(
+                      maxDistance: _distance,
+                      minRating: _rating,
+                      availableToday: _availableToday,
+                      maxPrice: _price,
+                    );
+                context.pop();
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.accent,
+                foregroundColor: AppColors.fondDark,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              ),
+              child: const Text('Apply Filters', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+            ),
+          ),
+          SizedBox(height: MediaQuery.of(context).padding.bottom),
+        ],
       ),
     );
   }

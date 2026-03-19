@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../../../../shared/theme/app_colors.dart';
-import '../../domain/profile_models.dart';
 
 class SocialBadgeWidget extends StatelessWidget {
   const SocialBadgeWidget({

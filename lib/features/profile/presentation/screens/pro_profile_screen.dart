@@ -9,17 +9,9 @@ import '../../data/profile_repository.dart';
 import '../../domain/profile_models.dart';
 import '../widgets/social_badge_widget.dart';
 
-class ProProfileNotifier extends AutoDisposeFamilyAsyncNotifier<ProProfile?, String> {
-  @override
-  Future<ProProfile?> build(String arg) async {
-    return ref.read(profileRepositoryProvider).getProProfile(arg);
-  }
-}
-
-final proProfileProvider =
-    AsyncNotifierProvider.family.autoDispose<ProProfileNotifier, ProProfile?, String>(
-  ProProfileNotifier.new,
-);
+final proProfileProvider = FutureProvider.family<ProProfile?, String>((ref, proId) async {
+  return ref.read(profileRepositoryProvider).getProProfile(proId);
+});
 
 class ProProfileScreen extends ConsumerWidget {
   const ProProfileScreen({super.key, required this.proId});
@@ -187,7 +179,10 @@ class ProProfileScreen extends ConsumerWidget {
                       runSpacing: 8,
                       alignment: WrapAlignment.center,
                       children: profile.socialConnections
-                          .map((conn) => SocialBadgeWidget(connection: conn))
+                          .map((conn) => SocialBadgeWidget(
+                                platform: conn.platform,
+                                followersCount: conn.followersCount,
+                              ))
                           .toList(),
                     ),
                     const SizedBox(height: 12),
