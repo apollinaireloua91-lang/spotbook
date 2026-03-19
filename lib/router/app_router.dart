@@ -31,6 +31,9 @@ import '../features/profile/presentation/screens/client_profile_screen.dart';
 import '../features/profile/presentation/screens/edit_profile_screen.dart';
 import '../features/profile/presentation/screens/pro_profile_screen.dart';
 import '../features/settings/presentation/screens/delete_account_screen.dart';
+import '../features/chat/presentation/screens/chat_screen.dart';
+import '../features/notifications/presentation/screens/notification_history_screen.dart';
+import '../features/notifications/presentation/screens/notification_settings_screen.dart';
 import '../features/settings/presentation/screens/settings_screen.dart';
 import '../shared/widgets/placeholder_screen.dart';
 import 'client_shell.dart';
@@ -204,14 +207,21 @@ final appRouter = GoRouter(
     ),
     GoRoute(
       path: '/chat/:conversationId',
-      builder: (context, state) => PlaceholderScreen(
-        title: 'Chat ${state.pathParameters['conversationId'] ?? ''}',
-      ),
+      builder: (context, state) {
+        final extra = state.extra as Map<String, String>?;
+        return ChatScreen(
+          conversationId: state.pathParameters['conversationId'] ?? '',
+          otherUserName: extra?['otherUserName'],
+        );
+      },
     ),
     GoRoute(
       path: '/notifications',
-      builder: (context, state) =>
-          const PlaceholderScreen(title: 'Notifications'),
+      builder: (context, state) => const NotificationHistoryScreen(),
+    ),
+    GoRoute(
+      path: '/notification-settings',
+      builder: (context, state) => const NotificationSettingsScreen(),
     ),
     GoRoute(
       path: '/edit-profile',
