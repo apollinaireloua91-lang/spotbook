@@ -40,6 +40,7 @@ import '../features/promo/presentation/screens/create_promo_code_screen.dart';
 import '../features/promo/presentation/screens/referral_screen.dart';
 import '../features/reviews/presentation/screens/review_screen.dart';
 import '../features/settings/presentation/screens/settings_screen.dart';
+import '../features/social/presentation/screens/pro_insights_screen.dart';
 import '../shared/widgets/placeholder_screen.dart';
 import 'client_shell.dart';
 import 'pro_shell.dart';
@@ -316,6 +317,10 @@ final appRouter = GoRouter(
     GoRoute(
       path: '/blocked-users',
       builder: (context, state) => const BlockedUsersScreen(),
+    ),
+    GoRoute(
+      path: '/pro-insights',
+      builder: (context, state) => const ProInsightsScreen(),
     ),
   ],
 );

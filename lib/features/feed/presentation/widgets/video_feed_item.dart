@@ -6,6 +6,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../shared/theme/app_colors.dart';
+import '../../../../shared/utils/analytics_service.dart';
+import '../../../moderation/presentation/screens/report_sheet.dart';
 import '../../../profile/presentation/widgets/social_badge_widget.dart';
 import '../../data/video_repository.dart';
 import '../../domain/video_model.dart';
@@ -110,6 +112,10 @@ class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
     } else {
       repo.likeVideo(widget.video.id);
       widget.onLikeToggled(true);
+      AnalyticsService.instance.capture('video_liked', properties: {
+        'video_id': widget.video.id,
+        'pro_id': widget.video.proId,
+      });
     }
   }
 
@@ -126,6 +132,55 @@ class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (_) => CommentsSheet(videoId: widget.video.id),
+    );
+  }
+
+  void _openModerationMenu() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) => Container(
+        padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
+        decoration: const BoxDecoration(
+          color: AppColors.surface,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        child: SafeArea(
+          top: false,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: const Icon(Icons.flag_outlined, color: AppColors.blanc),
+                title: const Text('Signaler', style: TextStyle(color: AppColors.blanc)),
+                onTap: () {
+                  Navigator.of(ctx).pop();
+                  showReportSheet(
+                    context,
+                    targetId: widget.video.id,
+                    targetType: 'video',
+                  );
+                },
+              ),
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: const Icon(Icons.block, color: AppColors.error),
+                title: const Text('Bloquer ce pro', style: TextStyle(color: AppColors.error)),
+                onTap: () {
+                  Navigator.of(ctx).pop();
+                  showBlockConfirmDialog(
+                    context,
+                    ref: ref,
+                    userId: widget.video.proId,
+                    userName: widget.video.proName,
+                  );
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 
@@ -261,6 +316,12 @@ class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
                   icon: Icons.share_outlined,
                   label: 'Share',
                   onTap: () {},
+                ),
+                const SizedBox(height: 20),
+                _ActionButton(
+                  icon: Icons.more_horiz,
+                  label: 'Plus',
+                  onTap: _openModerationMenu,
                 ),
               ],
             ),

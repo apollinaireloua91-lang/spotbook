@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shimmer/shimmer.dart';
 
 import '../../../../shared/theme/app_colors.dart';
 import '../../data/moderation_repository.dart';
@@ -27,6 +28,11 @@ class _BlockedNotifier extends Notifier<_BlockedState> {
     final repo = ref.read(moderationRepositoryProvider);
     final users = await repo.getBlockedUsers();
     state = state.copyWith(users: users, isLoading: false);
+  }
+
+  Future<void> refresh() async {
+    state = state.copyWith(isLoading: true);
+    await _load();
   }
 
   Future<void> unblock(String blockedId) async {
@@ -69,8 +75,21 @@ class BlockedUsersScreen extends ConsumerWidget {
         centerTitle: true,
       ),
       body: state.isLoading
-          ? const Center(
-              child: SizedBox(height: 24, width: 24, child: CircularProgressIndicator(color: AppColors.blanc, strokeWidth: 2)),
+          ? Shimmer.fromColors(
+              baseColor: AppColors.surface,
+              highlightColor: AppColors.surfaceAlt,
+              child: ListView.builder(
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                itemCount: 6,
+                itemBuilder: (_, __) => Container(
+                  margin: const EdgeInsets.symmetric(vertical: 4),
+                  height: 72,
+                  decoration: BoxDecoration(
+                    color: AppColors.surface,
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                ),
+              ),
             )
           : state.users.isEmpty
               ? const Center(
@@ -84,7 +103,11 @@ class BlockedUsersScreen extends ConsumerWidget {
                     ],
                   ),
                 )
-              : ListView.builder(
+              : RefreshIndicator(
+                  color: AppColors.blanc,
+                  backgroundColor: AppColors.surface,
+                  onRefresh: () => ref.read(_blockedProvider.notifier).refresh(),
+                  child: ListView.builder(
                   padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                   itemCount: state.users.length,
                   itemBuilder: (context, index) {
@@ -140,6 +163,7 @@ class BlockedUsersScreen extends ConsumerWidget {
                       ),
                     );
                   },
+                ),
                 ),
     );
   }

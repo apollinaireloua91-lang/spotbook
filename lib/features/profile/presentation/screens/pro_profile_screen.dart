@@ -1,9 +1,11 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../shared/theme/app_colors.dart';
+import '../../../moderation/presentation/screens/report_sheet.dart';
 import '../../../../shared/widgets/spotbook_button.dart';
 import '../../data/profile_repository.dart';
 import '../../domain/profile_models.dart';
@@ -30,7 +32,7 @@ class ProProfileScreen extends ConsumerWidget {
               child: Text('Pro not found', style: TextStyle(color: AppColors.gris)),
             );
           }
-          return _buildProfile(context, profile);
+          return _buildProfile(context, ref, profile);
         },
         loading: () => const Center(child: CircularProgressIndicator(color: AppColors.blanc)),
         error: (err, _) => Center(
@@ -40,7 +42,7 @@ class ProProfileScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildProfile(BuildContext context, ProProfile profile) {
+  Widget _buildProfile(BuildContext context, WidgetRef ref, ProProfile profile) {
     return DefaultTabController(
       length: 3,
       child: NestedScrollView(
@@ -75,6 +77,68 @@ class ProProfileScreen extends ConsumerWidget {
                             icon: const Icon(Icons.arrow_back_ios, color: AppColors.blanc, size: 20),
                             style: IconButton.styleFrom(
                               backgroundColor: Colors.black45,
+                            ),
+                          ),
+                        ),
+                        Positioned(
+                          top: MediaQuery.of(context).padding.top + 8,
+                          right: 16,
+                          child: Semantics(
+                            label: 'Options profil',
+                            child: IconButton(
+                              onPressed: () {
+                                HapticFeedback.mediumImpact();
+                                showModalBottomSheet(
+                                  context: context,
+                                  backgroundColor: Colors.transparent,
+                                  builder: (ctx) => Container(
+                                    padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
+                                    decoration: const BoxDecoration(
+                                      color: AppColors.surface,
+                                      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                                    ),
+                                    child: SafeArea(
+                                      top: false,
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          ListTile(
+                                            contentPadding: EdgeInsets.zero,
+                                            leading: const Icon(Icons.flag_outlined, color: AppColors.blanc),
+                                            title: const Text('Signaler', style: TextStyle(color: AppColors.blanc)),
+                                            onTap: () {
+                                              Navigator.of(ctx).pop();
+                                              showReportSheet(
+                                                context,
+                                                targetId: profile.id,
+                                                targetType: 'user',
+                                              );
+                                            },
+                                          ),
+                                          ListTile(
+                                            contentPadding: EdgeInsets.zero,
+                                            leading: const Icon(Icons.block, color: AppColors.error),
+                                            title: const Text('Bloquer', style: TextStyle(color: AppColors.error)),
+                                            onTap: () {
+                                              Navigator.of(ctx).pop();
+                                              showBlockConfirmDialog(
+                                                context,
+                                                ref: ref,
+                                                userId: profile.id,
+                                                userName: profile.businessName,
+                                              );
+                                            },
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              },
+                              icon: const Icon(Icons.more_horiz, color: AppColors.blanc),
+                              style: IconButton.styleFrom(
+                                backgroundColor: Colors.black45,
+                              ),
                             ),
                           ),
                         ),
