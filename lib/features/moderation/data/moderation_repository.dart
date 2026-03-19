@@ -39,6 +39,13 @@ class ModerationRepository {
       'blocker_id': uid,
       'blocked_id': blockedId,
     });
+    await _supabase.from('audit_logs').insert({
+      'user_id': uid,
+      'action': 'user_blocked',
+      'resource_type': 'user',
+      'resource_id': blockedId,
+      'metadata': {},
+    });
   }
 
   Future<void> unblockUser(String blockedId) async {
@@ -81,6 +88,13 @@ class ModerationRepository {
       'target_id': targetId,
       'target_type': targetType,
       'reason': reason,
+    });
+    await _supabase.from('audit_logs').insert({
+      'user_id': uid,
+      'action': 'user_reported',
+      'resource_type': targetType,
+      'resource_id': targetId,
+      'metadata': {'reason': reason},
     });
   }
 }
