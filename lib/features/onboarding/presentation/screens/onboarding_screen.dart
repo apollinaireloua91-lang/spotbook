@@ -1,19 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 import '../../../../shared/theme/app_colors.dart';
 
-class OnboardingScreen extends StatefulWidget {
+class _OnboardingPageNotifier extends Notifier<int> {
+  @override
+  int build() => 0;
+  void set(int page) => state = page;
+}
+
+final _onboardingPageProvider = NotifierProvider<_OnboardingPageNotifier, int>(
+  _OnboardingPageNotifier.new,
+  isAutoDispose: true,
+);
+
+class OnboardingScreen extends ConsumerStatefulWidget {
   const OnboardingScreen({super.key});
 
   @override
-  State<OnboardingScreen> createState() => _OnboardingScreenState();
+  ConsumerState<OnboardingScreen> createState() => _OnboardingScreenState();
 }
 
-class _OnboardingScreenState extends State<OnboardingScreen> {
+class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   final _controller = PageController();
-  int _currentPage = 0;
 
   @override
   void dispose() {
@@ -37,12 +48,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final currentPage = ref.watch(_onboardingPageProvider);
+
     return Scaffold(
       backgroundColor: AppColors.fondDark,
       body: SafeArea(
         child: Column(
           children: [
-            // Skip button
             Align(
               alignment: Alignment.topRight,
               child: Padding(
@@ -63,7 +75,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             Expanded(
               child: PageView(
                 controller: _controller,
-                onPageChanged: (i) => setState(() => _currentPage = i),
+                onPageChanged: (i) => ref.read(_onboardingPageProvider.notifier).set(i),
                 children: [
                   _buildSlide1(),
                   _buildSlide2(),
@@ -71,17 +83,16 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 ],
               ),
             ),
-            // Dot indicators
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: List.generate(3, (i) {
                 return AnimatedContainer(
                   duration: const Duration(milliseconds: 200),
                   margin: const EdgeInsets.symmetric(horizontal: 4),
-                  width: i == _currentPage ? 24 : 8,
+                  width: i == currentPage ? 24 : 8,
                   height: 8,
                   decoration: BoxDecoration(
-                    color: i == _currentPage
+                    color: i == currentPage
                         ? AppColors.accent
                         : AppColors.gris.withAlpha(77),
                     borderRadius: BorderRadius.circular(4),
@@ -90,15 +101,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               }),
             ),
             const SizedBox(height: 24),
-            // Action button
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: SizedBox(
                 width: double.infinity,
                 height: 52,
                 child: ElevatedButton(
-                  onPressed:
-                      _currentPage < 2 ? _nextPage : _complete,
+                  onPressed: currentPage < 2 ? _nextPage : _complete,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.accent,
                     foregroundColor: AppColors.fondDark,
@@ -107,7 +116,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     ),
                   ),
                   child: Text(
-                    _currentPage < 2 ? 'Next →' : 'Get Started →',
+                    currentPage < 2 ? 'Next →' : 'Get Started →',
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
@@ -116,7 +125,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 ),
               ),
             ),
-            if (_currentPage == 2) ...[
+            if (currentPage == 2) ...[
               const SizedBox(height: 16),
               GestureDetector(
                 onTap: () => context.go('/login'),
@@ -154,30 +163,16 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               color: AppColors.surfaceAuth,
               borderRadius: BorderRadius.circular(24),
             ),
-            child: const Icon(
-              Icons.play_circle_fill,
-              size: 80,
-              color: AppColors.accent,
-            ),
+            child: const Icon(Icons.play_circle_fill, size: 80, color: AppColors.accent),
           ),
           const SizedBox(height: 40),
           RichText(
             textAlign: TextAlign.center,
             text: const TextSpan(
-              style: TextStyle(
-                fontSize: 28,
-                fontWeight: FontWeight.bold,
-                height: 1.3,
-              ),
+              style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, height: 1.3),
               children: [
-                TextSpan(
-                  text: 'Watch. Discover. ',
-                  style: TextStyle(color: AppColors.blanc),
-                ),
-                TextSpan(
-                  text: 'Book.',
-                  style: TextStyle(color: AppColors.accent),
-                ),
+                TextSpan(text: 'Watch. Discover. ', style: TextStyle(color: AppColors.blanc)),
+                TextSpan(text: 'Book.', style: TextStyle(color: AppColors.accent)),
               ],
             ),
           ),
@@ -185,11 +180,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           const Text(
             'Explore local professionals through immersive video. See their skills in action before you book.',
             textAlign: TextAlign.center,
-            style: TextStyle(
-              color: AppColors.gris,
-              fontSize: 15,
-              height: 1.5,
-            ),
+            style: TextStyle(color: AppColors.gris, fontSize: 15, height: 1.5),
           ),
         ],
       ),
@@ -209,32 +200,19 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               color: AppColors.surfaceAuth,
               borderRadius: BorderRadius.circular(24),
             ),
-            child: const Icon(
-              Icons.calendar_month,
-              size: 80,
-              color: AppColors.accent,
-            ),
+            child: const Icon(Icons.calendar_month, size: 80, color: AppColors.accent),
           ),
           const SizedBox(height: 40),
           const Text(
             'Book Services & Events',
             textAlign: TextAlign.center,
-            style: TextStyle(
-              color: AppColors.blanc,
-              fontSize: 28,
-              fontWeight: FontWeight.bold,
-              height: 1.3,
-            ),
+            style: TextStyle(color: AppColors.blanc, fontSize: 28, fontWeight: FontWeight.bold, height: 1.3),
           ),
           const SizedBox(height: 16),
           const Text(
             'Connect with experts for 1:1 sessions or secure your spot at live workshops and events directly through the app.',
             textAlign: TextAlign.center,
-            style: TextStyle(
-              color: AppColors.gris,
-              fontSize: 15,
-              height: 1.5,
-            ),
+            style: TextStyle(color: AppColors.gris, fontSize: 15, height: 1.5),
           ),
         ],
       ),
@@ -254,32 +232,20 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               color: AppColors.surfaceAuth,
               borderRadius: BorderRadius.circular(24),
             ),
-            child: const Icon(
-              Icons.trending_up,
-              size: 80,
-              color: AppColors.accent,
-            ),
+            child: const Icon(Icons.trending_up, size: 80, color: AppColors.accent),
           ),
           const SizedBox(height: 40),
           const Text(
             'Empower Your Business',
             textAlign: TextAlign.center,
-            style: TextStyle(
-              color: AppColors.blanc,
-              fontSize: 28,
-              fontWeight: FontWeight.bold,
-              height: 1.3,
-            ),
+            style: TextStyle(color: AppColors.blanc, fontSize: 28, fontWeight: FontWeight.bold, height: 1.3),
           ),
           const SizedBox(height: 24),
-          _featureCard(Icons.videocam, 'Create Content',
-              'Share your expertise with video'),
+          _featureCard(Icons.videocam, 'Create Content', 'Share your expertise with video'),
           const SizedBox(height: 8),
-          _featureCard(Icons.calendar_today, 'Manage Bookings',
-              'Seamless scheduling system'),
+          _featureCard(Icons.calendar_today, 'Manage Bookings', 'Seamless scheduling system'),
           const SizedBox(height: 8),
-          _featureCard(Icons.confirmation_number, 'Sell Event Tickets',
-              'Monetize exclusive events'),
+          _featureCard(Icons.confirmation_number, 'Sell Event Tickets', 'Monetize exclusive events'),
         ],
       ),
     );
@@ -301,21 +267,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                    color: AppColors.blanc,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                Text(
-                  subtitle,
-                  style: const TextStyle(
-                    color: AppColors.gris,
-                    fontSize: 12,
-                  ),
-                ),
+                Text(title, style: const TextStyle(color: AppColors.blanc, fontSize: 14, fontWeight: FontWeight.w600)),
+                Text(subtitle, style: const TextStyle(color: AppColors.gris, fontSize: 12)),
               ],
             ),
           ),
