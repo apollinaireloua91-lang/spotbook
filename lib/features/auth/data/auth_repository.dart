@@ -1,0 +1,141 @@
+import 'dart:typed_data';
+
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+
+final authRepositoryProvider = Provider<AuthRepository>((ref) {
+  return AuthRepository(
+    supabase: Supabase.instance.client,
+    secureStorage: const FlutterSecureStorage(),
+  );
+});
+
+final authStateProvider = StreamProvider<AuthState>((ref) {
+  return ref.watch(authRepositoryProvider).authStateStream;
+});
+
+class AuthRepository {
+  AuthRepository({
+    required SupabaseClient supabase,
+    required FlutterSecureStorage secureStorage,
+  })  : _supabase = supabase,
+        _secureStorage = secureStorage;
+
+  final SupabaseClient _supabase;
+  final FlutterSecureStorage _secureStorage;
+
+  User? get currentUser => _supabase.auth.currentUser;
+  Session? get currentSession => _supabase.auth.currentSession;
+  String? get currentUserId => currentUser?.id;
+  String? get currentUserFullName =>
+      currentUser?.userMetadata?['full_name'] as String?;
+  String? get currentUserRole =>
+      currentUser?.userMetadata?['role'] as String?;
+  bool get hasActiveSession => currentSession != null;
+
+  Stream<AuthState> get authStateStream => _supabase.auth.onAuthStateChange;
+
+  Future<AuthResponse> signUpWithEmail({
+    required String email,
+    required String password,
+    required String fullName,
+    required String phone,
+    required String age,
+    required String address,
+    required String role,
+  }) async {
+    try {
+      return await _supabase.auth.signUp(
+        email: email,
+        password: password,
+        data: {
+          'full_name': fullName,
+          'role': role,
+          'phone': phone,
+          'age': age,
+          'address': address,
+        },
+      );
+    } on AuthException catch (e) {
+      if (e.message.contains('already registered')) {
+        throw AuthException('This email is already registered');
+      }
+      rethrow;
+    }
+  }
+
+  Future<AuthResponse> signInWithEmail({
+    required String email,
+    required String password,
+  }) async {
+    try {
+      return await _supabase.auth.signInWithPassword(
+        email: email,
+        password: password,
+      );
+    } on AuthException catch (e) {
+      if (e.message.contains('Invalid login credentials')) {
+        throw AuthException('Invalid email or password');
+      }
+      rethrow;
+    }
+  }
+
+  Future<void> resetPassword(String email) async {
+    await _supabase.auth.resetPasswordForEmail(email);
+  }
+
+  Future<void> signOut() async {
+    await _supabase.auth.signOut();
+    await _secureStorage.deleteAll();
+  }
+
+  Future<Map<String, dynamic>?> getUserProfile() async {
+    final uid = currentUserId;
+    if (uid == null) return null;
+    return await _supabase.from('users').select().eq('id', uid).maybeSingle();
+  }
+
+  Future<void> updateUserRole(String role) async {
+    final uid = currentUserId;
+    if (uid == null) throw AuthException('User not authenticated');
+    await _supabase.from('users').update({'role': role}).eq('id', uid);
+    await _supabase.auth.updateUser(UserAttributes(data: {'role': role}));
+  }
+
+  Future<String> uploadAvatar(Uint8List bytes) async {
+    final uid = currentUserId;
+    if (uid == null) throw AuthException('User not authenticated');
+    final path = '$uid/avatar.jpg';
+    await _supabase.storage
+        .from('avatars')
+        .uploadBinary(path, bytes, fileOptions: const FileOptions(upsert: true));
+    return _supabase.storage.from('avatars').getPublicUrl(path);
+  }
+
+  Future<void> updateProfile({
+    String? fullName,
+    String? bio,
+    String? avatarUrl,
+  }) async {
+    final uid = currentUserId;
+    if (uid == null) throw AuthException('User not authenticated');
+    final updates = <String, dynamic>{};
+    if (fullName != null) updates['full_name'] = fullName;
+    if (bio != null) updates['bio'] = bio;
+    if (avatarUrl != null) updates['avatar_url'] = avatarUrl;
+    if (updates.isNotEmpty) {
+      await _supabase.from('users').update(updates).eq('id', uid);
+    }
+  }
+
+  Future<void> softDeleteAccount() async {
+    final uid = currentUserId;
+    if (uid == null) throw AuthException('User not authenticated');
+    await _supabase
+        .from('users')
+        .update({'deleted_at': DateTime.now().toIso8601String()}).eq('id', uid);
+    await signOut();
+  }
+}
