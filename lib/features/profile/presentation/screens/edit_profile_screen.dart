@@ -101,9 +101,12 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
         backgroundColor: AppColors.fond,
         title: const Text('Edit Profile'),
         centerTitle: true,
-        leading: IconButton(
-          onPressed: () => context.pop(),
-          icon: const Icon(Icons.arrow_back_ios, size: 20),
+        leading: Semantics(
+          label: 'Retour',
+          child: IconButton(
+            icon: const Icon(Icons.arrow_back_ios, color: AppColors.blanc, size: 20),
+            onPressed: () => context.pop(),
+          ),
         ),
       ),
       body: SafeArea(

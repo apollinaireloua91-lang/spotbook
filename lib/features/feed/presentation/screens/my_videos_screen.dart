@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../shared/theme/app_colors.dart';
 import '../../data/my_videos_notifier.dart';
@@ -32,7 +33,18 @@ class MyVideosScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: AppColors.fond,
-      appBar: AppBar(backgroundColor: AppColors.fond, title: const Text('My Videos'), centerTitle: true),
+      appBar: AppBar(
+        backgroundColor: AppColors.fond,
+        leading: Semantics(
+          label: 'Retour',
+          child: IconButton(
+            icon: const Icon(Icons.arrow_back_ios, color: AppColors.blanc, size: 20),
+            onPressed: () => context.pop(),
+          ),
+        ),
+        title: const Text('My Videos'),
+        centerTitle: true,
+      ),
       body: videos == null
           ? const Center(child: CircularProgressIndicator(color: AppColors.blanc))
           : videos.isEmpty

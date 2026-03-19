@@ -71,7 +71,19 @@ class _ProBusinessDetailsScreenState extends ConsumerState<ProBusinessDetailsScr
     final n = ref.read(_bizProvider.notifier);
     return Scaffold(
       backgroundColor: AppColors.fondDark,
-      appBar: AppBar(backgroundColor: AppColors.fondDark, elevation: 0),
+      appBar: AppBar(
+        backgroundColor: AppColors.fondDark,
+        elevation: 0,
+        leading: GoRouter.of(context).canPop()
+            ? Semantics(
+                label: 'Retour',
+                child: IconButton(
+                  icon: const Icon(Icons.arrow_back_ios, color: AppColors.blanc, size: 20),
+                  onPressed: () => context.pop(),
+                ),
+              )
+            : null,
+      ),
       body: SafeArea(child: SingleChildScrollView(padding: const EdgeInsets.symmetric(horizontal: 24), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Row(children: [_dot(active: true), const SizedBox(width: 6), _dot(active: false), const SizedBox(width: 6), _dot(active: false)]),
         const SizedBox(height: 16),

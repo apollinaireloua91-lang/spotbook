@@ -35,7 +35,17 @@ class SettingsScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: AppColors.fondDark,
-      appBar: AppBar(backgroundColor: AppColors.fondDark, title: const Text('Settings')),
+      appBar: AppBar(
+        backgroundColor: AppColors.fondDark,
+        leading: Semantics(
+          label: 'Retour',
+          child: IconButton(
+            icon: const Icon(Icons.arrow_back_ios, color: AppColors.blanc, size: 20),
+            onPressed: () => context.pop(),
+          ),
+        ),
+        title: const Text('Settings'),
+      ),
       body: ListView(children: [
         _SettingsSection(title: 'ACCOUNT', items: [
           _SettingsItem(icon: Icons.person_outline, label: 'Edit Profile', onTap: () => context.push('/edit-profile')),

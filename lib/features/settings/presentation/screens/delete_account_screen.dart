@@ -42,7 +42,17 @@ class DeleteAccountScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: AppColors.fondDark,
-      appBar: AppBar(backgroundColor: AppColors.fondDark, title: const Text('Delete Account')),
+      appBar: AppBar(
+        backgroundColor: AppColors.fondDark,
+        leading: Semantics(
+          label: 'Retour',
+          child: IconButton(
+            icon: const Icon(Icons.arrow_back_ios, color: AppColors.blanc, size: 20),
+            onPressed: () => context.pop(),
+          ),
+        ),
+        title: const Text('Delete Account'),
+      ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Column(

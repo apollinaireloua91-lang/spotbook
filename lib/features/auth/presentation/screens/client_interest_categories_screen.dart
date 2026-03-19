@@ -34,9 +34,12 @@ class ClientInterestCategoriesScreen extends ConsumerWidget {
       backgroundColor: AppColors.fondDark,
       appBar: AppBar(
         backgroundColor: AppColors.fondDark,
-        leading: IconButton(
-          onPressed: () => context.pop(),
-          icon: const Icon(Icons.arrow_back_ios, size: 20),
+        leading: Semantics(
+          label: 'Retour',
+          child: IconButton(
+            icon: const Icon(Icons.arrow_back_ios, color: AppColors.blanc, size: 20),
+            onPressed: () => context.pop(),
+          ),
         ),
         title: const Text(
           'Onboarding',

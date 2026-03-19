@@ -8,6 +8,7 @@ import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/widgets/spotbook_button.dart';
 import '../../../booking/data/booking_repository.dart';
 import '../../../booking/domain/booking_models.dart';
+import '../../../booking/presentation/screens/booking_bottom_sheet.dart';
 import '../../../events/data/event_repository.dart';
 import '../../../events/domain/event_models.dart';
 import '../../../feed/data/video_repository.dart';
@@ -53,6 +54,28 @@ class ProProfileScreen extends ConsumerWidget {
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.transparent,
+        leading: GoRouter.of(context).canPop()
+            ? Semantics(
+                label: 'Retour',
+                child: IconButton(
+                  icon: const DecoratedBox(
+                    decoration: BoxDecoration(
+                      color: Color(0x66000000),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Padding(
+                      padding: EdgeInsets.all(6),
+                      child: Icon(
+                        Icons.arrow_back_ios_new,
+                        color: AppColors.blanc,
+                        size: 18,
+                      ),
+                    ),
+                  ),
+                  onPressed: () => context.pop(),
+                ),
+              )
+            : null,
         actions: [
           IconButton(
             onPressed: () => context.push('/settings'),
@@ -278,7 +301,11 @@ class _ProfileContent extends ConsumerWidget {
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: SpotbookButton.primary(
                       label: 'Book Appointment',
-                      onPressed: () {},
+                      onPressed: () => showBookingSheet(
+                        context,
+                        proId: profile.id,
+                        proProfile: profile,
+                      ),
                     ),
                   ),
                   const SizedBox(height: 12),
@@ -286,7 +313,8 @@ class _ProfileContent extends ConsumerWidget {
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: SpotbookButton.secondary(
                       label: 'Buy Event Ticket',
-                      onPressed: () {},
+                      onPressed: () =>
+                          DefaultTabController.of(context).animateTo(2),
                     ),
                   ),
                   const SizedBox(height: 24),
@@ -550,7 +578,11 @@ class _ServicesTab extends StatelessWidget {
                 width: 100,
                 child: SpotbookButton.outlined(
                   label: 'Réserver',
-                  onPressed: () => context.push('/pro/${profile.id}'),
+                  onPressed: () => showBookingSheet(
+                    context,
+                    proId: profile.id,
+                    proProfile: profile,
+                  ),
                 ),
               ),
             ],

@@ -61,7 +61,13 @@ class _ProVerificationScreenState extends ConsumerState<ProVerificationScreen> {
       backgroundColor: AppColors.fondDark,
       appBar: AppBar(
         backgroundColor: AppColors.fondDark,
-        leading: IconButton(onPressed: () => context.pop(), icon: const Icon(Icons.arrow_back_ios, size: 20)),
+        leading: Semantics(
+          label: 'Retour',
+          child: IconButton(
+            icon: const Icon(Icons.arrow_back_ios, color: AppColors.blanc, size: 20),
+            onPressed: () => context.pop(),
+          ),
+        ),
         title: const Text('STEP 2 OF 2', style: TextStyle(fontSize: 14, letterSpacing: 0.5)),
         centerTitle: true,
         actions: [IconButton(onPressed: () {}, icon: const Icon(Icons.help_outline, size: 22))],
