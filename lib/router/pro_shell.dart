@@ -12,6 +12,7 @@ class ProShell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.fond,
       body: navigationShell,
       bottomNavigationBar: Container(
         decoration: const BoxDecoration(
@@ -20,6 +21,11 @@ class ProShell extends StatelessWidget {
           ),
         ),
         child: BottomNavigationBar(
+          backgroundColor: AppColors.fond,
+          elevation: 0,
+          type: BottomNavigationBarType.fixed,
+          selectedItemColor: AppColors.blanc,
+          unselectedItemColor: AppColors.gris,
           currentIndex: navigationShell.currentIndex,
           onTap: (index) {
             HapticFeedback.selectionClick();
@@ -30,32 +36,53 @@ class ProShell extends StatelessWidget {
           },
           items: const [
             BottomNavigationBarItem(
-              icon: Icon(Icons.play_circle_outline),
-              activeIcon: Icon(Icons.play_circle_filled),
-              label: 'Feed',
+              icon: Icon(Icons.grid_view_outlined),
+              activeIcon: Icon(Icons.grid_view),
+              label: 'Dashboard',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.search_outlined),
               activeIcon: Icon(Icons.search),
-              label: 'Discover',
+              label: 'Recherche',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.videocam_outlined),
-              activeIcon: Icon(Icons.videocam),
-              label: 'Camera',
+              icon: _CameraTabIcon(),
+              activeIcon: _CameraTabIcon(),
+              label: 'Caméra',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.calendar_today_outlined),
-              activeIcon: Icon(Icons.calendar_today),
-              label: 'Bookings',
+              icon: Icon(Icons.calendar_month_outlined),
+              activeIcon: Icon(Icons.calendar_month),
+              label: 'RDV',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.dashboard_outlined),
-              activeIcon: Icon(Icons.dashboard),
-              label: 'Dashboard',
+              icon: Icon(Icons.event_outlined),
+              activeIcon: Icon(Icons.event),
+              label: 'Événements',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.person_outline),
+              activeIcon: Icon(Icons.person),
+              label: 'Profil Pro',
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _CameraTabIcon extends StatelessWidget {
+  const _CameraTabIcon();
+
+  @override
+  Widget build(BuildContext context) {
+    return Transform.translate(
+      offset: const Offset(0, -12),
+      child: const CircleAvatar(
+        radius: 28,
+        backgroundColor: AppColors.blanc,
+        child: Icon(Icons.videocam, color: AppColors.fond, size: 24),
       ),
     );
   }

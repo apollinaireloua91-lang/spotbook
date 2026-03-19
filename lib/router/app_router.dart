@@ -146,7 +146,7 @@ final appRouter = GoRouter(
       ],
     ),
 
-    // ─── Pro shell (BottomNav 5 tabs) ───
+    // ─── Pro shell (BottomNav 6 tabs) ───
     StatefulShellRoute.indexedStack(
       builder: (context, state, navigationShell) =>
           ProShell(navigationShell: navigationShell),
@@ -154,15 +154,15 @@ final appRouter = GoRouter(
         StatefulShellBranch(
           routes: [
             GoRoute(
-              path: '/pro/feed',
-              builder: (context, state) => const FeedScreen(),
+              path: '/pro/dashboard',
+              builder: (context, state) => const ProDashboardScreen(),
             ),
           ],
         ),
         StatefulShellBranch(
           routes: [
             GoRoute(
-              path: '/pro/discover',
+              path: '/pro/search',
               builder: (context, state) => const DiscoverScreen(),
             ),
           ],
@@ -178,7 +178,7 @@ final appRouter = GoRouter(
         StatefulShellBranch(
           routes: [
             GoRoute(
-              path: '/pro/bookings',
+              path: '/pro/appointments',
               builder: (context, state) => const MyBookingsScreen(),
             ),
           ],
@@ -186,8 +186,18 @@ final appRouter = GoRouter(
         StatefulShellBranch(
           routes: [
             GoRoute(
-              path: '/pro/dashboard',
-              builder: (context, state) => const ProDashboardScreen(),
+              path: '/pro/events',
+              builder: (context, state) =>
+                  const PlaceholderScreen(title: 'Événements'),
+            ),
+          ],
+        ),
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: '/pro/profile',
+              builder: (context, state) =>
+                  const PlaceholderScreen(title: 'Profil Pro'),
             ),
           ],
         ),
