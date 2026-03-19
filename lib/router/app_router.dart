@@ -21,6 +21,9 @@ import '../features/profile/presentation/screens/edit_profile_screen.dart';
 import '../features/profile/presentation/screens/pro_profile_screen.dart';
 import '../features/settings/presentation/screens/delete_account_screen.dart';
 import '../features/settings/presentation/screens/settings_screen.dart';
+import '../features/booking/presentation/screens/booking_cancellation_screen.dart';
+import '../features/booking/presentation/screens/my_bookings_screen.dart';
+import '../features/booking/presentation/screens/pro_dashboard_screen.dart';
 import '../shared/widgets/placeholder_screen.dart';
 import 'client_shell.dart';
 import 'pro_shell.dart';
@@ -111,8 +114,7 @@ final appRouter = GoRouter(
           routes: [
             GoRoute(
               path: '/client/bookings',
-              builder: (context, state) =>
-                  const PlaceholderScreen(title: 'My Bookings'),
+              builder: (context, state) => const MyBookingsScreen(),
             ),
           ],
         ),
@@ -160,8 +162,7 @@ final appRouter = GoRouter(
           routes: [
             GoRoute(
               path: '/pro/bookings',
-              builder: (context, state) =>
-                  const PlaceholderScreen(title: 'Bookings'),
+              builder: (context, state) => const MyBookingsScreen(),
             ),
           ],
         ),
@@ -169,8 +170,7 @@ final appRouter = GoRouter(
           routes: [
             GoRoute(
               path: '/pro/dashboard',
-              builder: (context, state) =>
-                  const PlaceholderScreen(title: 'Dashboard'),
+              builder: (context, state) => const ProDashboardScreen(),
             ),
           ],
         ),
@@ -225,6 +225,12 @@ final appRouter = GoRouter(
       path: '/booking/:bookingId',
       builder: (context, state) => PlaceholderScreen(
         title: 'Booking ${state.pathParameters['bookingId'] ?? ''}',
+      ),
+    ),
+    GoRoute(
+      path: '/cancel-booking/:bookingId',
+      builder: (context, state) => BookingCancellationScreen(
+        bookingId: state.pathParameters['bookingId'] ?? '',
       ),
     ),
   ],
