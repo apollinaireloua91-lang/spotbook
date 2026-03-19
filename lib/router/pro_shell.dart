@@ -26,9 +26,15 @@ class ProShell extends StatelessWidget {
           type: BottomNavigationBarType.fixed,
           selectedItemColor: AppColors.blanc,
           unselectedItemColor: AppColors.gris,
+          selectedFontSize: 10,
+          unselectedFontSize: 10,
           currentIndex: navigationShell.currentIndex,
           onTap: (index) {
-            HapticFeedback.selectionClick();
+            if (index == 2) {
+              HapticFeedback.mediumImpact();
+            } else {
+              HapticFeedback.selectionClick();
+            }
             navigationShell.goBranch(
               index,
               initialLocation: index == navigationShell.currentIndex,
@@ -46,8 +52,8 @@ class ProShell extends StatelessWidget {
               label: 'Recherche',
             ),
             BottomNavigationBarItem(
-              icon: _CameraTabIcon(),
-              activeIcon: _CameraTabIcon(),
+              icon: _CameraIcon(),
+              activeIcon: _CameraIcon(),
               label: 'Caméra',
             ),
             BottomNavigationBarItem(
@@ -72,17 +78,21 @@ class ProShell extends StatelessWidget {
   }
 }
 
-class _CameraTabIcon extends StatelessWidget {
-  const _CameraTabIcon();
+class _CameraIcon extends StatelessWidget {
+  const _CameraIcon();
 
   @override
   Widget build(BuildContext context) {
     return Transform.translate(
       offset: const Offset(0, -12),
-      child: const CircleAvatar(
-        radius: 28,
-        backgroundColor: AppColors.blanc,
-        child: Icon(Icons.videocam, color: AppColors.fond, size: 24),
+      child: Container(
+        width: 56,
+        height: 56,
+        decoration: const BoxDecoration(
+          color: AppColors.blanc,
+          shape: BoxShape.circle,
+        ),
+        child: const Icon(Icons.videocam, color: AppColors.fond, size: 26),
       ),
     );
   }
