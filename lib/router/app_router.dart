@@ -1,4 +1,5 @@
 import 'package:go_router/go_router.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../features/auth/presentation/screens/account_type_selection_screen.dart';
 import '../features/auth/presentation/screens/client_interest_categories_screen.dart';
@@ -196,8 +197,13 @@ final appRouter = GoRouter(
           routes: [
             GoRoute(
               path: '/pro/profile',
-              builder: (context, state) =>
-                  const PlaceholderScreen(title: 'Profil Pro'),
+              builder: (context, state) {
+                final uid = Supabase.instance.client.auth.currentUser?.id;
+                if (uid == null) {
+                  return const PlaceholderScreen(title: 'Profil Pro');
+                }
+                return ProProfileScreen(proId: uid);
+              },
             ),
           ],
         ),

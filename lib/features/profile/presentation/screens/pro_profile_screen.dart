@@ -1,22 +1,46 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shimmer/shimmer.dart';
 
 import '../../../../shared/theme/app_colors.dart';
-import '../../../moderation/presentation/screens/report_sheet.dart';
 import '../../../../shared/widgets/spotbook_button.dart';
+import '../../../booking/data/booking_repository.dart';
+import '../../../booking/domain/booking_models.dart';
+import '../../../events/data/event_repository.dart';
+import '../../../events/domain/event_models.dart';
+import '../../../feed/data/video_repository.dart';
+import '../../../feed/domain/video_model.dart';
 import '../../data/profile_repository.dart';
 import '../../domain/profile_models.dart';
 import '../widgets/social_badge_widget.dart';
 
-final proProfileProvider = FutureProvider.family<ProProfile?, String>((ref, proId) async {
+final proProfileProvider =
+    FutureProvider.family<ProProfile?, String>((ref, proId) async {
   return ref.read(profileRepositoryProvider).getProProfile(proId);
+});
+
+final proApprovedVideosProvider =
+    FutureProvider.family<List<VideoModel>, String>((ref, proId) async {
+  final videos = await ref.read(videoRepositoryProvider).getProVideos(proId);
+  return videos.where((video) => video.status == 'approved').toList();
+});
+
+final proServicesProvider =
+    FutureProvider.family<List<ServiceModel>, String>((ref, proId) async {
+  return ref.read(bookingRepositoryProvider).getProServices(proId);
+});
+
+final proEventsProvider =
+    FutureProvider.family<List<EventModel>, String>((ref, proId) async {
+  final events = await ref.read(eventRepositoryProvider).getEvents();
+  return events.where((event) => event.proId == proId).toList();
 });
 
 class ProProfileScreen extends ConsumerWidget {
   const ProProfileScreen({super.key, required this.proId});
+
   final String proId;
 
   @override
@@ -25,24 +49,51 @@ class ProProfileScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: AppColors.fond,
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        elevation: 0,
+        backgroundColor: Colors.transparent,
+        actions: [
+          IconButton(
+            onPressed: () => context.push('/settings'),
+            icon: const Icon(Icons.settings_outlined, color: AppColors.blanc),
+          ),
+        ],
+      ),
       body: profileAsync.when(
         data: (profile) {
           if (profile == null) {
             return const Center(
-              child: Text('Pro not found', style: TextStyle(color: AppColors.gris)),
+              child: Text('Pro introuvable',
+                  style: TextStyle(color: AppColors.gris)),
             );
           }
-          return _buildProfile(context, ref, profile);
+          return _ProfileContent(profile: profile);
         },
-        loading: () => const Center(child: CircularProgressIndicator(color: AppColors.blanc)),
+        loading: () => const _ProProfileShimmer(),
         error: (err, _) => Center(
-          child: Text('Error: $err', style: const TextStyle(color: AppColors.error)),
+          child: Text('Error: $err',
+              style: const TextStyle(color: AppColors.error)),
         ),
       ),
     );
   }
+}
 
-  Widget _buildProfile(BuildContext context, WidgetRef ref, ProProfile profile) {
+class _ProfileContent extends ConsumerWidget {
+  const _ProfileContent({required this.profile});
+
+  final ProProfile profile;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final videosAsync = ref.watch(proApprovedVideosProvider(profile.id));
+    final servicesAsync = ref.watch(proServicesProvider(profile.id));
+    final eventsAsync = ref.watch(proEventsProvider(profile.id));
+    final visibleSocials = profile.socialConnections
+        .where((connection) => connection.followersCount >= 10000)
+        .toList();
+
     return DefaultTabController(
       length: 3,
       child: NestedScrollView(
@@ -51,133 +102,69 @@ class ProProfileScreen extends ConsumerWidget {
             SliverToBoxAdapter(
               child: Column(
                 children: [
-                  // Cover & Avatar
                   SizedBox(
-                    height: 180 + 40, // Cover height + half avatar
+                    height: 220,
                     child: Stack(
                       children: [
-                        // Cover
-                        Container(
+                        SizedBox(
                           height: 180,
                           width: double.infinity,
-                          color: AppColors.surface,
-                          child: profile.coverUrl != null
-                              ? CachedNetworkImage(
+                          child: profile.coverUrl == null
+                              ? Container(color: AppColors.surface)
+                              : CachedNetworkImage(
                                   imageUrl: profile.coverUrl!,
                                   fit: BoxFit.cover,
-                                )
-                              : null,
-                        ),
-                        // Back Button
-                        Positioned(
-                          top: MediaQuery.of(context).padding.top + 8,
-                          left: 16,
-                          child: IconButton(
-                            onPressed: () => context.pop(),
-                            icon: const Icon(Icons.arrow_back_ios, color: AppColors.blanc, size: 20),
-                            style: IconButton.styleFrom(
-                              backgroundColor: Colors.black45,
-                            ),
-                          ),
-                        ),
-                        Positioned(
-                          top: MediaQuery.of(context).padding.top + 8,
-                          right: 16,
-                          child: Semantics(
-                            label: 'Options profil',
-                            child: IconButton(
-                              onPressed: () {
-                                HapticFeedback.mediumImpact();
-                                showModalBottomSheet(
-                                  context: context,
-                                  backgroundColor: Colors.transparent,
-                                  builder: (ctx) => Container(
-                                    padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
-                                    decoration: const BoxDecoration(
-                                      color: AppColors.surface,
-                                      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-                                    ),
-                                    child: SafeArea(
-                                      top: false,
-                                      child: Column(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          ListTile(
-                                            contentPadding: EdgeInsets.zero,
-                                            leading: const Icon(Icons.flag_outlined, color: AppColors.blanc),
-                                            title: const Text('Signaler', style: TextStyle(color: AppColors.blanc)),
-                                            onTap: () {
-                                              Navigator.of(ctx).pop();
-                                              showReportSheet(
-                                                context,
-                                                targetId: profile.id,
-                                                targetType: 'user',
-                                              );
-                                            },
-                                          ),
-                                          ListTile(
-                                            contentPadding: EdgeInsets.zero,
-                                            leading: const Icon(Icons.block, color: AppColors.error),
-                                            title: const Text('Bloquer', style: TextStyle(color: AppColors.error)),
-                                            onTap: () {
-                                              Navigator.of(ctx).pop();
-                                              showBlockConfirmDialog(
-                                                context,
-                                                ref: ref,
-                                                userId: profile.id,
-                                                userName: profile.businessName,
-                                              );
-                                            },
-                                          ),
-                                        ],
-                                      ),
-                                    ),
+                                  placeholder: (_, __) => Shimmer.fromColors(
+                                    baseColor: AppColors.surface,
+                                    highlightColor: AppColors.surfaceAlt,
+                                    child: Container(color: AppColors.surface),
                                   ),
-                                );
-                              },
-                              icon: const Icon(Icons.more_horiz, color: AppColors.blanc),
-                              style: IconButton.styleFrom(
-                                backgroundColor: Colors.black45,
-                              ),
-                            ),
-                          ),
+                                  errorWidget: (_, __, ___) => Container(
+                                    color: AppColors.surface,
+                                    child: const Icon(Icons.image_not_supported,
+                                        color: AppColors.blanc),
+                                  ),
+                                ),
                         ),
-                        // Avatar
                         Positioned(
-                          bottom: 0,
                           left: 0,
                           right: 0,
+                          bottom: 0,
                           child: Center(
                             child: Stack(
+                              clipBehavior: Clip.none,
                               children: [
                                 Container(
-                                  padding: const EdgeInsets.all(4),
+                                  padding: const EdgeInsets.all(3),
                                   decoration: const BoxDecoration(
-                                    color: AppColors.fond,
                                     shape: BoxShape.circle,
+                                    color: AppColors.blanc,
                                   ),
                                   child: CircleAvatar(
                                     radius: 40,
                                     backgroundColor: AppColors.surfaceAlt,
                                     backgroundImage: profile.avatarUrl != null
-                                        ? CachedNetworkImageProvider(profile.avatarUrl!)
+                                        ? CachedNetworkImageProvider(
+                                            profile.avatarUrl!)
                                         : null,
                                     child: profile.avatarUrl == null
-                                        ? const Icon(Icons.person, size: 40, color: AppColors.gris)
+                                        ? const Icon(Icons.person,
+                                            size: 40, color: AppColors.gris)
                                         : null,
                                   ),
                                 ),
-                                // Verified Badge
                                 Positioned(
-                                  bottom: 4,
-                                  right: 4,
+                                  right: -2,
+                                  bottom: -2,
                                   child: Container(
-                                    padding: const EdgeInsets.all(2),
+                                    width: 22,
+                                    height: 22,
                                     decoration: const BoxDecoration(
-                                      color: AppColors.accent,
+                                      color: AppColors.blanc,
                                       shape: BoxShape.circle,
                                     ),
-                                    child: const Icon(Icons.check, size: 12, color: AppColors.fondDark),
+                                    child: const Icon(Icons.check,
+                                        color: AppColors.fond, size: 16),
                                   ),
                                 ),
                               ],
@@ -188,100 +175,117 @@ class ProProfileScreen extends ConsumerWidget {
                     ),
                   ),
                   const SizedBox(height: 12),
-                  // Top Pro Badge
-                  if (profile.isTopPro) ...[
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: AppColors.blanc,
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                      child: const Text(
-                        'TOP PRO',
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 10,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                  ],
-                  // Business Name
-                  Text(
-                    profile.businessName,
-                    style: const TextStyle(
-                      color: AppColors.blanc,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  // Username, Category, City
-                  Text(
-                    '${profile.username != null ? '@${profile.username} • ' : ''}${profile.category}${profile.city != null ? ' • ${profile.city}' : ''}',
-                    style: const TextStyle(color: AppColors.gris, fontSize: 14),
-                  ),
-                  const SizedBox(height: 8),
-                  // Rating
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Icon(Icons.star, color: Colors.amber, size: 16),
-                      const SizedBox(width: 4),
-                      Text(
-                        '${profile.rating.toStringAsFixed(1)} (${profile.reviewsCount} avis)',
-                        style: const TextStyle(color: AppColors.gris, fontSize: 13),
+                      Flexible(
+                        child: Text(
+                          profile.businessName,
+                          textAlign: TextAlign.center,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            color: AppColors.blanc,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 0.5,
+                          ),
+                        ),
                       ),
+                      if (profile.isTopPro) ...[
+                        const SizedBox(width: 8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: AppColors.blanc,
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: const Text(
+                            'TOP PRO',
+                            style: TextStyle(
+                              color: AppColors.fond,
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
                     ],
                   ),
-                  const SizedBox(height: 12),
-                  // Social Badges
-                  if (profile.socialConnections.isNotEmpty) ...[
-                    Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      alignment: WrapAlignment.center,
-                      children: profile.socialConnections
-                          .map((conn) => SocialBadgeWidget(
-                                platform: conn.platform,
-                                followersCount: conn.followersCount,
-                              ))
-                          .toList(),
+                  if (profile.username != null) ...[
+                    const SizedBox(height: 6),
+                    Text(
+                      '@${profile.username}',
+                      textAlign: TextAlign.center,
+                      style:
+                          const TextStyle(color: AppColors.gris, fontSize: 14),
                     ),
-                    const SizedBox(height: 12),
                   ],
-                  // Bio
+                  const SizedBox(height: 4),
+                  Text(
+                    _categoryAndCity(profile),
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(color: AppColors.gris, fontSize: 13),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    '⭐ ${profile.rating.toStringAsFixed(1)} (${profile.reviewsCount} avis)',
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(color: AppColors.gris, fontSize: 13),
+                  ),
+                  if (visibleSocials.isNotEmpty) ...[
+                    const SizedBox(height: 12),
+                    SizedBox(
+                      height: 24,
+                      child: ListView.separated(
+                        shrinkWrap: true,
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        scrollDirection: Axis.horizontal,
+                        itemCount: visibleSocials.length,
+                        separatorBuilder: (_, __) => const SizedBox(width: 16),
+                        itemBuilder: (context, index) {
+                          final social = visibleSocials[index];
+                          return SocialBadgeWidget(
+                            platform: social.platform,
+                            followersCount: social.followersCount,
+                          );
+                        },
+                      ),
+                    ),
+                  ],
                   if (profile.bio != null && profile.bio!.isNotEmpty) ...[
+                    const SizedBox(height: 12),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 24),
                       child: Text(
                         profile.bio!,
                         textAlign: TextAlign.center,
-                        style: const TextStyle(color: AppColors.blanc, fontSize: 14),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                            color: AppColors.blanc, fontSize: 14, height: 1.5),
                       ),
                     ),
-                    const SizedBox(height: 24),
                   ],
-                  // Action Buttons
+                  const SizedBox(height: 20),
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24),
-                    child: Column(
-                      children: [
-                        SpotbookButton.primary(
-                          label: 'Book Appointment',
-                          onPressed: () {},
-                        ),
-                        const SizedBox(height: 12),
-                        SpotbookButton.secondary(
-                          label: 'Buy Event Ticket',
-                          onPressed: () {},
-                        ),
-                      ],
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: SpotbookButton.primary(
+                      label: 'Book Appointment',
+                      onPressed: () {},
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: SpotbookButton.secondary(
+                      label: 'Buy Event Ticket',
+                      onPressed: () {},
                     ),
                   ),
                   const SizedBox(height: 24),
-                  const Divider(color: AppColors.border, height: 1),
+                  Container(height: 1, color: AppColors.border),
                 ],
               ),
             ),
@@ -289,7 +293,7 @@ class ProProfileScreen extends ConsumerWidget {
               pinned: true,
               delegate: _SliverAppBarDelegate(
                 const TabBar(
-                  indicatorColor: AppColors.accent,
+                  indicatorColor: AppColors.blanc,
                   labelColor: AppColors.blanc,
                   unselectedLabelColor: AppColors.gris,
                   tabs: [
@@ -302,15 +306,319 @@ class ProProfileScreen extends ConsumerWidget {
             ),
           ];
         },
-        body: const TabBarView(
+        body: TabBarView(
           children: [
-            Center(child: Text('Vidéos (grille 2 cols)', style: TextStyle(color: AppColors.gris))),
-            Center(child: Text('Services (liste)', style: TextStyle(color: AppColors.gris))),
-            Center(child: Text('Événements (liste)', style: TextStyle(color: AppColors.gris))),
+            videosAsync.when(
+              data: (videos) => _VideosTab(videos: videos),
+              loading: () => const _GridShimmer(),
+              error: (err, _) => _ErrorTab(message: '$err'),
+            ),
+            servicesAsync.when(
+              data: (services) =>
+                  _ServicesTab(profile: profile, services: services),
+              loading: () => const _ListShimmer(),
+              error: (err, _) => _ErrorTab(message: '$err'),
+            ),
+            eventsAsync.when(
+              data: (events) => _EventsTab(events: events),
+              loading: () => const _ListShimmer(),
+              error: (err, _) => _ErrorTab(message: '$err'),
+            ),
           ],
         ),
       ),
     );
+  }
+
+  String _categoryAndCity(ProProfile profile) {
+    if (profile.city == null || profile.city!.isEmpty) return profile.category;
+    return '${profile.category} • ${profile.city}';
+  }
+}
+
+class _VideosTab extends StatelessWidget {
+  const _VideosTab({required this.videos});
+
+  final List<VideoModel> videos;
+
+  @override
+  Widget build(BuildContext context) {
+    if (videos.isEmpty) {
+      return const _EmptyTab(message: 'Aucune vidéo approuvée');
+    }
+
+    return GridView.builder(
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        crossAxisSpacing: 12,
+        mainAxisSpacing: 12,
+        childAspectRatio: 0.8,
+      ),
+      itemCount: videos.length,
+      itemBuilder: (context, index) {
+        final video = videos[index];
+        return Container(
+          decoration: BoxDecoration(
+            color: AppColors.surface,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: AppColors.border),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: ClipRRect(
+                  borderRadius:
+                      const BorderRadius.vertical(top: Radius.circular(16)),
+                  child: Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      if (video.thumbnailUrl != null)
+                        CachedNetworkImage(
+                          imageUrl: video.thumbnailUrl!,
+                          fit: BoxFit.cover,
+                          placeholder: (_, __) => Shimmer.fromColors(
+                            baseColor: AppColors.surface,
+                            highlightColor: AppColors.surfaceAlt,
+                            child: Container(color: AppColors.surface),
+                          ),
+                          errorWidget: (_, __, ___) => Container(
+                            color: AppColors.surface,
+                            child: const Icon(Icons.broken_image,
+                                color: AppColors.blanc),
+                          ),
+                        )
+                      else
+                        Container(
+                          color: AppColors.surfaceAlt,
+                          child:
+                              const Icon(Icons.videocam, color: AppColors.gris),
+                        ),
+                      Positioned(
+                        right: 8,
+                        bottom: 8,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: AppColors.fond,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Text(
+                            _formatDuration(video.durationSeconds),
+                            style: const TextStyle(
+                              color: AppColors.blanc,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(10),
+                child: Text(
+                  video.title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    color: AppColors.blanc,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  String _formatDuration(double? durationSeconds) {
+    if (durationSeconds == null || durationSeconds <= 0) return '--:--';
+    final total = durationSeconds.round();
+    final minutes = total ~/ 60;
+    final seconds = total % 60;
+    return '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
+  }
+}
+
+class _ServicesTab extends StatelessWidget {
+  const _ServicesTab({required this.profile, required this.services});
+
+  final ProProfile profile;
+  final List<ServiceModel> services;
+
+  @override
+  Widget build(BuildContext context) {
+    if (services.isEmpty) {
+      return const _EmptyTab(message: 'Aucun service disponible');
+    }
+
+    return ListView.separated(
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
+      itemCount: services.length,
+      separatorBuilder: (_, __) => const SizedBox(height: 12),
+      itemBuilder: (context, index) {
+        final service = services[index];
+        return Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: AppColors.surface,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: AppColors.border),
+          ),
+          child: Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      service.name,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        color: AppColors.blanc,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      '${service.durationMinutes} min • ${_formatPrice(service.price)}',
+                      style:
+                          const TextStyle(color: AppColors.gris, fontSize: 13),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 12),
+              SizedBox(
+                width: 100,
+                child: SpotbookButton.outlined(
+                  label: 'Réserver',
+                  onPressed: () => context.push('/pro/${profile.id}'),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  String _formatPrice(double price) {
+    if (price == price.roundToDouble()) {
+      return '\$${price.toStringAsFixed(0)}';
+    }
+    return '\$${price.toStringAsFixed(2)}';
+  }
+}
+
+class _EventsTab extends StatelessWidget {
+  const _EventsTab({required this.events});
+
+  final List<EventModel> events;
+
+  @override
+  Widget build(BuildContext context) {
+    if (events.isEmpty) {
+      return const _EmptyTab(message: 'Aucun événement actif');
+    }
+
+    return ListView.separated(
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
+      itemCount: events.length,
+      separatorBuilder: (_, __) => const SizedBox(height: 12),
+      itemBuilder: (context, index) {
+        final event = events[index];
+        return Container(
+          decoration: BoxDecoration(
+            color: AppColors.surface,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: AppColors.border),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ClipRRect(
+                borderRadius:
+                    const BorderRadius.vertical(top: Radius.circular(16)),
+                child: SizedBox(
+                  height: 140,
+                  width: double.infinity,
+                  child: event.coverUrl == null
+                      ? Container(
+                          color: AppColors.surfaceAlt,
+                          child: const Icon(Icons.event, color: AppColors.gris),
+                        )
+                      : CachedNetworkImage(
+                          imageUrl: event.coverUrl!,
+                          fit: BoxFit.cover,
+                          placeholder: (_, __) => Shimmer.fromColors(
+                            baseColor: AppColors.surface,
+                            highlightColor: AppColors.surfaceAlt,
+                            child: Container(color: AppColors.surface),
+                          ),
+                          errorWidget: (_, __, ___) => Container(
+                            color: AppColors.surfaceAlt,
+                            child: const Icon(Icons.image_not_supported,
+                                color: AppColors.blanc),
+                          ),
+                        ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      event.title,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        color: AppColors.blanc,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      '${_formatDate(event.eventDate)} • ${_formatPrice(event.minPrice)}',
+                      style:
+                          const TextStyle(color: AppColors.gris, fontSize: 13),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  String _formatDate(DateTime? date) {
+    if (date == null) return 'Date à confirmer';
+    final day = date.day.toString().padLeft(2, '0');
+    final month = date.month.toString().padLeft(2, '0');
+    final year = date.year.toString();
+    return '$day/$month/$year';
+  }
+
+  String _formatPrice(double price) {
+    if (price <= 0) return 'Prix à confirmer';
+    if (price == price.roundToDouble()) {
+      return '\$${price.toStringAsFixed(0)}';
+    }
+    return '\$${price.toStringAsFixed(2)}';
   }
 }
 
@@ -321,20 +629,131 @@ class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
 
   @override
   double get minExtent => _tabBar.preferredSize.height;
+
   @override
   double get maxExtent => _tabBar.preferredSize.height;
 
   @override
   Widget build(
       BuildContext context, double shrinkOffset, bool overlapsContent) {
-    return Container(
-      color: AppColors.fond,
-      child: _tabBar,
-    );
+    return Container(color: AppColors.fond, child: _tabBar);
   }
 
   @override
-  bool shouldRebuild(_SliverAppBarDelegate oldDelegate) {
-    return false;
+  bool shouldRebuild(_SliverAppBarDelegate oldDelegate) => false;
+}
+
+class _GridShimmer extends StatelessWidget {
+  const _GridShimmer();
+
+  @override
+  Widget build(BuildContext context) {
+    return Shimmer.fromColors(
+      baseColor: AppColors.surface,
+      highlightColor: AppColors.surfaceAlt,
+      child: GridView.builder(
+        padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          crossAxisSpacing: 12,
+          mainAxisSpacing: 12,
+        ),
+        itemCount: 6,
+        itemBuilder: (_, __) => Container(
+          decoration: BoxDecoration(
+            color: AppColors.surface,
+            borderRadius: BorderRadius.circular(16),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _ListShimmer extends StatelessWidget {
+  const _ListShimmer();
+
+  @override
+  Widget build(BuildContext context) {
+    return Shimmer.fromColors(
+      baseColor: AppColors.surface,
+      highlightColor: AppColors.surfaceAlt,
+      child: ListView.separated(
+        padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
+        itemCount: 4,
+        separatorBuilder: (_, __) => const SizedBox(height: 12),
+        itemBuilder: (_, __) => Container(
+          height: 92,
+          decoration: BoxDecoration(
+            color: AppColors.surface,
+            borderRadius: BorderRadius.circular(16),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _ProProfileShimmer extends StatelessWidget {
+  const _ProProfileShimmer();
+
+  @override
+  Widget build(BuildContext context) {
+    return Shimmer.fromColors(
+      baseColor: AppColors.surface,
+      highlightColor: AppColors.surfaceAlt,
+      child: ListView(
+        children: [
+          Container(height: 180, color: AppColors.surface),
+          Transform.translate(
+            offset: const Offset(0, -40),
+            child: Center(
+              child: Container(
+                width: 80,
+                height: 80,
+                decoration: const BoxDecoration(
+                  color: AppColors.surfaceAlt,
+                  shape: BoxShape.circle,
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 12),
+          Center(
+              child: Container(
+                  width: 200, height: 20, color: AppColors.surfaceAlt)),
+          const SizedBox(height: 8),
+          Center(
+              child: Container(
+                  width: 140, height: 14, color: AppColors.surfaceAlt)),
+        ],
+      ),
+    );
+  }
+}
+
+class _EmptyTab extends StatelessWidget {
+  const _EmptyTab({required this.message});
+
+  final String message;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Text(message, style: const TextStyle(color: AppColors.gris)),
+    );
+  }
+}
+
+class _ErrorTab extends StatelessWidget {
+  const _ErrorTab({required this.message});
+
+  final String message;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Text(message, style: const TextStyle(color: AppColors.error)),
+    );
   }
 }
