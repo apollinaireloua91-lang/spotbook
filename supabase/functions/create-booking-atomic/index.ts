@@ -1,12 +1,13 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
 import Stripe from "https://esm.sh/stripe@14.14.0?target=deno";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
-};
+import {
+  assertAmount,
+  assertUuid,
+  getClientIp,
+  jsonHeaders,
+  securityHeaders,
+} from "../_shared/security.ts";
 
 function generateBookingCode(): string {
   const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
@@ -19,7 +20,7 @@ function generateBookingCode(): string {
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: corsHeaders });
+    return new Response("ok", { headers: securityHeaders });
   }
 
   try {
@@ -42,7 +43,7 @@ serve(async (req) => {
     } = await authClient.auth.getUser();
     if (!user) {
       return new Response(JSON.stringify({ error: "unauthorized" }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        headers: jsonHeaders,
         status: 401,
       });
     }
@@ -53,11 +54,14 @@ serve(async (req) => {
       return new Response(
         JSON.stringify({ error: "slotId and serviceId required" }),
         {
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          headers: jsonHeaders,
           status: 400,
         }
       );
     }
+    assertUuid(slotId, "slotId");
+    assertUuid(serviceId, "serviceId");
+    if (promoCodeId) assertUuid(promoCodeId, "promoCodeId");
 
     // Atomic transaction via RPC
     const bookingCode = generateBookingCode();
@@ -74,7 +78,7 @@ serve(async (req) => {
         return new Response(
           JSON.stringify({ error: "slot_unavailable" }),
           {
-            headers: { ...corsHeaders, "Content-Type": "application/json" },
+            headers: jsonHeaders,
             status: 409,
           }
         );
@@ -104,6 +108,7 @@ serve(async (req) => {
     });
 
     const amountCents = Math.round(depositAmount * 100);
+    assertAmount(Number(depositAmount ?? 0), "deposit_amount");
     const commissionRate = pro?.commission_rate ?? 0.12;
     const applicationFee = Math.round(amountCents * commissionRate);
 
@@ -136,6 +141,14 @@ serve(async (req) => {
       .from("bookings")
       .update({ stripe_payment_intent_id: paymentIntent.id })
       .eq("id", bookingId);
+    await supabase.rpc("insert_audit_log", {
+      p_user_id: user.id,
+      p_action: "booking_created",
+      p_resource_type: "booking",
+      p_resource_id: bookingId,
+      p_metadata: { slot_id: slotId, service_id: serviceId },
+      p_ip_address: getClientIp(req),
+    });
 
     return new Response(
       JSON.stringify({
@@ -146,12 +159,12 @@ serve(async (req) => {
         depositAmount,
       }),
       {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        headers: jsonHeaders,
       }
     );
   } catch (error) {
     return new Response(JSON.stringify({ error: error.message }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      headers: jsonHeaders,
       status: 400,
     });
   }

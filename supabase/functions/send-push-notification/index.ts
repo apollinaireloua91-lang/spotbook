@@ -1,11 +1,11 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
-};
+import {
+  assertUuid,
+  jsonHeaders,
+  sanitizeText,
+  securityHeaders,
+} from "../_shared/security.ts";
 
 interface PushPayload {
   userId: string;
@@ -17,7 +17,7 @@ interface PushPayload {
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: corsHeaders });
+    return new Response("ok", { headers: securityHeaders });
   }
 
   try {
@@ -33,11 +33,14 @@ serve(async (req) => {
       return new Response(
         JSON.stringify({ error: "userId, title, body, type required" }),
         {
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          headers: jsonHeaders,
           status: 400,
         }
       );
     }
+    assertUuid(userId, "userId");
+    const safeTitle = sanitizeText(title);
+    const safeBody = sanitizeText(body);
 
     // Check notification preferences
     const { data: prefs } = await supabase
@@ -53,8 +56,8 @@ serve(async (req) => {
         // Still insert in history but don't send push
         await supabase.from("notifications").insert({
           user_id: userId,
-          title,
-          body,
+          title: safeTitle,
+          body: safeBody,
           type,
           data: data ?? {},
           is_read: false,
@@ -68,7 +71,7 @@ serve(async (req) => {
             reason: "disabled_by_user",
           }),
           {
-            headers: { ...corsHeaders, "Content-Type": "application/json" },
+            headers: jsonHeaders,
           }
         );
       }
@@ -92,7 +95,7 @@ serve(async (req) => {
       const message = {
         message: {
           token: user.fcm_token,
-          notification: { title, body },
+          notification: { title: safeTitle, body: safeBody },
           data: {
             type,
             click_action: "FLUTTER_NOTIFICATION_CLICK",
@@ -128,8 +131,8 @@ serve(async (req) => {
     // Insert notification in history
     await supabase.from("notifications").insert({
       user_id: userId,
-      title,
-      body,
+      title: safeTitle,
+      body: safeBody,
       type,
       data: data ?? {},
       is_read: false,
@@ -139,12 +142,12 @@ serve(async (req) => {
     return new Response(
       JSON.stringify({ success: true, push_sent: pushSent }),
       {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        headers: jsonHeaders,
       }
     );
   } catch (error) {
     return new Response(JSON.stringify({ error: error.message }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      headers: jsonHeaders,
       status: 400,
     });
   }

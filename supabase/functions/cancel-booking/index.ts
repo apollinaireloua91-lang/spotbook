@@ -1,16 +1,16 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
 import Stripe from "https://esm.sh/stripe@14.14.0?target=deno";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
-};
+import {
+  assertUuid,
+  getClientIp,
+  jsonHeaders,
+  securityHeaders,
+} from "../_shared/security.ts";
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: corsHeaders });
+    return new Response("ok", { headers: securityHeaders });
   }
 
   try {
@@ -33,7 +33,7 @@ serve(async (req) => {
     } = await authClient.auth.getUser();
     if (!user) {
       return new Response(JSON.stringify({ error: "unauthorized" }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        headers: jsonHeaders,
         status: 401,
       });
     }
@@ -43,11 +43,12 @@ serve(async (req) => {
       return new Response(
         JSON.stringify({ error: "bookingId required" }),
         {
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          headers: jsonHeaders,
           status: 400,
         }
       );
     }
+    assertUuid(bookingId, "bookingId");
 
     // Fetch booking
     const { data: booking, error: bErr } = await supabase
@@ -57,7 +58,7 @@ serve(async (req) => {
       .single();
     if (bErr || !booking) {
       return new Response(JSON.stringify({ error: "booking_not_found" }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        headers: jsonHeaders,
         status: 404,
       });
     }
@@ -65,7 +66,7 @@ serve(async (req) => {
     // Verify ownership (client or pro)
     if (booking.client_id !== user.id && booking.pro_id !== user.id) {
       return new Response(JSON.stringify({ error: "forbidden" }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        headers: jsonHeaders,
         status: 403,
       });
     }
@@ -123,6 +124,24 @@ serve(async (req) => {
       .from("time_slots")
       .update({ is_available: true, locked_by: null })
       .eq("id", booking.time_slot_id);
+    await supabase.rpc("insert_audit_log", {
+      p_user_id: user.id,
+      p_action: "booking_cancelled",
+      p_resource_type: "booking",
+      p_resource_id: bookingId,
+      p_metadata: { status: newStatus },
+      p_ip_address: getClientIp(req),
+    });
+    if (newStatus === "cancelled_full_refund") {
+      await supabase.rpc("insert_audit_log", {
+        p_user_id: user.id,
+        p_action: "refund_initiated",
+        p_resource_type: "booking",
+        p_resource_id: bookingId,
+        p_metadata: {},
+        p_ip_address: getClientIp(req),
+      });
+    }
 
     return new Response(
       JSON.stringify({
@@ -131,12 +150,12 @@ serve(async (req) => {
         hoursUntil: Math.round(hoursUntil),
       }),
       {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        headers: jsonHeaders,
       }
     );
   } catch (error) {
     return new Response(JSON.stringify({ error: error.message }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      headers: jsonHeaders,
       status: 400,
     });
   }

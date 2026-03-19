@@ -1,12 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
 import { encode as hexEncode } from "https://deno.land/std@0.168.0/encoding/hex.ts";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
-};
+import { assertUuid, jsonHeaders, securityHeaders } from "../_shared/security.ts";
 
 async function hmacSha256(data: string, secret: string): Promise<string> {
   const key = await crypto.subtle.importKey(
@@ -26,7 +21,7 @@ async function hmacSha256(data: string, secret: string): Promise<string> {
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: corsHeaders });
+    return new Response("ok", { headers: securityHeaders });
   }
 
   try {
@@ -40,11 +35,12 @@ serve(async (req) => {
       return new Response(
         JSON.stringify({ error: "ticketId required" }),
         {
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          headers: jsonHeaders,
           status: 400,
         }
       );
     }
+    assertUuid(ticketId, "ticketId");
 
     const { data: ticket, error: tErr } = await supabase
       .from("tickets")
@@ -56,7 +52,7 @@ serve(async (req) => {
       return new Response(
         JSON.stringify({ error: "ticket_not_found" }),
         {
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          headers: jsonHeaders,
           status: 404,
         }
       );
@@ -70,16 +66,24 @@ serve(async (req) => {
       .from("tickets")
       .update({ qr_hash: qrHash, status: "valid" })
       .eq("id", ticketId);
+    await supabase.rpc("insert_audit_log", {
+      p_user_id: ticket.user_id,
+      p_action: "ticket_purchased",
+      p_resource_type: "ticket",
+      p_resource_id: ticket.id,
+      p_metadata: { event_id: ticket.event_id },
+      p_ip_address: "edge",
+    });
 
     return new Response(
       JSON.stringify({ success: true, qr_hash: qrHash }),
       {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        headers: jsonHeaders,
       }
     );
   } catch (error) {
     return new Response(JSON.stringify({ error: error.message }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      headers: jsonHeaders,
       status: 400,
     });
   }

@@ -1,12 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
 import { encode as hexEncode } from "https://deno.land/std@0.168.0/encoding/hex.ts";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
-};
+import { assertUuid, jsonHeaders, securityHeaders } from "../_shared/security.ts";
 
 async function hmacSha256(data: string, secret: string): Promise<string> {
   const key = await crypto.subtle.importKey(
@@ -26,7 +21,7 @@ async function hmacSha256(data: string, secret: string): Promise<string> {
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: corsHeaders });
+    return new Response("ok", { headers: securityHeaders });
   }
 
   try {
@@ -50,7 +45,7 @@ serve(async (req) => {
     } = await authClient.auth.getUser();
     if (!user) {
       return new Response(JSON.stringify({ error: "unauthorized" }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        headers: jsonHeaders,
         status: 401,
       });
     }
@@ -60,11 +55,12 @@ serve(async (req) => {
       return new Response(
         JSON.stringify({ error: "ticketId and qrHash required" }),
         {
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          headers: jsonHeaders,
           status: 400,
         }
       );
     }
+    assertUuid(ticketId, "ticketId");
 
     const { data: ticket, error: tErr } = await supabase
       .from("tickets")
@@ -79,7 +75,7 @@ serve(async (req) => {
           reason: "ticket_not_found",
         }),
         {
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          headers: jsonHeaders,
         }
       );
     }
@@ -93,7 +89,7 @@ serve(async (req) => {
       return new Response(
         JSON.stringify({ valid: false, reason: "invalid_hash" }),
         {
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          headers: jsonHeaders,
         }
       );
     }
@@ -107,7 +103,7 @@ serve(async (req) => {
           scannedAt: ticket.scanned_at,
         }),
         {
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          headers: jsonHeaders,
         }
       );
     }
@@ -117,16 +113,24 @@ serve(async (req) => {
       .from("tickets")
       .update({ scanned_at: new Date().toISOString(), status: "used" })
       .eq("id", ticketId);
+    await supabase.rpc("insert_audit_log", {
+      p_user_id: ticket.user_id,
+      p_action: "ticket_scanned",
+      p_resource_type: "ticket",
+      p_resource_id: ticket.id,
+      p_metadata: { scanner_id: user.id, event_id: ticket.event_id },
+      p_ip_address: "edge",
+    });
 
     return new Response(
       JSON.stringify({ valid: true, ticketId: ticket.id }),
       {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        headers: jsonHeaders,
       }
     );
   } catch (error) {
     return new Response(JSON.stringify({ error: error.message }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      headers: jsonHeaders,
       status: 400,
     });
   }
