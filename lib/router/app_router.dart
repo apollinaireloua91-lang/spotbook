@@ -17,6 +17,7 @@ import '../features/feed/presentation/screens/my_videos_screen.dart';
 import '../features/feed/presentation/screens/upload_video_screen.dart';
 import '../features/onboarding/presentation/screens/onboarding_screen.dart';
 import '../features/profile/presentation/screens/client_profile_screen.dart';
+import '../features/profile/presentation/screens/pro_profile_screen.dart';
 import '../features/settings/presentation/screens/delete_account_screen.dart';
 import '../features/settings/presentation/screens/settings_screen.dart';
 import '../shared/widgets/placeholder_screen.dart';
@@ -205,8 +206,8 @@ final appRouter = GoRouter(
     ),
     GoRoute(
       path: '/pro/:proId',
-      builder: (context, state) => PlaceholderScreen(
-        title: 'Pro ${state.pathParameters['proId'] ?? ''}',
+      builder: (context, state) => ProProfileScreen(
+        proId: state.pathParameters['proId'] ?? '',
       ),
     ),
     GoRoute(
