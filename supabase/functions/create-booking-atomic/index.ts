@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
+import Stripe from "https://esm.sh/stripe@14.14.0?target=deno";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -27,7 +28,6 @@ serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
     );
 
-    // Auth check
     const authClient = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
       Deno.env.get("SUPABASE_ANON_KEY") ?? "",
@@ -82,13 +82,68 @@ serve(async (req) => {
       throw error;
     }
 
+    const bookingId = data.booking_id;
+    const depositAmount = data.deposit_amount;
+
+    // Fetch pro Stripe account for Connect transfer
+    const { data: slot } = await supabase
+      .from("time_slots")
+      .select("pro_id")
+      .eq("id", slotId)
+      .single();
+
+    const { data: pro } = await supabase
+      .from("profiles_pro")
+      .select("stripe_account_id, commission_rate")
+      .eq("id", slot.pro_id)
+      .single();
+
+    // Create Stripe PaymentIntent — amount in cents
+    const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") ?? "", {
+      apiVersion: "2023-10-16",
+    });
+
+    const amountCents = Math.round(depositAmount * 100);
+    const commissionRate = pro?.commission_rate ?? 0.12;
+    const applicationFee = Math.round(amountCents * commissionRate);
+
+    const paymentIntentParams: Record<string, unknown> = {
+      amount: amountCents,
+      currency: "cad",
+      metadata: {
+        bookingId,
+        clientId: user.id,
+        proId: slot.pro_id,
+        type: "deposit",
+      },
+    };
+
+    // If pro has Stripe Connect, use transfer_data + application_fee
+    if (pro?.stripe_account_id) {
+      paymentIntentParams.transfer_data = {
+        destination: pro.stripe_account_id,
+      };
+      paymentIntentParams.application_fee_amount = applicationFee;
+    }
+
+    const paymentIntent = await stripe.paymentIntents.create(
+      paymentIntentParams as Stripe.PaymentIntentCreateParams,
+      { idempotencyKey: `booking-${bookingId}-deposit` }
+    );
+
+    // Store payment intent ID on booking
+    await supabase
+      .from("bookings")
+      .update({ stripe_payment_intent_id: paymentIntent.id })
+      .eq("id", bookingId);
+
     return new Response(
       JSON.stringify({
         success: true,
-        bookingId: data.booking_id,
+        bookingId,
         bookingCode: data.booking_code,
-        totalAmount: data.total_amount,
-        depositAmount: data.deposit_amount,
+        clientSecret: paymentIntent.client_secret,
+        depositAmount,
       }),
       {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
