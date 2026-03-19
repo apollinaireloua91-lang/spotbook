@@ -56,28 +56,36 @@ class ClientProfileScreen extends ConsumerWidget {
         data: (profile) {
           if (profile == null) {
             return const Center(
-              child: Text('Not authenticated',
-                  style: TextStyle(color: AppColors.gris)),
+              child: Text(
+                'Non authentifié',
+                style: TextStyle(color: AppColors.gris),
+              ),
             );
           }
-          return _buildProfile(context, ref, profile);
+          return _ClientProfileBody(profile: profile);
         },
         loading: () => const _ClientProfileShimmer(),
         error: (err, _) => Center(
-          child: Text('Error: $err',
-              style: const TextStyle(color: AppColors.error)),
+          child: Text(
+            'Erreur : $err',
+            style: const TextStyle(color: AppColors.error),
+          ),
         ),
       ),
     );
   }
+}
 
-  Widget _buildProfile(
-    BuildContext context,
-    WidgetRef ref,
-    ClientProfile profile,
-  ) {
+class _ClientProfileBody extends ConsumerWidget {
+  const _ClientProfileBody({required this.profile});
+
+  final ClientProfile profile;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
     final isOwnProfile =
         ref.read(profileRepositoryProvider).currentUserId == profile.id;
+
     return DefaultTabController(
       length: 3,
       child: NestedScrollView(
@@ -86,40 +94,16 @@ class ClientProfileScreen extends ConsumerWidget {
             SliverToBoxAdapter(
               child: Column(
                 children: [
-                  // Cover & Avatar
                   SizedBox(
-                    height: 140 + 36, // Cover height + half avatar
+                    height: 176,
                     child: Stack(
+                      clipBehavior: Clip.none,
                       children: [
-                        // Cover
-                        Container(
-                          height: 140,
-                          width: double.infinity,
-                          color: AppColors.surface,
-                          child: profile.coverUrl != null
-                              ? CachedNetworkImage(
-                                  imageUrl: profile.coverUrl!,
-                                  fit: BoxFit.cover,
-                                  placeholder: (_, __) => Shimmer.fromColors(
-                                    baseColor: AppColors.surface,
-                                    highlightColor: AppColors.surfaceAlt,
-                                    child: Container(color: AppColors.surface),
-                                  ),
-                                  errorWidget: (_, __, ___) => Container(
-                                    color: AppColors.surface,
-                                    child: const Icon(
-                                      Icons.image_not_supported,
-                                      color: AppColors.blanc,
-                                    ),
-                                  ),
-                                )
-                              : null,
-                        ),
-                        // Avatar
+                        _CoverImage(url: profile.coverUrl),
                         Positioned(
-                          bottom: 0,
                           left: 0,
                           right: 0,
+                          bottom: 0,
                           child: Center(
                             child: Container(
                               padding: const EdgeInsets.all(2),
@@ -135,8 +119,11 @@ class ClientProfileScreen extends ConsumerWidget {
                                         profile.avatarUrl!)
                                     : null,
                                 child: profile.avatarUrl == null
-                                    ? const Icon(Icons.person,
-                                        size: 36, color: AppColors.gris)
+                                    ? const Icon(
+                                        Icons.person,
+                                        size: 36,
+                                        color: AppColors.gris,
+                                      )
                                     : null,
                               ),
                             ),
@@ -146,7 +133,6 @@ class ClientProfileScreen extends ConsumerWidget {
                     ),
                   ),
                   const SizedBox(height: 12),
-                  // Info
                   Text(
                     profile.fullName,
                     style: const TextStyle(
@@ -159,16 +145,31 @@ class ClientProfileScreen extends ConsumerWidget {
                     const SizedBox(height: 4),
                     Text(
                       '@${profile.username}',
-                      style:
-                          const TextStyle(color: AppColors.gris, fontSize: 14),
+                      style: const TextStyle(
+                        color: AppColors.gris,
+                        fontSize: 14,
+                      ),
                     ),
                   ],
                   if (profile.city != null) ...[
                     const SizedBox(height: 4),
-                    Text(
-                      '📍 ${profile.city!}',
-                      style:
-                          const TextStyle(color: AppColors.gris, fontSize: 13),
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(
+                          Icons.location_on_outlined,
+                          size: 14,
+                          color: AppColors.gris,
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          profile.city!,
+                          style: const TextStyle(
+                            color: AppColors.gris,
+                            fontSize: 13,
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                   if (isOwnProfile) ...[
@@ -188,11 +189,12 @@ class ClientProfileScreen extends ConsumerWidget {
             ),
             SliverPersistentHeader(
               pinned: true,
-              delegate: _SliverAppBarDelegate(
+              delegate: _TabBarDelegate(
                 const TabBar(
                   indicatorColor: AppColors.blanc,
                   labelColor: AppColors.blanc,
                   unselectedLabelColor: AppColors.gris,
+                  indicatorWeight: 2,
                   tabs: [
                     Tab(text: 'Favoris'),
                     Tab(text: 'Historique'),
@@ -205,18 +207,57 @@ class ClientProfileScreen extends ConsumerWidget {
         },
         body: const TabBarView(
           children: [
-            Center(
-                child:
-                    Text('Favoris', style: TextStyle(color: AppColors.gris))),
-            Center(
-                child: Text('Historique',
-                    style: TextStyle(color: AppColors.gris))),
-            Center(
-                child:
-                    Text('Billets', style: TextStyle(color: AppColors.gris))),
+            _EmptyTabPlaceholder(label: 'Favoris'),
+            _EmptyTabPlaceholder(label: 'Historique'),
+            _EmptyTabPlaceholder(label: 'Billets'),
           ],
         ),
       ),
+    );
+  }
+}
+
+class _CoverImage extends StatelessWidget {
+  const _CoverImage({this.url});
+
+  final String? url;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 140,
+      width: double.infinity,
+      child: url != null
+          ? CachedNetworkImage(
+              imageUrl: url!,
+              fit: BoxFit.cover,
+              placeholder: (_, __) => Shimmer.fromColors(
+                baseColor: AppColors.surface,
+                highlightColor: AppColors.surfaceAlt,
+                child: Container(color: AppColors.surface),
+              ),
+              errorWidget: (_, __, ___) => Container(
+                color: AppColors.surface,
+                child: const Icon(
+                  Icons.image_not_supported,
+                  color: AppColors.blanc,
+                ),
+              ),
+            )
+          : Container(color: AppColors.surface),
+    );
+  }
+}
+
+class _EmptyTabPlaceholder extends StatelessWidget {
+  const _EmptyTabPlaceholder({required this.label});
+
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Text(label, style: const TextStyle(color: AppColors.gris)),
     );
   }
 }
@@ -247,39 +288,46 @@ class _ClientProfileShimmer extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           Center(
-              child: Container(
-                  width: 180, height: 18, color: AppColors.surfaceAlt)),
+            child: Container(
+              width: 180,
+              height: 18,
+              color: AppColors.surfaceAlt,
+            ),
+          ),
           const SizedBox(height: 8),
           Center(
-              child: Container(
-                  width: 120, height: 14, color: AppColors.surfaceAlt)),
+            child: Container(
+              width: 120,
+              height: 14,
+              color: AppColors.surfaceAlt,
+            ),
+          ),
         ],
       ),
     );
   }
 }
 
-class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
-  _SliverAppBarDelegate(this._tabBar);
+class _TabBarDelegate extends SliverPersistentHeaderDelegate {
+  const _TabBarDelegate(this._tabBar);
 
   final TabBar _tabBar;
 
   @override
   double get minExtent => _tabBar.preferredSize.height;
+
   @override
   double get maxExtent => _tabBar.preferredSize.height;
 
   @override
   Widget build(
-      BuildContext context, double shrinkOffset, bool overlapsContent) {
-    return Container(
-      color: AppColors.fond,
-      child: _tabBar,
-    );
+    BuildContext context,
+    double shrinkOffset,
+    bool overlapsContent,
+  ) {
+    return Container(color: AppColors.fond, child: _tabBar);
   }
 
   @override
-  bool shouldRebuild(_SliverAppBarDelegate oldDelegate) {
-    return false;
-  }
+  bool shouldRebuild(_TabBarDelegate oldDelegate) => false;
 }
