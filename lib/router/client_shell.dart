@@ -23,12 +23,12 @@ class ClientShell extends StatelessWidget {
           child: FloatingActionButton(
             backgroundColor: AppColors.blanc,
             elevation: 0,
+            shape: const CircleBorder(),
             onPressed: () {
               HapticFeedback.mediumImpact();
               navigationShell.goBranch(1);
-              context.go('/client/discover');
             },
-            child: const Icon(Icons.add, color: AppColors.fond),
+            child: const Icon(Icons.explore, color: AppColors.fond),
           ),
         ),
       ),
@@ -44,6 +44,8 @@ class ClientShell extends StatelessWidget {
           type: BottomNavigationBarType.fixed,
           selectedItemColor: AppColors.blanc,
           unselectedItemColor: AppColors.gris,
+          selectedFontSize: 12,
+          unselectedFontSize: 12,
           currentIndex: navigationShell.currentIndex,
           onTap: (index) {
             HapticFeedback.selectionClick();
