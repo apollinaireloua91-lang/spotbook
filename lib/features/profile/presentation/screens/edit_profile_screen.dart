@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/widgets/spotbook_button.dart';
-import '../../data/profile_repository.dart';
-import '../../domain/profile_models.dart';
+import '../../data/edit_profile_notifier.dart';
 
 class EditProfileScreen extends ConsumerStatefulWidget {
   const EditProfileScreen({super.key});
@@ -20,17 +18,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
   final _usernameCtrl = TextEditingController();
   final _bioCtrl = TextEditingController();
   final _cityCtrl = TextEditingController();
-  bool _isLoading = true;
-  bool _isSaving = false;
-  ProProfile? _proProfile;
-  ClientProfile? _clientProfile;
-  bool _isPro = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _loadProfile();
-  }
+  bool _controllersInitialized = false;
 
   @override
   void dispose() {
@@ -41,37 +29,24 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     super.dispose();
   }
 
-  Future<void> _loadProfile() async {
-    try {
-      final repo = ref.read(profileRepositoryProvider);
-      final role = Supabase.instance.client.auth.currentUser?.userMetadata?['role'];
-      _isPro = role == 'pro';
-      final uid = repo.currentUserId;
-      if (uid == null) return;
-
-      if (_isPro) {
-        _proProfile = await repo.getProProfile(uid);
-        _nameCtrl.text = _proProfile!.businessName;
-        _usernameCtrl.text = _proProfile!.username ?? '';
-        _bioCtrl.text = _proProfile!.bio ?? '';
-        _cityCtrl.text = _proProfile!.city ?? '';
-      } else {
-        _clientProfile = await repo.getClientProfile(uid);
-        _nameCtrl.text = _clientProfile!.fullName;
-        _usernameCtrl.text = _clientProfile!.username ?? '';
-        _cityCtrl.text = _clientProfile!.city ?? '';
-      }
-    } catch (_) {
-      // Handle error
-    } finally {
-      if (mounted) setState(() => _isLoading = false);
+  void _initControllers(EditProfileState s) {
+    if (_controllersInitialized || s.isLoading) return;
+    _controllersInitialized = true;
+    if (s.isPro && s.proProfile != null) {
+      _nameCtrl.text = s.proProfile!.businessName;
+      _usernameCtrl.text = s.proProfile!.username ?? '';
+      _bioCtrl.text = s.proProfile!.bio ?? '';
+      _cityCtrl.text = s.proProfile!.city ?? '';
+    } else if (s.clientProfile != null) {
+      _nameCtrl.text = s.clientProfile!.fullName;
+      _usernameCtrl.text = s.clientProfile!.username ?? '';
+      _cityCtrl.text = s.clientProfile!.city ?? '';
     }
   }
 
   Future<void> _save() async {
-    setState(() => _isSaving = true);
     try {
-      await ref.read(profileRepositoryProvider).updateProfile(
+      await ref.read(editProfileProvider.notifier).saveProfile(
             fullName: _nameCtrl.text.trim(),
             username: _usernameCtrl.text.trim(),
             bio: _bioCtrl.text.trim(),
@@ -87,18 +62,12 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(e.toString()), backgroundColor: AppColors.error),
       );
-    } finally {
-      if (mounted) setState(() => _isSaving = false);
     }
   }
 
   Future<void> _linkSocial(String platform) async {
-    // Mocking OAuth flow
     try {
-      final res = await Supabase.instance.client.functions.invoke('link-$platform', body: {'code': 'mock_code'});
-      if (res.status == 200) {
-        await _loadProfile(); // Reload to get new connections
-      }
+      await ref.read(editProfileProvider.notifier).linkSocial(platform);
     } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -110,14 +79,16 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
 
   Future<void> _disconnectSocial(String platform) async {
     try {
-      await ref.read(profileRepositoryProvider).disconnectSocial(platform);
-      await _loadProfile();
+      await ref.read(editProfileProvider.notifier).disconnectSocial(platform);
     } catch (_) {}
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_isLoading) {
+    final s = ref.watch(editProfileProvider);
+    _initControllers(s);
+
+    if (s.isLoading) {
       return const Scaffold(
         backgroundColor: AppColors.fond,
         body: Center(child: CircularProgressIndicator(color: AppColors.blanc)),
@@ -146,7 +117,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
               _buildTextField('Username', _usernameCtrl),
               const SizedBox(height: 16),
               _buildTextField('City', _cityCtrl),
-              if (_isPro) ...[
+              if (s.isPro) ...[
                 const SizedBox(height: 16),
                 _buildTextField('Bio', _bioCtrl, maxLines: 3),
                 const SizedBox(height: 32),
@@ -155,17 +126,17 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                   style: TextStyle(color: AppColors.blanc, fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 16),
-                _buildSocialSection('instagram', Icons.camera_alt_outlined),
+                _buildSocialSection('instagram', Icons.camera_alt_outlined, s),
                 const SizedBox(height: 12),
-                _buildSocialSection('tiktok', Icons.music_note_outlined),
+                _buildSocialSection('tiktok', Icons.music_note_outlined, s),
                 const SizedBox(height: 12),
-                _buildSocialSection('youtube', Icons.play_circle_outline),
+                _buildSocialSection('youtube', Icons.play_circle_outline, s),
               ],
               const SizedBox(height: 40),
               SpotbookButton.primary(
                 label: 'Save Changes',
                 onPressed: _save,
-                isLoading: _isSaving,
+                isLoading: s.isSaving,
               ),
             ],
           ),
@@ -197,8 +168,8 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     );
   }
 
-  Widget _buildSocialSection(String platform, IconData icon) {
-    final conn = _proProfile?.socialConnections.where((e) => e.platform == platform).firstOrNull;
+  Widget _buildSocialSection(String platform, IconData icon, EditProfileState s) {
+    final conn = s.proProfile?.socialConnections.where((e) => e.platform == platform).firstOrNull;
     final isConnected = conn != null;
 
     return Container(

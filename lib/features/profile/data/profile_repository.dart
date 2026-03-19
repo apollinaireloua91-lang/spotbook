@@ -142,4 +142,16 @@ class ProfileRepository {
         .eq('pro_id', uid)
         .eq('platform', platform);
   }
+
+  String? get currentUserRole =>
+      _supabase.auth.currentUser?.userMetadata?['role'] as String?;
+
+  Future<void> linkSocial(String platform) async {
+    final res = await _supabase.functions
+        .invoke('link-$platform', body: {'code': 'mock_code'});
+    if (res.status != 200) {
+      final err = res.data is Map ? res.data['error'] : 'Link failed';
+      throw Exception(err ?? 'Link failed');
+    }
+  }
 }
