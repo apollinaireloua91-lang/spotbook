@@ -2,15 +2,17 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
 import Stripe from "https://esm.sh/stripe@14.14.0?target=deno";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
-};
+import {
+  assertAmount,
+  assertUuid,
+  getClientIp,
+  jsonHeaders,
+  securityHeaders,
+} from "../_shared/security.ts";
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: corsHeaders });
+    return new Response("ok", { headers: securityHeaders });
   }
 
   try {
@@ -44,11 +46,12 @@ serve(async (req) => {
       return new Response(
         JSON.stringify({ error: "bookingId required" }),
         {
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          headers: jsonHeaders,
           status: 400,
         }
       );
     }
+    assertUuid(bookingId, "bookingId");
 
     // Fetch booking
     const { data: booking, error: bErr } = await supabase
@@ -59,7 +62,7 @@ serve(async (req) => {
 
     if (bErr || !booking) {
       return new Response(JSON.stringify({ error: "booking_not_found" }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        headers: jsonHeaders,
         status: 404,
       });
     }
@@ -67,7 +70,7 @@ serve(async (req) => {
     // Verify ownership
     if (booking.client_id !== user.id) {
       return new Response(JSON.stringify({ error: "unauthorized" }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        headers: jsonHeaders,
         status: 401,
       });
     }
@@ -77,9 +80,34 @@ serve(async (req) => {
       return new Response(
         JSON.stringify({ error: "booking_not_pending" }),
         {
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          headers: jsonHeaders,
           status: 400,
         }
+      );
+    }
+
+    assertAmount(Number(booking.deposit_amount ?? 0), "deposit_amount");
+
+    // Rate limiting payment attempts (3 / hour) by IP + user
+    const limiter = await fetch(
+      `${Deno.env.get("SUPABASE_URL")}/functions/v1/rate-limiter`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          scope: "payment",
+          identifier: `${getClientIp(req)}:${user.id}`,
+        }),
+      },
+    );
+    if (limiter.status === 429) {
+      const body = await limiter.json();
+      return new Response(
+        JSON.stringify({ error: body.message ?? "Trop de tentatives." }),
+        { headers: jsonHeaders, status: 429 },
       );
     }
 
@@ -94,7 +122,7 @@ serve(async (req) => {
       return new Response(
         JSON.stringify({ clientSecret: existing.client_secret }),
         {
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          headers: jsonHeaders,
         }
       );
     }
@@ -134,16 +162,24 @@ serve(async (req) => {
       .from("bookings")
       .update({ stripe_payment_intent_id: paymentIntent.id })
       .eq("id", bookingId);
+    await supabase.rpc("insert_audit_log", {
+      p_user_id: user.id,
+      p_action: "payment_initiated",
+      p_resource_type: "booking",
+      p_resource_id: bookingId,
+      p_metadata: { payment_intent_id: paymentIntent.id },
+      p_ip_address: getClientIp(req),
+    });
 
     return new Response(
       JSON.stringify({ clientSecret: paymentIntent.client_secret }),
       {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        headers: jsonHeaders,
       }
     );
   } catch (error) {
     return new Response(JSON.stringify({ error: error.message }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      headers: jsonHeaders,
       status: 400,
     });
   }

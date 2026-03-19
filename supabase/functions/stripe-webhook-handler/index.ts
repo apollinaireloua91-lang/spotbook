@@ -1,10 +1,11 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
 import Stripe from "https://esm.sh/stripe@14.14.0?target=deno";
+import { jsonHeaders, securityHeaders } from "../_shared/security.ts";
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
-    return new Response("ok", { status: 200 });
+    return new Response("ok", { status: 200, headers: securityHeaders });
   }
 
   try {
@@ -17,7 +18,33 @@ serve(async (req) => {
     const sig = req.headers.get("stripe-signature");
 
     if (!sig) {
-      return new Response("Missing stripe-signature", { status: 400 });
+      return new Response(
+        JSON.stringify({ error: "Missing stripe-signature" }),
+        { status: 400, headers: jsonHeaders },
+      );
+    }
+
+    // Rate limiting webhook replay attempts (3 / hour) by signature
+    const limiter = await fetch(
+      `${Deno.env.get("SUPABASE_URL")}/functions/v1/rate-limiter`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          scope: "payment",
+          identifier: `stripe:${sig.slice(0, 24)}`,
+        }),
+      },
+    );
+    if (limiter.status === 429) {
+      const body = await limiter.json();
+      return new Response(
+        JSON.stringify({ error: body.message ?? "Trop de tentatives." }),
+        { headers: jsonHeaders, status: 429 },
+      );
     }
 
     const event = stripe.webhooks.constructEvent(
@@ -42,6 +69,22 @@ serve(async (req) => {
           .from("bookings")
           .update({ status: "confirmed" })
           .eq("id", bookingId);
+        await supabase.rpc("insert_audit_log", {
+          p_user_id: null,
+          p_action: "booking_confirmed",
+          p_resource_type: "booking",
+          p_resource_id: bookingId,
+          p_metadata: {},
+          p_ip_address: "stripe_webhook",
+        });
+        await supabase.rpc("insert_audit_log", {
+          p_user_id: null,
+          p_action: "payment_succeeded",
+          p_resource_type: "booking",
+          p_resource_id: bookingId,
+          p_metadata: { payment_intent_id: pi.id },
+          p_ip_address: "stripe_webhook",
+        });
 
         // Trigger payout via edge function
         try {
@@ -97,6 +140,14 @@ serve(async (req) => {
           .from("bookings")
           .update({ status: "payment_failed" })
           .eq("id", bookingId);
+        await supabase.rpc("insert_audit_log", {
+          p_user_id: null,
+          p_action: "payment_failed",
+          p_resource_type: "booking",
+          p_resource_id: bookingId,
+          p_metadata: { payment_intent_id: pi.id },
+          p_ip_address: "stripe_webhook",
+        });
 
         // Release the time slot
         if (booking?.time_slot_id) {
@@ -139,6 +190,14 @@ serve(async (req) => {
             .from("bookings")
             .update({ refund_status: "completed" })
             .eq("id", booking.id);
+          await supabase.rpc("insert_audit_log", {
+            p_user_id: booking.client_id,
+            p_action: "refund_completed",
+            p_resource_type: "booking",
+            p_resource_id: booking.id,
+            p_metadata: { payment_intent_id: piId },
+            p_ip_address: "stripe_webhook",
+          });
 
           await supabase.from("notifications").insert({
             user_id: booking.client_id,
@@ -193,13 +252,13 @@ serve(async (req) => {
     }
 
     return new Response(JSON.stringify({ received: true }), {
-      headers: { "Content-Type": "application/json" },
+      headers: jsonHeaders,
       status: 200,
     });
   } catch (error) {
     console.error("Webhook error:", error.message);
     return new Response(JSON.stringify({ error: error.message }), {
-      headers: { "Content-Type": "application/json" },
+      headers: jsonHeaders,
       status: 400,
     });
   }

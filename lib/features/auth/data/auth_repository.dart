@@ -70,23 +70,67 @@ class AuthRepository {
     required String password,
   }) async {
     try {
-      return await _supabase.auth.signInWithPassword(
+      final limiter = await _supabase.functions.invoke(
+        'rate-limiter',
+        body: {'scope': 'login', 'identifier': email.toLowerCase()},
+      );
+      if (limiter.status == 429) {
+        final message =
+            (limiter.data as Map<String, dynamic>?)?['message'] as String? ??
+                'Trop de tentatives. Réessaie plus tard.';
+        throw AuthException(message);
+      }
+
+      final response = await _supabase.auth.signInWithPassword(
         email: email,
         password: password,
       );
+      final uid = response.user?.id;
+      if (uid != null) {
+        await _supabase.from('audit_logs').insert({
+          'user_id': uid,
+          'action': 'user_login',
+          'resource_type': 'auth',
+          'metadata': {'provider': 'email'},
+        });
+      }
+      return response;
     } on AuthException catch (e) {
       if (e.message.contains('Invalid login credentials')) {
         throw AuthException('Invalid email or password');
+      }
+      if (e.message.toLowerCase().contains('token') &&
+          e.message.toLowerCase().contains('expired')) {
+        await _supabase.auth.refreshSession();
+        throw AuthException('Session expirée. Reconnecte-toi.');
       }
       rethrow;
     }
   }
 
   Future<void> resetPassword(String email) async {
+    final limiter = await _supabase.functions.invoke(
+      'rate-limiter',
+      body: {'scope': 'otp', 'identifier': email.toLowerCase()},
+    );
+    if (limiter.status == 429) {
+      final message = (limiter.data as Map<String, dynamic>?)?['message']
+              as String? ??
+          'Trop de tentatives. Réessaie plus tard.';
+      throw AuthException(message);
+    }
     await _supabase.auth.resetPasswordForEmail(email);
   }
 
   Future<void> signOut() async {
+    final uid = currentUserId;
+    if (uid != null) {
+      await _supabase.from('audit_logs').insert({
+        'user_id': uid,
+        'action': 'user_logout',
+        'resource_type': 'auth',
+      });
+    }
     await _supabase.auth.signOut();
     await _secureStorage.deleteAll();
   }
@@ -94,7 +138,16 @@ class AuthRepository {
   Future<Map<String, dynamic>?> getUserProfile() async {
     final uid = currentUserId;
     if (uid == null) return null;
-    return await _supabase.from('users').select().eq('id', uid).maybeSingle();
+    try {
+      return await _supabase.from('users').select().eq('id', uid).maybeSingle();
+    } on AuthException catch (e) {
+      if (e.message.toLowerCase().contains('token') &&
+          e.message.toLowerCase().contains('expired')) {
+        await refreshSession();
+        return await _supabase.from('users').select().eq('id', uid).maybeSingle();
+      }
+      rethrow;
+    }
   }
 
   Future<void> updateUserRole(String role) async {
@@ -136,6 +189,25 @@ class AuthRepository {
     await _supabase
         .from('users')
         .update({'deleted_at': DateTime.now().toIso8601String()}).eq('id', uid);
+    await _supabase.from('audit_logs').insert({
+      'user_id': uid,
+      'action': 'user_deleted',
+      'resource_type': 'users',
+      'resource_id': uid,
+    });
     await signOut();
+  }
+
+  Future<Session?> refreshSession() async {
+    try {
+      final refreshed = await _supabase.auth.refreshSession();
+      return refreshed.session;
+    } on AuthException catch (e) {
+      if (e.message.toLowerCase().contains('token') &&
+          e.message.toLowerCase().contains('expired')) {
+        await signOut();
+      }
+      rethrow;
+    }
   }
 }
