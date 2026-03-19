@@ -1,9 +1,21 @@
 -- OAuth token hardening with pgsodium helpers
 
--- Ensure plaintext tokens are never selected by default policies.
--- Keep encrypted token in social_connections.access_token only.
-comment on column public.social_connections.access_token is
-  'Encrypted token only (pgsodium). Never return to Flutter clients.';
+do $$
+begin
+  if exists (
+    select 1
+    from information_schema.columns
+    where table_schema = 'public'
+      and table_name = 'social_connections'
+      and column_name = 'access_token'
+  ) then
+    execute $sql$
+      comment on column public.social_connections.access_token is
+      'Encrypted token only (pgsodium). Never return to Flutter clients.'
+    $sql$;
+  end if;
+end;
+$$;
 
 -- Optional key rotation helper: decrypt with current key then re-encrypt.
 create or replace function public.rotate_social_token_cipher(p_ciphertext text)
