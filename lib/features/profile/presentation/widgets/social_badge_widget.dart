@@ -3,15 +3,20 @@ import '../../../../shared/theme/app_colors.dart';
 import '../../domain/profile_models.dart';
 
 class SocialBadgeWidget extends StatelessWidget {
-  const SocialBadgeWidget({super.key, required this.connection});
+  const SocialBadgeWidget({
+    super.key,
+    required this.platform,
+    required this.followersCount,
+  });
 
-  final SocialConnection connection;
+  final String platform;
+  final int followersCount;
 
   @override
   Widget build(BuildContext context) {
-    if (connection.followersCount < 10000) return const SizedBox.shrink();
+    if (followersCount < 10000) return const SizedBox.shrink();
 
-    final icon = switch (connection.platform) {
+    final icon = switch (platform) {
       'instagram' => Icons.camera_alt_outlined, // Fallback for IG
       'tiktok' => Icons.music_note_outlined, // Fallback for TikTok
       'youtube' => Icons.play_circle_outline, // Fallback for YouTube
@@ -31,7 +36,7 @@ class SocialBadgeWidget extends StatelessWidget {
           Icon(icon, size: 14, color: AppColors.blanc),
           const SizedBox(width: 4),
           Text(
-            _formatCount(connection.followersCount),
+            _formatCount(followersCount),
             style: const TextStyle(
               color: AppColors.blanc,
               fontSize: 12,

@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../shared/theme/app_colors.dart';
+import '../../../profile/presentation/widgets/social_badge_widget.dart';
 import '../../data/video_repository.dart';
 import '../../domain/video_model.dart';
 import 'comments_sheet.dart';
@@ -192,10 +193,27 @@ class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
                       ),
                       const SizedBox(width: 10),
                       Expanded(
-                        child: Text(
-                          widget.video.proName ?? 'Pro',
-                          style: const TextStyle(color: AppColors.blanc, fontSize: 15, fontWeight: FontWeight.w600),
-                          overflow: TextOverflow.ellipsis,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              widget.video.proName ?? 'Pro',
+                              style: const TextStyle(color: AppColors.blanc, fontSize: 15, fontWeight: FontWeight.w600),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            if (widget.video.socialConnections.isNotEmpty) ...[
+                              const SizedBox(height: 4),
+                              Wrap(
+                                spacing: 4,
+                                children: widget.video.socialConnections
+                                    .map((c) => SocialBadgeWidget(
+                                          platform: c['platform'] as String,
+                                          followersCount: c['followers_count'] as int,
+                                        ))
+                                    .toList(),
+                              ),
+                            ],
+                          ],
                         ),
                       ),
                     ],

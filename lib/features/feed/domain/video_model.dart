@@ -20,6 +20,7 @@ class VideoModel {
     this.proAvatarUrl,
     this.proCity,
     this.isLiked = false,
+    this.socialConnections = const [],
   });
 
   final String id;
@@ -42,6 +43,7 @@ class VideoModel {
   final String? proAvatarUrl;
   final String? proCity;
   final bool isLiked;
+  final List<Map<String, dynamic>> socialConnections;
 
   factory VideoModel.fromJson(Map<String, dynamic> json, {bool isLiked = false}) {
     final pro = json['profiles_pro'] as Map<String, dynamic>?;
@@ -73,6 +75,10 @@ class VideoModel {
       proAvatarUrl: user?['avatar_url'] as String?,
       proCity: user?['city'] as String?,
       isLiked: isLiked,
+      socialConnections: (pro?['social_connections'] as List<dynamic>?)
+              ?.map((e) => e as Map<String, dynamic>)
+              .toList() ??
+          [],
     );
   }
 }

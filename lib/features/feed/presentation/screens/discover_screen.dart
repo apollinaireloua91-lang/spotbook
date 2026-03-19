@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../shared/theme/app_colors.dart';
+import '../../../profile/presentation/widgets/social_badge_widget.dart';
 import '../../data/discover_notifier.dart';
 import '../../domain/video_model.dart';
 
@@ -152,6 +153,18 @@ class _ProCard extends StatelessWidget {
                     const SizedBox(width: 6),
                     Expanded(child: Text(video.proName ?? 'Pro', style: const TextStyle(color: AppColors.blanc, fontSize: 12, fontWeight: FontWeight.w600), overflow: TextOverflow.ellipsis)),
                   ]),
+                  if (video.socialConnections.isNotEmpty) ...[
+                    const SizedBox(height: 4),
+                    Wrap(
+                      spacing: 4,
+                      children: video.socialConnections
+                          .map((c) => SocialBadgeWidget(
+                                platform: c['platform'] as String,
+                                followersCount: c['followers_count'] as int,
+                              ))
+                          .toList(),
+                    ),
+                  ],
                   const SizedBox(height: 4),
                   Text(video.title, style: const TextStyle(color: AppColors.grisClair, fontSize: 11), maxLines: 2, overflow: TextOverflow.ellipsis),
                 ],
