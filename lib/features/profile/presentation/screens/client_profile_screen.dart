@@ -150,7 +150,7 @@ class ClientProfileScreen extends ConsumerWidget {
                     ),
                   ),
                   const SizedBox(height: 24),
-                  const Divider(color: Color(0xFF2A2A2A), height: 1),
+                  const Divider(color: AppColors.border, height: 1),
                 ],
               ),
             ),

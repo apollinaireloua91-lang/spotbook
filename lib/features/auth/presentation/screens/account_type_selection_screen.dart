@@ -41,8 +41,8 @@ class AccountTypeSelectionScreen extends StatelessWidget {
                   // Experience section (Client)
                   _ImmersiveSection(
                     gradientColors: const [
-                      Color(0xFF1A2A1A),
-                      Color(0xFF0D0D14),
+                      AppColors.surface,
+                      AppColors.fond,
                     ],
                     badge: 'EXPERIENCE',
                     badgeColor: AppColors.accent,
@@ -57,8 +57,8 @@ class AccountTypeSelectionScreen extends StatelessWidget {
                   // Legacy section (Pro)
                   _ImmersiveSection(
                     gradientColors: const [
-                      Color(0xFF0D0D14),
-                      Color(0xFF0D1A0D),
+                      AppColors.fond,
+                      AppColors.surface,
                     ],
                     badge: 'LEGACY',
                     badgeColor: AppColors.accentGreen,
