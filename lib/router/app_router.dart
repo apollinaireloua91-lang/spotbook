@@ -11,21 +11,27 @@ import '../features/auth/presentation/screens/pro_verification_screen.dart';
 import '../features/auth/presentation/screens/sign_up_screen.dart';
 import '../features/auth/presentation/screens/splash_screen.dart';
 import '../features/auth/presentation/screens/stripe_connect_screen.dart';
+import '../features/booking/presentation/screens/booking_cancellation_screen.dart';
+import '../features/booking/presentation/screens/my_bookings_screen.dart';
+import '../features/booking/presentation/screens/pro_dashboard_screen.dart';
+import '../features/events/domain/event_models.dart';
+import '../features/events/presentation/screens/create_event_screen.dart';
+import '../features/events/presentation/screens/event_detail_screen.dart';
+import '../features/events/presentation/screens/scanner_screen.dart';
+import '../features/events/presentation/screens/ticket_detail_screen.dart';
+import '../features/events/presentation/screens/waitlist_screen.dart';
 import '../features/feed/presentation/screens/discover_screen.dart';
 import '../features/feed/presentation/screens/feed_screen.dart';
 import '../features/feed/presentation/screens/my_videos_screen.dart';
 import '../features/feed/presentation/screens/upload_video_screen.dart';
 import '../features/onboarding/presentation/screens/onboarding_screen.dart';
+import '../features/payment/presentation/screens/pro_subscription_screen.dart';
+import '../features/payment/presentation/screens/stripe_checkout_webview.dart';
 import '../features/profile/presentation/screens/client_profile_screen.dart';
 import '../features/profile/presentation/screens/edit_profile_screen.dart';
 import '../features/profile/presentation/screens/pro_profile_screen.dart';
 import '../features/settings/presentation/screens/delete_account_screen.dart';
 import '../features/settings/presentation/screens/settings_screen.dart';
-import '../features/booking/presentation/screens/booking_cancellation_screen.dart';
-import '../features/booking/presentation/screens/my_bookings_screen.dart';
-import '../features/booking/presentation/screens/pro_dashboard_screen.dart';
-import '../features/payment/presentation/screens/pro_subscription_screen.dart';
-import '../features/payment/presentation/screens/stripe_checkout_webview.dart';
 import '../shared/widgets/placeholder_screen.dart';
 import 'client_shell.dart';
 import 'pro_shell.dart';
@@ -219,9 +225,34 @@ final appRouter = GoRouter(
     ),
     GoRoute(
       path: '/event/:eventId',
-      builder: (context, state) => PlaceholderScreen(
-        title: 'Event ${state.pathParameters['eventId'] ?? ''}',
+      builder: (context, state) => EventDetailScreen(
+        eventId: state.pathParameters['eventId'] ?? '',
       ),
+    ),
+    GoRoute(
+      path: '/create-event',
+      builder: (context, state) => const CreateEventScreen(),
+    ),
+    GoRoute(
+      path: '/ticket-detail',
+      builder: (context, state) =>
+          TicketDetailScreen(ticket: state.extra! as TicketModel),
+    ),
+    GoRoute(
+      path: '/scanner/:eventId',
+      builder: (context, state) => ScannerScreen(
+        eventId: state.pathParameters['eventId'] ?? '',
+      ),
+    ),
+    GoRoute(
+      path: '/waitlist',
+      builder: (context, state) {
+        final args = state.extra! as Map<String, String>;
+        return WaitlistScreen(
+          ticketTypeId: args['ticketTypeId']!,
+          eventTitle: args['eventTitle']!,
+        );
+      },
     ),
     GoRoute(
       path: '/booking/:bookingId',
