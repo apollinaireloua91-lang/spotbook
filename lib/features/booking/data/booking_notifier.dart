@@ -208,9 +208,13 @@ class ClientBookingsState {
   const ClientBookingsState({
     this.bookings = const [],
     this.isLoading = true,
+    this.isCancelling = false,
+    this.cancellationError,
   });
   final List<BookingModel> bookings;
   final bool isLoading;
+  final bool isCancelling;
+  final String? cancellationError;
 
   List<BookingModel> get upcoming => bookings.where((b) => b.isUpcoming).toList();
   List<BookingModel> get past => bookings.where((b) => b.isPast).toList();
@@ -219,10 +223,14 @@ class ClientBookingsState {
   ClientBookingsState copyWith({
     List<BookingModel>? bookings,
     bool? isLoading,
+    bool? isCancelling,
+    String? cancellationError,
   }) =>
       ClientBookingsState(
         bookings: bookings ?? this.bookings,
         isLoading: isLoading ?? this.isLoading,
+        isCancelling: isCancelling ?? this.isCancelling,
+        cancellationError: cancellationError,
       );
 }
 
@@ -242,6 +250,23 @@ class ClientBookingsNotifier extends Notifier<ClientBookingsState> {
   Future<void> refresh() async {
     state = state.copyWith(isLoading: true);
     await _load();
+  }
+
+  Future<bool> cancelBooking(String bookingId) async {
+    state = state.copyWith(isCancelling: true, cancellationError: null);
+    try {
+      final repo = ref.read(bookingRepositoryProvider);
+      await repo.cancelBooking(bookingId);
+      await _load();
+      state = state.copyWith(isCancelling: false);
+      return true;
+    } catch (e) {
+      state = state.copyWith(
+        isCancelling: false,
+        cancellationError: e.toString(),
+      );
+      return false;
+    }
   }
 }
 

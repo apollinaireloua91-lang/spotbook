@@ -1,54 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../shared/theme/app_colors.dart';
 import '../../data/booking_notifier.dart';
-import '../../data/booking_repository.dart';
 
-class BookingCancellationScreen extends ConsumerStatefulWidget {
+class BookingCancellationScreen extends ConsumerWidget {
   const BookingCancellationScreen({super.key, required this.bookingId});
 
   final String bookingId;
 
   @override
-  ConsumerState<BookingCancellationScreen> createState() =>
-      _BookingCancellationScreenState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final state = ref.watch(clientBookingsProvider);
 
-class _BookingCancellationScreenState
-    extends ConsumerState<BookingCancellationScreen> {
-  bool _isCancelling = false;
-  String? _error;
-
-  Future<void> _cancel() async {
-    setState(() {
-      _isCancelling = true;
-      _error = null;
-    });
-    try {
-      await ref
-          .read(bookingRepositoryProvider)
-          .cancelBooking(widget.bookingId);
-      ref.invalidate(clientBookingsProvider);
-      if (mounted) context.pop();
-    } catch (e) {
-      setState(() {
-        _error = e.toString();
-        _isCancelling = false;
-      });
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.fond,
       appBar: AppBar(
         backgroundColor: AppColors.fond,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppColors.blanc),
-          onPressed: () => context.pop(),
+        leading: Semantics(
+          label: 'Retour',
+          child: IconButton(
+            icon: const Icon(Icons.arrow_back, color: AppColors.blanc),
+            onPressed: () => context.pop(),
+          ),
         ),
         title: const Text(
           'Annuler le RDV',
@@ -57,7 +33,7 @@ class _BookingCancellationScreenState
         centerTitle: true,
       ),
       body: Padding(
-        padding: const EdgeInsets.all(24),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -73,14 +49,14 @@ class _BookingCancellationScreenState
               ),
             ),
             const SizedBox(height: 16),
-            _PolicyRow(
+            const _PolicyRow(
               icon: Icons.check_circle_outline,
               color: AppColors.success,
               text:
                   'Plus de 48h avant le RDV : remboursement intégral de l\'acompte.',
             ),
             const SizedBox(height: 12),
-            _PolicyRow(
+            const _PolicyRow(
               icon: Icons.cancel_outlined,
               color: AppColors.error,
               text:
@@ -92,7 +68,7 @@ class _BookingCancellationScreenState
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: AppColors.error.withAlpha(15),
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(16),
                 border: Border.all(color: AppColors.error.withAlpha(50)),
               ),
               child: const Text(
@@ -101,26 +77,37 @@ class _BookingCancellationScreenState
                 textAlign: TextAlign.center,
               ),
             ),
-            if (_error != null) ...[
+            if (state.cancellationError != null) ...[
               const SizedBox(height: 12),
-              Text(_error!,
-                  style:
-                      const TextStyle(color: AppColors.error, fontSize: 13)),
+              Text(
+                state.cancellationError!,
+                style: const TextStyle(color: AppColors.error, fontSize: 13),
+              ),
             ],
             const Spacer(),
             SizedBox(
               width: double.infinity,
+              height: 52,
               child: ElevatedButton(
-                onPressed: _isCancelling ? null : _cancel,
+                onPressed: state.isCancelling
+                    ? null
+                    : () async {
+                        HapticFeedback.mediumImpact();
+                        final success = await ref
+                            .read(clientBookingsProvider.notifier)
+                            .cancelBooking(bookingId);
+                        if (success && context.mounted) {
+                          context.pop();
+                        }
+                      },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.error,
                   foregroundColor: AppColors.blanc,
                   disabledBackgroundColor: AppColors.surfaceAlt,
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12)),
-                  padding: const EdgeInsets.symmetric(vertical: 16),
                 ),
-                child: _isCancelling
+                child: state.isCancelling
                     ? const SizedBox(
                         height: 20,
                         width: 20,
@@ -134,14 +121,14 @@ class _BookingCancellationScreenState
             const SizedBox(height: 12),
             SizedBox(
               width: double.infinity,
+              height: 52,
               child: OutlinedButton(
-                onPressed: _isCancelling ? null : () => context.pop(),
+                onPressed: state.isCancelling ? null : () => context.pop(),
                 style: OutlinedButton.styleFrom(
                   foregroundColor: AppColors.blanc,
                   side: const BorderSide(color: AppColors.border),
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12)),
-                  padding: const EdgeInsets.symmetric(vertical: 16),
                 ),
                 child: const Text('Retour'),
               ),
