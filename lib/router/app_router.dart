@@ -24,6 +24,8 @@ import '../features/settings/presentation/screens/settings_screen.dart';
 import '../features/booking/presentation/screens/booking_cancellation_screen.dart';
 import '../features/booking/presentation/screens/my_bookings_screen.dart';
 import '../features/booking/presentation/screens/pro_dashboard_screen.dart';
+import '../features/payment/presentation/screens/pro_subscription_screen.dart';
+import '../features/payment/presentation/screens/stripe_checkout_webview.dart';
 import '../shared/widgets/placeholder_screen.dart';
 import 'client_shell.dart';
 import 'pro_shell.dart';
@@ -232,6 +234,15 @@ final appRouter = GoRouter(
       builder: (context, state) => BookingCancellationScreen(
         bookingId: state.pathParameters['bookingId'] ?? '',
       ),
+    ),
+    GoRoute(
+      path: '/pro-subscription',
+      builder: (context, state) => const ProSubscriptionScreen(),
+    ),
+    GoRoute(
+      path: '/subscription-checkout',
+      builder: (context, state) =>
+          StripeCheckoutWebview(url: state.extra as String? ?? ''),
     ),
   ],
 );
