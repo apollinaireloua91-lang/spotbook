@@ -23,18 +23,20 @@ class DiscoverScreen extends ConsumerStatefulWidget {
 class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
   final _searchCtrl = TextEditingController();
   final _focusNode = FocusNode();
-  bool _showHistory = false;
 
   @override
   void initState() {
     super.initState();
-    _focusNode.addListener(() {
-      setState(() => _showHistory = _focusNode.hasFocus);
-    });
+    _focusNode.addListener(_onFocusChanged);
+  }
+
+  void _onFocusChanged() {
+    ref.read(discoverProvider.notifier).setShowHistory(_focusNode.hasFocus);
   }
 
   @override
   void dispose() {
+    _focusNode.removeListener(_onFocusChanged);
     _searchCtrl.dispose();
     _focusNode.dispose();
     super.dispose();
@@ -79,15 +81,18 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
                         hintText: 'Search professionals, services...',
                         hintStyle: const TextStyle(color: AppColors.gris),
                         prefixIcon: const Icon(Icons.search, color: AppColors.gris, size: 20),
-                        suffixIcon: _searchCtrl.text.isNotEmpty
-                            ? IconButton(
-                                icon: const Icon(Icons.clear, color: AppColors.gris, size: 18),
-                                onPressed: () {
-                                  _searchCtrl.clear();
-                                  n.search('');
-                                },
-                              )
-                            : null,
+                        suffixIcon: ValueListenableBuilder<TextEditingValue>(
+                          valueListenable: _searchCtrl,
+                          builder: (context, value, _) => value.text.isNotEmpty
+                              ? IconButton(
+                                  icon: const Icon(Icons.clear, color: AppColors.gris, size: 18),
+                                  onPressed: () {
+                                    _searchCtrl.clear();
+                                    n.search('');
+                                  },
+                                )
+                              : const SizedBox.shrink(),
+                        ),
                         filled: true,
                         fillColor: AppColors.surface,
                         border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
@@ -107,7 +112,7 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
                 ],
               ),
             ),
-            if (_showHistory && s.searchHistory.isNotEmpty)
+            if (s.showHistory && s.searchHistory.isNotEmpty)
               Container(
                 margin: const EdgeInsets.symmetric(horizontal: 16),
                 padding: const EdgeInsets.symmetric(vertical: 8),
@@ -198,31 +203,14 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
   }
 }
 
-class _FiltersSheet extends ConsumerStatefulWidget {
+class _FiltersSheet extends ConsumerWidget {
   const _FiltersSheet();
 
   @override
-  ConsumerState<_FiltersSheet> createState() => _FiltersSheetState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final s = ref.watch(discoverProvider);
+    final n = ref.read(discoverProvider.notifier);
 
-class _FiltersSheetState extends ConsumerState<_FiltersSheet> {
-  late double _distance;
-  late double _rating;
-  late bool _availableToday;
-  late double _price;
-
-  @override
-  void initState() {
-    super.initState();
-    final s = ref.read(discoverProvider);
-    _distance = s.maxDistance;
-    _rating = s.minRating;
-    _availableToday = s.availableToday;
-    _price = s.maxPrice;
-  }
-
-  @override
-  Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(24),
       child: Column(
@@ -235,72 +223,64 @@ class _FiltersSheetState extends ConsumerState<_FiltersSheet> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const Text('Max Distance', style: TextStyle(color: AppColors.blanc, fontSize: 16)),
-              Text('${_distance.toInt()} km', style: const TextStyle(color: AppColors.accent, fontSize: 16)),
+              Text('${s.maxDistance.toInt()} km', style: const TextStyle(color: AppColors.accent, fontSize: 16)),
             ],
           ),
           Slider(
-            value: _distance,
+            value: s.maxDistance,
             min: 1,
             max: 100,
             activeColor: AppColors.accent,
             inactiveColor: AppColors.surfaceAlt,
-            onChanged: (v) => setState(() => _distance = v),
+            onChanged: n.setDistance,
           ),
           const SizedBox(height: 16),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const Text('Min Rating', style: TextStyle(color: AppColors.blanc, fontSize: 16)),
-              Text(_rating.toStringAsFixed(1), style: const TextStyle(color: AppColors.accent, fontSize: 16)),
+              Text(s.minRating.toStringAsFixed(1), style: const TextStyle(color: AppColors.accent, fontSize: 16)),
             ],
           ),
           Slider(
-            value: _rating,
+            value: s.minRating,
             min: 0,
             max: 5,
             divisions: 10,
             activeColor: AppColors.accent,
             inactiveColor: AppColors.surfaceAlt,
-            onChanged: (v) => setState(() => _rating = v),
+            onChanged: n.setRating,
           ),
           const SizedBox(height: 16),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const Text('Max Price', style: TextStyle(color: AppColors.blanc, fontSize: 16)),
-              Text('\$${_price.toInt()}', style: const TextStyle(color: AppColors.accent, fontSize: 16)),
+              Text('\$${s.maxPrice.toInt()}', style: const TextStyle(color: AppColors.accent, fontSize: 16)),
             ],
           ),
           Slider(
-            value: _price,
+            value: s.maxPrice,
             min: 10,
             max: 500,
             activeColor: AppColors.accent,
             inactiveColor: AppColors.surfaceAlt,
-            onChanged: (v) => setState(() => _price = v),
+            onChanged: n.setPrice,
           ),
           const SizedBox(height: 16),
           SwitchListTile(
             title: const Text('Available Today', style: TextStyle(color: AppColors.blanc, fontSize: 16)),
-            value: _availableToday,
+            value: s.availableToday,
             activeTrackColor: AppColors.accent.withAlpha(128),
             contentPadding: EdgeInsets.zero,
-            onChanged: (v) => setState(() => _availableToday = v),
+            onChanged: n.setAvailableToday,
           ),
           const SizedBox(height: 24),
           SizedBox(
             width: double.infinity,
             height: 52,
             child: ElevatedButton(
-              onPressed: () {
-                ref.read(discoverProvider.notifier).setFilters(
-                      maxDistance: _distance,
-                      minRating: _rating,
-                      availableToday: _availableToday,
-                      maxPrice: _price,
-                    );
-                context.pop();
-              },
+              onPressed: () => context.pop(),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.accent,
                 foregroundColor: AppColors.fondDark,

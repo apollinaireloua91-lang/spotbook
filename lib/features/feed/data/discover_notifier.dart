@@ -16,6 +16,7 @@ class DiscoverState {
     this.availableToday = false,
     this.maxPrice = 200.0,
     this.searchHistory = const [],
+    this.showHistory = false,
   });
 
   final List<VideoModel>? results;
@@ -26,6 +27,7 @@ class DiscoverState {
   final bool availableToday;
   final double maxPrice;
   final List<String> searchHistory;
+  final bool showHistory;
 
   DiscoverState copyWith({
     List<VideoModel>? results,
@@ -36,6 +38,7 @@ class DiscoverState {
     bool? availableToday,
     double? maxPrice,
     List<String>? searchHistory,
+    bool? showHistory,
     bool clearResults = false,
   }) =>
       DiscoverState(
@@ -47,6 +50,7 @@ class DiscoverState {
         availableToday: availableToday ?? this.availableToday,
         maxPrice: maxPrice ?? this.maxPrice,
         searchHistory: searchHistory ?? this.searchHistory,
+        showHistory: showHistory ?? this.showHistory,
       );
 }
 
@@ -99,6 +103,21 @@ class DiscoverNotifier extends Notifier<DiscoverState> {
     _loadDefault();
   }
 
+  void setShowHistory(bool show) =>
+      state = state.copyWith(showHistory: show);
+
+  void setDistance(double v) =>
+      state = state.copyWith(maxDistance: v);
+
+  void setRating(double v) =>
+      state = state.copyWith(minRating: v);
+
+  void setPrice(double v) =>
+      state = state.copyWith(maxPrice: v);
+
+  void setAvailableToday(bool v) =>
+      state = state.copyWith(availableToday: v);
+
   void setFilters({
     double? maxDistance,
     double? minRating,
@@ -111,7 +130,6 @@ class DiscoverNotifier extends Notifier<DiscoverState> {
       availableToday: availableToday,
       maxPrice: maxPrice,
     );
-    // In a real app, we would re-trigger search with these filters
   }
 
   void onSearchChanged(String query) {
