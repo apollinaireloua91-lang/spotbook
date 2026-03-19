@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../shared/theme/app_colors.dart';
 import '../../data/moderation_repository.dart';
+import '../../data/report_notifier.dart';
 
 void showReportSheet(
   BuildContext context, {
@@ -62,18 +63,10 @@ void showBlockConfirmDialog(
   );
 }
 
-class _ReportSheet extends ConsumerStatefulWidget {
+class _ReportSheet extends ConsumerWidget {
   const _ReportSheet({required this.targetId, required this.targetType});
   final String targetId;
   final String targetType;
-
-  @override
-  ConsumerState<_ReportSheet> createState() => _ReportSheetState();
-}
-
-class _ReportSheetState extends ConsumerState<_ReportSheet> {
-  String? _selectedReason;
-  bool _isSubmitting = false;
 
   static const _reasons = [
     'Contenu inapproprié',
@@ -84,7 +77,9 @@ class _ReportSheetState extends ConsumerState<_ReportSheet> {
   ];
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final reportState = ref.watch(reportNotifierProvider).asData?.value ?? const ReportState();
+
     return Container(
       padding: EdgeInsets.only(
         left: 20,
@@ -119,11 +114,11 @@ class _ReportSheetState extends ConsumerState<_ReportSheet> {
           const SizedBox(height: 16),
           ...List.generate(_reasons.length, (i) {
             final reason = _reasons[i];
-            final isSelected = _selectedReason == reason;
+            final isSelected = reportState.selectedReason == reason;
             return GestureDetector(
               onTap: () {
                 HapticFeedback.lightImpact();
-                setState(() => _selectedReason = reason);
+                ref.read(reportNotifierProvider.notifier).selectReason(reason);
               },
               child: Container(
                 width: double.infinity,
@@ -152,16 +147,14 @@ class _ReportSheetState extends ConsumerState<_ReportSheet> {
             width: double.infinity,
             height: 52,
             child: ElevatedButton(
-              onPressed: _selectedReason == null || _isSubmitting
+              onPressed: reportState.selectedReason == null || reportState.isSubmitting
                   ? null
                   : () async {
                       HapticFeedback.mediumImpact();
-                      setState(() => _isSubmitting = true);
                       try {
-                        await ref.read(moderationRepositoryProvider).report(
-                              targetId: widget.targetId,
-                              targetType: widget.targetType,
-                              reason: _selectedReason!,
+                        await ref.read(reportNotifierProvider.notifier).submitReport(
+                              targetId: targetId,
+                              targetType: targetType,
                             );
                         if (context.mounted) {
                           Navigator.of(context).pop();
@@ -179,7 +172,6 @@ class _ReportSheetState extends ConsumerState<_ReportSheet> {
                           );
                         }
                       }
-                      if (mounted) setState(() => _isSubmitting = false);
                     },
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.error,
@@ -187,8 +179,15 @@ class _ReportSheetState extends ConsumerState<_ReportSheet> {
                 disabledBackgroundColor: AppColors.surfaceAlt,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               ),
-              child: _isSubmitting
-                  ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: AppColors.blanc, strokeWidth: 2))
+              child: reportState.isSubmitting
+                  ? const SizedBox(
+                      height: 20,
+                      width: 20,
+                      child: CircularProgressIndicator(
+                        color: AppColors.blanc,
+                        strokeWidth: 2,
+                      ),
+                    )
                   : const Text('Envoyer le signalement',
                       style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
             ),
