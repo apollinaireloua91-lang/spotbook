@@ -12,7 +12,26 @@ class ClientShell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.fond,
       body: navigationShell,
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      floatingActionButton: Transform.translate(
+        offset: const Offset(0, -12),
+        child: SizedBox(
+          width: 56,
+          height: 56,
+          child: FloatingActionButton(
+            backgroundColor: AppColors.blanc,
+            elevation: 0,
+            onPressed: () {
+              HapticFeedback.mediumImpact();
+              navigationShell.goBranch(1);
+              context.go('/client/discover');
+            },
+            child: const Icon(Icons.add, color: AppColors.fond),
+          ),
+        ),
+      ),
       bottomNavigationBar: Container(
         decoration: const BoxDecoration(
           border: Border(
@@ -20,6 +39,11 @@ class ClientShell extends StatelessWidget {
           ),
         ),
         child: BottomNavigationBar(
+          backgroundColor: AppColors.fond,
+          elevation: 0,
+          type: BottomNavigationBarType.fixed,
+          selectedItemColor: AppColors.blanc,
+          unselectedItemColor: AppColors.gris,
           currentIndex: navigationShell.currentIndex,
           onTap: (index) {
             HapticFeedback.selectionClick();
@@ -30,8 +54,8 @@ class ClientShell extends StatelessWidget {
           },
           items: const [
             BottomNavigationBarItem(
-              icon: Icon(Icons.play_circle_outline),
-              activeIcon: Icon(Icons.play_circle_filled),
+              icon: Icon(Icons.home_outlined),
+              activeIcon: Icon(Icons.home),
               label: 'Feed',
             ),
             BottomNavigationBarItem(
@@ -40,8 +64,8 @@ class ClientShell extends StatelessWidget {
               label: 'Découvrir',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.calendar_today_outlined),
-              activeIcon: Icon(Icons.calendar_today),
+              icon: Icon(Icons.calendar_month_outlined),
+              activeIcon: Icon(Icons.calendar_month),
               label: 'Mes RDV',
             ),
             BottomNavigationBarItem(
