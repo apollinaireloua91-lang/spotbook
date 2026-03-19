@@ -71,7 +71,6 @@ class _UploadVideoScreenState extends ConsumerState<UploadVideoScreen> {
   Widget build(BuildContext context) {
     final s = ref.watch(uploadVideoProvider);
     final n = ref.read(uploadVideoProvider.notifier);
-    final valid = _isValid(s);
 
     return Scaffold(
       backgroundColor: AppColors.fond,
@@ -91,7 +90,16 @@ class _UploadVideoScreenState extends ConsumerState<UploadVideoScreen> {
                     Text('Select a video (max 60s)', style: TextStyle(color: AppColors.gris, fontSize: 14))]))),
         ),
         const SizedBox(height: 24),
-        _TitleField(controller: _titleCtrl),
+        ValueListenableBuilder<TextEditingValue>(
+          valueListenable: _titleCtrl,
+          builder: (context, value, _) => TextField(
+            controller: _titleCtrl, maxLength: 80, style: const TextStyle(color: AppColors.blanc),
+            decoration: InputDecoration(labelText: 'Title *', hintText: 'Ex: Coupe femme + brushing', labelStyle: const TextStyle(color: AppColors.gris), hintStyle: TextStyle(color: AppColors.gris.withAlpha(128)), counterStyle: const TextStyle(color: AppColors.gris), filled: true, fillColor: AppColors.surface,
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.border)),
+              enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.border)),
+              focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.blanc))),
+          ),
+        ),
         const SizedBox(height: 16),
         DropdownButtonFormField<String>(
           initialValue: s.selectedCategory,
@@ -104,7 +112,16 @@ class _UploadVideoScreenState extends ConsumerState<UploadVideoScreen> {
           onChanged: (v) => n.setCategory(v),
         ),
         const SizedBox(height: 16),
-        _DescField(controller: _descCtrl),
+        ValueListenableBuilder<TextEditingValue>(
+          valueListenable: _descCtrl,
+          builder: (context, value, _) => TextField(
+            controller: _descCtrl, maxLines: 4, maxLength: 300, style: const TextStyle(color: AppColors.blanc),
+            decoration: InputDecoration(labelText: 'Description *', hintText: 'Describe your service in detail...', labelStyle: const TextStyle(color: AppColors.gris), hintStyle: TextStyle(color: AppColors.gris.withAlpha(128)), counterStyle: const TextStyle(color: AppColors.gris), filled: true, fillColor: AppColors.surface,
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.border)),
+              enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.border)),
+              focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.blanc))),
+          ),
+        ),
         const SizedBox(height: 16),
         TextField(controller: _hashtagCtrl, style: const TextStyle(color: AppColors.blanc),
           decoration: InputDecoration(labelText: 'Hashtags (optional, max 5)', hintText: 'coiffure, tendance, paris', labelStyle: const TextStyle(color: AppColors.gris), hintStyle: TextStyle(color: AppColors.gris.withAlpha(128)), filled: true, fillColor: AppColors.surface,
@@ -118,55 +135,19 @@ class _UploadVideoScreenState extends ConsumerState<UploadVideoScreen> {
           Center(child: Text('${(s.uploadProgress * 100).toInt()}% — Publishing...', style: const TextStyle(color: AppColors.gris, fontSize: 13))),
           const SizedBox(height: 16),
         ],
-        SizedBox(width: double.infinity, height: 52, child: ElevatedButton(
-          onPressed: valid && !s.isUploading ? _publish : null,
-          style: ElevatedButton.styleFrom(backgroundColor: AppColors.blanc, foregroundColor: AppColors.fond, disabledBackgroundColor: AppColors.surfaceAlt, disabledForegroundColor: AppColors.gris, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
-          child: const Text('Publier ma prestation', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
-        )),
+        ListenableBuilder(
+          listenable: Listenable.merge([_titleCtrl, _descCtrl]),
+          builder: (context, _) {
+            final valid = _isValid(s);
+            return SizedBox(width: double.infinity, height: 52, child: ElevatedButton(
+              onPressed: valid && !s.isUploading ? _publish : null,
+              style: ElevatedButton.styleFrom(backgroundColor: AppColors.blanc, foregroundColor: AppColors.fond, disabledBackgroundColor: AppColors.surfaceAlt, disabledForegroundColor: AppColors.gris, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
+              child: const Text('Publier ma prestation', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+            ));
+          },
+        ),
         const SizedBox(height: 32),
       ]))),
-    );
-  }
-}
-
-class _TitleField extends StatefulWidget {
-  const _TitleField({required this.controller});
-  final TextEditingController controller;
-  @override
-  State<_TitleField> createState() => _TitleFieldState();
-}
-
-class _TitleFieldState extends State<_TitleField> {
-  @override
-  Widget build(BuildContext context) {
-    return TextField(
-      controller: widget.controller, maxLength: 80, style: const TextStyle(color: AppColors.blanc),
-      onChanged: (_) => setState(() {}),
-      decoration: InputDecoration(labelText: 'Title *', hintText: 'Ex: Coupe femme + brushing', labelStyle: const TextStyle(color: AppColors.gris), hintStyle: TextStyle(color: AppColors.gris.withAlpha(128)), counterStyle: const TextStyle(color: AppColors.gris), filled: true, fillColor: AppColors.surface,
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.border)),
-        enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.border)),
-        focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.blanc))),
-    );
-  }
-}
-
-class _DescField extends StatefulWidget {
-  const _DescField({required this.controller});
-  final TextEditingController controller;
-  @override
-  State<_DescField> createState() => _DescFieldState();
-}
-
-class _DescFieldState extends State<_DescField> {
-  @override
-  Widget build(BuildContext context) {
-    return TextField(
-      controller: widget.controller, maxLines: 4, maxLength: 300, style: const TextStyle(color: AppColors.blanc),
-      onChanged: (_) => setState(() {}),
-      decoration: InputDecoration(labelText: 'Description *', hintText: 'Describe your service in detail...', labelStyle: const TextStyle(color: AppColors.gris), hintStyle: TextStyle(color: AppColors.gris.withAlpha(128)), counterStyle: const TextStyle(color: AppColors.gris), filled: true, fillColor: AppColors.surface,
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.border)),
-        enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.border)),
-        focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.blanc))),
     );
   }
 }
