@@ -6,6 +6,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../shared/theme/app_colors.dart';
+import '../../../../shared/widgets/address_autocomplete_field.dart';
 import '../../data/event_notifier.dart';
 import '../../data/event_repository.dart';
 
@@ -245,9 +246,19 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
               ),
             ),
             const SizedBox(height: 14),
-            _buildField(_locationCtrl, 'Lieu', Icons.location_on_outlined),
+            AddressAutocompleteField(
+              controller: _locationCtrl,
+              label: 'Lieu',
+              icon: Icons.location_on_outlined,
+              fillColor: AppColors.surface,
+            ),
             const SizedBox(height: 14),
-            _buildField(_addressCtrl, 'Adresse (optionnel)', Icons.pin_drop_outlined),
+            AddressAutocompleteField(
+              controller: _addressCtrl,
+              label: 'Adresse (optionnel)',
+              icon: Icons.pin_drop_outlined,
+              fillColor: AppColors.surface,
+            ),
             const SizedBox(height: 24),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../shared/theme/app_colors.dart';
+import '../../../../shared/widgets/address_autocomplete_field.dart';
 import '../../../../shared/widgets/spotbook_button.dart';
 import '../../data/edit_profile_notifier.dart';
 
@@ -119,7 +120,12 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
               const SizedBox(height: 16),
               _buildTextField('Username', _usernameCtrl),
               const SizedBox(height: 16),
-              _buildTextField('City', _cityCtrl),
+              AddressAutocompleteField(
+                controller: _cityCtrl,
+                label: 'City',
+                icon: Icons.location_city,
+                fillColor: AppColors.surface,
+              ),
               if (s.isPro) ...[
                 const SizedBox(height: 16),
                 _buildTextField('Bio', _bioCtrl, maxLines: 3),
@@ -210,7 +216,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
           else
             TextButton(
               onPressed: () => _linkSocial(platform),
-              child: const Text('Link', style: TextStyle(color: AppColors.accent)),
+              child: const Text('Link', style: TextStyle(color: AppColors.blanc)),
             ),
         ],
       ),

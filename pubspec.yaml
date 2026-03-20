@@ -105,6 +105,7 @@ dependencies:
   posthog_flutter: ^5.20.0
 
   sentry_flutter: ^9.15.0
+  flutter_google_places_sdk: ^0.4.3
 
 
 dev_dependencies:

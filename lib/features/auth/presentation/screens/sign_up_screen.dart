@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../shared/theme/app_colors.dart';
+import '../../../../shared/widgets/address_autocomplete_field.dart';
 import '../../../../shared/widgets/spotbook_button.dart';
 import '../../data/auth_repository.dart';
 import '../../data/user_setup_repository.dart';
@@ -334,10 +335,12 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
           onContinue: () => _onContinue(4),
           isLoading: false,
           footer: loginLink,
-          child: _SignUpField(
+          child: AddressAutocompleteField(
             controller: _addressCtrl,
+            label: 'Location',
             hint: 'Montreal, QC',
             icon: Icons.pin_drop_outlined,
+            fillColor: AppColors.surfaceAuth,
           ),
         );
       case 5:
