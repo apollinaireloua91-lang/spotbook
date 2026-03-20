@@ -58,9 +58,9 @@ class _ProVerificationScreenState extends ConsumerState<ProVerificationScreen> {
     final s = ref.watch(proVerificationProvider);
 
     return Scaffold(
-      backgroundColor: AppColors.fondDark,
+      backgroundColor: AppColors.fond,
       appBar: AppBar(
-        backgroundColor: AppColors.fondDark,
+        backgroundColor: AppColors.fond,
         leading: Semantics(
           label: 'Retour',
           child: IconButton(
@@ -88,11 +88,11 @@ class _ProVerificationScreenState extends ConsumerState<ProVerificationScreen> {
         const Text('Mobile Number', style: TextStyle(color: AppColors.gris, fontSize: 13)),
         const SizedBox(height: 8),
         Row(children: [
-          Container(padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14), decoration: BoxDecoration(color: AppColors.surfaceAuth, borderRadius: BorderRadius.circular(12)),
+          Container(padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14), decoration: BoxDecoration(color: AppColors.surface, borderRadius: BorderRadius.circular(12)),
             child: const Text('+1 🇺🇸', style: TextStyle(color: AppColors.blanc, fontSize: 14))),
           const SizedBox(width: 8),
           Expanded(child: TextField(controller: _phoneCtrl, keyboardType: TextInputType.phone, style: const TextStyle(color: AppColors.blanc),
-            decoration: InputDecoration(hintText: 'Phone number', hintStyle: TextStyle(color: AppColors.gris.withAlpha(128)), filled: true, fillColor: AppColors.surfaceAuth, border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none)))),
+            decoration: InputDecoration(hintText: 'Phone number', hintStyle: TextStyle(color: AppColors.gris.withAlpha(128)), filled: true, fillColor: AppColors.surface, border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none)))),
         ]),
         const SizedBox(height: 8),
         const Text("We'll send a 6-digit code to verify this number.", style: TextStyle(color: AppColors.gris, fontSize: 12)),
@@ -106,15 +106,15 @@ class _ProVerificationScreenState extends ConsumerState<ProVerificationScreen> {
         const SizedBox(height: 16),
         GestureDetector(
           onTap: s.isUploading ? null : _pickDocument,
-          child: Container(width: double.infinity, padding: const EdgeInsets.symmetric(vertical: 32), decoration: BoxDecoration(borderRadius: BorderRadius.circular(16), border: Border.all(color: AppColors.accent.withAlpha(77), width: 1.5, strokeAlign: BorderSide.strokeAlignInside)),
+          child: Container(width: double.infinity, padding: const EdgeInsets.symmetric(vertical: 32), decoration: BoxDecoration(borderRadius: BorderRadius.circular(16), border: Border.all(color: AppColors.border, width: 1.5, strokeAlign: BorderSide.strokeAlignInside)),
             child: Column(children: [
-              if (s.isUploading) const CircularProgressIndicator(color: AppColors.accent, strokeWidth: 2)
+              if (s.isUploading) const CircularProgressIndicator(color: AppColors.blanc, strokeWidth: 2)
               else if (s.documentName != null) ...[
-                const Icon(Icons.check_circle, color: AppColors.accentGreen, size: 36),
+                const Icon(Icons.check_circle, color: AppColors.success, size: 36),
                 const SizedBox(height: 8),
                 Text(s.documentName!, style: const TextStyle(color: AppColors.blanc, fontSize: 13)),
               ] else ...[
-                const Icon(Icons.cloud_upload_outlined, color: AppColors.accent, size: 36),
+                const Icon(Icons.cloud_upload_outlined, color: AppColors.gris, size: 36),
                 const SizedBox(height: 8),
                 const Text('Tap to upload Front & Back', style: TextStyle(color: AppColors.blanc, fontSize: 14, fontWeight: FontWeight.w500)),
                 const SizedBox(height: 4),
@@ -123,17 +123,17 @@ class _ProVerificationScreenState extends ConsumerState<ProVerificationScreen> {
             ])),
         ),
         const SizedBox(height: 16),
-        Container(padding: const EdgeInsets.all(12), decoration: BoxDecoration(color: AppColors.surfaceAuth, borderRadius: BorderRadius.circular(12)),
+        Container(padding: const EdgeInsets.all(12), decoration: BoxDecoration(color: AppColors.surface, borderRadius: BorderRadius.circular(12)),
           child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            const Icon(Icons.lock, color: AppColors.accent, size: 18),
+            const Icon(Icons.lock, color: AppColors.gris, size: 18),
             const SizedBox(width: 10),
             Expanded(child: Text('Your ID is encrypted and securely stored. We only use this information to verify your identity. It will never be shared publicly.', style: TextStyle(color: AppColors.gris.withAlpha(204), fontSize: 12, height: 1.4))),
           ])),
         const SizedBox(height: 32),
         SizedBox(width: double.infinity, height: 52, child: ElevatedButton(
           onPressed: s.isSubmitting ? null : _submit,
-          style: ElevatedButton.styleFrom(backgroundColor: AppColors.accent, foregroundColor: AppColors.fondDark, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
-          child: s.isSubmitting ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.fondDark)) : const Text('Submit Documents', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+          style: ElevatedButton.styleFrom(backgroundColor: AppColors.blanc, foregroundColor: AppColors.fond, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
+          child: s.isSubmitting ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.fond)) : const Text('Submit Documents', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
         )),
         const SizedBox(height: 32),
       ]))),

@@ -41,9 +41,9 @@ class DeleteAccountScreen extends ConsumerWidget {
     final n = ref.read(_deleteProvider.notifier);
 
     return Scaffold(
-      backgroundColor: AppColors.fondDark,
+      backgroundColor: AppColors.fond,
       appBar: AppBar(
-        backgroundColor: AppColors.fondDark,
+        backgroundColor: AppColors.fond,
         leading: Semantics(
           label: 'Retour',
           child: IconButton(

@@ -9,9 +9,9 @@ class StripeConnectScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.fondDark,
+      backgroundColor: AppColors.fond,
       appBar: AppBar(
-        backgroundColor: AppColors.fondDark,
+        backgroundColor: AppColors.fond,
         leading: Semantics(
           label: 'Retour',
           child: IconButton(
@@ -37,14 +37,14 @@ class StripeConnectScreen extends StatelessWidget {
                 height: 80,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
-                  color: AppColors.accent.withAlpha(26),
+                  color: AppColors.surfaceAlt,
                   border: Border.all(
-                    color: AppColors.accent.withAlpha(51),
+                    color: AppColors.border,
                   ),
                 ),
                 child: const Icon(
                   Icons.account_balance_wallet,
-                  color: AppColors.accent,
+                  color: AppColors.blanc,
                   size: 40,
                 ),
               ),
@@ -78,7 +78,7 @@ class StripeConnectScreen extends StatelessWidget {
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.blanc,
-                    foregroundColor: AppColors.fondDark,
+                    foregroundColor: AppColors.fond,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -110,7 +110,7 @@ class StripeConnectScreen extends StatelessWidget {
                 onTap: () {},
                 child: const Text(
                   'Besoin d\'aide ? Contactez le support',
-                  style: TextStyle(color: AppColors.accent, fontSize: 13),
+                  style: TextStyle(color: AppColors.gris, fontSize: 13),
                 ),
               ),
               const SizedBox(height: 32),
@@ -125,12 +125,12 @@ class StripeConnectScreen extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: AppColors.surfaceAuth,
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
         children: [
-          Icon(icon, color: AppColors.accentGreen, size: 24),
+          Icon(icon, color: AppColors.success, size: 24),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
@@ -154,7 +154,7 @@ class StripeConnectScreen extends StatelessWidget {
               ],
             ),
           ),
-          const Icon(Icons.check_circle, color: AppColors.accentGreen, size: 20),
+          const Icon(Icons.check_circle, color: AppColors.success, size: 20),
         ],
       ),
     );

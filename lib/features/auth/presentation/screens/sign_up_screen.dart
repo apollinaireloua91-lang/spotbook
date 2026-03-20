@@ -340,7 +340,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
             label: 'Location',
             hint: 'Montreal, QC',
             icon: Icons.pin_drop_outlined,
-            fillColor: AppColors.surfaceAuth,
+            fillColor: AppColors.surface,
           ),
         );
       case 5:

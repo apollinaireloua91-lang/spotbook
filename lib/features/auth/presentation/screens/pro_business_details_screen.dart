@@ -131,6 +131,6 @@ class _ProBusinessDetailsScreenState extends ConsumerState<ProBusinessDetailsScr
   Widget _dot({required bool active}) => Container(width: 8, height: 8, decoration: BoxDecoration(shape: BoxShape.circle, color: active ? AppColors.blanc : AppColors.gris.withAlpha(77)));
 
   Widget _field({required TextEditingController controller, required String label, required String hint, required IconData icon}) {
-    return TextField(controller: controller, style: const TextStyle(color: AppColors.blanc), decoration: InputDecoration(labelText: label, hintText: hint, labelStyle: const TextStyle(color: AppColors.gris), hintStyle: TextStyle(color: AppColors.gris.withAlpha(128)), prefixIcon: Icon(icon, color: AppColors.gris, size: 20), filled: true, fillColor: AppColors.surfaceAuth, border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none)));
+    return TextField(controller: controller, style: const TextStyle(color: AppColors.blanc), decoration: InputDecoration(labelText: label, hintText: hint, labelStyle: const TextStyle(color: AppColors.gris), hintStyle: TextStyle(color: AppColors.gris.withAlpha(128)), prefixIcon: Icon(icon, color: AppColors.gris, size: 20), filled: true, fillColor: AppColors.surface, border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none)));
   }
 }
