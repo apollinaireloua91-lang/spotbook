@@ -136,7 +136,7 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
                           const Text('Recent Searches', style: TextStyle(color: AppColors.gris, fontSize: 12)),
                           GestureDetector(
                             onTap: n.clearHistory,
-                            child: const Text('Clear', style: TextStyle(color: AppColors.accent, fontSize: 12)),
+                            child: const Text('Clear', style: TextStyle(color: AppColors.gris, fontSize: 12)),
                           ),
                         ],
                       ),
@@ -232,14 +232,14 @@ class _FiltersSheet extends ConsumerWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const Text('Max Distance', style: TextStyle(color: AppColors.blanc, fontSize: 16)),
-              Text('${s.maxDistance.toInt()} km', style: const TextStyle(color: AppColors.accent, fontSize: 16)),
+              Text('${s.maxDistance.toInt()} km', style: const TextStyle(color: AppColors.blanc, fontSize: 16)),
             ],
           ),
           Slider(
             value: s.maxDistance,
             min: 1,
             max: 100,
-            activeColor: AppColors.accent,
+            activeColor: AppColors.blanc,
             inactiveColor: AppColors.surfaceAlt,
             onChanged: n.setDistance,
           ),
@@ -248,7 +248,7 @@ class _FiltersSheet extends ConsumerWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const Text('Min Rating', style: TextStyle(color: AppColors.blanc, fontSize: 16)),
-              Text(s.minRating.toStringAsFixed(1), style: const TextStyle(color: AppColors.accent, fontSize: 16)),
+              Text(s.minRating.toStringAsFixed(1), style: const TextStyle(color: AppColors.blanc, fontSize: 16)),
             ],
           ),
           Slider(
@@ -256,7 +256,7 @@ class _FiltersSheet extends ConsumerWidget {
             min: 0,
             max: 5,
             divisions: 10,
-            activeColor: AppColors.accent,
+            activeColor: AppColors.blanc,
             inactiveColor: AppColors.surfaceAlt,
             onChanged: n.setRating,
           ),
@@ -265,14 +265,14 @@ class _FiltersSheet extends ConsumerWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const Text('Max Price', style: TextStyle(color: AppColors.blanc, fontSize: 16)),
-              Text('\$${s.maxPrice.toInt()}', style: const TextStyle(color: AppColors.accent, fontSize: 16)),
+              Text('\$${s.maxPrice.toInt()}', style: const TextStyle(color: AppColors.blanc, fontSize: 16)),
             ],
           ),
           Slider(
             value: s.maxPrice,
             min: 10,
             max: 500,
-            activeColor: AppColors.accent,
+            activeColor: AppColors.blanc,
             inactiveColor: AppColors.surfaceAlt,
             onChanged: n.setPrice,
           ),
@@ -280,7 +280,7 @@ class _FiltersSheet extends ConsumerWidget {
           SwitchListTile(
             title: const Text('Available Today', style: TextStyle(color: AppColors.blanc, fontSize: 16)),
             value: s.availableToday,
-            activeTrackColor: AppColors.accent.withAlpha(128),
+            activeTrackColor: AppColors.blanc.withAlpha(128),
             contentPadding: EdgeInsets.zero,
             onChanged: n.setAvailableToday,
           ),
@@ -291,8 +291,8 @@ class _FiltersSheet extends ConsumerWidget {
             child: ElevatedButton(
               onPressed: () => context.pop(),
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.accent,
-                foregroundColor: AppColors.fondDark,
+                backgroundColor: AppColors.blanc,
+                foregroundColor: AppColors.fond,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               ),
               child: const Text('Apply Filters', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),

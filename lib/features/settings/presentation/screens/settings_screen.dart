@@ -34,9 +34,9 @@ class SettingsScreen extends ConsumerWidget {
     final role = ref.read(authRepositoryProvider).currentUserRole ?? 'client';
 
     return Scaffold(
-      backgroundColor: AppColors.fondDark,
+      backgroundColor: AppColors.fond,
       appBar: AppBar(
-        backgroundColor: AppColors.fondDark,
+        backgroundColor: AppColors.fond,
         leading: Semantics(
           label: 'Retour',
           child: IconButton(
