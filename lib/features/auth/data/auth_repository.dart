@@ -36,6 +36,23 @@ class AuthRepository {
 
   Stream<AuthState> get authStateStream => _supabase.auth.onAuthStateChange;
 
+  Future<T> _runWithSessionRecovery<T>(Future<T> Function() action) async {
+    try {
+      return await action();
+    } on AuthException catch (e) {
+      final message = e.message.toLowerCase();
+      if (message.contains('jwt') || message.contains('token') || message.contains('expired')) {
+        final refreshed = await _supabase.auth.refreshSession();
+        if (refreshed.session == null) {
+          await signOut();
+          throw AuthException('Session expirée. Merci de vous reconnecter.');
+        }
+        return await action();
+      }
+      rethrow;
+    }
+  }
+
   Future<AuthResponse> signUpWithEmail({
     required String email,
     required String password,
@@ -70,20 +87,22 @@ class AuthRepository {
     required String password,
   }) async {
     try {
-      final limiter = await _supabase.functions.invoke(
+      final rateLimit = await _supabase.functions.invoke(
         'rate-limiter',
-        body: {'scope': 'login', 'identifier': email.toLowerCase()},
+        body: {'type': 'login'},
       );
-      if (limiter.status == 429) {
-        final message =
-            (limiter.data as Map<String, dynamic>?)?['message'] as String? ??
-                'Trop de tentatives. Réessaie plus tard.';
-        throw AuthException(message);
+      if (rateLimit.status == 429) {
+        final err = rateLimit.data is Map<String, dynamic>
+            ? rateLimit.data['error']
+            : 'Trop de tentatives. Réessaie plus tard.';
+        throw AuthException(err as String);
       }
 
-      final response = await _supabase.auth.signInWithPassword(
-        email: email,
-        password: password,
+      final response = await _runWithSessionRecovery(
+        () => _supabase.auth.signInWithPassword(
+          email: email,
+          password: password,
+        ),
       );
       final uid = response.user?.id;
       if (uid != null) {
@@ -91,7 +110,7 @@ class AuthRepository {
           'user_id': uid,
           'action': 'user_login',
           'resource_type': 'auth',
-          'metadata': {'provider': 'email'},
+          'metadata': {'method': 'password'},
         });
       }
       return response;
@@ -99,25 +118,20 @@ class AuthRepository {
       if (e.message.contains('Invalid login credentials')) {
         throw AuthException('Invalid email or password');
       }
-      if (e.message.toLowerCase().contains('token') &&
-          e.message.toLowerCase().contains('expired')) {
-        await _supabase.auth.refreshSession();
-        throw AuthException('Session expirée. Reconnecte-toi.');
-      }
       rethrow;
     }
   }
 
   Future<void> resetPassword(String email) async {
-    final limiter = await _supabase.functions.invoke(
+    final rateLimit = await _supabase.functions.invoke(
       'rate-limiter',
-      body: {'scope': 'otp', 'identifier': email.toLowerCase()},
+      body: {'type': 'otp', 'email': email},
     );
-    if (limiter.status == 429) {
-      final message = (limiter.data as Map<String, dynamic>?)?['message']
-              as String? ??
-          'Trop de tentatives. Réessaie plus tard.';
-      throw AuthException(message);
+    if (rateLimit.status == 429) {
+      final err = rateLimit.data is Map<String, dynamic>
+          ? rateLimit.data['error']
+          : 'Trop de tentatives. Réessaie plus tard.';
+      throw AuthException(err as String);
     }
     await _supabase.auth.resetPasswordForEmail(email);
   }
@@ -138,32 +152,31 @@ class AuthRepository {
   Future<Map<String, dynamic>?> getUserProfile() async {
     final uid = currentUserId;
     if (uid == null) return null;
-    try {
-      return await _supabase.from('users').select().eq('id', uid).maybeSingle();
-    } on AuthException catch (e) {
-      if (e.message.toLowerCase().contains('token') &&
-          e.message.toLowerCase().contains('expired')) {
-        await refreshSession();
-        return await _supabase.from('users').select().eq('id', uid).maybeSingle();
-      }
-      rethrow;
-    }
+    return await _runWithSessionRecovery(
+      () => _supabase.from('users').select().eq('id', uid).maybeSingle(),
+    );
   }
 
   Future<void> updateUserRole(String role) async {
     final uid = currentUserId;
     if (uid == null) throw AuthException('User not authenticated');
-    await _supabase.from('users').update({'role': role}).eq('id', uid);
-    await _supabase.auth.updateUser(UserAttributes(data: {'role': role}));
+    await _runWithSessionRecovery(
+      () => _supabase.from('users').update({'role': role}).eq('id', uid),
+    );
+    await _runWithSessionRecovery(
+      () => _supabase.auth.updateUser(UserAttributes(data: {'role': role})),
+    );
   }
 
   Future<String> uploadAvatar(Uint8List bytes) async {
     final uid = currentUserId;
     if (uid == null) throw AuthException('User not authenticated');
     final path = '$uid/avatar.jpg';
-    await _supabase.storage
-        .from('avatars')
-        .uploadBinary(path, bytes, fileOptions: const FileOptions(upsert: true));
+    await _runWithSessionRecovery(
+      () => _supabase.storage
+          .from('avatars')
+          .uploadBinary(path, bytes, fileOptions: const FileOptions(upsert: true)),
+    );
     return _supabase.storage.from('avatars').getPublicUrl(path);
   }
 
@@ -179,35 +192,33 @@ class AuthRepository {
     if (bio != null) updates['bio'] = bio;
     if (avatarUrl != null) updates['avatar_url'] = avatarUrl;
     if (updates.isNotEmpty) {
-      await _supabase.from('users').update(updates).eq('id', uid);
+      await _runWithSessionRecovery(
+        () => _supabase.from('users').update(updates).eq('id', uid),
+      );
     }
+  }
+
+  Future<bool> signInWithGoogle() async {
+    return _supabase.auth.signInWithOAuth(
+      OAuthProvider.google,
+      redirectTo: 'io.supabase.spotbook://login-callback',
+    );
   }
 
   Future<void> softDeleteAccount() async {
     final uid = currentUserId;
     if (uid == null) throw AuthException('User not authenticated');
-    await _supabase
-        .from('users')
-        .update({'deleted_at': DateTime.now().toIso8601String()}).eq('id', uid);
+    await _runWithSessionRecovery(
+      () => _supabase
+          .from('users')
+          .update({'deleted_at': DateTime.now().toIso8601String()}).eq('id', uid),
+    );
     await _supabase.from('audit_logs').insert({
       'user_id': uid,
       'action': 'user_deleted',
-      'resource_type': 'users',
+      'resource_type': 'user',
       'resource_id': uid,
     });
     await signOut();
-  }
-
-  Future<Session?> refreshSession() async {
-    try {
-      final refreshed = await _supabase.auth.refreshSession();
-      return refreshed.session;
-    } on AuthException catch (e) {
-      if (e.message.toLowerCase().contains('token') &&
-          e.message.toLowerCase().contains('expired')) {
-        await signOut();
-      }
-      rethrow;
-    }
   }
 }

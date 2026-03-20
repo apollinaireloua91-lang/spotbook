@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../shared/theme/app_colors.dart';
+import '../../../../shared/widgets/spotbook_button.dart';
 import '../../data/auth_repository.dart';
 
 class _LoginState {
@@ -15,7 +17,11 @@ class _LoginState {
   final bool obscurePassword;
   final String selectedRole;
 
-  _LoginState copyWith({bool? isLoading, bool? obscurePassword, String? selectedRole}) =>
+  _LoginState copyWith({
+    bool? isLoading,
+    bool? obscurePassword,
+    String? selectedRole,
+  }) =>
       _LoginState(
         isLoading: isLoading ?? this.isLoading,
         obscurePassword: obscurePassword ?? this.obscurePassword,
@@ -47,8 +53,10 @@ class _LoginNotifier extends Notifier<_LoginState> {
   }
 }
 
-final _loginProvider =
-    NotifierProvider<_LoginNotifier, _LoginState>(_LoginNotifier.new, isAutoDispose: true);
+final _loginProvider = NotifierProvider<_LoginNotifier, _LoginState>(
+  _LoginNotifier.new,
+  isAutoDispose: true,
+);
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -71,7 +79,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   Future<void> _signIn() async {
     if (_emailCtrl.text.trim().isEmpty || _passwordCtrl.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please fill in all fields'), backgroundColor: AppColors.error),
+        const SnackBar(
+          content: Text('Veuillez remplir tous les champs'),
+          backgroundColor: AppColors.error,
+        ),
       );
       return;
     }
@@ -85,14 +96,32 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         case 'client':
           context.go('/client/feed');
         case 'pro':
-          context.go('/pro/dashboard');
+          context.go('/pro/feed');
         default:
           context.go('/complete-profile');
       }
     } on Exception catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(e.toString().replaceFirst('Exception: ', '')), backgroundColor: AppColors.error),
+        SnackBar(
+          content: Text(e.toString().replaceFirst('Exception: ', '')),
+          backgroundColor: AppColors.error,
+        ),
+      );
+    }
+  }
+
+  Future<void> _googleSignIn() async {
+    try {
+      await ref.read(authRepositoryProvider).signInWithGoogle();
+      // Navigation handled by auth state listener in app_router
+    } on Exception catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString().replaceFirst('Exception: ', '')),
+          backgroundColor: AppColors.error,
+        ),
       );
     }
   }
@@ -103,90 +132,149 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final notifier = ref.read(_loginProvider.notifier);
 
     return Scaffold(
-      backgroundColor: AppColors.fondDark,
+      backgroundColor: AppColors.fond,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24),
           child: Column(
             children: [
               const SizedBox(height: 48),
+              // Logo
               Container(
-                width: 72, height: 72,
+                width: 80,
+                height: 80,
                 decoration: BoxDecoration(
-                  shape: BoxShape.circle, color: AppColors.surfaceAuth,
-                  border: Border.all(color: AppColors.accent.withAlpha(77), width: 2),
+                  color: AppColors.surface,
+                  shape: BoxShape.circle,
                 ),
-                child: const Icon(Icons.play_arrow_rounded, color: AppColors.accent, size: 36),
+                child: const Icon(
+                  Icons.play_circle_outline,
+                  color: AppColors.blanc,
+                  size: 40,
+                ),
               ),
               const SizedBox(height: 24),
-              const Text('Welcome Back', style: TextStyle(color: AppColors.blanc, fontSize: 28, fontWeight: FontWeight.bold)),
+              const Text(
+                'Welcome Back',
+                style: TextStyle(
+                  color: AppColors.blanc,
+                  fontSize: 32,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
               const SizedBox(height: 8),
-              const Text('Login to your account to continue', style: TextStyle(color: AppColors.gris, fontSize: 15)),
+              const Text(
+                'Login to your account',
+                style: TextStyle(color: AppColors.gris, fontSize: 15),
+              ),
               const SizedBox(height: 32),
-              _RoleToggle(selected: s.selectedRole, onChanged: notifier.setRole),
+              // Role toggle
+              _RoleToggle(
+                selected: s.selectedRole,
+                onChanged: notifier.setRole,
+              ),
               const SizedBox(height: 24),
-              _Field(controller: _emailCtrl, hint: 'Email Address', icon: Icons.mail_outline, keyboardType: TextInputType.emailAddress),
-              const SizedBox(height: 16),
+              // Email field
               _Field(
-                controller: _passwordCtrl, hint: 'Password', icon: Icons.lock_outline, obscure: s.obscurePassword,
+                controller: _emailCtrl,
+                hint: 'Email Address',
+                icon: Icons.mail_outline,
+                keyboardType: TextInputType.emailAddress,
+              ),
+              const SizedBox(height: 16),
+              // Password field
+              _Field(
+                controller: _passwordCtrl,
+                hint: 'Password',
+                icon: Icons.lock_outline,
+                obscure: s.obscurePassword,
                 suffix: GestureDetector(
                   onTap: notifier.toggleObscure,
-                  child: Icon(s.obscurePassword ? Icons.visibility_off_outlined : Icons.visibility_outlined, color: AppColors.gris, size: 20),
+                  child: Icon(
+                    s.obscurePassword
+                        ? Icons.visibility_off_outlined
+                        : Icons.visibility_outlined,
+                    color: AppColors.gris,
+                    size: 20,
+                  ),
                 ),
               ),
               const SizedBox(height: 12),
+              // Forgot password
               Align(
                 alignment: Alignment.centerRight,
                 child: GestureDetector(
                   onTap: () {
                     if (_emailCtrl.text.trim().isNotEmpty) {
-                      ref.read(authRepositoryProvider).resetPassword(_emailCtrl.text.trim());
-                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Password reset email sent')));
+                      ref
+                          .read(authRepositoryProvider)
+                          .resetPassword(_emailCtrl.text.trim());
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Email de réinitialisation envoyé'),
+                        ),
+                      );
                     }
                   },
-                  child: const Text('Forgot Password?', style: TextStyle(color: AppColors.accent, fontSize: 13)),
+                  child: const Text(
+                    'Forgot Password?',
+                    style: TextStyle(color: AppColors.gris, fontSize: 13),
+                  ),
                 ),
               ),
               const SizedBox(height: 24),
-              SizedBox(
-                width: double.infinity, height: 52,
-                child: ElevatedButton(
-                  onPressed: s.isLoading ? null : _signIn,
-                  style: ElevatedButton.styleFrom(backgroundColor: AppColors.accent, foregroundColor: AppColors.fondDark, disabledBackgroundColor: AppColors.accent.withAlpha(128), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
-                  child: s.isLoading
-                      ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.fondDark))
-                      : const Text('Login →', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
-                ),
+              // Sign In button
+              SpotbookButton.primary(
+                label: 'Sign In',
+                isLoading: s.isLoading,
+                onPressed: s.isLoading ? null : _signIn,
               ),
               const SizedBox(height: 24),
-              Row(children: [
-                Expanded(child: Divider(color: AppColors.gris.withAlpha(77), height: 1)),
-                const Padding(padding: EdgeInsets.symmetric(horizontal: 16), child: Text('OR CONTINUE WITH', style: TextStyle(color: AppColors.gris, fontSize: 12, letterSpacing: 0.5))),
-                Expanded(child: Divider(color: AppColors.gris.withAlpha(77), height: 1)),
-              ]),
+              // Divider
+              Row(
+                children: [
+                  Expanded(
+                    child: Container(height: 1, color: AppColors.border),
+                  ),
+                  const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    child: Text(
+                      'or',
+                      style: TextStyle(color: AppColors.gris, fontSize: 13),
+                    ),
+                  ),
+                  Expanded(
+                    child: Container(height: 1, color: AppColors.border),
+                  ),
+                ],
+              ),
               const SizedBox(height: 24),
-              Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                _socialButton(Icons.g_mobiledata),
-                const SizedBox(width: 16),
-                _socialButton(Icons.apple),
-              ]),
+              // Google button
+              SpotbookButton.secondary(
+                label: 'Continue with Google',
+                icon: Icons.g_mobiledata,
+                onPressed: _googleSignIn,
+              ),
               const SizedBox(height: 32),
+              // Sign Up link
               GestureDetector(
-                onTap: () => context.go('/signup'),
-                child: RichText(text: const TextSpan(text: "Don't have an account? ", style: TextStyle(color: AppColors.gris, fontSize: 14), children: [TextSpan(text: 'Sign Up', style: TextStyle(color: AppColors.accent))])),
+                onTap: () {
+                  HapticFeedback.selectionClick();
+                  context.go('/signup');
+                },
+                child: const Text(
+                  "Don't have an account? Sign Up",
+                  style: TextStyle(
+                    color: AppColors.blanc,
+                    fontSize: 14,
+                  ),
+                ),
               ),
               const SizedBox(height: 32),
             ],
           ),
         ),
       ),
-    );
-  }
-
-  Widget _socialButton(IconData icon) {
-    return Opacity(
-      opacity: 0.4,
-      child: Container(width: 56, height: 56, decoration: BoxDecoration(color: AppColors.surfaceAuth, borderRadius: BorderRadius.circular(16)), child: Icon(icon, color: AppColors.blanc, size: 28)),
     );
   }
 }
@@ -199,9 +287,14 @@ class _RoleToggle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(color: AppColors.surfaceAuth, borderRadius: BorderRadius.circular(12)),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(12),
+      ),
       padding: const EdgeInsets.all(4),
-      child: Row(children: [_btn('Client', 'client'), _btn('Service Provider', 'pro')]),
+      child: Row(
+        children: [_btn('Client', 'client'), _btn('Service Provider', 'pro')],
+      ),
     );
   }
 
@@ -213,8 +306,21 @@ class _RoleToggle extends StatelessWidget {
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 200),
           padding: const EdgeInsets.symmetric(vertical: 12),
-          decoration: BoxDecoration(color: sel ? AppColors.blanc.withAlpha(26) : Colors.transparent, borderRadius: BorderRadius.circular(8)),
-          child: Center(child: Text(label, style: TextStyle(color: sel ? AppColors.blanc : AppColors.gris, fontSize: 14, fontWeight: sel ? FontWeight.w600 : FontWeight.w400))),
+          decoration: BoxDecoration(
+            color: sel ? AppColors.surfaceAlt : Colors.transparent,
+            borderRadius: BorderRadius.circular(8),
+            border: sel ? Border.all(color: AppColors.border) : null,
+          ),
+          child: Center(
+            child: Text(
+              label,
+              style: TextStyle(
+                color: sel ? AppColors.blanc : AppColors.gris,
+                fontSize: 14,
+                fontWeight: sel ? FontWeight.w600 : FontWeight.w400,
+              ),
+            ),
+          ),
         ),
       ),
     );
@@ -222,7 +328,14 @@ class _RoleToggle extends StatelessWidget {
 }
 
 class _Field extends StatelessWidget {
-  const _Field({required this.controller, required this.hint, this.icon, this.keyboardType, this.obscure = false, this.suffix});
+  const _Field({
+    required this.controller,
+    required this.hint,
+    this.icon,
+    this.keyboardType,
+    this.obscure = false,
+    this.suffix,
+  });
   final TextEditingController controller;
   final String hint;
   final IconData? icon;
@@ -233,14 +346,32 @@ class _Field extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextField(
-      controller: controller, obscureText: obscure, keyboardType: keyboardType,
+      controller: controller,
+      obscureText: obscure,
+      keyboardType: keyboardType,
       style: const TextStyle(color: AppColors.blanc),
       decoration: InputDecoration(
-        hintText: hint, hintStyle: TextStyle(color: AppColors.gris.withAlpha(179)),
-        prefixIcon: icon != null ? Icon(icon, color: AppColors.gris, size: 20) : null,
-        suffixIcon: suffix, filled: true, fillColor: AppColors.surfaceAuth,
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        hintText: hint,
+        hintStyle: const TextStyle(color: AppColors.gris),
+        prefixIcon:
+            icon != null ? Icon(icon, color: AppColors.gris, size: 20) : null,
+        suffixIcon: suffix,
+        filled: true,
+        fillColor: AppColors.surface,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(50),
+          borderSide: BorderSide.none,
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(50),
+          borderSide: BorderSide.none,
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(50),
+          borderSide: const BorderSide(color: AppColors.blanc, width: 1),
+        ),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       ),
     );
   }

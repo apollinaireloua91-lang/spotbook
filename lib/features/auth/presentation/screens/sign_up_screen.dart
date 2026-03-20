@@ -1,35 +1,101 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../shared/theme/app_colors.dart';
-import '../../../../shared/utils/analytics_service.dart';
+import '../../../../shared/widgets/spotbook_button.dart';
 import '../../data/auth_repository.dart';
 import '../../data/user_setup_repository.dart';
 
+// ─── State ───────────────────────────────────────────────────────────────────
+
 class _SignUpState {
-  const _SignUpState({this.isLoading = false, this.obscurePassword = true, this.selectedRole = 'client'});
+  const _SignUpState({
+    this.isLoading = false,
+    this.obscurePassword = true,
+    this.step = 1,
+    this.selectedRole = 'client',
+    this.fullName = '',
+    this.email = '',
+    this.phone = '',
+    this.age = '',
+    this.address = '',
+    this.password = '',
+  });
+
   final bool isLoading;
   final bool obscurePassword;
+  final int step;
   final String selectedRole;
-  _SignUpState copyWith({bool? isLoading, bool? obscurePassword, String? selectedRole}) =>
-      _SignUpState(isLoading: isLoading ?? this.isLoading, obscurePassword: obscurePassword ?? this.obscurePassword, selectedRole: selectedRole ?? this.selectedRole);
+  final String fullName;
+  final String email;
+  final String phone;
+  final String age;
+  final String address;
+  final String password;
+
+  _SignUpState copyWith({
+    bool? isLoading,
+    bool? obscurePassword,
+    int? step,
+    String? selectedRole,
+    String? fullName,
+    String? email,
+    String? phone,
+    String? age,
+    String? address,
+    String? password,
+  }) =>
+      _SignUpState(
+        isLoading: isLoading ?? this.isLoading,
+        obscurePassword: obscurePassword ?? this.obscurePassword,
+        step: step ?? this.step,
+        selectedRole: selectedRole ?? this.selectedRole,
+        fullName: fullName ?? this.fullName,
+        email: email ?? this.email,
+        phone: phone ?? this.phone,
+        age: age ?? this.age,
+        address: address ?? this.address,
+        password: password ?? this.password,
+      );
 }
 
 class _SignUpNotifier extends Notifier<_SignUpState> {
   @override
   _SignUpState build() => const _SignUpState();
-  void toggleObscure() => state = state.copyWith(obscurePassword: !state.obscurePassword);
-  void setRole(String role) => state = state.copyWith(selectedRole: role);
 
-  Future<void> signUp({required String email, required String password, required String fullName, required String phone, required String age, required String address}) async {
-    state = state.copyWith(isLoading: true);
+  void setRole(String role) => state = state.copyWith(selectedRole: role);
+  void toggleObscure() =>
+      state = state.copyWith(obscurePassword: !state.obscurePassword);
+
+  void goStep(int step) => state = state.copyWith(step: step);
+  void prevStep() {
+    if (state.step > 1) state = state.copyWith(step: state.step - 1);
+  }
+
+  void saveStep1(String fullName) =>
+      state = state.copyWith(fullName: fullName, step: 2);
+  void saveStep2(String email) =>
+      state = state.copyWith(email: email, step: 3);
+  void saveStep3(String phone, String age) =>
+      state = state.copyWith(phone: phone, age: age, step: 4);
+  void saveStep4(String address) =>
+      state = state.copyWith(address: address, step: 5);
+
+  Future<void> signUp(String password) async {
+    state = state.copyWith(isLoading: true, password: password);
     try {
-      await ref.read(authRepositoryProvider).signUpWithEmail(email: email, password: password, fullName: fullName, phone: phone, age: age, address: address, role: state.selectedRole);
+      await ref.read(authRepositoryProvider).signUpWithEmail(
+            email: state.email,
+            password: password,
+            fullName: state.fullName,
+            phone: state.phone,
+            age: state.age,
+            address: state.address,
+            role: state.selectedRole,
+          );
       await ref.read(userSetupRepositoryProvider).setupNewUser();
-      await AnalyticsService.instance.capture('signup_completed', properties: {
-        'role': state.selectedRole,
-      });
       state = state.copyWith(isLoading: false);
     } catch (e) {
       state = state.copyWith(isLoading: false);
@@ -38,7 +104,12 @@ class _SignUpNotifier extends Notifier<_SignUpState> {
   }
 }
 
-final _signUpProvider = NotifierProvider<_SignUpNotifier, _SignUpState>(_SignUpNotifier.new, isAutoDispose: true);
+final _signUpProvider = NotifierProvider<_SignUpNotifier, _SignUpState>(
+  _SignUpNotifier.new,
+  isAutoDispose: true,
+);
+
+// ─── Screen ──────────────────────────────────────────────────────────────────
 
 class SignUpScreen extends ConsumerStatefulWidget {
   const SignUpScreen({super.key, this.initialRole});
@@ -49,7 +120,6 @@ class SignUpScreen extends ConsumerStatefulWidget {
 }
 
 class _SignUpScreenState extends ConsumerState<SignUpScreen> {
-  final _formKey = GlobalKey<FormState>();
   final _nameCtrl = TextEditingController();
   final _emailCtrl = TextEditingController();
   final _phoneCtrl = TextEditingController();
@@ -61,29 +131,68 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
   void initState() {
     super.initState();
     if (widget.initialRole != null) {
-      Future.microtask(() => ref.read(_signUpProvider.notifier).setRole(widget.initialRole!));
+      Future.microtask(
+        () => ref
+            .read(_signUpProvider.notifier)
+            .setRole(widget.initialRole!),
+      );
     }
   }
 
   @override
   void dispose() {
-    _nameCtrl.dispose(); _emailCtrl.dispose(); _phoneCtrl.dispose();
-    _ageCtrl.dispose(); _addressCtrl.dispose(); _passwordCtrl.dispose();
+    _nameCtrl.dispose();
+    _emailCtrl.dispose();
+    _phoneCtrl.dispose();
+    _ageCtrl.dispose();
+    _addressCtrl.dispose();
+    _passwordCtrl.dispose();
     super.dispose();
   }
 
+  void _onContinue(int step) {
+    HapticFeedback.selectionClick();
+    final n = ref.read(_signUpProvider.notifier);
+    switch (step) {
+      case 1:
+        if (_nameCtrl.text.trim().isEmpty) return;
+        n.saveStep1(_nameCtrl.text.trim());
+      case 2:
+        final email = _emailCtrl.text.trim();
+        if (email.isEmpty || !email.contains('@')) return;
+        n.saveStep2(email);
+      case 3:
+        n.saveStep3(_phoneCtrl.text.trim(), _ageCtrl.text.trim());
+      case 4:
+        n.saveStep4(_addressCtrl.text.trim());
+      case 5:
+        _submit();
+    }
+  }
+
   Future<void> _submit() async {
-    if (!_formKey.currentState!.validate()) return;
-    try {
-      await ref.read(_signUpProvider.notifier).signUp(
-        email: _emailCtrl.text.trim(), password: _passwordCtrl.text, fullName: _nameCtrl.text.trim(),
-        phone: _phoneCtrl.text.trim(), age: _ageCtrl.text.trim(), address: _addressCtrl.text.trim(),
+    final pw = _passwordCtrl.text;
+    if (pw.length < 6) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Mot de passe: minimum 6 caractères'),
+          backgroundColor: AppColors.error,
+        ),
       );
+      return;
+    }
+    try {
+      await ref.read(_signUpProvider.notifier).signUp(pw);
       if (!mounted) return;
       context.go('/complete-profile');
     } on Exception catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString().replaceFirst('Exception: ', '')), backgroundColor: AppColors.error));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString().replaceFirst('Exception: ', '')),
+          backgroundColor: AppColors.error,
+        ),
+      );
     }
   }
 
@@ -91,85 +200,283 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
   Widget build(BuildContext context) {
     final s = ref.watch(_signUpProvider);
     final n = ref.read(_signUpProvider.notifier);
+
     return Scaffold(
-      backgroundColor: AppColors.fondDark,
+      backgroundColor: AppColors.fond,
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
-          child: Form(key: _formKey, child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            const SizedBox(height: 16),
-            _RoleToggle(selected: s.selectedRole, onChanged: n.setRole),
-            const SizedBox(height: 32),
-            const Text('Create your account', style: TextStyle(color: AppColors.blanc, fontSize: 28, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 8),
-            const Text('Join the community to discover, book, and experience events.', style: TextStyle(color: AppColors.gris, fontSize: 15)),
-            const SizedBox(height: 32),
-            _FormField(controller: _nameCtrl, hint: 'Jane Doe', label: 'Full Name', icon: Icons.person_outline, validator: (v) => (v == null || v.isEmpty) ? 'Required' : null),
-            const SizedBox(height: 16),
-            _FormField(controller: _emailCtrl, hint: 'name@example.com', label: 'Email Address', icon: Icons.mail_outline, keyboardType: TextInputType.emailAddress, validator: (v) { if (v == null || v.isEmpty) return 'Required'; if (!v.contains('@')) return 'Invalid email'; return null; }),
-            const SizedBox(height: 16),
-            _FormField(controller: _phoneCtrl, hint: '+1 (555) 000-0000', label: 'Phone Number', icon: Icons.phone_outlined, keyboardType: TextInputType.phone),
-            const SizedBox(height: 16),
-            Row(children: [
-              SizedBox(width: 80, child: _FormField(controller: _ageCtrl, hint: 'Age', label: 'Age', keyboardType: TextInputType.number)),
-              const SizedBox(width: 12),
-              Expanded(child: _FormField(controller: _addressCtrl, hint: '123 Main St', label: 'Address', icon: Icons.pin_drop_outlined)),
-            ]),
-            const SizedBox(height: 16),
-            _FormField(controller: _passwordCtrl, hint: '••••••••', label: 'Password', icon: Icons.lock_outline, obscure: s.obscurePassword,
-              suffix: GestureDetector(onTap: n.toggleObscure, child: Icon(s.obscurePassword ? Icons.visibility_off_outlined : Icons.visibility_outlined, color: AppColors.gris, size: 20)),
-              validator: (v) { if (v == null || v.length < 6) return 'Min 6 characters'; return null; }),
-            const SizedBox(height: 24),
-            RichText(text: const TextSpan(style: TextStyle(color: AppColors.gris, fontSize: 12), children: [
-              TextSpan(text: 'By selecting "Create Account", you agree to our '),
-              TextSpan(text: 'Terms of Service', style: TextStyle(color: AppColors.accent)),
-              TextSpan(text: ' and '),
-              TextSpan(text: 'Privacy Policy', style: TextStyle(color: AppColors.accent)),
-              TextSpan(text: '.'),
-            ])),
-            const SizedBox(height: 24),
-            SizedBox(width: double.infinity, height: 52, child: ElevatedButton(
-              onPressed: s.isLoading ? null : _submit,
-              style: ElevatedButton.styleFrom(backgroundColor: AppColors.accent, foregroundColor: AppColors.fondDark, disabledBackgroundColor: AppColors.accent.withAlpha(128), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
-              child: s.isLoading ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.fondDark)) : const Text('Create Account', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
-            )),
-            const SizedBox(height: 24),
-            Center(child: GestureDetector(onTap: () => context.go('/login'), child: RichText(text: const TextSpan(text: 'Already have an account? ', style: TextStyle(color: AppColors.gris, fontSize: 14), children: [TextSpan(text: 'Log in', style: TextStyle(color: AppColors.accent))])))),
-            const SizedBox(height: 32),
-          ])),
+        child: Column(
+          children: [
+            // Top bar
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+              child: Row(
+                children: [
+                  GestureDetector(
+                    onTap: s.step == 1
+                        ? () => context.go('/account-type')
+                        : n.prevStep,
+                    child: const Icon(
+                      Icons.arrow_back_ios,
+                      color: AppColors.blanc,
+                      size: 20,
+                    ),
+                  ),
+                  const Spacer(),
+                  Text(
+                    'Step ${s.step} of 5',
+                    style: const TextStyle(
+                      color: AppColors.gris,
+                      fontSize: 13,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            // Progress bar
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(4),
+                child: LinearProgressIndicator(
+                  value: s.step / 5,
+                  backgroundColor: AppColors.surface,
+                  valueColor: const AlwaysStoppedAnimation<Color>(
+                    AppColors.blanc,
+                  ),
+                  minHeight: 4,
+                ),
+              ),
+            ),
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: _buildStepContent(s),
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
+
+  Widget _buildStepContent(_SignUpState s) {
+    final loginLink = Center(
+      child: GestureDetector(
+        onTap: () => context.go('/login'),
+        child: const Text(
+          'Already have an account? Sign In',
+          style: TextStyle(color: AppColors.blanc, fontSize: 14),
+        ),
+      ),
+    );
+
+    switch (s.step) {
+      case 1:
+        return _StepLayout(
+          title: 'Create your account',
+          subtitle: 'What is your full name?',
+          buttonLabel: 'Continue',
+          onContinue: () => _onContinue(1),
+          isLoading: false,
+          footer: loginLink,
+          child: _SignUpField(
+            controller: _nameCtrl,
+            hint: 'Jane Doe',
+            icon: Icons.person_outline,
+          ),
+        );
+      case 2:
+        return _StepLayout(
+          title: 'Your email',
+          subtitle: 'We will send your confirmation here',
+          buttonLabel: 'Continue',
+          onContinue: () => _onContinue(2),
+          isLoading: false,
+          footer: loginLink,
+          child: _SignUpField(
+            controller: _emailCtrl,
+            hint: 'name@example.com',
+            icon: Icons.mail_outline,
+            keyboardType: TextInputType.emailAddress,
+          ),
+        );
+      case 3:
+        return _StepLayout(
+          title: 'Contact info',
+          subtitle: 'Phone and age (optional)',
+          buttonLabel: 'Continue',
+          onContinue: () => _onContinue(3),
+          isLoading: false,
+          footer: loginLink,
+          child: Column(
+            children: [
+              _SignUpField(
+                controller: _phoneCtrl,
+                hint: '+1 (555) 000-0000',
+                icon: Icons.phone_outlined,
+                keyboardType: TextInputType.phone,
+              ),
+              const SizedBox(height: 16),
+              _SignUpField(
+                controller: _ageCtrl,
+                hint: 'Age',
+                icon: Icons.cake_outlined,
+                keyboardType: TextInputType.number,
+              ),
+            ],
+          ),
+        );
+      case 4:
+        return _StepLayout(
+          title: 'Your location',
+          subtitle: 'City or address (optional)',
+          buttonLabel: 'Continue',
+          onContinue: () => _onContinue(4),
+          isLoading: false,
+          footer: loginLink,
+          child: _SignUpField(
+            controller: _addressCtrl,
+            hint: 'Montreal, QC',
+            icon: Icons.pin_drop_outlined,
+          ),
+        );
+      case 5:
+        return _StepLayout(
+          title: 'Create a password',
+          subtitle: 'Minimum 6 characters',
+          buttonLabel: 'Create Account',
+          onContinue: () => _onContinue(5),
+          isLoading: s.isLoading,
+          footer: loginLink,
+          child: _SignUpField(
+            controller: _passwordCtrl,
+            hint: '••••••••',
+            icon: Icons.lock_outline,
+            obscure: s.obscurePassword,
+            suffix: GestureDetector(
+              onTap: ref.read(_signUpProvider.notifier).toggleObscure,
+              child: Icon(
+                s.obscurePassword
+                    ? Icons.visibility_off_outlined
+                    : Icons.visibility_outlined,
+                color: AppColors.gris,
+                size: 20,
+              ),
+            ),
+          ),
+        );
+      default:
+        return const SizedBox.shrink();
+    }
+  }
 }
 
-class _RoleToggle extends StatelessWidget {
-  const _RoleToggle({required this.selected, required this.onChanged});
-  final String selected;
-  final ValueChanged<String> onChanged;
+// ─── Step layout ─────────────────────────────────────────────────────────────
+
+class _StepLayout extends StatelessWidget {
+  const _StepLayout({
+    required this.title,
+    required this.subtitle,
+    required this.child,
+    required this.buttonLabel,
+    required this.onContinue,
+    required this.isLoading,
+    required this.footer,
+  });
+
+  final String title;
+  final String subtitle;
+  final Widget child;
+  final String buttonLabel;
+  final VoidCallback onContinue;
+  final bool isLoading;
+  final Widget footer;
+
   @override
   Widget build(BuildContext context) {
-    return Container(decoration: BoxDecoration(color: AppColors.surfaceAuth, borderRadius: BorderRadius.circular(12)), padding: const EdgeInsets.all(4), child: Row(children: [_b('Client', 'client'), _b('Service Provider', 'pro')]));
-  }
-  Widget _b(String label, String role) {
-    final sel = selected == role;
-    return Expanded(child: GestureDetector(onTap: () => onChanged(role), child: AnimatedContainer(duration: const Duration(milliseconds: 200), padding: const EdgeInsets.symmetric(vertical: 12), decoration: BoxDecoration(color: sel ? AppColors.blanc.withAlpha(26) : Colors.transparent, borderRadius: BorderRadius.circular(8)), child: Center(child: Text(label, style: TextStyle(color: sel ? AppColors.blanc : AppColors.gris, fontSize: 14, fontWeight: sel ? FontWeight.w600 : FontWeight.w400))))));
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 32),
+        Text(
+          title,
+          style: const TextStyle(
+            color: AppColors.blanc,
+            fontSize: 28,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          subtitle,
+          style: const TextStyle(color: AppColors.gris, fontSize: 15),
+        ),
+        const SizedBox(height: 32),
+        child,
+        const SizedBox(height: 32),
+        SpotbookButton.primary(
+          label: buttonLabel,
+          isLoading: isLoading,
+          onPressed: isLoading ? null : onContinue,
+        ),
+        const SizedBox(height: 24),
+        footer,
+        const SizedBox(height: 40),
+      ],
+    );
   }
 }
 
-class _FormField extends StatelessWidget {
-  const _FormField({required this.controller, required this.hint, required this.label, this.icon, this.keyboardType, this.obscure = false, this.suffix, this.validator});
-  final TextEditingController controller; final String hint; final String label; final IconData? icon; final TextInputType? keyboardType; final bool obscure; final Widget? suffix; final String? Function(String?)? validator;
+// ─── Field ────────────────────────────────────────────────────────────────────
+
+class _SignUpField extends StatelessWidget {
+  const _SignUpField({
+    required this.controller,
+    required this.hint,
+    this.icon,
+    this.keyboardType,
+    this.obscure = false,
+    this.suffix,
+  });
+
+  final TextEditingController controller;
+  final String hint;
+  final IconData? icon;
+  final TextInputType? keyboardType;
+  final bool obscure;
+  final Widget? suffix;
+
   @override
   Widget build(BuildContext context) {
-    return TextFormField(controller: controller, obscureText: obscure, keyboardType: keyboardType, validator: validator, style: const TextStyle(color: AppColors.blanc), decoration: InputDecoration(
-      hintText: hint, labelText: label, labelStyle: const TextStyle(color: AppColors.gris, fontSize: 13), hintStyle: TextStyle(color: AppColors.gris.withAlpha(128)),
-      prefixIcon: icon != null ? Icon(icon, color: AppColors.gris, size: 20) : null, suffixIcon: suffix, filled: true, fillColor: AppColors.surfaceAuth,
-      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
-      enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
-      focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.accent)),
-      errorBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.error)),
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-    ));
+    return TextField(
+      controller: controller,
+      obscureText: obscure,
+      keyboardType: keyboardType,
+      style: const TextStyle(color: AppColors.blanc),
+      decoration: InputDecoration(
+        hintText: hint,
+        hintStyle: const TextStyle(color: AppColors.gris),
+        prefixIcon: icon != null
+            ? Icon(icon, color: AppColors.gris, size: 20)
+            : null,
+        suffixIcon: suffix,
+        filled: true,
+        fillColor: AppColors.surface,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide.none,
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: AppColors.border),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: AppColors.blanc),
+        ),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+      ),
+    );
   }
 }
