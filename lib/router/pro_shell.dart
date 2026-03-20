@@ -15,85 +15,118 @@ class ProShell extends StatelessWidget {
       backgroundColor: AppColors.fond,
       body: navigationShell,
       bottomNavigationBar: Container(
+        height: 68,
         decoration: const BoxDecoration(
+          color: AppColors.fond,
           border: Border(
             top: BorderSide(color: AppColors.border, width: 0.5),
           ),
         ),
-        child: BottomNavigationBar(
-          backgroundColor: AppColors.fond,
-          elevation: 0,
-          type: BottomNavigationBarType.fixed,
-          selectedItemColor: AppColors.blanc,
-          unselectedItemColor: AppColors.gris,
-          selectedFontSize: 10,
-          unselectedFontSize: 10,
-          currentIndex: navigationShell.currentIndex,
-          onTap: (index) {
-            if (index == 2) {
-              HapticFeedback.mediumImpact();
-            } else {
-              HapticFeedback.selectionClick();
-            }
-            navigationShell.goBranch(
-              index,
-              initialLocation: index == navigationShell.currentIndex,
-            );
-          },
-          items: const [
-            BottomNavigationBarItem(
-              icon: Icon(Icons.grid_view_outlined),
-              activeIcon: Icon(Icons.grid_view),
-              label: 'Dashboard',
+        child: Row(
+          children: [
+            // Tabs 0, 1, 2 (Feed, Search, Camera)
+            Expanded(
+              child: _buildNav(
+                context,
+                tabs: const [
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.dynamic_feed_outlined),
+                    activeIcon: Icon(Icons.dynamic_feed),
+                    label: 'Feed',
+                  ),
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.search_outlined),
+                    activeIcon: Icon(Icons.search),
+                    label: 'Recherche',
+                  ),
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.videocam_outlined),
+                    activeIcon: Icon(Icons.videocam),
+                    label: 'Caméra',
+                  ),
+                ],
+                startIndex: 0,
+              ),
             ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.search_outlined),
-              activeIcon: Icon(Icons.search),
-              label: 'Recherche',
+            // 1px vertical divider between tab 3 and 4
+            Container(
+              width: 1,
+              height: 40,
+              color: AppColors.border,
             ),
-            BottomNavigationBarItem(
-              icon: _CameraIcon(),
-              activeIcon: _CameraIcon(),
-              label: 'Caméra',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.calendar_month_outlined),
-              activeIcon: Icon(Icons.calendar_month),
-              label: 'RDV',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.event_outlined),
-              activeIcon: Icon(Icons.event),
-              label: 'Événements',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.person_outline),
-              activeIcon: Icon(Icons.person),
-              label: 'Profil Pro',
+            // Tabs 3, 4, 5 (Bookings, Events, Profile)
+            Expanded(
+              child: _buildNav(
+                context,
+                tabs: const [
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.calendar_today_outlined),
+                    activeIcon: Icon(Icons.calendar_today),
+                    label: 'RDV',
+                  ),
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.confirmation_number_outlined),
+                    activeIcon: Icon(Icons.confirmation_number),
+                    label: 'Événements',
+                  ),
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.person_outline),
+                    activeIcon: Icon(Icons.person),
+                    label: 'Profil Pro',
+                  ),
+                ],
+                startIndex: 3,
+              ),
             ),
           ],
         ),
       ),
     );
   }
-}
 
-class _CameraIcon extends StatelessWidget {
-  const _CameraIcon();
+  Widget _buildNav(
+    BuildContext context, {
+    required List<BottomNavigationBarItem> tabs,
+    required int startIndex,
+  }) {
+    final currentIndex = navigationShell.currentIndex;
+    final relativeIndex = currentIndex - startIndex;
+    final isInGroup = relativeIndex >= 0 && relativeIndex < tabs.length;
 
-  @override
-  Widget build(BuildContext context) {
-    return Transform.translate(
-      offset: const Offset(0, -12),
-      child: Container(
-        width: 56,
-        height: 56,
-        decoration: const BoxDecoration(
-          color: AppColors.blanc,
-          shape: BoxShape.circle,
-        ),
-        child: const Icon(Icons.videocam, color: AppColors.fond, size: 26),
-      ),
+    return BottomNavigationBar(
+      backgroundColor: AppColors.fond,
+      elevation: 0,
+      type: BottomNavigationBarType.fixed,
+      selectedItemColor: AppColors.blanc,
+      unselectedItemColor: AppColors.gris,
+      selectedFontSize: 10,
+      unselectedFontSize: 10,
+      currentIndex: isInGroup ? relativeIndex : 0,
+      showSelectedLabels: true,
+      showUnselectedLabels: true,
+      onTap: (relIdx) {
+        final globalIdx = startIndex + relIdx;
+        HapticFeedback.selectionClick();
+        navigationShell.goBranch(
+          globalIdx,
+          initialLocation: globalIdx == currentIndex,
+        );
+      },
+      items: tabs
+          .asMap()
+          .map((i, tab) {
+            final isSelected = isInGroup && i == relativeIndex;
+            return MapEntry(
+              i,
+              BottomNavigationBarItem(
+                icon: isSelected ? tab.activeIcon : tab.icon,
+                activeIcon: tab.activeIcon,
+                label: tab.label,
+              ),
+            );
+          })
+          .values
+          .toList(),
     );
   }
 }
