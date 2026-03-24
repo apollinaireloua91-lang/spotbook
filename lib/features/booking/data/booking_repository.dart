@@ -17,6 +17,9 @@ class BookingRepository {
   static const _bookingSelect =
       '*, services(name, price, duration_minutes), time_slots(date, start_time, end_time), profiles_pro(business_name, users(full_name, avatar_url))';
 
+  static const _proBookingSelect =
+      '*, services(name, price, duration_minutes), time_slots(date, start_time, end_time), profiles_pro(business_name, users(full_name, avatar_url)), client_user:users!bookings_client_id_fkey(full_name, avatar_url)';
+
   // ─── Slots & dates ────────────────────────────────────────
 
   Future<List<String>> getAvailableDates(String proId) async {
@@ -116,13 +119,31 @@ class BookingRepository {
 
     final data = await _supabase
         .from('bookings')
-        .select(_bookingSelect)
+        .select(_proBookingSelect)
         .eq('pro_id', uid)
         .order('created_at', ascending: false);
 
     return (data as List)
         .map((json) => BookingModel.fromJson(json as Map<String, dynamic>))
         .toList();
+  }
+
+  Future<BookingModel?> getBookingById(String bookingId) async {
+    final data = await _supabase
+        .from('bookings')
+        .select(_proBookingSelect)
+        .eq('id', bookingId)
+        .maybeSingle();
+    if (data == null) return null;
+    return BookingModel.fromJson(data);
+  }
+
+  /// Pro : marque le RDV comme terminé (après passage en salon).
+  Future<void> markBookingCompleted(String bookingId) async {
+    await _supabase.from('bookings').update({'status': 'completed'}).eq(
+          'id',
+          bookingId,
+        );
   }
 
   // ─── Cancel booking ──────────────────────────────────────
@@ -137,6 +158,34 @@ class BookingRepository {
       throw Exception(err ?? 'Cancel failed');
     }
     return res.data as Map<String, dynamic>;
+  }
+
+  // ─── Reschedule booking ──────────────────────────────────
+
+  /// Atomically reschedules a booking to a new slot.
+  /// Frees the old slot, reserves the new slot, and updates the booking.
+  Future<void> rescheduleBooking({
+    required String bookingId,
+    required String oldSlotId,
+    required String newSlotId,
+  }) async {
+    // Free old slot
+    await _supabase
+        .from('time_slots')
+        .update({'is_available': true})
+        .eq('id', oldSlotId);
+
+    // Reserve new slot
+    await _supabase
+        .from('time_slots')
+        .update({'is_available': false})
+        .eq('id', newSlotId);
+
+    // Update booking
+    await _supabase
+        .from('bookings')
+        .update({'slot_id': newSlotId, 'status': 'confirmed'})
+        .eq('id', bookingId);
   }
 
   // ─── Promo code ───────────────────────────────────────────
@@ -224,13 +273,48 @@ class BookingRepository {
     };
   }
 
+  /// Série journalière des acomptes (RDV confirmés + terminés) pour graphique revenus.
+  Future<List<({DateTime day, double amount})>> getProRevenueDaily({
+    int days = 30,
+  }) async {
+    final uid = currentUserId;
+    if (uid == null) return [];
+
+    final from = DateTime.now().subtract(Duration(days: days));
+    final data = await _supabase
+        .from('bookings')
+        .select('deposit_amount, created_at, status')
+        .eq('pro_id', uid)
+        .gte('created_at', from.toIso8601String())
+        .inFilter('status', ['confirmed', 'completed']);
+
+    final byDay = <String, double>{};
+    for (final row in data as List) {
+      final created = DateTime.parse(row['created_at'] as String).toUtc();
+      final local = created.toLocal();
+      final key =
+          '${local.year}-${local.month.toString().padLeft(2, '0')}-${local.day.toString().padLeft(2, '0')}';
+      final amt = (row['deposit_amount'] as num?)?.toDouble() ?? 0;
+      byDay[key] = (byDay[key] ?? 0) + amt;
+    }
+
+    final out = <({DateTime day, double amount})>[];
+    for (var i = days - 1; i >= 0; i--) {
+      final d = DateTime.now().subtract(Duration(days: i));
+      final key =
+          '${d.year}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
+      out.add((day: DateTime(d.year, d.month, d.day), amount: byDay[key] ?? 0));
+    }
+    return out;
+  }
+
   Future<List<BookingModel>> getUpcomingProBookings({int limit = 5}) async {
     final uid = currentUserId;
     if (uid == null) return [];
 
     final data = await _supabase
         .from('bookings')
-        .select(_bookingSelect)
+        .select(_proBookingSelect)
         .eq('pro_id', uid)
         .inFilter('status', ['confirmed', 'pending_payment'])
         .order('created_at', ascending: false)

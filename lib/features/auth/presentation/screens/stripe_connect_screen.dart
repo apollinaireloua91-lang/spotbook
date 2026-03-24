@@ -74,7 +74,7 @@ class StripeConnectScreen extends StatelessWidget {
                 child: ElevatedButton(
                   onPressed: () {
                     // TODO: Open Stripe Connect onboarding WebView
-                    context.go('/pro/dashboard');
+                    context.go('/pro');
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.blanc,

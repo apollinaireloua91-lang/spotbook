@@ -69,13 +69,17 @@ class ProfileRepository {
     }
 
     if (bio != null) {
-      // Check if pro
       final role = _supabase.auth.currentUser?.userMetadata?['role'];
       if (role == 'pro') {
         await _supabase
             .from('profiles_pro')
-            .update({'bio': bio, 'updated_at': DateTime.now().toIso8601String()})
+            .update({
+              'description': bio,
+              'updated_at': DateTime.now().toIso8601String(),
+            })
             .eq('id', uid);
+      } else {
+        await _supabase.from('users').update({'bio': bio}).eq('id', uid);
       }
     }
   }
@@ -153,5 +157,141 @@ class ProfileRepository {
       final err = res.data is Map ? res.data['error'] : 'Link failed';
       throw Exception(err ?? 'Link failed');
     }
+  }
+
+  /// Nombre d’avis laissés par ce client (table `reviews`).
+  Future<int> countReviewsLeftByClient(String clientId) async {
+    final data = await _supabase
+        .from('reviews')
+        .select('id')
+        .eq('client_id', clientId);
+    return (data as List).length;
+  }
+
+  /// Liens `social_links` (tiktok, facebook, snapchat, twitter) → URL.
+  Future<Map<String, String>> getClientSocialLinkUrls(String userId) async {
+    try {
+      final data = await _supabase
+          .from('social_links')
+          .select('platform, url')
+          .eq('user_id', userId);
+      final map = <String, String>{};
+      for (final row in data as List) {
+        final m = row as Map<String, dynamic>;
+        final p = m['platform'] as String?;
+        final u = m['url'] as String?;
+        if (p != null && u != null && u.isNotEmpty) map[p] = u;
+      }
+      return map;
+    } catch (_) {
+      return {};
+    }
+  }
+
+  Future<List<ClientFavoriteProItem>> getClientFavoritePros(String userId) async {
+    final favData = await _supabase
+        .from('favorites')
+        .select()
+        .eq('user_id', userId)
+        .eq('target_type', 'pro')
+        .order('created_at', ascending: false);
+
+    final rows = favData as List;
+    if (rows.isEmpty) return [];
+
+    final orderedIds = <String>[];
+    for (final r in rows) {
+      final id = (r as Map<String, dynamic>)['target_id'] as String;
+      if (!orderedIds.contains(id)) orderedIds.add(id);
+    }
+
+    final prosData = await _supabase
+        .from('profiles_pro')
+        .select(
+          'id, average_rating, review_count, business_name, users(full_name, avatar_url)',
+        )
+        .inFilter('id', orderedIds);
+
+    final byId = <String, Map<String, dynamic>>{};
+    for (final p in prosData as List) {
+      final m = p as Map<String, dynamic>;
+      byId[m['id'] as String] = m;
+    }
+
+    final out = <ClientFavoriteProItem>[];
+    for (final id in orderedIds) {
+      final m = byId[id];
+      if (m == null) continue;
+      final user = m['users'] as Map<String, dynamic>?;
+      final name = user?['full_name'] as String? ??
+          m['business_name'] as String? ??
+          'Pro';
+      final avatar = user?['avatar_url'] as String?;
+      final rating = (m['average_rating'] as num?)?.toDouble() ?? 0;
+      final reviewCount = m['review_count'] as int? ?? 0;
+      out.add(ClientFavoriteProItem(
+        proId: id,
+        name: name,
+        rating: rating,
+        reviewCount: reviewCount,
+        avatarUrl: avatar,
+      ));
+    }
+    return out;
+  }
+
+  Future<List<ClientFavoriteVideoItem>> getClientFavoriteVideos(
+    String userId,
+  ) async {
+    final favData = await _supabase
+        .from('favorites')
+        .select()
+        .eq('user_id', userId)
+        .eq('target_type', 'video')
+        .order('created_at', ascending: false);
+
+    final rows = favData as List;
+    if (rows.isEmpty) return [];
+
+    final orderedIds = <String>[];
+    for (final r in rows) {
+      final id = (r as Map<String, dynamic>)['target_id'] as String;
+      if (!orderedIds.contains(id)) orderedIds.add(id);
+    }
+
+    final videoData = await _supabase
+        .from('videos')
+        .select('id, title, thumbnail_url')
+        .inFilter('id', orderedIds);
+
+    final byId = <String, Map<String, dynamic>>{};
+    for (final v in videoData as List) {
+      final m = v as Map<String, dynamic>;
+      byId[m['id'] as String] = m;
+    }
+
+    final out = <ClientFavoriteVideoItem>[];
+    for (final id in orderedIds) {
+      final m = byId[id];
+      if (m == null) continue;
+      out.add(ClientFavoriteVideoItem(
+        videoId: id,
+        title: m['title'] as String? ?? '',
+        thumbnailUrl: m['thumbnail_url'] as String?,
+        durationSeconds: null,
+      ));
+    }
+    return out;
+  }
+
+  Future<void> removeFavoriteForUser({
+    required String userId,
+    required String targetId,
+  }) async {
+    await _supabase
+        .from('favorites')
+        .delete()
+        .eq('user_id', userId)
+        .eq('target_id', targetId);
   }
 }

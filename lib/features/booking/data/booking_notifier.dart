@@ -334,6 +334,14 @@ final proBookingsProvider =
   isAutoDispose: true,
 );
 
+// ─── Détail réservation (client ou pro) ─────────────────────
+
+final bookingDetailProvider =
+    FutureProvider.family<BookingModel?, String>((ref, bookingId) async {
+  final repo = ref.watch(bookingRepositoryProvider);
+  return repo.getBookingById(bookingId);
+});
+
 // ─── Pro dashboard ──────────────────────────────────────────
 
 class ProDashboardState {
@@ -389,3 +397,11 @@ final proDashboardProvider =
   ProDashboardNotifier.new,
   isAutoDispose: true,
 );
+
+// ─── Revenus (graphique) ───────────────────────────────────
+
+final proRevenueDailyProvider = FutureProvider.family<
+    List<({DateTime day, double amount})>, int>((ref, days) async {
+  final repo = ref.watch(bookingRepositoryProvider);
+  return repo.getProRevenueDaily(days: days);
+});

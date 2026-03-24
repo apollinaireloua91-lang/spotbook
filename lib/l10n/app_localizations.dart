@@ -343,6 +343,420 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Partager'**
   String get share;
+
+  /// No description provided for @clientProfileReviewsCount.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count, plural, one{{count} avis} other{{count} avis}}'**
+  String clientProfileReviewsCount(int count);
+
+  /// No description provided for @clientProfileMemberSince.
+  ///
+  /// In fr, this message translates to:
+  /// **'Membre depuis {date}'**
+  String clientProfileMemberSince(String date);
+
+  /// No description provided for @clientProfileConnectedSocials.
+  ///
+  /// In fr, this message translates to:
+  /// **'RÉSEAUX LIÉS'**
+  String get clientProfileConnectedSocials;
+
+  /// No description provided for @clientProfileCollaborationTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Contact collaboration'**
+  String get clientProfileCollaborationTitle;
+
+  /// No description provided for @clientProfileCollaborationBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vous êtes prestataire ? Envoyez une demande pour discuter d’un partenariat ou d’une collaboration.'**
+  String get clientProfileCollaborationBody;
+
+  /// No description provided for @clientProfileSendCollaborationRequest.
+  ///
+  /// In fr, this message translates to:
+  /// **'Envoyer une demande'**
+  String get clientProfileSendCollaborationRequest;
+
+  /// No description provided for @clientProfileCollaborationOpened.
+  ///
+  /// In fr, this message translates to:
+  /// **'Conversation ouverte'**
+  String get clientProfileCollaborationOpened;
+
+  /// No description provided for @clientProfileTakePhoto.
+  ///
+  /// In fr, this message translates to:
+  /// **'Prendre une photo'**
+  String get clientProfileTakePhoto;
+
+  /// No description provided for @clientProfileFromGallery.
+  ///
+  /// In fr, this message translates to:
+  /// **'Galerie'**
+  String get clientProfileFromGallery;
+
+  /// No description provided for @clientProfileEditProfile.
+  ///
+  /// In fr, this message translates to:
+  /// **'Modifier le profil'**
+  String get clientProfileEditProfile;
+
+  /// No description provided for @clientProfilePrivateTabs.
+  ///
+  /// In fr, this message translates to:
+  /// **'Seul vous voyez ce contenu sur votre profil.'**
+  String get clientProfilePrivateTabs;
+
+  /// No description provided for @clientProfileRemovedFavorite.
+  ///
+  /// In fr, this message translates to:
+  /// **'Retiré des favoris'**
+  String get clientProfileRemovedFavorite;
+
+  /// No description provided for @clientProfileBookNow.
+  ///
+  /// In fr, this message translates to:
+  /// **'Réserver'**
+  String get clientProfileBookNow;
+
+  /// No description provided for @clientProfileTicketValid.
+  ///
+  /// In fr, this message translates to:
+  /// **'Valide'**
+  String get clientProfileTicketValid;
+
+  /// No description provided for @clientProfileTicketUsed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Utilisé'**
+  String get clientProfileTicketUsed;
+
+  /// No description provided for @clientProfileNoFavorites.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun favori pour l’instant'**
+  String get clientProfileNoFavorites;
+
+  /// No description provided for @clientProfileNoHistory.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun rendez-vous passé'**
+  String get clientProfileNoHistory;
+
+  /// No description provided for @clientProfileNoTickets.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun billet'**
+  String get clientProfileNoTickets;
+
+  /// No description provided for @clientProfileNotSignedIn.
+  ///
+  /// In fr, this message translates to:
+  /// **'Non connecté'**
+  String get clientProfileNotSignedIn;
+
+  /// No description provided for @clientProfileCollaborationError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impossible d’ouvrir la conversation'**
+  String get clientProfileCollaborationError;
+
+  /// No description provided for @proSettingsTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Paramètres pro'**
+  String get proSettingsTitle;
+
+  /// No description provided for @proSettingsSavedToast.
+  ///
+  /// In fr, this message translates to:
+  /// **'Enregistré'**
+  String get proSettingsSavedToast;
+
+  /// No description provided for @proSettingsSectionAccount.
+  ///
+  /// In fr, this message translates to:
+  /// **'COMPTE'**
+  String get proSettingsSectionAccount;
+
+  /// No description provided for @proSettingsPhone.
+  ///
+  /// In fr, this message translates to:
+  /// **'Téléphone'**
+  String get proSettingsPhone;
+
+  /// No description provided for @proSettingsChangePassword.
+  ///
+  /// In fr, this message translates to:
+  /// **'Changer le mot de passe'**
+  String get proSettingsChangePassword;
+
+  /// No description provided for @proSettingsSectionBusiness.
+  ///
+  /// In fr, this message translates to:
+  /// **'ENTREPRISE'**
+  String get proSettingsSectionBusiness;
+
+  /// No description provided for @proSettingsBusinessProfile.
+  ///
+  /// In fr, this message translates to:
+  /// **'Profil entreprise'**
+  String get proSettingsBusinessProfile;
+
+  /// No description provided for @proSettingsWorkAddress.
+  ///
+  /// In fr, this message translates to:
+  /// **'Adresse d’activité'**
+  String get proSettingsWorkAddress;
+
+  /// No description provided for @proSettingsSectionBookings.
+  ///
+  /// In fr, this message translates to:
+  /// **'RÉSERVATIONS'**
+  String get proSettingsSectionBookings;
+
+  /// No description provided for @proSettingsCancellationPolicy.
+  ///
+  /// In fr, this message translates to:
+  /// **'Politique d’annulation'**
+  String get proSettingsCancellationPolicy;
+
+  /// No description provided for @proSettingsPolicyModerate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Modérée'**
+  String get proSettingsPolicyModerate;
+
+  /// No description provided for @proSettingsPolicyStrict.
+  ///
+  /// In fr, this message translates to:
+  /// **'Stricte'**
+  String get proSettingsPolicyStrict;
+
+  /// No description provided for @proSettingsPolicyFlexible.
+  ///
+  /// In fr, this message translates to:
+  /// **'Flexible'**
+  String get proSettingsPolicyFlexible;
+
+  /// No description provided for @proSettingsMinAdvance.
+  ///
+  /// In fr, this message translates to:
+  /// **'Délai minimum avant réservation'**
+  String get proSettingsMinAdvance;
+
+  /// No description provided for @proSettingsHoursShort.
+  ///
+  /// In fr, this message translates to:
+  /// **'h'**
+  String get proSettingsHoursShort;
+
+  /// No description provided for @proSettingsMinGap.
+  ///
+  /// In fr, this message translates to:
+  /// **'Intervalle minimum entre RDV'**
+  String get proSettingsMinGap;
+
+  /// No description provided for @proSettingsMinutesShort.
+  ///
+  /// In fr, this message translates to:
+  /// **'min'**
+  String get proSettingsMinutesShort;
+
+  /// No description provided for @proSettingsMaxPerDay.
+  ///
+  /// In fr, this message translates to:
+  /// **'RDV max par jour'**
+  String get proSettingsMaxPerDay;
+
+  /// No description provided for @proSettingsSectionPayments.
+  ///
+  /// In fr, this message translates to:
+  /// **'PAIEMENTS'**
+  String get proSettingsSectionPayments;
+
+  /// No description provided for @proSettingsPayoutHistory.
+  ///
+  /// In fr, this message translates to:
+  /// **'Historique des virements'**
+  String get proSettingsPayoutHistory;
+
+  /// No description provided for @proSettingsPaymentsInfo.
+  ///
+  /// In fr, this message translates to:
+  /// **'Connectez Stripe pour recevoir les paiements des clients.'**
+  String get proSettingsPaymentsInfo;
+
+  /// No description provided for @proSettingsSectionNotifications.
+  ///
+  /// In fr, this message translates to:
+  /// **'NOTIFICATIONS'**
+  String get proSettingsSectionNotifications;
+
+  /// No description provided for @proSettingsNotifSettings.
+  ///
+  /// In fr, this message translates to:
+  /// **'Paramètres des notifications'**
+  String get proSettingsNotifSettings;
+
+  /// No description provided for @proSettingsSectionPrivacy.
+  ///
+  /// In fr, this message translates to:
+  /// **'CONFIDENTIALITÉ'**
+  String get proSettingsSectionPrivacy;
+
+  /// No description provided for @proSettingsProfilePublic.
+  ///
+  /// In fr, this message translates to:
+  /// **'Profil public'**
+  String get proSettingsProfilePublic;
+
+  /// No description provided for @proSettingsSearchVisible.
+  ///
+  /// In fr, this message translates to:
+  /// **'Visible dans la recherche'**
+  String get proSettingsSearchVisible;
+
+  /// No description provided for @proSettingsSectionLanguage.
+  ///
+  /// In fr, this message translates to:
+  /// **'LANGUE'**
+  String get proSettingsSectionLanguage;
+
+  /// No description provided for @proSettingsLanguage.
+  ///
+  /// In fr, this message translates to:
+  /// **'Langue de l’app'**
+  String get proSettingsLanguage;
+
+  /// No description provided for @proSettingsLangEnglish.
+  ///
+  /// In fr, this message translates to:
+  /// **'Anglais'**
+  String get proSettingsLangEnglish;
+
+  /// No description provided for @proSettingsLangFrench.
+  ///
+  /// In fr, this message translates to:
+  /// **'Français'**
+  String get proSettingsLangFrench;
+
+  /// No description provided for @proSettingsSectionHelp.
+  ///
+  /// In fr, this message translates to:
+  /// **'AIDE'**
+  String get proSettingsSectionHelp;
+
+  /// No description provided for @proSettingsFaq.
+  ///
+  /// In fr, this message translates to:
+  /// **'FAQ'**
+  String get proSettingsFaq;
+
+  /// No description provided for @proSettingsContactSupport.
+  ///
+  /// In fr, this message translates to:
+  /// **'Contacter le support'**
+  String get proSettingsContactSupport;
+
+  /// No description provided for @proSettingsDangerZone.
+  ///
+  /// In fr, this message translates to:
+  /// **'ZONE DANGEREUSE'**
+  String get proSettingsDangerZone;
+
+  /// No description provided for @proSettingsSignOut.
+  ///
+  /// In fr, this message translates to:
+  /// **'Se déconnecter'**
+  String get proSettingsSignOut;
+
+  /// No description provided for @proSettingsDeleteAccount.
+  ///
+  /// In fr, this message translates to:
+  /// **'Supprimer mon compte'**
+  String get proSettingsDeleteAccount;
+
+  /// No description provided for @proSettingsModifyEmailTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Modifier l’email'**
+  String get proSettingsModifyEmailTitle;
+
+  /// No description provided for @proSettingsModifyPhoneTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Modifier le téléphone'**
+  String get proSettingsModifyPhoneTitle;
+
+  /// No description provided for @proSettingsSignOutTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Se déconnecter ?'**
+  String get proSettingsSignOutTitle;
+
+  /// No description provided for @proSettingsSignOutConfirm.
+  ///
+  /// In fr, this message translates to:
+  /// **'Se déconnecter'**
+  String get proSettingsSignOutConfirm;
+
+  /// No description provided for @proSettingsStripeActive.
+  ///
+  /// In fr, this message translates to:
+  /// **'Stripe actif'**
+  String get proSettingsStripeActive;
+
+  /// No description provided for @proSettingsBankEnding.
+  ///
+  /// In fr, this message translates to:
+  /// **'Compte'**
+  String get proSettingsBankEnding;
+
+  /// No description provided for @proSettingsStripeVerifying.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vérification en cours'**
+  String get proSettingsStripeVerifying;
+
+  /// No description provided for @proSettingsStripeNotConfigured.
+  ///
+  /// In fr, this message translates to:
+  /// **'Stripe non configuré'**
+  String get proSettingsStripeNotConfigured;
+
+  /// No description provided for @proSettingsStripeConfigure.
+  ///
+  /// In fr, this message translates to:
+  /// **'Configurer Stripe Connect'**
+  String get proSettingsStripeConfigure;
+
+  /// No description provided for @proChangePasswordTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Changer le mot de passe'**
+  String get proChangePasswordTitle;
+
+  /// No description provided for @proCurrentPassword.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mot de passe actuel'**
+  String get proCurrentPassword;
+
+  /// No description provided for @proNewPassword.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nouveau mot de passe'**
+  String get proNewPassword;
+
+  /// No description provided for @proConfirmPassword.
+  ///
+  /// In fr, this message translates to:
+  /// **'Confirmer le mot de passe'**
+  String get proConfirmPassword;
 }
 
 class _AppLocalizationsDelegate

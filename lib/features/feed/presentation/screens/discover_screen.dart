@@ -7,6 +7,7 @@ import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/utils/analytics_service.dart';
 import '../../../profile/presentation/widgets/social_badge_widget.dart';
 import '../../data/discover_notifier.dart';
+import '../../domain/provider_search_result.dart';
 import '../../domain/video_model.dart';
 
 const _filterCategories = [
@@ -107,6 +108,36 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
                   ),
                   const SizedBox(width: 8),
                   IconButton(
+                    onPressed: () {
+                      final path = GoRouterState.of(context).uri.path;
+                      final base = path.startsWith('/pro/search')
+                          ? '/pro/search'
+                          : '/client/discover';
+                      context.push('$base/results');
+                    },
+                    icon: const Icon(Icons.view_list_outlined, color: AppColors.blanc),
+                    style: IconButton.styleFrom(
+                      backgroundColor: AppColors.surface,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    ),
+                  ),
+                  const SizedBox(width: 6),
+                  IconButton(
+                    onPressed: () {
+                      final path = GoRouterState.of(context).uri.path;
+                      final base = path.startsWith('/pro/search')
+                          ? '/pro/search'
+                          : '/client/discover';
+                      context.push('$base/map');
+                    },
+                    icon: const Icon(Icons.map_outlined, color: AppColors.blanc),
+                    style: IconButton.styleFrom(
+                      backgroundColor: AppColors.surface,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    ),
+                  ),
+                  const SizedBox(width: 6),
+                  IconButton(
                     onPressed: _openFilters,
                     icon: const Icon(Icons.tune, color: AppColors.blanc),
                     style: IconButton.styleFrom(
@@ -194,16 +225,82 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
             Expanded(
               child: s.isLoading
                   ? const Center(child: CircularProgressIndicator(color: AppColors.blanc))
-                  : s.results == null || s.results!.isEmpty
-                      ? const Center(child: Text('No results', style: TextStyle(color: AppColors.gris, fontSize: 15)))
-                      : GridView.builder(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2, crossAxisSpacing: 10, mainAxisSpacing: 10, childAspectRatio: 0.65,
+                  : CustomScrollView(
+                      slivers: [
+                        if (s.nearbyProviders.isNotEmpty) ...[
+                          SliverToBoxAdapter(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Padding(
+                                  padding: EdgeInsets.fromLTRB(16, 0, 16, 8),
+                                  child: Text(
+                                    'Professionnels proches',
+                                    style: TextStyle(
+                                      color: AppColors.blanc,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 148,
+                                  child: ListView.separated(
+                                    scrollDirection: Axis.horizontal,
+                                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                                    itemCount: s.nearbyProviders.length,
+                                    separatorBuilder: (_, __) => const SizedBox(width: 10),
+                                    itemBuilder: (context, i) =>
+                                        _NearbyProCard(pro: s.nearbyProviders[i]),
+                                  ),
+                                ),
+                                const SizedBox(height: 16),
+                              ],
+                            ),
                           ),
-                          itemCount: s.results!.length,
-                          itemBuilder: (context, index) => _ProCard(video: s.results![index]),
-                        ),
+                        ],
+                        if (s.results != null && s.results!.isNotEmpty)
+                          SliverPadding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            sliver: SliverGrid(
+                              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 2,
+                                crossAxisSpacing: 10,
+                                mainAxisSpacing: 10,
+                                childAspectRatio: 0.65,
+                              ),
+                              delegate: SliverChildBuilderDelegate(
+                                (context, index) => _ProCard(video: s.results![index]),
+                                childCount: s.results!.length,
+                              ),
+                            ),
+                          ),
+                        if (!s.isLoading &&
+                            s.nearbyProviders.isEmpty &&
+                            (s.results == null || s.results!.isEmpty))
+                          const SliverFillRemaining(
+                            hasScrollBody: false,
+                            child: Center(
+                              child: Text(
+                                'Aucun résultat',
+                                style: TextStyle(color: AppColors.gris, fontSize: 15),
+                              ),
+                            ),
+                          ),
+                        if (!s.isLoading &&
+                            s.nearbyProviders.isNotEmpty &&
+                            (s.results == null || s.results!.isEmpty))
+                          const SliverToBoxAdapter(
+                            child: Padding(
+                              padding: EdgeInsets.fromLTRB(16, 8, 16, 24),
+                              child: Text(
+                                'Aucune vidéo pour ces critères.',
+                                style: TextStyle(color: AppColors.gris, fontSize: 14),
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
             ),
           ],
         ),
@@ -289,7 +386,10 @@ class _FiltersSheet extends ConsumerWidget {
             width: double.infinity,
             height: 52,
             child: ElevatedButton(
-              onPressed: () => context.pop(),
+              onPressed: () {
+                n.reloadWithFilters();
+                context.pop();
+              },
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.blanc,
                 foregroundColor: AppColors.fond,
@@ -305,6 +405,70 @@ class _FiltersSheet extends ConsumerWidget {
   }
 }
 
+class _NearbyProCard extends StatelessWidget {
+  const _NearbyProCard({required this.pro});
+  final ProviderSearchResult pro;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () => context.push('/client/provider/${pro.id}'),
+      child: Container(
+        width: 120,
+        decoration: BoxDecoration(
+          color: AppColors.surface,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: AppColors.border),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(10),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              CircleAvatar(
+                radius: 28,
+                backgroundColor: AppColors.surfaceAlt,
+                backgroundImage:
+                    pro.avatarUrl != null ? CachedNetworkImageProvider(pro.avatarUrl!) : null,
+                child: pro.avatarUrl == null
+                    ? const Icon(Icons.storefront, color: AppColors.gris, size: 28)
+                    : null,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                pro.displayName,
+                style: const TextStyle(
+                  color: AppColors.blanc,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+              if (pro.city != null && pro.city!.isNotEmpty) ...[
+                const SizedBox(height: 2),
+                Text(
+                  pro.city!,
+                  style: const TextStyle(color: AppColors.gris, fontSize: 10),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+              if (pro.distanceKm != null) ...[
+                const Spacer(),
+                Text(
+                  '${pro.distanceKm!.toStringAsFixed(1)} km',
+                  style: const TextStyle(color: AppColors.grisClair, fontSize: 10),
+                ),
+              ],
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class _ProCard extends StatelessWidget {
   const _ProCard({required this.video});
   final VideoModel video;
@@ -312,7 +476,7 @@ class _ProCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => context.push('/pro/${video.proId}'),
+      onTap: () => context.push('/client/provider/${video.proId}'),
       child: Container(
         decoration: BoxDecoration(
           color: AppColors.surface,

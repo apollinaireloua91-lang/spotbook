@@ -19,7 +19,7 @@ class PermissionLocationScreen extends ConsumerWidget {
     } catch (_) {
       // Continue even if location access is denied
     }
-    if (context.mounted) context.go('/client/feed');
+    if (context.mounted) context.go('/client');
   }
 
   @override
@@ -77,7 +77,7 @@ class PermissionLocationScreen extends ConsumerWidget {
               ),
               const SizedBox(height: 16),
               GestureDetector(
-                onTap: () => context.go('/client/feed'),
+                onTap: () => context.go('/client'),
                 child: const Padding(
                   padding: EdgeInsets.symmetric(vertical: 8),
                   child: Text(

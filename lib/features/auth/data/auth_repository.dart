@@ -1,5 +1,4 @@
-import 'dart:typed_data';
-
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -35,6 +34,32 @@ class AuthRepository {
   bool get hasActiveSession => currentSession != null;
 
   Stream<AuthState> get authStateStream => _supabase.auth.onAuthStateChange;
+
+  /// 429 → [AuthException] (trop de tentatives). Autres erreurs Edge → on continue
+  /// (function indisponible / migration manquante) pour ne pas bloquer l’auth.
+  Future<void> _guardRateLimiter(Map<String, dynamic> body) async {
+    try {
+      await _supabase.functions.invoke('rate-limiter', body: body);
+    } on FunctionException catch (e) {
+      if (e.status == 429) {
+        throw AuthException(_rateLimiterUserMessage(e));
+      }
+      debugPrint(
+        '[auth] rate-limiter ignoré (status=${e.status}): ${e.details}',
+      );
+    } catch (e) {
+      // Réseau, timeout, parse, etc. — ne pas bloquer l’auth.
+      debugPrint('[auth] rate-limiter ignoré (autre): $e');
+    }
+  }
+
+  String _rateLimiterUserMessage(FunctionException e) {
+    final d = e.details;
+    if (d is Map && d['error'] != null) {
+      return d['error'].toString();
+    }
+    return 'Trop de tentatives. Réessaie plus tard.';
+  }
 
   Future<T> _runWithSessionRecovery<T>(Future<T> Function() action) async {
     try {
@@ -87,16 +112,7 @@ class AuthRepository {
     required String password,
   }) async {
     try {
-      final rateLimit = await _supabase.functions.invoke(
-        'rate-limiter',
-        body: {'type': 'login'},
-      );
-      if (rateLimit.status == 429) {
-        final err = rateLimit.data is Map<String, dynamic>
-            ? rateLimit.data['error']
-            : 'Trop de tentatives. Réessaie plus tard.';
-        throw AuthException(err as String);
-      }
+      await _guardRateLimiter({'type': 'login'});
 
       final response = await _runWithSessionRecovery(
         () => _supabase.auth.signInWithPassword(
@@ -123,17 +139,38 @@ class AuthRepository {
   }
 
   Future<void> resetPassword(String email) async {
-    final rateLimit = await _supabase.functions.invoke(
-      'rate-limiter',
-      body: {'type': 'otp', 'email': email},
-    );
-    if (rateLimit.status == 429) {
-      final err = rateLimit.data is Map<String, dynamic>
-          ? rateLimit.data['error']
-          : 'Trop de tentatives. Réessaie plus tard.';
-      throw AuthException(err as String);
-    }
+    await _guardRateLimiter({'type': 'otp', 'email': email});
     await _supabase.auth.resetPasswordForEmail(email);
+  }
+
+  /// Met à jour l’email (flux de confirmation selon config Supabase).
+  Future<void> updateEmail(String newEmail) async {
+    final trimmed = newEmail.trim();
+    if (trimmed.isEmpty) throw AuthException('Email requis');
+    await _runWithSessionRecovery(
+      () => _supabase.auth.updateUser(UserAttributes(email: trimmed)),
+    );
+  }
+
+  /// Vérifie l’ancien mot de passe puis applique le nouveau.
+  Future<void> changePassword({
+    required String currentPassword,
+    required String newPassword,
+  }) async {
+    final email = currentUser?.email;
+    if (email == null || email.isEmpty) {
+      throw AuthException('Aucun email associé au compte');
+    }
+    await _guardRateLimiter({'type': 'password_change'});
+    await _runWithSessionRecovery(
+      () => _supabase.auth.signInWithPassword(
+        email: email,
+        password: currentPassword,
+      ),
+    );
+    await _runWithSessionRecovery(
+      () => _supabase.auth.updateUser(UserAttributes(password: newPassword)),
+    );
   }
 
   Future<void> signOut() async {

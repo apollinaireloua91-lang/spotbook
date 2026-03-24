@@ -20,6 +20,7 @@ class ChatRepository {
     required String clientId,
     required String proId,
     String? bookingId,
+    String? tag,
   }) async {
     // Only allow chat if there's a confirmed booking
     if (bookingId != null) {
@@ -52,7 +53,8 @@ class ChatRepository {
         .insert({
           'client_id': clientId,
           'pro_id': proId,
-          'booking_id': bookingId,
+          if (bookingId != null) 'booking_id': bookingId,
+          if (tag != null) 'tag': tag,
         })
         .select('*, client_user:client_id(full_name, avatar_url), pro_user:pro_id(full_name, avatar_url)')
         .single();
@@ -137,6 +139,38 @@ class ChatRepository {
         .eq('conversation_id', conversationId)
         .neq('sender_id', uid)
         .eq('is_read', false);
+  }
+
+  /// Inbox : changements sur les conversations où l’utilisateur est client ou pro.
+  RealtimeChannel subscribeInbox({
+    required String userId,
+    required void Function() onChange,
+  }) {
+    return _supabase
+        .channel('inbox:$userId')
+        .onPostgresChanges(
+          event: PostgresChangeEvent.all,
+          schema: 'public',
+          table: 'conversations',
+          filter: PostgresChangeFilter(
+            type: PostgresChangeFilterType.eq,
+            column: 'client_id',
+            value: userId,
+          ),
+          callback: (_) => onChange(),
+        )
+        .onPostgresChanges(
+          event: PostgresChangeEvent.all,
+          schema: 'public',
+          table: 'conversations',
+          filter: PostgresChangeFilter(
+            type: PostgresChangeFilterType.eq,
+            column: 'pro_id',
+            value: userId,
+          ),
+          callback: (_) => onChange(),
+        )
+        .subscribe();
   }
 
   RealtimeChannel subscribeMessages(

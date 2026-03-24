@@ -1,3 +1,43 @@
+/// Règle hebdomadaire (alignée sur `generate-slots` : jour 0 = dimanche … 6 = samedi).
+class AvailabilityRuleModel {
+  const AvailabilityRuleModel({
+    required this.id,
+    required this.proId,
+    required this.dayOfWeek,
+    required this.startTime,
+    required this.endTime,
+    required this.slotDurationMinutes,
+  });
+
+  final String id;
+  final String proId;
+  final int dayOfWeek;
+  final String startTime;
+  final String endTime;
+  final int slotDurationMinutes;
+
+  static String _normTime(Object? raw) {
+    if (raw == null) return '00:00';
+    final t = raw.toString();
+    final parts = t.split(':');
+    if (parts.length >= 2) {
+      return '${parts[0].padLeft(2, '0')}:${parts[1].padLeft(2, '0')}';
+    }
+    return t;
+  }
+
+  factory AvailabilityRuleModel.fromJson(Map<String, dynamic> json) {
+    return AvailabilityRuleModel(
+      id: json['id'] as String,
+      proId: json['pro_id'] as String,
+      dayOfWeek: json['day_of_week'] as int,
+      startTime: _normTime(json['start_time']),
+      endTime: _normTime(json['end_time']),
+      slotDurationMinutes: json['slot_duration_minutes'] as int? ?? 60,
+    );
+  }
+}
+
 class ServiceModel {
   const ServiceModel({
     required this.id,
@@ -18,10 +58,18 @@ class ServiceModel {
   final bool isActive;
 
   factory ServiceModel.fromJson(Map<String, dynamic> json) {
+    String displayName = '';
+    for (final key in ['name', 'title', 'service_name']) {
+      final v = json[key];
+      if (v is String && v.trim().isNotEmpty) {
+        displayName = v.trim();
+        break;
+      }
+    }
     return ServiceModel(
       id: json['id'] as String,
       proId: json['pro_id'] as String,
-      name: json['name'] as String? ?? '',
+      name: displayName,
       description: json['description'] as String?,
       durationMinutes: json['duration_minutes'] as int? ?? 60,
       price: (json['price'] as num?)?.toDouble() ?? 0,
@@ -81,6 +129,10 @@ class BookingModel {
     this.slotDate,
     this.slotStartTime,
     this.proAvatarUrl,
+    this.clientName,
+    this.clientAvatarUrl,
+    this.serviceDurationMinutes,
+    this.slotEndTime,
   });
 
   final String id;
@@ -103,6 +155,10 @@ class BookingModel {
   final String? slotDate;
   final String? slotStartTime;
   final String? proAvatarUrl;
+  final String? clientName;
+  final String? clientAvatarUrl;
+  final int? serviceDurationMinutes;
+  final String? slotEndTime;
 
   bool get isUpcoming =>
       status == 'pending_payment' || status == 'confirmed';
@@ -115,6 +171,7 @@ class BookingModel {
     final slot = json['time_slots'] as Map<String, dynamic>?;
     final pro = json['profiles_pro'] as Map<String, dynamic>?;
     final proUser = pro?['users'] as Map<String, dynamic>?;
+    final clientUser = json['client_user'] as Map<String, dynamic>?;
 
     return BookingModel(
       id: json['id'] as String,
@@ -138,7 +195,21 @@ class BookingModel {
       slotDate: slot?['date'] as String?,
       slotStartTime: slot?['start_time'] as String?,
       proAvatarUrl: proUser?['avatar_url'] as String?,
+      clientName: clientUser?['full_name'] as String?,
+      clientAvatarUrl: clientUser?['avatar_url'] as String?,
+      serviceDurationMinutes: service?['duration_minutes'] as int?,
+      slotEndTime: _normSlotTime(slot?['end_time']),
     );
+  }
+
+  static String? _normSlotTime(Object? raw) {
+    if (raw == null) return null;
+    final t = raw.toString();
+    final parts = t.split(':');
+    if (parts.length >= 2) {
+      return '${parts[0].padLeft(2, '0')}:${parts[1].padLeft(2, '0')}';
+    }
+    return t;
   }
 }
 

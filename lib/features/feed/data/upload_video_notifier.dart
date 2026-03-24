@@ -1,3 +1,4 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:video_compress/video_compress.dart';
@@ -96,10 +97,8 @@ class UploadVideoNotifier extends Notifier<UploadVideoState> {
         category: state.selectedCategory!,
         duration: state.videoDuration,
         cloudflareId: cloudflareId,
-        streamUrl:
-            'https://customer-${const String.fromEnvironment("CLOUDFLARE_CUSTOMER_CODE")}.cloudflarestream.com/$cloudflareId/manifest/video.m3u8',
         thumbnailUrl:
-            'https://customer-${const String.fromEnvironment("CLOUDFLARE_CUSTOMER_CODE")}.cloudflarestream.com/$cloudflareId/thumbnails/thumbnail.jpg',
+            'https://customer-${dotenv.env["CLOUDFLARE_CUSTOMER_CODE"]}.cloudflarestream.com/$cloudflareId/thumbnails/thumbnail.jpg',
         hashtags: tags,
       );
 

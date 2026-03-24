@@ -192,7 +192,7 @@ class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
       onDoubleTap: _onDoubleTap,
       onHorizontalDragEnd: (details) {
         if ((details.primaryVelocity ?? 0) < -300) {
-          context.push('/pro/${widget.video.proId}');
+          context.push('/client/provider/${widget.video.proId}');
         }
       },
       child: Stack(
@@ -233,7 +233,8 @@ class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 GestureDetector(
-                  onTap: () => context.push('/pro/${widget.video.proId}'),
+                  onTap: () =>
+                      context.push('/client/provider/${widget.video.proId}'),
                   child: Row(
                     children: [
                       CircleAvatar(

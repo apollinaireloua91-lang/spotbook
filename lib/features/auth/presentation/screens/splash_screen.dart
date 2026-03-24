@@ -41,9 +41,9 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     }
     switch (repo.currentUserRole) {
       case 'client':
-        context.go('/client/feed');
+        context.go('/client');
       case 'pro':
-        context.go('/pro/dashboard');
+        context.go('/pro');
       default:
         context.go('/onboarding');
     }

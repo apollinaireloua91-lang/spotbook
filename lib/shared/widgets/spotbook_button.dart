@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 
 import '../theme/app_colors.dart';
 
-enum SpotbookButtonVariant { primary, secondary, outlined }
+enum SpotbookButtonVariant { primary, secondary, outlined, ghost, destructive }
 
 class SpotbookButton extends StatefulWidget {
   const SpotbookButton({
@@ -13,6 +13,7 @@ class SpotbookButton extends StatefulWidget {
     this.variant = SpotbookButtonVariant.primary,
     this.isLoading = false,
     this.icon,
+    this.width,
   });
 
   const SpotbookButton.primary({
@@ -21,6 +22,7 @@ class SpotbookButton extends StatefulWidget {
     required this.onPressed,
     this.isLoading = false,
     this.icon,
+    this.width,
   }) : variant = SpotbookButtonVariant.primary;
 
   const SpotbookButton.secondary({
@@ -29,6 +31,7 @@ class SpotbookButton extends StatefulWidget {
     required this.onPressed,
     this.isLoading = false,
     this.icon,
+    this.width,
   }) : variant = SpotbookButtonVariant.secondary;
 
   const SpotbookButton.outlined({
@@ -37,13 +40,33 @@ class SpotbookButton extends StatefulWidget {
     required this.onPressed,
     this.isLoading = false,
     this.icon,
+    this.width,
   }) : variant = SpotbookButtonVariant.outlined;
+
+  const SpotbookButton.ghost({
+    super.key,
+    required this.label,
+    required this.onPressed,
+    this.isLoading = false,
+    this.icon,
+    this.width,
+  }) : variant = SpotbookButtonVariant.ghost;
+
+  const SpotbookButton.destructive({
+    super.key,
+    required this.label,
+    required this.onPressed,
+    this.isLoading = false,
+    this.icon,
+    this.width,
+  }) : variant = SpotbookButtonVariant.destructive;
 
   final String label;
   final VoidCallback? onPressed;
   final SpotbookButtonVariant variant;
   final bool isLoading;
   final IconData? icon;
+  final double? width;
 
   @override
   State<SpotbookButton> createState() => _SpotbookButtonState();
@@ -60,7 +83,7 @@ class _SpotbookButtonState extends State<SpotbookButton>
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 100),
-      lowerBound: 0.95,
+      lowerBound: 0.97,
       upperBound: 1.0,
       value: 1.0,
     );
@@ -95,27 +118,39 @@ class _SpotbookButtonState extends State<SpotbookButton>
       case SpotbookButtonVariant.outlined:
         bg = Colors.transparent;
         fg = AppColors.blanc;
-        border = Border.all(color: AppColors.border);
+        border = Border.all(color: AppColors.blanc);
+      case SpotbookButtonVariant.ghost:
+        bg = Colors.transparent;
+        fg = AppColors.blanc;
+        border = null;
+      case SpotbookButtonVariant.destructive:
+        bg = AppColors.error.withValues(alpha: 0.1);
+        fg = AppColors.error;
+        border = null;
     }
 
+    final bool isPill = widget.variant == SpotbookButtonVariant.primary;
+    final double radius = isPill ? 28 : 12;
+    final double height = isPill ? 56 : 48;
+
     return GestureDetector(
-      onTapDown: _onTapDown,
-      onTapUp: _onTapUp,
-      onTapCancel: _onTapCancel,
+      onTapDown: widget.isLoading ? null : _onTapDown,
+      onTapUp: widget.isLoading ? null : _onTapUp,
+      onTapCancel: widget.isLoading ? null : _onTapCancel,
       onTap: widget.isLoading
           ? null
           : () {
-              HapticFeedback.mediumImpact();
+              HapticFeedback.lightImpact();
               widget.onPressed?.call();
             },
       child: ScaleTransition(
         scale: _scale,
         child: Container(
-          width: double.infinity,
-          height: 48,
+          width: widget.width ?? double.infinity,
+          height: height,
           decoration: BoxDecoration(
             color: bg,
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(radius),
             border: border,
           ),
           child: Center(
@@ -141,6 +176,7 @@ class _SpotbookButtonState extends State<SpotbookButton>
                           color: fg,
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
+                          letterSpacing: isPill ? 0.2 : 0,
                         ),
                       ),
                     ],

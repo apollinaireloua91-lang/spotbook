@@ -4,15 +4,18 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../shared/theme/app_colors.dart';
-import '../../data/booking_notifier.dart';
+import '../../data/booking_notifier.dart' show clientBookingsProvider, proBookingsProvider;
 import '../../domain/booking_models.dart';
 
 class MyBookingsScreen extends ConsumerWidget {
-  const MyBookingsScreen({super.key});
+  const MyBookingsScreen({super.key, this.forPro = false});
+
+  /// Liste des réservations reçues (prestataire) au lieu des réservations client.
+  final bool forPro;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final state = ref.watch(clientBookingsProvider);
+    final state = ref.watch(forPro ? proBookingsProvider : clientBookingsProvider);
 
     return DefaultTabController(
       length: 3,
@@ -20,9 +23,9 @@ class MyBookingsScreen extends ConsumerWidget {
         backgroundColor: AppColors.fond,
         appBar: AppBar(
           backgroundColor: AppColors.fond,
-          title: const Text(
-            'Mes RDV',
-            style: TextStyle(
+          title: Text(
+            forPro ? 'Mes RDV' : 'Mes RDV',
+            style: const TextStyle(
               color: AppColors.blanc,
               fontWeight: FontWeight.bold,
             ),
@@ -47,15 +50,18 @@ class MyBookingsScreen extends ConsumerWidget {
                   _BookingsList(
                     bookings: state.upcoming,
                     emptyMessage: 'Aucun RDV à venir',
-                    showCancel: true,
+                    showCancel: !forPro,
+                    forPro: forPro,
                   ),
                   _BookingsList(
                     bookings: state.past,
                     emptyMessage: 'Aucun RDV passé',
+                    forPro: forPro,
                   ),
                   _BookingsList(
                     bookings: state.cancelled,
                     emptyMessage: 'Aucun RDV annulé',
+                    forPro: forPro,
                   ),
                 ],
               ),
@@ -69,11 +75,13 @@ class _BookingsList extends StatelessWidget {
     required this.bookings,
     required this.emptyMessage,
     this.showCancel = false,
+    this.forPro = false,
   });
 
   final List<BookingModel> bookings;
   final String emptyMessage;
   final bool showCancel;
+  final bool forPro;
 
   @override
   Widget build(BuildContext context) {
@@ -100,41 +108,77 @@ class _BookingsList extends StatelessWidget {
       separatorBuilder: (_, __) => const SizedBox(height: 12),
       itemBuilder: (context, index) {
         final booking = bookings[index];
-        return _BookingCard(booking: booking, showCancel: showCancel);
+        return _BookingCard(
+          booking: booking,
+          showCancel: showCancel,
+          forPro: forPro,
+        );
       },
     );
   }
 }
 
 class _BookingCard extends StatelessWidget {
-  const _BookingCard({required this.booking, this.showCancel = false});
+  const _BookingCard({
+    required this.booking,
+    this.showCancel = false,
+    this.forPro = false,
+  });
 
   final BookingModel booking;
   final bool showCancel;
+  final bool forPro;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: () {
+          final path = forPro
+              ? '/pro/calendar/bookings/${booking.id}'
+              : '/client/bookings/${booking.id}';
+          context.push(path);
+        },
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.border),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: AppColors.surface,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: AppColors.border),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
           Row(
             children: [
               CircleAvatar(
                 radius: 20,
                 backgroundColor: AppColors.surfaceAlt,
-                backgroundImage: booking.proAvatarUrl != null
-                    ? CachedNetworkImageProvider(booking.proAvatarUrl!)
-                    : null,
-                child: booking.proAvatarUrl == null
-                    ? const Icon(Icons.person, color: AppColors.gris, size: 20)
-                    : null,
+                backgroundImage: forPro
+                    ? (booking.clientAvatarUrl != null
+                        ? CachedNetworkImageProvider(booking.clientAvatarUrl!)
+                        : null)
+                    : (booking.proAvatarUrl != null
+                        ? CachedNetworkImageProvider(booking.proAvatarUrl!)
+                        : null),
+                child: forPro
+                    ? (booking.clientAvatarUrl == null
+                        ? Text(
+                            (booking.clientName ?? 'C').isNotEmpty
+                                ? (booking.clientName ?? 'C')[0].toUpperCase()
+                                : '?',
+                            style: const TextStyle(
+                              color: AppColors.blanc,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          )
+                        : null)
+                    : (booking.proAvatarUrl == null
+                        ? const Icon(Icons.person, color: AppColors.gris, size: 20)
+                        : null),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -142,7 +186,9 @@ class _BookingCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      booking.proName ?? 'Pro',
+                      forPro
+                          ? (booking.clientName ?? 'Client')
+                          : (booking.proName ?? 'Pro'),
                       style: const TextStyle(
                         color: AppColors.blanc,
                         fontWeight: FontWeight.bold,
@@ -209,7 +255,9 @@ class _BookingCard extends StatelessWidget {
               ),
             ),
           ],
-        ],
+            ],
+          ),
+        ),
       ),
     );
   }

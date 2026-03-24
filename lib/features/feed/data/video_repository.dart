@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../../shared/utils/cloudflare_stream_urls.dart';
 import '../domain/video_model.dart';
 
 final videoRepositoryProvider = Provider<VideoRepository>((ref) {
@@ -17,8 +18,18 @@ class VideoRepository {
 
   String? get currentUserId => _supabase.auth.currentUser?.id;
 
+  /// Colonnes explicites (schéma minimal `001`) — pas de `stream_url` ; lecture dérivée via `cloudflare_id`.
   static const _selectWithPro =
-      '*, profiles_pro!inner(id, business_name, category, is_top_pro, users!inner(full_name, avatar_url, city), social_connections(platform, followers_count, handle))';
+      'id, pro_id, cloudflare_id, thumbnail_url, title, hashtags, category, status, likes_count, comments_count, views_count, created_at, profiles_pro!inner(id, business_name, category, is_top_pro, users!inner(full_name, avatar_url, city), social_connections(platform, followers_count, handle))';
+
+  Map<String, dynamic> _withDerivedStreamUrl(Map<String, dynamic> json) {
+    final m = Map<String, dynamic>.from(json);
+    final existing = m['stream_url'] as String?;
+    if (existing != null && existing.isNotEmpty) return m;
+    final derived = cloudflareManifestUrl(m['cloudflare_id'] as String?);
+    if (derived != null) m['stream_url'] = derived;
+    return m;
+  }
 
   Future<List<VideoModel>> getScoredVideos({int limit = 10}) async {
     final uid = currentUserId;
@@ -40,12 +51,16 @@ class VideoRepository {
       query = query.not('pro_id', 'in', blockedIds);
     }
 
-    final data = await query.order('created_at', ascending: false).limit(50);
+    final data = await query
+        .order('created_at', ascending: false)
+        .limit(50);
     final likedIds = await _getLikedVideoIds(uid);
 
     final videos = (data as List)
-        .map((json) => VideoModel.fromJson(json as Map<String, dynamic>,
-            isLiked: likedIds.contains(json['id'])))
+        .map((json) => VideoModel.fromJson(
+              _withDerivedStreamUrl(json as Map<String, dynamic>),
+              isLiked: likedIds.contains(json['id']),
+            ))
         .toList();
 
     final scored = videos.map((v) {
@@ -88,8 +103,10 @@ class VideoRepository {
         .range(offset, offset + limit - 1);
 
     return (data as List)
-        .map((json) => VideoModel.fromJson(json as Map<String, dynamic>,
-            isLiked: likedIds.contains(json['id'])))
+        .map((json) => VideoModel.fromJson(
+              _withDerivedStreamUrl(json as Map<String, dynamic>),
+              isLiked: likedIds.contains(json['id']),
+            ))
         .toList();
   }
 
@@ -169,7 +186,9 @@ class VideoRepository {
         .eq('pro_id', uid)
         .order('created_at', ascending: false);
     return (data as List)
-        .map((json) => VideoModel.fromJson(json as Map<String, dynamic>))
+        .map((json) => VideoModel.fromJson(
+              _withDerivedStreamUrl(json as Map<String, dynamic>),
+            ))
         .toList();
   }
 
@@ -180,7 +199,9 @@ class VideoRepository {
         .eq('pro_id', proId)
         .order('created_at', ascending: false);
     return (data as List)
-        .map((json) => VideoModel.fromJson(json as Map<String, dynamic>))
+        .map((json) => VideoModel.fromJson(
+              _withDerivedStreamUrl(json as Map<String, dynamic>),
+            ))
         .toList();
   }
 
@@ -200,7 +221,6 @@ class VideoRepository {
     required String category,
     required double? duration,
     required String cloudflareId,
-    required String streamUrl,
     required String thumbnailUrl,
     required List<String> hashtags,
   }) async {
@@ -212,7 +232,6 @@ class VideoRepository {
         'category': category,
         'duration': duration,
         'cloudflare_id': cloudflareId,
-        'stream_url': streamUrl,
         'thumbnail_url': thumbnailUrl,
         'hashtags': hashtags,
       },
@@ -233,7 +252,9 @@ class VideoRepository {
         .order('created_at', ascending: false)
         .limit(20);
     return (data as List)
-        .map((json) => VideoModel.fromJson(json as Map<String, dynamic>))
+        .map((json) => VideoModel.fromJson(
+              _withDerivedStreamUrl(json as Map<String, dynamic>),
+            ))
         .toList();
   }
 
@@ -246,7 +267,9 @@ class VideoRepository {
         .order('created_at', ascending: false)
         .limit(20);
     return (data as List)
-        .map((json) => VideoModel.fromJson(json as Map<String, dynamic>))
+        .map((json) => VideoModel.fromJson(
+              _withDerivedStreamUrl(json as Map<String, dynamic>),
+            ))
         .toList();
   }
 

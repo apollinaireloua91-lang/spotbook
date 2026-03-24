@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_google_places_sdk/flutter_google_places_sdk.dart';
 import '../theme/app_colors.dart';
 
@@ -30,7 +31,7 @@ class _AddressAutocompleteFieldState extends State<AddressAutocompleteField> {
   @override
   void initState() {
     super.initState();
-    const apiKey = String.fromEnvironment('GOOGLE_PLACES_KEY');
+    final apiKey = dotenv.env['GOOGLE_PLACES_KEY'] ?? '';
     _places = FlutterGooglePlacesSdk(apiKey);
   }
 

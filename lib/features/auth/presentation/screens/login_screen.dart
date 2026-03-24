@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/widgets/spotbook_button.dart';
@@ -58,6 +59,19 @@ final _loginProvider = NotifierProvider<_LoginNotifier, _LoginState>(
   isAutoDispose: true,
 );
 
+String _loginErrorMessage(Object e) {
+  if (e is AuthException) return e.message;
+  if (e is FunctionException) {
+    if (e.status == 429) {
+      final d = e.details;
+      if (d is Map && d['error'] != null) return d['error'].toString();
+      return 'Trop de tentatives. Réessaie plus tard.';
+    }
+    return 'Service momentanément indisponible. Réessaie dans quelques instants.';
+  }
+  return e.toString().replaceFirst('Exception: ', '');
+}
+
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
 
@@ -94,17 +108,17 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       if (!mounted) return;
       switch (role) {
         case 'client':
-          context.go('/client/feed');
+          context.go('/client');
         case 'pro':
-          context.go('/pro/feed');
+          context.go('/pro');
         default:
           context.go('/complete-profile');
       }
-    } on Exception catch (e) {
+    } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(e.toString().replaceFirst('Exception: ', '')),
+          content: Text(_loginErrorMessage(e)),
           backgroundColor: AppColors.error,
         ),
       );
@@ -115,11 +129,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     try {
       await ref.read(authRepositoryProvider).signInWithGoogle();
       // Navigation handled by auth state listener in app_router
-    } on Exception catch (e) {
+    } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(e.toString().replaceFirst('Exception: ', '')),
+          content: Text(_loginErrorMessage(e)),
           backgroundColor: AppColors.error,
         ),
       );

@@ -44,7 +44,7 @@ class ModerationRepository {
       'action': 'user_blocked',
       'resource_type': 'user',
       'resource_id': blockedId,
-      'metadata': {},
+      'metadata': {'blocked_id': blockedId},
     });
   }
 

@@ -4,129 +4,150 @@ import 'package:go_router/go_router.dart';
 
 import '../shared/theme/app_colors.dart';
 
+/// Shell prestataire — 5 onglets : Feed | Recherche | Caméra | RDV | Profil Pro
+/// (aligné avec GoRouter ; événements depuis le profil / dashboard, pas un onglet.)
 class ProShell extends StatelessWidget {
   const ProShell({super.key, required this.navigationShell});
 
   final StatefulNavigationShell navigationShell;
 
+  void _goBranch(BuildContext context, int index) {
+    HapticFeedback.selectionClick();
+    navigationShell.goBranch(
+      index,
+      initialLocation: index == navigationShell.currentIndex,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final idx = navigationShell.currentIndex;
+
     return Scaffold(
+      extendBody: true,
       backgroundColor: AppColors.fond,
       body: navigationShell,
-      bottomNavigationBar: Container(
-        height: 68,
-        decoration: const BoxDecoration(
-          color: AppColors.fond,
-          border: Border(
-            top: BorderSide(color: AppColors.border, width: 0.5),
+      bottomNavigationBar: _ProBottomBar(
+        currentIndex: idx,
+        onTap: (i) => _goBranch(context, i),
+      ),
+    );
+  }
+}
+
+class _ProBottomBar extends StatelessWidget {
+  const _ProBottomBar({required this.currentIndex, required this.onTap});
+
+  final int currentIndex;
+  final ValueChanged<int> onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 72 + MediaQuery.of(context).padding.bottom,
+      decoration: const BoxDecoration(
+        color: AppColors.fond,
+        border: Border(top: BorderSide(color: AppColors.border, width: 0.5)),
+      ),
+      child: SafeArea(
+        top: false,
+        child: SizedBox(
+          height: 72,
+          child: Row(
+            children: [
+              Expanded(
+                child: _NavItem(
+                  icon: Icons.dynamic_feed_outlined,
+                  activeIcon: Icons.dynamic_feed,
+                  label: 'Feed',
+                  selected: currentIndex == 0,
+                  onTap: () => onTap(0),
+                ),
+              ),
+              Expanded(
+                child: _NavItem(
+                  icon: Icons.search_outlined,
+                  activeIcon: Icons.search,
+                  label: 'Recherche',
+                  selected: currentIndex == 1,
+                  onTap: () => onTap(1),
+                ),
+              ),
+              Expanded(
+                child: _NavItem(
+                  icon: Icons.videocam_outlined,
+                  activeIcon: Icons.videocam,
+                  label: 'Caméra',
+                  selected: currentIndex == 2,
+                  onTap: () => onTap(2),
+                ),
+              ),
+              Expanded(
+                child: _NavItem(
+                  icon: Icons.calendar_today_outlined,
+                  activeIcon: Icons.calendar_today,
+                  label: 'RDV',
+                  selected: currentIndex == 3,
+                  onTap: () => onTap(3),
+                ),
+              ),
+              Expanded(
+                child: _NavItem(
+                  icon: Icons.person_outline,
+                  activeIcon: Icons.person,
+                  label: 'Profil Pro',
+                  selected: currentIndex == 4,
+                  onTap: () => onTap(4),
+                ),
+              ),
+            ],
           ),
         ),
-        child: Row(
+      ),
+    );
+  }
+}
+
+class _NavItem extends StatelessWidget {
+  const _NavItem({
+    required this.icon,
+    required this.activeIcon,
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final IconData activeIcon;
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final color = selected ? AppColors.blanc : AppColors.gris;
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Tabs 0, 1, 2 (Feed, Search, Camera)
-            Expanded(
-              child: _buildNav(
-                context,
-                tabs: const [
-                  BottomNavigationBarItem(
-                    icon: Icon(Icons.dynamic_feed_outlined),
-                    activeIcon: Icon(Icons.dynamic_feed),
-                    label: 'Feed',
-                  ),
-                  BottomNavigationBarItem(
-                    icon: Icon(Icons.search_outlined),
-                    activeIcon: Icon(Icons.search),
-                    label: 'Recherche',
-                  ),
-                  BottomNavigationBarItem(
-                    icon: Icon(Icons.videocam_outlined),
-                    activeIcon: Icon(Icons.videocam),
-                    label: 'Caméra',
-                  ),
-                ],
-                startIndex: 0,
-              ),
-            ),
-            // 1px vertical divider between tab 3 and 4
-            Container(
-              width: 1,
-              height: 40,
-              color: AppColors.border,
-            ),
-            // Tabs 3, 4, 5 (Bookings, Events, Profile)
-            Expanded(
-              child: _buildNav(
-                context,
-                tabs: const [
-                  BottomNavigationBarItem(
-                    icon: Icon(Icons.calendar_today_outlined),
-                    activeIcon: Icon(Icons.calendar_today),
-                    label: 'RDV',
-                  ),
-                  BottomNavigationBarItem(
-                    icon: Icon(Icons.confirmation_number_outlined),
-                    activeIcon: Icon(Icons.confirmation_number),
-                    label: 'Événements',
-                  ),
-                  BottomNavigationBarItem(
-                    icon: Icon(Icons.person_outline),
-                    activeIcon: Icon(Icons.person),
-                    label: 'Profil Pro',
-                  ),
-                ],
-                startIndex: 3,
+            Icon(selected ? activeIcon : icon, color: color, size: 22),
+            const SizedBox(height: 2),
+            Text(
+              label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                color: color,
+                fontSize: 9,
+                fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
               ),
             ),
           ],
         ),
       ),
-    );
-  }
-
-  Widget _buildNav(
-    BuildContext context, {
-    required List<BottomNavigationBarItem> tabs,
-    required int startIndex,
-  }) {
-    final currentIndex = navigationShell.currentIndex;
-    final relativeIndex = currentIndex - startIndex;
-    final isInGroup = relativeIndex >= 0 && relativeIndex < tabs.length;
-
-    return BottomNavigationBar(
-      backgroundColor: AppColors.fond,
-      elevation: 0,
-      type: BottomNavigationBarType.fixed,
-      selectedItemColor: AppColors.blanc,
-      unselectedItemColor: AppColors.gris,
-      selectedFontSize: 10,
-      unselectedFontSize: 10,
-      currentIndex: isInGroup ? relativeIndex : 0,
-      showSelectedLabels: true,
-      showUnselectedLabels: true,
-      onTap: (relIdx) {
-        final globalIdx = startIndex + relIdx;
-        HapticFeedback.selectionClick();
-        navigationShell.goBranch(
-          globalIdx,
-          initialLocation: globalIdx == currentIndex,
-        );
-      },
-      items: tabs
-          .asMap()
-          .map((i, tab) {
-            final isSelected = isInGroup && i == relativeIndex;
-            return MapEntry(
-              i,
-              BottomNavigationBarItem(
-                icon: isSelected ? tab.activeIcon : tab.icon,
-                activeIcon: tab.activeIcon,
-                label: tab.label,
-              ),
-            );
-          })
-          .values
-          .toList(),
     );
   }
 }

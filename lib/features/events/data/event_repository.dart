@@ -31,6 +31,22 @@ class EventRepository {
         .toList();
   }
 
+  /// Événements créés par le pro connecté (gestion + scanner).
+  Future<List<EventModel>> getMyEvents() async {
+    final uid = currentUserId;
+    if (uid == null) return [];
+
+    final data = await _supabase
+        .from('events')
+        .select(_eventSelect)
+        .eq('pro_id', uid)
+        .order('event_date', ascending: false);
+
+    return (data as List)
+        .map((json) => EventModel.fromJson(json as Map<String, dynamic>))
+        .toList();
+  }
+
   Future<EventModel> getEvent(String eventId) async {
     final data = await _supabase
         .from('events')

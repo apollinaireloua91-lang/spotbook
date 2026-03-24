@@ -27,10 +27,48 @@ class ConversationsState {
 }
 
 class ConversationsNotifier extends Notifier<ConversationsState> {
+  RealtimeChannel? _inboxChannel;
+  Timer? _debounce;
+  bool _microtaskScheduled = false;
+
   @override
   ConversationsState build() {
-    _load();
-    return const ConversationsState();
+    ref.onDispose(() {
+      _debounce?.cancel();
+      _inboxChannel?.unsubscribe();
+      _inboxChannel = null;
+      _microtaskScheduled = false;
+    });
+
+    final uid = ref.read(chatRepositoryProvider).currentUserId;
+    if (uid == null) {
+      return const ConversationsState(conversations: [], isLoading: false);
+    }
+
+    if (_inboxChannel != null || _microtaskScheduled) {
+      return state;
+    }
+
+    _microtaskScheduled = true;
+    Future.microtask(() => _bootstrap(uid));
+    return const ConversationsState(isLoading: true);
+  }
+
+  Future<void> _bootstrap(String uid) async {
+    await _load();
+    final repo = ref.read(chatRepositoryProvider);
+    _inboxChannel?.unsubscribe();
+    _inboxChannel = repo.subscribeInbox(
+      userId: uid,
+      onChange: _scheduleRefresh,
+    );
+  }
+
+  void _scheduleRefresh() {
+    _debounce?.cancel();
+    _debounce = Timer(const Duration(milliseconds: 400), () {
+      unawaited(_load());
+    });
   }
 
   Future<void> _load() async {

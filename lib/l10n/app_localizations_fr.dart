@@ -131,4 +131,225 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get share => 'Partager';
+
+  @override
+  String clientProfileReviewsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count avis',
+      one: '$count avis',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String clientProfileMemberSince(String date) {
+    return 'Membre depuis $date';
+  }
+
+  @override
+  String get clientProfileConnectedSocials => 'RÉSEAUX LIÉS';
+
+  @override
+  String get clientProfileCollaborationTitle => 'Contact collaboration';
+
+  @override
+  String get clientProfileCollaborationBody =>
+      'Vous êtes prestataire ? Envoyez une demande pour discuter d’un partenariat ou d’une collaboration.';
+
+  @override
+  String get clientProfileSendCollaborationRequest => 'Envoyer une demande';
+
+  @override
+  String get clientProfileCollaborationOpened => 'Conversation ouverte';
+
+  @override
+  String get clientProfileTakePhoto => 'Prendre une photo';
+
+  @override
+  String get clientProfileFromGallery => 'Galerie';
+
+  @override
+  String get clientProfileEditProfile => 'Modifier le profil';
+
+  @override
+  String get clientProfilePrivateTabs =>
+      'Seul vous voyez ce contenu sur votre profil.';
+
+  @override
+  String get clientProfileRemovedFavorite => 'Retiré des favoris';
+
+  @override
+  String get clientProfileBookNow => 'Réserver';
+
+  @override
+  String get clientProfileTicketValid => 'Valide';
+
+  @override
+  String get clientProfileTicketUsed => 'Utilisé';
+
+  @override
+  String get clientProfileNoFavorites => 'Aucun favori pour l’instant';
+
+  @override
+  String get clientProfileNoHistory => 'Aucun rendez-vous passé';
+
+  @override
+  String get clientProfileNoTickets => 'Aucun billet';
+
+  @override
+  String get clientProfileNotSignedIn => 'Non connecté';
+
+  @override
+  String get clientProfileCollaborationError =>
+      'Impossible d’ouvrir la conversation';
+
+  @override
+  String get proSettingsTitle => 'Paramètres pro';
+
+  @override
+  String get proSettingsSavedToast => 'Enregistré';
+
+  @override
+  String get proSettingsSectionAccount => 'COMPTE';
+
+  @override
+  String get proSettingsPhone => 'Téléphone';
+
+  @override
+  String get proSettingsChangePassword => 'Changer le mot de passe';
+
+  @override
+  String get proSettingsSectionBusiness => 'ENTREPRISE';
+
+  @override
+  String get proSettingsBusinessProfile => 'Profil entreprise';
+
+  @override
+  String get proSettingsWorkAddress => 'Adresse d’activité';
+
+  @override
+  String get proSettingsSectionBookings => 'RÉSERVATIONS';
+
+  @override
+  String get proSettingsCancellationPolicy => 'Politique d’annulation';
+
+  @override
+  String get proSettingsPolicyModerate => 'Modérée';
+
+  @override
+  String get proSettingsPolicyStrict => 'Stricte';
+
+  @override
+  String get proSettingsPolicyFlexible => 'Flexible';
+
+  @override
+  String get proSettingsMinAdvance => 'Délai minimum avant réservation';
+
+  @override
+  String get proSettingsHoursShort => 'h';
+
+  @override
+  String get proSettingsMinGap => 'Intervalle minimum entre RDV';
+
+  @override
+  String get proSettingsMinutesShort => 'min';
+
+  @override
+  String get proSettingsMaxPerDay => 'RDV max par jour';
+
+  @override
+  String get proSettingsSectionPayments => 'PAIEMENTS';
+
+  @override
+  String get proSettingsPayoutHistory => 'Historique des virements';
+
+  @override
+  String get proSettingsPaymentsInfo =>
+      'Connectez Stripe pour recevoir les paiements des clients.';
+
+  @override
+  String get proSettingsSectionNotifications => 'NOTIFICATIONS';
+
+  @override
+  String get proSettingsNotifSettings => 'Paramètres des notifications';
+
+  @override
+  String get proSettingsSectionPrivacy => 'CONFIDENTIALITÉ';
+
+  @override
+  String get proSettingsProfilePublic => 'Profil public';
+
+  @override
+  String get proSettingsSearchVisible => 'Visible dans la recherche';
+
+  @override
+  String get proSettingsSectionLanguage => 'LANGUE';
+
+  @override
+  String get proSettingsLanguage => 'Langue de l’app';
+
+  @override
+  String get proSettingsLangEnglish => 'Anglais';
+
+  @override
+  String get proSettingsLangFrench => 'Français';
+
+  @override
+  String get proSettingsSectionHelp => 'AIDE';
+
+  @override
+  String get proSettingsFaq => 'FAQ';
+
+  @override
+  String get proSettingsContactSupport => 'Contacter le support';
+
+  @override
+  String get proSettingsDangerZone => 'ZONE DANGEREUSE';
+
+  @override
+  String get proSettingsSignOut => 'Se déconnecter';
+
+  @override
+  String get proSettingsDeleteAccount => 'Supprimer mon compte';
+
+  @override
+  String get proSettingsModifyEmailTitle => 'Modifier l’email';
+
+  @override
+  String get proSettingsModifyPhoneTitle => 'Modifier le téléphone';
+
+  @override
+  String get proSettingsSignOutTitle => 'Se déconnecter ?';
+
+  @override
+  String get proSettingsSignOutConfirm => 'Se déconnecter';
+
+  @override
+  String get proSettingsStripeActive => 'Stripe actif';
+
+  @override
+  String get proSettingsBankEnding => 'Compte';
+
+  @override
+  String get proSettingsStripeVerifying => 'Vérification en cours';
+
+  @override
+  String get proSettingsStripeNotConfigured => 'Stripe non configuré';
+
+  @override
+  String get proSettingsStripeConfigure => 'Configurer Stripe Connect';
+
+  @override
+  String get proChangePasswordTitle => 'Changer le mot de passe';
+
+  @override
+  String get proCurrentPassword => 'Mot de passe actuel';
+
+  @override
+  String get proNewPassword => 'Nouveau mot de passe';
+
+  @override
+  String get proConfirmPassword => 'Confirmer le mot de passe';
 }

@@ -159,3 +159,10 @@ final buyTicketProvider = NotifierProvider<BuyTicketNotifier, BuyTicketState>(
   BuyTicketNotifier.new,
   isAutoDispose: true,
 );
+
+// ─── Pro : mes événements (liste + scanner) ─────────────────
+
+final proEventsProvider = FutureProvider<List<EventModel>>((ref) async {
+  final repo = ref.watch(eventRepositoryProvider);
+  return repo.getMyEvents();
+});

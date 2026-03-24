@@ -10,9 +10,24 @@ abstract final class AppColors {
   static const Color blanc = Color(0xFFFFFFFF);
   static const Color gris = Color(0xFF888888);
   static const Color grisClair = Color(0xFFCCCCCC);
-  static const Color accent = Color(0xFF00D1FF);
+  /// Accent UI — charte noir & blanc (pas de cyan Stitch dans l’app).
+  static const Color accent = Color(0xFFFFFFFF);
   static const Color accentGreen = Color(0xFF00C853);
   static const Color success = Color(0xFF00C851);
   static const Color error = Color(0xFFFF4444);
   static const Color warning = Color(0xFFFFBB33);
+}
+
+/// Sémantique UI « Spotbook » (noir & blanc) — alias explicites pour les écrans profil.
+abstract final class SpotbookColors {
+  static const Color background = AppColors.fond;
+  static const Color surface = AppColors.surface;
+  static const Color surfaceVariant = AppColors.surfaceAlt;
+  static const Color border = AppColors.border;
+  static const Color textPrimary = AppColors.blanc;
+  static const Color textSecondary = AppColors.gris;
+  static const Color textTertiary = AppColors.grisClair;
+  static const Color textDisabled = AppColors.border;
+  static const Color error = AppColors.error;
+  static const Color success = AppColors.success;
 }

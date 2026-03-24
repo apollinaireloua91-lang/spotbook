@@ -15,6 +15,13 @@ class ProfileRepository {
 
   String? get _uid => _supabase.auth.currentUser?.id;
 
+  static bool _isUniqueViolation(PostgrestException e) {
+    final details = e.details?.toString() ?? '';
+    return e.code == '23505' ||
+        details.contains('23505') ||
+        e.message.toLowerCase().contains('duplicate');
+  }
+
   Future<void> upsertProProfile({
     required String businessName,
     required String category,
@@ -23,13 +30,36 @@ class ProfileRepository {
   }) async {
     final uid = _uid;
     if (uid == null) throw Exception('User not authenticated');
-    await _supabase.from('profiles_pro').upsert({
-      'user_id': uid,
+
+    final existing = await _supabase
+        .from('profiles_pro')
+        .select('id')
+        .eq('id', uid)
+        .maybeSingle();
+
+    final payload = {
       'business_name': businessName,
       'category': category,
-      'city': city,
-      'bio': bio,
-    });
+      'description': bio,
+    };
+
+    if (existing == null) {
+      try {
+        await _supabase.from('profiles_pro').insert({
+          'id': uid,
+          ...payload,
+        });
+      } on PostgrestException catch (e) {
+        if (_isUniqueViolation(e)) {
+          await _supabase.from('profiles_pro').update(payload).eq('id', uid);
+        } else {
+          rethrow;
+        }
+      }
+    } else {
+      await _supabase.from('profiles_pro').update(payload).eq('id', uid);
+    }
+
     await _supabase.from('users').update({'city': city}).eq('id', uid);
   }
 
@@ -46,10 +76,11 @@ class ProfileRepository {
   Future<void> submitKycVerification(String phone) async {
     final uid = _uid;
     if (uid == null) throw Exception('User not authenticated');
+
     await _supabase.from('profiles_pro').update({
       'kyc_status': 'pending',
-      'phone': phone,
-    }).eq('user_id', uid);
+      'tel': phone,
+    }).eq('id', uid);
   }
 
   Future<void> requestLocationAndSave() async {
@@ -68,9 +99,13 @@ class ProfileRepository {
 
     final uid = _uid;
     if (uid == null) return;
-    await _supabase.from('users').update({
-      'latitude': position.latitude,
-      'longitude': position.longitude,
-    }).eq('id', uid);
+    try {
+      await _supabase.from('users').update({
+        'latitude': position.latitude,
+        'longitude': position.longitude,
+      }).eq('id', uid);
+    } catch (_) {
+      // Colonnes latitude/longitude absentes ou RLS : ne pas bloquer la navigation.
+    }
   }
 }

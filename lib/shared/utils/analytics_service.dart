@@ -1,3 +1,4 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:posthog_flutter/posthog_flutter.dart';
 
@@ -44,9 +45,9 @@ class AnalyticsService {
     final consent = b.get(_consentKey) == true;
     if (!consent || _isInitialized) return;
 
-    final apiKey = const String.fromEnvironment('POSTHOG_API_KEY');
+    final apiKey = dotenv.env['POSTHOG_API_KEY'] ?? '';
     if (apiKey.isEmpty) return;
-    final host = const String.fromEnvironment('POSTHOG_HOST');
+    final host = dotenv.env['POSTHOG_HOST'] ?? '';
 
     final config = PostHogConfig(apiKey);
     if (host.isNotEmpty) config.host = host;
