@@ -2,826 +2,672 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:shimmer/shimmer.dart';
 
 import '../../../../shared/theme/app_colors.dart';
-import '../../../../shared/widgets/spotbook_button.dart';
-import '../../../booking/data/booking_repository.dart';
-import '../../../booking/domain/booking_models.dart';
-import '../../../booking/presentation/screens/booking_bottom_sheet.dart';
-import '../../../events/data/event_repository.dart';
-import '../../../events/domain/event_models.dart';
-import '../../../feed/data/video_repository.dart';
-import '../../../feed/domain/video_model.dart';
-import '../../data/profile_repository.dart';
-import '../../domain/profile_models.dart';
-import '../widgets/social_badge_widget.dart';
+import '../../../../shared/widgets/spotbook_avatar.dart';
+import '../../../../shared/widgets/spotbook_card.dart';
+import '../../../../shared/widgets/spotbook_loading_shimmer.dart';
+import '../../domain/entities/provider_profile_data.dart';
+import '../notifiers/provider_profile_notifier.dart';
 
-final proProfileProvider =
-    FutureProvider.family<ProProfile?, String>((ref, proId) async {
-  return ref.read(profileRepositoryProvider).getProProfile(proId);
-});
-
-final proApprovedVideosProvider =
-    FutureProvider.family<List<VideoModel>, String>((ref, proId) async {
-  final videos = await ref.read(videoRepositoryProvider).getProVideos(proId);
-  return videos.where((v) => v.status == 'approved').toList();
-});
-
-final proServicesProvider =
-    FutureProvider.family<List<ServiceModel>, String>((ref, proId) async {
-  return ref.read(bookingRepositoryProvider).getProServices(proId);
-});
-
-final proEventsProvider =
-    FutureProvider.family<List<EventModel>, String>((ref, proId) async {
-  final events = await ref.read(eventRepositoryProvider).getEvents();
-  return events.where((e) => e.proId == proId).toList();
-});
-
-class ProProfileScreen extends ConsumerWidget {
+class ProProfileScreen extends ConsumerStatefulWidget {
   const ProProfileScreen({super.key, required this.proId});
 
   final String proId;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final profileAsync = ref.watch(proProfileProvider(proId));
+  ConsumerState<ProProfileScreen> createState() => _ProProfileScreenState();
+}
+
+class _ProProfileScreenState extends ConsumerState<ProProfileScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref
+          .read(providerProfileNotifierProvider.notifier)
+          .load(widget.proId);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final profileState = ref.watch(providerProfileNotifierProvider);
 
     return Scaffold(
       backgroundColor: AppColors.fond,
-      extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        elevation: 0,
-        backgroundColor: Colors.transparent,
-        leading: GoRouter.of(context).canPop()
-            ? Semantics(
-                label: 'Retour',
-                child: IconButton(
-                  icon: const DecoratedBox(
-                    decoration: BoxDecoration(
-                      color: Color(0x66000000),
-                      shape: BoxShape.circle,
-                    ),
-                    child: Padding(
-                      padding: EdgeInsets.all(6),
-                      child: Icon(
-                        Icons.arrow_back_ios_new,
-                        color: AppColors.blanc,
-                        size: 18,
-                      ),
-                    ),
-                  ),
-                  onPressed: () => context.pop(),
-                ),
-              )
-            : null,
-        actions: [
-          IconButton(
-            onPressed: () => context.push('/settings'),
-            icon: const Icon(Icons.settings_outlined, color: AppColors.blanc),
+      body: switch (profileState) {
+        ProviderProfileInitial() || ProviderProfileLoading() => _ProfileShimmerLayout(),
+        ProviderProfileLoaded(:final data) => _ProfileBody(data: data),
+        ProviderProfileError(:final failure) => _ErrorView(
+            message: failure.message,
+            onRetry: () => ref
+                .read(providerProfileNotifierProvider.notifier)
+                .load(widget.proId),
           ),
-        ],
-      ),
-      body: profileAsync.when(
-        data: (profile) {
-          if (profile == null) {
-            return const Center(
-              child: Text(
-                'Pro introuvable',
-                style: TextStyle(color: AppColors.gris),
-              ),
-            );
-          }
-          return _ProfileContent(profile: profile);
-        },
-        loading: () => const _ProProfileShimmer(),
-        error: (err, _) => Center(
-          child: Text(
-            'Erreur : $err',
-            style: const TextStyle(color: AppColors.error),
-          ),
-        ),
-      ),
+      },
     );
   }
 }
 
-class _ProfileContent extends ConsumerWidget {
-  const _ProfileContent({required this.profile});
+// ─── Shimmer ──────────────────────────────────────────────────────────────────
 
-  final ProProfile profile;
+class _ProfileShimmerLayout extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: const SpotbookLoadingShimmer.profile(),
+    );
+  }
+}
+
+// ─── Error ────────────────────────────────────────────────────────────────────
+
+class _ErrorView extends StatelessWidget {
+  const _ErrorView({required this.message, required this.onRetry});
+
+  final String message;
+  final VoidCallback onRetry;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final videosAsync = ref.watch(proApprovedVideosProvider(profile.id));
-    final servicesAsync = ref.watch(proServicesProvider(profile.id));
-    final eventsAsync = ref.watch(proEventsProvider(profile.id));
-    final visibleSocials = profile.socialConnections
-        .where((c) => c.followersCount >= 10000)
-        .toList();
-
-    return DefaultTabController(
-      length: 3,
-      child: NestedScrollView(
-        headerSliverBuilder: (context, innerBoxIsScrolled) {
-          return [
-            SliverToBoxAdapter(
-              child: Column(
-                children: [
-                  SizedBox(
-                    height: 220,
-                    child: Stack(
-                      clipBehavior: Clip.none,
-                      children: [
-                        _CoverImage(url: profile.coverUrl),
-                        Positioned(
-                          left: 0,
-                          right: 0,
-                          bottom: 0,
-                          child: Center(
-                            child: Stack(
-                              clipBehavior: Clip.none,
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.all(3),
-                                  decoration: const BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: AppColors.blanc,
-                                  ),
-                                  child: CircleAvatar(
-                                    radius: 40,
-                                    backgroundColor: AppColors.surfaceAlt,
-                                    backgroundImage: profile.avatarUrl != null
-                                        ? CachedNetworkImageProvider(
-                                            profile.avatarUrl!)
-                                        : null,
-                                    child: profile.avatarUrl == null
-                                        ? const Icon(
-                                            Icons.person,
-                                            size: 40,
-                                            color: AppColors.gris,
-                                          )
-                                        : null,
-                                  ),
-                                ),
-                                Positioned(
-                                  right: -2,
-                                  bottom: -2,
-                                  child: Container(
-                                    width: 22,
-                                    height: 22,
-                                    decoration: const BoxDecoration(
-                                      color: AppColors.blanc,
-                                      shape: BoxShape.circle,
-                                    ),
-                                    child: const Icon(
-                                      Icons.check,
-                                      color: AppColors.fond,
-                                      size: 16,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Flexible(
-                        child: Text(
-                          profile.businessName,
-                          textAlign: TextAlign.center,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            color: AppColors.blanc,
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: 0.5,
-                          ),
-                        ),
-                      ),
-                      if (profile.isTopPro) ...[
-                        const SizedBox(width: 8),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 4,
-                          ),
-                          decoration: BoxDecoration(
-                            color: AppColors.blanc,
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                          child: const Text(
-                            'TOP PRO',
-                            style: TextStyle(
-                              color: AppColors.fond,
-                              fontSize: 11,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ],
-                  ),
-                  if (profile.username != null) ...[
-                    const SizedBox(height: 6),
-                    Text(
-                      '@${profile.username}',
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        color: AppColors.gris,
-                        fontSize: 14,
-                      ),
-                    ),
-                  ],
-                  const SizedBox(height: 4),
-                  Text(
-                    _categoryAndCity(profile),
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      color: AppColors.gris,
-                      fontSize: 13,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    '\u2B50 ${profile.rating.toStringAsFixed(1)} (${profile.reviewsCount} avis)',
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      color: AppColors.gris,
-                      fontSize: 13,
-                    ),
-                  ),
-                  if (visibleSocials.isNotEmpty) ...[
-                    const SizedBox(height: 12),
-                    SizedBox(
-                      height: 24,
-                      child: ListView.separated(
-                        shrinkWrap: true,
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        scrollDirection: Axis.horizontal,
-                        itemCount: visibleSocials.length,
-                        separatorBuilder: (_, __) => const SizedBox(width: 16),
-                        itemBuilder: (_, index) {
-                          final social = visibleSocials[index];
-                          return SocialBadgeWidget(
-                            platform: social.platform,
-                            followersCount: social.followersCount,
-                          );
-                        },
-                      ),
-                    ),
-                  ],
-                  if (profile.bio != null && profile.bio!.isNotEmpty) ...[
-                    const SizedBox(height: 12),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 24),
-                      child: Text(
-                        profile.bio!,
-                        textAlign: TextAlign.center,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          color: AppColors.blanc,
-                          fontSize: 14,
-                          height: 1.5,
-                        ),
-                      ),
-                    ),
-                  ],
-                  const SizedBox(height: 20),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: SpotbookButton.primary(
-                      label: 'Book Appointment',
-                      onPressed: () => showBookingSheet(
-                        context,
-                        proId: profile.id,
-                        proProfile: profile,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: SpotbookButton.secondary(
-                      label: 'Buy Event Ticket',
-                      onPressed: () =>
-                          DefaultTabController.of(context).animateTo(2),
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  Container(height: 1, color: AppColors.border),
-                ],
-              ),
-            ),
-            SliverPersistentHeader(
-              pinned: true,
-              delegate: _TabBarDelegate(
-                const TabBar(
-                  indicatorColor: AppColors.blanc,
-                  labelColor: AppColors.blanc,
-                  unselectedLabelColor: AppColors.gris,
-                  indicatorWeight: 2,
-                  tabs: [
-                    Tab(text: 'Vidéos'),
-                    Tab(text: 'Services'),
-                    Tab(text: 'Événements'),
-                  ],
-                ),
-              ),
-            ),
-          ];
-        },
-        body: TabBarView(
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(32),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            videosAsync.when(
-              data: (videos) => _VideosTab(videos: videos),
-              loading: () => const _GridShimmer(),
-              error: (err, _) => _ErrorPlaceholder(message: '$err'),
+            const Icon(Icons.error_outline, color: AppColors.error, size: 48),
+            const SizedBox(height: 16),
+            Text(
+              message,
+              textAlign: TextAlign.center,
+              style: const TextStyle(color: AppColors.gris, fontSize: 14),
             ),
-            servicesAsync.when(
-              data: (services) =>
-                  _ServicesTab(profile: profile, services: services),
-              loading: () => const _ListShimmer(),
-              error: (err, _) => _ErrorPlaceholder(message: '$err'),
-            ),
-            eventsAsync.when(
-              data: (events) => _EventsTab(events: events),
-              loading: () => const _ListShimmer(),
-              error: (err, _) => _ErrorPlaceholder(message: '$err'),
+            const SizedBox(height: 24),
+            TextButton(
+              onPressed: onRetry,
+              child: const Text(
+                'Réessayer',
+                style: TextStyle(color: AppColors.blanc),
+              ),
             ),
           ],
         ),
       ),
     );
   }
-
-  static String _categoryAndCity(ProProfile profile) {
-    if (profile.city == null || profile.city!.isEmpty) return profile.category;
-    return '${profile.category} \u2022 ${profile.city}';
-  }
 }
 
-class _CoverImage extends StatelessWidget {
-  const _CoverImage({this.url});
+// ─── Body principal ───────────────────────────────────────────────────────────
 
-  final String? url;
+class _ProfileBody extends StatelessWidget {
+  const _ProfileBody({required this.data});
+
+  final ProviderProfileData data;
+
+  static const double _hPad = 20;
+  static const double _sectionGap = 24;
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 180,
-      width: double.infinity,
-      child: url != null
-          ? CachedNetworkImage(
-              imageUrl: url!,
-              fit: BoxFit.cover,
-              placeholder: (_, __) => Shimmer.fromColors(
-                baseColor: AppColors.surface,
-                highlightColor: AppColors.surfaceAlt,
-                child: Container(color: AppColors.surface),
-              ),
-              errorWidget: (_, __, ___) => Container(
-                color: AppColors.surface,
-                child: const Icon(
-                  Icons.image_not_supported,
-                  color: AppColors.blanc,
-                ),
-              ),
-            )
-          : Container(color: AppColors.surface),
+    return CustomScrollView(
+      slivers: [
+        _buildAppBar(context),
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: _hPad),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                const SizedBox(height: 24),
+                _buildAvatar(data.provider),
+                const SizedBox(height: 16),
+                _buildNameRow(data.provider),
+                const SizedBox(height: 8),
+                _buildProfessionLocation(data.provider),
+                const SizedBox(height: _sectionGap),
+                _buildStrategicOverview(data.provider),
+                const SizedBox(height: _sectionGap),
+                _buildReachAnalytics(data.provider),
+                const SizedBox(height: _sectionGap),
+                _buildQuickActions(context),
+                const SizedBox(height: _sectionGap),
+                _buildVisualStreams(context, data.videos),
+                const SizedBox(height: _sectionGap),
+                _buildActiveServices(context, data.services),
+                const SizedBox(height: _sectionGap),
+                _buildEvents(context, data.events),
+                const SizedBox(height: 40),
+              ],
+            ),
+          ),
+        ),
+      ],
     );
   }
-}
 
-class _VideosTab extends StatelessWidget {
-  const _VideosTab({required this.videos});
+  // ── AppBar ─────────────────────────────────────────────────────────────────
 
-  final List<VideoModel> videos;
+  Widget _buildAppBar(BuildContext context) {
+    return SliverAppBar(
+      backgroundColor: Colors.transparent,
+      elevation: 0,
+      floating: true,
+      automaticallyImplyLeading: false,
+      actions: [
+        IconButton(
+          icon: const Icon(Icons.settings_outlined, color: AppColors.blanc),
+          onPressed: () => context.push('/pro/profile/settings'),
+        ),
+      ],
+    );
+  }
 
-  @override
-  Widget build(BuildContext context) {
-    if (videos.isEmpty) {
-      return const _EmptyPlaceholder(message: 'Aucune vidéo approuvée');
-    }
+  // ── Avatar ─────────────────────────────────────────────────────────────────
 
-    return GridView.builder(
-      padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        crossAxisSpacing: 12,
-        mainAxisSpacing: 12,
-        childAspectRatio: 0.8,
+  Widget _buildAvatar(ProviderEntity p) {
+    return SpotbookAvatar(
+      imageUrl: p.avatarUrl,
+      name: p.fullName,
+      radius: 50,
+      isVerified: p.isVerified,
+    );
+  }
+
+  // ── Nom ───────────────────────────────────────────────────────────────────
+
+  Widget _buildNameRow(ProviderEntity p) {
+    return Text(
+      p.fullName.toUpperCase(),
+      textAlign: TextAlign.center,
+      style: const TextStyle(
+        color: AppColors.blanc,
+        fontSize: 24,
+        fontWeight: FontWeight.w800,
+        letterSpacing: 0.5,
       ),
-      itemCount: videos.length,
-      itemBuilder: (context, index) {
-        final video = videos[index];
-        return Container(
-          decoration: BoxDecoration(
-            color: AppColors.surface,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: AppColors.border),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: ClipRRect(
-                  borderRadius: const BorderRadius.vertical(
-                    top: Radius.circular(16),
-                  ),
-                  child: Stack(
-                    fit: StackFit.expand,
-                    children: [
-                      if (video.thumbnailUrl != null)
-                        CachedNetworkImage(
-                          imageUrl: video.thumbnailUrl!,
-                          fit: BoxFit.cover,
-                          placeholder: (_, __) => Shimmer.fromColors(
-                            baseColor: AppColors.surface,
-                            highlightColor: AppColors.surfaceAlt,
-                            child: Container(color: AppColors.surface),
-                          ),
-                          errorWidget: (_, __, ___) => Container(
-                            color: AppColors.surface,
-                            child: const Icon(
-                              Icons.broken_image,
-                              color: AppColors.blanc,
-                            ),
-                          ),
-                        )
-                      else
-                        Container(
-                          color: AppColors.surfaceAlt,
-                          child: const Icon(
-                            Icons.videocam,
-                            color: AppColors.gris,
-                          ),
-                        ),
-                      Positioned(
-                        right: 8,
-                        bottom: 8,
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 4,
-                          ),
-                          decoration: BoxDecoration(
-                            color: AppColors.fond,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Text(
-                            _formatDuration(video.durationSeconds),
-                            style: const TextStyle(
-                              color: AppColors.blanc,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+    );
+  }
+
+  // ── Profession + Localisation ─────────────────────────────────────────────
+
+  Widget _buildProfessionLocation(ProviderEntity p) {
+    return Wrap(
+      alignment: WrapAlignment.center,
+      spacing: 8,
+      runSpacing: 6,
+      children: [
+        if (p.profession.isNotEmpty)
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+            decoration: BoxDecoration(
+              color: AppColors.blanc,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Text(
+              p.profession,
+              style: const TextStyle(
+                color: AppColors.fond,
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
               ),
-              Padding(
-                padding: const EdgeInsets.all(10),
-                child: Text(
-                  video.title,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    color: AppColors.blanc,
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
+            ),
+          ),
+        if (p.location != null && p.location!.isNotEmpty)
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.location_on_outlined,
+                  color: AppColors.gris, size: 14),
+              const SizedBox(width: 3),
+              Text(
+                p.location!,
+                style: const TextStyle(color: AppColors.gris, fontSize: 13),
               ),
             ],
           ),
-        );
-      },
+      ],
     );
   }
 
-  static String _formatDuration(double? durationSeconds) {
-    if (durationSeconds == null || durationSeconds <= 0) return '--:--';
-    final total = durationSeconds.round();
-    final minutes = total ~/ 60;
-    final seconds = total % 60;
-    return '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
-  }
-}
+  // ── Strategic Overview ────────────────────────────────────────────────────
 
-class _ServicesTab extends StatelessWidget {
-  const _ServicesTab({required this.profile, required this.services});
-
-  final ProProfile profile;
-  final List<ServiceModel> services;
-
-  @override
-  Widget build(BuildContext context) {
-    if (services.isEmpty) {
-      return const _EmptyPlaceholder(message: 'Aucun service disponible');
-    }
-
-    return ListView.separated(
-      padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
-      itemCount: services.length,
-      separatorBuilder: (_, __) => const SizedBox(height: 12),
-      itemBuilder: (context, index) {
-        final service = services[index];
-        return Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: AppColors.surface,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: AppColors.border),
+  Widget _buildStrategicOverview(ProviderEntity p) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _SectionLabel(label: 'STRATEGIC OVERVIEW'),
+        const SizedBox(height: 12),
+        SpotbookCard(
+          child: Text(
+            p.bio?.isNotEmpty == true ? p.bio! : 'Aucune bio pour le moment.',
+            style: const TextStyle(
+              color: AppColors.gris,
+              fontSize: 15,
+              height: 1.5,
+            ),
           ),
+        ),
+      ],
+    );
+  }
+
+  // ── Reach Analytics ───────────────────────────────────────────────────────
+
+  Widget _buildReachAnalytics(ProviderEntity p) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _SectionLabel(label: 'REACH ANALYTICS'),
+        const SizedBox(height: 12),
+        SpotbookCard(
           child: Row(
             children: [
               Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      service.name,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        color: AppColors.blanc,
-                        fontSize: 15,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      '${service.durationMinutes} min \u2022 ${_formatPrice(service.price)}',
-                      style: const TextStyle(
-                        color: AppColors.gris,
-                        fontSize: 13,
-                      ),
-                    ),
-                  ],
+                child: _StatColumn(
+                  value: _formatCount(p.tiktokReach),
+                  label: 'TIKTOK REACH',
+                ),
+              ),
+              _VerticalDivider(),
+              Expanded(
+                child: _StatColumn(
+                  value: _formatCount(p.igPresence),
+                  label: 'IG PRESENCE',
+                ),
+              ),
+              _VerticalDivider(),
+              Expanded(
+                child: _StatColumn(
+                  value: _formatCount(p.subscribersCount),
+                  label: 'SUBSCRIBERS',
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  // ── Quick Actions (pro uniquement) ────────────────────────────────────────
+
+  Widget _buildQuickActions(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _SectionLabel(label: 'QUICK ACTIONS'),
+        const SizedBox(height: 12),
+        IntrinsicHeight(
+          child: Row(
+            children: [
+              Expanded(
+                child: _ActionCard(
+                  icon: Icons.calendar_month_outlined,
+                  label: 'CALENDRIER\n/ DISPOS',
+                  onTap: () => context.push('/pro/profile/availability'),
                 ),
               ),
               const SizedBox(width: 12),
-              SizedBox(
-                width: 100,
-                child: SpotbookButton.outlined(
-                  label: 'Réserver',
-                  onPressed: () => showBookingSheet(
-                    context,
-                    proId: profile.id,
-                    proProfile: profile,
+              Expanded(
+                child: _ActionCard(
+                  icon: Icons.add_circle_outline,
+                  label: 'CRÉER\nÉVÉNEMENT',
+                  onTap: () => context.push('/pro/events/create'),
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 12),
+        IntrinsicHeight(
+          child: Row(
+            children: [
+              Expanded(
+                child: _ActionCard(
+                  icon: Icons.qr_code_outlined,
+                  label: 'MON\nQR CODE',
+                  onTap: () => context.push('/pro/profile/qr-code'),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: _ActionCard(
+                  icon: Icons.confirmation_number_outlined,
+                  label: 'CODES\nPROMO',
+                  onTap: () => context.push('/pro/profile/promo-codes'),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: _ActionCard(
+                  icon: Icons.payments_outlined,
+                  label: 'REVENUS',
+                  onTap: () => context.push('/pro/revenue'),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  // ── Visual Streams ────────────────────────────────────────────────────────
+
+  Widget _buildVisualStreams(BuildContext context, List<VideoEntity> videos) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            _SectionLabel(label: 'VISUAL STREAMS'),
+            Text(
+              'SYS_READY',
+              style: const TextStyle(
+                color: AppColors.gris,
+                fontSize: 11,
+                letterSpacing: 0.5,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        if (videos.isEmpty)
+          const _EmptyStreamHint()
+        else
+          SizedBox(
+            height: 120,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              itemCount: videos.length,
+              separatorBuilder: (_, __) => const SizedBox(width: 10),
+              itemBuilder: (context, i) {
+                return _VideoThumbnail(video: videos[i]);
+              },
+            ),
+          ),
+      ],
+    );
+  }
+
+  // ── Active Services ───────────────────────────────────────────────────────
+
+  Widget _buildActiveServices(
+      BuildContext context, List<ServiceEntity> services) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            _SectionLabel(label: 'ACTIVE SERVICES'),
+            GestureDetector(
+              onTap: () => context.push('/pro/profile/services'),
+              child: const Text(
+                'Gérer →',
+                style: TextStyle(
+                  color: AppColors.grisClair,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        if (services.isEmpty)
+          const _EmptyHint(label: 'Aucun service actif.')
+        else
+          ListView.separated(
+            physics: const NeverScrollableScrollPhysics(),
+            shrinkWrap: true,
+            itemCount: services.length,
+            separatorBuilder: (_, __) => const SizedBox(height: 8),
+            itemBuilder: (_, i) => _ServiceRow(service: services[i]),
+          ),
+      ],
+    );
+  }
+
+  // ── Mes Événements ────────────────────────────────────────────────────────
+
+  Widget _buildEvents(BuildContext context, List<EventEntity> events) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            _SectionLabel(label: 'MES ÉVÉNEMENTS'),
+            GestureDetector(
+              onTap: () => context.push('/pro/events'),
+              child: const Text(
+                'Voir tout →',
+                style: TextStyle(
+                  color: AppColors.grisClair,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        if (events.isEmpty)
+          const _EmptyHint(label: 'Aucun événement à venir.')
+        else
+          ListView.separated(
+            physics: const NeverScrollableScrollPhysics(),
+            shrinkWrap: true,
+            itemCount: events.length,
+            separatorBuilder: (_, __) => const SizedBox(height: 8),
+            itemBuilder: (context, i) =>
+                _EventRow(event: events[i], context: context),
+          ),
+      ],
+    );
+  }
+
+  // ── Helpers ───────────────────────────────────────────────────────────────
+
+  String _formatCount(int n) {
+    if (n >= 1000000) return '${(n / 1000000).toStringAsFixed(1)}M';
+    if (n >= 1000) return '${(n / 1000).toStringAsFixed(1)}K';
+    return n.toString();
+  }
+}
+
+// ─── Composants internes ──────────────────────────────────────────────────────
+
+class _SectionLabel extends StatelessWidget {
+  const _SectionLabel({required this.label});
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      label,
+      style: const TextStyle(
+        color: AppColors.gris,
+        fontSize: 11,
+        fontWeight: FontWeight.w600,
+        letterSpacing: 1.5,
+      ),
+    );
+  }
+}
+
+class _StatColumn extends StatelessWidget {
+  const _StatColumn({required this.value, required this.label});
+  final String value;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          value,
+          style: const TextStyle(
+            color: AppColors.blanc,
+            fontSize: 28,
+            fontWeight: FontWeight.w800,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          label,
+          textAlign: TextAlign.center,
+          style: const TextStyle(
+            color: AppColors.gris,
+            fontSize: 11,
+            letterSpacing: 1,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _VerticalDivider extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 0.5,
+      height: 48,
+      color: AppColors.border,
+    );
+  }
+}
+
+class _ActionCard extends StatelessWidget {
+  const _ActionCard({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
+        decoration: BoxDecoration(
+          color: const Color(0xFF0D0D0D),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: AppColors.border, width: 0.5),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Icon(icon, color: AppColors.blanc, size: 24),
+            const SizedBox(height: 10),
+            Text(
+              label,
+              style: const TextStyle(
+                color: AppColors.blanc,
+                fontSize: 13,
+                fontWeight: FontWeight.w700,
+                height: 1.3,
+                letterSpacing: 0.3,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _VideoThumbnail extends StatelessWidget {
+  const _VideoThumbnail({required this.video});
+  final VideoEntity video;
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(12),
+      child: SizedBox(
+        width: 90,
+        height: 120,
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            if (video.thumbnailUrl != null)
+              CachedNetworkImage(
+                imageUrl: video.thumbnailUrl!,
+                fit: BoxFit.cover,
+                placeholder: (_, __) => Container(color: AppColors.surface),
+                errorWidget: (_, __, ___) =>
+                    Container(color: AppColors.surface),
+              )
+            else
+              Container(color: AppColors.surface),
+            const Center(
+              child: Icon(Icons.play_circle_outline,
+                  color: AppColors.blanc, size: 28),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _ServiceRow extends StatelessWidget {
+  const _ServiceRow({required this.service});
+  final ServiceEntity service;
+
+  @override
+  Widget build(BuildContext context) {
+    final shortId =
+        service.id.length >= 6 ? service.id.substring(0, 6).toUpperCase() : service.id.toUpperCase();
+
+    return SpotbookCard(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  service.name,
+                  style: const TextStyle(
+                    color: AppColors.blanc,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  static String _formatPrice(double price) {
-    if (price == price.roundToDouble()) {
-      return '\$${price.toStringAsFixed(0)}';
-    }
-    return '\$${price.toStringAsFixed(2)}';
-  }
-}
-
-class _EventsTab extends StatelessWidget {
-  const _EventsTab({required this.events});
-
-  final List<EventModel> events;
-
-  @override
-  Widget build(BuildContext context) {
-    if (events.isEmpty) {
-      return const _EmptyPlaceholder(message: 'Aucun événement actif');
-    }
-
-    return ListView.separated(
-      padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
-      itemCount: events.length,
-      separatorBuilder: (_, __) => const SizedBox(height: 12),
-      itemBuilder: (context, index) {
-        final event = events[index];
-        return Container(
-          decoration: BoxDecoration(
-            color: AppColors.surface,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: AppColors.border),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              ClipRRect(
-                borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(16),
+                const SizedBox(height: 3),
+                Text(
+                  'ID: SRT-$shortId / ${service.durationMinutes} MINS',
+                  style: const TextStyle(
+                    color: AppColors.gris,
+                    fontSize: 11,
+                    letterSpacing: 0.3,
+                  ),
                 ),
-                child: SizedBox(
-                  height: 140,
-                  width: double.infinity,
-                  child: event.coverUrl == null
-                      ? Container(
-                          color: AppColors.surfaceAlt,
-                          child: const Icon(
-                            Icons.event,
-                            color: AppColors.gris,
-                          ),
-                        )
-                      : CachedNetworkImage(
-                          imageUrl: event.coverUrl!,
-                          fit: BoxFit.cover,
-                          placeholder: (_, __) => Shimmer.fromColors(
-                            baseColor: AppColors.surface,
-                            highlightColor: AppColors.surfaceAlt,
-                            child: Container(color: AppColors.surface),
-                          ),
-                          errorWidget: (_, __, ___) => Container(
-                            color: AppColors.surfaceAlt,
-                            child: const Icon(
-                              Icons.image_not_supported,
-                              color: AppColors.blanc,
-                            ),
-                          ),
-                        ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(12),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      event.title,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        color: AppColors.blanc,
-                        fontSize: 15,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      '${_formatDate(event.eventDate)} \u2022 ${_formatPrice(event.minPrice)}',
-                      style: const TextStyle(
-                        color: AppColors.gris,
-                        fontSize: 13,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  static String _formatDate(DateTime? date) {
-    if (date == null) return 'Date à confirmer';
-    final day = date.day.toString().padLeft(2, '0');
-    final month = date.month.toString().padLeft(2, '0');
-    final year = date.year.toString();
-    return '$day/$month/$year';
-  }
-
-  static String _formatPrice(double price) {
-    if (price <= 0) return 'Prix à confirmer';
-    if (price == price.roundToDouble()) {
-      return '\$${price.toStringAsFixed(0)}';
-    }
-    return '\$${price.toStringAsFixed(2)}';
-  }
-}
-
-class _TabBarDelegate extends SliverPersistentHeaderDelegate {
-  const _TabBarDelegate(this._tabBar);
-
-  final TabBar _tabBar;
-
-  @override
-  double get minExtent => _tabBar.preferredSize.height;
-
-  @override
-  double get maxExtent => _tabBar.preferredSize.height;
-
-  @override
-  Widget build(
-    BuildContext context,
-    double shrinkOffset,
-    bool overlapsContent,
-  ) {
-    return Container(color: AppColors.fond, child: _tabBar);
-  }
-
-  @override
-  bool shouldRebuild(_TabBarDelegate oldDelegate) => false;
-}
-
-class _GridShimmer extends StatelessWidget {
-  const _GridShimmer();
-
-  @override
-  Widget build(BuildContext context) {
-    return Shimmer.fromColors(
-      baseColor: AppColors.surface,
-      highlightColor: AppColors.surfaceAlt,
-      child: GridView.builder(
-        padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          crossAxisSpacing: 12,
-          mainAxisSpacing: 12,
-        ),
-        itemCount: 6,
-        itemBuilder: (_, __) => Container(
-          decoration: BoxDecoration(
-            color: AppColors.surface,
-            borderRadius: BorderRadius.circular(16),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _ListShimmer extends StatelessWidget {
-  const _ListShimmer();
-
-  @override
-  Widget build(BuildContext context) {
-    return Shimmer.fromColors(
-      baseColor: AppColors.surface,
-      highlightColor: AppColors.surfaceAlt,
-      child: ListView.separated(
-        padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
-        itemCount: 4,
-        separatorBuilder: (_, __) => const SizedBox(height: 12),
-        itemBuilder: (_, __) => Container(
-          height: 92,
-          decoration: BoxDecoration(
-            color: AppColors.surface,
-            borderRadius: BorderRadius.circular(16),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _ProProfileShimmer extends StatelessWidget {
-  const _ProProfileShimmer();
-
-  @override
-  Widget build(BuildContext context) {
-    return Shimmer.fromColors(
-      baseColor: AppColors.surface,
-      highlightColor: AppColors.surfaceAlt,
-      child: ListView(
-        children: [
-          Container(height: 180, color: AppColors.surface),
-          Transform.translate(
-            offset: const Offset(0, -40),
-            child: Center(
-              child: Container(
-                width: 80,
-                height: 80,
-                decoration: const BoxDecoration(
-                  color: AppColors.surfaceAlt,
-                  shape: BoxShape.circle,
-                ),
-              ),
+              ],
             ),
           ),
-          const SizedBox(height: 12),
-          Center(
-            child: Container(
-              width: 200,
-              height: 20,
-              color: AppColors.surfaceAlt,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Center(
-            child: Container(
-              width: 140,
-              height: 14,
-              color: AppColors.surfaceAlt,
+          Text(
+            '\$${service.price.toStringAsFixed(0)}',
+            style: const TextStyle(
+              color: AppColors.blanc,
+              fontSize: 18,
+              fontWeight: FontWeight.w700,
             ),
           ),
         ],
@@ -830,28 +676,147 @@ class _ProProfileShimmer extends StatelessWidget {
   }
 }
 
-class _EmptyPlaceholder extends StatelessWidget {
-  const _EmptyPlaceholder({required this.message});
+class _EventRow extends StatelessWidget {
+  const _EventRow({required this.event, required this.context});
+  final EventEntity event;
+  final BuildContext context;
 
-  final String message;
+  @override
+  Widget build(BuildContext ctx) {
+    final date = event.eventDate;
+    final day = date != null
+        ? date.day.toString().padLeft(2, '0')
+        : '--';
+    final month = date != null
+        ? _monthAbbr(date.month)
+        : '---';
+
+    return SpotbookCard(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      child: Row(
+        children: [
+          // Date block
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                day,
+                style: const TextStyle(
+                  color: AppColors.blanc,
+                  fontSize: 22,
+                  fontWeight: FontWeight.w800,
+                  height: 1,
+                ),
+              ),
+              Text(
+                month,
+                style: const TextStyle(
+                  color: AppColors.gris,
+                  fontSize: 11,
+                  letterSpacing: 1,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(width: 16),
+          Container(width: 0.5, height: 40, color: AppColors.border),
+          const SizedBox(width: 16),
+          // Title + meta
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  event.title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    color: AppColors.blanc,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 3),
+                Text(
+                  [
+                    if (event.eventTime != null) event.eventTime!,
+                    if (event.venueName != null) event.venueName!,
+                  ].join(' · '),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    color: AppColors.gris,
+                    fontSize: 12,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 12),
+          // Gérer button
+          GestureDetector(
+            onTap: () => context.push('/pro/events/${event.id}/edit'),
+            child: Container(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                border: Border.all(color: AppColors.border),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: const Text(
+                'GÉRER',
+                style: TextStyle(
+                  color: AppColors.grisClair,
+                  fontSize: 11,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 0.5,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _monthAbbr(int m) {
+    const months = [
+      'JAN', 'FÉV', 'MAR', 'AVR', 'MAI', 'JUN',
+      'JUL', 'AOÛ', 'SEP', 'OCT', 'NOV', 'DÉC',
+    ];
+    return months[m - 1];
+  }
+}
+
+class _EmptyStreamHint extends StatelessWidget {
+  const _EmptyStreamHint();
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Text(message, style: const TextStyle(color: AppColors.gris)),
+    return Container(
+      height: 90,
+      alignment: Alignment.center,
+      child: const Text(
+        'Aucune vidéo publiée',
+        style: TextStyle(color: AppColors.gris, fontSize: 13),
+      ),
     );
   }
 }
 
-class _ErrorPlaceholder extends StatelessWidget {
-  const _ErrorPlaceholder({required this.message});
-
-  final String message;
+class _EmptyHint extends StatelessWidget {
+  const _EmptyHint({required this.label});
+  final String label;
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Text(message, style: const TextStyle(color: AppColors.error)),
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 12),
+      child: Text(
+        label,
+        style: const TextStyle(color: AppColors.gris, fontSize: 13),
+      ),
     );
   }
 }

@@ -50,6 +50,11 @@ class DayRule {
     const names = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'];
     return names[dow.clamp(0, 6)];
   }
+
+  static String dayShort(int dow) {
+    const names = ['Lu', 'Ma', 'Me', 'Je', 'Ve', 'Sa', 'Di'];
+    return names[dow.clamp(0, 6)];
+  }
 }
 
 // ─── Blocked date ─────────────────────────────────────────────────────────────
