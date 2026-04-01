@@ -47,6 +47,96 @@ class EmptyState extends StatefulWidget {
         onCta: onCta,
       );
 
+  factory EmptyState.noVideos({VoidCallback? onCta}) => EmptyState(
+        icon: Icons.videocam_outlined,
+        title: 'Aucune vidéo pour le moment',
+        subtitle: 'Les professionnels n\'ont pas encore publié de contenu.',
+        ctaLabel: null,
+        onCta: onCta,
+      );
+
+  factory EmptyState.noTickets({VoidCallback? onCta}) => EmptyState(
+        icon: Icons.confirmation_number_outlined,
+        title: 'Aucun billet',
+        subtitle: 'Vos billets d\'événements apparaîtront ici.',
+        ctaLabel: onCta != null ? 'Explorer les événements' : null,
+        onCta: onCta,
+      );
+
+  factory EmptyState.noNotifications() => const EmptyState(
+        icon: Icons.notifications_none_outlined,
+        title: 'Aucune notification',
+        subtitle: 'Vous serez notifié ici de vos réservations et messages.',
+      );
+
+  factory EmptyState.noReviews() => const EmptyState(
+        icon: Icons.star_border_outlined,
+        title: 'Aucun avis pour le moment',
+        subtitle: 'Les avis apparaîtront ici après vos premiers services.',
+      );
+
+  factory EmptyState.noSearchResults() => const EmptyState(
+        icon: Icons.search_off_outlined,
+        title: 'Aucun résultat',
+        subtitle: 'Essayez d\'autres termes de recherche.',
+      );
+
+  // ── Pro-specific empty states ──
+
+  factory EmptyState.proNoBookings() => const EmptyState(
+        icon: Icons.calendar_today_outlined,
+        title: 'Aucune réservation',
+        subtitle: 'Partagez votre profil pour recevoir des clients.',
+      );
+
+  factory EmptyState.proNoVideos({VoidCallback? onCta}) => EmptyState(
+        icon: Icons.videocam_outlined,
+        title: 'Aucune vidéo publiée',
+        subtitle: 'Publiez votre première vidéo pour attirer des clients.',
+        ctaLabel: onCta != null ? 'Publier une vidéo' : null,
+        onCta: onCta,
+      );
+
+  factory EmptyState.proNoEvents({VoidCallback? onCta}) => EmptyState(
+        icon: Icons.event_outlined,
+        title: 'Aucun événement créé',
+        subtitle: 'Créez un événement pour vendre des billets.',
+        ctaLabel: onCta != null ? 'Créer un événement' : null,
+        onCta: onCta,
+      );
+
+  factory EmptyState.proNoServices({VoidCallback? onCta}) => EmptyState(
+        icon: Icons.design_services_outlined,
+        title: 'Aucun service configuré',
+        subtitle: 'Ajoutez vos services pour recevoir des réservations.',
+        ctaLabel: onCta != null ? 'Ajouter un service' : null,
+        onCta: onCta,
+      );
+
+  factory EmptyState.proNoClients() => const EmptyState(
+        icon: Icons.people_outline,
+        title: 'Aucun client',
+        subtitle: 'Vos clients apparaîtront ici après vos premières réservations.',
+      );
+
+  factory EmptyState.proNoRevenue() => const EmptyState(
+        icon: Icons.account_balance_wallet_outlined,
+        title: 'Aucun revenu',
+        subtitle: 'Configurez vos services pour commencer à gagner.',
+      );
+
+  factory EmptyState.proNoMessages() => const EmptyState(
+        icon: Icons.chat_bubble_outline,
+        title: 'Aucune conversation',
+        subtitle: 'Vos clients vous contacteront ici.',
+      );
+
+  factory EmptyState.proNoReviews() => const EmptyState(
+        icon: Icons.star_border_outlined,
+        title: 'Aucun avis reçu',
+        subtitle: 'Les avis apparaîtront ici après vos premiers services.',
+      );
+
   final IconData icon;
   final String title;
   final String? subtitle;

@@ -1,7 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import '../../../shared/utils/agent_debug_log.dart';
 import '../../../shared/utils/cloudflare_stream_urls.dart';
 import '../domain/video_model.dart';
 
@@ -248,43 +247,8 @@ class VideoRepository {
           'Authorization': 'Bearer $token',
         },
       );
-      // #region agent log
-      agentDebugLog(
-        hypothesisId: 'post-fix',
-        location: 'video_repository.dart:_invokeAuthenticatedEdgeFunction',
-        message: 'Edge function OK',
-        data: {
-          'runId': 'post-fix-v2',
-          'name': functionName,
-          'status': res.status,
-        },
-      );
-      // #endregion
       return res;
-    } on FunctionException catch (e) {
-      // #region agent log
-      String? detailsError;
-      final d = e.details;
-      if (d is Map) {
-        final m = Map<String, dynamic>.from(d);
-        detailsError =
-            m['error']?.toString() ?? m['message']?.toString() ?? m['msg']?.toString();
-      } else if (d is String && d.isNotEmpty) {
-        detailsError = d.length > 240 ? '${d.substring(0, 240)}…' : d;
-      }
-      agentDebugLog(
-        hypothesisId: 'post-fix',
-        location: 'video_repository.dart:_invokeAuthenticatedEdgeFunction',
-        message: 'Edge function FunctionException',
-        data: {
-          'runId': 'post-fix-v2',
-          'name': functionName,
-          'status': e.status,
-          'detailsType': e.details.runtimeType.toString(),
-          'detailsError': detailsError ?? 'none',
-        },
-      );
-      // #endregion
+    } on FunctionException {
       rethrow;
     }
   }
@@ -295,27 +259,6 @@ class VideoRepository {
     String? mimeType,
   }) async {
     final session = _supabase.auth.currentSession;
-    final singleton = Supabase.instance.client;
-    final fnHeaders = singleton.functions.headers;
-    final preAuthKey = fnHeaders.keys
-        .map((k) => k.toLowerCase())
-        .contains('authorization');
-    // #region agent log
-    agentDebugLog(
-      hypothesisId: 'H1-H4',
-      location: 'video_repository.dart:getCloudflareUploadUrl',
-      message: 'SESSION CHECK avant functions.invoke (upload URL)',
-      data: {
-        'repoClientHash': identityHashCode(_supabase),
-        'singletonClientHash': identityHashCode(singleton),
-        'sameInstance': identical(_supabase, singleton),
-        'hasSession': session != null,
-        'sessionExpired': session?.isExpired,
-        'accessTokenChars': session?.accessToken.length ?? 0,
-        'functionsHeadersHasAuthorizationKey': preAuthKey,
-      },
-    );
-    // #endregion
     if (session == null) {
       throw Exception('Session expirée — veuillez vous reconnecter');
     }
@@ -359,27 +302,6 @@ class VideoRepository {
     String? serviceId,
   }) async {
     final session = _supabase.auth.currentSession;
-    final singleton = Supabase.instance.client;
-    final fnHeaders = singleton.functions.headers;
-    final preAuthKey = fnHeaders.keys
-        .map((k) => k.toLowerCase())
-        .contains('authorization');
-    // #region agent log
-    agentDebugLog(
-      hypothesisId: 'H1-H4',
-      location: 'video_repository.dart:submitForModeration',
-      message: 'SESSION CHECK avant functions.invoke (moderate)',
-      data: {
-        'repoClientHash': identityHashCode(_supabase),
-        'singletonClientHash': identityHashCode(singleton),
-        'sameInstance': identical(_supabase, singleton),
-        'hasSession': session != null,
-        'sessionExpired': session?.isExpired,
-        'accessTokenChars': session?.accessToken.length ?? 0,
-        'functionsHeadersHasAuthorizationKey': preAuthKey,
-      },
-    );
-    // #endregion
     if (session == null) {
       throw Exception('Session expirée — veuillez vous reconnecter');
     }

@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/theme/app_typography.dart';
@@ -415,75 +416,177 @@ class _ProPopularCard extends StatelessWidget {
 // TRENDING EVENTS — horizontal cards
 // ═════════════════════════════════════════════════════════════════════════════
 
-class _TrendingEventsSection extends StatelessWidget {
+class _TrendingEventsSection extends ConsumerWidget {
   const _TrendingEventsSection();
 
   @override
-  Widget build(BuildContext context) {
-    // Placeholder — will be wired to Supabase events query
+  Widget build(BuildContext context, WidgetRef ref) {
+    final events = ref.watch(_trendingEventsProvider);
     return SizedBox(
       height: 130,
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
-        child: Container(
-          decoration: BoxDecoration(
-            color: AppColors.surface,
-            borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: AppColors.border, width: 0.5),
-          ),
-          child: const Center(
-            child: Text(
-              'Événements à venir',
-              style: TextStyle(color: AppColors.gris, fontSize: 13),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-// ═════════════════════════════════════════════════════════════════════════════
-// INSPIRATION GRID — 3 columns, thumbnail posts
-// ═════════════════════════════════════════════════════════════════════════════
-
-class _InspirationGrid extends StatelessWidget {
-  const _InspirationGrid();
-
-  @override
-  Widget build(BuildContext context) {
-    // Placeholder grid — will be populated from trending posts
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: GridView.builder(
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 3,
-          mainAxisSpacing: 4,
-          crossAxisSpacing: 4,
-          childAspectRatio: 0.75,
-        ),
-        itemCount: 6,
-        itemBuilder: (context, i) {
-          return Container(
+      child: events.when(
+        loading: () => Padding(
+          padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
+          child: Container(
             decoration: BoxDecoration(
               color: AppColors.surface,
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(14),
             ),
-            child: Center(
-              child: Icon(
-                Icons.play_arrow_rounded,
-                color: AppColors.gris.withAlpha(77),
-                size: 28,
+          ),
+        ),
+        error: (_, __) => const SizedBox.shrink(),
+        data: (list) {
+          if (list.isEmpty) {
+            return Padding(
+              padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: AppColors.surface,
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: AppColors.border, width: 0.5),
+                ),
+                child: const Center(
+                  child: Text(
+                    'Aucun événement à venir',
+                    style: TextStyle(color: AppColors.gris, fontSize: 13),
+                  ),
+                ),
               ),
-            ),
+            );
+          }
+          return ListView.separated(
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
+            itemCount: list.length,
+            separatorBuilder: (_, __) => const SizedBox(width: 10),
+            itemBuilder: (context, i) {
+              final e = list[i];
+              return GestureDetector(
+                onTap: () => context.push('/pro/events/${e['id']}'),
+                child: Container(
+                  width: 200,
+                  decoration: BoxDecoration(
+                    color: AppColors.surface,
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(color: AppColors.border, width: 0.5),
+                  ),
+                  padding: const EdgeInsets.all(12),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        e['title'] as String? ?? '',
+                        style: const TextStyle(color: AppColors.blanc, fontSize: 14, fontWeight: FontWeight.w600),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        e['event_date'] as String? ?? '',
+                        style: const TextStyle(color: AppColors.gris, fontSize: 12),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
           );
         },
       ),
     );
   }
 }
+
+final _trendingEventsProvider = FutureProvider.autoDispose<List<Map<String, dynamic>>>((ref) async {
+  final data = await Supabase.instance.client
+      .from('events')
+      .select('id, title, event_date')
+      .eq('is_active', true)
+      .gte('event_date', DateTime.now().toIso8601String())
+      .order('event_date', ascending: true)
+      .limit(10);
+  return (data as List).cast<Map<String, dynamic>>();
+});
+
+// ═════════════════════════════════════════════════════════════════════════════
+// INSPIRATION GRID — 3 columns, thumbnail posts
+// ═════════════════════════════════════════════════════════════════════════════
+
+class _InspirationGrid extends ConsumerWidget {
+  const _InspirationGrid();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final posts = ref.watch(_trendingPostsProvider);
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: posts.when(
+        loading: () => GridView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 3, mainAxisSpacing: 4, crossAxisSpacing: 4, childAspectRatio: 0.75,
+          ),
+          itemCount: 6,
+          itemBuilder: (_, __) => Container(
+            decoration: BoxDecoration(color: AppColors.surface, borderRadius: BorderRadius.circular(8)),
+          ),
+        ),
+        error: (_, __) => const Center(
+          child: Padding(
+            padding: EdgeInsets.all(24),
+            child: Text('Impossible de charger les inspirations', style: TextStyle(color: AppColors.gris, fontSize: 13)),
+          ),
+        ),
+        data: (list) {
+          if (list.isEmpty) {
+            return const Center(
+              child: Padding(
+                padding: EdgeInsets.all(24),
+                child: Text('Aucune inspiration pour le moment', style: TextStyle(color: AppColors.gris, fontSize: 13)),
+              ),
+            );
+          }
+          return GridView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 3, mainAxisSpacing: 4, crossAxisSpacing: 4, childAspectRatio: 0.75,
+            ),
+            itemCount: list.length,
+            itemBuilder: (context, i) {
+              final post = list[i];
+              final thumb = post['thumbnail_url'] as String?;
+              return GestureDetector(
+                onTap: () => context.push('/pro/feed'),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: thumb != null
+                      ? CachedNetworkImage(imageUrl: thumb, fit: BoxFit.cover, errorWidget: (_, __, ___) => Container(color: AppColors.surface))
+                      : Container(
+                          color: AppColors.surface,
+                          child: Icon(Icons.play_arrow_rounded, color: AppColors.gris.withAlpha(77), size: 28),
+                        ),
+                ),
+              );
+            },
+          );
+        },
+      ),
+    );
+  }
+}
+
+final _trendingPostsProvider = FutureProvider.autoDispose<List<Map<String, dynamic>>>((ref) async {
+  final data = await Supabase.instance.client
+      .from('posts')
+      .select('id, thumbnail_url')
+      .eq('status', 'approved')
+      .order('created_at', ascending: false)
+      .limit(9);
+  return (data as List).cast<Map<String, dynamic>>();
+});
 
 // ═════════════════════════════════════════════════════════════════════════════
 // PRO SEARCH CARD — result item

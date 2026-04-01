@@ -211,7 +211,7 @@ class ProInsightsScreen extends ConsumerWidget {
             ),
           ),
           const SizedBox(height: 16),
-          // Key metrics placeholder
+          // Shimmer squelette métriques
           Row(
             children: List.generate(
               2,

@@ -932,7 +932,7 @@ class _Step6Confirmation extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bookingCode =
-        state.bookingResult?['bookingCode'] as String? ?? 'SPT-XXXXXXXX';
+        state.bookingResult?['bookingCode'] as String? ?? '—';
     // Read isDepositMode from bookingResult (server) or fallback to state.
     final _ = state.isDepositMode;
 

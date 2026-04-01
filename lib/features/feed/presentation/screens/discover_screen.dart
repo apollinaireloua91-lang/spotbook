@@ -12,7 +12,7 @@ import '../../domain/provider_search_result.dart';
 import '../../domain/video_model.dart';
 
 const _filterCategories = [
-  'All', 'Coiffure', 'Beauté', 'Fitness', 'Photo',
+  'Tous', 'Coiffure', 'Beauté', 'Fitness', 'Photo',
   'Musique', 'Cuisine', 'Massage', 'Tatouage', 'Mode', 'Coaching',
 ];
 
@@ -85,7 +85,7 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
                       },
                       style: const TextStyle(color: AppColors.blanc, fontSize: 14),
                       decoration: InputDecoration(
-                        hintText: 'Search professionals, services...',
+                        hintText: 'Rechercher des pros, services...',
                         hintStyle: const TextStyle(color: AppColors.gris),
                         prefixIcon: const Icon(Icons.search, color: AppColors.gris, size: 20),
                         suffixIcon: ValueListenableBuilder<TextEditingValue>(
@@ -165,10 +165,10 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Text('Recent Searches', style: TextStyle(color: AppColors.gris, fontSize: 12)),
+                          const Text('Recherches récentes', style: TextStyle(color: AppColors.gris, fontSize: 12)),
                           GestureDetector(
                             onTap: n.clearHistory,
-                            child: const Text('Clear', style: TextStyle(color: AppColors.gris, fontSize: 12)),
+                            child: const Text('Effacer', style: TextStyle(color: AppColors.gris, fontSize: 12)),
                           ),
                         ],
                       ),
@@ -200,7 +200,7 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
                 itemBuilder: (context, index) {
                   final cat = _filterCategories[index];
                   final selected = s.selectedCategory == cat;
-                  final isAll = cat == 'All';
+                  final isAll = cat == 'Tous';
                   return GestureDetector(
                     onTap: () => n.setCategory(cat),
                     child: Container(
@@ -373,12 +373,12 @@ class _FiltersSheet extends ConsumerWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Filters', style: TextStyle(color: AppColors.blanc, fontSize: 20, fontWeight: FontWeight.bold)),
+          const Text('Filtres', style: TextStyle(color: AppColors.blanc, fontSize: 20, fontWeight: FontWeight.bold)),
           const SizedBox(height: 24),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text('Max Distance', style: TextStyle(color: AppColors.blanc, fontSize: 16)),
+              const Text('Distance max', style: TextStyle(color: AppColors.blanc, fontSize: 16)),
               Text('${s.maxDistance.toInt()} km', style: const TextStyle(color: AppColors.blanc, fontSize: 16)),
             ],
           ),
@@ -394,7 +394,7 @@ class _FiltersSheet extends ConsumerWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text('Min Rating', style: TextStyle(color: AppColors.blanc, fontSize: 16)),
+              const Text('Note minimum', style: TextStyle(color: AppColors.blanc, fontSize: 16)),
               Text(s.minRating.toStringAsFixed(1), style: const TextStyle(color: AppColors.blanc, fontSize: 16)),
             ],
           ),
@@ -411,7 +411,7 @@ class _FiltersSheet extends ConsumerWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text('Max Price', style: TextStyle(color: AppColors.blanc, fontSize: 16)),
+              const Text('Prix max', style: TextStyle(color: AppColors.blanc, fontSize: 16)),
               Text('\$${s.maxPrice.toInt()}', style: const TextStyle(color: AppColors.blanc, fontSize: 16)),
             ],
           ),
@@ -425,7 +425,7 @@ class _FiltersSheet extends ConsumerWidget {
           ),
           const SizedBox(height: 16),
           SwitchListTile(
-            title: const Text('Available Today', style: TextStyle(color: AppColors.blanc, fontSize: 16)),
+            title: const Text('Disponible aujourd\'hui', style: TextStyle(color: AppColors.blanc, fontSize: 16)),
             value: s.availableToday,
             activeTrackColor: AppColors.violet.withAlpha(128),
             contentPadding: EdgeInsets.zero,

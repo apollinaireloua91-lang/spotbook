@@ -175,13 +175,14 @@ class ProfileRepository {
   String? get currentUserRole =>
       _supabase.auth.currentUser?.userMetadata?['role'] as String?;
 
-  Future<void> linkSocial(String platform) async {
-    final res = await _supabase.functions
-        .invoke('link-$platform', body: {'code': 'mock_code'});
-    if (res.status != 200) {
-      final err = res.data is Map ? res.data['error'] : 'Link failed';
-      throw Exception(err ?? 'Link failed');
-    }
+  Future<void> linkSocial(String platform, {required String url}) async {
+    final uid = _supabase.auth.currentUser?.id;
+    if (uid == null) throw Exception('Non authentifié');
+    await _supabase.from('social_links').upsert({
+      'user_id': uid,
+      'platform': platform,
+      'url': url,
+    }, onConflict: 'user_id,platform');
   }
 
   /// Nombre d’avis laissés par ce client (table `reviews`).

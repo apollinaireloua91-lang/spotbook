@@ -45,7 +45,7 @@ class AccountTypeSelectionScreen extends ConsumerWidget {
               ),
               const Spacer(),
               const Text(
-                'What are you?',
+                'Qui êtes-vous ?',
                 style: TextStyle(
                   color: AppColors.blanc,
                   fontSize: 28,
@@ -55,7 +55,7 @@ class AccountTypeSelectionScreen extends ConsumerWidget {
               ),
               const SizedBox(height: 8),
               const Text(
-                'Choose your account type to get started',
+                'Choisissez votre type de compte pour commencer',
                 style: TextStyle(color: AppColors.gris, fontSize: 15),
                 textAlign: TextAlign.center,
               ),
@@ -66,7 +66,7 @@ class AccountTypeSelectionScreen extends ConsumerWidget {
                     child: _RoleCard(
                       icon: Icons.person_outline,
                       title: 'Client',
-                      subtitle: 'Book services & events',
+                      subtitle: 'Réservez des services et événements',
                       isSelected: selected == 'client',
                       onTap: () {
                         HapticFeedback.selectionClick();
@@ -80,8 +80,8 @@ class AccountTypeSelectionScreen extends ConsumerWidget {
                   Expanded(
                     child: _RoleCard(
                       icon: Icons.star_outline,
-                      title: 'Professional',
-                      subtitle: 'Offer your services',
+                      title: 'Professionnel',
+                      subtitle: 'Proposez vos services',
                       isSelected: selected == 'pro',
                       onTap: () {
                         HapticFeedback.selectionClick();
@@ -95,7 +95,7 @@ class AccountTypeSelectionScreen extends ConsumerWidget {
               ),
               const Spacer(),
               SpotbookButton.primary(
-                label: 'Continue',
+                label: 'Continuer',
                 onPressed: selected == null
                     ? null
                     : () {
@@ -107,7 +107,7 @@ class AccountTypeSelectionScreen extends ConsumerWidget {
               GestureDetector(
                 onTap: () => context.go('/login'),
                 child: const Text(
-                  'Already have an account? Sign In',
+                  'Déjà un compte ? Se connecter',
                   style: TextStyle(color: AppColors.blanc, fontSize: 14),
                 ),
               ),

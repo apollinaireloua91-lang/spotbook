@@ -8,8 +8,6 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import '../../../shared/utils/agent_debug_log.dart';
-
 final authRepositoryProvider = Provider<AuthRepository>((ref) {
   return AuthRepository(
     supabase: Supabase.instance.client,
@@ -94,23 +92,6 @@ class AuthRepository {
     required String address,
     required String role,
   }) async {
-    // #region agent log
-    final parts = email.split('@');
-    agentDebugLog(
-      hypothesisId: 'H2',
-      location: 'auth_repository.dart:signUpWithEmail',
-      message: 'Entrée avant Supabase signUp',
-      data: {
-        'emailLen': email.length,
-        'emailEmpty': email.isEmpty,
-        'emailHasAt': email.contains('@'),
-        'atCount': '@'.allMatches(email).length,
-        'localLen': parts.length >= 2 ? parts.first.length : 0,
-        'domainLen': parts.length >= 2 ? parts.last.length : 0,
-        'hasWhitespace': email.contains(RegExp(r'\s')),
-      },
-    );
-    // #endregion
     try {
       return await _supabase.auth.signUp(
         email: email,
@@ -135,19 +116,6 @@ class AuthRepository {
     required String email,
     required String password,
   }) async {
-    // #region agent log
-    agentDebugLog(
-      hypothesisId: 'H4',
-      location: 'auth_repository.dart:signInWithEmail',
-      message: 'Tentative connexion (métriques email, sans PII)',
-      data: {
-        'emailLen': email.length,
-        'emailEmpty': email.isEmpty,
-        'emailHasAt': email.contains('@'),
-        'passwordLen': password.length,
-      },
-    );
-    // #endregion
     try {
       await _guardRateLimiter({'type': 'login'});
 
@@ -157,20 +125,6 @@ class AuthRepository {
           password: password,
         ),
       );
-      // #region agent log
-      agentDebugLog(
-        hypothesisId: 'H2_session',
-        location: 'auth_repository.dart:signInWithEmail',
-        message: 'SESSION après signInWithPassword',
-        data: {
-          'hasSession': response.session != null,
-          'singletonMatchesRepo': identical(
-            _supabase,
-            Supabase.instance.client,
-          ),
-        },
-      );
-      // #endregion
       final uid = response.user?.id;
       if (uid != null) {
         try {

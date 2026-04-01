@@ -14,13 +14,13 @@ class _Category {
 }
 
 const _categories = [
-  _Category(icon: Icons.content_cut, label: 'Hair & Beauty'),
-  _Category(icon: Icons.self_improvement, label: 'Wellness & Yoga'),
-  _Category(icon: Icons.theater_comedy, label: 'Event Planning'),
-  _Category(icon: Icons.music_note, label: 'Entertainment'),
-  _Category(icon: Icons.fitness_center, label: 'Training'),
-  _Category(icon: Icons.camera_alt, label: 'Media & Photo'),
-  _Category(icon: Icons.restaurant, label: 'Cooking'),
+  _Category(icon: Icons.content_cut, label: 'Coiffure & Beauté'),
+  _Category(icon: Icons.self_improvement, label: 'Bien-être & Yoga'),
+  _Category(icon: Icons.theater_comedy, label: 'Événementiel'),
+  _Category(icon: Icons.music_note, label: 'Divertissement'),
+  _Category(icon: Icons.fitness_center, label: 'Coaching sportif'),
+  _Category(icon: Icons.camera_alt, label: 'Média & Photo'),
+  _Category(icon: Icons.restaurant, label: 'Cuisine'),
   _Category(icon: Icons.palette, label: 'Design'),
 ];
 
@@ -52,7 +52,7 @@ class ClientInterestCategoriesScreen extends ConsumerWidget {
                   ),
                   const Spacer(),
                   const Text(
-                    'Step 1 of 3',
+                    'Étape 1 sur 3',
                     style: TextStyle(color: AppColors.gris, fontSize: 13),
                   ),
                 ],
@@ -78,7 +78,7 @@ class ClientInterestCategoriesScreen extends ConsumerWidget {
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  'What are you looking for?',
+                  'Que recherchez-vous ?',
                   style: TextStyle(
                     color: AppColors.blanc,
                     fontSize: 24,
@@ -93,7 +93,7 @@ class ClientInterestCategoriesScreen extends ConsumerWidget {
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  'Select categories to personalise your feed.',
+                  'Sélectionnez des catégories pour personnaliser votre feed.',
                   style: TextStyle(color: AppColors.gris, fontSize: 14),
                 ),
               ),
@@ -163,7 +163,7 @@ class ClientInterestCategoriesScreen extends ConsumerWidget {
             Padding(
               padding: const EdgeInsets.fromLTRB(24, 16, 24, 0),
               child: SpotbookButton.primary(
-                label: 'Continue',
+                label: 'Continuer',
                 onPressed: selected.isNotEmpty
                     ? () {
                         HapticFeedback.mediumImpact();
@@ -176,7 +176,7 @@ class ClientInterestCategoriesScreen extends ConsumerWidget {
             GestureDetector(
               onTap: () => context.go('/client/goals'),
               child: const Text(
-                'Skip for now',
+                'Passer pour le moment',
                 style: TextStyle(color: AppColors.gris, fontSize: 14),
               ),
             ),

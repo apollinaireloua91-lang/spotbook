@@ -2,10 +2,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:video_compress/video_compress.dart';
 
-import '../../../shared/utils/agent_debug_log.dart';
 import '../../../shared/utils/cloudflare_stream_urls.dart';
 import 'video_repository.dart';
 
@@ -118,18 +116,6 @@ class UploadVideoNotifier extends Notifier<UploadVideoState> {
       final outMime = _videoMimeFromPath(uploadPath) ?? pathMime;
 
       state = state.copyWith(uploadProgress: 0.3);
-      final s = Supabase.instance.client.auth.currentSession;
-      // #region agent log
-      agentDebugLog(
-        hypothesisId: 'H2',
-        location: 'upload_video_notifier.dart:publish',
-        message: 'Avant getCloudflareUploadUrl (après compression)',
-        data: {
-          'hasSession': s != null,
-          'sessionExpired': s?.isExpired,
-        },
-      );
-      // #endregion
       final uploadData = await repo.getCloudflareUploadUrl(
         fileSizeBytes: rawBytes,
         mimeType: outMime,

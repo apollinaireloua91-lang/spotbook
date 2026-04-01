@@ -14,11 +14,11 @@ class MyVideosScreen extends ConsumerWidget {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Delete video?'),
-        content: const Text('This action cannot be undone.'),
+        title: const Text('Supprimer la vidéo ?'),
+        content: const Text('Cette action est irréversible.'),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
-          TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Delete', style: TextStyle(color: AppColors.error))),
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Annuler')),
+          TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Supprimer', style: TextStyle(color: AppColors.error))),
         ],
       ),
     );
@@ -99,7 +99,7 @@ class _VideoCard extends StatelessWidget {
           ]),
           if (video.status == 'rejected' && video.rejectionReason != null) ...[
             const SizedBox(height: 6),
-            Text('Reason: ${video.rejectionReason}', style: const TextStyle(color: AppColors.error, fontSize: 12)),
+            Text('Motif : ${video.rejectionReason}', style: const TextStyle(color: AppColors.error, fontSize: 12)),
           ],
           const SizedBox(height: 8),
           Row(children: [
@@ -121,10 +121,10 @@ class _StatusBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final (Color bg, Color fg, String label) = switch (status) {
-      'approved' => (AppColors.success.withAlpha(26), AppColors.success, 'Published'),
-      'pending_review' => (AppColors.warning.withAlpha(26), AppColors.warning, 'In Review'),
-      'rejected' => (AppColors.error.withAlpha(26), AppColors.error, 'Rejected'),
-      'flagged' => (AppColors.warning.withAlpha(26), AppColors.warning, 'Flagged'),
+      'approved' => (AppColors.success.withAlpha(26), AppColors.success, 'Publiée'),
+      'pending_review' => (AppColors.warning.withAlpha(26), AppColors.warning, 'En revue'),
+      'rejected' => (AppColors.error.withAlpha(26), AppColors.error, 'Refusée'),
+      'flagged' => (AppColors.warning.withAlpha(26), AppColors.warning, 'Signalée'),
       _ => (AppColors.gris.withAlpha(26), AppColors.gris, status),
     };
     return Container(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4), decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(8)),

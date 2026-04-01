@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../shared/theme/app_colors.dart';
-import '../../../../shared/utils/agent_debug_log.dart';
 import '../../../../shared/widgets/address_autocomplete_field.dart';
 import '../../../../shared/widgets/spotbook_button.dart';
 import '../../data/auth_repository.dart';
@@ -87,31 +86,6 @@ class _SignUpNotifier extends Notifier<_SignUpState> {
 
   Future<void> signUp(String password) async {
     state = state.copyWith(isLoading: true, password: password);
-    // #region agent log
-    agentDebugLog(
-      hypothesisId: 'H1',
-      location: 'sign_up_screen.dart:_SignUpNotifier.signUp',
-      message: 'État avant signUpWithEmail',
-      data: {
-        'emailLen': state.email.length,
-        'emailEmpty': state.email.isEmpty,
-        'emailHasAt': state.email.contains('@'),
-        'step': state.step,
-        'fullNameLen': state.fullName.length,
-        'role': state.selectedRole,
-        'passwordLen': password.length,
-      },
-    );
-    agentDebugLog(
-      hypothesisId: 'H3',
-      location: 'sign_up_screen.dart:_SignUpNotifier.signUp',
-      message: 'Contrôleur email step2 encore présent?',
-      data: {
-        'note':
-            'Si emailEmpty mais user a saisi email, état notifier perdu ou saveStep2 jamais appelé',
-      },
-    );
-    // #endregion
     try {
       await ref.read(authRepositoryProvider).signUpWithEmail(
             email: state.email,
@@ -322,9 +296,9 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
           text: const TextSpan(
             style: TextStyle(color: AppColors.gris, fontSize: 14),
             children: [
-              TextSpan(text: 'Already have an account? '),
+              TextSpan(text: 'Déjà un compte ? '),
               TextSpan(
-                text: 'Sign In',
+                text: 'Se connecter',
                 style: TextStyle(
                   color: AppColors.violetClair,
                   fontWeight: FontWeight.w600,
@@ -339,9 +313,9 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
     switch (s.step) {
       case 1:
         return _StepLayout(
-          title: 'Create your account',
-          subtitle: 'What is your full name?',
-          buttonLabel: 'Continue',
+          title: 'Créez votre compte',
+          subtitle: 'Quel est votre nom complet ?',
+          buttonLabel: 'Continuer',
           onContinue: () => _onContinue(1),
           isLoading: false,
           footer: loginLink,
@@ -353,9 +327,9 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
         );
       case 2:
         return _StepLayout(
-          title: 'Your email',
-          subtitle: 'We will send your confirmation here',
-          buttonLabel: 'Continue',
+          title: 'Votre e-mail',
+          subtitle: 'Nous enverrons votre confirmation ici',
+          buttonLabel: 'Continuer',
           onContinue: () => _onContinue(2),
           isLoading: false,
           footer: loginLink,
@@ -368,9 +342,9 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
         );
       case 3:
         return _StepLayout(
-          title: 'Contact info',
-          subtitle: 'Phone and age (optional)',
-          buttonLabel: 'Continue',
+          title: 'Coordonnées',
+          subtitle: 'Téléphone et âge (optionnel)',
+          buttonLabel: 'Continuer',
           onContinue: () => _onContinue(3),
           isLoading: false,
           footer: loginLink,
@@ -385,7 +359,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
               const SizedBox(height: 16),
               _SignUpField(
                 controller: _ageCtrl,
-                hint: 'Age',
+                hint: 'Âge',
                 icon: Icons.cake_outlined,
                 keyboardType: TextInputType.number,
               ),
@@ -394,15 +368,15 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
         );
       case 4:
         return _StepLayout(
-          title: 'Your location',
-          subtitle: 'City or address (optional)',
-          buttonLabel: 'Continue',
+          title: 'Votre localisation',
+          subtitle: 'Ville ou adresse (optionnel)',
+          buttonLabel: 'Continuer',
           onContinue: () => _onContinue(4),
           isLoading: false,
           footer: loginLink,
           child: AddressAutocompleteField(
             controller: _addressCtrl,
-            label: 'Location',
+            label: 'Localisation',
             hint: 'Montreal, QC',
             icon: Icons.pin_drop_outlined,
             fillColor: AppColors.surface,
@@ -410,9 +384,9 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
         );
       case 5:
         return _StepLayout(
-          title: 'Create a password',
-          subtitle: 'Minimum 6 characters',
-          buttonLabel: 'Create Account',
+          title: 'Créez un mot de passe',
+          subtitle: 'Minimum 6 caractères',
+          buttonLabel: 'Créer mon compte',
           onContinue: () => _onContinue(5),
           isLoading: s.isLoading,
           footer: loginLink,

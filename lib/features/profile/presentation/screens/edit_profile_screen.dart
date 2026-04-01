@@ -16,6 +16,7 @@ import '../../data/edit_profile_notifier.dart';
 import '../../data/profile_repository.dart';
 import '../../domain/profile_models.dart';
 import '../providers/client_profile_screen_provider.dart';
+import '../widgets/social_link_sheets.dart';
 
 class EditProfileScreen extends ConsumerStatefulWidget {
   const EditProfileScreen({super.key});
@@ -66,7 +67,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
           );
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Profile updated'), backgroundColor: AppColors.success),
+        const SnackBar(content: Text('Profil mis à jour'), backgroundColor: AppColors.success),
       );
       context.pop();
     } catch (e) {
@@ -78,12 +79,24 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
   }
 
   Future<void> _linkSocial(String platform) async {
+    final info = platformInfoFor(platform);
+    if (info == null) return;
+    final url = await showModalBottomSheet<String>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: AppColors.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (_) => SocialLinkBottomSheet(platform: info),
+    );
+    if (url == null || url.isEmpty) return;
     try {
-      await ref.read(editProfileProvider.notifier).linkSocial(platform);
+      await ref.read(editProfileProvider.notifier).linkSocial(platform, url: url);
     } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to link account'), backgroundColor: AppColors.error),
+          const SnackBar(content: Text('Échec de la liaison du compte'), backgroundColor: AppColors.error),
         );
       }
     }
@@ -111,7 +124,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
       backgroundColor: AppColors.fond,
       appBar: AppBar(
         backgroundColor: AppColors.fond,
-        title: const Text('Edit Profile'),
+        title: const Text('Modifier le profil'),
         centerTitle: true,
         leading: Semantics(
           label: 'Retour',
@@ -130,13 +143,13 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
               if (!s.isPro && s.clientProfile != null) ...[
                 _buildClientPhotosHeader(s.clientProfile!),
               ],
-              _buildTextField('Name', _nameCtrl),
+              _buildTextField('Nom', _nameCtrl),
               const SizedBox(height: 16),
-              _buildTextField('Username', _usernameCtrl),
+              _buildTextField('Nom d\'utilisateur', _usernameCtrl),
               const SizedBox(height: 16),
               AddressAutocompleteField(
                 controller: _cityCtrl,
-                label: 'City',
+                label: 'Ville',
                 icon: Icons.location_city,
                 fillColor: AppColors.surface,
               ),
@@ -149,7 +162,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                 _buildTextField('Bio', _bioCtrl, maxLines: 3),
                 const SizedBox(height: 32),
                 const Text(
-                  'Social Connections',
+                  'Réseaux sociaux',
                   style: TextStyle(color: AppColors.blanc, fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 16),
@@ -161,7 +174,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
               ],
               const SizedBox(height: 40),
               SpotbookButton.primary(
-                label: 'Save Changes',
+                label: 'Enregistrer',
                 onPressed: _save,
                 isLoading: s.isSaving,
               ),
@@ -454,12 +467,12 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
           if (isConnected)
             TextButton(
               onPressed: () => _disconnectSocial(platform),
-              child: const Text('Disconnect', style: TextStyle(color: AppColors.error)),
+              child: const Text('Déconnecter', style: TextStyle(color: AppColors.error)),
             )
           else
             TextButton(
               onPressed: () => _linkSocial(platform),
-              child: const Text('Link', style: TextStyle(color: AppColors.blanc)),
+              child: const Text('Lier', style: TextStyle(color: AppColors.blanc)),
             ),
         ],
       ),

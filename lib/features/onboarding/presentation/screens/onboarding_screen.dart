@@ -65,7 +65,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                 child: GestureDetector(
                   onTap: _complete,
                   child: const Text(
-                    'Skip',
+                    'Passer',
                     style: TextStyle(color: AppColors.gris, fontSize: 15),
                   ),
                 ),
@@ -80,21 +80,21 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                 children: const [
                   _OnboardingSlide(
                     icon: Icons.play_circle_outline,
-                    title: 'Watch. Discover. Book.',
+                    title: 'Regardez. Découvrez. Réservez.',
                     subtitle:
-                        'Explore local professionals through short videos. See their skills before you book.',
+                        'Explorez les professionnels locaux à travers des vidéos courtes. Découvrez leur savoir-faire avant de réserver.',
                   ),
                   _OnboardingSlide(
                     icon: Icons.calendar_month_outlined,
-                    title: 'Book Services & Events',
+                    title: 'Réservez services et événements',
                     subtitle:
-                        'Connect with experts for 1:1 sessions or get tickets for live workshops directly in the app.',
+                        'Connectez-vous avec des experts pour des sessions 1:1 ou obtenez des billets pour des ateliers en direct.',
                   ),
                   _OnboardingSlide(
                     icon: Icons.trending_up,
-                    title: 'Create & Earn',
+                    title: 'Créez et gagnez',
                     subtitle:
-                        'Share your expertise through video, manage bookings, and sell event tickets.',
+                        'Partagez votre expertise en vidéo, gérez vos réservations et vendez des billets.',
                   ),
                 ],
               ),
@@ -120,7 +120,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: SpotbookButton.primary(
-                label: page < 2 ? 'Suivant' : 'Get Started',
+                label: page < 2 ? 'Suivant' : 'Commencer',
                 onPressed: page < 2 ? _next : _complete,
               ),
             ),
@@ -132,7 +132,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                   context.go('/login');
                 },
                 child: const Text(
-                  'Already have an account? Sign In',
+                  'Déjà un compte ? Se connecter',
                   style: TextStyle(color: AppColors.blanc, fontSize: 14),
                 ),
               ),

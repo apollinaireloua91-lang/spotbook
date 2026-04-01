@@ -208,7 +208,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               ),
               const SizedBox(height: 24),
               const Text(
-                'Welcome Back',
+                'Bon retour',
                 style: TextStyle(
                   color: AppColors.blanc,
                   fontSize: 32,
@@ -217,7 +217,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               ),
               const SizedBox(height: 8),
               const Text(
-                'Login to your account',
+                'Connectez-vous à votre compte',
                 style: TextStyle(color: AppColors.gris, fontSize: 15),
               ),
               const SizedBox(height: 32),
@@ -230,7 +230,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               // Email field
               _Field(
                 controller: _emailCtrl,
-                hint: 'Email Address',
+                hint: 'Adresse e-mail',
                 icon: Icons.mail_outline,
                 keyboardType: TextInputType.emailAddress,
               ),
@@ -238,7 +238,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               // Password field
               _Field(
                 controller: _passwordCtrl,
-                hint: 'Password',
+                hint: 'Mot de passe',
                 icon: Icons.lock_outline,
                 obscure: s.obscurePassword,
                 suffix: GestureDetector(
@@ -267,7 +267,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               const SizedBox(height: 24),
               // Sign In button
               SpotbookButton.primary(
-                label: 'Sign In',
+                label: 'Se connecter',
                 isLoading: s.isLoading,
                 onPressed: s.isLoading ? null : _signIn,
               ),
@@ -281,7 +281,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   const Padding(
                     padding: EdgeInsets.symmetric(horizontal: 16),
                     child: Text(
-                      'or',
+                      'ou',
                       style: TextStyle(color: AppColors.gris, fontSize: 13),
                     ),
                   ),
@@ -293,7 +293,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               const SizedBox(height: 24),
               // Google button
               SpotbookButton.secondary(
-                label: 'Continue with Google',
+                label: 'Continuer avec Google',
                 icon: Icons.g_mobiledata,
                 onPressed: _googleSignIn,
               ),
@@ -308,9 +308,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   text: const TextSpan(
                     style: TextStyle(color: AppColors.gris, fontSize: 14),
                     children: [
-                      TextSpan(text: "Don't have an account? "),
+                      TextSpan(text: 'Pas de compte ? '),
                       TextSpan(
-                        text: 'Sign Up',
+                        text: "S'inscrire",
                         style: TextStyle(
                           color: AppColors.violetClair,
                           fontWeight: FontWeight.w600,
@@ -344,7 +344,7 @@ class _RoleToggle extends StatelessWidget {
       ),
       padding: const EdgeInsets.all(4),
       child: Row(
-        children: [_btn('Client', 'client'), _btn('Service Provider', 'pro')],
+        children: [_btn('Client', 'client'), _btn('Professionnel', 'pro')],
       ),
     );
   }

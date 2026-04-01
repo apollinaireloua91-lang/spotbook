@@ -20,23 +20,23 @@ class _Goal {
 const _goals = [
   _Goal(
     icon: Icons.trending_up,
-    title: 'Discover new trends',
-    description: 'Explore the latest videos and styles',
+    title: 'Découvrir les tendances',
+    description: 'Explorez les dernières vidéos et styles',
   ),
   _Goal(
     icon: Icons.pin_drop,
-    title: 'Book a nearby pro',
-    description: 'Find and schedule professional services',
+    title: 'Réserver un pro à proximité',
+    description: 'Trouvez et planifiez des services professionnels',
   ),
   _Goal(
     icon: Icons.confirmation_number,
-    title: 'Attend local events',
-    description: 'Get tickets for upcoming gatherings',
+    title: 'Participer à des événements',
+    description: 'Obtenez des billets pour les événements à venir',
   ),
   _Goal(
     icon: Icons.attach_money,
-    title: 'Compare service prices',
-    description: 'Find the best value for your needs',
+    title: 'Comparer les prix',
+    description: 'Trouvez le meilleur rapport qualité-prix',
   ),
 ];
 
@@ -78,7 +78,7 @@ class ClientInterestGoalsScreen extends ConsumerWidget {
                   ),
                   const Spacer(),
                   const Text(
-                    'Step 2 of 3',
+                    'Étape 2 sur 3',
                     style: TextStyle(color: AppColors.gris, fontSize: 13),
                   ),
                 ],
@@ -104,7 +104,7 @@ class ClientInterestGoalsScreen extends ConsumerWidget {
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  'What is your goal today?',
+                  'Quel est votre objectif ?',
                   style: TextStyle(
                     color: AppColors.blanc,
                     fontSize: 24,
@@ -119,7 +119,7 @@ class ClientInterestGoalsScreen extends ConsumerWidget {
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  'Tell us what you are looking for so we can tailor your experience.',
+                  'Dites-nous ce que vous recherchez pour personnaliser votre expérience.',
                   style: TextStyle(color: AppColors.gris, fontSize: 14),
                 ),
               ),
@@ -207,7 +207,7 @@ class ClientInterestGoalsScreen extends ConsumerWidget {
             Padding(
               padding: const EdgeInsets.fromLTRB(24, 16, 24, 0),
               child: SpotbookButton.primary(
-                label: 'Continue',
+                label: 'Continuer',
                 onPressed: selectedIndex != null
                     ? () {
                         HapticFeedback.mediumImpact();

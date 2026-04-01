@@ -83,7 +83,6 @@ import '../features/settings/presentation/screens/delete_account_screen.dart';
 import '../features/settings/presentation/screens/language_settings_screen.dart';
 import '../features/settings/presentation/screens/settings_screen.dart';
 import '../features/social/presentation/screens/pro_insights_screen.dart';
-import '../shared/widgets/placeholder_screen.dart';
 import 'client_shell.dart';
 import 'pro_shell.dart';
 
@@ -242,7 +241,15 @@ final appRouter = GoRouter(
       builder: (context, state) {
         final v = state.extra as VideoEntity?;
         if (v == null) {
-          return const PlaceholderScreen(title: 'Vidéo introuvable');
+          return const Scaffold(
+            backgroundColor: Color(0xFF0D0D14),
+            body: Center(
+              child: Text(
+                'Vidéo introuvable',
+                style: TextStyle(color: Colors.white, fontSize: 16),
+              ),
+            ),
+          );
         }
         return ProviderPublicVideoScreen(video: v);
       },
@@ -620,7 +627,15 @@ final appRouter = GoRouter(
               builder: (context, state) {
                 final uid = Supabase.instance.client.auth.currentUser?.id;
                 if (uid == null) {
-                  return const PlaceholderScreen(title: 'Profil Pro');
+                  return const Scaffold(
+                    backgroundColor: Color(0xFF0D0D14),
+                    body: Center(
+                      child: Text(
+                        'Session expirée',
+                        style: TextStyle(color: Colors.white, fontSize: 16),
+                      ),
+                    ),
+                  );
                 }
                 return ProProfileScreen(proId: uid);
               },
