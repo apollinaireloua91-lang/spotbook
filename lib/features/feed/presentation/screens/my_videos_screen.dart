@@ -1,7 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 import '../../../../shared/theme/app_colors.dart';
 import '../../data/my_videos_notifier.dart';
@@ -14,11 +13,11 @@ class MyVideosScreen extends ConsumerWidget {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Supprimer la vidéo ?'),
-        content: const Text('Cette action est irréversible.'),
+        title: const Text('Delete video?'),
+        content: const Text('This action cannot be undone.'),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Annuler')),
-          TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Supprimer', style: TextStyle(color: AppColors.error))),
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
+          TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Delete', style: TextStyle(color: AppColors.error))),
         ],
       ),
     );
@@ -33,36 +32,11 @@ class MyVideosScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: AppColors.fond,
-      appBar: AppBar(
-        backgroundColor: AppColors.fond,
-        leading: Semantics(
-          label: 'Retour',
-          child: IconButton(
-            icon: const Icon(Icons.arrow_back_ios, color: AppColors.blanc, size: 20),
-            onPressed: () => context.pop(),
-          ),
-        ),
-        title: const Text('Mes vidéos (compte)'),
-        centerTitle: true,
-      ),
+      appBar: AppBar(backgroundColor: AppColors.fond, title: const Text('My Videos'), centerTitle: true),
       body: videos == null
           ? const Center(child: CircularProgressIndicator(color: AppColors.blanc))
           : videos.isEmpty
-              ? Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(24),
-                    child: Text(
-                      'Aucune vidéo enregistrée sur ton compte pour l’instant.\n'
-                      'Crée-en une depuis l’onglet caméra : elles apparaîtront ici avec leur statut (en revue, publiée, etc.).',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: AppColors.gris.withValues(alpha: 0.95),
-                        fontSize: 15,
-                        height: 1.45,
-                      ),
-                    ),
-                  ),
-                )
+              ? const Center(child: Text('No videos yet', style: TextStyle(color: AppColors.gris, fontSize: 15)))
               : ListView.builder(
                   padding: const EdgeInsets.all(16), itemCount: videos.length,
                   itemBuilder: (context, index) {
@@ -99,7 +73,7 @@ class _VideoCard extends StatelessWidget {
           ]),
           if (video.status == 'rejected' && video.rejectionReason != null) ...[
             const SizedBox(height: 6),
-            Text('Motif : ${video.rejectionReason}', style: const TextStyle(color: AppColors.error, fontSize: 12)),
+            Text('Reason: ${video.rejectionReason}', style: const TextStyle(color: AppColors.error, fontSize: 12)),
           ],
           const SizedBox(height: 8),
           Row(children: [
@@ -121,10 +95,10 @@ class _StatusBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final (Color bg, Color fg, String label) = switch (status) {
-      'approved' => (AppColors.success.withAlpha(26), AppColors.success, 'Publiée'),
-      'pending_review' => (AppColors.warning.withAlpha(26), AppColors.warning, 'En revue'),
-      'rejected' => (AppColors.error.withAlpha(26), AppColors.error, 'Refusée'),
-      'flagged' => (AppColors.warning.withAlpha(26), AppColors.warning, 'Signalée'),
+      'approved' => (AppColors.success.withAlpha(26), AppColors.success, 'Published'),
+      'pending_review' => (AppColors.warning.withAlpha(26), AppColors.warning, 'In Review'),
+      'rejected' => (AppColors.error.withAlpha(26), AppColors.error, 'Rejected'),
+      'flagged' => (AppColors.warning.withAlpha(26), AppColors.warning, 'Flagged'),
       _ => (AppColors.gris.withAlpha(26), AppColors.gris, status),
     };
     return Container(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4), decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(8)),

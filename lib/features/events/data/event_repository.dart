@@ -31,16 +31,12 @@ class EventRepository {
         .toList();
   }
 
-  /// Événements créés par le pro connecté (gestion + scanner).
-  Future<List<EventModel>> getMyEvents() async {
-    final uid = currentUserId;
-    if (uid == null) return [];
-
+  Future<List<EventModel>> getEventsByProId(String proId) async {
     final data = await _supabase
         .from('events')
         .select(_eventSelect)
-        .eq('pro_id', uid)
-        .order('event_date', ascending: false);
+        .eq('pro_id', proId)
+        .order('event_date', ascending: true);
 
     return (data as List)
         .map((json) => EventModel.fromJson(json as Map<String, dynamic>))
@@ -81,26 +77,6 @@ class EventRepository {
         .single();
 
     return EventModel.fromJson(data);
-  }
-
-  Future<void> updateEvent({
-    required String eventId,
-    required String title,
-    required String description,
-    required DateTime eventDate,
-    required String location,
-    String? address,
-  }) async {
-    await _supabase
-        .from('events')
-        .update({
-          'title': title,
-          'description': description,
-          'event_date': eventDate.toIso8601String(),
-          'location': location,
-          'address': address,
-        })
-        .eq('id', eventId);
   }
 
   Future<String> uploadCover(String eventId, Uint8List bytes) async {

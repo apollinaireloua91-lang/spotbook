@@ -67,7 +67,7 @@ class _CommentsSheetState extends ConsumerState<CommentsSheet> {
               child: Row(children: [
                 Expanded(child: TextField(controller: _textCtrl, style: const TextStyle(color: AppColors.blanc, fontSize: 14),
                   decoration: InputDecoration(hintText: 'Add a comment...', hintStyle: const TextStyle(color: AppColors.gris), filled: true, fillColor: AppColors.surfaceAlt, border: OutlineInputBorder(borderRadius: BorderRadius.circular(24), borderSide: BorderSide.none), contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10)))),
-                IconButton(onPressed: _sendComment, icon: const Icon(Icons.send, color: AppColors.blanc, size: 22)),
+                IconButton(onPressed: _sendComment, icon: const Icon(Icons.send, color: AppColors.accent, size: 22)),
               ]),
             ),
           ]),

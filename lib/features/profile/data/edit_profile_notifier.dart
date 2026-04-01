@@ -90,8 +90,8 @@ class EditProfileNotifier extends Notifier<EditProfileState> {
     }
   }
 
-  Future<void> linkSocial(String platform, {required String url}) async {
-    await ref.read(profileRepositoryProvider).linkSocial(platform, url: url);
+  Future<void> linkSocial(String platform) async {
+    await ref.read(profileRepositoryProvider).linkSocial(platform);
     await _loadProfile();
   }
 

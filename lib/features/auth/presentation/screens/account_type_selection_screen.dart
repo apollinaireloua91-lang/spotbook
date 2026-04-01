@@ -1,182 +1,206 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../shared/theme/app_colors.dart';
-import '../../../../shared/widgets/spotbook_button.dart';
 
-class _RoleNotifier extends Notifier<String?> {
-  @override
-  String? build() => null;
-  void select(String role) => state = role;
-}
-
-final _selectedRoleProvider = NotifierProvider<_RoleNotifier, String?>(
-  _RoleNotifier.new,
-  isAutoDispose: true,
-);
-
-class AccountTypeSelectionScreen extends ConsumerWidget {
+class AccountTypeSelectionScreen extends StatelessWidget {
   const AccountTypeSelectionScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final selected = ref.watch(_selectedRoleProvider);
-
+  Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.fond,
+      backgroundColor: AppColors.fondDark,
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
-          child: Column(
-            children: [
-              const SizedBox(height: 16),
-              Align(
-                alignment: Alignment.topLeft,
-                child: GestureDetector(
-                  onTap: () => context.pop(),
-                  child: const Icon(
-                    Icons.arrow_back_ios,
-                    color: AppColors.blanc,
-                    size: 20,
-                  ),
-                ),
-              ),
-              const Spacer(),
-              const Text(
-                'Qui êtes-vous ?',
-                style: TextStyle(
-                  color: AppColors.blanc,
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 8),
-              const Text(
-                'Choisissez votre type de compte pour commencer',
-                style: TextStyle(color: AppColors.gris, fontSize: 15),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 40),
-              Row(
+        child: Column(
+          children: [
+            // Top bar
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Expanded(
-                    child: _RoleCard(
-                      icon: Icons.person_outline,
-                      title: 'Client',
-                      subtitle: 'Réservez des services et événements',
-                      isSelected: selected == 'client',
-                      onTap: () {
-                        HapticFeedback.selectionClick();
-                        ref
-                            .read(_selectedRoleProvider.notifier)
-                            .select('client');
-                      },
-                    ),
+                  GestureDetector(
+                    onTap: () => context.pop(),
+                    child: const Icon(Icons.arrow_back_ios,
+                        color: AppColors.blanc, size: 20),
                   ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: _RoleCard(
-                      icon: Icons.star_outline,
-                      title: 'Professionnel',
-                      subtitle: 'Proposez vos services',
-                      isSelected: selected == 'pro',
-                      onTap: () {
-                        HapticFeedback.selectionClick();
-                        ref
-                            .read(_selectedRoleProvider.notifier)
-                            .select('pro');
-                      },
+                  GestureDetector(
+                    onTap: () {},
+                    child: const Text(
+                      'Support',
+                      style: TextStyle(color: AppColors.gris, fontSize: 14),
                     ),
                   ),
                 ],
               ),
-              const Spacer(),
-              SpotbookButton.primary(
-                label: 'Continuer',
-                onPressed: selected == null
-                    ? null
-                    : () {
-                        HapticFeedback.mediumImpact();
-                        context.go('/signup', extra: selected);
-                      },
+            ),
+            Expanded(
+              child: ListView(
+                padding: EdgeInsets.zero,
+                children: [
+                  // Experience section (Client)
+                  _ImmersiveSection(
+                    gradientColors: const [
+                      AppColors.surface,
+                      AppColors.fond,
+                    ],
+                    badge: 'EXPERIENCE',
+                    badgeColor: AppColors.accent,
+                    titlePrefix: 'Discover the\n',
+                    titleHighlight: 'Extraordinary.',
+                    highlightColor: AppColors.accent,
+                    subtitle:
+                        'Access exclusive events, world-class talent, and immersive content.',
+                    buttonLabel: 'Start Exploring →',
+                    onPressed: () => context.go('/signup', extra: 'client'),
+                  ),
+                  // Legacy section (Pro)
+                  _ImmersiveSection(
+                    gradientColors: const [
+                      AppColors.fond,
+                      AppColors.surface,
+                    ],
+                    badge: 'LEGACY',
+                    badgeColor: AppColors.accentGreen,
+                    titlePrefix: 'Build Your\n',
+                    titleHighlight: 'Empire.',
+                    highlightColor: AppColors.accentGreen,
+                    subtitle:
+                        'Scale your professional reach and monetize your unique vision.',
+                    buttonLabel: 'Launch Your Brand 🚀',
+                    onPressed: () => context.go('/signup', extra: 'pro'),
+                  ),
+                ],
               ),
-              const SizedBox(height: 24),
-              GestureDetector(
-                onTap: () => context.go('/login'),
+            ),
+            // Bottom link
+            Padding(
+              padding: const EdgeInsets.only(bottom: 32, top: 8),
+              child: GestureDetector(
+                onTap: () {},
                 child: const Text(
-                  'Déjà un compte ? Se connecter',
-                  style: TextStyle(color: AppColors.blanc, fontSize: 14),
+                  'NEED GUIDANCE? COMPARE ROLES',
+                  style: TextStyle(
+                    color: AppColors.gris,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                    letterSpacing: 1.2,
+                  ),
                 ),
               ),
-              const SizedBox(height: 40),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
   }
 }
 
-class _RoleCard extends StatelessWidget {
-  const _RoleCard({
-    required this.icon,
-    required this.title,
+class _ImmersiveSection extends StatelessWidget {
+  const _ImmersiveSection({
+    required this.gradientColors,
+    required this.badge,
+    required this.badgeColor,
+    required this.titlePrefix,
+    required this.titleHighlight,
+    required this.highlightColor,
     required this.subtitle,
-    required this.isSelected,
-    required this.onTap,
+    required this.buttonLabel,
+    required this.onPressed,
   });
 
-  final IconData icon;
-  final String title;
+  final List<Color> gradientColors;
+  final String badge;
+  final Color badgeColor;
+  final String titlePrefix;
+  final String titleHighlight;
+  final Color highlightColor;
   final String subtitle;
-  final bool isSelected;
-  final VoidCallback onTap;
+  final String buttonLabel;
+  final VoidCallback onPressed;
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.all(24),
-        decoration: BoxDecoration(
-          color: AppColors.surface,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: isSelected ? AppColors.blanc : AppColors.border,
-            width: isSelected ? 2 : 1,
-          ),
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 48),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: gradientColors,
         ),
-        child: Column(
-          children: [
-            Icon(
-              icon,
-              color: AppColors.blanc,
-              size: 40,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: badgeColor.withAlpha(128)),
             ),
-            const SizedBox(height: 16),
-            Text(
-              title,
-              style: const TextStyle(
-                color: AppColors.blanc,
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              subtitle,
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                color: AppColors.gris,
+            child: Text(
+              badge,
+              style: TextStyle(
+                color: badgeColor,
                 fontSize: 12,
+                fontWeight: FontWeight.w600,
+                letterSpacing: 1.5,
               ),
             ),
-          ],
-        ),
+          ),
+          const SizedBox(height: 20),
+          RichText(
+            text: TextSpan(
+              style: const TextStyle(
+                fontSize: 32,
+                fontWeight: FontWeight.bold,
+                height: 1.2,
+              ),
+              children: [
+                TextSpan(
+                  text: titlePrefix,
+                  style: const TextStyle(color: AppColors.blanc),
+                ),
+                TextSpan(
+                  text: titleHighlight,
+                  style: TextStyle(color: highlightColor),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            subtitle,
+            style: const TextStyle(
+              color: AppColors.gris,
+              fontSize: 15,
+              height: 1.5,
+            ),
+          ),
+          const SizedBox(height: 24),
+          SizedBox(
+            width: double.infinity,
+            height: 52,
+            child: ElevatedButton(
+              onPressed: onPressed,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.blanc,
+                foregroundColor: AppColors.fondDark,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              child: Text(
+                buttonLabel,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

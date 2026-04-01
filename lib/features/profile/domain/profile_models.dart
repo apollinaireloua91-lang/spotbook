@@ -7,9 +7,6 @@ class ClientProfile {
     this.coverUrl,
     this.city,
     this.username,
-    this.bio,
-    this.createdAt,
-    this.role,
   });
 
   final String id;
@@ -19,9 +16,6 @@ class ClientProfile {
   final String? coverUrl;
   final String? city;
   final String? username;
-  final String? bio;
-  final DateTime? createdAt;
-  final String? role;
 
   factory ClientProfile.fromJson(Map<String, dynamic> json) {
     return ClientProfile(
@@ -32,11 +26,6 @@ class ClientProfile {
       coverUrl: json['cover_url'] as String?,
       city: json['city'] as String?,
       username: json['username'] as String?,
-      bio: json['bio'] as String?,
-      createdAt: json['created_at'] != null
-          ? DateTime.tryParse(json['created_at'] as String)
-          : null,
-      role: json['role'] as String?,
     );
   }
 }
@@ -106,7 +95,7 @@ class ProProfile {
       id: json['id'] as String,
       businessName: json['business_name'] as String? ?? 'Pro',
       category: json['category'] as String? ?? '',
-      bio: json['description'] as String? ?? json['bio'] as String?,
+      bio: json['bio'] as String?,
       city: user['city'] as String?,
       avatarUrl: user['avatar_url'] as String?,
       coverUrl: user['cover_url'] as String?,
@@ -118,36 +107,4 @@ class ProProfile {
       isFollowedByMe: isFollowedByMe,
     );
   }
-}
-
-/// Pro favori pour la grille profil client.
-class ClientFavoriteProItem {
-  const ClientFavoriteProItem({
-    required this.proId,
-    required this.name,
-    required this.rating,
-    required this.reviewCount,
-    this.avatarUrl,
-  });
-
-  final String proId;
-  final String name;
-  final double rating;
-  final int reviewCount;
-  final String? avatarUrl;
-}
-
-/// Vidéo sauvegardée (favoris type `video`).
-class ClientFavoriteVideoItem {
-  const ClientFavoriteVideoItem({
-    required this.videoId,
-    required this.title,
-    this.thumbnailUrl,
-    this.durationSeconds,
-  });
-
-  final String videoId;
-  final String title;
-  final String? thumbnailUrl;
-  final double? durationSeconds;
 }

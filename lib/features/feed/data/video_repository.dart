@@ -1,7 +1,8 @@
+import 'dart:math';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import '../../../shared/utils/cloudflare_stream_urls.dart';
 import '../domain/video_model.dart';
 
 final videoRepositoryProvider = Provider<VideoRepository>((ref) {
@@ -12,58 +13,72 @@ class VideoRepository {
   VideoRepository({required SupabaseClient supabase}) : _supabase = supabase;
 
   final SupabaseClient _supabase;
+  final _random = Random();
 
   String? get currentUserId => _supabase.auth.currentUser?.id;
 
-  /// `videos.pro_id` référence `users.id` (FK `videos_pro_id_fkey`), pas `profiles_pro` — embed via `users` puis `profiles_pro`.
-  /// `services` / `events` : colonnes `service_id` / `event_id` (migration 20260328130000).
   static const _selectWithPro =
-      'id, pro_id, cloudflare_id, stream_url, thumbnail_url, title, description, hashtags, category, status, likes_count, comments_count, views_count, share_count, created_at, duration_seconds, service_id, event_id, spotify_track_title, spotify_track_artist, '
-      'services(title, name, price), '
-      'events(title, event_date, start_time, location), '
-      'users!inner(id, full_name, avatar_url, city, profiles_pro(business_name, category, is_top_pro, social_connections(platform, followers_count, handle)))';
+      '*, profiles_pro!inner(id, business_name, category, is_top_pro, users!inner(full_name, avatar_url, city), social_connections(platform, followers_count, handle))';
 
-  /// Normalise `cloudflare_id`, dérive [stream_url] / [thumbnail_url] si absents.
-  Map<String, dynamic> _enrichVideoRow(Map<String, dynamic> json) {
-    final m = Map<String, dynamic>.from(json);
-    final id = cloudflareIdFromRow(m);
-    if (id != null) {
-      m['cloudflare_id'] = id;
-    }
-    final stream = m['stream_url'] as String?;
-    if (stream == null || stream.isEmpty) {
-      final derived = cloudflareManifestUrl(id);
-      if (derived != null) m['stream_url'] = derived;
-    }
-    final thumb = m['thumbnail_url'] as String?;
-    if (thumb == null || thumb.isEmpty) {
-      final u = cloudflareThumbnailUrl(id);
-      if (u != null) m['thumbnail_url'] = u;
-    }
-    return m;
-  }
-
-  /// Feed Découvrir : uniquement `approved` + `public`, pagination chronologique cohérente.
-  Future<List<VideoModel>> getDiscoverFeed({
-    int offset = 0,
-    int limit = 10,
-  }) async {
+  Future<List<VideoModel>> getScoredVideos({int limit = 10}) async {
     final uid = currentUserId;
+    if (uid == null) return [];
 
-    final blockedIds =
-        uid != null ? await _getBlockedProIds(uid) : <String>[];
-    final likedIds =
-        uid != null ? await _getLikedVideoIds(uid) : <String>{};
-    final savedIds =
-        uid != null ? await _getSavedVideoIds(uid) : <String>{};
-    final followedIds =
-        uid != null ? await _getFollowedProIds(uid) : <String>{};
+    final blockedIds = await _getBlockedProIds(uid);
+    final userProfile = await _supabase
+        .from('users')
+        .select('city')
+        .eq('id', uid)
+        .maybeSingle();
+    final userCity = userProfile?['city'] as String?;
 
     var query = _supabase
         .from('videos')
         .select(_selectWithPro)
-        .eq('status', 'approved')
-        .eq('visibility', 'public');
+        .eq('status', 'approved');
+    if (blockedIds.isNotEmpty) {
+      query = query.not('pro_id', 'in', blockedIds);
+    }
+
+    final data = await query.order('created_at', ascending: false).limit(50);
+    final likedIds = await _getLikedVideoIds(uid);
+
+    final videos = (data as List)
+        .map((json) => VideoModel.fromJson(json as Map<String, dynamic>,
+            isLiked: likedIds.contains(json['id'])))
+        .toList();
+
+    final scored = videos.map((v) {
+      double score = 0;
+      if (userCity != null && v.proCity == userCity) score += 40;
+      final age = DateTime.now().difference(v.createdAt);
+      if (age.inHours < 24) {
+        score += 30;
+      } else if (age.inDays < 7) {
+        score += 20;
+      }
+      score += _random.nextInt(11);
+      return (video: v, score: score);
+    }).toList();
+
+    scored.sort((a, b) => b.score.compareTo(a.score));
+    return scored.take(limit).map((e) => e.video).toList();
+  }
+
+  Future<List<VideoModel>> getMoreVideos({
+    required int offset,
+    int limit = 10,
+  }) async {
+    final uid = currentUserId;
+    if (uid == null) return [];
+
+    final blockedIds = await _getBlockedProIds(uid);
+    final likedIds = await _getLikedVideoIds(uid);
+
+    var query = _supabase
+        .from('videos')
+        .select(_selectWithPro)
+        .eq('status', 'approved');
     if (blockedIds.isNotEmpty) {
       query = query.not('pro_id', 'in', blockedIds);
     }
@@ -73,27 +88,10 @@ class VideoRepository {
         .range(offset, offset + limit - 1);
 
     return (data as List)
-        .map((raw) {
-          final json = raw as Map<String, dynamic>;
-          final m = _enrichVideoRow(json);
-          return VideoModel.fromJson(
-            m,
-            isLiked: likedIds.contains(m['id'] as String),
-            isSaved: savedIds.contains(m['id'] as String),
-            isFollowed: followedIds.contains(m['pro_id'] as String),
-          );
-        })
+        .map((json) => VideoModel.fromJson(json as Map<String, dynamic>,
+            isLiked: likedIds.contains(json['id'])))
         .toList();
   }
-
-  Future<List<VideoModel>> getScoredVideos({int limit = 10}) =>
-      getDiscoverFeed(offset: 0, limit: limit);
-
-  Future<List<VideoModel>> getMoreVideos({
-    required int offset,
-    int limit = 10,
-  }) =>
-      getDiscoverFeed(offset: offset, limit: limit);
 
   Future<void> likeVideo(String videoId) async {
     final uid = currentUserId;
@@ -171,33 +169,7 @@ class VideoRepository {
         .eq('pro_id', uid)
         .order('created_at', ascending: false);
     return (data as List)
-        .map((json) => VideoModel.fromJson(
-              _enrichVideoRow(json as Map<String, dynamic>),
-            ))
-        .toList();
-  }
-
-  /// Même flux que [getMyVideos] + états like / favori pour l’utilisateur courant (aperçu stats).
-  Future<List<VideoModel>> getMyVideosWithInteractions() async {
-    final uid = currentUserId;
-    if (uid == null) return [];
-    final likedIds = await _getLikedVideoIds(uid);
-    final savedIds = await _getSavedVideoIds(uid);
-    final data = await _supabase
-        .from('videos')
-        .select(_selectWithPro)
-        .eq('pro_id', uid)
-        .order('created_at', ascending: false);
-    return (data as List)
-        .map((json) {
-          final m = json as Map<String, dynamic>;
-          final id = m['id'] as String;
-          return VideoModel.fromJson(
-            _enrichVideoRow(m),
-            isLiked: likedIds.contains(id),
-            isSaved: savedIds.contains(id),
-          );
-        })
+        .map((json) => VideoModel.fromJson(json as Map<String, dynamic>))
         .toList();
   }
 
@@ -208,9 +180,7 @@ class VideoRepository {
         .eq('pro_id', proId)
         .order('created_at', ascending: false);
     return (data as List)
-        .map((json) => VideoModel.fromJson(
-              _enrichVideoRow(json as Map<String, dynamic>),
-            ))
+        .map((json) => VideoModel.fromJson(json as Map<String, dynamic>))
         .toList();
   }
 
@@ -218,77 +188,10 @@ class VideoRepository {
     await _supabase.from('videos').delete().eq('id', videoId);
   }
 
-  /// Edge Functions : toujours le singleton + JWT utilisateur explicite (évite tout cas limite sur [AuthHttpClient.putIfAbsent]).
-  Future<FunctionResponse> _invokeAuthenticatedEdgeFunction(
-    String functionName, {
-    Map<String, dynamic>? body,
-  }) async {
-    final authClient = Supabase.instance.client;
-    var session = authClient.auth.currentSession;
-    if (session == null) {
-      throw Exception('Session expirée — veuillez vous reconnecter');
-    }
-    if (session.isExpired) {
-      final refreshed = await authClient.auth.refreshSession();
-      session = refreshed.session;
-      if (session == null) {
-        throw Exception('Session expirée — veuillez vous reconnecter');
-      }
-    }
-    final token = session.accessToken;
-    if (token.isEmpty) {
-      throw Exception('Session expirée — veuillez vous reconnecter');
-    }
-    try {
-      final res = await authClient.functions.invoke(
-        functionName,
-        body: body,
-        headers: {
-          'Authorization': 'Bearer $token',
-        },
-      );
-      return res;
-    } on FunctionException {
-      rethrow;
-    }
-  }
-
-  /// Réponse Edge = corps API Cloudflare v4 (`success`, `result.uploadURL`, `result.uid`).
-  Future<Map<String, dynamic>> getCloudflareUploadUrl({
-    int? fileSizeBytes,
-    String? mimeType,
-  }) async {
-    final session = _supabase.auth.currentSession;
-    if (session == null) {
-      throw Exception('Session expirée — veuillez vous reconnecter');
-    }
-    final res = await _invokeAuthenticatedEdgeFunction(
-      'generate-cloudflare-upload-url',
-      body: {
-        if (fileSizeBytes != null) 'fileSizeBytes': fileSizeBytes,
-        if (mimeType != null && mimeType.isNotEmpty) 'mimeType': mimeType,
-      },
-    );
-    if (res.status != 200) {
-      throw Exception(_functionsErrorMessage(res.data, fallback: 'Upload URL failed'));
-    }
-    final data = res.data;
-    if (data is! Map<String, dynamic>) {
-      throw Exception('Invalid upload URL response');
-    }
-    final result = data['result'];
-    if (result is! Map<String, dynamic>) {
-      throw Exception(data['error']?.toString() ?? 'No Cloudflare result');
-    }
-    final uploadURL = result['uploadURL'] as String?;
-    final uid = result['uid'] as String?;
-    if (uploadURL == null || uid == null) {
-      throw Exception('Missing uploadURL or uid in Cloudflare response');
-    }
-    return {
-      'uploadURL': uploadURL,
-      'videoId': uid,
-    };
+  Future<Map<String, dynamic>> getCloudflareUploadUrl() async {
+    final res = await _supabase.functions
+        .invoke('generate-cloudflare-upload-url');
+    return res.data as Map<String, dynamic>;
   }
 
   Future<Map<String, dynamic>> submitForModeration({
@@ -297,15 +200,11 @@ class VideoRepository {
     required String category,
     required double? duration,
     required String cloudflareId,
-    String thumbnailUrl = '',
+    required String streamUrl,
+    required String thumbnailUrl,
     required List<String> hashtags,
-    String? serviceId,
   }) async {
-    final session = _supabase.auth.currentSession;
-    if (session == null) {
-      throw Exception('Session expirée — veuillez vous reconnecter');
-    }
-    final res = await _invokeAuthenticatedEdgeFunction(
+    final res = await _supabase.functions.invoke(
       'moderate-video',
       body: {
         'title': title,
@@ -313,42 +212,28 @@ class VideoRepository {
         'category': category,
         'duration': duration,
         'cloudflare_id': cloudflareId,
+        'stream_url': streamUrl,
         'thumbnail_url': thumbnailUrl,
         'hashtags': hashtags,
-        if (serviceId != null && serviceId.isNotEmpty) 'service_id': serviceId,
       },
     );
     if (res.status != 200) {
-      throw Exception(_functionsErrorMessage(res.data, fallback: 'Publication échouée'));
+      final err = res.data is Map ? res.data['error'] : 'Upload failed';
+      throw Exception(err ?? 'Upload failed');
     }
     return res.data as Map<String, dynamic>;
   }
 
-  static String _functionsErrorMessage(dynamic data, {required String fallback}) {
-    if (data is Map) {
-      final e = data['error'] ?? data['message'];
-      if (e != null && e.toString().trim().isNotEmpty) return e.toString();
-    }
-    if (data is String && data.trim().isNotEmpty) return data;
-    return fallback;
-  }
-
   Future<List<VideoModel>> searchVideos(String query) async {
-    // Sanitize query to prevent PostgREST filter injection
-    final sanitized = query.replaceAll(RegExp(r'[,.()\[\]%\\]'), '');
-    if (sanitized.trim().isEmpty) return [];
     final data = await _supabase
         .from('videos')
         .select(_selectWithPro)
         .eq('status', 'approved')
-        .eq('visibility', 'public')
-        .or('title.ilike.%$sanitized%,category.ilike.%$sanitized%')
+        .or('title.ilike.%$query%,category.ilike.%$query%')
         .order('created_at', ascending: false)
         .limit(20);
     return (data as List)
-        .map((json) => VideoModel.fromJson(
-              _enrichVideoRow(json as Map<String, dynamic>),
-            ))
+        .map((json) => VideoModel.fromJson(json as Map<String, dynamic>))
         .toList();
   }
 
@@ -357,99 +242,12 @@ class VideoRepository {
         .from('videos')
         .select(_selectWithPro)
         .eq('status', 'approved')
-        .eq('visibility', 'public')
         .eq('category', category)
         .order('created_at', ascending: false)
         .limit(20);
     return (data as List)
-        .map((json) => VideoModel.fromJson(
-              _enrichVideoRow(json as Map<String, dynamic>),
-            ))
+        .map((json) => VideoModel.fromJson(json as Map<String, dynamic>))
         .toList();
-  }
-
-  /// Feed filtered to followed pros only.
-  Future<List<VideoModel>> getFollowingFeed({int limit = 10, int offset = 0}) async {
-    final uid = currentUserId;
-    if (uid == null) return [];
-
-    final followedIds = await _getFollowedProIds(uid);
-    if (followedIds.isEmpty) return [];
-
-    final likedIds = await _getLikedVideoIds(uid);
-    final savedIds = await _getSavedVideoIds(uid);
-
-    final data = await _supabase
-        .from('videos')
-        .select(_selectWithPro)
-        .eq('status', 'approved')
-        .eq('visibility', 'public')
-        .inFilter('pro_id', followedIds.toList())
-        .order('created_at', ascending: false)
-        .range(offset, offset + limit - 1);
-
-    return (data as List)
-        .map((json) => VideoModel.fromJson(
-              _enrichVideoRow(json as Map<String, dynamic>),
-              isLiked: likedIds.contains(json['id']),
-              isSaved: savedIds.contains(json['id']),
-              isFollowed: true,
-            ))
-        .toList();
-  }
-
-  Future<void> saveVideo(String videoId) async {
-    final uid = currentUserId;
-    if (uid == null) return;
-    await _supabase.from('favorites').insert({
-      'user_id': uid,
-      'video_id': videoId,
-    });
-  }
-
-  Future<void> unsaveVideo(String videoId) async {
-    final uid = currentUserId;
-    if (uid == null) return;
-    await _supabase
-        .from('favorites')
-        .delete()
-        .eq('user_id', uid)
-        .eq('video_id', videoId);
-  }
-
-  Future<void> followPro(String proId) async {
-    final uid = currentUserId;
-    if (uid == null) return;
-    await _supabase.from('follows').insert({
-      'follower_id': uid,
-      'following_id': proId,
-    });
-  }
-
-  Future<void> unfollowPro(String proId) async {
-    final uid = currentUserId;
-    if (uid == null) return;
-    await _supabase
-        .from('follows')
-        .delete()
-        .eq('follower_id', uid)
-        .eq('following_id', proId);
-  }
-
-  Future<Set<String>> _getFollowedProIds(String userId) async {
-    final data = await _supabase
-        .from('follows')
-        .select('following_id')
-        .eq('follower_id', userId);
-    return (data as List).map((e) => e['following_id'] as String).toSet();
-  }
-
-  Future<Set<String>> _getSavedVideoIds(String userId) async {
-    final data = await _supabase
-        .from('favorites')
-        .select('video_id')
-        .eq('user_id', userId);
-    return (data as List).map((e) => e['video_id'] as String).toSet();
   }
 
   Future<List<String>> _getBlockedProIds(String userId) async {

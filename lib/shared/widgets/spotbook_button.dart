@@ -3,14 +3,7 @@ import 'package:flutter/services.dart';
 
 import '../theme/app_colors.dart';
 
-enum SpotbookButtonVariant {
-  primary,
-  secondary,
-  outlined,
-  ghost,
-  destructive,
-  gradient,
-}
+enum SpotbookButtonVariant { primary, secondary, outlined }
 
 class SpotbookButton extends StatefulWidget {
   const SpotbookButton({
@@ -20,7 +13,6 @@ class SpotbookButton extends StatefulWidget {
     this.variant = SpotbookButtonVariant.primary,
     this.isLoading = false,
     this.icon,
-    this.width,
   });
 
   const SpotbookButton.primary({
@@ -29,7 +21,6 @@ class SpotbookButton extends StatefulWidget {
     required this.onPressed,
     this.isLoading = false,
     this.icon,
-    this.width,
   }) : variant = SpotbookButtonVariant.primary;
 
   const SpotbookButton.secondary({
@@ -38,7 +29,6 @@ class SpotbookButton extends StatefulWidget {
     required this.onPressed,
     this.isLoading = false,
     this.icon,
-    this.width,
   }) : variant = SpotbookButtonVariant.secondary;
 
   const SpotbookButton.outlined({
@@ -47,42 +37,13 @@ class SpotbookButton extends StatefulWidget {
     required this.onPressed,
     this.isLoading = false,
     this.icon,
-    this.width,
   }) : variant = SpotbookButtonVariant.outlined;
-
-  const SpotbookButton.ghost({
-    super.key,
-    required this.label,
-    required this.onPressed,
-    this.isLoading = false,
-    this.icon,
-    this.width,
-  }) : variant = SpotbookButtonVariant.ghost;
-
-  const SpotbookButton.destructive({
-    super.key,
-    required this.label,
-    required this.onPressed,
-    this.isLoading = false,
-    this.icon,
-    this.width,
-  }) : variant = SpotbookButtonVariant.destructive;
-
-  const SpotbookButton.gradient({
-    super.key,
-    required this.label,
-    required this.onPressed,
-    this.isLoading = false,
-    this.icon,
-    this.width,
-  }) : variant = SpotbookButtonVariant.gradient;
 
   final String label;
   final VoidCallback? onPressed;
   final SpotbookButtonVariant variant;
   final bool isLoading;
   final IconData? icon;
-  final double? width;
 
   @override
   State<SpotbookButton> createState() => _SpotbookButtonState();
@@ -99,7 +60,7 @@ class _SpotbookButtonState extends State<SpotbookButton>
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 100),
-      lowerBound: 0.97,
+      lowerBound: 0.95,
       upperBound: 1.0,
       value: 1.0,
     );
@@ -122,12 +83,10 @@ class _SpotbookButtonState extends State<SpotbookButton>
     final Color fg;
     final Border? border;
 
-    final bool isGradient = widget.variant == SpotbookButtonVariant.gradient;
-
     switch (widget.variant) {
       case SpotbookButtonVariant.primary:
-        bg = AppColors.violet;
-        fg = AppColors.blanc;
+        bg = AppColors.blanc;
+        fg = AppColors.fond;
         border = null;
       case SpotbookButtonVariant.secondary:
         bg = AppColors.surfaceAlt;
@@ -136,68 +95,28 @@ class _SpotbookButtonState extends State<SpotbookButton>
       case SpotbookButtonVariant.outlined:
         bg = Colors.transparent;
         fg = AppColors.blanc;
-        border = Border.all(color: AppColors.blanc);
-      case SpotbookButtonVariant.ghost:
-        bg = Colors.transparent;
-        fg = AppColors.blanc;
-        border = null;
-      case SpotbookButtonVariant.destructive:
-        bg = AppColors.error.withValues(alpha: 0.1);
-        fg = AppColors.error;
-        border = null;
-      case SpotbookButtonVariant.gradient:
-        bg = Colors.transparent; // gradient used instead
-        fg = AppColors.blanc;
-        border = null;
+        border = Border.all(color: AppColors.border);
     }
 
-    final bool isPill =
-        widget.variant == SpotbookButtonVariant.primary || isGradient;
-    final double radius = isPill ? 28 : 12;
-    final double height = isPill ? 56 : 48;
-
     return GestureDetector(
-      onTapDown: widget.isLoading ? null : _onTapDown,
-      onTapUp: widget.isLoading ? null : _onTapUp,
-      onTapCancel: widget.isLoading ? null : _onTapCancel,
+      onTapDown: _onTapDown,
+      onTapUp: _onTapUp,
+      onTapCancel: _onTapCancel,
       onTap: widget.isLoading
           ? null
           : () {
-              HapticFeedback.lightImpact();
+              HapticFeedback.mediumImpact();
               widget.onPressed?.call();
             },
       child: ScaleTransition(
         scale: _scale,
         child: Container(
-          width: widget.width ?? double.infinity,
-          height: height,
+          width: double.infinity,
+          height: 48,
           decoration: BoxDecoration(
-            color: isGradient ? null : bg,
-            gradient: isGradient ? AppColors.gradientAccent : null,
-            borderRadius: BorderRadius.circular(radius),
+            color: bg,
+            borderRadius: BorderRadius.circular(12),
             border: border,
-            boxShadow: isGradient
-                ? [
-                    BoxShadow(
-                      color: AppColors.violet.withAlpha(80),
-                      blurRadius: 16,
-                      offset: const Offset(0, 4),
-                    ),
-                    BoxShadow(
-                      color: AppColors.rose.withAlpha(40),
-                      blurRadius: 24,
-                      offset: const Offset(0, 8),
-                    ),
-                  ]
-                : widget.variant == SpotbookButtonVariant.primary
-                    ? [
-                        BoxShadow(
-                          color: AppColors.violet.withAlpha(90),
-                          blurRadius: 18,
-                          offset: const Offset(0, 5),
-                        ),
-                      ]
-                    : null,
           ),
           child: Center(
             child: widget.isLoading
@@ -222,7 +141,6 @@ class _SpotbookButtonState extends State<SpotbookButton>
                           color: fg,
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
-                          letterSpacing: isPill ? 0.2 : 0,
                         ),
                       ),
                     ],

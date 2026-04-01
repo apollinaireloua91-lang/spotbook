@@ -44,9 +44,9 @@ class AnalyticsService {
     final consent = b.get(_consentKey) == true;
     if (!consent || _isInitialized) return;
 
-    const apiKey = String.fromEnvironment('POSTHOG_API_KEY');
+    final apiKey = const String.fromEnvironment('POSTHOG_API_KEY');
     if (apiKey.isEmpty) return;
-    const host = String.fromEnvironment('POSTHOG_HOST');
+    final host = const String.fromEnvironment('POSTHOG_HOST');
 
     final config = PostHogConfig(apiKey);
     if (host.isNotEmpty) config.host = host;

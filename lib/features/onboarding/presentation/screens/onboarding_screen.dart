@@ -1,20 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 import '../../../../shared/theme/app_colors.dart';
-import '../../../../shared/widgets/spotbook_button.dart';
 
-class _PageNotifier extends Notifier<int> {
+class _OnboardingPageNotifier extends Notifier<int> {
   @override
   int build() => 0;
   void set(int page) => state = page;
 }
 
-final _onboardingPageProvider = NotifierProvider<_PageNotifier, int>(
-  _PageNotifier.new,
+final _onboardingPageProvider = NotifierProvider<_OnboardingPageNotifier, int>(
+  _OnboardingPageNotifier.new,
   isAutoDispose: true,
 );
 
@@ -41,7 +39,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     context.go('/account-type');
   }
 
-  void _next() {
+  void _nextPage() {
     _controller.nextPage(
       duration: const Duration(milliseconds: 300),
       curve: Curves.easeInOut,
@@ -50,14 +48,13 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final page = ref.watch(_onboardingPageProvider);
+    final currentPage = ref.watch(_onboardingPageProvider);
 
     return Scaffold(
-      backgroundColor: AppColors.fond,
+      backgroundColor: AppColors.fondDark,
       body: SafeArea(
         child: Column(
           children: [
-            // Skip
             Align(
               alignment: Alignment.topRight,
               child: Padding(
@@ -65,131 +62,214 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                 child: GestureDetector(
                   onTap: _complete,
                   child: const Text(
-                    'Passer',
-                    style: TextStyle(color: AppColors.gris, fontSize: 15),
+                    'Skip',
+                    style: TextStyle(
+                      color: AppColors.gris,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                 ),
               ),
             ),
-            // Pages
             Expanded(
               child: PageView(
                 controller: _controller,
-                onPageChanged: (i) =>
-                    ref.read(_onboardingPageProvider.notifier).set(i),
-                children: const [
-                  _OnboardingSlide(
-                    icon: Icons.play_circle_outline,
-                    title: 'Regardez. Découvrez. Réservez.',
-                    subtitle:
-                        'Explorez les professionnels locaux à travers des vidéos courtes. Découvrez leur savoir-faire avant de réserver.',
-                  ),
-                  _OnboardingSlide(
-                    icon: Icons.calendar_month_outlined,
-                    title: 'Réservez services et événements',
-                    subtitle:
-                        'Connectez-vous avec des experts pour des sessions 1:1 ou obtenez des billets pour des ateliers en direct.',
-                  ),
-                  _OnboardingSlide(
-                    icon: Icons.trending_up,
-                    title: 'Créez et gagnez',
-                    subtitle:
-                        'Partagez votre expertise en vidéo, gérez vos réservations et vendez des billets.',
-                  ),
+                onPageChanged: (i) => ref.read(_onboardingPageProvider.notifier).set(i),
+                children: [
+                  _buildSlide1(),
+                  _buildSlide2(),
+                  _buildSlide3(),
                 ],
               ),
             ),
-            // Dots
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: List.generate(3, (i) {
                 return AnimatedContainer(
                   duration: const Duration(milliseconds: 200),
                   margin: const EdgeInsets.symmetric(horizontal: 4),
-                  width: i == page ? 24 : 8,
+                  width: i == currentPage ? 24 : 8,
                   height: 8,
                   decoration: BoxDecoration(
-                    color: i == page ? AppColors.blanc : AppColors.gris,
+                    color: i == currentPage
+                        ? AppColors.accent
+                        : AppColors.gris.withAlpha(77),
                     borderRadius: BorderRadius.circular(4),
                   ),
                 );
               }),
             ),
-            const SizedBox(height: 32),
-            // Button
+            const SizedBox(height: 24),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: SpotbookButton.primary(
-                label: page < 2 ? 'Suivant' : 'Commencer',
-                onPressed: page < 2 ? _next : _complete,
-              ),
-            ),
-            const SizedBox(height: 16),
-            if (page == 2)
-              GestureDetector(
-                onTap: () {
-                  HapticFeedback.selectionClick();
-                  context.go('/login');
-                },
-                child: const Text(
-                  'Déjà un compte ? Se connecter',
-                  style: TextStyle(color: AppColors.blanc, fontSize: 14),
+              child: SizedBox(
+                width: double.infinity,
+                height: 52,
+                child: ElevatedButton(
+                  onPressed: currentPage < 2 ? _nextPage : _complete,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.accent,
+                    foregroundColor: AppColors.fondDark,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(26),
+                    ),
+                  ),
+                  child: Text(
+                    currentPage < 2 ? 'Next →' : 'Get Started →',
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                 ),
               ),
+            ),
+            if (currentPage == 2) ...[
+              const SizedBox(height: 16),
+              GestureDetector(
+                onTap: () => context.go('/login'),
+                child: RichText(
+                  text: const TextSpan(
+                    text: 'Existing user? ',
+                    style: TextStyle(color: AppColors.gris, fontSize: 14),
+                    children: [
+                      TextSpan(
+                        text: 'Log in',
+                        style: TextStyle(color: AppColors.accent),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
             const SizedBox(height: 40),
           ],
         ),
       ),
     );
   }
-}
 
-class _OnboardingSlide extends StatelessWidget {
-  const _OnboardingSlide({
-    required this.icon,
-    required this.title,
-    required this.subtitle,
-  });
-
-  final IconData icon;
-  final String title;
-  final String subtitle;
-
-  @override
-  Widget build(BuildContext context) {
+  Widget _buildSlide1() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 32),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
-            width: 160,
-            height: 160,
+            width: 200,
+            height: 200,
             decoration: BoxDecoration(
-              color: AppColors.surface,
-              shape: BoxShape.circle,
+              color: AppColors.surfaceAuth,
+              borderRadius: BorderRadius.circular(24),
             ),
-            child: Icon(icon, size: 72, color: AppColors.blanc),
+            child: const Icon(Icons.play_circle_fill, size: 80, color: AppColors.accent),
           ),
           const SizedBox(height: 40),
-          Text(
-            title,
+          RichText(
             textAlign: TextAlign.center,
-            style: const TextStyle(
-              color: AppColors.blanc,
-              fontSize: 28,
-              fontWeight: FontWeight.bold,
-              height: 1.3,
+            text: const TextSpan(
+              style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, height: 1.3),
+              children: [
+                TextSpan(text: 'Watch. Discover. ', style: TextStyle(color: AppColors.blanc)),
+                TextSpan(text: 'Book.', style: TextStyle(color: AppColors.accent)),
+              ],
             ),
           ),
           const SizedBox(height: 16),
-          Text(
-            subtitle,
+          const Text(
+            'Explore local professionals through immersive video. See their skills in action before you book.',
             textAlign: TextAlign.center,
-            style: const TextStyle(
-              color: AppColors.gris,
-              fontSize: 16,
-              height: 1.5,
+            style: TextStyle(color: AppColors.gris, fontSize: 15, height: 1.5),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSlide2() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 32),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            width: 200,
+            height: 200,
+            decoration: BoxDecoration(
+              color: AppColors.surfaceAuth,
+              borderRadius: BorderRadius.circular(24),
+            ),
+            child: const Icon(Icons.calendar_month, size: 80, color: AppColors.accent),
+          ),
+          const SizedBox(height: 40),
+          const Text(
+            'Book Services & Events',
+            textAlign: TextAlign.center,
+            style: TextStyle(color: AppColors.blanc, fontSize: 28, fontWeight: FontWeight.bold, height: 1.3),
+          ),
+          const SizedBox(height: 16),
+          const Text(
+            'Connect with experts for 1:1 sessions or secure your spot at live workshops and events directly through the app.',
+            textAlign: TextAlign.center,
+            style: TextStyle(color: AppColors.gris, fontSize: 15, height: 1.5),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSlide3() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 32),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            width: 200,
+            height: 200,
+            decoration: BoxDecoration(
+              color: AppColors.surfaceAuth,
+              borderRadius: BorderRadius.circular(24),
+            ),
+            child: const Icon(Icons.trending_up, size: 80, color: AppColors.accent),
+          ),
+          const SizedBox(height: 40),
+          const Text(
+            'Empower Your Business',
+            textAlign: TextAlign.center,
+            style: TextStyle(color: AppColors.blanc, fontSize: 28, fontWeight: FontWeight.bold, height: 1.3),
+          ),
+          const SizedBox(height: 24),
+          _featureCard(Icons.videocam, 'Create Content', 'Share your expertise with video'),
+          const SizedBox(height: 8),
+          _featureCard(Icons.calendar_today, 'Manage Bookings', 'Seamless scheduling system'),
+          const SizedBox(height: 8),
+          _featureCard(Icons.confirmation_number, 'Sell Event Tickets', 'Monetize exclusive events'),
+        ],
+      ),
+    );
+  }
+
+  Widget _featureCard(IconData icon, String title, String subtitle) {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: AppColors.blanc.withAlpha(13),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.blanc.withAlpha(26)),
+      ),
+      child: Row(
+        children: [
+          Icon(icon, color: AppColors.accent, size: 24),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(title, style: const TextStyle(color: AppColors.blanc, fontSize: 14, fontWeight: FontWeight.w600)),
+                Text(subtitle, style: const TextStyle(color: AppColors.gris, fontSize: 12)),
+              ],
             ),
           ),
         ],

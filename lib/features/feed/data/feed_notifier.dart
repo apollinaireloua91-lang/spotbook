@@ -3,73 +3,55 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../domain/video_model.dart';
 import 'video_repository.dart';
 
-enum FeedTab { discover, following }
-
 class FeedState {
   const FeedState({
     this.videos = const [],
     this.isLoading = true,
     this.currentIndex = 0,
     this.isLoadingMore = false,
-    this.activeTab = FeedTab.discover,
   });
   final List<VideoModel> videos;
   final bool isLoading;
   final int currentIndex;
   final bool isLoadingMore;
-  final FeedTab activeTab;
 
   FeedState copyWith({
     List<VideoModel>? videos,
     bool? isLoading,
     int? currentIndex,
     bool? isLoadingMore,
-    FeedTab? activeTab,
   }) =>
       FeedState(
         videos: videos ?? this.videos,
         isLoading: isLoading ?? this.isLoading,
         currentIndex: currentIndex ?? this.currentIndex,
         isLoadingMore: isLoadingMore ?? this.isLoadingMore,
-        activeTab: activeTab ?? this.activeTab,
       );
 }
 
 class FeedNotifier extends Notifier<FeedState> {
   @override
   FeedState build() {
-    _loadFeed();
+    _loadInitial();
     return const FeedState();
   }
 
-  VideoRepository get _repo => ref.read(videoRepositoryProvider);
-
-  Future<void> _loadFeed() async {
-    state = state.copyWith(isLoading: true, currentIndex: 0);
+  Future<void> _loadInitial() async {
     try {
-      final videos = state.activeTab == FeedTab.discover
-          ? await _repo.getScoredVideos()
-          : await _repo.getFollowingFeed();
+      final videos = await ref.read(videoRepositoryProvider).getScoredVideos();
       state = state.copyWith(videos: videos, isLoading: false);
     } catch (_) {
       state = state.copyWith(isLoading: false);
     }
   }
 
-  void switchTab(FeedTab tab) {
-    if (tab == state.activeTab) return;
-    state = state.copyWith(activeTab: tab, videos: [], currentIndex: 0);
-    _loadFeed();
-  }
-
   Future<void> loadMore() async {
     if (state.isLoadingMore) return;
     state = state.copyWith(isLoadingMore: true);
     try {
-      final offset = state.videos.length;
-      final more = state.activeTab == FeedTab.discover
-          ? await _repo.getMoreVideos(offset: offset)
-          : await _repo.getFollowingFeed(offset: offset);
+      final more = await ref
+          .read(videoRepositoryProvider)
+          .getMoreVideos(offset: state.videos.length);
       state = state.copyWith(
         videos: [...state.videos, ...more],
         isLoadingMore: false,
@@ -86,59 +68,32 @@ class FeedNotifier extends Notifier<FeedState> {
     }
   }
 
-  void _updateVideo(int index, VideoModel updated) {
-    final list = List<VideoModel>.from(state.videos);
-    list[index] = updated;
-    state = state.copyWith(videos: list);
-  }
-
   void toggleLike(int index, bool liked) {
     final v = state.videos[index];
-    _updateVideo(
-      index,
-      v.copyWith(
-        isLiked: liked,
-        likesCount: v.likesCount + (liked ? 1 : -1),
-      ),
+    final updated = List<VideoModel>.from(state.videos);
+    updated[index] = VideoModel(
+      id: v.id,
+      proId: v.proId,
+      cloudflareId: v.cloudflareId,
+      streamUrl: v.streamUrl,
+      thumbnailUrl: v.thumbnailUrl,
+      title: v.title,
+      description: v.description,
+      category: v.category,
+      hashtags: v.hashtags,
+      status: v.status,
+      rejectionReason: v.rejectionReason,
+      likesCount: v.likesCount + (liked ? 1 : -1),
+      commentsCount: v.commentsCount,
+      viewsCount: v.viewsCount,
+      flagCount: v.flagCount,
+      createdAt: v.createdAt,
+      proName: v.proName,
+      proAvatarUrl: v.proAvatarUrl,
+      proCity: v.proCity,
+      isLiked: liked,
     );
-    if (liked) {
-      _repo.likeVideo(v.id);
-    } else {
-      _repo.unlikeVideo(v.id);
-    }
-  }
-
-  void toggleSave(int index, bool saved) {
-    final v = state.videos[index];
-    _updateVideo(
-      index,
-      v.copyWith(
-        isSaved: saved,
-        savesCount: v.savesCount + (saved ? 1 : -1),
-      ),
-    );
-    if (saved) {
-      _repo.saveVideo(v.id);
-    } else {
-      _repo.unsaveVideo(v.id);
-    }
-  }
-
-  void toggleFollow(int index, bool followed) {
-    final v = state.videos[index];
-    // Update all videos from this pro
-    final list = List<VideoModel>.from(state.videos);
-    for (int i = 0; i < list.length; i++) {
-      if (list[i].proId == v.proId) {
-        list[i] = list[i].copyWith(isFollowed: followed);
-      }
-    }
-    state = state.copyWith(videos: list);
-    if (followed) {
-      _repo.followPro(v.proId);
-    } else {
-      _repo.unfollowPro(v.proId);
-    }
+    state = state.copyWith(videos: updated);
   }
 }
 

@@ -11,26 +11,13 @@ import '../../data/event_notifier.dart';
 import '../../domain/event_models.dart';
 import '../widgets/buy_ticket_sheet.dart';
 
-class EventDetailScreen extends ConsumerStatefulWidget {
-  const EventDetailScreen({
-    super.key,
-    required this.eventId,
-    this.openPurchaseFlow = false,
-  });
-
+class EventDetailScreen extends ConsumerWidget {
+  const EventDetailScreen({super.key, required this.eventId});
   final String eventId;
-  final bool openPurchaseFlow;
 
   @override
-  ConsumerState<EventDetailScreen> createState() => _EventDetailScreenState();
-}
-
-class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
-  bool _purchaseSheetOpened = false;
-
-  @override
-  Widget build(BuildContext context) {
-    final eventAsync = ref.watch(eventDetailProvider(widget.eventId));
+  Widget build(BuildContext context, WidgetRef ref) {
+    final eventAsync = ref.watch(eventDetailProvider(eventId));
 
     return Scaffold(
       backgroundColor: AppColors.fond,
@@ -39,32 +26,7 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
         error: (e, _) => Center(
           child: Text('Erreur: $e', style: const TextStyle(color: AppColors.error)),
         ),
-        data: (event) {
-          if (widget.openPurchaseFlow &&
-              !_purchaseSheetOpened &&
-              event.ticketTypes.isNotEmpty) {
-            TicketTypeModel? firstAvailable;
-            for (final t in event.ticketTypes) {
-              if (!t.isSoldOut) {
-                firstAvailable = t;
-                break;
-              }
-            }
-            if (firstAvailable != null) {
-              _purchaseSheetOpened = true;
-              final type = firstAvailable;
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                if (!context.mounted) return;
-                showBuyTicketSheet(
-                  context,
-                  ticketType: type,
-                  event: event,
-                );
-              });
-            }
-          }
-          return _EventDetailBody(event: event);
-        },
+        data: (event) => _EventDetailBody(event: event),
       ),
     );
   }

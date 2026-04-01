@@ -1,5 +1,4 @@
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -15,9 +14,7 @@ void main() async {
     anonKey: const String.fromEnvironment('SUPABASE_ANON_KEY'),
   );
 
-  if (!kIsWeb) {
-    await Firebase.initializeApp();
-  }
+  await Firebase.initializeApp();
 
   await Hive.initFlutter();
 

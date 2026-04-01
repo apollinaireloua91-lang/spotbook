@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -84,7 +83,7 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen> w
     try {
       await ref.read(_profileProvider.notifier).uploadAvatar(image);
     } catch (_) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Échec du téléchargement'), backgroundColor: AppColors.error));
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Upload failed'), backgroundColor: AppColors.error));
     }
   }
 
@@ -94,7 +93,7 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen> w
       if (!mounted) return;
       _navigateNext();
     } catch (_) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Échec de la sauvegarde'), backgroundColor: AppColors.error));
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Save failed'), backgroundColor: AppColors.error));
     }
   }
 
@@ -107,37 +106,37 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen> w
   Widget build(BuildContext context) {
     final s = ref.watch(_profileProvider);
     return Scaffold(
-      backgroundColor: AppColors.fond,
+      backgroundColor: AppColors.fondDark,
       body: SafeArea(child: SingleChildScrollView(padding: const EdgeInsets.symmetric(horizontal: 24), child: Column(children: [
         const SizedBox(height: 48),
-        ScaleTransition(scale: _checkScale, child: Container(width: 64, height: 64, decoration: const BoxDecoration(shape: BoxShape.circle, color: AppColors.success), child: const Icon(Icons.check, color: AppColors.blanc, size: 32))),
+        ScaleTransition(scale: _checkScale, child: Container(width: 64, height: 64, decoration: const BoxDecoration(shape: BoxShape.circle, color: AppColors.accentGreen), child: const Icon(Icons.check, color: AppColors.blanc, size: 32))),
         const SizedBox(height: 16),
-        const Text('Compte créé !', style: TextStyle(color: AppColors.success, fontSize: 18, fontWeight: FontWeight.w600)),
+        const Text('Account Created!', style: TextStyle(color: AppColors.accentGreen, fontSize: 18, fontWeight: FontWeight.w600)),
         const SizedBox(height: 24),
-        const Text('Complétez votre profil', style: TextStyle(color: AppColors.blanc, fontSize: 28, fontWeight: FontWeight.bold)),
+        const Text('Complete your profile', style: TextStyle(color: AppColors.blanc, fontSize: 28, fontWeight: FontWeight.bold)),
         const SizedBox(height: 8),
-        const Text('Ajoutez une photo et une bio pour que les professionnels sachent qui vous êtes.', textAlign: TextAlign.center, style: TextStyle(color: AppColors.gris, fontSize: 15)),
+        const Text('Add a photo and bio so providers know who they\'re working with.', textAlign: TextAlign.center, style: TextStyle(color: AppColors.gris, fontSize: 15)),
         const SizedBox(height: 32),
         GestureDetector(
           onTap: s.isUploading ? null : _pickAvatar,
           child: Stack(children: [
-            CircleAvatar(radius: 50, backgroundColor: AppColors.surface, backgroundImage: s.avatarUrl != null ? CachedNetworkImageProvider(s.avatarUrl!) : null, child: s.avatarUrl == null ? const Icon(Icons.person, size: 40, color: AppColors.gris) : null),
-            Positioned(bottom: 0, right: 0, child: Container(width: 32, height: 32, decoration: const BoxDecoration(shape: BoxShape.circle, color: AppColors.surfaceAlt),
+            CircleAvatar(radius: 50, backgroundColor: AppColors.surfaceAuth, backgroundImage: s.avatarUrl != null ? NetworkImage(s.avatarUrl!) : null, child: s.avatarUrl == null ? const Icon(Icons.person, size: 40, color: AppColors.gris) : null),
+            Positioned(bottom: 0, right: 0, child: Container(width: 32, height: 32, decoration: const BoxDecoration(shape: BoxShape.circle, color: AppColors.accent),
               child: s.isUploading ? const Padding(padding: EdgeInsets.all(8), child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.blanc)) : const Icon(Icons.camera_alt, size: 16, color: AppColors.blanc))),
           ]),
         ),
         const SizedBox(height: 32),
-        TextField(controller: _displayNameCtrl, style: const TextStyle(color: AppColors.blanc), decoration: InputDecoration(labelText: 'Nom affiché', labelStyle: const TextStyle(color: AppColors.gris), prefixIcon: const Icon(Icons.edit, color: AppColors.gris, size: 20), filled: true, fillColor: AppColors.surface, border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none))),
+        TextField(controller: _displayNameCtrl, style: const TextStyle(color: AppColors.blanc), decoration: InputDecoration(labelText: 'Display Name', labelStyle: const TextStyle(color: AppColors.gris), prefixIcon: const Icon(Icons.edit, color: AppColors.gris, size: 20), filled: true, fillColor: AppColors.surfaceAuth, border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none))),
         const SizedBox(height: 16),
-        TextField(controller: _bioCtrl, style: const TextStyle(color: AppColors.blanc), maxLines: 3, decoration: InputDecoration(labelText: 'Bio', hintText: 'Parlez-nous un peu de vous...', labelStyle: const TextStyle(color: AppColors.gris), hintStyle: TextStyle(color: AppColors.gris.withAlpha(128)), filled: true, fillColor: AppColors.surface, border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none))),
+        TextField(controller: _bioCtrl, style: const TextStyle(color: AppColors.blanc), maxLines: 3, decoration: InputDecoration(labelText: 'Bio', hintText: 'Tell us a little about yourself...', labelStyle: const TextStyle(color: AppColors.gris), hintStyle: TextStyle(color: AppColors.gris.withAlpha(128)), filled: true, fillColor: AppColors.surfaceAuth, border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none))),
         const SizedBox(height: 32),
         SizedBox(width: double.infinity, height: 52, child: ElevatedButton(
           onPressed: s.isSaving ? null : _save,
-          style: ElevatedButton.styleFrom(backgroundColor: AppColors.blanc, foregroundColor: AppColors.fond, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
-          child: s.isSaving ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.fond)) : const Text('Enregistrer', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+          style: ElevatedButton.styleFrom(backgroundColor: AppColors.accent, foregroundColor: AppColors.fondDark, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
+          child: s.isSaving ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.fondDark)) : const Text('Save Profile', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
         )),
         const SizedBox(height: 16),
-        GestureDetector(onTap: _navigateNext, child: const Text('Passer pour le moment', style: TextStyle(color: AppColors.gris, fontSize: 14))),
+        GestureDetector(onTap: _navigateNext, child: const Text('Skip for now', style: TextStyle(color: AppColors.gris, fontSize: 14))),
         const SizedBox(height: 32),
       ]))),
     );

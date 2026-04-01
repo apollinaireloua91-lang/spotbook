@@ -1,66 +1,42 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import 'app_colors.dart';
-import 'app_typography.dart';
 
 abstract final class AppTheme {
-  static ThemeData get dark {
-    final base = ThemeData.dark(useMaterial3: true);
-    final textTheme = AppTypography.darkTextTheme(base.textTheme);
-    final primaryTextTheme = AppTypography.darkTextTheme(base.primaryTextTheme);
-
-    return base.copyWith(
+  static ThemeData get dark => ThemeData.dark().copyWith(
         scaffoldBackgroundColor: AppColors.fond,
         cardColor: AppColors.surface,
         dividerColor: AppColors.border,
         colorScheme: const ColorScheme.dark(
           surface: AppColors.surface,
-          primary: AppColors.violet,
-          secondary: AppColors.rose,
+          primary: AppColors.blanc,
           error: AppColors.error,
-          onPrimary: AppColors.blanc,
+          onPrimary: AppColors.fond,
           onSurface: AppColors.blanc,
           onError: AppColors.blanc,
         ),
-        appBarTheme: AppBarTheme(
+        appBarTheme: const AppBarTheme(
           backgroundColor: AppColors.fond,
           foregroundColor: AppColors.blanc,
           elevation: 0,
           centerTitle: true,
-          titleTextStyle: GoogleFonts.plusJakartaSans(
-            color: AppColors.blanc,
-            fontSize: 17,
-            fontWeight: FontWeight.w600,
-            letterSpacing: 0.2,
-          ),
         ),
-        bottomNavigationBarTheme: BottomNavigationBarThemeData(
+        bottomNavigationBarTheme: const BottomNavigationBarThemeData(
           backgroundColor: AppColors.fond,
-          selectedItemColor: AppColors.violet,
-          unselectedItemColor: AppColors.grisInactif,
+          selectedItemColor: AppColors.blanc,
+          unselectedItemColor: AppColors.gris,
           type: BottomNavigationBarType.fixed,
           elevation: 0,
-          selectedLabelStyle: GoogleFonts.plusJakartaSans(
-            fontSize: 9,
-            fontWeight: FontWeight.w600,
-            letterSpacing: 0.2,
-          ),
-          unselectedLabelStyle: GoogleFonts.plusJakartaSans(
-            fontSize: 9,
-            fontWeight: FontWeight.w500,
-            letterSpacing: 0.2,
-          ),
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.violet,
-            foregroundColor: AppColors.blanc,
+            backgroundColor: AppColors.blanc,
+            foregroundColor: AppColors.fond,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
             ),
             minimumSize: const Size(double.infinity, 48),
-            textStyle: GoogleFonts.plusJakartaSans(
+            textStyle: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w600,
             ),
@@ -69,13 +45,12 @@ abstract final class AppTheme {
         outlinedButtonTheme: OutlinedButtonThemeData(
           style: OutlinedButton.styleFrom(
             foregroundColor: AppColors.blanc,
-            backgroundColor: AppColors.surface,
-            side: BorderSide(color: AppColors.blanc.withAlpha(26)),
+            side: const BorderSide(color: AppColors.border),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
             ),
             minimumSize: const Size(double.infinity, 48),
-            textStyle: GoogleFonts.plusJakartaSans(
+            textStyle: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w600,
             ),
@@ -84,33 +59,25 @@ abstract final class AppTheme {
         inputDecorationTheme: InputDecorationTheme(
           filled: true,
           fillColor: AppColors.surface,
-          hintStyle: GoogleFonts.plusJakartaSans(
-            color: AppColors.grisInactif,
-            fontSize: 15,
-            fontWeight: FontWeight.w400,
-          ),
+          hintStyle: const TextStyle(color: AppColors.gris),
           border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(14),
-            borderSide: BorderSide(color: AppColors.blanc.withAlpha(15)),
+            borderRadius: BorderRadius.circular(12),
+            borderSide: const BorderSide(color: AppColors.border),
           ),
           enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(14),
-            borderSide: BorderSide(color: AppColors.blanc.withAlpha(15)),
+            borderRadius: BorderRadius.circular(12),
+            borderSide: const BorderSide(color: AppColors.border),
           ),
           focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(14),
-            borderSide: const BorderSide(color: AppColors.violet),
+            borderRadius: BorderRadius.circular(12),
+            borderSide: const BorderSide(color: AppColors.blanc),
           ),
           contentPadding:
               const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         ),
         snackBarTheme: SnackBarThemeData(
           backgroundColor: AppColors.surface,
-          contentTextStyle: GoogleFonts.plusJakartaSans(
-            color: AppColors.blanc,
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
-          ),
+          contentTextStyle: const TextStyle(color: AppColors.blanc),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
@@ -121,47 +88,44 @@ abstract final class AppTheme {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
           ),
-          titleTextStyle: GoogleFonts.plusJakartaSans(
+          titleTextStyle: const TextStyle(
             color: AppColors.blanc,
             fontSize: 18,
-            fontWeight: FontWeight.w700,
-            letterSpacing: 0.2,
+            fontWeight: FontWeight.bold,
           ),
         ),
-        sliderTheme: const SliderThemeData(
-          activeTrackColor: AppColors.violet,
-          inactiveTrackColor: AppColors.surfaceAlt,
-          thumbColor: AppColors.blanc,
-        ),
-        switchTheme: SwitchThemeData(
-          thumbColor: WidgetStateProperty.resolveWith((states) {
-            if (states.contains(WidgetState.selected)) {
-              return AppColors.violet;
-            }
-            return AppColors.gris;
-          }),
-          trackColor: WidgetStateProperty.resolveWith((states) {
-            if (states.contains(WidgetState.selected)) {
-              return AppColors.violet.withAlpha(128);
-            }
-            return AppColors.surfaceAlt;
-          }),
-        ),
-        tabBarTheme: TabBarThemeData(
-          indicatorColor: AppColors.violet,
-          labelColor: AppColors.blanc,
-          unselectedLabelColor: AppColors.grisInactif,
-          labelStyle: GoogleFonts.plusJakartaSans(
-            fontSize: 14,
+        textTheme: const TextTheme(
+          headlineLarge: TextStyle(
+            color: AppColors.blanc,
+            fontWeight: FontWeight.bold,
+            letterSpacing: 0.5,
+          ),
+          headlineMedium: TextStyle(
+            color: AppColors.blanc,
+            fontWeight: FontWeight.bold,
+            letterSpacing: 0.5,
+          ),
+          titleLarge: TextStyle(
+            color: AppColors.blanc,
             fontWeight: FontWeight.w600,
           ),
-          unselectedLabelStyle: GoogleFonts.plusJakartaSans(
-            fontSize: 14,
+          titleMedium: TextStyle(
+            color: AppColors.blanc,
+            fontWeight: FontWeight.w600,
+          ),
+          bodyLarge: TextStyle(
+            color: AppColors.blanc,
+            height: 1.5,
+          ),
+          bodyMedium: TextStyle(
+            color: AppColors.grisClair,
+            height: 1.5,
+          ),
+          labelLarge: TextStyle(
+            color: AppColors.gris,
             fontWeight: FontWeight.w500,
+            letterSpacing: 1.2,
           ),
         ),
-        textTheme: textTheme,
-        primaryTextTheme: primaryTextTheme,
       );
-  }
 }

@@ -6,19 +6,16 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../shared/theme/app_colors.dart';
-import '../../../../shared/widgets/address_autocomplete_field.dart';
 import '../../data/event_notifier.dart';
 import '../../data/event_repository.dart';
 
 class _CreateState {
-  const _CreateState({this.isCreating = false, this.ticketTypes = const [], this.isLoadingEvent = false});
+  const _CreateState({this.isCreating = false, this.ticketTypes = const []});
   final bool isCreating;
-  final bool isLoadingEvent;
   final List<_TicketInput> ticketTypes;
-  _CreateState copyWith({bool? isCreating, bool? isLoadingEvent, List<_TicketInput>? ticketTypes}) =>
+  _CreateState copyWith({bool? isCreating, List<_TicketInput>? ticketTypes}) =>
       _CreateState(
         isCreating: isCreating ?? this.isCreating,
-        isLoadingEvent: isLoadingEvent ?? this.isLoadingEvent,
         ticketTypes: ticketTypes ?? this.ticketTypes,
       );
 }
@@ -94,40 +91,6 @@ class _CreateNotifier extends Notifier<_CreateState> {
       rethrow;
     }
   }
-
-  Future<void> updateEvent({
-    required String eventId,
-    required String title,
-    required String description,
-    required DateTime date,
-    required String location,
-    String? address,
-    XFile? coverImage,
-  }) async {
-    state = state.copyWith(isCreating: true);
-    try {
-      final repo = ref.read(eventRepositoryProvider);
-      await repo.updateEvent(
-        eventId: eventId,
-        title: title,
-        description: description,
-        eventDate: date,
-        location: location,
-        address: address,
-      );
-
-      if (coverImage != null) {
-        final bytes = await coverImage.readAsBytes();
-        await repo.uploadCover(eventId, bytes);
-      }
-
-      ref.invalidate(eventsProvider);
-      state = state.copyWith(isCreating: false);
-    } catch (_) {
-      state = state.copyWith(isCreating: false);
-      rethrow;
-    }
-  }
 }
 
 final _createProvider = NotifierProvider<_CreateNotifier, _CreateState>(
@@ -136,11 +99,7 @@ final _createProvider = NotifierProvider<_CreateNotifier, _CreateState>(
 );
 
 class CreateEventScreen extends ConsumerStatefulWidget {
-  const CreateEventScreen({super.key, this.eventId});
-
-  final String? eventId;
-
-  bool get isEditing => eventId != null;
+  const CreateEventScreen({super.key});
 
   @override
   ConsumerState<CreateEventScreen> createState() => _CreateEventScreenState();
@@ -153,40 +112,6 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
   final _addressCtrl = TextEditingController();
   DateTime _selectedDate = DateTime.now().add(const Duration(days: 7));
   XFile? _coverImage;
-  bool _isLoadingEvent = false;
-
-  @override
-  void initState() {
-    super.initState();
-    if (widget.isEditing) {
-      _loadExistingEvent();
-    }
-  }
-
-  Future<void> _loadExistingEvent() async {
-    setState(() => _isLoadingEvent = true);
-    try {
-      final repo = ref.read(eventRepositoryProvider);
-      final event = await repo.getEvent(widget.eventId!);
-      _titleCtrl.text = event.title;
-      _descCtrl.text = event.description ?? '';
-      _locationCtrl.text = event.location ?? '';
-      _addressCtrl.text = event.address ?? '';
-      if (event.eventDate != null) {
-        _selectedDate = event.eventDate!;
-      }
-      // Pre-populate ticket types
-      final notifier = ref.read(_createProvider.notifier);
-      for (final t in event.ticketTypes) {
-        notifier.addTicketType();
-        final idx = ref.read(_createProvider).ticketTypes.length - 1;
-        notifier.updateTicketType(idx, name: t.name, price: t.price, quantity: t.quantity);
-      }
-    } catch (_) {
-      // Ignore — fields stay empty
-    }
-    if (mounted) setState(() => _isLoadingEvent = false);
-  }
 
   @override
   void dispose() {
@@ -228,26 +153,14 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
       return;
     }
     try {
-      if (widget.isEditing) {
-        await ref.read(_createProvider.notifier).updateEvent(
-              eventId: widget.eventId!,
-              title: _titleCtrl.text.trim(),
-              description: _descCtrl.text.trim(),
-              date: _selectedDate,
-              location: _locationCtrl.text.trim(),
-              address: _addressCtrl.text.trim(),
-              coverImage: _coverImage,
-            );
-      } else {
-        await ref.read(_createProvider.notifier).create(
-              title: _titleCtrl.text.trim(),
-              description: _descCtrl.text.trim(),
-              date: _selectedDate,
-              location: _locationCtrl.text.trim(),
-              address: _addressCtrl.text.trim(),
-              coverImage: _coverImage,
-            );
-      }
+      await ref.read(_createProvider.notifier).create(
+            title: _titleCtrl.text.trim(),
+            description: _descCtrl.text.trim(),
+            date: _selectedDate,
+            location: _locationCtrl.text.trim(),
+            address: _addressCtrl.text.trim(),
+            coverImage: _coverImage,
+          );
       if (mounted) context.pop();
     } catch (e) {
       if (mounted) {
@@ -275,13 +188,11 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
             },
           ),
         ),
-        title: Text(widget.isEditing ? 'Modifier l\'événement' : 'Créer un événement',
-            style: const TextStyle(color: AppColors.blanc, fontWeight: FontWeight.bold)),
+        title: const Text('Créer un événement',
+            style: TextStyle(color: AppColors.blanc, fontWeight: FontWeight.bold)),
         centerTitle: true,
       ),
-      body: _isLoadingEvent
-          ? const Center(child: CircularProgressIndicator(color: AppColors.violet))
-          : SingleChildScrollView(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -334,19 +245,9 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
               ),
             ),
             const SizedBox(height: 14),
-            AddressAutocompleteField(
-              controller: _locationCtrl,
-              label: 'Lieu',
-              icon: Icons.location_on_outlined,
-              fillColor: AppColors.surface,
-            ),
+            _buildField(_locationCtrl, 'Lieu', Icons.location_on_outlined),
             const SizedBox(height: 14),
-            AddressAutocompleteField(
-              controller: _addressCtrl,
-              label: 'Adresse (optionnel)',
-              icon: Icons.pin_drop_outlined,
-              fillColor: AppColors.surface,
-            ),
+            _buildField(_addressCtrl, 'Adresse (optionnel)', Icons.pin_drop_outlined),
             const SizedBox(height: 24),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -393,7 +294,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                 ),
                 child: s.isCreating
                     ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: AppColors.gris, strokeWidth: 2))
-                    : Text(widget.isEditing ? 'Enregistrer les modifications' : 'Publier l\'événement', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                    : const Text('Publier l\'événement', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
               ),
             ),
             const SizedBox(height: 32),

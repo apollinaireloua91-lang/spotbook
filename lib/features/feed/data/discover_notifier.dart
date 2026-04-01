@@ -3,17 +3,13 @@ import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
-import '../domain/provider_search_result.dart';
 import '../domain/video_model.dart';
-import 'discover_search_repository.dart';
 import 'video_repository.dart';
 
 class DiscoverState {
   const DiscoverState({
     this.results,
-    this.nearbyProviders = const [],
     this.isLoading = false,
-    this.hasError = false,
     this.selectedCategory = 'All',
     this.maxDistance = 50.0,
     this.minRating = 0.0,
@@ -21,13 +17,10 @@ class DiscoverState {
     this.maxPrice = 200.0,
     this.searchHistory = const [],
     this.showHistory = false,
-    this.activeQuery,
   });
 
   final List<VideoModel>? results;
-  final List<ProviderSearchResult> nearbyProviders;
   final bool isLoading;
-  final bool hasError;
   final String selectedCategory;
   final double maxDistance;
   final double minRating;
@@ -35,13 +28,10 @@ class DiscoverState {
   final double maxPrice;
   final List<String> searchHistory;
   final bool showHistory;
-  final String? activeQuery;
 
   DiscoverState copyWith({
     List<VideoModel>? results,
-    List<ProviderSearchResult>? nearbyProviders,
     bool? isLoading,
-    bool? hasError,
     String? selectedCategory,
     double? maxDistance,
     double? minRating,
@@ -49,15 +39,11 @@ class DiscoverState {
     double? maxPrice,
     List<String>? searchHistory,
     bool? showHistory,
-    String? activeQuery,
-    bool clearActiveQuery = false,
     bool clearResults = false,
   }) =>
       DiscoverState(
         results: clearResults ? null : (results ?? this.results),
-        nearbyProviders: nearbyProviders ?? this.nearbyProviders,
         isLoading: isLoading ?? this.isLoading,
-        hasError: hasError ?? this.hasError,
         selectedCategory: selectedCategory ?? this.selectedCategory,
         maxDistance: maxDistance ?? this.maxDistance,
         minRating: minRating ?? this.minRating,
@@ -65,8 +51,6 @@ class DiscoverState {
         maxPrice: maxPrice ?? this.maxPrice,
         searchHistory: searchHistory ?? this.searchHistory,
         showHistory: showHistory ?? this.showHistory,
-        activeQuery:
-            clearActiveQuery ? null : (activeQuery ?? this.activeQuery),
       );
 }
 
@@ -76,9 +60,8 @@ class DiscoverNotifier extends Notifier<DiscoverState> {
   @override
   DiscoverState build() {
     _loadHistory();
-    // Premier frame = chargement (évite « Aucun résultat » avant la requête Supabase).
-    Future<void>.microtask(_loadDefault);
-    return const DiscoverState(isLoading: true);
+    _loadDefault();
+    return const DiscoverState();
   }
 
   Future<void> _loadHistory() async {
@@ -90,8 +73,7 @@ class DiscoverNotifier extends Notifier<DiscoverState> {
   Future<void> _saveToHistory(String query) async {
     if (query.trim().isEmpty) return;
     final q = query.trim();
-    final newHistory =
-        [q, ...state.searchHistory.where((e) => e != q)].take(10).toList();
+    final newHistory = [q, ...state.searchHistory.where((e) => e != q)].take(10).toList();
     state = state.copyWith(searchHistory: newHistory);
     final box = await Hive.openBox<List<String>>('search_history');
     await box.put('history', newHistory);
@@ -104,39 +86,15 @@ class DiscoverNotifier extends Notifier<DiscoverState> {
   }
 
   Future<void> _loadDefault() async {
-    state = state.copyWith(isLoading: true, hasError: false);
+    state = state.copyWith(isLoading: true);
     try {
-      final searchRepo = ref.read(discoverSearchRepositoryProvider);
-      final videoRepo = ref.read(videoRepositoryProvider);
-
-      // Coords are optional — getCurrentUserCoordinates() never throws.
-      final coords = await searchRepo.getCurrentUserCoordinates();
-
-      // PostgREST = liste complète ; RPC = distance / coords enrichis (sans écraser la liste).
-      final providers = await searchRepo.fetchDiscoverProviders(
-        clientLat: coords.lat,
-        clientLng: coords.lng,
-        radiusKm: state.maxDistance,
-        textQuery: null,
-        categoryChip: state.selectedCategory,
-        minRating: state.minRating,
-      );
-
+      final repo = ref.read(videoRepositoryProvider);
       final videos = state.selectedCategory == 'All'
-          ? await videoRepo.searchVideos('')
-          : await videoRepo
-              .getVideosByCategory(state.selectedCategory.toLowerCase());
-
-
-      state = state.copyWith(
-        results: videos,
-        nearbyProviders: providers,
-        isLoading: false,
-        hasError: false,
-        clearActiveQuery: true,
-      );
+          ? await repo.searchVideos('')
+          : await repo.getVideosByCategory(state.selectedCategory.toLowerCase());
+      state = state.copyWith(results: videos, isLoading: false);
     } catch (_) {
-      state = state.copyWith(isLoading: false, hasError: true);
+      state = state.copyWith(isLoading: false);
     }
   }
 
@@ -145,17 +103,20 @@ class DiscoverNotifier extends Notifier<DiscoverState> {
     _loadDefault();
   }
 
-  void setShowHistory(bool show) {
-    state = state.copyWith(showHistory: show);
-  }
+  void setShowHistory(bool show) =>
+      state = state.copyWith(showHistory: show);
 
-  void setDistance(double v) => state = state.copyWith(maxDistance: v);
+  void setDistance(double v) =>
+      state = state.copyWith(maxDistance: v);
 
-  void setRating(double v) => state = state.copyWith(minRating: v);
+  void setRating(double v) =>
+      state = state.copyWith(minRating: v);
 
-  void setPrice(double v) => state = state.copyWith(maxPrice: v);
+  void setPrice(double v) =>
+      state = state.copyWith(maxPrice: v);
 
-  void setAvailableToday(bool v) => state = state.copyWith(availableToday: v);
+  void setAvailableToday(bool v) =>
+      state = state.copyWith(availableToday: v);
 
   void setFilters({
     double? maxDistance,
@@ -178,45 +139,23 @@ class DiscoverNotifier extends Notifier<DiscoverState> {
     });
   }
 
-  Future<void> reloadWithFilters() => _loadDefault();
-
   Future<void> search(String query) async {
     if (query.trim().isEmpty) {
       _loadDefault();
       return;
     }
     _saveToHistory(query);
-    state = state.copyWith(isLoading: true, hasError: false);
+    state = state.copyWith(isLoading: true);
     try {
-      final searchRepo = ref.read(discoverSearchRepositoryProvider);
-      final videoRepo = ref.read(videoRepositoryProvider);
-      final coords = await searchRepo.getCurrentUserCoordinates();
-
-      final providers = await searchRepo.fetchDiscoverProviders(
-        clientLat: coords.lat,
-        clientLng: coords.lng,
-        radiusKm: state.maxDistance,
-        textQuery: query.trim(),
-        categoryChip: state.selectedCategory,
-        minRating: state.minRating,
-      );
-
-      final videos = await videoRepo.searchVideos(query.trim());
-
-
-      state = state.copyWith(
-        results: videos,
-        nearbyProviders: providers,
-        isLoading: false,
-        hasError: false,
-        activeQuery: query.trim(),
-      );
+      final videos = await ref.read(videoRepositoryProvider).searchVideos(query.trim());
+      state = state.copyWith(results: videos, isLoading: false);
     } catch (_) {
-      state = state.copyWith(isLoading: false, hasError: true);
+      state = state.copyWith(isLoading: false);
     }
   }
 }
 
 final discoverProvider = NotifierProvider<DiscoverNotifier, DiscoverState>(
   DiscoverNotifier.new,
+  isAutoDispose: true,
 );

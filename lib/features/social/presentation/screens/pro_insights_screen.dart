@@ -102,7 +102,6 @@ class ProInsightsScreen extends ConsumerWidget {
               child: ListView(
                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
                 children: [
-                  // Period selector
                   Row(
                     children: [
                       _PeriodChip(
@@ -122,12 +121,6 @@ class ProInsightsScreen extends ConsumerWidget {
                         selected: state.period == 90,
                         onTap: () => ref.read(proInsightsProvider.notifier).setPeriod(90),
                       ),
-                      const SizedBox(width: 8),
-                      _PeriodChip(
-                        label: '1 an',
-                        selected: state.period == 365,
-                        onTap: () => ref.read(proInsightsProvider.notifier).setPeriod(365),
-                      ),
                     ],
                   ),
                   const SizedBox(height: 16),
@@ -141,40 +134,79 @@ class ProInsightsScreen extends ConsumerWidget {
                       style: TextStyle(color: AppColors.gris, fontSize: 15),
                     ),
                   ] else ...[
-                    // Key metrics cards
-                    _KeyMetricsGrid(data: data),
-                    const SizedBox(height: 20),
-                    // Revenue chart
-                    _ChartSection(
-                      title: 'Revenus',
-                      series: data.revenueSeries,
-                      lineColor: AppColors.success,
-                      suffix: ' \$',
-                    ),
-                    const SizedBox(height: 20),
-                    // Views chart — build from metrics
-                    if (_findMetric(data, 'Vues vidéo') != null)
-                      _ChartSection(
-                        title: 'Vues vidéo',
-                        series: data.revenueSeries, // reuses timeline
-                        lineColor: AppColors.violet,
-                        metric: _findMetric(data, 'Vues vidéo'),
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: AppColors.surface,
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: AppColors.border),
                       ),
-                    const SizedBox(height: 20),
-                    // Detailed metrics list
-                    const Text(
-                      'Détails',
-                      style: TextStyle(
-                        color: AppColors.blanc,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w700,
+                      child: SizedBox(
+                        height: 220,
+                        child: LineChart(
+                          LineChartData(
+                            gridData: FlGridData(
+                              show: true,
+                              drawVerticalLine: false,
+                              getDrawingHorizontalLine: (_) => const FlLine(
+                                color: AppColors.border,
+                                strokeWidth: 1,
+                              ),
+                            ),
+                            titlesData: FlTitlesData(
+                              topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                              rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                              leftTitles: AxisTitles(
+                                sideTitles: SideTitles(
+                                  showTitles: true,
+                                  reservedSize: 38,
+                                  interval: _leftInterval(data.revenueSeries),
+                                  getTitlesWidget: (value, _) => Text(
+                                    value.toInt().toString(),
+                                    style: const TextStyle(color: AppColors.gris, fontSize: 11),
+                                  ),
+                                ),
+                              ),
+                              bottomTitles: AxisTitles(
+                                sideTitles: SideTitles(
+                                  showTitles: true,
+                                  interval: 1,
+                                  getTitlesWidget: (value, _) {
+                                    final idx = value.toInt();
+                                    if (idx < 0 || idx >= data.revenueSeries.length) {
+                                      return const SizedBox.shrink();
+                                    }
+                                    return Text(
+                                      data.revenueSeries[idx].label,
+                                      style: const TextStyle(color: AppColors.gris, fontSize: 11),
+                                    );
+                                  },
+                                ),
+                              ),
+                            ),
+                            borderData: FlBorderData(show: false),
+                            lineBarsData: [
+                              LineChartBarData(
+                                spots: List.generate(
+                                  data.revenueSeries.length,
+                                  (i) => FlSpot(i.toDouble(), data.revenueSeries[i].value),
+                                ),
+                                color: AppColors.blanc,
+                                barWidth: 2.2,
+                                isCurved: true,
+                                dotData: const FlDotData(show: false),
+                                belowBarData: BarAreaData(
+                                  show: true,
+                                  color: AppColors.blanc.withAlpha(24),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
                     ),
-                    const SizedBox(height: 12),
-                    ...data.metrics.map((m) => Padding(
-                          padding: const EdgeInsets.only(bottom: 8),
-                          child: _MetricTile(metric: m),
-                        )),
+                    const SizedBox(height: 16),
+                    ...data.metrics.map((m) => _MetricTile(metric: m)),
                   ],
                 ],
               ),
@@ -182,11 +214,11 @@ class ProInsightsScreen extends ConsumerWidget {
     );
   }
 
-  InsightMetric? _findMetric(ProInsights data, String label) {
-    for (final m in data.metrics) {
-      if (m.label == label) return m;
-    }
-    return null;
+  double _leftInterval(List<InsightPoint> points) {
+    if (points.isEmpty) return 1;
+    final maxVal = points.map((e) => e.value).reduce((a, b) => a > b ? a : b);
+    if (maxVal <= 5) return 1;
+    return (maxVal / 4).ceilToDouble();
   }
 
   Widget _buildShimmer() {
@@ -198,7 +230,7 @@ class ProInsightsScreen extends ConsumerWidget {
         children: [
           Row(
             children: List.generate(
-              4,
+              3,
               (_) => Container(
                 margin: const EdgeInsets.only(right: 8),
                 width: 56,
@@ -211,23 +243,6 @@ class ProInsightsScreen extends ConsumerWidget {
             ),
           ),
           const SizedBox(height: 16),
-          // Shimmer squelette métriques
-          Row(
-            children: List.generate(
-              2,
-              (_) => Expanded(
-                child: Container(
-                  margin: const EdgeInsets.only(right: 8),
-                  height: 80,
-                  decoration: BoxDecoration(
-                    color: AppColors.surface,
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(height: 12),
           Container(
             height: 220,
             decoration: BoxDecoration(
@@ -252,291 +267,6 @@ class ProInsightsScreen extends ConsumerWidget {
     );
   }
 }
-
-// ─── Key Metrics Grid ─────────────────────────────────────
-
-class _KeyMetricsGrid extends StatelessWidget {
-  const _KeyMetricsGrid({required this.data});
-  final ProInsights data;
-
-  @override
-  Widget build(BuildContext context) {
-    final revenue = data.metrics.where((m) => m.label == 'Revenus').firstOrNull;
-    final bookings = data.metrics.where((m) => m.label == 'Événements').firstOrNull;
-    final views = data.metrics.where((m) => m.label == 'Vues vidéo').firstOrNull;
-
-    final cards = <_KeyMetricData>[
-      if (revenue != null)
-        _KeyMetricData(
-          icon: Icons.attach_money,
-          label: 'Revenus',
-          value: '${revenue.value.toStringAsFixed(0)} \$',
-          delta: revenue.deltaPercent,
-        ),
-      if (bookings != null)
-        _KeyMetricData(
-          icon: Icons.event,
-          label: 'Événements',
-          value: bookings.value.toStringAsFixed(0),
-          delta: bookings.deltaPercent,
-        ),
-      if (views != null)
-        _KeyMetricData(
-          icon: Icons.visibility,
-          label: 'Vues',
-          value: views.value.toStringAsFixed(0),
-          delta: views.deltaPercent,
-        ),
-      _KeyMetricData(
-        icon: Icons.trending_up,
-        label: 'Taux conv.',
-        value: _conversionRate(data),
-        delta: 0,
-      ),
-    ];
-
-    return GridView.count(
-      crossAxisCount: 2,
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      mainAxisSpacing: 10,
-      crossAxisSpacing: 10,
-      childAspectRatio: 2.0,
-      children: cards.map((c) => _KeyMetricCard(data: c)).toList(),
-    );
-  }
-
-  String _conversionRate(ProInsights data) {
-    final views =
-        data.metrics.where((m) => m.label == 'Vues vidéo').firstOrNull;
-    final revenue =
-        data.metrics.where((m) => m.label == 'Revenus').firstOrNull;
-    if (views == null || views.value == 0) return '—';
-    if (revenue == null) return '0%';
-    // Approximate: bookings / views
-    final bookingCount = data.metrics
-        .where((m) => m.label == 'Événements')
-        .firstOrNull
-        ?.value ?? 0;
-    if (views.value == 0) return '—';
-    return '${(bookingCount / views.value * 100).toStringAsFixed(1)}%';
-  }
-}
-
-class _KeyMetricData {
-  const _KeyMetricData({
-    required this.icon,
-    required this.label,
-    required this.value,
-    required this.delta,
-  });
-  final IconData icon;
-  final String label;
-  final String value;
-  final double delta;
-}
-
-class _KeyMetricCard extends StatelessWidget {
-  const _KeyMetricCard({required this.data});
-  final _KeyMetricData data;
-
-  @override
-  Widget build(BuildContext context) {
-    final up = data.delta >= 0;
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.border),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Row(
-            children: [
-              Icon(data.icon, color: AppColors.gris, size: 16),
-              const SizedBox(width: 6),
-              Text(data.label,
-                  style: const TextStyle(
-                      color: AppColors.gris, fontSize: 12)),
-              const Spacer(),
-              if (data.delta != 0)
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      up ? Icons.arrow_upward : Icons.arrow_downward,
-                      color: up ? AppColors.success : AppColors.error,
-                      size: 12,
-                    ),
-                    Text(
-                      '${data.delta.abs().toStringAsFixed(1)}%',
-                      style: TextStyle(
-                        color: up ? AppColors.success : AppColors.error,
-                        fontSize: 11,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ],
-                ),
-            ],
-          ),
-          const SizedBox(height: 6),
-          Text(
-            data.value,
-            style: const TextStyle(
-              color: AppColors.blanc,
-              fontWeight: FontWeight.w800,
-              fontSize: 20,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-// ─── Chart Section ────────────────────────────────────────
-
-class _ChartSection extends StatelessWidget {
-  const _ChartSection({
-    required this.title,
-    required this.series,
-    required this.lineColor,
-    this.suffix = '',
-    this.metric,
-  });
-
-  final String title;
-  final List<InsightPoint> series;
-  final Color lineColor;
-  final String suffix;
-  final InsightMetric? metric;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Text(
-              title,
-              style: const TextStyle(
-                color: AppColors.blanc,
-                fontSize: 16,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-            if (metric != null) ...[
-              const Spacer(),
-              Text(
-                metric!.value.toStringAsFixed(metric!.label == 'Revenus' ? 2 : 0) + suffix,
-                style: const TextStyle(
-                  color: AppColors.blanc,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                ),
-              ),
-            ],
-          ],
-        ),
-        const SizedBox(height: 12),
-        Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: AppColors.surface,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: AppColors.border),
-          ),
-          child: SizedBox(
-            height: 180,
-            child: LineChart(
-              LineChartData(
-                gridData: FlGridData(
-                  show: true,
-                  drawVerticalLine: false,
-                  getDrawingHorizontalLine: (_) => const FlLine(
-                    color: AppColors.border,
-                    strokeWidth: 1,
-                  ),
-                ),
-                titlesData: FlTitlesData(
-                  topTitles:
-                      const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                  rightTitles:
-                      const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                  leftTitles: AxisTitles(
-                    sideTitles: SideTitles(
-                      showTitles: true,
-                      reservedSize: 38,
-                      interval: _leftInterval(series),
-                      getTitlesWidget: (value, _) => Text(
-                        value.toInt().toString(),
-                        style: const TextStyle(
-                            color: AppColors.gris, fontSize: 11),
-                      ),
-                    ),
-                  ),
-                  bottomTitles: AxisTitles(
-                    sideTitles: SideTitles(
-                      showTitles: true,
-                      interval: 1,
-                      getTitlesWidget: (value, _) {
-                        final idx = value.toInt();
-                        if (idx < 0 || idx >= series.length) {
-                          return const SizedBox.shrink();
-                        }
-                        // Show every Nth label
-                        final step = series.length > 10 ? 3 : 1;
-                        if (idx % step != 0 && idx != series.length - 1) {
-                          return const SizedBox.shrink();
-                        }
-                        return Text(
-                          series[idx].label,
-                          style: const TextStyle(
-                              color: AppColors.gris, fontSize: 10),
-                        );
-                      },
-                    ),
-                  ),
-                ),
-                borderData: FlBorderData(show: false),
-                lineBarsData: [
-                  LineChartBarData(
-                    spots: List.generate(
-                      series.length,
-                      (i) => FlSpot(i.toDouble(), series[i].value),
-                    ),
-                    color: lineColor,
-                    barWidth: 2.2,
-                    isCurved: true,
-                    dotData: const FlDotData(show: false),
-                    belowBarData: BarAreaData(
-                      show: true,
-                      color: lineColor.withAlpha(24),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  double _leftInterval(List<InsightPoint> points) {
-    if (points.isEmpty) return 1;
-    final maxVal = points.map((e) => e.value).reduce((a, b) => a > b ? a : b);
-    if (maxVal <= 5) return 1;
-    return (maxVal / 4).ceilToDouble();
-  }
-}
-
-// ─── Period Chip ──────────────────────────────────────────
 
 class _PeriodChip extends StatelessWidget {
   const _PeriodChip({
@@ -579,8 +309,6 @@ class _PeriodChip extends StatelessWidget {
   }
 }
 
-// ─── Metric Tile ─────────────────────────────────────────
-
 class _MetricTile extends StatelessWidget {
   const _MetricTile({required this.metric});
 
@@ -590,6 +318,7 @@ class _MetricTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final up = metric.deltaPercent >= 0;
     return Container(
+      margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: AppColors.surface,

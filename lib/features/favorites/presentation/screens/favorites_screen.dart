@@ -54,8 +54,7 @@ class FavoritesScreen extends ConsumerWidget {
                     favorites: state.proFavorites,
                     emptyIcon: Icons.person_outline,
                     emptyLabel: 'Aucun pro en favoris',
-                    onTap: (fav) =>
-                        context.push('/client/provider/${fav.targetId}'),
+                    onTap: (fav) => context.push('/pro/${fav.targetId}'),
                   ),
                   _FavoritesList(
                     favorites: state.eventFavorites,

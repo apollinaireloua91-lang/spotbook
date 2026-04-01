@@ -5,14 +5,12 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/utils/analytics_service.dart';
-import '../../../../shared/utils/service_category_icons.dart';
 import '../../../profile/presentation/widgets/social_badge_widget.dart';
 import '../../data/discover_notifier.dart';
-import '../../domain/provider_search_result.dart';
 import '../../domain/video_model.dart';
 
 const _filterCategories = [
-  'Tous', 'Coiffure', 'Beauté', 'Fitness', 'Photo',
+  'All', 'Coiffure', 'Beauté', 'Fitness', 'Photo',
   'Musique', 'Cuisine', 'Massage', 'Tatouage', 'Mode', 'Coaching',
 ];
 
@@ -85,7 +83,7 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
                       },
                       style: const TextStyle(color: AppColors.blanc, fontSize: 14),
                       decoration: InputDecoration(
-                        hintText: 'Rechercher des pros, services...',
+                        hintText: 'Search professionals, services...',
                         hintStyle: const TextStyle(color: AppColors.gris),
                         prefixIcon: const Icon(Icons.search, color: AppColors.gris, size: 20),
                         suffixIcon: ValueListenableBuilder<TextEditingValue>(
@@ -108,36 +106,6 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
                     ),
                   ),
                   const SizedBox(width: 8),
-                  IconButton(
-                    onPressed: () {
-                      final path = GoRouterState.of(context).uri.path;
-                      final base = path.startsWith('/pro/search')
-                          ? '/pro/search'
-                          : '/client/discover';
-                      context.push('$base/results');
-                    },
-                    icon: const Icon(Icons.view_list_outlined, color: AppColors.blanc),
-                    style: IconButton.styleFrom(
-                      backgroundColor: AppColors.surface,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                    ),
-                  ),
-                  const SizedBox(width: 6),
-                  IconButton(
-                    onPressed: () {
-                      final path = GoRouterState.of(context).uri.path;
-                      final base = path.startsWith('/pro/search')
-                          ? '/pro/search'
-                          : '/client/discover';
-                      context.push('$base/map');
-                    },
-                    icon: const Icon(Icons.map_outlined, color: AppColors.blanc),
-                    style: IconButton.styleFrom(
-                      backgroundColor: AppColors.surface,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                    ),
-                  ),
-                  const SizedBox(width: 6),
                   IconButton(
                     onPressed: _openFilters,
                     icon: const Icon(Icons.tune, color: AppColors.blanc),
@@ -165,10 +133,10 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Text('Recherches récentes', style: TextStyle(color: AppColors.gris, fontSize: 12)),
+                          const Text('Recent Searches', style: TextStyle(color: AppColors.gris, fontSize: 12)),
                           GestureDetector(
                             onTap: n.clearHistory,
-                            child: const Text('Effacer', style: TextStyle(color: AppColors.gris, fontSize: 12)),
+                            child: const Text('Clear', style: TextStyle(color: AppColors.accent, fontSize: 12)),
                           ),
                         ],
                       ),
@@ -200,34 +168,22 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
                 itemBuilder: (context, index) {
                   final cat = _filterCategories[index];
                   final selected = s.selectedCategory == cat;
-                  final isAll = cat == 'Tous';
                   return GestureDetector(
                     onTap: () => n.setCategory(cat),
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                       decoration: BoxDecoration(
-                        color: selected ? AppColors.violet : Colors.transparent,
+                        color: selected ? AppColors.blanc : AppColors.surface,
                         borderRadius: BorderRadius.circular(18),
-                        border: selected ? null : Border.all(color: AppColors.blanc.withAlpha(26)),
+                        border: selected ? null : Border.all(color: AppColors.border),
                       ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            isAll ? Icons.apps : ServiceCategoryIcons.icon(cat),
-                            size: 14,
-                            color: selected ? AppColors.blanc : AppColors.gris,
-                          ),
-                          const SizedBox(width: 5),
-                          Text(
-                            cat,
-                            style: TextStyle(
-                              color: selected ? AppColors.blanc : AppColors.gris,
-                              fontSize: 12,
-                              fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
-                            ),
-                          ),
-                        ],
+                      child: Text(
+                        cat,
+                        style: TextStyle(
+                          color: selected ? AppColors.fond : AppColors.blanc,
+                          fontSize: 12,
+                          fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
+                        ),
                       ),
                     ),
                   );
@@ -237,120 +193,17 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
             const SizedBox(height: 12),
             Expanded(
               child: s.isLoading
-                  ? const Center(child: CircularProgressIndicator(color: AppColors.violet))
-                  : s.hasError
-                      ? Center(
-                          child: Padding(
-                            padding: const EdgeInsets.all(24),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                const Icon(Icons.cloud_off_outlined,
-                                    color: AppColors.gris, size: 48),
-                                const SizedBox(height: 16),
-                                const Text(
-                                  'Impossible de charger les professionnels.',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    color: AppColors.blanc,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                                const SizedBox(height: 8),
-                                const Text(
-                                  'Vérifie ta connexion puis réessaie.',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(color: AppColors.gris, fontSize: 14),
-                                ),
-                                const SizedBox(height: 20),
-                                FilledButton(
-                                  onPressed: () => n.reloadWithFilters(),
-                                  style: FilledButton.styleFrom(
-                                    backgroundColor: AppColors.violet,
-                                  ),
-                                  child: const Text('Réessayer'),
-                                ),
-                              ],
-                            ),
+                  ? const Center(child: CircularProgressIndicator(color: AppColors.blanc))
+                  : s.results == null || s.results!.isEmpty
+                      ? const Center(child: Text('No results', style: TextStyle(color: AppColors.gris, fontSize: 15)))
+                      : GridView.builder(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2, crossAxisSpacing: 10, mainAxisSpacing: 10, childAspectRatio: 0.65,
                           ),
-                        )
-                      : CustomScrollView(
-                      slivers: [
-                        if (s.nearbyProviders.isNotEmpty) ...[
-                          SliverToBoxAdapter(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Padding(
-                                  padding: EdgeInsets.fromLTRB(16, 0, 16, 8),
-                                  child: Text(
-                                    'Professionnels proches',
-                                    style: TextStyle(
-                                      color: AppColors.blanc,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ),
-                                SizedBox(
-                                  height: 148,
-                                  child: ListView.separated(
-                                    scrollDirection: Axis.horizontal,
-                                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                                    itemCount: s.nearbyProviders.length,
-                                    separatorBuilder: (_, __) => const SizedBox(width: 10),
-                                    itemBuilder: (context, i) =>
-                                        _NearbyProCard(pro: s.nearbyProviders[i]),
-                                  ),
-                                ),
-                                const SizedBox(height: 16),
-                              ],
-                            ),
-                          ),
-                        ],
-                        if (s.results != null && s.results!.isNotEmpty)
-                          SliverPadding(
-                            padding: const EdgeInsets.symmetric(horizontal: 16),
-                            sliver: SliverGrid(
-                              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 2,
-                                crossAxisSpacing: 10,
-                                mainAxisSpacing: 10,
-                                childAspectRatio: 0.65,
-                              ),
-                              delegate: SliverChildBuilderDelegate(
-                                (context, index) => _ProCard(video: s.results![index]),
-                                childCount: s.results!.length,
-                              ),
-                            ),
-                          ),
-                        if (!s.isLoading &&
-                            s.nearbyProviders.isEmpty &&
-                            (s.results == null || s.results!.isEmpty))
-                          const SliverFillRemaining(
-                            hasScrollBody: false,
-                            child: Center(
-                              child: Text(
-                                'Aucun résultat',
-                                style: TextStyle(color: AppColors.gris, fontSize: 15),
-                              ),
-                            ),
-                          ),
-                        if (!s.isLoading &&
-                            s.nearbyProviders.isNotEmpty &&
-                            (s.results == null || s.results!.isEmpty))
-                          const SliverToBoxAdapter(
-                            child: Padding(
-                              padding: EdgeInsets.fromLTRB(16, 8, 16, 24),
-                              child: Text(
-                                'Aucune vidéo pour ces critères.',
-                                style: TextStyle(color: AppColors.gris, fontSize: 14),
-                              ),
-                            ),
-                          ),
-                      ],
-                    ),
+                          itemCount: s.results!.length,
+                          itemBuilder: (context, index) => _ProCard(video: s.results![index]),
+                        ),
             ),
           ],
         ),
@@ -373,20 +226,20 @@ class _FiltersSheet extends ConsumerWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Filtres', style: TextStyle(color: AppColors.blanc, fontSize: 20, fontWeight: FontWeight.bold)),
+          const Text('Filters', style: TextStyle(color: AppColors.blanc, fontSize: 20, fontWeight: FontWeight.bold)),
           const SizedBox(height: 24),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text('Distance max', style: TextStyle(color: AppColors.blanc, fontSize: 16)),
-              Text('${s.maxDistance.toInt()} km', style: const TextStyle(color: AppColors.blanc, fontSize: 16)),
+              const Text('Max Distance', style: TextStyle(color: AppColors.blanc, fontSize: 16)),
+              Text('${s.maxDistance.toInt()} km', style: const TextStyle(color: AppColors.accent, fontSize: 16)),
             ],
           ),
           Slider(
             value: s.maxDistance,
             min: 1,
             max: 100,
-            activeColor: AppColors.violet,
+            activeColor: AppColors.accent,
             inactiveColor: AppColors.surfaceAlt,
             onChanged: n.setDistance,
           ),
@@ -394,8 +247,8 @@ class _FiltersSheet extends ConsumerWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text('Note minimum', style: TextStyle(color: AppColors.blanc, fontSize: 16)),
-              Text(s.minRating.toStringAsFixed(1), style: const TextStyle(color: AppColors.blanc, fontSize: 16)),
+              const Text('Min Rating', style: TextStyle(color: AppColors.blanc, fontSize: 16)),
+              Text(s.minRating.toStringAsFixed(1), style: const TextStyle(color: AppColors.accent, fontSize: 16)),
             ],
           ),
           Slider(
@@ -403,7 +256,7 @@ class _FiltersSheet extends ConsumerWidget {
             min: 0,
             max: 5,
             divisions: 10,
-            activeColor: AppColors.violet,
+            activeColor: AppColors.accent,
             inactiveColor: AppColors.surfaceAlt,
             onChanged: n.setRating,
           ),
@@ -411,23 +264,23 @@ class _FiltersSheet extends ConsumerWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text('Prix max', style: TextStyle(color: AppColors.blanc, fontSize: 16)),
-              Text('\$${s.maxPrice.toInt()}', style: const TextStyle(color: AppColors.blanc, fontSize: 16)),
+              const Text('Max Price', style: TextStyle(color: AppColors.blanc, fontSize: 16)),
+              Text('\$${s.maxPrice.toInt()}', style: const TextStyle(color: AppColors.accent, fontSize: 16)),
             ],
           ),
           Slider(
             value: s.maxPrice,
             min: 10,
             max: 500,
-            activeColor: AppColors.violet,
+            activeColor: AppColors.accent,
             inactiveColor: AppColors.surfaceAlt,
             onChanged: n.setPrice,
           ),
           const SizedBox(height: 16),
           SwitchListTile(
-            title: const Text('Disponible aujourd\'hui', style: TextStyle(color: AppColors.blanc, fontSize: 16)),
+            title: const Text('Available Today', style: TextStyle(color: AppColors.blanc, fontSize: 16)),
             value: s.availableToday,
-            activeTrackColor: AppColors.violet.withAlpha(128),
+            activeTrackColor: AppColors.accent.withAlpha(128),
             contentPadding: EdgeInsets.zero,
             onChanged: n.setAvailableToday,
           ),
@@ -436,104 +289,17 @@ class _FiltersSheet extends ConsumerWidget {
             width: double.infinity,
             height: 52,
             child: ElevatedButton(
-              onPressed: () {
-                n.reloadWithFilters();
-                context.pop();
-              },
+              onPressed: () => context.pop(),
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.violet,
-                foregroundColor: AppColors.blanc,
+                backgroundColor: AppColors.accent,
+                foregroundColor: AppColors.fondDark,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               ),
-              child: const Text('Appliquer', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+              child: const Text('Apply Filters', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
             ),
           ),
           SizedBox(height: MediaQuery.of(context).padding.bottom),
         ],
-      ),
-    );
-  }
-}
-
-class _NearbyProCard extends StatelessWidget {
-  const _NearbyProCard({required this.pro});
-  final ProviderSearchResult pro;
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () => context.push('/client/provider/${pro.id}'),
-      child: Container(
-        width: 120,
-        decoration: BoxDecoration(
-          color: AppColors.surface,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: AppColors.border),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(10),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Stack(
-                children: [
-                  CircleAvatar(
-                    radius: 28,
-                    backgroundColor: AppColors.surfaceAlt,
-                    backgroundImage:
-                        pro.avatarUrl != null ? CachedNetworkImageProvider(pro.avatarUrl!) : null,
-                    child: pro.avatarUrl == null
-                        ? Icon(ServiceCategoryIcons.icon(pro.category), color: AppColors.gris, size: 28)
-                        : null,
-                  ),
-                  Positioned(
-                    right: 0,
-                    bottom: 0,
-                    child: Container(
-                      padding: const EdgeInsets.all(3),
-                      decoration: const BoxDecoration(
-                        color: AppColors.surface,
-                        shape: BoxShape.circle,
-                      ),
-                      child: Icon(
-                        ServiceCategoryIcons.icon(pro.category),
-                        size: 12,
-                        color: AppColors.blanc,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              Text(
-                pro.displayName,
-                style: const TextStyle(
-                  color: AppColors.blanc,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-              if (pro.city != null && pro.city!.isNotEmpty) ...[
-                const SizedBox(height: 2),
-                Text(
-                  pro.city!,
-                  style: const TextStyle(color: AppColors.gris, fontSize: 10),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
-              if (pro.distanceKm != null) ...[
-                const Spacer(),
-                Text(
-                  '${pro.distanceKm!.toStringAsFixed(1)} km',
-                  style: const TextStyle(color: AppColors.grisClair, fontSize: 10),
-                ),
-              ],
-            ],
-          ),
-        ),
       ),
     );
   }
@@ -546,7 +312,7 @@ class _ProCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => context.push('/client/provider/${video.proId}'),
+      onTap: () => context.push('/pro/${video.proId}'),
       child: Container(
         decoration: BoxDecoration(
           color: AppColors.surface,

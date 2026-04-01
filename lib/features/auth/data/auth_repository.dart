@@ -1,11 +1,7 @@
-import 'dart:convert';
-import 'dart:math';
+import 'dart:typed_data';
 
-import 'package:crypto/crypto.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 final authRepositoryProvider = Provider<AuthRepository>((ref) {
@@ -39,49 +35,6 @@ class AuthRepository {
   bool get hasActiveSession => currentSession != null;
 
   Stream<AuthState> get authStateStream => _supabase.auth.onAuthStateChange;
-
-  /// 429 → [AuthException] (trop de tentatives). Autres erreurs Edge → on continue
-  /// (function indisponible / migration manquante) pour ne pas bloquer l’auth.
-  Future<void> _guardRateLimiter(Map<String, dynamic> body) async {
-    try {
-      await _supabase.functions.invoke('rate-limiter', body: body);
-    } on FunctionException catch (e) {
-      if (e.status == 429) {
-        throw AuthException(_rateLimiterUserMessage(e));
-      }
-      debugPrint(
-        '[auth] rate-limiter ignoré (status=${e.status}): ${e.details}',
-      );
-    } catch (e) {
-      // Réseau, timeout, parse, etc. — ne pas bloquer l’auth.
-      debugPrint('[auth] rate-limiter ignoré (autre): $e');
-    }
-  }
-
-  String _rateLimiterUserMessage(FunctionException e) {
-    final d = e.details;
-    if (d is Map && d['error'] != null) {
-      return d['error'].toString();
-    }
-    return 'Trop de tentatives. Réessaie plus tard.';
-  }
-
-  Future<T> _runWithSessionRecovery<T>(Future<T> Function() action) async {
-    try {
-      return await action();
-    } on AuthException catch (e) {
-      final message = e.message.toLowerCase();
-      if (message.contains('jwt') || message.contains('token') || message.contains('expired')) {
-        final refreshed = await _supabase.auth.refreshSession();
-        if (refreshed.session == null) {
-          await signOut();
-          throw AuthException('Session expirée. Merci de vous reconnecter.');
-        }
-        return await action();
-      }
-      rethrow;
-    }
-  }
 
   Future<AuthResponse> signUpWithEmail({
     required String email,
@@ -117,124 +70,100 @@ class AuthRepository {
     required String password,
   }) async {
     try {
-      await _guardRateLimiter({'type': 'login'});
+      final limiter = await _supabase.functions.invoke(
+        'rate-limiter',
+        body: {'scope': 'login', 'identifier': email.toLowerCase()},
+      );
+      if (limiter.status == 429) {
+        final message =
+            (limiter.data as Map<String, dynamic>?)?['message'] as String? ??
+                'Trop de tentatives. Réessaie plus tard.';
+        throw AuthException(message);
+      }
 
-      final response = await _runWithSessionRecovery(
-        () => _supabase.auth.signInWithPassword(
-          email: email,
-          password: password,
-        ),
+      final response = await _supabase.auth.signInWithPassword(
+        email: email,
+        password: password,
       );
       final uid = response.user?.id;
       if (uid != null) {
-        try {
-          await _supabase.from('audit_logs').insert({
-            'user_id': uid,
-            'action': 'user_login',
-            'resource_type': 'auth',
-            'metadata': {'method': 'password'},
-          });
-        } catch (e) {
-          debugPrint('[auth] audit_logs login insert ignored: $e');
-        }
+        await _supabase.from('audit_logs').insert({
+          'user_id': uid,
+          'action': 'user_login',
+          'resource_type': 'auth',
+          'metadata': {'provider': 'email'},
+        });
       }
       return response;
     } on AuthException catch (e) {
       if (e.message.contains('Invalid login credentials')) {
         throw AuthException('Invalid email or password');
       }
+      if (e.message.toLowerCase().contains('token') &&
+          e.message.toLowerCase().contains('expired')) {
+        await _supabase.auth.refreshSession();
+        throw AuthException('Session expirée. Reconnecte-toi.');
+      }
       rethrow;
     }
   }
 
   Future<void> resetPassword(String email) async {
-    await _guardRateLimiter({'type': 'otp', 'email': email});
-    await _supabase.auth.resetPasswordForEmail(email);
-  }
-
-  /// Met à jour l’email (flux de confirmation selon config Supabase).
-  Future<void> updateEmail(String newEmail) async {
-    final trimmed = newEmail.trim();
-    if (trimmed.isEmpty) throw AuthException('Email requis');
-    await _runWithSessionRecovery(
-      () => _supabase.auth.updateUser(UserAttributes(email: trimmed)),
+    final limiter = await _supabase.functions.invoke(
+      'rate-limiter',
+      body: {'scope': 'otp', 'identifier': email.toLowerCase()},
     );
-  }
-
-  /// Vérifie l’ancien mot de passe puis applique le nouveau.
-  Future<void> changePassword({
-    required String currentPassword,
-    required String newPassword,
-  }) async {
-    final email = currentUser?.email;
-    if (email == null || email.isEmpty) {
-      throw AuthException('Aucun email associé au compte');
+    if (limiter.status == 429) {
+      final message = (limiter.data as Map<String, dynamic>?)?['message']
+              as String? ??
+          'Trop de tentatives. Réessaie plus tard.';
+      throw AuthException(message);
     }
-    await _guardRateLimiter({'type': 'login'});
-    await _runWithSessionRecovery(
-      () => _supabase.auth.signInWithPassword(
-        email: email,
-        password: currentPassword,
-      ),
-    );
-    await _runWithSessionRecovery(
-      () => _supabase.auth.updateUser(UserAttributes(password: newPassword)),
-    );
+    await _supabase.auth.resetPasswordForEmail(email);
   }
 
   Future<void> signOut() async {
     final uid = currentUserId;
     if (uid != null) {
-      try {
-        await _supabase.from('audit_logs').insert({
-          'user_id': uid,
-          'action': 'user_logout',
-          'resource_type': 'auth',
-        });
-      } catch (e) {
-        debugPrint('[auth] audit_logs logout insert ignored: $e');
-      }
+      await _supabase.from('audit_logs').insert({
+        'user_id': uid,
+        'action': 'user_logout',
+        'resource_type': 'auth',
+      });
     }
-    try {
-      await _supabase.auth.signOut();
-    } catch (e) {
-      debugPrint('[auth] supabase signOut ignored: $e');
-    }
-    try {
-      await _secureStorage.deleteAll();
-    } catch (e) {
-      debugPrint('[auth] secureStorage deleteAll ignored: $e');
-    }
+    await _supabase.auth.signOut();
+    await _secureStorage.deleteAll();
   }
 
   Future<Map<String, dynamic>?> getUserProfile() async {
     final uid = currentUserId;
     if (uid == null) return null;
-    return await _runWithSessionRecovery(
-      () => _supabase.from('users').select().eq('id', uid).maybeSingle(),
-    );
+    try {
+      return await _supabase.from('users').select().eq('id', uid).maybeSingle();
+    } on AuthException catch (e) {
+      if (e.message.toLowerCase().contains('token') &&
+          e.message.toLowerCase().contains('expired')) {
+        await refreshSession();
+        return await _supabase.from('users').select().eq('id', uid).maybeSingle();
+      }
+      rethrow;
+    }
   }
 
   Future<void> updateUserRole(String role) async {
     final uid = currentUserId;
     if (uid == null) throw AuthException('User not authenticated');
-    await _runWithSessionRecovery(
-      () => _supabase.from('users').update({'role': role}).eq('id', uid),
-    );
-    await _runWithSessionRecovery(
-      () => _supabase.auth.updateUser(UserAttributes(data: {'role': role})),
-    );
+    await _supabase.from('users').update({'role': role}).eq('id', uid);
+    await _supabase.auth.updateUser(UserAttributes(data: {'role': role}));
   }
 
   Future<String> uploadAvatar(Uint8List bytes) async {
     final uid = currentUserId;
     if (uid == null) throw AuthException('User not authenticated');
     final path = '$uid/avatar.jpg';
-    await _runWithSessionRecovery(
-      () => _supabase.storage
-          .from('avatars')
-          .uploadBinary(path, bytes, fileOptions: const FileOptions(upsert: true)),
-    );
+    await _supabase.storage
+        .from('avatars')
+        .uploadBinary(path, bytes, fileOptions: const FileOptions(upsert: true));
     return _supabase.storage.from('avatars').getPublicUrl(path);
   }
 
@@ -250,77 +179,35 @@ class AuthRepository {
     if (bio != null) updates['bio'] = bio;
     if (avatarUrl != null) updates['avatar_url'] = avatarUrl;
     if (updates.isNotEmpty) {
-      await _runWithSessionRecovery(
-        () => _supabase.from('users').update(updates).eq('id', uid),
-      );
-    }
-  }
-
-  String _generateNonce([int length = 32]) {
-    const charset =
-        '0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._';
-    final random = Random.secure();
-    return List.generate(
-      length,
-      (_) => charset[random.nextInt(charset.length)],
-    ).join();
-  }
-
-  String _sha256ofString(String input) {
-    final bytes = utf8.encode(input);
-    final digest = sha256.convert(bytes);
-    return digest.toString();
-  }
-
-  /// Retourne [null] si l'utilisateur a annulé le sélecteur Google.
-  Future<AuthResponse?> signInWithGoogle() async {
-    const webClientId =
-        String.fromEnvironment('GOOGLE_CLIENT_ID');
-    final rawNonce = _generateNonce();
-    final hashedNonce = _sha256ofString(rawNonce);
-    // Le nonce (SHA-256) est passé à initialize() pour être intégré dans l'id_token.
-    // On réinitialise à chaque tentative pour avoir un nonce frais.
-    await GoogleSignIn.instance.initialize(
-      serverClientId: webClientId,
-      nonce: hashedNonce,
-    );
-    try {
-      final googleUser = await GoogleSignIn.instance.authenticate();
-      final idToken = googleUser.authentication.idToken;
-      if (idToken == null) {
-        throw AuthException("Impossible d'obtenir le token Google.");
-      }
-      return _supabase.auth.signInWithIdToken(
-        provider: OAuthProvider.google,
-        idToken: idToken,
-        nonce: rawNonce,
-      );
-    } on GoogleSignInException catch (e) {
-      if (e.code == GoogleSignInExceptionCode.canceled) return null;
-      throw AuthException(
-        'Erreur Google Sign-In (${e.code.name}): ${e.description ?? "inconnue"}',
-      );
+      await _supabase.from('users').update(updates).eq('id', uid);
     }
   }
 
   Future<void> softDeleteAccount() async {
     final uid = currentUserId;
     if (uid == null) throw AuthException('User not authenticated');
-    await _runWithSessionRecovery(
-      () => _supabase
-          .from('users')
-          .update({'deleted_at': DateTime.now().toIso8601String()}).eq('id', uid),
-    );
-    try {
-      await _supabase.from('audit_logs').insert({
-        'user_id': uid,
-        'action': 'user_deleted',
-        'resource_type': 'user',
-        'resource_id': uid,
-      });
-    } catch (e) {
-      debugPrint('[auth] audit_logs delete insert ignored: $e');
-    }
+    await _supabase
+        .from('users')
+        .update({'deleted_at': DateTime.now().toIso8601String()}).eq('id', uid);
+    await _supabase.from('audit_logs').insert({
+      'user_id': uid,
+      'action': 'user_deleted',
+      'resource_type': 'users',
+      'resource_id': uid,
+    });
     await signOut();
+  }
+
+  Future<Session?> refreshSession() async {
+    try {
+      final refreshed = await _supabase.auth.refreshSession();
+      return refreshed.session;
+    } on AuthException catch (e) {
+      if (e.message.toLowerCase().contains('token') &&
+          e.message.toLowerCase().contains('expired')) {
+        await signOut();
+      }
+      rethrow;
+    }
   }
 }

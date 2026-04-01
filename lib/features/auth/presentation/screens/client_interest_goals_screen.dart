@@ -1,43 +1,21 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../shared/theme/app_colors.dart';
-import '../../../../shared/widgets/spotbook_button.dart';
 
 class _Goal {
-  const _Goal({
-    required this.icon,
-    required this.title,
-    required this.description,
-  });
+  const _Goal({required this.icon, required this.title, required this.description});
   final IconData icon;
   final String title;
   final String description;
 }
 
 const _goals = [
-  _Goal(
-    icon: Icons.trending_up,
-    title: 'Découvrir les tendances',
-    description: 'Explorez les dernières vidéos et styles',
-  ),
-  _Goal(
-    icon: Icons.pin_drop,
-    title: 'Réserver un pro à proximité',
-    description: 'Trouvez et planifiez des services professionnels',
-  ),
-  _Goal(
-    icon: Icons.confirmation_number,
-    title: 'Participer à des événements',
-    description: 'Obtenez des billets pour les événements à venir',
-  ),
-  _Goal(
-    icon: Icons.attach_money,
-    title: 'Comparer les prix',
-    description: 'Trouvez le meilleur rapport qualité-prix',
-  ),
+  _Goal(icon: Icons.trending_up, title: 'Discover new trends', description: 'Explore the latest videos and styles'),
+  _Goal(icon: Icons.pin_drop, title: 'Book a nearby pro', description: 'Find and schedule professional services'),
+  _Goal(icon: Icons.confirmation_number, title: 'Attend local events', description: 'Get tickets for upcoming gatherings'),
+  _Goal(icon: Icons.attach_money, title: 'Compare service prices', description: 'Find the best value for your needs'),
 ];
 
 class _GoalNotifier extends Notifier<int?> {
@@ -46,10 +24,7 @@ class _GoalNotifier extends Notifier<int?> {
   void select(int index) => state = index;
 }
 
-final _selectedGoalProvider = NotifierProvider<_GoalNotifier, int?>(
-  _GoalNotifier.new,
-  isAutoDispose: true,
-);
+final _selectedGoalProvider = NotifierProvider<_GoalNotifier, int?>(_GoalNotifier.new, isAutoDispose: true);
 
 class ClientInterestGoalsScreen extends ConsumerWidget {
   const ClientInterestGoalsScreen({super.key});
@@ -59,165 +34,63 @@ class ClientInterestGoalsScreen extends ConsumerWidget {
     final selectedIndex = ref.watch(_selectedGoalProvider);
 
     return Scaffold(
-      backgroundColor: AppColors.fond,
+      backgroundColor: AppColors.fondDark,
+      appBar: AppBar(
+        backgroundColor: AppColors.fondDark,
+        leading: IconButton(onPressed: () => context.pop(), icon: const Icon(Icons.arrow_back_ios, size: 20)),
+        title: const Text('Onboarding', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+        centerTitle: true,
+      ),
       body: SafeArea(
-        child: Column(
-          children: [
-            // Top bar
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-              child: Row(
-                children: [
-                  GestureDetector(
-                    onTap: () => context.pop(),
-                    child: const Icon(
-                      Icons.arrow_back_ios,
-                      color: AppColors.blanc,
-                      size: 20,
-                    ),
-                  ),
-                  const Spacer(),
-                  const Text(
-                    'Étape 2 sur 3',
-                    style: TextStyle(color: AppColors.gris, fontSize: 13),
-                  ),
-                ],
-              ),
-            ),
-            // Progress bar
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(4),
-                child: const LinearProgressIndicator(
-                  value: 0.66,
-                  backgroundColor: AppColors.surface,
-                  valueColor:
-                      AlwaysStoppedAnimation<Color>(AppColors.blanc),
-                  minHeight: 4,
-                ),
-              ),
-            ),
-            const SizedBox(height: 24),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 24),
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  'Quel est votre objectif ?',
-                  style: TextStyle(
-                    color: AppColors.blanc,
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24),
+          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             const SizedBox(height: 8),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 24),
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  'Dites-nous ce que vous recherchez pour personnaliser votre expérience.',
-                  style: TextStyle(color: AppColors.gris, fontSize: 14),
-                ),
-              ),
-            ),
+            Row(children: [
+              Container(padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4), decoration: BoxDecoration(borderRadius: BorderRadius.circular(12), color: AppColors.accent.withAlpha(26)),
+                child: const Text('STEP 2 OF 2', style: TextStyle(color: AppColors.accent, fontSize: 11, fontWeight: FontWeight.w600, letterSpacing: 0.5))),
+              const Spacer(),
+              const Text('90%', style: TextStyle(color: AppColors.gris, fontSize: 12)),
+            ]),
+            const SizedBox(height: 8),
+            ClipRRect(borderRadius: BorderRadius.circular(4), child: const LinearProgressIndicator(value: 0.9, backgroundColor: AppColors.surfaceAuth, valueColor: AlwaysStoppedAnimation<Color>(AppColors.accent), minHeight: 4)),
             const SizedBox(height: 24),
-            Expanded(
-              child: ListView.separated(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                itemCount: _goals.length,
-                separatorBuilder: (_, __) => const SizedBox(height: 12),
-                itemBuilder: (context, index) {
-                  final goal = _goals[index];
-                  final isSelected = selectedIndex == index;
-                  return GestureDetector(
-                    onTap: () {
-                      HapticFeedback.selectionClick();
-                      ref
-                          .read(_selectedGoalProvider.notifier)
-                          .select(index);
-                    },
-                    child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 200),
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: isSelected
-                            ? AppColors.blanc
-                            : AppColors.surface,
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(
-                          color: isSelected
-                              ? AppColors.blanc
-                              : AppColors.border,
-                        ),
-                      ),
-                      child: Row(
-                        children: [
-                          Icon(
-                            goal.icon,
-                            color: isSelected
-                                ? AppColors.fond
-                                : AppColors.blanc,
-                            size: 28,
-                          ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  goal.title,
-                                  style: TextStyle(
-                                    color: isSelected
-                                        ? AppColors.fond
-                                        : AppColors.blanc,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  goal.description,
-                                  style: TextStyle(
-                                    color: isSelected
-                                        ? AppColors.fond
-                                        : AppColors.gris,
-                                    fontSize: 13,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          if (isSelected)
-                            const Icon(
-                              Icons.check_circle,
-                              color: AppColors.fond,
-                              size: 24,
-                            ),
-                        ],
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(24, 16, 24, 0),
-              child: SpotbookButton.primary(
-                label: 'Continuer',
-                onPressed: selectedIndex != null
-                    ? () {
-                        HapticFeedback.mediumImpact();
-                        context.go('/client/location');
-                      }
-                    : null,
-              ),
-            ),
-            const SizedBox(height: 32),
-          ],
+            const Text("What's your goal today?", style: TextStyle(color: AppColors.blanc, fontSize: 24, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 8),
+            const Text('Tell us what you\'re looking for so we can tailor your experience and find the best matches.', style: TextStyle(color: AppColors.gris, fontSize: 14)),
+            const SizedBox(height: 24),
+            Expanded(child: ListView.separated(
+              itemCount: _goals.length, separatorBuilder: (_, __) => const SizedBox(height: 12),
+              itemBuilder: (context, index) {
+                final goal = _goals[index];
+                final isSelected = selectedIndex == index;
+                return GestureDetector(
+                  onTap: () => ref.read(_selectedGoalProvider.notifier).select(index),
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 200), padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(color: AppColors.surfaceAuth, borderRadius: BorderRadius.circular(16), border: Border.all(color: isSelected ? AppColors.accent : Colors.transparent, width: 2)),
+                    child: Row(children: [
+                      Icon(goal.icon, color: isSelected ? AppColors.accent : AppColors.blanc, size: 28),
+                      const SizedBox(width: 16),
+                      Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                        Text(goal.title, style: const TextStyle(color: AppColors.blanc, fontSize: 16, fontWeight: FontWeight.w600)),
+                        const SizedBox(height: 4),
+                        Text(goal.description, style: const TextStyle(color: AppColors.gris, fontSize: 13)),
+                      ])),
+                      if (isSelected) const Icon(Icons.check_circle, color: AppColors.accent, size: 24),
+                    ]),
+                  ),
+                );
+              },
+            )),
+            const SizedBox(height: 16),
+            SizedBox(width: double.infinity, height: 52, child: ElevatedButton(
+              onPressed: selectedIndex != null ? () => context.go('/client/location') : null,
+              style: ElevatedButton.styleFrom(backgroundColor: AppColors.accent, foregroundColor: AppColors.fondDark, disabledBackgroundColor: AppColors.accent.withAlpha(77), disabledForegroundColor: AppColors.fondDark.withAlpha(128), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
+              child: const Text('Finish Setup ✓', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+            )),
+            const SizedBox(height: 24),
+          ]),
         ),
       ),
     );

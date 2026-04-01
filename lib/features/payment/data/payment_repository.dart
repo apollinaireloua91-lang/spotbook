@@ -10,33 +10,6 @@ class PaymentRepository {
 
   final SupabaseClient _supabase;
 
-  /// Paiement Connect générique : montant en **centimes**, compte Stripe du pro.
-  /// Edge : `create-payment-intent`.
-  Future<String> createPaymentIntentForProvider({
-    required int amountCents,
-    required String providerId,
-    String? idempotencyKey,
-  }) async {
-    final res = await _supabase.functions.invoke(
-      'create-payment-intent',
-      body: {
-        'amount': amountCents,
-        'providerId': providerId,
-        if (idempotencyKey != null) 'idempotencyKey': idempotencyKey,
-      },
-    );
-    if (res.status != 200) {
-      final err = res.data is Map ? res.data['error'] : 'Payment failed';
-      throw Exception(err ?? 'Payment failed');
-    }
-    final data = res.data as Map<String, dynamic>;
-    final clientSecret = data['clientSecret'] as String?;
-    if (clientSecret == null || clientSecret.isEmpty) {
-      throw Exception('No client secret returned');
-    }
-    return clientSecret;
-  }
-
   /// Calls stripe-create-intent edge function to get a clientSecret
   /// for the booking's deposit PaymentIntent.
   Future<String> createPaymentIntent(String bookingId) async {
