@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Provider QR Ticket Scanner</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#2badee",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101c22",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .scanner-frame {
+            box-shadow: 0 0 0 2000px rgba(0, 0, 0, 0.6);
+        }
+        .scan-line {
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #2badee, transparent);
+            box-shadow: 0 0 8px #2badee;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-white overflow-hidden">
+<div class="relative flex h-screen w-full flex-col overflow-hidden">
+<!-- TopAppBar Component -->
+<div class="flex items-center bg-background-dark/90 backdrop-blur-md p-4 pb-2 justify-between z-30">
+<div class="text-white flex size-12 shrink-0 items-center">
+<span class="material-symbols-outlined cursor-pointer">arrow_back_ios</span>
+</div>
+<div class="flex flex-col items-center flex-1">
+<h2 class="text-white text-base font-bold leading-tight tracking-[-0.015em]">Summer Tech Conference 2024</h2>
+<span class="text-primary text-[10px] font-bold uppercase tracking-widest">Provider Mode</span>
+</div>
+<div class="flex w-12 items-center justify-end">
+<button class="flex size-10 items-center justify-center rounded-full bg-white/10 hover:bg-white/20 transition-colors">
+<span class="material-symbols-outlined text-white text-xl">help</span>
+</button>
+</div>
+</div>
+<!-- ProgressBar Component (Modified for Header) -->
+<div class="bg-background-dark/90 backdrop-blur-md px-4 pb-4 z-30 border-b border-white/5">
+<div class="flex flex-col gap-2">
+<div class="flex gap-6 justify-between items-center">
+<p class="text-white/70 text-sm font-medium leading-normal">Total Scanned</p>
+<p class="text-white text-sm font-bold leading-normal">45<span class="text-white/40">/100</span></p>
+</div>
+<div class="rounded-full bg-white/10 h-1.5 overflow-hidden">
+<div class="h-full rounded-full bg-primary" style="width: 45%;"></div>
+</div>
+</div>
+</div>
+<!-- Camera Viewfinder Area -->
+<div class="relative flex-1 bg-black flex items-center justify-center overflow-hidden">
+<!-- Simulated Camera Feed -->
+<div class="absolute inset-0 w-full h-full">
+<img alt="Camera Feed" class="w-full h-full object-cover opacity-60" data-alt="Blurred dark tech conference background with stage lights" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD12knUvvDa5NeY3F6Yujf3Stfean1Vw-w-qCPCArcNIADrc4H7G2MF2nP8j8YWlfVkNiThKpx2BqphDV5mdcOfQl78DGiG2uzIOkXewYv9Y9vhxLsYtb7YS6UQBwd2JVwBXHZKzcSuwNOkEHk6SC_RgbTlWg-8mOaX68jxOzJSh0n2VbChiB3OUJnpsfNDeGTVMZk4yzzr1WBaLLuAngHJH92vOS2RJgAkQZWf1WakLXUJaxggoKw3tkf4AIDJDK_th67b90dOgCo"/>
+</div>
+<!-- Scanning Overlay -->
+<div class="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
+<div class="relative w-64 h-64 scanner-frame rounded-2xl border-2 border-primary/30">
+<!-- Scanning Corners -->
+<div class="absolute top-0 left-0 w-8 h-8 border-t-4 border-l-4 border-primary rounded-tl-xl"></div>
+<div class="absolute top-0 right-0 w-8 h-8 border-t-4 border-r-4 border-primary rounded-tr-xl"></div>
+<div class="absolute bottom-0 left-0 w-8 h-8 border-b-4 border-l-4 border-primary rounded-bl-xl"></div>
+<div class="absolute bottom-0 right-0 w-8 h-8 border-b-4 border-r-4 border-primary rounded-br-xl"></div>
+<!-- Scan Animation Line (Visual Only) -->
+<div class="scan-line absolute w-full top-1/2"></div>
+</div>
+</div>
+<!-- CameraControl Component -->
+<div class="absolute bottom-10 left-0 right-0 flex items-center justify-center gap-8 z-20">
+<button class="flex shrink-0 items-center justify-center rounded-full size-12 bg-black/50 backdrop-blur-xl text-white border border-white/10 hover:bg-black/70 transition-all">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0">flashlight_on</span>
+</button>
+<button class="flex shrink-0 items-center justify-center rounded-full size-20 bg-primary text-white shadow-[0_0_20px_rgba(43,173,238,0.4)] active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-4xl" style="font-variation-settings: 'FILL' 1">qr_code_scanner</span>
+</button>
+<button class="flex shrink-0 items-center justify-center rounded-full size-12 bg-black/50 backdrop-blur-xl text-white border border-white/10 hover:bg-black/70 transition-all">
+<span class="material-symbols-outlined">sync</span>
+</button>
+</div>
+</div>
+<!-- Status & Feedback Area -->
+<div class="bg-background-dark p-6 pb-10 z-30 rounded-t-3xl shadow-[0_-10px_30px_rgba(0,0,0,0.5)] border-t border-white/5">
+<!-- HeadlineText Component -->
+<div class="flex items-center justify-center gap-2 mb-1">
+<span class="material-symbols-outlined text-primary animate-pulse">info</span>
+<h3 class="text-white tracking-tight text-xl font-bold leading-tight text-center">Ready to scan</h3>
+</div>
+<!-- BodyText Component -->
+<p class="text-white/60 text-sm font-normal leading-normal pb-6 text-center">Align the attendee's QR ticket within the frame for instant check-in</p>
+<!-- Manual Entry / Action Button -->
+<div class="flex flex-col gap-3">
+<button class="w-full bg-primary hover:bg-primary/90 text-white font-bold py-4 rounded-xl flex items-center justify-center gap-2 shadow-lg shadow-primary/20 transition-all">
+<span class="material-symbols-outlined text-xl">keyboard</span>
+                    Enter Code Manually
+                </button>
+<button class="w-full bg-white/5 hover:bg-white/10 text-white/70 font-medium py-3 rounded-xl flex items-center justify-center gap-2 transition-all">
+<span class="material-symbols-outlined text-xl">history</span>
+                    Recent History
+                </button>
+</div>
+</div>
+<!-- Success Feedback Overlay (Hidden by default, used for design visualization) -->
+<!-- 
+        <div class="absolute inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-6">
+            <div class="bg-background-dark w-full max-w-sm rounded-3xl p-8 border border-green-500/30 flex flex-col items-center text-center">
+                <div class="size-20 rounded-full bg-green-500/20 flex items-center justify-center mb-6">
+                    <span class="material-symbols-outlined text-green-500 text-5xl">check_circle</span>
+                </div>
+                <h4 class="text-green-500 text-2xl font-bold mb-2">Access Granted</h4>
+                <p class="text-white text-xl font-semibold">Johnathan Doe</p>
+                <p class="text-white/50 text-sm mb-8">VIP Pass • Section A-12</p>
+                <button class="w-full bg-green-500 text-white font-bold py-4 rounded-xl">Next Scan</button>
+            </div>
+        </div> 
+        -->
+</div>
+</body></html>

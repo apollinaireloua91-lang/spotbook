@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../theme/app_colors.dart';
+import '../theme/app_typography.dart';
 
 /// Transparent AppBar with white title and optional back/actions.
 /// Use [preferredSize] on Scaffold.appBar via [PreferredSize] or
@@ -45,14 +46,7 @@ class SpotbookAppBar extends StatelessWidget implements PreferredSizeWidget {
             )
           : null,
       title: title != null
-          ? Text(
-              title!,
-              style: const TextStyle(
-                color: AppColors.blanc,
-                fontSize: 17,
-                fontWeight: FontWeight.w600,
-              ),
-            )
+          ? Text(title!, style: AppTypography.appBarTitle)
           : null,
       actions: actions,
       bottom: bottom,

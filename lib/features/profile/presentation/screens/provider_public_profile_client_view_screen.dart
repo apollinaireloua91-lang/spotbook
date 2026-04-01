@@ -372,10 +372,9 @@ class _ReadyBody extends StatelessWidget {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const Text(
-                              '📍 ',
-                              style: TextStyle(fontSize: 14),
-                            ),
+                            const Icon(Icons.location_on_outlined,
+                                size: 14, color: AppColors.grisClair),
+                            const SizedBox(width: 4),
                             Flexible(
                               child: Text(
                                 p.location!,
@@ -452,7 +451,7 @@ class _ReadyBody extends StatelessWidget {
                     children: [
                       Expanded(
                         child: _QuickActionCard(
-                          icon: '📅',
+                          icon: Icons.calendar_today_rounded,
                           label: 'BOOK APPT.',
                           onTap: onBookTap,
                         ),
@@ -460,7 +459,7 @@ class _ReadyBody extends StatelessWidget {
                       const SizedBox(width: 12),
                       Expanded(
                         child: _QuickActionCard(
-                          icon: '🎫',
+                          icon: Icons.confirmation_number_outlined,
                           label: 'BUY TICKET',
                           onTap: onTicketTap,
                         ),
@@ -638,7 +637,7 @@ class _QuickActionCard extends StatelessWidget {
     required this.onTap,
   });
 
-  final String icon;
+  final IconData icon;
   final String label;
   final VoidCallback onTap;
 
@@ -652,7 +651,7 @@ class _QuickActionCard extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(icon, style: const TextStyle(fontSize: 22)),
+            Icon(icon, size: 22, color: AppColors.blanc),
             const SizedBox(height: 8),
             Text(
               label,

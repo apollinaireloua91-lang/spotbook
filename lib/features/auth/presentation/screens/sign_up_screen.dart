@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../shared/theme/app_colors.dart';
+import '../../../../shared/utils/agent_debug_log.dart';
 import '../../../../shared/widgets/address_autocomplete_field.dart';
 import '../../../../shared/widgets/spotbook_button.dart';
 import '../../data/auth_repository.dart';
@@ -86,6 +87,31 @@ class _SignUpNotifier extends Notifier<_SignUpState> {
 
   Future<void> signUp(String password) async {
     state = state.copyWith(isLoading: true, password: password);
+    // #region agent log
+    agentDebugLog(
+      hypothesisId: 'H1',
+      location: 'sign_up_screen.dart:_SignUpNotifier.signUp',
+      message: 'État avant signUpWithEmail',
+      data: {
+        'emailLen': state.email.length,
+        'emailEmpty': state.email.isEmpty,
+        'emailHasAt': state.email.contains('@'),
+        'step': state.step,
+        'fullNameLen': state.fullName.length,
+        'role': state.selectedRole,
+        'passwordLen': password.length,
+      },
+    );
+    agentDebugLog(
+      hypothesisId: 'H3',
+      location: 'sign_up_screen.dart:_SignUpNotifier.signUp',
+      message: 'Contrôleur email step2 encore présent?',
+      data: {
+        'note':
+            'Si emailEmpty mais user a saisi email, état notifier perdu ou saveStep2 jamais appelé',
+      },
+    );
+    // #endregion
     try {
       await ref.read(authRepositoryProvider).signUpWithEmail(
             email: state.email,
@@ -173,10 +199,10 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
 
   Future<void> _submit() async {
     final pw = _passwordCtrl.text;
-    if (pw.length < 6) {
+    if (pw.length < 8) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Mot de passe: minimum 6 caractères'),
+          content: Text('Mot de passe: minimum 8 caractères'),
           backgroundColor: AppColors.error,
         ),
       );
@@ -204,7 +230,18 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
 
     return Scaffold(
       backgroundColor: AppColors.fond,
-      body: SafeArea(
+      body: DecoratedBox(
+        decoration: BoxDecoration(
+          gradient: RadialGradient(
+            center: const Alignment(0, -1.1),
+            radius: 1.4,
+            colors: [
+              AppColors.violet.withAlpha(65),
+              AppColors.fond,
+            ],
+          ),
+        ),
+        child: SafeArea(
         child: Column(
           children: [
             // Top bar
@@ -224,7 +261,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                   ),
                   const Spacer(),
                   Text(
-                    'Step ${s.step} of 5',
+                    'Étape ${s.step} / 5',
                     style: const TextStyle(
                       color: AppColors.gris,
                       fontSize: 13,
@@ -233,19 +270,35 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                 ],
               ),
             ),
-            // Progress bar
+            // Progress bar (gradient)
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(4),
-                child: LinearProgressIndicator(
-                  value: s.step / 5,
-                  backgroundColor: AppColors.surface,
-                  valueColor: const AlwaysStoppedAnimation<Color>(
-                    AppColors.blanc,
+              child: Stack(
+                children: [
+                  Container(
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: AppColors.surface,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
                   ),
-                  minHeight: 4,
-                ),
+                  FractionallySizedBox(
+                    widthFactor: s.step / 5,
+                    child: Container(
+                      height: 4,
+                      decoration: BoxDecoration(
+                        gradient: AppColors.gradientAccent,
+                        borderRadius: BorderRadius.circular(4),
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppColors.violet.withAlpha(120),
+                            blurRadius: 6,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
             Expanded(
@@ -256,6 +309,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
             ),
           ],
         ),
+        ),
       ),
     );
   }
@@ -264,9 +318,20 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
     final loginLink = Center(
       child: GestureDetector(
         onTap: () => context.go('/login'),
-        child: const Text(
-          'Already have an account? Sign In',
-          style: TextStyle(color: AppColors.blanc, fontSize: 14),
+        child: RichText(
+          text: const TextSpan(
+            style: TextStyle(color: AppColors.gris, fontSize: 14),
+            children: [
+              TextSpan(text: 'Already have an account? '),
+              TextSpan(
+                text: 'Sign In',
+                style: TextStyle(
+                  color: AppColors.violetClair,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

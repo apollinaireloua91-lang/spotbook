@@ -2,12 +2,13 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
 import Stripe from "https://esm.sh/stripe@14.14.0?target=deno";
 import {
-  assertAmount,
-  assertUuid,
-  getClientIp,
-  jsonHeaders,
+  isValidAmount,
+  isValidUuid,
+  jsonResponse,
   securityHeaders,
 } from "../_shared/security.ts";
+
+const corsHeaders = securityHeaders;
 
 function generateBookingCode(): string {
   const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
@@ -20,7 +21,7 @@ function generateBookingCode(): string {
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: securityHeaders });
+    return new Response("ok", { headers: corsHeaders });
   }
 
   try {
@@ -29,12 +30,17 @@ serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
     );
 
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader) {
+      return jsonResponse({ error: "unauthorized" }, 401);
+    }
+
     const authClient = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
       Deno.env.get("SUPABASE_ANON_KEY") ?? "",
       {
         global: {
-          headers: { Authorization: req.headers.get("Authorization")! },
+          headers: { Authorization: authHeader },
         },
       }
     );
@@ -42,26 +48,23 @@ serve(async (req) => {
       data: { user },
     } = await authClient.auth.getUser();
     if (!user) {
-      return new Response(JSON.stringify({ error: "unauthorized" }), {
-        headers: jsonHeaders,
-        status: 401,
-      });
+      return jsonResponse({ error: "unauthorized" }, 401);
     }
 
     const { slotId, serviceId, promoCodeId } = await req.json();
 
-    if (!slotId || !serviceId) {
-      return new Response(
-        JSON.stringify({ error: "slotId and serviceId required" }),
-        {
-          headers: jsonHeaders,
-          status: 400,
-        }
+    if (
+      !slotId ||
+      !serviceId ||
+      !isValidUuid(String(slotId)) ||
+      !isValidUuid(String(serviceId)) ||
+      (promoCodeId && !isValidUuid(String(promoCodeId)))
+    ) {
+      return jsonResponse(
+        { error: "slotId/serviceId/promoCodeId doivent être des UUID valides" },
+        400
       );
     }
-    assertUuid(slotId, "slotId");
-    assertUuid(serviceId, "serviceId");
-    if (promoCodeId) assertUuid(promoCodeId, "promoCodeId");
 
     // Atomic transaction via RPC
     const bookingCode = generateBookingCode();
@@ -75,19 +78,15 @@ serve(async (req) => {
 
     if (error) {
       if (error.message?.includes("slot_unavailable")) {
-        return new Response(
-          JSON.stringify({ error: "slot_unavailable" }),
-          {
-            headers: jsonHeaders,
-            status: 409,
-          }
-        );
+        return jsonResponse({ error: "slot_unavailable" }, 409);
       }
       throw error;
     }
 
     const bookingId = data.booking_id;
     const depositAmount = data.deposit_amount;
+    const remainingAmount = data.remaining_amount ?? 0;
+    const paymentMode = data.payment_mode ?? "full";
 
     // Fetch pro Stripe account for Connect transfer
     const { data: slot } = await supabase
@@ -108,18 +107,25 @@ serve(async (req) => {
     });
 
     const amountCents = Math.round(depositAmount * 100);
-    assertAmount(Number(depositAmount ?? 0), "deposit_amount");
+    if (!isValidAmount(Number(depositAmount))) {
+      return jsonResponse(
+        { error: "deposit_amount doit être > 0 et < 99999" },
+        400
+      );
+    }
     const commissionRate = pro?.commission_rate ?? 0.12;
     const applicationFee = Math.round(amountCents * commissionRate);
 
     const paymentIntentParams: Record<string, unknown> = {
       amount: amountCents,
       currency: "cad",
+      automatic_payment_methods: { enabled: true },
       metadata: {
         bookingId,
         clientId: user.id,
         proId: slot.pro_id,
-        type: "deposit",
+        type: paymentMode === "deposit" ? "deposit" : "full_payment",
+        paymentMode,
       },
     };
 
@@ -141,13 +147,19 @@ serve(async (req) => {
       .from("bookings")
       .update({ stripe_payment_intent_id: paymentIntent.id })
       .eq("id", bookingId);
-    await supabase.rpc("insert_audit_log", {
+    await supabase.rpc("log_audit_action", {
       p_user_id: user.id,
       p_action: "booking_created",
       p_resource_type: "booking",
       p_resource_id: bookingId,
-      p_metadata: { slot_id: slotId, service_id: serviceId },
-      p_ip_address: getClientIp(req),
+      p_metadata: { payment_intent_id: paymentIntent.id },
+    });
+    await supabase.rpc("log_audit_action", {
+      p_user_id: user.id,
+      p_action: "payment_initiated",
+      p_resource_type: "booking",
+      p_resource_id: bookingId,
+      p_metadata: { amount: depositAmount },
     });
 
     return new Response(
@@ -157,15 +169,15 @@ serve(async (req) => {
         bookingCode: data.booking_code,
         clientSecret: paymentIntent.client_secret,
         depositAmount,
+        remainingAmount,
+        paymentMode,
       }),
       {
-        headers: jsonHeaders,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
       }
     );
   } catch (error) {
-    return new Response(JSON.stringify({ error: error.message }), {
-      headers: jsonHeaders,
-      status: 400,
-    });
+    console.error("create-booking-atomic error:", error);
+    return jsonResponse({ error: "internal_error" }, 500);
   }
 });

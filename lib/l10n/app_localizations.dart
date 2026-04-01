@@ -757,6 +757,132 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Confirmer le mot de passe'**
   String get proConfirmPassword;
+
+  /// No description provided for @proSettingsSectionSpotify.
+  ///
+  /// In fr, this message translates to:
+  /// **'MUSIQUE (FEED)'**
+  String get proSettingsSectionSpotify;
+
+  /// No description provided for @proSettingsSpotifyTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Spotify'**
+  String get proSettingsSpotifyTitle;
+
+  /// No description provided for @proSettingsSpotifyLinked.
+  ///
+  /// In fr, this message translates to:
+  /// **'Compte Spotify connecté'**
+  String get proSettingsSpotifyLinked;
+
+  /// No description provided for @proSettingsSpotifyConnect.
+  ///
+  /// In fr, this message translates to:
+  /// **'Connecter Spotify'**
+  String get proSettingsSpotifyConnect;
+
+  /// No description provided for @proSettingsSpotifyDisconnect.
+  ///
+  /// In fr, this message translates to:
+  /// **'Déconnecter Spotify'**
+  String get proSettingsSpotifyDisconnect;
+
+  /// No description provided for @proSettingsSpotifyHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Lie ton compte pour voir tes titres les plus joués dans la feuille musique du feed pro.'**
+  String get proSettingsSpotifyHint;
+
+  /// No description provided for @proSettingsSpotifyMissingClientId.
+  ///
+  /// In fr, this message translates to:
+  /// **'SPOTIFY_CLIENT_ID manquant dans .env'**
+  String get proSettingsSpotifyMissingClientId;
+
+  /// No description provided for @spotifySheetTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajouter de la musique'**
+  String get spotifySheetTitle;
+
+  /// No description provided for @spotifySheetLinkedHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Compte Spotify lié — top titres et recherche enrichie.'**
+  String get spotifySheetLinkedHint;
+
+  /// No description provided for @spotifySheetNotLinkedHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sans liaison : recherche seulement. Connecte Spotify dans Paramètres pro.'**
+  String get spotifySheetNotLinkedHint;
+
+  /// No description provided for @spotifySheetOpenSettings.
+  ///
+  /// In fr, this message translates to:
+  /// **'Paramètres'**
+  String get spotifySheetOpenSettings;
+
+  /// No description provided for @spotifySheetSearchHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rechercher un titre ou artiste…'**
+  String get spotifySheetSearchHint;
+
+  /// No description provided for @spotifySheetTopTracksHeader.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tes titres récents (Spotify)'**
+  String get spotifySheetTopTracksHeader;
+
+  /// No description provided for @spotifySheetNoResults.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun résultat'**
+  String get spotifySheetNoResults;
+
+  /// No description provided for @spotifySheetEmptyTop.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun top titre pour l’instant. Écoute de la musique sur Spotify puis réessaie.'**
+  String get spotifySheetEmptyTop;
+
+  /// No description provided for @spotifySheetEmptyNeedLink.
+  ///
+  /// In fr, this message translates to:
+  /// **'Connecte Spotify dans Paramètres pro pour afficher tes top titres ici.'**
+  String get spotifySheetEmptyNeedLink;
+
+  /// No description provided for @spotifySheetTrackAdded.
+  ///
+  /// In fr, this message translates to:
+  /// **'{name} — ajouté au post'**
+  String spotifySheetTrackAdded(String name);
+
+  /// No description provided for @settingsLanguageScreenTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Langue'**
+  String get settingsLanguageScreenTitle;
+
+  /// No description provided for @settingsLanguageScreenSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Choisis la langue d’affichage de Spotbook. La préférence est enregistrée sur cet appareil (Hive).'**
+  String get settingsLanguageScreenSubtitle;
+
+  /// No description provided for @settingsLanguageSavedSnack.
+  ///
+  /// In fr, this message translates to:
+  /// **'Langue enregistrée'**
+  String get settingsLanguageSavedSnack;
+
+  /// No description provided for @settingsLanguageMenuLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Langue'**
+  String get settingsLanguageMenuLabel;
 }
 
 class _AppLocalizationsDelegate

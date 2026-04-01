@@ -178,6 +178,16 @@ class AvailabilityNotifier extends AsyncNotifier<AvailabilityState> {
     ));
   }
 
+  void updateMinAdvanceHours(int hours) {
+    final current = state.value;
+    if (current == null) return;
+    state = AsyncData(current.copyWith(
+      settings: current.settings.copyWith(minAdvanceHours: hours),
+      hasUnsavedChanges: true,
+      error: null,
+    ));
+  }
+
   // ─── Validation ──────────────────────────────────────────────────────────────
 
   String? validateRules() {

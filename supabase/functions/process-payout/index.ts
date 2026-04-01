@@ -1,49 +1,66 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
 import Stripe from "https://esm.sh/stripe@14.14.0?target=deno";
-import { assertAmount, assertUuid, jsonHeaders, securityHeaders } from "../_shared/security.ts";
+import {
+  assertServiceRoleOnly,
+  isValidAmount,
+  isValidUuid,
+  jsonResponse,
+  securityHeadersFor,
+} from "../_shared/security.ts";
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
-    return new Response("ok", { status: 200, headers: securityHeaders });
+    return new Response("ok", { status: 200, headers: securityHeadersFor(req) });
   }
 
   try {
+    const forbidden = assertServiceRoleOnly(req);
+    if (forbidden) return forbidden;
+
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
     );
 
     const { bookingId } = await req.json();
-    if (!bookingId) {
-      return new Response(
-        JSON.stringify({ error: "bookingId required" }),
-        { headers: jsonHeaders, status: 400 }
+    if (!bookingId || !isValidUuid(String(bookingId))) {
+      return jsonResponse(
+        { error: "bookingId doit être un UUID valide" },
+        400,
+        undefined,
+        req,
       );
     }
-    assertUuid(bookingId, "bookingId");
 
     const { data: booking, error: bErr } = await supabase
       .from("bookings")
       .select(
-        "id, deposit_amount, currency, pro_id, profiles_pro(stripe_account_id, commission_rate)"
+        "id, status, deposit_amount, currency, pro_id, transfer_id, profiles_pro(stripe_account_id, commission_rate)"
       )
       .eq("id", bookingId)
       .single();
 
     if (bErr || !booking) {
-      return new Response(
-        JSON.stringify({ error: "booking_not_found" }),
-        { headers: jsonHeaders, status: 404 }
+      return jsonResponse({ error: "booking_not_found" }, 404, undefined, req);
+    }
+
+    if (booking.status !== "confirmed") {
+      return jsonResponse({ error: "booking_not_confirmed" }, 400, undefined, req);
+    }
+
+    if (booking.transfer_id) {
+      return jsonResponse(
+        { error: "payout_already_processed", transferId: booking.transfer_id },
+        409,
+        undefined,
+        req,
       );
     }
 
     const pro = booking.profiles_pro;
     if (!pro?.stripe_account_id) {
-      return new Response(
-        JSON.stringify({ error: "pro_not_connected" }),
-        { headers: jsonHeaders, status: 400 }
-      );
+      return jsonResponse({ error: "pro_not_connected" }, 400, undefined, req);
     }
 
     const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") ?? "", {
@@ -52,7 +69,9 @@ serve(async (req) => {
 
     const commissionRate = pro.commission_rate ?? 0.12;
     const proAmount = booking.deposit_amount * (1 - commissionRate);
-    assertAmount(Number(proAmount ?? 0), "proAmount");
+    if (!isValidAmount(Number(proAmount))) {
+      return jsonResponse({ error: "amount invalide" }, 400, undefined, req);
+    }
     const proAmountCents = Math.floor(proAmount * 100);
 
     const transfer = await stripe.transfers.create(
@@ -73,24 +92,17 @@ serve(async (req) => {
       .from("bookings")
       .update({ transfer_id: transfer.id })
       .eq("id", bookingId);
-    await supabase.rpc("insert_audit_log", {
+    await supabase.rpc("log_audit_action", {
       p_user_id: booking.pro_id,
       p_action: "pro_payout_sent",
       p_resource_type: "booking",
       p_resource_id: booking.id,
       p_metadata: { transfer_id: transfer.id },
-      p_ip_address: "edge",
     });
 
-    return new Response(
-      JSON.stringify({ success: true, transferId: transfer.id }),
-      { headers: jsonHeaders }
-    );
+    return jsonResponse({ success: true, transferId: transfer.id }, 200, undefined, req);
   } catch (error) {
-    console.error("Payout error:", error.message);
-    return new Response(JSON.stringify({ error: error.message }), {
-      headers: jsonHeaders,
-      status: 400,
-    });
+    console.error("process-payout error:", error);
+    return jsonResponse({ error: "internal_error" }, 500, undefined, req);
   }
 });

@@ -1,27 +1,114 @@
+import 'dart:async';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/widgets/empty_state.dart';
 import '../../../../shared/widgets/spotbook_loading_shimmer.dart';
 import '../../data/chat_notifier.dart';
+import '../../data/chat_repository.dart';
+import '../../domain/chat_models.dart';
 
 /// Liste des conversations (style Stitch / messagerie), palette noir & blanc.
-class MessagingInboxScreen extends ConsumerWidget {
+class MessagingInboxScreen extends ConsumerStatefulWidget {
   const MessagingInboxScreen({super.key, this.isProShell = false});
 
   /// Préfixe des routes chat : `/pro/messages` vs `/client/messages`.
   final bool isProShell;
 
-  String get _base => isProShell ? '/pro/messages' : '/client/messages';
+  @override
+  ConsumerState<MessagingInboxScreen> createState() =>
+      _MessagingInboxScreenState();
+}
+
+class _MessagingInboxScreenState extends ConsumerState<MessagingInboxScreen> {
+  final _searchCtrl = TextEditingController();
+  String _searchQuery = '';
+
+  // Typing indicator state per conversation
+  final Map<String, bool> _typingStates = {};
+  final Map<String, RealtimeChannel> _typingChannels = {};
+  final Map<String, Timer> _typingTimers = {};
+  Set<String> _subscribedIds = {};
+
+  String get _base =>
+      widget.isProShell ? '/pro/messages' : '/client/messages';
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  void dispose() {
+    _searchCtrl.dispose();
+    for (final channel in _typingChannels.values) {
+      channel.unsubscribe();
+    }
+    for (final timer in _typingTimers.values) {
+      timer.cancel();
+    }
+    super.dispose();
+  }
+
+  void _syncTypingSubscriptions(List<ConversationModel> conversations) {
+    final repo = ref.read(chatRepositoryProvider);
+    final myUid = repo.currentUserId;
+    if (myUid == null) return;
+
+    final currentIds = conversations.map((c) => c.id).toSet();
+    if (currentIds.length == _subscribedIds.length &&
+        currentIds.every(_subscribedIds.contains)) {
+      return; // No change
+    }
+
+    // Subscribe to new conversations
+    for (final c in conversations) {
+      if (_typingChannels.containsKey(c.id)) continue;
+      _typingChannels[c.id] = repo.subscribeTyping(
+        c.id,
+        onTyping: (userId) {
+          if (userId != myUid && mounted) {
+            setState(() => _typingStates[c.id] = true);
+            _typingTimers[c.id]?.cancel();
+            _typingTimers[c.id] = Timer(const Duration(seconds: 3), () {
+              if (mounted) setState(() => _typingStates[c.id] = false);
+            });
+          }
+        },
+      );
+    }
+
+    // Clean up removed conversations
+    final removed = _subscribedIds.difference(currentIds);
+    for (final id in removed) {
+      _typingChannels.remove(id)?.unsubscribe();
+      _typingTimers.remove(id)?.cancel();
+      _typingStates.remove(id);
+    }
+
+    _subscribedIds = currentIds;
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final state = ref.watch(conversationsProvider);
+
+    // Subscribe to typing when conversations load
+    if (!state.isLoading && state.conversations.isNotEmpty) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _syncTypingSubscriptions(state.conversations);
+      });
+    }
+
+    // Filter conversations by search query
+    final filtered = _searchQuery.isEmpty
+        ? state.conversations
+        : state.conversations.where((c) {
+            final name = (c.otherUserName ?? '').toLowerCase();
+            return name.contains(_searchQuery.toLowerCase());
+          }).toList();
 
     return Scaffold(
       backgroundColor: AppColors.fond,
@@ -30,7 +117,8 @@ class MessagingInboxScreen extends ConsumerWidget {
         surfaceTintColor: Colors.transparent,
         leading: context.canPop()
             ? IconButton(
-                icon: const Icon(Icons.arrow_back_ios, color: AppColors.blanc, size: 20),
+                icon: const Icon(Icons.arrow_back_ios,
+                    color: AppColors.blanc, size: 20),
                 onPressed: () {
                   HapticFeedback.lightImpact();
                   context.pop();
@@ -53,39 +141,94 @@ class MessagingInboxScreen extends ConsumerWidget {
             child: SpotbookLoadingShimmer.list(itemCount: 8),
           ),
         false when state.conversations.isEmpty => EmptyState.noMessages(
-            onCta: context.canPop() ? () => context.pop() : null,
+            onCta: () => context.go('/client/search'),
           ),
-        false => RefreshIndicator(
-            color: AppColors.blanc,
-            backgroundColor: AppColors.surface,
-            onRefresh: () => ref.read(conversationsProvider.notifier).refresh(),
-            child: ListView.separated(
-              padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
-              itemCount: state.conversations.length,
-              separatorBuilder: (_, __) => const Divider(
-                height: 1,
-                color: AppColors.border,
+        false => Column(
+            children: [
+              // Search bar
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 4, 20, 12),
+                child: TextField(
+                  controller: _searchCtrl,
+                  onChanged: (v) => setState(() => _searchQuery = v),
+                  style:
+                      const TextStyle(color: AppColors.blanc, fontSize: 15),
+                  decoration: InputDecoration(
+                    hintText: 'Rechercher une conversation…',
+                    hintStyle:
+                        const TextStyle(color: AppColors.gris, fontSize: 14),
+                    prefixIcon: const Icon(Icons.search,
+                        color: AppColors.gris, size: 20),
+                    suffixIcon: _searchQuery.isNotEmpty
+                        ? GestureDetector(
+                            onTap: () {
+                              _searchCtrl.clear();
+                              setState(() => _searchQuery = '');
+                            },
+                            child: const Icon(Icons.close,
+                                color: AppColors.gris, size: 18),
+                          )
+                        : null,
+                    filled: true,
+                    fillColor: AppColors.surface,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide.none,
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 12),
+                  ),
+                ),
               ),
-              itemBuilder: (context, i) {
-                final c = state.conversations[i];
-                return _ConversationTile(
-                  name: c.otherUserName ?? 'Utilisateur',
-                  avatarUrl: c.otherUserAvatar,
-                  preview: c.lastMessage ?? '',
-                  time: c.lastMessageAt,
-                  unread: c.unreadCount,
-                  onTap: () {
-                    HapticFeedback.selectionClick();
-                    context.push(
-                      '$_base/${c.id}',
-                      extra: {
-                        'otherUserName': c.otherUserName ?? '',
-                      },
-                    );
-                  },
-                );
-              },
-            ),
+              // Conversation list
+              Expanded(
+                child: filtered.isEmpty
+                    ? Center(
+                        child: Text(
+                          _searchQuery.isNotEmpty
+                              ? 'Aucune conversation trouvée'
+                              : 'Aucun message',
+                          style: const TextStyle(
+                              color: AppColors.gris, fontSize: 15),
+                        ),
+                      )
+                    : RefreshIndicator(
+                        color: AppColors.blanc,
+                        backgroundColor: AppColors.surface,
+                        onRefresh: () =>
+                            ref.read(conversationsProvider.notifier).refresh(),
+                        child: ListView.separated(
+                          padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
+                          itemCount: filtered.length,
+                          separatorBuilder: (_, __) => const Divider(
+                            height: 1,
+                            color: AppColors.border,
+                          ),
+                          itemBuilder: (context, i) {
+                            final c = filtered[i];
+                            final isTyping = _typingStates[c.id] == true;
+                            return _ConversationTile(
+                              name: c.otherUserName ?? 'Utilisateur',
+                              avatarUrl: c.otherUserAvatar,
+                              preview: c.lastMessage ?? '',
+                              time: c.lastMessageAt,
+                              unread: c.unreadCount,
+                              isTyping: isTyping,
+                              onTap: () {
+                                HapticFeedback.selectionClick();
+                                context.push(
+                                  '$_base/${c.id}',
+                                  extra: {
+                                    'otherUserName': c.otherUserName ?? '',
+                                  },
+                                );
+                              },
+                            );
+                          },
+                        ),
+                      ),
+              ),
+            ],
           ),
       },
     );
@@ -99,6 +242,7 @@ class _ConversationTile extends StatelessWidget {
     required this.preview,
     required this.time,
     required this.unread,
+    required this.isTyping,
     required this.onTap,
   });
 
@@ -107,6 +251,7 @@ class _ConversationTile extends StatelessWidget {
   final String preview;
   final DateTime? time;
   final int unread;
+  final bool isTyping;
   final VoidCallback onTap;
 
   @override
@@ -140,14 +285,16 @@ class _ConversationTile extends StatelessWidget {
                           width: 52,
                           height: 52,
                           color: AppColors.surfaceAlt,
-                          child: const Icon(Icons.person, color: AppColors.gris),
+                          child: const Icon(Icons.person,
+                              color: AppColors.gris),
                         ),
                       )
                     : Container(
                         width: 52,
                         height: 52,
                         color: AppColors.surfaceAlt,
-                        child: const Icon(Icons.person, color: AppColors.gris),
+                        child: const Icon(Icons.person,
+                            color: AppColors.gris),
                       ),
               ),
               const SizedBox(width: 14),
@@ -183,20 +330,32 @@ class _ConversationTile extends StatelessWidget {
                     Row(
                       children: [
                         Expanded(
-                          child: Text(
-                            preview,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                              color: AppColors.gris,
-                              fontSize: 14,
-                            ),
-                          ),
+                          child: isTyping
+                              ? const Text(
+                                  'est en train d\'écrire…',
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                    color: AppColors.violetClair,
+                                    fontSize: 14,
+                                    fontStyle: FontStyle.italic,
+                                  ),
+                                )
+                              : Text(
+                                  preview,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(
+                                    color: AppColors.gris,
+                                    fontSize: 14,
+                                  ),
+                                ),
                         ),
                         if (unread > 0)
                           Container(
                             margin: const EdgeInsets.only(left: 8),
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 2),
                             decoration: BoxDecoration(
                               color: AppColors.blanc,
                               borderRadius: BorderRadius.circular(10),

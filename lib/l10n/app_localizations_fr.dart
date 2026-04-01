@@ -352,4 +352,76 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get proConfirmPassword => 'Confirmer le mot de passe';
+
+  @override
+  String get proSettingsSectionSpotify => 'MUSIQUE (FEED)';
+
+  @override
+  String get proSettingsSpotifyTitle => 'Spotify';
+
+  @override
+  String get proSettingsSpotifyLinked => 'Compte Spotify connecté';
+
+  @override
+  String get proSettingsSpotifyConnect => 'Connecter Spotify';
+
+  @override
+  String get proSettingsSpotifyDisconnect => 'Déconnecter Spotify';
+
+  @override
+  String get proSettingsSpotifyHint =>
+      'Lie ton compte pour voir tes titres les plus joués dans la feuille musique du feed pro.';
+
+  @override
+  String get proSettingsSpotifyMissingClientId =>
+      'SPOTIFY_CLIENT_ID manquant dans .env';
+
+  @override
+  String get spotifySheetTitle => 'Ajouter de la musique';
+
+  @override
+  String get spotifySheetLinkedHint =>
+      'Compte Spotify lié — top titres et recherche enrichie.';
+
+  @override
+  String get spotifySheetNotLinkedHint =>
+      'Sans liaison : recherche seulement. Connecte Spotify dans Paramètres pro.';
+
+  @override
+  String get spotifySheetOpenSettings => 'Paramètres';
+
+  @override
+  String get spotifySheetSearchHint => 'Rechercher un titre ou artiste…';
+
+  @override
+  String get spotifySheetTopTracksHeader => 'Tes titres récents (Spotify)';
+
+  @override
+  String get spotifySheetNoResults => 'Aucun résultat';
+
+  @override
+  String get spotifySheetEmptyTop =>
+      'Aucun top titre pour l’instant. Écoute de la musique sur Spotify puis réessaie.';
+
+  @override
+  String get spotifySheetEmptyNeedLink =>
+      'Connecte Spotify dans Paramètres pro pour afficher tes top titres ici.';
+
+  @override
+  String spotifySheetTrackAdded(String name) {
+    return '$name — ajouté au post';
+  }
+
+  @override
+  String get settingsLanguageScreenTitle => 'Langue';
+
+  @override
+  String get settingsLanguageScreenSubtitle =>
+      'Choisis la langue d’affichage de Spotbook. La préférence est enregistrée sur cet appareil (Hive).';
+
+  @override
+  String get settingsLanguageSavedSnack => 'Langue enregistrée';
+
+  @override
+  String get settingsLanguageMenuLabel => 'Langue';
 }

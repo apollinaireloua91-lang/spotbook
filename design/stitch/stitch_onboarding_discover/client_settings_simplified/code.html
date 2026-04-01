@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#7B4FFF", // Violet accent
+                        "secondary": "#00D4FF", // Cyan accent
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#080810",
+                        "card-dark": "#1C1C2E",
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        .custom-gradient-text {
+            background: linear-gradient(90deg, #7B4FFF, #00D4FF);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen pb-24">
+<!-- Header Section -->
+<header class="sticky top-0 z-10 flex items-center bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md p-4 border-b border-slate-200 dark:border-slate-800">
+<button class="flex items-center justify-center size-10 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors">
+<span class="material-symbols-outlined text-slate-900 dark:text-slate-100">arrow_back</span>
+</button>
+<h1 class="flex-1 text-center text-xl font-bold tracking-tight pr-10">Settings</h1>
+</header>
+<main class="max-w-md mx-auto p-4 space-y-6">
+<!-- Account Section -->
+<section>
+<h3 class="text-xs font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400 mb-3 px-1">Account</h3>
+<div class="bg-white dark:bg-card-dark rounded-xl overflow-hidden shadow-sm border border-slate-200 dark:border-slate-800">
+<a class="flex items-center gap-4 p-4 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors border-b border-slate-100 dark:border-slate-800" href="#">
+<div class="flex items-center justify-center rounded-lg bg-primary/10 text-primary size-10">
+<span class="material-symbols-outlined">person</span>
+</div>
+<div class="flex-1">
+<p class="text-base font-semibold">Edit Profile</p>
+<p class="text-xs text-slate-500">Alex Johnson • alex@example.com</p>
+</div>
+<span class="material-symbols-outlined text-slate-400">chevron_right</span>
+</a>
+<a class="flex items-center gap-4 p-4 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors" href="#">
+<div class="flex items-center justify-center rounded-lg bg-secondary/10 text-secondary size-10">
+<span class="material-symbols-outlined">lock</span>
+</div>
+<div class="flex-1">
+<p class="text-base font-semibold">Change Password</p>
+</div>
+<span class="material-symbols-outlined text-slate-400">chevron_right</span>
+</a>
+</div>
+</section>
+<!-- Preferences Section -->
+<section>
+<h3 class="text-xs font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400 mb-3 px-1">Preferences</h3>
+<div class="bg-white dark:bg-card-dark rounded-xl overflow-hidden shadow-sm border border-slate-200 dark:border-slate-800">
+<div class="flex items-center gap-4 p-4 border-b border-slate-100 dark:border-slate-800">
+<div class="flex items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 size-10">
+<span class="material-symbols-outlined">notifications</span>
+</div>
+<div class="flex-1">
+<p class="text-base font-semibold">Notifications</p>
+</div>
+<div class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-slate-300 dark:bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+</div>
+</div>
+<a class="flex items-center gap-4 p-4 hover:bg-slate-50 dark:hover:bg-slate-800/50" href="#">
+<div class="flex items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 size-10">
+<span class="material-symbols-outlined">language</span>
+</div>
+<div class="flex-1">
+<p class="text-base font-semibold">Language</p>
+</div>
+<p class="text-sm text-primary font-medium">English</p>
+</a>
+</div>
+</section>
+<!-- Danger Zone Section -->
+<section>
+<h3 class="text-xs font-bold uppercase tracking-widest text-red-500 mb-3 px-1">Danger Zone</h3>
+<div class="bg-white dark:bg-card-dark rounded-xl overflow-hidden shadow-sm border border-red-200/50 dark:border-red-900/30">
+<button class="w-full flex items-center gap-4 p-4 border-b border-slate-100 dark:border-slate-800 hover:bg-red-50 dark:hover:bg-red-900/10 text-red-500 transition-colors">
+<div class="flex items-center justify-center rounded-lg bg-red-100 dark:bg-red-900/20 size-10">
+<span class="material-symbols-outlined">logout</span>
+</div>
+<div class="flex-1 text-left">
+<p class="text-base font-semibold">Logout</p>
+</div>
+</button>
+<button class="w-full flex items-center gap-4 p-4 hover:bg-red-50 dark:hover:bg-red-900/10 text-red-500 transition-colors">
+<div class="flex items-center justify-center rounded-lg bg-red-100 dark:bg-red-900/20 size-10">
+<span class="material-symbols-outlined">delete_forever</span>
+</div>
+<div class="flex-1 text-left">
+<p class="text-base font-semibold">Delete Account</p>
+</div>
+</button>
+</div>
+</section>
+</main>
+<!-- Bottom Navigation Bar -->
+<nav class="fixed bottom-0 left-0 right-0 z-20 border-t border-slate-200 dark:border-slate-800 bg-white/90 dark:bg-card-dark/90 backdrop-blur-xl px-4 pb-6 pt-3">
+<div class="max-w-md mx-auto flex gap-2">
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-slate-500 dark:text-slate-400 transition-colors" href="#">
+<span class="material-symbols-outlined text-[24px]">home</span>
+<p class="text-[10px] font-medium leading-normal tracking-wide">Home</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-slate-500 dark:text-slate-400 transition-colors" href="#">
+<span class="material-symbols-outlined text-[24px]">search</span>
+<p class="text-[10px] font-medium leading-normal tracking-wide">Search</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-slate-500 dark:text-slate-400 transition-colors" href="#">
+<span class="material-symbols-outlined text-[24px]">history</span>
+<p class="text-[10px] font-medium leading-normal tracking-wide">Activity</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-primary" href="#">
+<span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' 1;">settings</span>
+<p class="text-[10px] font-bold leading-normal tracking-wide">Settings</p>
+</a>
+</div>
+</nav>
+</body></html>

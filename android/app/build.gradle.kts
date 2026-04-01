@@ -3,12 +3,11 @@ plugins {
     id("kotlin-android")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
+    id("com.google.gms.google-services")
 }
 
-apply(plugin = "com.google.gms.google-services")
-
 android {
-    namespace = "com.spotbook.spotbook"
+    namespace = "com.spotbook.app"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -23,7 +22,7 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.spotbook.spotbook"
+        applicationId = "com.spotbook.app"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
@@ -43,4 +42,15 @@ android {
 
 flutter {
     source = "../.."
+}
+
+dependencies {
+    // Firebase BoM — gère les versions compatibles automatiquement
+    implementation(platform("com.google.firebase:firebase-bom:34.0.0"))
+
+    // Analytics
+    implementation("com.google.firebase:firebase-analytics")
+
+    // Cloud Messaging (FCM)
+    implementation("com.google.firebase:firebase-messaging")
 }

@@ -331,7 +331,7 @@ class _ProviderCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: const Color(0xFF0D0D0D),
+      color: AppColors.fond,
       borderRadius: BorderRadius.circular(16),
       child: InkWell(
         onTap: () {

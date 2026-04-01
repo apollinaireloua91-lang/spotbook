@@ -50,19 +50,16 @@ class UserSetupRepository {
       'id': user.id,
       'email': user.email,
       'full_name': meta['full_name'],
-      'phone': meta['phone'],
-      'age': meta['age'],
-      'address': meta['address'],
       'role': meta['role'],
       'avatar_url': meta['avatar_url'],
+      'city': meta['address'],
       'country': countryCode,
       'currency': currency,
       'payment_provider': 'stripe',
     });
 
-    await _supabase.from('notification_preferences').insert({
-      'user_id': user.id,
-    });
+    // notification_preferences row is auto-created by DB trigger
+    // (tr_ensure_notif_prefs in migration 027)
   }
 
   Future<String?> _resolveCountry() async {

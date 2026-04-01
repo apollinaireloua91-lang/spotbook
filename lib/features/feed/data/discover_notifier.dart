@@ -65,7 +65,8 @@ class DiscoverState {
         maxPrice: maxPrice ?? this.maxPrice,
         searchHistory: searchHistory ?? this.searchHistory,
         showHistory: showHistory ?? this.showHistory,
-        activeQuery: clearActiveQuery ? null : (activeQuery ?? this.activeQuery),
+        activeQuery:
+            clearActiveQuery ? null : (activeQuery ?? this.activeQuery),
       );
 }
 
@@ -75,8 +76,9 @@ class DiscoverNotifier extends Notifier<DiscoverState> {
   @override
   DiscoverState build() {
     _loadHistory();
-    _loadDefault();
-    return const DiscoverState();
+    // Premier frame = chargement (évite « Aucun résultat » avant la requête Supabase).
+    Future<void>.microtask(_loadDefault);
+    return const DiscoverState(isLoading: true);
   }
 
   Future<void> _loadHistory() async {
@@ -88,7 +90,8 @@ class DiscoverNotifier extends Notifier<DiscoverState> {
   Future<void> _saveToHistory(String query) async {
     if (query.trim().isEmpty) return;
     final q = query.trim();
-    final newHistory = [q, ...state.searchHistory.where((e) => e != q)].take(10).toList();
+    final newHistory =
+        [q, ...state.searchHistory.where((e) => e != q)].take(10).toList();
     state = state.copyWith(searchHistory: newHistory);
     final box = await Hive.openBox<List<String>>('search_history');
     await box.put('history', newHistory);
@@ -109,27 +112,21 @@ class DiscoverNotifier extends Notifier<DiscoverState> {
       // Coords are optional — getCurrentUserCoordinates() never throws.
       final coords = await searchRepo.getCurrentUserCoordinates();
 
-      // Try RPC first (gives distance sorting when coords available).
-      // Fall back to direct PostgREST query if RPC fails or is not deployed.
-      List<ProviderSearchResult> providers;
-      try {
-        providers = await searchRepo.searchProvidersNearby(
-          lat: coords.lat,
-          lng: coords.lng,
-          radiusKm: state.maxDistance,
-          query: null,
-          category: state.selectedCategory,
-          minRating: state.minRating,
-        );
-      } catch (_) {
-        providers = await searchRepo.getAllProviders(
-          category: state.selectedCategory,
-        );
-      }
+      // PostgREST = liste complète ; RPC = distance / coords enrichis (sans écraser la liste).
+      final providers = await searchRepo.fetchDiscoverProviders(
+        clientLat: coords.lat,
+        clientLng: coords.lng,
+        radiusKm: state.maxDistance,
+        textQuery: null,
+        categoryChip: state.selectedCategory,
+        minRating: state.minRating,
+      );
 
       final videos = state.selectedCategory == 'All'
           ? await videoRepo.searchVideos('')
-          : await videoRepo.getVideosByCategory(state.selectedCategory.toLowerCase());
+          : await videoRepo
+              .getVideosByCategory(state.selectedCategory.toLowerCase());
+
 
       state = state.copyWith(
         results: videos,
@@ -148,7 +145,9 @@ class DiscoverNotifier extends Notifier<DiscoverState> {
     _loadDefault();
   }
 
-  void setShowHistory(bool show) => state = state.copyWith(showHistory: show);
+  void setShowHistory(bool show) {
+    state = state.copyWith(showHistory: show);
+  }
 
   void setDistance(double v) => state = state.copyWith(maxDistance: v);
 
@@ -193,29 +192,17 @@ class DiscoverNotifier extends Notifier<DiscoverState> {
       final videoRepo = ref.read(videoRepositoryProvider);
       final coords = await searchRepo.getCurrentUserCoordinates();
 
-      List<ProviderSearchResult> providers;
-      try {
-        providers = await searchRepo.searchProvidersNearby(
-          lat: coords.lat,
-          lng: coords.lng,
-          radiusKm: state.maxDistance,
-          query: query.trim(),
-          category: state.selectedCategory,
-          minRating: state.minRating,
-        );
-      } catch (_) {
-        // RPC unavailable: filter in memory from direct query.
-        final all = await searchRepo.getAllProviders(category: state.selectedCategory);
-        final q = query.trim().toLowerCase();
-        providers = all
-            .where((p) =>
-                p.displayName.toLowerCase().contains(q) ||
-                (p.category?.toLowerCase().contains(q) ?? false) ||
-                (p.city?.toLowerCase().contains(q) ?? false))
-            .toList();
-      }
+      final providers = await searchRepo.fetchDiscoverProviders(
+        clientLat: coords.lat,
+        clientLng: coords.lng,
+        radiusKm: state.maxDistance,
+        textQuery: query.trim(),
+        categoryChip: state.selectedCategory,
+        minRating: state.minRating,
+      );
 
       final videos = await videoRepo.searchVideos(query.trim());
+
 
       state = state.copyWith(
         results: videos,
@@ -232,5 +219,4 @@ class DiscoverNotifier extends Notifier<DiscoverState> {
 
 final discoverProvider = NotifierProvider<DiscoverNotifier, DiscoverState>(
   DiscoverNotifier.new,
-  isAutoDispose: true,
 );

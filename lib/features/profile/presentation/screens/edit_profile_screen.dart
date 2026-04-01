@@ -1,11 +1,21 @@
+import 'dart:io';
+
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_cropper/image_cropper.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/widgets/address_autocomplete_field.dart';
+import '../../../../shared/widgets/spotbook_bottom_sheet.dart';
 import '../../../../shared/widgets/spotbook_button.dart';
 import '../../data/edit_profile_notifier.dart';
+import '../../data/profile_repository.dart';
+import '../../domain/profile_models.dart';
+import '../providers/client_profile_screen_provider.dart';
 
 class EditProfileScreen extends ConsumerStatefulWidget {
   const EditProfileScreen({super.key});
@@ -41,6 +51,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     } else if (s.clientProfile != null) {
       _nameCtrl.text = s.clientProfile!.fullName;
       _usernameCtrl.text = s.clientProfile!.username ?? '';
+      _bioCtrl.text = s.clientProfile!.bio ?? '';
       _cityCtrl.text = s.clientProfile!.city ?? '';
     }
   }
@@ -116,6 +127,9 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              if (!s.isPro && s.clientProfile != null) ...[
+                _buildClientPhotosHeader(s.clientProfile!),
+              ],
               _buildTextField('Name', _nameCtrl),
               const SizedBox(height: 16),
               _buildTextField('Username', _usernameCtrl),
@@ -126,6 +140,10 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                 icon: Icons.location_city,
                 fillColor: AppColors.surface,
               ),
+              if (!s.isPro) ...[
+                const SizedBox(height: 16),
+                _buildTextField('Bio', _bioCtrl, maxLines: 3),
+              ],
               if (s.isPro) ...[
                 const SizedBox(height: 16),
                 _buildTextField('Bio', _bioCtrl, maxLines: 3),
@@ -152,6 +170,231 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
         ),
       ),
     );
+  }
+
+  Widget _buildClientPhotosHeader(ClientProfile profile) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Photo de couverture et avatar',
+          style: TextStyle(
+            color: AppColors.blanc,
+            fontSize: 16,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        const SizedBox(height: 6),
+        const Text(
+          'Appuie sur la bannière ou sur l’avatar pour les remplacer.',
+          style: TextStyle(color: AppColors.gris, fontSize: 13, height: 1.35),
+        ),
+        const SizedBox(height: 14),
+        SizedBox(
+          height: 148,
+          width: double.infinity,
+          child: Stack(
+            clipBehavior: Clip.none,
+            children: [
+              Positioned.fill(
+                child: Material(
+                  color: AppColors.surface,
+                  borderRadius: BorderRadius.circular(14),
+                  clipBehavior: Clip.antiAlias,
+                  child: InkWell(
+                    onTap: () => _pickClientCover(),
+                    child: profile.coverUrl != null
+                        ? CachedNetworkImage(
+                            imageUrl: profile.coverUrl!,
+                            fit: BoxFit.cover,
+                            width: double.infinity,
+                            placeholder: (_, __) =>
+                                Container(color: AppColors.surfaceAlt),
+                            errorWidget: (_, __, ___) => const Icon(
+                              Icons.add_photo_alternate_outlined,
+                              color: AppColors.gris,
+                              size: 40,
+                            ),
+                          )
+                        : const Center(
+                            child: Icon(
+                              Icons.add_photo_alternate_outlined,
+                              color: AppColors.gris,
+                              size: 40,
+                            ),
+                          ),
+                  ),
+                ),
+              ),
+              Positioned(
+                left: 16,
+                bottom: -32,
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    customBorder: const CircleBorder(),
+                    onTap: () => _pickClientAvatar(),
+                    child: Container(
+                      width: 72,
+                      height: 72,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(color: AppColors.violet, width: 2),
+                        color: AppColors.surfaceAlt,
+                      ),
+                      child: ClipOval(
+                        child: profile.avatarUrl != null
+                            ? CachedNetworkImage(
+                                imageUrl: profile.avatarUrl!,
+                                fit: BoxFit.cover,
+                                placeholder: (_, __) =>
+                                    Container(color: AppColors.surface),
+                                errorWidget: (_, __, ___) => const Icon(
+                                  Icons.person,
+                                  color: AppColors.gris,
+                                  size: 36,
+                                ),
+                              )
+                            : const Icon(
+                                Icons.person,
+                                color: AppColors.gris,
+                                size: 36,
+                              ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 44),
+      ],
+    );
+  }
+
+  Future<void> _pickClientCover() async {
+    HapticFeedback.lightImpact();
+    final source = await showSpotbookBottomSheet<ImageSource>(
+      context: context,
+      title: 'Couverture',
+      child: SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.photo_camera, color: AppColors.blanc),
+              title: const Text('Prendre une photo',
+                  style: TextStyle(color: AppColors.blanc)),
+              onTap: () => Navigator.pop(context, ImageSource.camera),
+            ),
+            ListTile(
+              leading:
+                  const Icon(Icons.photo_library_outlined, color: AppColors.blanc),
+              title: const Text('Galerie',
+                  style: TextStyle(color: AppColors.blanc)),
+              onTap: () => Navigator.pop(context, ImageSource.gallery),
+            ),
+          ],
+        ),
+      ),
+    );
+    if (source == null || !mounted) return;
+    final picked =
+        await ImagePicker().pickImage(source: source, imageQuality: 92);
+    if (picked == null || !mounted) return;
+    final cropped = await ImageCropper().cropImage(
+      sourcePath: picked.path,
+      aspectRatio: const CropAspectRatio(ratioX: 16, ratioY: 9),
+      compressQuality: 88,
+      uiSettings: [
+        AndroidUiSettings(
+          toolbarTitle: 'Recadrer',
+          toolbarColor: AppColors.surface,
+          activeControlsWidgetColor: AppColors.blanc,
+          dimmedLayerColor: AppColors.overlayPicker,
+        ),
+        IOSUiSettings(title: 'Recadrer'),
+      ],
+    );
+    if (cropped == null || !mounted) return;
+    final bytes = await File(cropped.path).readAsBytes();
+    try {
+      await ref.read(profileRepositoryProvider).uploadCover(bytes, 'jpg');
+      ref.invalidate(clientProfileScreenDataProvider(''));
+      ref.invalidate(editProfileProvider);
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Échec du téléversement'),
+            backgroundColor: AppColors.error,
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> _pickClientAvatar() async {
+    HapticFeedback.lightImpact();
+    final source = await showSpotbookBottomSheet<ImageSource>(
+      context: context,
+      title: 'Photo de profil',
+      child: SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.photo_camera, color: AppColors.blanc),
+              title: const Text('Prendre une photo',
+                  style: TextStyle(color: AppColors.blanc)),
+              onTap: () => Navigator.pop(context, ImageSource.camera),
+            ),
+            ListTile(
+              leading:
+                  const Icon(Icons.photo_library_outlined, color: AppColors.blanc),
+              title: const Text('Galerie',
+                  style: TextStyle(color: AppColors.blanc)),
+              onTap: () => Navigator.pop(context, ImageSource.gallery),
+            ),
+          ],
+        ),
+      ),
+    );
+    if (source == null || !mounted) return;
+    final picked =
+        await ImagePicker().pickImage(source: source, imageQuality: 92);
+    if (picked == null || !mounted) return;
+    final cropped = await ImageCropper().cropImage(
+      sourcePath: picked.path,
+      compressQuality: 88,
+      uiSettings: [
+        AndroidUiSettings(
+          toolbarTitle: 'Recadrer',
+          toolbarColor: AppColors.surface,
+          activeControlsWidgetColor: AppColors.blanc,
+          dimmedLayerColor: AppColors.overlayPicker,
+          cropStyle: CropStyle.circle,
+        ),
+        IOSUiSettings(title: 'Recadrer', cropStyle: CropStyle.circle),
+      ],
+    );
+    if (cropped == null || !mounted) return;
+    final bytes = await File(cropped.path).readAsBytes();
+    try {
+      await ref.read(profileRepositoryProvider).uploadAvatar(bytes, 'jpg');
+      ref.invalidate(clientProfileScreenDataProvider(''));
+      ref.invalidate(editProfileProvider);
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Échec du téléversement'),
+            backgroundColor: AppColors.error,
+          ),
+        );
+      }
+    }
   }
 
   Widget _buildTextField(String label, TextEditingController controller, {int maxLines = 1}) {

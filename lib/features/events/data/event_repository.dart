@@ -83,6 +83,26 @@ class EventRepository {
     return EventModel.fromJson(data);
   }
 
+  Future<void> updateEvent({
+    required String eventId,
+    required String title,
+    required String description,
+    required DateTime eventDate,
+    required String location,
+    String? address,
+  }) async {
+    await _supabase
+        .from('events')
+        .update({
+          'title': title,
+          'description': description,
+          'event_date': eventDate.toIso8601String(),
+          'location': location,
+          'address': address,
+        })
+        .eq('id', eventId);
+  }
+
   Future<String> uploadCover(String eventId, Uint8List bytes) async {
     final path = '$eventId/cover.jpg';
     await _supabase.storage

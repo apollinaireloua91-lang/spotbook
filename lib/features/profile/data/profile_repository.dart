@@ -17,17 +17,35 @@ class ProfileRepository {
   String? get currentUserId => _supabase.auth.currentUser?.id;
 
   Future<ClientProfile> getClientProfile(String userId) async {
-    final data = await _supabase
-        .from('users')
-        .select()
-        .eq('id', userId)
-        .single();
-    return ClientProfile.fromJson(data);
+    final data =
+        await _supabase.from('users').select().eq('id', userId).maybeSingle();
+    if (data != null) {
+      return ClientProfile.fromJson(data);
+    }
+    // Ligne `users` absente (sync retardée) : repli sur la session Auth.
+    final sessionUser = _supabase.auth.currentUser;
+    if (sessionUser != null && sessionUser.id == userId) {
+      final meta = sessionUser.userMetadata;
+      final name = meta?['full_name'] as String? ??
+          meta?['name'] as String? ??
+          meta?['display_name'] as String? ??
+          (sessionUser.email?.split('@').first ?? 'Utilisateur');
+      return ClientProfile(
+        id: sessionUser.id,
+        fullName: name,
+        email: sessionUser.email ?? '',
+        avatarUrl: meta?['avatar_url'] as String? ?? meta?['picture'] as String?,
+        username: meta?['username'] as String?,
+        role: meta?['role'] as String? ?? 'client',
+        createdAt: DateTime.tryParse(sessionUser.createdAt),
+      );
+    }
+    throw Exception('Utilisateur introuvable');
   }
 
   Future<ProProfile> getProProfile(String proId) async {
     final uid = currentUserId;
-    
+
     // Fetch pro profile with user data and social connections
     final data = await _supabase
         .from('profiles_pro')
@@ -39,7 +57,7 @@ class ProfileRepository {
     if (uid != null) {
       final followData = await _supabase
           .from('follows')
-          .select('id')
+          .select('follower_id')
           .eq('follower_id', uid)
           .eq('following_id', proId)
           .maybeSingle();
@@ -71,13 +89,10 @@ class ProfileRepository {
     if (bio != null) {
       final role = _supabase.auth.currentUser?.userMetadata?['role'];
       if (role == 'pro') {
-        await _supabase
-            .from('profiles_pro')
-            .update({
-              'description': bio,
-              'updated_at': DateTime.now().toIso8601String(),
-            })
-            .eq('id', uid);
+        await _supabase.from('profiles_pro').update({
+          'description': bio,
+          'updated_at': DateTime.now().toIso8601String(),
+        }).eq('id', uid);
       } else {
         await _supabase.from('users').update({'bio': bio}).eq('id', uid);
       }
@@ -127,13 +142,23 @@ class ProfileRepository {
         .eq('following_id', targetId);
   }
 
+  Future<bool> isFollowingPro(String proId) async {
+    final uid = currentUserId;
+    if (uid == null) return false;
+    final row = await _supabase
+        .from('follows')
+        .select('follower_id')
+        .eq('follower_id', uid)
+        .eq('following_id', proId)
+        .maybeSingle();
+    return row != null;
+  }
+
   Future<List<SocialConnection>> getSocialConnections() async {
     final uid = currentUserId;
     if (uid == null) return [];
-    final data = await _supabase
-        .from('social_connections')
-        .select()
-        .eq('pro_id', uid);
+    final data =
+        await _supabase.from('social_connections').select().eq('pro_id', uid);
     return (data as List).map((e) => SocialConnection.fromJson(e)).toList();
   }
 
@@ -161,10 +186,8 @@ class ProfileRepository {
 
   /// Nombre d’avis laissés par ce client (table `reviews`).
   Future<int> countReviewsLeftByClient(String clientId) async {
-    final data = await _supabase
-        .from('reviews')
-        .select('id')
-        .eq('client_id', clientId);
+    final data =
+        await _supabase.from('reviews').select('id').eq('client_id', clientId);
     return (data as List).length;
   }
 
@@ -188,7 +211,8 @@ class ProfileRepository {
     }
   }
 
-  Future<List<ClientFavoriteProItem>> getClientFavoritePros(String userId) async {
+  Future<List<ClientFavoriteProItem>> getClientFavoritePros(
+      String userId) async {
     final favData = await _supabase
         .from('favorites')
         .select()

@@ -4,31 +4,35 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../domain/availability_models.dart';
 
+/// Persistance alignée sur `supabase/migrations` :
+/// - `availability_rules` (pro_id, day_of_week JS 0=dim … 6=sam)
+/// - `provider_settings` (clé **pro_id**, pas provider_id)
+/// - Jours bloqués + toggle réservations : `profiles_pro.availability` (jsonb)
 class AvailabilityRepository {
   final _db = Supabase.instance.client;
 
   String get _uid => _db.auth.currentUser!.id;
 
-  // ─── Load all availability data ─────────────────────────────────────────────
+  // ─── Load ───────────────────────────────────────────────────────────────────
 
   Future<AvailabilityState> load() async {
     final results = await Future.wait<dynamic>([
-      _db.from('provider_availability').select().eq('provider_id', _uid),
       _db
-          .from('provider_blocked_dates')
+          .from('availability_rules')
           .select()
-          .eq('provider_id', _uid)
-          .gte('blocked_date', _today()),
-      _db
-          .from('provider_settings')
-          .select()
-          .eq('provider_id', _uid)
-          .maybeSingle(),
+          .eq('pro_id', _uid)
+          .order('day_of_week')
+          .order('start_time'),
+      _db.from('provider_settings').select().eq('pro_id', _uid).maybeSingle(),
+      _db.from('profiles_pro').select('availability').eq('id', _uid).maybeSingle(),
     ]);
 
-    final weekRules = _parseWeekRules(results[0] as List<dynamic>);
-    final blockedDates = _parseBlockedDates(results[1] as List<dynamic>);
-    final settings = _parseSettings(results[2] as Map<String, dynamic>?);
+    final weekRules = _weekRulesFromAvailabilityRules(results[0] as List<dynamic>);
+    final settings = _parseSettings(
+      results[1] as Map<String, dynamic>?,
+      results[2] as Map<String, dynamic>?,
+    );
+    final blockedDates = _blockedDatesFromProfileJson(results[2] as Map<String, dynamic>?);
 
     return AvailabilityState(
       weekRules: weekRules,
@@ -38,124 +42,193 @@ class AvailabilityRepository {
   }
 
   Future<List<BlockedDate>> loadBlockedDates() async {
-    final rows = await _db
-        .from('provider_blocked_dates')
-        .select()
-        .eq('provider_id', _uid)
-        .gte('blocked_date', _today());
-    return _parseBlockedDates(rows as List<dynamic>);
+    final row = await _db
+        .from('profiles_pro')
+        .select('availability')
+        .eq('id', _uid)
+        .maybeSingle();
+    return _blockedDatesFromProfileJson(row);
   }
 
-  // ─── Save weekly availability ────────────────────────────────────────────────
+  // ─── Save weekly rules → availability_rules ─────────────────────────────────
 
   Future<void> saveAvailability(List<DayRule> rules) async {
-    await _db.from('provider_availability').delete().eq('provider_id', _uid);
+    await _db.from('availability_rules').delete().eq('pro_id', _uid);
 
     final rows = <Map<String, dynamic>>[];
     for (final rule in rules) {
       if (!rule.isActive || rule.slots.isEmpty) continue;
-      for (int i = 0; i < rule.slots.length; i++) {
-        final slot = rule.slots[i];
+      final dbDow = _uiDowToDb(rule.dayOfWeek);
+      for (final slot in rule.slots) {
+        if (!slot.isValid) continue;
         rows.add({
-          'provider_id': _uid,
-          'day_of_week': rule.dayOfWeek,
+          'pro_id': _uid,
+          'day_of_week': dbDow,
           'start_time': _fmt(slot.startTime),
           'end_time': _fmt(slot.endTime),
-          'slot_index': i,
-          'is_active': true,
+          'slot_duration_minutes': 60,
         });
       }
     }
     if (rows.isNotEmpty) {
-      await _db.from('provider_availability').insert(rows);
+      await _db.from('availability_rules').insert(rows);
     }
   }
 
-  // ─── Blocked dates toggle ────────────────────────────────────────────────────
+  // ─── Blocked dates (jsonb) ──────────────────────────────────────────────────
 
   Future<void> toggleBlockedDate(DateTime date, List<BlockedDate> current) async {
     final dateStr = _dateStr(date);
-    final existing = current.where((d) => _sameDay(d.date, date)).firstOrNull;
+    final row = await _db
+        .from('profiles_pro')
+        .select('availability')
+        .eq('id', _uid)
+        .maybeSingle();
+    final av = Map<String, dynamic>.from(row?['availability'] as Map? ?? {});
+    final blocked = List<String>.from(
+      (av['blocked_dates'] as List<dynamic>? ?? []).map((e) => e.toString()),
+    );
 
-    if (existing != null) {
-      await _db.from('provider_blocked_dates').delete().eq('id', existing.id);
+    final had = current.any((d) => _sameDay(d.date, date));
+    if (had) {
+      blocked.removeWhere((s) => s == dateStr);
     } else {
-      await _db.from('provider_blocked_dates').insert({
-        'provider_id': _uid,
-        'blocked_date': dateStr,
-      });
+      if (!blocked.contains(dateStr)) blocked.add(dateStr);
     }
+    blocked.sort();
+    av['blocked_dates'] = blocked;
+
+    await _db.from('profiles_pro').update({'availability': av}).eq('id', _uid);
   }
 
-  // ─── Settings ────────────────────────────────────────────────────────────────
+  // ─── Settings (provider_settings + accepts dans jsonb) ─────────────────────
 
   Future<void> saveSettings(AvailabilitySettings s) async {
     await _db.from('provider_settings').upsert({
-      'provider_id': _uid,
+      'pro_id': _uid,
       'min_gap_minutes': s.minGapMinutes,
       'max_bookings_per_day': s.maxBookingsPerDay,
-      'accepts_bookings': s.acceptsBookings,
       'min_advance_hours': s.minAdvanceHours,
+      'updated_at': DateTime.now().toUtc().toIso8601String(),
     });
+
+    final row = await _db
+        .from('profiles_pro')
+        .select('availability')
+        .eq('id', _uid)
+        .maybeSingle();
+    final av = Map<String, dynamic>.from(row?['availability'] as Map? ?? {});
+    av['accepts_bookings'] = s.acceptsBookings;
+    await _db.from('profiles_pro').update({'availability': av}).eq('id', _uid);
   }
 
   Future<void> toggleAcceptBookings(bool value) async {
-    await _db.from('provider_settings').upsert({
-      'provider_id': _uid,
-      'accepts_bookings': value,
-    });
+    final row = await _db
+        .from('profiles_pro')
+        .select('availability')
+        .eq('id', _uid)
+        .maybeSingle();
+    final av = Map<String, dynamic>.from(row?['availability'] as Map? ?? {});
+    av['accepts_bookings'] = value;
+    await _db.from('profiles_pro').update({'availability': av}).eq('id', _uid);
   }
 
-  // ─── Helpers ─────────────────────────────────────────────────────────────────
+  // ─── Day-of-week : UI 0=lun…6=dim ↔ DB JS 0=dim…6=sam ─────────────────────
 
-  List<DayRule> _parseWeekRules(List<dynamic> rows) {
+  static int _uiDowToDb(int ui) => ui == 6 ? 0 : ui + 1;
+
+  static int _dbDowToUi(int db) => db == 0 ? 6 : db - 1;
+
+  List<DayRule> _weekRulesFromAvailabilityRules(List<dynamic> rows) {
     final slotsMap = <int, List<DaySlot>>{};
-    final activeMap = <int, bool>{};
 
     for (final row in rows) {
-      final dow = row['day_of_week'] as int;
-      activeMap[dow] = row['is_active'] as bool? ?? true;
-      (slotsMap[dow] ??= []).add(DaySlot(
-        tempId: '${dow}_${row['slot_index']}',
-        slotIndex: row['slot_index'] as int,
-        startTime: _parseTime(row['start_time'] as String),
-        endTime: _parseTime(row['end_time'] as String),
-      ));
+      final rawDow = row['day_of_week'];
+      if (rawDow == null) continue;
+      final dbDow = rawDow as int;
+      final uiDow = _dbDowToUi(dbDow);
+      final id = row['id']?.toString() ?? '${uiDow}_${row['start_time']}';
+      final startStr = row['start_time']?.toString() ?? '00:00:00';
+      final endStr = row['end_time']?.toString() ?? '00:00:00';
+
+      final list = slotsMap.putIfAbsent(uiDow, () => []);
+      list.add(
+        DaySlot(
+          tempId: id,
+          slotIndex: list.length,
+          startTime: _parseTime(startStr),
+          endTime: _parseTime(endStr),
+        ),
+      );
     }
 
     return List.generate(7, (i) {
-      final slots = (slotsMap[i] ?? [])
-        ..sort((a, b) => a.slotIndex.compareTo(b.slotIndex));
+      final slots = List<DaySlot>.from(slotsMap[i] ?? [])
+        ..sort((a, b) => a.startMinutes.compareTo(b.startMinutes));
+      for (var j = 0; j < slots.length; j++) {
+        final s = slots[j];
+        slots[j] = DaySlot(
+          tempId: s.tempId,
+          slotIndex: j,
+          startTime: s.startTime,
+          endTime: s.endTime,
+        );
+      }
       return DayRule(
         dayOfWeek: i,
-        isActive: activeMap[i] ?? false,
+        isActive: slots.isNotEmpty,
         slots: slots,
       );
     });
   }
 
-  List<BlockedDate> _parseBlockedDates(List<dynamic> rows) => rows
-      .map((r) => BlockedDate(
-            id: r['id'] as String,
-            date: DateTime.parse(r['blocked_date'] as String),
-            reason: r['reason'] as String?,
-          ))
-      .toList()
-    ..sort((a, b) => a.date.compareTo(b.date));
+  List<BlockedDate> _blockedDatesFromProfileJson(Map<String, dynamic>? row) {
+    if (row == null) return [];
+    final av = row['availability'];
+    if (av is! Map) return [];
+    final raw = av['blocked_dates'];
+    if (raw is! List) return [];
+    final today = _today();
+    final out = <BlockedDate>[];
+    for (final e in raw) {
+      final s = e.toString();
+      if (s.length < 10) continue;
+      if (s.compareTo(today) < 0) continue;
+      out.add(BlockedDate(id: s, date: DateTime.parse(s)));
+    }
+    out.sort((a, b) => a.date.compareTo(b.date));
+    return out;
+  }
 
-  AvailabilitySettings _parseSettings(Map<String, dynamic>? row) {
-    if (row == null) return const AvailabilitySettings();
+  AvailabilitySettings _parseSettings(
+    Map<String, dynamic>? settingsRow,
+    Map<String, dynamic>? profileRow,
+  ) {
+    Map<String, dynamic>? av;
+    if (profileRow != null && profileRow['availability'] is Map) {
+      av = Map<String, dynamic>.from(profileRow['availability'] as Map);
+    }
+    final acceptsBookings = av?['accepts_bookings'] is bool
+        ? av!['accepts_bookings'] as bool
+        : true;
+
+    if (settingsRow == null) {
+      return AvailabilitySettings(acceptsBookings: acceptsBookings);
+    }
+
     return AvailabilitySettings(
-      minGapMinutes: row['min_gap_minutes'] as int? ?? 15,
-      maxBookingsPerDay: row['max_bookings_per_day'] as int? ?? 10,
-      acceptsBookings: row['accepts_bookings'] as bool? ?? true,
-      minAdvanceHours: row['min_advance_hours'] as int? ?? 2,
+      minGapMinutes: settingsRow['min_gap_minutes'] as int? ?? 15,
+      maxBookingsPerDay: settingsRow['max_bookings_per_day'] as int? ?? 10,
+      acceptsBookings: acceptsBookings,
+      minAdvanceHours: settingsRow['min_advance_hours'] as int? ?? 2,
     );
   }
 
   TimeOfDay _parseTime(String t) {
     final p = t.split(':');
-    return TimeOfDay(hour: int.parse(p[0]), minute: int.parse(p[1]));
+    final h = int.tryParse(p[0]) ?? 0;
+    final m = p.length > 1 ? (int.tryParse(p[1]) ?? 0) : 0;
+    return TimeOfDay(hour: h, minute: m);
   }
 
   String _fmt(TimeOfDay t) =>
@@ -164,6 +237,7 @@ class AvailabilityRepository {
   String _today() => _dateStr(DateTime.now());
   String _dateStr(DateTime d) =>
       '${d.year}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
+
   bool _sameDay(DateTime a, DateTime b) =>
       a.year == b.year && a.month == b.month && a.day == b.day;
 }

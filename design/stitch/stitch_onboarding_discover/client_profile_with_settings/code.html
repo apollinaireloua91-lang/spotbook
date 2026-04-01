@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#7B4FFF", // Violet for active
+                        "cyan-action": "#00D4FF", // Cyan for buttons
+                        "nav-bg": "#0D0D1A",
+                        "nav-border": "#1E1E32",
+                        "inactive-grey": "#888888",
+                        "background-dark": "#0D0D1A",
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans"]
+                    },
+                    borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style type="text/tailwindcss">
+        :root {
+            --nav-bg: #0D0D1A;
+            --nav-border: #1E1E32;
+            --active-violet: #7B4FFF;
+            --inactive-grey: #888888;
+            --cyan-accent: #00D4FF;
+        }
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            min-height: 100dvh;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .active-tab {
+            color: var(--active-violet);
+        }
+        .active-tab .material-symbols-outlined {
+            font-variation-settings: 'FILL' 1;
+        }
+        .inactive-tab {
+            color: var(--inactive-grey);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-background-dark text-slate-100 flex flex-col min-h-screen">
+<div class="sticky top-0 z-50 flex items-center bg-background-dark/80 backdrop-blur-md p-4 justify-between border-b border-white/5">
+<div class="flex items-center gap-4">
+<div class="text-slate-100 flex size-10 shrink-0 items-center justify-center cursor-pointer">
+<span class="material-symbols-outlined">arrow_back</span>
+</div>
+<div>
+<h2 class="text-slate-100 text-lg font-bold leading-tight">Alex Johnson</h2>
+<p class="text-xs text-slate-400">124 Reviews</p>
+</div>
+</div>
+<div class="flex items-center">
+<button class="flex size-10 items-center justify-center rounded-full bg-white/5 text-slate-100 hover:bg-white/10 transition-colors">
+<span class="material-symbols-outlined">settings</span>
+</button>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto">
+<div class="relative">
+<div class="h-32 w-full bg-gradient-to-br from-[#7B4FFF] to-[#00D4FF]" data-alt="Gradient banner"></div>
+<div class="px-4 -mt-12 flex justify-between items-end">
+<div class="relative">
+<div class="size-24 rounded-full border-4 border-background-dark bg-cover bg-center overflow-hidden bg-slate-800" data-alt="Profile image" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuB6Hd1i8rWA1FzjlUt4FjPxc_Gchzg9H5IqdNA_p3IlWLg5euy71FB-KkJddGt78qdxMJzT-yzYT-cidQs6sYZqBL8lRwqag6Y3BymyToov5NkGRdxmt7L3S62Po4SxAQtFW3SLtciLEoDgf3oUIExrc6VvpW0O1b_1Os27P2pB6w7BGDNAA-QW9RinMWtTK1ONjjVLPO4pypBeL9ID4HcrdgKqp3ZQvIlix3h2bm72is5cVKpucSZY3QKfxjB94GbsTkgVwkiW_TI");'></div>
+</div>
+<button class="mb-2 px-6 py-2 rounded-full border border-cyan-action text-cyan-action font-bold text-sm hover:bg-cyan-action/10 transition-colors">
+                Edit Profile
+            </button>
+</div>
+</div>
+<div class="p-4 flex flex-col gap-1">
+<h1 class="text-2xl font-extrabold tracking-tight">Alex Johnson</h1>
+<p class="text-slate-400 text-sm">@alex_j_creative</p>
+<p class="mt-3 text-[15px] leading-relaxed text-slate-300">
+            Digital creator and lifestyle enthusiast. Passionate about testing new products and sharing honest reviews. Exploring the intersection of tech and daily living.
+        </p>
+<div class="flex gap-4 mt-3 text-slate-400 text-sm">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">location_on</span>
+<span>San Francisco, CA</span>
+</div>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">calendar_month</span>
+<span>Joined March 2022</span>
+</div>
+</div>
+</div>
+<div class="px-4 py-4 border-t border-white/5">
+<h3 class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4">Connected Socials</h3>
+<div class="grid grid-cols-4 gap-4">
+<div class="flex flex-col items-center gap-2">
+<div class="size-12 rounded-2xl bg-white/5 flex items-center justify-center text-slate-300 hover:bg-white/10 transition-colors">
+<span class="material-symbols-outlined">brand_family</span>
+</div>
+<span class="text-[10px] font-medium uppercase text-slate-500">TikTok</span>
+</div>
+<div class="flex flex-col items-center gap-2">
+<div class="size-12 rounded-2xl bg-white/5 flex items-center justify-center text-slate-300 hover:bg-white/10 transition-colors">
+<span class="material-symbols-outlined">public</span>
+</div>
+<span class="text-[10px] font-medium uppercase text-slate-500">Facebook</span>
+</div>
+<div class="flex flex-col items-center gap-2">
+<div class="size-12 rounded-2xl bg-white/5 flex items-center justify-center text-slate-300 hover:bg-white/10 transition-colors">
+<span class="material-symbols-outlined">chat_bubble</span>
+</div>
+<span class="text-[10px] font-medium uppercase text-slate-500">Snapchat</span>
+</div>
+<div class="flex flex-col items-center gap-2">
+<div class="size-12 rounded-2xl bg-white/5 flex items-center justify-center text-slate-300 hover:bg-white/10 transition-colors">
+<span class="material-symbols-outlined">share</span>
+</div>
+<span class="text-[10px] font-medium uppercase text-slate-500">Twitter</span>
+</div>
+</div>
+</div>
+<div class="mx-4 my-2 p-5 rounded-2xl bg-[#00D4FF]/5 border border-[#00D4FF]/20">
+<div class="flex items-start gap-3 mb-4">
+<div class="bg-cyan-action rounded-full p-2 text-background-dark shrink-0">
+<span class="material-symbols-outlined">handshake</span>
+</div>
+<div>
+<h3 class="font-bold text-slate-100">Contact for Collaboration</h3>
+<p class="text-sm text-slate-400 mt-1">
+                    Are you a service provider? Contact me to set up appointments for product testing or high-quality content creation. Let's work together!
+                </p>
+</div>
+</div>
+<button class="w-full py-3 bg-cyan-action text-background-dark font-extrabold rounded-xl shadow-lg shadow-cyan-action/20 active:scale-[0.98] transition-all">
+            Send Collaboration Request
+        </button>
+</div>
+<div class="mt-4">
+<div class="flex border-b border-white/5">
+<button class="flex-1 py-4 text-sm font-bold border-b-2 border-primary text-primary">Favorites</button>
+<button class="flex-1 py-4 text-sm font-bold text-slate-500 hover:bg-white/5 transition-colors">History</button>
+<button class="flex-1 py-4 text-sm font-bold text-slate-500 hover:bg-white/5 transition-colors">Tickets</button>
+</div>
+<div class="p-4 space-y-4">
+<div class="flex gap-4 p-4 rounded-xl border border-white/5 bg-white/5">
+<div class="size-12 rounded-lg bg-primary/20 shrink-0" data-alt="Icon"></div>
+<div class="space-y-1">
+<p class="font-bold text-sm">TechUnbox Pro 2.0</p>
+<p class="text-xs text-slate-500">Liked by Alex • 2h ago</p>
+</div>
+</div>
+<div class="flex gap-4 p-4 rounded-xl border border-white/5 bg-white/5">
+<div class="size-12 rounded-lg bg-primary/20 shrink-0" data-alt="Icon"></div>
+<div class="space-y-1">
+<p class="font-bold text-sm">Sustainable Gear Co.</p>
+<p class="text-xs text-slate-500">Saved to Favorites • Yesterday</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-around bg-nav-bg border-t border-nav-border px-4 pb-8 pt-3 sticky bottom-0 z-50 h-[84px]">
+<a class="flex flex-col items-center justify-center gap-1 inactive-tab group" href="#">
+<div class="flex h-7 items-center justify-center group-active:scale-90 transition-transform">
+<span class="material-symbols-outlined text-[28px]">home</span>
+</div>
+<p class="text-[10px] font-bold uppercase tracking-wider">Feed</p>
+</a>
+<a class="flex flex-col items-center justify-center gap-1 inactive-tab group" href="#">
+<div class="flex h-7 items-center justify-center group-active:scale-90 transition-transform">
+<span class="material-symbols-outlined text-[28px]">search</span>
+</div>
+<p class="text-[10px] font-bold uppercase tracking-wider">Découvrir</p>
+</a>
+<a class="flex flex-col items-center justify-center gap-1 inactive-tab group" href="#">
+<div class="flex h-7 items-center justify-center group-active:scale-90 transition-transform">
+<span class="material-symbols-outlined text-[28px]">calendar_month</span>
+</div>
+<p class="text-[10px] font-bold uppercase tracking-wider">Mes RDV</p>
+</a>
+<a class="flex flex-col items-center justify-center gap-1 active-tab group" href="#">
+<div class="flex h-7 items-center justify-center group-active:scale-90 transition-transform">
+<span class="material-symbols-outlined text-[28px]">person</span>
+</div>
+<p class="text-[10px] font-bold uppercase tracking-wider">Profil</p>
+</a>
+</div>
+</body></html>

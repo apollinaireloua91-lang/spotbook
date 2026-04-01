@@ -21,7 +21,7 @@ Langues     : Français (défaut) + Anglais
 
 Framework  : Flutter 3.x + Dart null safety
 
-State      : Riverpod 2.x — AsyncNotifier UNIQUEMENT
+State      : Bloc / Cubit + Equatable
 
 Navigation : go_router
 
@@ -41,43 +41,58 @@ Analytics  : PostHog (après consentement RGPD uniquement)
 Monitoring : Sentry
 
 
-## DESIGN — NOIR ET BLANC STRICT
+## DESIGN — PALETTE SPOTBOOK
 
-fond        : #000000
+fond          : #0D0D14
 
-surface     : #111111
+surface       : #1E1E2E
 
-surfaceAlt  : #1A1A1A
+surfaceAlt    : #16161F
 
-border      : #2A2A2A
+border        : #2A2A3A
 
-blanc       : #FFFFFF
+blanc         : #FFFFFF
 
-gris        : #888888
+gris          : #9090AA
 
-grisClair   : #CCCCCC
+grisInactif   : #555555
 
-success     : #00C851
+violet        : #6C3EF4
 
-error       : #FF4444
+violetClair   : #8B63FF
 
-warning     : #FFBB33
+rose          : #F43E8F
+
+roseClair     : #FF6BAA
+
+success       : #22C55E
+
+error         : #FF4444
+
+warning       : #FFBB33
 
 
-Bouton primaire   : fond blanc, texte noir, borderRadius 12
+Typographie :
+  Titres h1/h2  : Clash Display (assets locaux)
+  Corps / labels / boutons : DM Sans (google_fonts)
+  Logo "Spotbook" : DM Sans bold, fontSize 20, blanc #FFFFFF — jamais coloré
 
-Bouton secondaire : fond #1A1A1A, texte blanc, bordure #2A2A2A, radius 12
+Bouton primaire   : fond #6C3EF4 (violet), texte blanc, borderRadius 12
 
-// !! Jamais de violet, cyan, ou toute autre couleur décorative.
+Bouton secondaire : fond #1E1E2E, texte blanc, bordure rgba(255,255,255,0.1), radius 12
+
+Bouton danger     : fond rgba(244,62,143,0.12), texte #FF6BAA, radius 12
 
 
 ## RÔLES UTILISATEURS
 
-CLIENT : Feed vidéo, réservation, achat billets, chat avec pro
+CLIENT : Feed vidéo/photo, réservation, achat billets, chat avec pro,
+         like/save/commenter posts, suivre des pros
 
-Profil CLIENT : cover + avatar + nom + username + ville + bouton modifier
-  3 onglets : Favoris | Historique RDV | Mes Billets
-  // !! Pas d'abonnés, pas de following, pas de réseaux sociaux, pas de stats
+Profil CLIENT : avatar + nom + handle + bio + localisation + bouton modifier
+  Stats : RDV | Pros suivis | Événements | Avis
+  Sections : Mes Pros favoris (scroll horizontal) + Historique récent
+  Paramètres : Notifications, Paiement, Confidentialité, Langue, Mes avis, Devenir Pro
 
 PRO    : Upload vidéo, gestion dispo, scanner QR, dashboard, stats
 
@@ -118,7 +133,7 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   await Hive.initFlutter();                  // 4e
-  runApp(const ProviderScope(child: SpotbookApp())); // DERNIER
+  runApp(const SpotbookApp()); // DERNIER — wrapped in MultiBlocProvider
 }
 
 // !! Si cet ordre n'est pas respecté → crash au démarrage.
@@ -150,7 +165,7 @@ SplashScreen
 ## RÈGLES ABSOLUES — VIOLATIONS = PHASE REFUSÉE
 
 // !! JAMAIS Supabase dans un Widget → Repository uniquement
-// !! JAMAIS setState dans un écran → Riverpod AsyncNotifier
+// !! JAMAIS setState dans un écran → Bloc / Cubit uniquement
 // !! JAMAIS Image.network() → CachedNetworkImage
 // !! JAMAIS Navigator.push() → context.go() go_router
 // !! JAMAIS couleur hex dans Widget → AppColors.xxx
@@ -183,40 +198,58 @@ Commission réservation : 12% (8% si pro premium)
 Commission événement   : 7%
 
 
-## BASE DE DONNÉES — 25 TABLES
+## BASE DE DONNÉES
 
+### Tables existantes (Pro + Shared)
 users, profiles_pro, social_connections, services,
 availability_rules, time_slots, bookings,
-videos, video_likes, video_comments,
 events, ticket_types, tickets, waitlist,
 conversations, messages,
 notifications, notification_preferences,
-favorites, follows, blocks, reviews,
-promo_codes, pro_subscriptions, referrals, reports
+blocks, promo_codes, pro_subscriptions, referrals, reports
+
+### Tables Client (nouvelles)
+posts              — publications Pro (video/photo/event) avec caption, media, spotify track
+post_likes         — likes sur posts (PK: post_id + user_id)
+post_saves         — sauvegardes posts (PK: post_id + user_id)
+post_comments      — commentaires sur posts (author_id, text, like_count)
+comment_likes      — likes sur commentaires (PK: comment_id + user_id)
+follows            — abonnements client→pro (PK: client_id + pro_id)
+notifications_client — notifications client (type, title, body, ref_id, is_read)
+reservations       — réservations client (status: pending/confirmed/done/cancelled)
+ticket_purchases   — billets achetés (quantity, total_price, qr_code_url, status)
+client_profiles    — profil client (display_name, handle, bio, avatar_url, location)
+client_favorite_pros — pros favoris d'un client (PK: client_id + pro_id)
+reviews            — avis client sur réservation (rating 1-5, comment)
 
 // RLS activé sur toutes les tables.
 
 
-## RÈGLES VIDÉO — SPOTBOOK N'EST PAS TIKTOK
+## RÈGLES POSTS & VIDÉO — SPOTBOOK N'EST PAS TIKTOK
 
-Seuls les Pros peuvent uploader des vidéos.
+Seuls les Pros peuvent créer des posts (vidéo, photo, événement).
 
-Chaque vidéo DOIT représenter une prestation de service réelle.
+Chaque post vidéo DOIT représenter une prestation de service réelle.
 
 Champs obligatoires : titre (5-80 chars) + catégorie (liste fermée) + description (min 20 chars)
 
-Durée max : 60 secondes.
+Durée max vidéo : 60 secondes.
 
 Toute vidéo passe par moderate-video avant publication.
 
 Statuts : pending_review → approved (visible) | rejected | flagged (3 signalements)
 
-Le feed n'affiche QUE les vidéos status = "approved".
+Le feed n'affiche QUE les posts avec vidéos status = "approved".
 
 TOP PRO : auto-approbation immédiate.
 
+Un post peut être lié à un service (service_id) ou un événement (event_id).
+
+Un post peut avoir un morceau Spotify (spotify_track_title + spotify_track_artist).
+
 // !! Jamais afficher une vidéo sans status = "approved" dans le feed.
-// !! Un client ne peut JAMAIS uploader une vidéo.
+// !! Un client ne peut JAMAIS créer un post ou uploader une vidéo.
+// !! Le bouton commenter est EXCLUSIF au feed Client (absent du ProFeedScreen).
 
 
 ## Design References — Maquettes Stitch
@@ -249,12 +282,65 @@ SHARED : design/stitch/shared/
   generated_screen_1..3.png
 
 RÈGLE DESIGN : Consulter la maquette correspondante AVANT de coder un écran.
-Le design Stitch fait autorité sur les layouts et espacements.
-Si une couleur dans les maquettes diffère de AppColors → signaler avant de coder.
+Le design Stitch fait autorité sur les layouts, espacements et couleurs.
+AppColors doit refléter la palette Spotbook définie ci-dessus.
 
-// !! ATTENTION : Les maquettes utilisent un accent cyan (#00D4FF) et du violet (#7B61FF).
-// !! La charte Spotbook est NOIR ET BLANC STRICT. AppColors fait autorité sur les couleurs.
 // !! Les layouts et espacements Stitch font autorité sur la structure.
+// !! Toute couleur doit passer par AppColors.xxx — jamais de hex brut dans un Widget.
+
+
+## ROUTING — SÉPARATION PRO / CLIENT
+
+AuthCubit vérifie AccountType au démarrage :
+- AccountType.client → GoRouter redirige /client/feed
+- AccountType.pro → GoRouter redirige /pro/feed
+- Non authentifié → /auth/login
+
+### Client Shell (4 onglets — PAS de bouton caméra)
+
+| Index | Icône          | Label      | Route            |
+|-------|----------------|------------|------------------|
+| 0     | grid_2x2       | Feed       | /client/feed     |
+| 1     | search         | Recherche  | /client/search   |
+| 2     | calendar_today | Mes RDV    | /client/bookings |
+| 3     | person         | Profil     | /client/profile  |
+
+Routes supplémentaires Client :
+- /client/booking/:serviceId/:proId → BookingScreen
+- /client/ticket/:eventId → TicketPurchaseScreen
+- /client/pro/:proId → ProPublicProfileScreen
+
+### Pro Shell (5 onglets avec bouton caméra central)
+
+| Index | Icône     | Label     | Route        |
+|-------|-----------|-----------|--------------|
+| 0     | grid_2x2  | Feed      | /pro/feed    |
+| 1     | search    | Recherche | /pro/search  |
+| 2     | camera    | (central) | /pro/camera  |
+| 3     | calendar  | RDV       | /pro/rdv     |
+| 4     | person    | Profil    | /pro/profile |
+
+
+## CLIENT FEED — COMPORTEMENTS CRITIQUES
+
+1. Feed temps réel : Supabase Realtime stream sur posts
+   - Tab Découvrir = tous les posts récents
+   - Tab Abonnements = posts des pros suivis (JOIN follows)
+
+2. VideoPlayer : autoplay au snap PageView, pause au scroll, loop, dispose au destroy
+
+3. Like / Save / Follow : optimistic update + sync Supabase en arrière-plan
+   Rollback si erreur + SnackBar
+
+4. Double tap : déclenche like si non liké + animation gros cœur 80px au centre
+
+5. MusicTicker : visible seulement si post.spotifyTrackTitle != null
+
+6. Bouton Commenter : EXCLUSIF Client (absent de ProFeedScreen)
+
+7. Bouton caméra : ABSENT de la nav bar Client
+
+8. Logo : Text "Spotbook" blanc #FFFFFF, DM Sans bold 20, jamais coloré
 
 
 ## LANCER L'APP

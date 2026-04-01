@@ -1,10 +1,10 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
 import {
-  assertUuid,
-  jsonHeaders,
+  isValidUuid,
+  jsonResponse,
   sanitizeText,
-  securityHeaders,
+  securityHeadersFor,
 } from "../_shared/security.ts";
 
 interface PushPayload {
@@ -13,71 +13,123 @@ interface PushPayload {
   body: string;
   type: string;
   data?: Record<string, string>;
+  /** Obligatoire pour les appels clients (ex. notif « nouvel abonné »). */
+  actorId?: string;
+}
+
+/** Préférences table `notification_preferences` (colonnes legacy + *_enabled). */
+function notificationTypeEnabled(
+  prefs: Record<string, unknown> | null,
+  type: string,
+): boolean {
+  if (!prefs) return true;
+  const explicit = prefs[`${type}_enabled`];
+  if (explicit === false) return false;
+  if (explicit === true) return true;
+  if (type === "message" && prefs.messages === false) return false;
+  if ((type === "booking" || type === "ticket") && prefs.bookings === false) {
+    return false;
+  }
+  if (type === "ticket" && prefs.promotions === false) return false;
+  return true;
+}
+
+function isServiceRoleRequest(req: Request): boolean {
+  const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
+  const auth = req.headers.get("Authorization") ?? "";
+  return Boolean(serviceKey && auth === `Bearer ${serviceKey}`);
 }
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: securityHeaders });
+    return new Response("ok", { headers: securityHeadersFor(req) });
   }
 
   try {
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
     );
 
-    const { userId, title, body, type, data } =
-      (await req.json()) as PushPayload;
+    const payload = (await req.json()) as PushPayload;
+    const { userId, title, body, type, data } = payload;
 
-    if (!userId || !title || !body || !type) {
-      return new Response(
-        JSON.stringify({ error: "userId, title, body, type required" }),
-        {
-          headers: jsonHeaders,
-          status: 400,
-        }
-      );
+    if (!userId || !isValidUuid(String(userId))) {
+      return jsonResponse({ error: "userId must be a valid UUID" }, 400, undefined, req);
     }
-    assertUuid(userId, "userId");
-    const safeTitle = sanitizeText(title);
-    const safeBody = sanitizeText(body);
+    if (!title || !body || !type) {
+      return jsonResponse({ error: "title, body, type required" }, 400, undefined, req);
+    }
 
-    // Check notification preferences
+    if (!isServiceRoleRequest(req)) {
+      const authHeader = req.headers.get("Authorization");
+      if (!authHeader) {
+        return jsonResponse({ error: "unauthorized" }, 401, undefined, req);
+      }
+      const authClient = createClient(
+        Deno.env.get("SUPABASE_URL") ?? "",
+        Deno.env.get("SUPABASE_ANON_KEY") ?? "",
+        { global: { headers: { Authorization: authHeader } } },
+      );
+      const {
+        data: { user },
+      } = await authClient.auth.getUser();
+      if (!user) {
+        return jsonResponse({ error: "unauthorized" }, 401, undefined, req);
+      }
+
+      if (type !== "social") {
+        return jsonResponse({ error: "forbidden" }, 403, undefined, req);
+      }
+      const actorId = payload.actorId;
+      if (!actorId || !isValidUuid(String(actorId)) || actorId !== user.id) {
+        return jsonResponse({ error: "forbidden" }, 403, undefined, req);
+      }
+      if (data?.kind !== "new_follower") {
+        return jsonResponse({ error: "forbidden" }, 403, undefined, req);
+      }
+
+      const { data: follow } = await supabase
+        .from("follows")
+        .select("follower_id")
+        .eq("follower_id", actorId)
+        .eq("following_id", userId)
+        .maybeSingle();
+
+      if (!follow) {
+        return jsonResponse({ error: "forbidden" }, 403, undefined, req);
+      }
+    }
+
     const { data: prefs } = await supabase
       .from("notification_preferences")
       .select("*")
       .eq("user_id", userId)
       .single();
 
-    if (prefs) {
-      const prefKey = `${type}_enabled` as string;
-      if (prefs[prefKey] === false) {
-        // User disabled this notification type
-        // Still insert in history but don't send push
-        await supabase.from("notifications").insert({
-          user_id: userId,
-          title: safeTitle,
-          body: safeBody,
-          type,
-          data: data ?? {},
-          is_read: false,
-          push_sent: false,
-        });
+    if (!notificationTypeEnabled(prefs as Record<string, unknown> | null, type)) {
+      await supabase.from("notifications").insert({
+        user_id: userId,
+        title: sanitizeText(title),
+        body: sanitizeText(body),
+        type,
+        data: data ?? {},
+        is_read: false,
+        push_sent: false,
+      });
 
-        return new Response(
-          JSON.stringify({
-            success: true,
-            push_sent: false,
-            reason: "disabled_by_user",
-          }),
-          {
-            headers: jsonHeaders,
-          }
-        );
-      }
+      return jsonResponse(
+        {
+          success: true,
+          push_sent: false,
+          reason: "disabled_by_user",
+        },
+        200,
+        undefined,
+        req,
+      );
     }
 
-    // Get FCM token
     const { data: user } = await supabase
       .from("users")
       .select("fcm_token")
@@ -95,7 +147,7 @@ serve(async (req) => {
       const message = {
         message: {
           token: user.fcm_token,
-          notification: { title: safeTitle, body: safeBody },
+          notification: { title, body },
           data: {
             type,
             click_action: "FLUTTER_NOTIFICATION_CLICK",
@@ -123,32 +175,22 @@ serve(async (req) => {
 
         pushSent = fcmRes.ok;
       } catch {
-        // FCM delivery failed — still save notification in history
         pushSent = false;
       }
     }
 
-    // Insert notification in history
     await supabase.from("notifications").insert({
       user_id: userId,
-      title: safeTitle,
-      body: safeBody,
+      title: sanitizeText(title),
+      body: sanitizeText(body),
       type,
       data: data ?? {},
       is_read: false,
       push_sent: pushSent,
     });
 
-    return new Response(
-      JSON.stringify({ success: true, push_sent: pushSent }),
-      {
-        headers: jsonHeaders,
-      }
-    );
+    return jsonResponse({ success: true, push_sent: pushSent }, 200, undefined, req);
   } catch (error) {
-    return new Response(JSON.stringify({ error: error.message }), {
-      headers: jsonHeaders,
-      status: 400,
-    });
+    return jsonResponse({ error: (error as Error).message }, 400, undefined, req);
   }
 });

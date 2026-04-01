@@ -12,6 +12,9 @@ import '../../../../shared/widgets/spotbook_button.dart';
 import '../../../../shared/widgets/spotbook_card.dart';
 import '../../../../shared/widgets/spotbook_loading_shimmer.dart';
 import '../../../auth/data/auth_repository.dart';
+import '../../../feed/data/spotify_link_notifier.dart';
+import '../../../feed/data/spotify_oauth_service.dart';
+import '../../../feed/data/spotify_repository.dart';
 import '../../data/provider_settings_repository.dart';
 import '../notifiers/pro_settings_notifier.dart';
 
@@ -263,6 +266,10 @@ class _SettingsBody extends ConsumerWidget {
             ],
           ),
         ),
+        _SectionTitle(text: l10n.proSettingsSectionSpotify),
+        SpotbookCard(
+          child: _SpotifyProSettingsBlock(),
+        ),
         _SectionTitle(text: 'Outils Pro'),
         SpotbookCard(
           child: Column(
@@ -336,16 +343,15 @@ class _SettingsBody extends ConsumerWidget {
         ),
         _SectionTitle(text: l10n.proSettingsSectionLanguage),
         SpotbookCard(
-          child: _DropdownRow<String>(
+          child: _Tile(
             label: l10n.proSettingsLanguage,
-            value: locale.languageCode == 'en' ? 'en' : 'fr',
-            items: const ['fr', 'en'],
-            display: (c) =>
-                c == 'en' ? l10n.proSettingsLangEnglish : l10n.proSettingsLangFrench,
-            onChanged: (c) async {
-              if (c == null) return;
+            value: locale.languageCode == 'en'
+                ? l10n.proSettingsLangEnglish
+                : l10n.proSettingsLangFrench,
+            showChevron: true,
+            onTap: () {
               HapticFeedback.selectionClick();
-              await ref.read(appLocaleProvider.notifier).changeLocale(c);
+              context.push('/pro/profile/settings/language');
             },
           ),
         ),
@@ -578,9 +584,203 @@ class _SettingsBody extends ConsumerWidget {
     );
     if (ok == true && context.mounted) {
       HapticFeedback.mediumImpact();
-      await ref.read(authRepositoryProvider).signOut();
+      try {
+        await ref.read(authRepositoryProvider).signOut();
+      } catch (e) {
+        debugPrint('[pro_settings] signOut error ignored: $e');
+      }
       if (context.mounted) context.go('/auth/login');
     }
+  }
+}
+
+/// Connexion OAuth Spotify (top titres + recherche enrichie sur le feed pro).
+class _SpotifyProSettingsBlock extends ConsumerStatefulWidget {
+  const _SpotifyProSettingsBlock();
+
+  @override
+  ConsumerState<_SpotifyProSettingsBlock> createState() =>
+      _SpotifyProSettingsBlockState();
+}
+
+class _SpotifyProSettingsBlockState extends ConsumerState<_SpotifyProSettingsBlock> {
+  bool _busy = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final link = ref.watch(spotifyLinkProvider);
+    final oauth = ref.watch(spotifyOAuthServiceProvider);
+
+    return link.when(
+      loading: () => const Padding(
+        padding: EdgeInsets.symmetric(vertical: 16),
+        child: Center(
+          child: SizedBox(
+            width: 24,
+            height: 24,
+            child: CircularProgressIndicator(
+              strokeWidth: 2,
+              color: SpotbookColors.textPrimary,
+            ),
+          ),
+        ),
+      ),
+      error: (_, __) => Padding(
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        child: Text(
+          l10n.error,
+          style: const TextStyle(color: SpotbookColors.textSecondary),
+        ),
+      ),
+      data: (info) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Row(
+              children: [
+                Icon(
+                  Icons.music_note,
+                  color: info.linked
+                      ? AppColors.spotifyGreen
+                      : SpotbookColors.textSecondary,
+                  size: 22,
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    l10n.proSettingsSpotifyTitle,
+                    style: const TextStyle(
+                      color: SpotbookColors.textPrimary,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 15,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Text(
+              l10n.proSettingsSpotifyHint,
+              style: const TextStyle(
+                color: SpotbookColors.textSecondary,
+                fontSize: 13,
+                height: 1.4,
+              ),
+            ),
+            if (info.linked) ...[
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  const Icon(Icons.check_circle,
+                      color: AppColors.spotifyGreen, size: 18),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      l10n.proSettingsSpotifyLinked,
+                      style: const TextStyle(
+                        color: SpotbookColors.textPrimary,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+            const SizedBox(height: 16),
+            if (info.linked)
+              SpotbookButton.outlined(
+                label: l10n.proSettingsSpotifyDisconnect,
+                isLoading: _busy,
+                onPressed: _busy
+                    ? null
+                    : () async {
+                        setState(() => _busy = true);
+                        HapticFeedback.mediumImpact();
+                        final messenger = ScaffoldMessenger.of(context);
+                        try {
+                          await ref
+                              .read(spotifyRepositoryProvider)
+                              .disconnect();
+                          await ref
+                              .read(spotifyLinkProvider.notifier)
+                              .refresh();
+                          if (context.mounted) {
+                            messenger.showSnackBar(
+                              SnackBar(
+                                content: Text(l10n.proSettingsSavedToast),
+                                backgroundColor: AppColors.success,
+                              ),
+                            );
+                          }
+                        } catch (e) {
+                          if (context.mounted) {
+                            messenger.showSnackBar(
+                              SnackBar(
+                                content: Text(e.toString()),
+                                backgroundColor: AppColors.error,
+                              ),
+                            );
+                          }
+                        } finally {
+                          if (mounted) setState(() => _busy = false);
+                        }
+                      },
+              )
+            else
+              SpotbookButton.primary(
+                label: l10n.proSettingsSpotifyConnect,
+                isLoading: _busy,
+                onPressed: _busy
+                    ? null
+                    : () async {
+                        if (!oauth.isConfigured) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content:
+                                  Text(l10n.proSettingsSpotifyMissingClientId),
+                              backgroundColor: AppColors.error,
+                            ),
+                          );
+                          return;
+                        }
+                        setState(() => _busy = true);
+                        HapticFeedback.mediumImpact();
+                        final messenger = ScaffoldMessenger.of(context);
+                        try {
+                          final code = await oauth.authorizeInteractive();
+                          await ref
+                              .read(spotifyRepositoryProvider)
+                              .exchangeOAuthCode(code);
+                          await ref
+                              .read(spotifyLinkProvider.notifier)
+                              .refresh();
+                          if (context.mounted) {
+                            messenger.showSnackBar(
+                              SnackBar(
+                                content: Text(l10n.proSettingsSavedToast),
+                                backgroundColor: AppColors.success,
+                              ),
+                            );
+                          }
+                        } catch (e) {
+                          if (context.mounted) {
+                            messenger.showSnackBar(
+                              SnackBar(
+                                content: Text(e.toString()),
+                                backgroundColor: AppColors.error,
+                              ),
+                            );
+                          }
+                        } finally {
+                          if (mounted) setState(() => _busy = false);
+                        }
+                      },
+              ),
+          ],
+        );
+      },
+    );
   }
 }
 
@@ -803,9 +1003,9 @@ class _StripeBlockState extends ConsumerState<_StripeBlock> {
     if (d.stripeOnboarded) {
       final last = d.stripePayoutLast4;
       if (last != null && last.isNotEmpty) {
-        return '${l10n.proSettingsStripeActive} ✅ · ${l10n.proSettingsBankEnding} ·••• $last';
+        return '${l10n.proSettingsStripeActive} · ${l10n.proSettingsBankEnding} ·••• $last';
       }
-      return '${l10n.proSettingsStripeActive} ✅';
+      return l10n.proSettingsStripeActive;
     }
     if (d.stripeAccountId != null && d.stripeAccountId!.isNotEmpty) {
       return l10n.proSettingsStripeVerifying;

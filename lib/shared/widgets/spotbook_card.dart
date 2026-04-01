@@ -1,12 +1,13 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../theme/app_colors.dart';
 
 enum SpotbookCardVariant { standard, glass, highlight }
 
-class SpotbookCard extends StatelessWidget {
+class SpotbookCard extends StatefulWidget {
   const SpotbookCard({
     super.key,
     required this.child,
@@ -39,17 +40,62 @@ class SpotbookCard extends StatelessWidget {
   final bool selected;
 
   @override
+  State<SpotbookCard> createState() => _SpotbookCardState();
+}
+
+class _SpotbookCardState extends State<SpotbookCard>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _scaleCtrl;
+
+  @override
+  void initState() {
+    super.initState();
+    _scaleCtrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 120),
+      lowerBound: 0.97,
+      upperBound: 1.0,
+      value: 1.0,
+    );
+  }
+
+  @override
+  void dispose() {
+    _scaleCtrl.dispose();
+    super.dispose();
+  }
+
+  void _onTapDown(TapDownDetails _) {
+    if (widget.onTap != null) _scaleCtrl.reverse();
+  }
+
+  void _onTapUp(TapUpDetails _) => _scaleCtrl.forward();
+  void _onTapCancel() => _scaleCtrl.forward();
+
+  @override
   Widget build(BuildContext context) {
     final content = GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: padding ?? const EdgeInsets.all(16),
-        decoration: _decoration,
-        child: child,
+      onTapDown: _onTapDown,
+      onTapUp: _onTapUp,
+      onTapCancel: _onTapCancel,
+      onTap: widget.onTap != null
+          ? () {
+              HapticFeedback.lightImpact();
+              widget.onTap!();
+            }
+          : null,
+      child: ScaleTransition(
+        scale: _scaleCtrl,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          padding: widget.padding ?? const EdgeInsets.all(16),
+          decoration: _decoration,
+          child: widget.child,
+        ),
       ),
     );
 
-    if (variant == SpotbookCardVariant.glass) {
+    if (widget.variant == SpotbookCardVariant.glass) {
       return ClipRRect(
         borderRadius: BorderRadius.circular(16),
         child: BackdropFilter(
@@ -63,10 +109,10 @@ class SpotbookCard extends StatelessWidget {
   }
 
   BoxDecoration get _decoration {
-    switch (variant) {
+    switch (widget.variant) {
       case SpotbookCardVariant.standard:
         return BoxDecoration(
-          color: const Color(0xFF0D0D0D),
+          color: AppColors.fond,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(color: AppColors.border, width: 0.5),
           boxShadow: const [
@@ -88,17 +134,17 @@ class SpotbookCard extends StatelessWidget {
         );
       case SpotbookCardVariant.highlight:
         return BoxDecoration(
-          color: const Color(0xFF0D0D0D),
+          color: AppColors.fond,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: selected ? AppColors.blanc : AppColors.border,
-            width: selected ? 1.5 : 0.5,
+            color: widget.selected ? AppColors.violet : AppColors.border,
+            width: widget.selected ? 1.5 : 0.5,
           ),
-          boxShadow: selected
+          boxShadow: widget.selected
               ? [
                   BoxShadow(
-                    color: AppColors.blanc.withValues(alpha: 0.06),
-                    blurRadius: 12,
+                    color: AppColors.violet.withValues(alpha: 0.15),
+                    blurRadius: 16,
                     offset: const Offset(0, 2),
                   ),
                 ]

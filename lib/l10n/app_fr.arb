@@ -119,5 +119,33 @@
   "proChangePasswordTitle": "Changer le mot de passe",
   "proCurrentPassword": "Mot de passe actuel",
   "proNewPassword": "Nouveau mot de passe",
-  "proConfirmPassword": "Confirmer le mot de passe"
+  "proConfirmPassword": "Confirmer le mot de passe",
+  "proSettingsSectionSpotify": "MUSIQUE (FEED)",
+  "proSettingsSpotifyTitle": "Spotify",
+  "proSettingsSpotifyLinked": "Compte Spotify connecté",
+  "proSettingsSpotifyConnect": "Connecter Spotify",
+  "proSettingsSpotifyDisconnect": "Déconnecter Spotify",
+  "proSettingsSpotifyHint": "Lie ton compte pour voir tes titres les plus joués dans la feuille musique du feed pro.",
+  "proSettingsSpotifyMissingClientId": "SPOTIFY_CLIENT_ID manquant dans .env",
+  "spotifySheetTitle": "Ajouter de la musique",
+  "spotifySheetLinkedHint": "Compte Spotify lié — top titres et recherche enrichie.",
+  "spotifySheetNotLinkedHint": "Sans liaison : recherche seulement. Connecte Spotify dans Paramètres pro.",
+  "spotifySheetOpenSettings": "Paramètres",
+  "spotifySheetSearchHint": "Rechercher un titre ou artiste…",
+  "spotifySheetTopTracksHeader": "Tes titres récents (Spotify)",
+  "spotifySheetNoResults": "Aucun résultat",
+  "spotifySheetEmptyTop": "Aucun top titre pour l’instant. Écoute de la musique sur Spotify puis réessaie.",
+  "spotifySheetEmptyNeedLink": "Connecte Spotify dans Paramètres pro pour afficher tes top titres ici.",
+  "spotifySheetTrackAdded": "{name} — ajouté au post",
+  "@spotifySheetTrackAdded": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsLanguageScreenTitle": "Langue",
+  "settingsLanguageScreenSubtitle": "Choisis la langue d’affichage de Spotbook. La préférence est enregistrée sur cet appareil (Hive).",
+  "settingsLanguageSavedSnack": "Langue enregistrée",
+  "settingsLanguageMenuLabel": "Langue"
 }

@@ -1,0 +1,289 @@
+version: "2"
+type: frontend
+tech_stack:
+  - Dart
+  - Flutter 3.x
+  - Riverpod 2.x (state management)
+  - go_router (navigation)
+  - Supabase (backend - auth, database, storage, edge functions)
+  - Stripe Connect (payments)
+  - Cloudflare Stream (video)
+  - Firebase FCM (push notifications)
+  - Hive (local storage)
+routes:
+  - path: /
+    file: lib/features/auth/presentation/screens/splash_screen.dart
+    auth_required: false
+    description: Splash screen - app entry point, redirects based on auth state
+  - path: /onboarding
+    file: lib/features/onboarding/presentation/screens/onboarding_screen.dart
+    auth_required: false
+    description: Onboarding slides for first-time users (3 slides)
+  - path: /account-type
+    file: lib/features/auth/presentation/screens/account_type_selection_screen.dart
+    auth_required: false
+    description: Role selection - Client or Pro
+  - path: /signup
+    file: lib/features/auth/presentation/screens/sign_up_screen.dart
+    auth_required: false
+    description: Sign up with email/password or Google OAuth
+  - path: /login
+    file: lib/features/auth/presentation/screens/login_screen.dart
+    auth_required: false
+    description: Login with email/password or Google OAuth
+  - path: /complete-profile
+    file: lib/features/auth/presentation/screens/complete_profile_screen.dart
+    auth_required: true
+    description: Complete profile after signup (name, avatar, etc.)
+  - path: /client/interests
+    file: lib/features/auth/presentation/screens/client_interest_categories_screen.dart
+    auth_required: true
+    description: Client selects interest categories during onboarding
+  - path: /client/goals
+    file: lib/features/auth/presentation/screens/client_interest_goals_screen.dart
+    auth_required: true
+    description: Client selects goals during onboarding
+  - path: /client/location
+    file: lib/features/auth/presentation/screens/permission_location_screen.dart
+    auth_required: true
+    description: Client grants location permission
+  - path: /pro/business-details
+    file: lib/features/auth/presentation/screens/pro_business_details_screen.dart
+    auth_required: true
+    description: Pro enters business details during onboarding
+  - path: /pro/verification
+    file: lib/features/auth/presentation/screens/pro_verification_screen.dart
+    auth_required: true
+    description: Pro identity verification step
+  - path: /pro/stripe-connect
+    file: lib/features/auth/presentation/screens/stripe_connect_screen.dart
+    auth_required: true
+    description: Pro connects Stripe account for payouts
+  - path: /client/feed
+    file: lib/features/feed/presentation/screens/feed_screen.dart
+    auth_required: true
+    description: Client main feed - TikTok-style vertical video feed
+  - path: /client/discover
+    file: lib/features/feed/presentation/screens/discover_screen.dart
+    auth_required: true
+    description: Client discover/search screen for pros and services
+  - path: /client/bookings
+    file: lib/features/booking/presentation/screens/my_bookings_screen.dart
+    auth_required: true
+    description: Client bookings list (upcoming, past)
+  - path: /client/profile
+    file: lib/features/profile/presentation/screens/client_profile_screen.dart
+    auth_required: true
+    description: Client profile with favorites, bookings history, tickets
+  - path: /pro/feed
+    file: lib/features/feed/presentation/screens/feed_screen.dart
+    auth_required: true
+    description: Pro video feed
+  - path: /pro/discover
+    file: lib/features/feed/presentation/screens/discover_screen.dart
+    auth_required: true
+    description: Pro discover/search screen
+  - path: /pro/camera
+    file: lib/features/feed/presentation/screens/upload_video_screen.dart
+    auth_required: true
+    description: Pro video upload screen
+  - path: /pro/bookings
+    file: lib/features/booking/presentation/screens/my_bookings_screen.dart
+    auth_required: true
+    description: Pro bookings management
+  - path: /pro/dashboard
+    file: lib/features/booking/presentation/screens/pro_dashboard_screen.dart
+    auth_required: true
+    description: Pro dashboard with stats and management
+  - path: /settings
+    file: lib/features/settings/presentation/screens/settings_screen.dart
+    auth_required: true
+    description: App settings screen
+  - path: /event/:eventId
+    file: lib/features/events/presentation/screens/event_detail_screen.dart
+    auth_required: true
+    description: Event detail page with ticket purchase
+  - path: /create-event
+    file: lib/features/events/presentation/screens/create_event_screen.dart
+    auth_required: true
+    description: Create new event (Pro only)
+  - path: /favorites
+    file: lib/features/favorites/presentation/screens/favorites_screen.dart
+    auth_required: true
+    description: User favorites list
+  - path: /notifications
+    file: lib/features/notifications/presentation/screens/notification_history_screen.dart
+    auth_required: true
+    description: Notification history
+  - path: /edit-profile
+    file: lib/features/profile/presentation/screens/edit_profile_screen.dart
+    auth_required: true
+    description: Edit user profile
+  - path: /chat/:conversationId
+    file: lib/features/chat/presentation/screens/chat_screen.dart
+    auth_required: true
+    description: Chat conversation between client and pro
+features:
+  - name: Splash & Auth Routing
+    description: App entry point that checks auth state and redirects to onboarding, login, or main app
+    files:
+      - lib/features/auth/presentation/screens/splash_screen.dart
+      - lib/features/auth/data/auth_repository.dart
+    entry_route: /
+    user_interactions:
+      - App opens and shows splash screen
+      - Automatically redirects based on auth state
+    api_calls:
+      - method: GET
+        endpoint: supabase.auth.currentSession
+    auth_required: false
+  - name: Onboarding
+    description: Three-slide onboarding for first-time users introducing Spotbook features
+    files:
+      - lib/features/onboarding/presentation/screens/onboarding_screen.dart
+    entry_route: /onboarding
+    user_interactions:
+      - Swipe through 3 onboarding slides
+      - Tap next button to advance
+      - Tap get started button on last slide
+    api_calls: []
+    auth_required: false
+  - name: User Login
+    description: Login with email/password or Google OAuth
+    files:
+      - lib/features/auth/presentation/screens/login_screen.dart
+      - lib/features/auth/data/auth_repository.dart
+    entry_route: /login
+    user_interactions:
+      - Tap Continue with Google button for OAuth login
+      - Fill email input field
+      - Fill password input field
+      - Tap Login button to submit
+      - Tap sign up link to navigate to registration
+      - See error message on invalid credentials
+    api_calls:
+      - method: POST
+        endpoint: supabase.auth.signInWithPassword
+      - method: POST
+        endpoint: supabase.auth.signInWithOAuth (Google)
+    auth_required: false
+  - name: User Sign Up
+    description: Multi-step registration with role selection (Client or Pro)
+    files:
+      - lib/features/auth/presentation/screens/sign_up_screen.dart
+      - lib/features/auth/presentation/screens/account_type_selection_screen.dart
+      - lib/features/auth/data/auth_repository.dart
+    entry_route: /account-type
+    user_interactions:
+      - Select account type (Client or Pro)
+      - Fill email, password, confirm password
+      - Tap sign up button
+      - See validation errors
+    api_calls:
+      - method: POST
+        endpoint: supabase.auth.signUp
+    auth_required: false
+  - name: Video Feed
+    description: TikTok-style vertical video feed showing approved pro service videos
+    files:
+      - lib/features/feed/presentation/screens/feed_screen.dart
+    entry_route: /client/feed
+    user_interactions:
+      - Swipe vertically to browse videos
+      - Tap like button on video
+      - Tap comment button
+      - Tap pro profile to view
+      - Tap book button to start booking
+    api_calls:
+      - method: GET
+        endpoint: supabase.from('videos').select() where status=approved
+    auth_required: true
+  - name: Discover & Search
+    description: Search and browse pros, services, and events by category
+    files:
+      - lib/features/feed/presentation/screens/discover_screen.dart
+    entry_route: /client/discover
+    user_interactions:
+      - Type in search bar
+      - Select category filter chips
+      - Browse pro profiles in results
+      - Tap on a pro to view profile
+    api_calls:
+      - method: GET
+        endpoint: supabase.from('profiles_pro').select()
+      - method: GET
+        endpoint: supabase.from('services').select()
+    auth_required: true
+  - name: Bookings Management
+    description: View and manage upcoming and past bookings
+    files:
+      - lib/features/booking/presentation/screens/my_bookings_screen.dart
+      - lib/features/booking/presentation/screens/booking_cancellation_screen.dart
+    entry_route: /client/bookings
+    user_interactions:
+      - View list of upcoming bookings
+      - View list of past bookings
+      - Tap on booking for details
+      - Cancel a booking
+    api_calls:
+      - method: GET
+        endpoint: supabase.from('bookings').select()
+      - method: POST
+        endpoint: supabase.functions.invoke('cancel-booking')
+    auth_required: true
+  - name: Event Details & Tickets
+    description: View event details and purchase tickets
+    files:
+      - lib/features/events/presentation/screens/event_detail_screen.dart
+      - lib/features/events/presentation/screens/ticket_detail_screen.dart
+    entry_route: /event/:eventId
+    user_interactions:
+      - View event details (date, location, description)
+      - Select ticket type
+      - Purchase ticket via Stripe
+      - View digital ticket with QR code
+    api_calls:
+      - method: GET
+        endpoint: supabase.from('events').select()
+      - method: POST
+        endpoint: supabase.functions.invoke('stripe-create-ticket-intent')
+    auth_required: true
+  - name: Settings
+    description: App settings including notifications, account deletion, blocked users
+    files:
+      - lib/features/settings/presentation/screens/settings_screen.dart
+      - lib/features/settings/presentation/screens/delete_account_screen.dart
+    entry_route: /settings
+    user_interactions:
+      - Toggle notification preferences
+      - Navigate to blocked users
+      - Navigate to delete account
+      - Sign out
+    api_calls:
+      - method: POST
+        endpoint: supabase.auth.signOut
+    auth_required: true
+  - name: Client Profile
+    description: Client profile with cover photo, avatar, tabs for favorites, bookings history, tickets
+    files:
+      - lib/features/profile/presentation/screens/client_profile_screen.dart
+      - lib/features/profile/presentation/screens/edit_profile_screen.dart
+    entry_route: /client/profile
+    user_interactions:
+      - View profile info (cover, avatar, name, username, city)
+      - Switch between tabs (Favorites, Bookings History, Tickets)
+      - Tap edit profile button
+    api_calls:
+      - method: GET
+        endpoint: supabase.from('users').select()
+    auth_required: true
+known_limitations:
+  - issue: Firebase not configured for web platform - FCM push notifications unavailable on web
+    location: lib/main.dart
+    impact: Push notifications will not work during web-based testing
+  - issue: Camera/video recording not available on web
+    location: lib/features/feed/presentation/screens/upload_video_screen.dart
+    impact: Video upload testing is limited on web platform
+  - issue: QR scanner requires native camera - not functional on web
+    location: lib/features/events/presentation/screens/scanner_screen.dart
+    impact: QR ticket scanning cannot be tested on web

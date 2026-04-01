@@ -1,6 +1,10 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
-import { jsonHeaders, securityHeaders } from "../_shared/security.ts";
+import {
+  assertServiceRoleOnly,
+  jsonResponse,
+  securityHeadersFor,
+} from "../_shared/security.ts";
 
 async function sendPush(
   supabaseUrl: string,
@@ -23,12 +27,37 @@ async function sendPush(
   });
 }
 
+/** Fire-and-forget email via send-email Edge Function. Never throws. */
+async function sendEmail(
+  supabaseUrl: string,
+  serviceKey: string,
+  type: string,
+  userId: string,
+  data: Record<string, unknown>,
+) {
+  try {
+    await fetch(`${supabaseUrl}/functions/v1/send-email`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${serviceKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ type, userId, data }),
+    });
+  } catch (e) {
+    console.error("sendEmail non-blocking error:", e);
+  }
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: securityHeaders });
+    return new Response("ok", { headers: securityHeadersFor(req) });
   }
 
   try {
+    const forbidden = assertServiceRoleOnly(req);
+    if (forbidden) return forbidden;
+
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
@@ -47,10 +76,10 @@ serve(async (req) => {
     const { data: tomorrowBookings } = await supabase
       .from("bookings")
       .select(
-        "id, client_id, time_slots(pro_id, date, start_time), services(name)"
+        "id, client_id, time_slots(pro_id, date, start_time), services(name), " +
+        "profiles_pro!bookings_pro_id_fkey(business_name)"
       )
       .eq("status", "confirmed")
-      .not("reminder_j1_sent", "is", null)
       .is("reminder_j1_sent", null);
 
     // Filter to tomorrow's date on joined time_slots
@@ -82,6 +111,16 @@ serve(async (req) => {
         body: `Rendez-vous « ${serviceName} » demain à ${slot.start_time}`,
         type: "booking_reminder",
         data: { bookingId: booking.id as string },
+      });
+
+      // Email — J-1 reminder to client only (avoid inbox flood for H-2)
+      const proProfile = booking.profiles_pro as Record<string, unknown> | null;
+      const proName = (proProfile?.business_name as string) ?? "";
+      await sendEmail(supabaseUrl, serviceKey, "booking_reminder", booking.client_id as string, {
+        serviceName,
+        proName,
+        date: slot.date as string,
+        time: slot.start_time as string,
       });
 
       await supabase
@@ -138,16 +177,10 @@ serve(async (req) => {
       sentCount += 2;
     }
 
-    return new Response(
-      JSON.stringify({ success: true, reminders_sent: sentCount }),
-      {
-        headers: jsonHeaders,
-      }
-    );
-  } catch (error) {
-    return new Response(JSON.stringify({ error: error.message }), {
-      headers: jsonHeaders,
-      status: 400,
+    return new Response(JSON.stringify({ success: true, reminders_sent: sentCount }), {
+      headers: { ...securityHeadersFor(req), "Content-Type": "application/json" },
     });
+  } catch (error) {
+    return jsonResponse({ error: (error as Error).message }, 400, undefined, req);
   }
 });

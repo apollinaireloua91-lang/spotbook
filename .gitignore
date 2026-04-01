@@ -45,5 +45,7 @@ app.*.map.json
 /android/app/release
 
 # Local environment secrets
+.env
 .env.json
 *.env
+node_modules

@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Booking Selection - Step 3</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              colors: {
+                "primary": "#00D4FF",
+                "background-light": "#f6f7f8",
+                "background-dark": "#080810",
+                "neutral-dark": "#161625",
+                "neutral-border": "#232338"
+              },
+              fontFamily: {
+                "display": ["Plus Jakarta Sans", "sans-serif"]
+              },
+              borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+            },
+          },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #080810;
+        }
+        .video-bg {
+            background: linear-gradient(rgba(8, 8, 16, 0.4), rgba(8, 8, 16, 0.9)), url('https://images.unsplash.com/photo-1517649763962-0c623066013b?q=80&w=2070&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen font-display">
+<!-- Main Container representing a Mobile Viewport/App Screen -->
+<div class="relative mx-auto max-w-md h-screen overflow-hidden border-x border-neutral-border shadow-2xl flex flex-col">
+<!-- Video Background Layer -->
+<div class="absolute inset-0 z-0 video-bg" data-alt="Blurry background of a modern gym or workspace"></div>
+<!-- Top Header Overlay -->
+<div class="relative z-10 flex justify-between items-center p-6 bg-gradient-to-b from-background-dark/80 to-transparent">
+<button class="w-10 h-10 flex items-center justify-center rounded-full bg-background-dark/40 backdrop-blur-md border border-neutral-border">
+<span class="material-symbols-outlined text-slate-100">arrow_back</span>
+</button>
+<div class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/20 border border-primary/30 backdrop-blur-md">
+<span class="flex h-2 w-2 rounded-full bg-primary animate-pulse"></span>
+<span class="text-xs font-bold text-primary uppercase tracking-wider">Real-time</span>
+</div>
+</div>
+<!-- Spacer to push Bottom Sheet down -->
+<div class="flex-grow"></div>
+<!-- Bottom Sheet Container -->
+<div class="relative z-20 flex flex-col w-full bg-neutral-dark rounded-t-lg shadow-[0_-10px_40px_rgba(0,0,0,0.5)] border-t border-neutral-border">
+<!-- Handle -->
+<div class="flex h-6 w-full items-center justify-center">
+<div class="h-1.5 w-12 rounded-full bg-slate-700"></div>
+</div>
+<!-- Content Area -->
+<div class="px-6 pb-8">
+<!-- Progress Header -->
+<div class="flex flex-col gap-3 mb-6">
+<div class="flex justify-between items-end">
+<div>
+<p class="text-slate-400 text-xs font-medium uppercase tracking-widest">Appointment</p>
+<h2 class="text-white text-xl font-bold">Select a time</h2>
+</div>
+<p class="text-primary text-sm font-bold">Step 3 of 6</p>
+</div>
+<div class="h-1.5 w-full rounded-full bg-slate-800 overflow-hidden">
+<div class="h-full bg-primary rounded-full shadow-[0_0_10px_rgba(0,212,255,0.5)]" style="width: 50%;"></div>
+</div>
+</div>
+<!-- Time Grid -->
+<div class="grid grid-cols-3 gap-3 mb-8">
+<!-- Available (Selected) -->
+<button class="flex flex-col items-center justify-center gap-1 rounded-xl border-2 border-primary bg-primary/10 p-4 transition-all">
+<span class="text-white text-base font-bold">09:00</span>
+<span class="text-primary text-[10px] font-bold uppercase">Selected</span>
+</button>
+<!-- Available -->
+<button class="flex flex-col items-center justify-center gap-1 rounded-xl border border-neutral-border bg-background-dark/50 p-4 hover:border-primary/50 transition-all">
+<span class="text-slate-200 text-base font-bold">09:30</span>
+<span class="text-slate-500 text-[10px] font-medium uppercase">AM</span>
+</button>
+<!-- Taken -->
+<button class="relative flex flex-col items-center justify-center gap-1 rounded-xl border border-neutral-border/50 bg-slate-900/50 p-4 opacity-40 cursor-not-allowed overflow-hidden">
+<div class="absolute inset-0 flex items-center justify-center">
+<div class="w-[120%] h-[1px] bg-slate-600 rotate-[35deg]"></div>
+</div>
+<span class="text-slate-400 text-base font-bold">10:00</span>
+<span class="text-slate-600 text-[10px] font-medium uppercase">Booked</span>
+</button>
+<!-- Available -->
+<button class="flex flex-col items-center justify-center gap-1 rounded-xl border border-neutral-border bg-background-dark/50 p-4 hover:border-primary/50 transition-all">
+<span class="text-slate-200 text-base font-bold">10:30</span>
+<span class="text-slate-500 text-[10px] font-medium uppercase">AM</span>
+</button>
+<!-- Available -->
+<button class="flex flex-col items-center justify-center gap-1 rounded-xl border border-neutral-border bg-background-dark/50 p-4 hover:border-primary/50 transition-all">
+<span class="text-slate-200 text-base font-bold">11:00</span>
+<span class="text-slate-500 text-[10px] font-medium uppercase">AM</span>
+</button>
+<!-- Available -->
+<button class="flex flex-col items-center justify-center gap-1 rounded-xl border border-neutral-border bg-background-dark/50 p-4 hover:border-primary/50 transition-all">
+<span class="text-slate-200 text-base font-bold">11:30</span>
+<span class="text-slate-500 text-[10px] font-medium uppercase">AM</span>
+</button>
+<!-- Taken -->
+<button class="relative flex flex-col items-center justify-center gap-1 rounded-xl border border-neutral-border/50 bg-slate-900/50 p-4 opacity-40 cursor-not-allowed overflow-hidden">
+<div class="absolute inset-0 flex items-center justify-center">
+<div class="w-[120%] h-[1px] bg-slate-600 rotate-[35deg]"></div>
+</div>
+<span class="text-slate-400 text-base font-bold">12:00</span>
+<span class="text-slate-600 text-[10px] font-medium uppercase">Booked</span>
+</button>
+<!-- Available -->
+<button class="flex flex-col items-center justify-center gap-1 rounded-xl border border-neutral-border bg-background-dark/50 p-4 hover:border-primary/50 transition-all">
+<span class="text-slate-200 text-base font-bold">12:30</span>
+<span class="text-slate-500 text-[10px] font-medium uppercase">PM</span>
+</button>
+<!-- Available -->
+<button class="flex flex-col items-center justify-center gap-1 rounded-xl border border-neutral-border bg-background-dark/50 p-4 hover:border-primary/50 transition-all">
+<span class="text-slate-200 text-base font-bold">01:00</span>
+<span class="text-slate-500 text-[10px] font-medium uppercase">PM</span>
+</button>
+</div>
+<!-- Live Notification Section -->
+<div class="flex items-center gap-4 p-4 rounded-xl bg-background-dark border border-neutral-border mb-8">
+<div class="flex-shrink-0 w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">timer</span>
+</div>
+<div>
+<p class="text-sm font-bold text-white leading-tight">Fastest Booking</p>
+<p class="text-xs text-slate-400 leading-normal">Selected slot is held for 5:00 minutes.</p>
+</div>
+</div>
+<!-- Navigation Buttons -->
+<div class="flex gap-4">
+<button class="flex-[1] flex items-center justify-center gap-2 px-6 py-4 rounded-xl border border-neutral-border bg-background-dark text-slate-300 font-bold hover:bg-neutral-dark transition-colors">
+<span class="material-symbols-outlined text-lg">chevron_left</span>
+                        Back
+                    </button>
+<button class="flex-[2] flex items-center justify-center gap-2 px-6 py-4 rounded-xl bg-primary text-background-dark font-extrabold shadow-[0_4px_20px_rgba(0,212,255,0.4)] hover:brightness-110 active:scale-[0.98] transition-all">
+                        Next Step
+                        <span class="material-symbols-outlined text-lg">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Virtual Home Indicator -->
+<div class="h-2 w-full bg-neutral-dark flex justify-center pb-2">
+<div class="h-1 w-24 bg-slate-700 rounded-full"></div>
+</div>
+</div>
+</body></html>

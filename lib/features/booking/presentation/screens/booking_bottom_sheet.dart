@@ -17,20 +17,30 @@ Future<void> showBookingSheet(
   BuildContext context, {
   required String proId,
   required ProProfile proProfile,
+  String? initialServiceId,
 }) {
   return showModalBottomSheet<void>(
     context: context,
     isScrollControlled: true,
     backgroundColor: Colors.transparent,
-    builder: (_) => _BookingSheet(proId: proId, proProfile: proProfile),
+    builder: (_) => _BookingSheet(
+      proId: proId,
+      proProfile: proProfile,
+      initialServiceId: initialServiceId,
+    ),
   );
 }
 
 class _BookingSheet extends ConsumerStatefulWidget {
-  const _BookingSheet({required this.proId, required this.proProfile});
+  const _BookingSheet({
+    required this.proId,
+    required this.proProfile,
+    this.initialServiceId,
+  });
 
   final String proId;
   final ProProfile proProfile;
+  final String? initialServiceId;
 
   @override
   ConsumerState<_BookingSheet> createState() => _BookingSheetState();
@@ -43,7 +53,10 @@ class _BookingSheetState extends ConsumerState<_BookingSheet> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(bookingFlowProvider.notifier).init(widget.proId);
+      ref.read(bookingFlowProvider.notifier).init(
+            widget.proId,
+            initialServiceId: widget.initialServiceId,
+          );
     });
   }
 
@@ -164,6 +177,31 @@ class _Step1Services extends ConsumerWidget {
         if (state.isLoading)
           const Center(
               child: CircularProgressIndicator(color: AppColors.blanc))
+        else if (state.services.isEmpty)
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Ce prestataire n\'a pas encore de service réservable en ligne.',
+                  style: TextStyle(
+                    color: AppColors.gris,
+                    fontSize: 15,
+                    height: 1.4,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                TextButton(
+                  onPressed: () => Navigator.of(context).maybePop(),
+                  child: const Text(
+                    'Fermer',
+                    style: TextStyle(color: AppColors.blanc),
+                  ),
+                ),
+              ],
+            ),
+          )
         else
           ListView.separated(
             shrinkWrap: true,
@@ -311,7 +349,9 @@ class _ServiceTile extends StatelessWidget {
                   ],
                   const SizedBox(height: 4),
                   Text(
-                    '${service.durationMinutes} min',
+                    service.isDepositMode
+                        ? '${service.durationMinutes} min · Acompte ${service.depositType == 'fixed' ? '${service.depositValue?.toStringAsFixed(0) ?? '—'} \$' : '${service.depositValue?.toInt() ?? 30} %'}'
+                        : '${service.durationMinutes} min · Paiement complet',
                     style: const TextStyle(
                         color: AppColors.gris, fontSize: 12),
                   ),
@@ -640,14 +680,27 @@ class _Step4Summary extends ConsumerWidget {
             valueColor: AppColors.success,
           ),
         _SummaryRow(
-          label: 'Total',
+          label: 'Total du service',
           value: '${state.totalPrice.toStringAsFixed(2)} CA\$',
         ),
-        _SummaryRow(
-          label: 'Acompte à payer',
-          value: '${state.depositPrice.toStringAsFixed(2)} CA\$',
-          isBold: true,
-        ),
+        if (state.isDepositMode) ...[
+          _SummaryRow(
+            label: 'Acompte à payer maintenant',
+            value: '${state.depositPrice.toStringAsFixed(2)} CA\$',
+            isBold: true,
+          ),
+          _SummaryRow(
+            label: 'Reste à payer sur place',
+            value: '${state.remainingPrice.toStringAsFixed(2)} CA\$',
+            valueColor: AppColors.gris,
+          ),
+        ] else ...[
+          _SummaryRow(
+            label: 'À payer en ligne',
+            value: '${state.totalPrice.toStringAsFixed(2)} CA\$',
+            isBold: true,
+          ),
+        ],
         const SizedBox(height: 32),
         SizedBox(
           width: double.infinity,
@@ -662,7 +715,9 @@ class _Step4Summary extends ConsumerWidget {
               padding: const EdgeInsets.symmetric(vertical: 16),
             ),
             child: Text(
-              'Payer ${state.depositPrice.toStringAsFixed(2)} CA\$',
+              state.isDepositMode
+                  ? 'Payer l\'acompte de ${state.depositPrice.toStringAsFixed(2)} CA\$'
+                  : 'Payer ${state.totalPrice.toStringAsFixed(2)} CA\$',
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
           ),
@@ -744,34 +799,14 @@ class _Step5Payment extends ConsumerWidget {
           ],
         ),
         const SizedBox(height: 24),
-        Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: AppColors.surfaceAlt,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: AppColors.border),
-          ),
-          child: CardField(
-            decoration: InputDecoration(
-              filled: true,
-              fillColor: AppColors.surfaceAlt,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: AppColors.border),
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: AppColors.border),
-              ),
-            ),
-          ),
-        ),
-        const SizedBox(height: 12),
         Text(
-          'Acompte de ${state.depositPrice.toStringAsFixed(2)} CA\$',
+          state.isDepositMode
+              ? 'Vous payez l\'acompte de ${state.depositPrice.toStringAsFixed(2)} CA\$ — carte, Apple Pay ou Google Pay via Stripe.\nLe solde de ${state.remainingPrice.toStringAsFixed(2)} CA\$ sera réglé lors du RDV.'
+              : 'Paiement de ${state.totalPrice.toStringAsFixed(2)} CA\$ — carte, Apple Pay ou Google Pay via Stripe.',
           style: const TextStyle(
             color: AppColors.gris,
             fontSize: 13,
+            height: 1.4,
           ),
         ),
         if (state.error != null) ...[
@@ -802,19 +837,23 @@ class _Step5Payment extends ConsumerWidget {
                           .read(bookingFlowProvider.notifier)
                           .createBooking();
                     }
-                    final flowState = ref.read(bookingFlowProvider);
+                    final flowNotifier =
+                        ref.read(bookingFlowProvider.notifier);
+                    var flowState = ref.read(bookingFlowProvider);
                     final clientSecret = flowState.clientSecret;
                     if (clientSecret == null) return;
 
-                    // Step 2: Confirm payment via Stripe SDK
+                    flowNotifier.setPaying(true);
                     try {
-                      await Stripe.instance.confirmPayment(
-                        paymentIntentClientSecret: clientSecret,
-                        data: const PaymentMethodParams.card(
-                          paymentMethodData: PaymentMethodData(),
+                      await Stripe.instance.initPaymentSheet(
+                        paymentSheetParameters: SetupPaymentSheetParameters(
+                          paymentIntentClientSecret: clientSecret,
+                          merchantDisplayName: 'Spotbook',
+                          style: ThemeMode.dark,
                         ),
                       );
-                      // Payment succeeded — go to confirmation
+                      await Stripe.instance.presentPaymentSheet();
+                      flowState = ref.read(bookingFlowProvider);
                       await AnalyticsService.instance.capture(
                         'booking_completed',
                         properties: {
@@ -822,24 +861,34 @@ class _Step5Payment extends ConsumerWidget {
                           'pro_id': state.selectedSlot?.proId ?? '',
                         },
                       );
-                      ref.read(bookingFlowProvider.notifier).nextStep();
-                    } on StripeException catch (e) {
-                      await AnalyticsService.instance.capture(
-                        'payment_failed',
-                        properties: {
-                          'booking_id': flowState.bookingResult?['bookingId']?.toString() ?? '',
-                          'error': e.error.localizedMessage ?? 'payment_failed',
-                        },
-                      );
                       if (!context.mounted) return;
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            e.error.localizedMessage ?? 'Paiement échoué',
+                      flowNotifier.nextStep();
+                    } on StripeException catch (e) {
+                      final code = e.error.code;
+                      final canceled = code == FailureCode.Canceled;
+                      if (!canceled) {
+                        final st = ref.read(bookingFlowProvider);
+                        await AnalyticsService.instance.capture(
+                          'payment_failed',
+                          properties: {
+                            'booking_id': st.bookingResult?['bookingId']?.toString() ?? '',
+                            'error': e.error.localizedMessage ?? 'payment_failed',
+                          },
+                        );
+                      }
+                      if (!context.mounted) return;
+                      if (!canceled) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              e.error.localizedMessage ?? 'Paiement échoué',
+                            ),
+                            backgroundColor: AppColors.error,
                           ),
-                          backgroundColor: AppColors.error,
-                        ),
-                      );
+                        );
+                      }
+                    } finally {
+                      flowNotifier.setPaying(false);
                     }
                   },
             style: ElevatedButton.styleFrom(
@@ -857,7 +906,9 @@ class _Step5Payment extends ConsumerWidget {
                         color: AppColors.gris, strokeWidth: 2),
                   )
                 : Text(
-                    'Payer ${state.depositPrice.toStringAsFixed(2)} CA\$',
+                    state.isDepositMode
+                        ? 'Payer l\'acompte de ${state.depositPrice.toStringAsFixed(2)} CA\$'
+                        : 'Payer ${state.totalPrice.toStringAsFixed(2)} CA\$',
                     style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
           ),
@@ -882,6 +933,8 @@ class _Step6Confirmation extends StatelessWidget {
   Widget build(BuildContext context) {
     final bookingCode =
         state.bookingResult?['bookingCode'] as String? ?? 'SPT-XXXXXXXX';
+    // Read isDepositMode from bookingResult (server) or fallback to state.
+    final _ = state.isDepositMode;
 
     return Column(
       children: [
@@ -937,7 +990,50 @@ class _Step6Confirmation extends StatelessWidget {
           '${state.selectedDate ?? ''} à ${state.selectedSlot?.startTime.substring(0, 5) ?? ''}',
           style: const TextStyle(color: AppColors.gris, fontSize: 14),
         ),
-        const SizedBox(height: 32),
+        const SizedBox(height: 20),
+        // ─── Payment summary ─────────────────────────────────
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: AppColors.surfaceAlt,
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: AppColors.border),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (state.isDepositMode) ...[
+                _ConfirmationLine(
+                  icon: Icons.check_circle,
+                  iconColor: AppColors.success,
+                  text: 'Acompte payé : ${state.depositPrice.toStringAsFixed(2)} CA\$',
+                  isBold: true,
+                ),
+                const SizedBox(height: 10),
+                _ConfirmationLine(
+                  icon: Icons.schedule,
+                  iconColor: AppColors.warning,
+                  text: 'Reste à payer sur place : ${state.remainingPrice.toStringAsFixed(2)} CA\$',
+                ),
+                const SizedBox(height: 10),
+                const _ConfirmationLine(
+                  icon: Icons.storefront,
+                  iconColor: AppColors.gris,
+                  text: 'Mode de paiement du reste : En personne',
+                ),
+              ] else ...[
+                _ConfirmationLine(
+                  icon: Icons.check_circle,
+                  iconColor: AppColors.success,
+                  text: 'Paiement effectué : ${state.totalPrice.toStringAsFixed(2)} CA\$',
+                  isBold: true,
+                ),
+              ],
+            ],
+          ),
+        ),
+        const SizedBox(height: 24),
         SizedBox(
           width: double.infinity,
           child: OutlinedButton.icon(
@@ -989,6 +1085,41 @@ class _Step6Confirmation extends StatelessWidget {
             ),
             child: const Text('Fermer',
                 style: TextStyle(fontWeight: FontWeight.bold)),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _ConfirmationLine extends StatelessWidget {
+  const _ConfirmationLine({
+    required this.icon,
+    required this.iconColor,
+    required this.text,
+    this.isBold = false,
+  });
+
+  final IconData icon;
+  final Color iconColor;
+  final String text;
+  final bool isBold;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Icon(icon, color: iconColor, size: 18),
+        const SizedBox(width: 10),
+        Expanded(
+          child: Text(
+            text,
+            style: TextStyle(
+              color: AppColors.blanc,
+              fontSize: 13,
+              fontWeight: isBold ? FontWeight.w600 : FontWeight.normal,
+              height: 1.3,
+            ),
           ),
         ),
       ],

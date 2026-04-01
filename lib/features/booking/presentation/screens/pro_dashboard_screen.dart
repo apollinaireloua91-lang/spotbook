@@ -399,17 +399,21 @@ class _BookingTile extends StatelessWidget {
               ],
             ),
           ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Text(booking.slotDate ?? '',
-                  style: const TextStyle(
-                      color: AppColors.blanc, fontSize: 13)),
-              const SizedBox(height: 2),
-              Text(booking.slotStartTime?.substring(0, 5) ?? '',
-                  style: const TextStyle(
-                      color: AppColors.gris, fontSize: 12)),
-            ],
+          Flexible(
+            flex: 0,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text(booking.slotDate ?? '',
+                    style: const TextStyle(
+                        color: AppColors.blanc, fontSize: 13),
+                    overflow: TextOverflow.ellipsis),
+                const SizedBox(height: 2),
+                Text(booking.slotStartTime?.substring(0, 5) ?? '',
+                    style: const TextStyle(
+                        color: AppColors.gris, fontSize: 12)),
+              ],
+            ),
           ),
         ],
       ),

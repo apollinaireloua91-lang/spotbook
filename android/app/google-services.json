@@ -12,7 +12,20 @@
           "package_name": "com.spotbook.app"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "1084162491451-4bjhejt4s8gt54dasul3d177f0hdu1di.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.spotbook.app",
+            "certificate_hash": "3a00c5b3a6d9ada416877a974b6493b3eb7d4b6d"
+          }
+        },
+        {
+          "client_id": "1084162491451-ce829llikqg167f88ip1cun5v5abotet.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyCYOhuXViMHPDr9Lj22MRDwmV7BrJYQYWM"
@@ -20,7 +33,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1084162491451-ce829llikqg167f88ip1cun5v5abotet.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1084162491451-gr6lp5fs6ccgssto37v1pl27idtv6c53.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.spotbook.app"
+              }
+            }
+          ]
         }
       }
     }

@@ -1,16 +1,13 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
 import Stripe from "https://esm.sh/stripe@14.14.0?target=deno";
-import {
-  assertUuid,
-  getClientIp,
-  jsonHeaders,
-  securityHeaders,
-} from "../_shared/security.ts";
+import { isValidUuid, jsonResponse, securityHeaders } from "../_shared/security.ts";
+
+const corsHeaders = securityHeaders;
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: securityHeaders });
+    return new Response("ok", { headers: corsHeaders });
   }
 
   try {
@@ -19,12 +16,17 @@ serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
     );
 
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader) {
+      return jsonResponse({ error: "unauthorized" }, 401);
+    }
+
     const authClient = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
       Deno.env.get("SUPABASE_ANON_KEY") ?? "",
       {
         global: {
-          headers: { Authorization: req.headers.get("Authorization")! },
+          headers: { Authorization: authHeader },
         },
       }
     );
@@ -32,23 +34,13 @@ serve(async (req) => {
       data: { user },
     } = await authClient.auth.getUser();
     if (!user) {
-      return new Response(JSON.stringify({ error: "unauthorized" }), {
-        headers: jsonHeaders,
-        status: 401,
-      });
+      return jsonResponse({ error: "unauthorized" }, 401);
     }
 
     const { bookingId } = await req.json();
-    if (!bookingId) {
-      return new Response(
-        JSON.stringify({ error: "bookingId required" }),
-        {
-          headers: jsonHeaders,
-          status: 400,
-        }
-      );
+    if (!bookingId || !isValidUuid(String(bookingId))) {
+      return jsonResponse({ error: "bookingId doit être un UUID valide" }, 400);
     }
-    assertUuid(bookingId, "bookingId");
 
     // Fetch booking
     const { data: booking, error: bErr } = await supabase
@@ -57,18 +49,21 @@ serve(async (req) => {
       .eq("id", bookingId)
       .single();
     if (bErr || !booking) {
-      return new Response(JSON.stringify({ error: "booking_not_found" }), {
-        headers: jsonHeaders,
-        status: 404,
-      });
+      return jsonResponse({ error: "booking_not_found" }, 404);
     }
 
     // Verify ownership (client or pro)
     if (booking.client_id !== user.id && booking.pro_id !== user.id) {
-      return new Response(JSON.stringify({ error: "forbidden" }), {
-        headers: jsonHeaders,
-        status: 403,
-      });
+      return jsonResponse({ error: "forbidden" }, 403);
+    }
+
+    // Only allow cancellation from valid states
+    const cancellableStatuses = ["confirmed", "pending_payment"];
+    if (!cancellableStatuses.includes(booking.status)) {
+      return jsonResponse(
+        { error: "booking_not_cancellable", currentStatus: booking.status },
+        400
+      );
     }
 
     // Calculate hours until appointment
@@ -106,6 +101,19 @@ serve(async (req) => {
           refund_status: "refunded",
         })
         .eq("id", bookingId);
+      await supabase.rpc("log_audit_action", {
+        p_user_id: user.id,
+        p_action: "refund_initiated",
+        p_resource_type: "booking",
+        p_resource_id: bookingId,
+        p_metadata: { refund_amount: booking.deposit_amount },
+      });
+      await supabase.rpc("log_audit_action", {
+        p_user_id: user.id,
+        p_action: "refund_completed",
+        p_resource_type: "booking",
+        p_resource_id: bookingId,
+      });
     } else {
       // No refund — pro keeps deposit
       newStatus = "cancelled_no_refund";
@@ -118,30 +126,19 @@ serve(async (req) => {
         })
         .eq("id", bookingId);
     }
+    await supabase.rpc("log_audit_action", {
+      p_user_id: user.id,
+      p_action: "booking_cancelled",
+      p_resource_type: "booking",
+      p_resource_id: bookingId,
+      p_metadata: { status: newStatus },
+    });
 
     // Release the time slot
     await supabase
       .from("time_slots")
       .update({ is_available: true, locked_by: null })
       .eq("id", booking.time_slot_id);
-    await supabase.rpc("insert_audit_log", {
-      p_user_id: user.id,
-      p_action: "booking_cancelled",
-      p_resource_type: "booking",
-      p_resource_id: bookingId,
-      p_metadata: { status: newStatus },
-      p_ip_address: getClientIp(req),
-    });
-    if (newStatus === "cancelled_full_refund") {
-      await supabase.rpc("insert_audit_log", {
-        p_user_id: user.id,
-        p_action: "refund_initiated",
-        p_resource_type: "booking",
-        p_resource_id: bookingId,
-        p_metadata: {},
-        p_ip_address: getClientIp(req),
-      });
-    }
 
     return new Response(
       JSON.stringify({
@@ -150,13 +147,11 @@ serve(async (req) => {
         hoursUntil: Math.round(hoursUntil),
       }),
       {
-        headers: jsonHeaders,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
       }
     );
   } catch (error) {
-    return new Response(JSON.stringify({ error: error.message }), {
-      headers: jsonHeaders,
-      status: 400,
-    });
+    console.error("cancel-booking error:", error);
+    return jsonResponse({ error: "internal_error" }, 500);
   }
 });

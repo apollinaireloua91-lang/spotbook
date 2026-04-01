@@ -20,6 +20,8 @@ dependencies:
 
     sdk: flutter
 
+  cupertino_icons: ^1.0.8
+
 
   # Backend
 
@@ -36,6 +38,10 @@ dependencies:
 
   riverpod_annotation: ^4.0.2
 
+  flutter_bloc: ^9.1.1
+
+  equatable: ^2.0.7
+
 
   # Navigation
 
@@ -44,7 +50,11 @@ dependencies:
 
   # Auth
 
+  crypto: ^3.0.3
+
   google_sign_in: ^7.2.0
+
+  flutter_web_auth_2: ^4.1.0
 
 
   # Payments
@@ -59,6 +69,10 @@ dependencies:
   video_compress: ^3.1.2
 
   image_picker: ^1.1.2
+
+  # Audio (Spotify previews)
+
+  audioplayers: ^6.1.0
 
 
   # QR
@@ -105,7 +119,17 @@ dependencies:
   posthog_flutter: ^5.20.0
 
   sentry_flutter: ^9.15.0
-  flutter_google_places_sdk: ^0.4.3
+  flutter_dotenv: ^6.0.0
+  google_maps_flutter: ^2.16.0
+
+  google_fonts: ^6.3.3
+
+  url_launcher: ^6.3.1
+
+  http: ^1.2.1
+  http_parser: ^4.1.0
+
+  image_cropper: ^9.1.0
 
 
 dev_dependencies:
@@ -136,11 +160,11 @@ flutter_launcher_icons:
     generate: false
 
 flutter_native_splash:
-  color: "#FFFFFF"
-  image: assets/images/logo.png
+  color: "#0D0D14"
+  image: assets/images/logo_white.png
   android_12:
-    color: "#FFFFFF"
-    image: assets/images/logo.png
+    color: "#0D0D14"
+    image: assets/images/logo_white.png
   ios: true
 
 flutter:
@@ -153,4 +177,8 @@ flutter:
 
     - assets/images/
 
+    - assets/social/
+
     - assets/animations/
+
+dependency_overrides: {}

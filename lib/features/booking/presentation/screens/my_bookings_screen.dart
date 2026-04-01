@@ -32,9 +32,9 @@ class MyBookingsScreen extends ConsumerWidget {
           ),
           centerTitle: true,
           bottom: const TabBar(
-            indicatorColor: AppColors.blanc,
+            indicatorColor: AppColors.violet,
             labelColor: AppColors.blanc,
-            unselectedLabelColor: AppColors.gris,
+            unselectedLabelColor: AppColors.grisInactif,
             tabs: [
               Tab(text: 'À venir'),
               Tab(text: 'Passés'),
@@ -44,7 +44,7 @@ class MyBookingsScreen extends ConsumerWidget {
         ),
         body: state.isLoading
             ? const Center(
-                child: CircularProgressIndicator(color: AppColors.blanc))
+                child: CircularProgressIndicator(color: AppColors.violet))
             : TabBarView(
                 children: [
                   _BookingsList(
@@ -212,9 +212,12 @@ class _BookingCard extends StatelessWidget {
               const Icon(Icons.calendar_today,
                   color: AppColors.gris, size: 14),
               const SizedBox(width: 6),
-              Text(
-                booking.slotDate ?? '',
-                style: const TextStyle(color: AppColors.gris, fontSize: 13),
+              Flexible(
+                child: Text(
+                  booking.slotDate ?? '',
+                  style: const TextStyle(color: AppColors.gris, fontSize: 13),
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
               const SizedBox(width: 16),
               const Icon(Icons.access_time,
@@ -246,8 +249,9 @@ class _BookingCard extends StatelessWidget {
                 onPressed: () => context.push(
                     '/cancel-booking/${booking.id}'),
                 style: OutlinedButton.styleFrom(
-                  foregroundColor: AppColors.error,
-                  side: const BorderSide(color: AppColors.error),
+                  foregroundColor: AppColors.roseClair,
+                  backgroundColor: AppColors.rose.withAlpha(30),
+                  side: BorderSide.none,
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10)),
                 ),
@@ -276,27 +280,27 @@ class _StatusBadge extends StatelessWidget {
 
     switch (status) {
       case 'confirmed':
-        bg = AppColors.success.withAlpha(30);
+        bg = AppColors.success.withAlpha(38);
         fg = AppColors.success;
-        label = 'Confirmé';
+        label = '✓ Confirmé';
       case 'pending_payment':
-        bg = AppColors.warning.withAlpha(30);
-        fg = AppColors.warning;
-        label = 'En attente';
+        bg = AppColors.violet.withAlpha(38);
+        fg = AppColors.violetClair;
+        label = '⏳ En attente';
       case 'completed':
-        bg = AppColors.gris.withAlpha(30);
+        bg = AppColors.gris.withAlpha(38);
         fg = AppColors.gris;
-        label = 'Terminé';
+        label = '✓ Terminé';
       case 'cancelled_full_refund':
-        bg = AppColors.error.withAlpha(30);
-        fg = AppColors.error;
+        bg = AppColors.rose.withAlpha(30);
+        fg = AppColors.roseClair;
         label = 'Remboursé';
       case 'cancelled_no_refund':
-        bg = AppColors.error.withAlpha(30);
-        fg = AppColors.error;
+        bg = AppColors.rose.withAlpha(30);
+        fg = AppColors.roseClair;
         label = 'Annulé';
       default:
-        bg = AppColors.gris.withAlpha(30);
+        bg = AppColors.gris.withAlpha(38);
         fg = AppColors.gris;
         label = status;
     }

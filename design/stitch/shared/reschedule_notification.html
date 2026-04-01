@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="fr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#2badee",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#080810",
+                        "surface-dark": "#111c22",
+                        "border-dark": "#233c48",
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans"]
+                    },
+                    borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: "Plus Jakarta Sans", sans-serif;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-fill {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen flex flex-col">
+<!-- Header -->
+<header class="sticky top-0 z-10 flex items-center bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md p-4 border-b border-slate-200 dark:border-border-dark justify-between">
+<div class="flex items-center gap-4">
+<button class="flex size-10 items-center justify-center rounded-full hover:bg-slate-200 dark:hover:bg-border-dark transition-colors">
+<span class="material-symbols-outlined text-slate-900 dark:text-slate-100">arrow_back</span>
+</button>
+<h1 class="text-xl font-bold leading-tight tracking-tight">Notifications</h1>
+</div>
+<button class="text-primary text-sm font-semibold">Tout marquer comme lu</button>
+</header>
+<main class="flex-1 overflow-y-auto pb-24">
+<!-- New Notification Section -->
+<section class="mt-4">
+<div class="px-4 py-2">
+<h2 class="text-primary text-xs font-bold uppercase tracking-widest">Nouveau</h2>
+</div>
+<!-- Rescheduled Appointment Notification -->
+<div class="bg-primary/5 dark:bg-primary/10 border-l-4 border-primary p-4 mb-4 transition-all">
+<div class="flex gap-4">
+<div class="flex items-center justify-center rounded-full bg-primary/20 shrink-0 size-12">
+<span class="material-symbols-outlined text-primary text-2xl material-symbols-fill">calendar_today</span>
+</div>
+<div class="flex flex-1 flex-col">
+<div class="flex justify-between items-start">
+<p class="text-slate-900 dark:text-slate-100 text-base font-bold">Rendez-vous reporté</p>
+<div class="flex items-center gap-2">
+<p class="text-slate-500 dark:text-slate-400 text-xs font-medium">À l'instant</p>
+<div class="size-2 rounded-full bg-primary"></div>
+</div>
+</div>
+<p class="text-slate-600 dark:text-slate-400 text-sm mt-1 leading-relaxed">
+<span class="font-semibold text-slate-800 dark:text-slate-200">Alex Johnson</span> a déplacé son rendez-vous du 12 Octobre au <span class="text-primary font-semibold">21 Octobre à 18:30</span>.
+                        </p>
+<!-- Action Buttons -->
+<div class="flex gap-3 mt-4">
+<button class="flex-1 flex items-center justify-center gap-2 rounded-full h-10 px-4 bg-primary text-white text-sm font-bold transition-transform active:scale-95">
+<span class="material-symbols-outlined text-sm">calendar_month</span>
+<span>Voir le calendrier</span>
+</button>
+<button class="flex-1 flex items-center justify-center gap-2 rounded-full h-10 px-4 bg-slate-200 dark:bg-border-dark text-slate-900 dark:text-white text-sm font-bold transition-transform active:scale-95">
+<span class="material-symbols-outlined text-sm">chat_bubble</span>
+<span>Contacter</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Earlier Notifications Section -->
+<section class="mt-2">
+<div class="px-4 py-2">
+<h2 class="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-widest">Plus tôt</h2>
+</div>
+<!-- Payment Received -->
+<div class="flex gap-4 px-4 py-4 border-b border-slate-100 dark:border-border-dark/30 hover:bg-slate-50 dark:hover:bg-surface-dark transition-colors">
+<div class="flex items-center justify-center rounded-full bg-green-500/20 shrink-0 size-12">
+<span class="material-symbols-outlined text-green-500 text-2xl">payments</span>
+</div>
+<div class="flex flex-1 flex-col justify-center">
+<div class="flex justify-between items-start">
+<p class="text-slate-900 dark:text-slate-100 text-base font-medium">Paiement reçu</p>
+<p class="text-slate-500 dark:text-slate-400 text-xs">Il y a 2h</p>
+</div>
+<p class="text-slate-600 dark:text-slate-400 text-sm">Le paiement de 45,00€ de Sarah Miller a été confirmé.</p>
+</div>
+</div>
+<!-- New Message -->
+<div class="flex gap-4 px-4 py-4 border-b border-slate-100 dark:border-border-dark/30 hover:bg-slate-50 dark:hover:bg-surface-dark transition-colors">
+<div class="flex items-center justify-center rounded-full bg-orange-500/20 shrink-0 size-12">
+<span class="material-symbols-outlined text-orange-500 text-2xl">mail</span>
+</div>
+<div class="flex flex-1 flex-col justify-center">
+<div class="flex justify-between items-start">
+<p class="text-slate-900 dark:text-slate-100 text-base font-medium">Nouveau message</p>
+<p class="text-slate-500 dark:text-slate-400 text-xs">Il y a 5h</p>
+</div>
+<p class="text-slate-600 dark:text-slate-400 text-sm">"Bonjour, est-ce qu'il reste de la place pour demain ?"</p>
+</div>
+</div>
+<!-- Feedback Reminder -->
+<div class="flex gap-4 px-4 py-4 border-b border-slate-100 dark:border-border-dark/30 hover:bg-slate-50 dark:hover:bg-surface-dark transition-colors">
+<div class="flex items-center justify-center rounded-full bg-purple-500/20 shrink-0 size-12">
+<span class="material-symbols-outlined text-purple-500 text-2xl">star</span>
+</div>
+<div class="flex flex-1 flex-col justify-center">
+<div class="flex justify-between items-start">
+<p class="text-slate-900 dark:text-slate-100 text-base font-medium">Nouvel avis</p>
+<p class="text-slate-500 dark:text-slate-400 text-xs">Hier</p>
+</div>
+<p class="text-slate-600 dark:text-slate-400 text-sm">Thomas L. vous a laissé une note de 5 étoiles.</p>
+</div>
+</div>
+</section>
+</main>
+<!-- Bottom Navigation Bar -->
+<nav class="fixed bottom-0 left-0 right-0 z-20 flex gap-2 border-t border-slate-200 dark:border-border-dark bg-white/90 dark:bg-surface-dark/95 backdrop-blur-xl px-2 pb-6 pt-2">
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-slate-500 dark:text-slate-400 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<p class="text-[10px] font-bold leading-normal uppercase tracking-tighter">Dashboard</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-slate-500 dark:text-slate-400 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">search</span>
+<p class="text-[10px] font-bold leading-normal uppercase tracking-tighter">Recherche</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-slate-500 dark:text-slate-400 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">photo_camera</span>
+<p class="text-[10px] font-bold leading-normal uppercase tracking-tighter">Caméra</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-primary" href="#">
+<span class="material-symbols-outlined material-symbols-fill">calendar_today</span>
+<p class="text-[10px] font-bold leading-normal uppercase tracking-tighter">RDV</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-slate-500 dark:text-slate-400 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">confirmation_number</span>
+<p class="text-[10px] font-bold leading-normal uppercase tracking-tighter">Événements</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-slate-500 dark:text-slate-400 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">person</span>
+<p class="text-[10px] font-bold leading-normal uppercase tracking-tighter">Profil Pro</p>
+</a>
+</nav>
+</body></html>

@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Spotbook | Provider Management</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "background": "#13131b",
+              "surface": "#13131b",
+              "primary-container": "#00d4ff",
+              "surface-dim": "#13131b",
+              "outline": "#859398",
+              "tertiary-container": "#feb528",
+              "on-primary-fixed": "#001f27",
+              "secondary": "#ccbdff",
+              "primary": "#a8e8ff",
+              "error": "#ffb4ab",
+              "on-tertiary-fixed-variant": "#604100",
+              "on-tertiary-fixed": "#281900",
+              "secondary-fixed": "#e7deff",
+              "on-error": "#690005",
+              "inverse-surface": "#e4e1ed",
+              "tertiary-fixed-dim": "#ffba3d",
+              "tertiary": "#ffd9a1",
+              "surface-variant": "#34343d",
+              "on-primary-container": "#00586b",
+              "secondary-fixed-dim": "#ccbdff",
+              "surface-container-lowest": "#0d0d16",
+              "on-tertiary-container": "#6c4900",
+              "surface-container": "#1f1f28",
+              "on-secondary": "#350097",
+              "primary-fixed": "#b4ebff",
+              "surface-bright": "#393842",
+              "tertiary-fixed": "#ffdeae",
+              "surface-tint": "#3cd7ff",
+              "surface-container-high": "#292932",
+              "on-surface": "#e4e1ed",
+              "on-tertiary": "#432c00",
+              "outline-variant": "#3c494e",
+              "on-secondary-fixed-variant": "#4e00d2",
+              "on-surface-variant": "#bbc9cf",
+              "on-secondary-container": "#bfadff",
+              "on-primary": "#003642",
+              "primary-fixed-dim": "#3cd7ff",
+              "surface-container-highest": "#34343d",
+              "secondary-container": "#5008d4",
+              "inverse-on-surface": "#302f39",
+              "on-background": "#e4e1ed",
+              "on-primary-fixed-variant": "#004e5f",
+              "error-container": "#93000a",
+              "surface-container-low": "#1b1b23",
+              "on-secondary-fixed": "#1f0060",
+              "inverse-primary": "#00677e",
+              "on-error-container": "#ffdad6"
+            },
+            fontFamily: {
+              "headline": ["Manrope"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      body {
+        background-color: #13131b;
+        color: #e4e1ed;
+        font-family: 'Inter', sans-serif;
+      }
+      .glass-card {
+        background: rgba(31, 31, 40, 0.6);
+        backdrop-filter: blur(20px);
+      }
+      .neon-glow {
+        box-shadow: 0 0 15px rgba(0, 212, 255, 0.2);
+      }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="min-h-screen pb-32">
+<!-- Top Navigation -->
+<header class="bg-[#13131b] border-none flex justify-between items-center w-full px-6 py-4 fixed top-0 z-50">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center overflow-hidden">
+<img alt="Profile" class="w-full h-full object-cover" data-alt="Professional headshot of a smiling male service provider in modern studio lighting with dark background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDqPgViICxYluL8jpWmLXVOO6KcXm3yW8b44tjISS4hHjeprdxVSfsZ6yXty-i6mGK5O8yFZ4c9e4dYau5jfxErY3ktCE6NNg6BlaNN7Zs9qHhdN1i7RwzKG6p9GsjveXfRPH_4eZsoFMy6eHEKyVEmc9OebH_ks2Sehcqgv9dlR9Xk_3kCDtAjJ0DPMhqG0nBYYeF1J1joSamr7ZpmkoLeRWQ_KeKKJ05cUU3Ouq7PpRZPa7tHX6g4PE-1B8ztJ6kZAO_yKC1UZ80"/>
+</div>
+<h1 class="font-bold text-xl tracking-tight font-manrope text-[#a8e8ff]">Spotbook</h1>
+</div>
+<div class="flex items-center gap-6">
+<button class="text-[#a8e8ff] hover:bg-[#34343d] transition-colors p-2 rounded-lg">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+</div>
+</header>
+<main class="pt-24 px-6 max-w-4xl mx-auto">
+<!-- Header Section -->
+<section class="mb-12">
+<h2 class="text-3xl font-headline font-extrabold text-on-surface mb-2">Time Slot Exceptions</h2>
+<p class="text-on-surface-variant font-body">Manage your availability by blocking specific dates or holidays.</p>
+</section>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
+<!-- Form Section: Add Exception -->
+<div class="lg:col-span-5">
+<div class="bg-surface-container-low rounded-xl p-8 sticky top-32">
+<h3 class="text-lg font-headline font-bold text-secondary mb-8">Add New Exception</h3>
+<form class="space-y-6">
+<!-- Date Range Selection -->
+<div class="space-y-4">
+<div>
+<label class="block text-[10px] font-medium font-inter uppercase tracking-wider text-outline mb-2">From Date</label>
+<div class="bg-surface-container-lowest rounded-lg px-4 py-3 flex items-center gap-3 group focus-within:ring-1 focus-within:ring-primary-container transition-all">
+<span class="material-symbols-outlined text-primary text-sm">calendar_today</span>
+<input class="bg-transparent border-none text-on-surface focus:ring-0 w-full text-sm" type="date" value="2023-10-25"/>
+</div>
+</div>
+<div>
+<label class="block text-[10px] font-medium font-inter uppercase tracking-wider text-outline mb-2">To Date</label>
+<div class="bg-surface-container-lowest rounded-lg px-4 py-3 flex items-center gap-3 focus-within:ring-1 focus-within:ring-primary-container transition-all">
+<span class="material-symbols-outlined text-primary text-sm">calendar_month</span>
+<input class="bg-transparent border-none text-on-surface focus:ring-0 w-full text-sm" type="date" value="2023-10-30"/>
+</div>
+</div>
+</div>
+<!-- Reason Field -->
+<div>
+<label class="block text-[10px] font-medium font-inter uppercase tracking-wider text-outline mb-2">Reason for Absence</label>
+<div class="bg-surface-container-lowest rounded-lg px-4 py-3 focus-within:ring-1 focus-within:ring-primary-container transition-all">
+<select class="bg-transparent border-none text-on-surface focus:ring-0 w-full text-sm appearance-none">
+<option>Vacation</option>
+<option>Personal Leave</option>
+<option>Public Holiday</option>
+<option>Maintenance</option>
+</select>
+</div>
+</div>
+<!-- Toggle -->
+<div class="flex items-center justify-between py-2">
+<span class="text-sm font-body text-on-surface">Close for Bookings</span>
+<button aria-checked="true" class="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none bg-primary-container" role="switch" type="button">
+<span class="translate-x-5 pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"></span>
+</button>
+</div>
+<!-- Submit Button -->
+<button class="w-full py-4 rounded-xl bg-gradient-to-br from-primary to-primary-container text-on-primary font-bold tracking-tight text-lg shadow-[0_0_20px_0_rgba(0,212,255,0.2)] hover:scale-[0.98] transition-transform flex items-center justify-center gap-2" type="button">
+<span class="material-symbols-outlined">add</span>
+                            Add Exception
+                        </button>
+</form>
+</div>
+</div>
+<!-- List Section: Active Exceptions -->
+<div class="lg:col-span-7">
+<div class="flex items-center justify-between mb-6">
+<h3 class="text-lg font-headline font-bold text-on-surface">Active Exceptions</h3>
+<span class="text-[10px] font-medium font-inter uppercase tracking-wider text-primary px-3 py-1 bg-primary/10 rounded-full">3 Scheduled</span>
+</div>
+<div class="space-y-4">
+<!-- Exception Card 1 -->
+<div class="bg-surface-container-low hover:bg-surface-container-high transition-all p-6 rounded-xl flex items-center justify-between group">
+<div class="flex items-center gap-6">
+<div class="w-12 h-12 rounded-xl bg-secondary-container/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary">beach_access</span>
+</div>
+<div>
+<h4 class="font-bold font-headline text-on-surface">Annual Vacation</h4>
+<p class="text-sm text-on-surface-variant">Oct 12 — Oct 20, 2023</p>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<span class="hidden md:inline-block text-[10px] font-medium font-inter uppercase tracking-wider text-primary-container bg-primary-container/10 px-2 py-1 rounded">Closed</span>
+<button class="text-outline hover:text-error transition-colors">
+<span class="material-symbols-outlined">delete</span>
+</button>
+</div>
+</div>
+<!-- Exception Card 2 -->
+<div class="bg-surface-container-low hover:bg-surface-container-high transition-all p-6 rounded-xl flex items-center justify-between group">
+<div class="flex items-center gap-6">
+<div class="w-12 h-12 rounded-xl bg-tertiary-container/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-tertiary-container">event_busy</span>
+</div>
+<div>
+<h4 class="font-bold font-headline text-on-surface">Personal Maintenance</h4>
+<p class="text-sm text-on-surface-variant">Nov 04, 2023</p>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<span class="hidden md:inline-block text-[10px] font-medium font-inter uppercase tracking-wider text-primary-container bg-primary-container/10 px-2 py-1 rounded">Closed</span>
+<button class="text-outline hover:text-error transition-colors">
+<span class="material-symbols-outlined">delete</span>
+</button>
+</div>
+</div>
+<!-- Exception Card 3 -->
+<div class="bg-surface-container-low hover:bg-surface-container-high transition-all p-6 rounded-xl flex items-center justify-between group">
+<div class="flex items-center gap-6">
+<div class="w-12 h-12 rounded-xl bg-secondary-container/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary">festival</span>
+</div>
+<div>
+<h4 class="font-bold font-headline text-on-surface">Bank Holiday</h4>
+<p class="text-sm text-on-surface-variant">Dec 25 — Dec 26, 2023</p>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<span class="hidden md:inline-block text-[10px] font-medium font-inter uppercase tracking-wider text-primary-container bg-primary-container/10 px-2 py-1 rounded">Closed</span>
+<button class="text-outline hover:text-error transition-colors">
+<span class="material-symbols-outlined">delete</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Empty State Tip -->
+<div class="mt-12 p-8 border border-outline-variant/15 border-dashed rounded-xl flex flex-col items-center text-center">
+<span class="material-symbols-outlined text-outline text-4xl mb-4">info</span>
+<h5 class="font-headline font-bold text-on-surface mb-2">Automated Sync</h5>
+<p class="text-xs text-on-surface-variant max-w-xs">Exceptions automatically sync with your public booking calendar. Clients will see these dates as unavailable.</p>
+</div>
+</div>
+</div>
+</main>
+<!-- Bottom Navigation Bar (Mobile & Desktop Anchor) -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-6 pt-3 bg-[#13131b]/60 backdrop-blur-xl shadow-[0_-8px_32px_0_rgba(0,212,255,0.08)] rounded-t-2xl">
+<a class="flex flex-col items-center justify-center text-slate-500 px-3 py-1.5 hover:text-[#a8e8ff] transition-all" href="#">
+<span class="material-symbols-outlined mb-1">dashboard</span>
+<span class="text-[10px] font-medium font-inter uppercase tracking-wider">Dashboard</span>
+</a>
+<a class="flex flex-col items-center justify-center text-slate-500 px-3 py-1.5 hover:text-[#a8e8ff] transition-all" href="#">
+<span class="material-symbols-outlined mb-1">search</span>
+<span class="text-[10px] font-medium font-inter uppercase tracking-wider">Search</span>
+</a>
+<a class="flex flex-col items-center justify-center text-slate-500 px-3 py-1.5 hover:text-[#a8e8ff] transition-all" href="#">
+<div class="w-12 h-12 bg-primary-container/10 rounded-full flex items-center justify-center mb-1">
+<span class="material-symbols-outlined text-[#00d4ff]">photo_camera</span>
+</div>
+<span class="text-[10px] font-medium font-inter uppercase tracking-wider">Camera</span>
+</a>
+<a class="flex flex-col items-center justify-center text-slate-500 px-3 py-1.5 hover:text-[#a8e8ff] transition-all" href="#">
+<span class="material-symbols-outlined mb-1">calendar_today</span>
+<span class="text-[10px] font-medium font-inter uppercase tracking-wider">Bookings</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-[#00d4ff]/10 text-[#00d4ff] rounded-xl px-3 py-1.5 transition-all duration-300" href="#">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 1;">badge</span>
+<span class="text-[10px] font-medium font-inter uppercase tracking-wider">Profile Pro</span>
+</a>
+</nav>
+</body></html>

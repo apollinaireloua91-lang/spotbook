@@ -31,9 +31,7 @@ class EventModel {
 
   double get minPrice {
     if (ticketTypes.isEmpty) return 0;
-    return ticketTypes
-        .map((t) => t.price)
-        .reduce((a, b) => a < b ? a : b);
+    return ticketTypes.map((t) => t.price).reduce((a, b) => a < b ? a : b);
   }
 
   bool get isSoldOut =>
@@ -61,8 +59,8 @@ class EventModel {
       address: json['address'] as String?,
       isActive: json['is_active'] as bool? ?? true,
       createdAt: DateTime.parse(json['created_at'] as String),
-      proName: proUser?['full_name'] as String? ??
-          pro?['business_name'] as String?,
+      proName:
+          proUser?['full_name'] as String? ?? pro?['business_name'] as String?,
       proAvatarUrl: proUser?['avatar_url'] as String?,
       ticketTypes: types,
     );

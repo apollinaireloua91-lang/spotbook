@@ -1,12 +1,15 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
 import Stripe from "https://esm.sh/stripe@14.14.0?target=deno";
+import {
+  getClientIp,
+  isValidAmount,
+  isValidUuid,
+  jsonResponse,
+  securityHeaders,
+} from "../_shared/security.ts";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
-};
+const corsHeaders = securityHeaders;
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -19,12 +22,17 @@ serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
     );
 
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader) {
+      return jsonResponse({ error: "unauthorized" }, 401);
+    }
+
     const authClient = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
       Deno.env.get("SUPABASE_ANON_KEY") ?? "",
       {
         global: {
-          headers: { Authorization: req.headers.get("Authorization")! },
+          headers: { Authorization: authHeader },
         },
       }
     );
@@ -32,20 +40,20 @@ serve(async (req) => {
       data: { user },
     } = await authClient.auth.getUser();
     if (!user) {
-      return new Response(JSON.stringify({ error: "unauthorized" }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-        status: 401,
-      });
+      return jsonResponse({ error: "unauthorized" }, 401);
     }
 
     const { ticketTypeId, quantity } = await req.json();
-    if (!ticketTypeId || !quantity || quantity < 1 || quantity > 4) {
-      return new Response(
-        JSON.stringify({ error: "ticketTypeId and quantity (1-4) required" }),
-        {
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-          status: 400,
-        }
+    if (
+      !ticketTypeId ||
+      !isValidUuid(String(ticketTypeId)) ||
+      !quantity ||
+      quantity < 1 ||
+      quantity > 4
+    ) {
+      return jsonResponse(
+        { error: "ticketTypeId UUID valide et quantity (1-4) requis" },
+        400
       );
     }
 
@@ -57,31 +65,41 @@ serve(async (req) => {
       .single();
 
     if (ttErr || !ticketType) {
-      return new Response(
-        JSON.stringify({ error: "ticket_type_not_found" }),
-        {
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-          status: 404,
-        }
-      );
+      return jsonResponse({ error: "ticket_type_not_found" }, 404);
     }
 
     // Check availability
     const remaining =
       (ticketType.quantity ?? 0) - (ticketType.sold_count ?? 0);
     if (remaining < quantity) {
-      return new Response(
-        JSON.stringify({ error: "not_enough_tickets" }),
-        {
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-          status: 409,
-        }
-      );
+      return jsonResponse({ error: "not_enough_tickets" }, 409);
     }
 
     const unitPrice = ticketType.price ?? 0;
     const totalCents = Math.round(unitPrice * quantity * 100);
+    if (!isValidAmount(Number(unitPrice))) {
+      return jsonResponse({ error: "ticket amount invalide" }, 400);
+    }
     const commission = Math.round(totalCents * 0.07); // 7% event commission
+
+    const rateLimitResp = await fetch(
+      `${Deno.env.get("SUPABASE_URL")}/functions/v1/rate-limiter`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          type: "payment",
+          cardFingerprint: `${user.id}:${ticketTypeId}:${getClientIp(req)}`,
+        }),
+      }
+    );
+    if (rateLimitResp.status === 429) {
+      const data = await rateLimitResp.json();
+      return jsonResponse({ error: data.error }, 429);
+    }
 
     const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") ?? "", {
       apiVersion: "2023-10-16",
@@ -110,7 +128,7 @@ serve(async (req) => {
     const paymentIntent = await stripe.paymentIntents.create(
       params as Stripe.PaymentIntentCreateParams,
       {
-        idempotencyKey: `ticket-${ticketTypeId}-${user.id}-${Date.now()}`,
+        idempotencyKey: `ticket-${ticketTypeId}-${user.id}-${quantity}`,
       }
     );
 
@@ -125,9 +143,7 @@ serve(async (req) => {
       }
     );
   } catch (error) {
-    return new Response(JSON.stringify({ error: error.message }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-      status: 400,
-    });
+    console.error("stripe-create-ticket-intent error:", error);
+    return jsonResponse({ error: "internal_error" }, 500);
   }
 });

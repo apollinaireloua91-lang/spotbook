@@ -13,7 +13,7 @@ import '../../../../shared/widgets/spotbook_loading_shimmer.dart';
 import '../../data/booking_notifier.dart';
 import '../../domain/booking_models.dart';
 
-/// Point d’entrée onglet RDV pro : raccourcis réservation + aperçu des RDV.
+/// Point d'entrée onglet RDV pro : raccourcis réservation + aperçu des RDV.
 class ProCalendarHubScreen extends ConsumerWidget {
   const ProCalendarHubScreen({super.key});
 

@@ -50,21 +50,48 @@ class ProSchedulingRepository {
         .toList();
   }
 
+  /// Colonnes `title` et `category` sont NOT NULL côté Postgres (`services`).
+  Future<String> _defaultServiceCategory(String proId) async {
+    final row = await _supabase
+        .from('profiles_pro')
+        .select('category')
+        .eq('id', proId)
+        .maybeSingle();
+    final c = row?['category'] as String?;
+    if (c != null && c.trim().isNotEmpty) return c.trim();
+    return 'Autre';
+  }
+
   Future<void> createService({
     required String name,
     String? description,
     required int durationMinutes,
     required double price,
+    double depositPercentage = 0.30,
+    String paymentMode = 'full',
+    String? depositType,
+    double? depositValue,
   }) async {
     final uid = _uid;
     if (uid == null) throw Exception('Non connecté');
 
+    final trimmed = name.trim();
+    if (trimmed.isEmpty) throw Exception('Le nom du service est obligatoire');
+
+    final category = await _defaultServiceCategory(uid);
+
     await _supabase.from('services').insert({
       'pro_id': uid,
-      'name': name.trim(),
+      'title': trimmed,
+      'name': trimmed,
+      'category': category,
       'description': description?.trim(),
       'duration_minutes': durationMinutes,
       'price': price,
+      'deposit_percentage': depositPercentage,
+      'payment_mode': paymentMode,
+      'deposit_type': depositType,
+      'deposit_value': depositValue,
       'is_active': true,
     });
   }
@@ -76,15 +103,26 @@ class ProSchedulingRepository {
     required int durationMinutes,
     required double price,
     required bool isActive,
+    double depositPercentage = 0.30,
+    String paymentMode = 'full',
+    String? depositType,
+    double? depositValue,
   }) async {
     final uid = _uid;
     if (uid == null) throw Exception('Non connecté');
 
+    final trimmed = name.trim();
+
     await _supabase.from('services').update({
-      'name': name.trim(),
+      'title': trimmed,
+      'name': trimmed,
       'description': description?.trim(),
       'duration_minutes': durationMinutes,
       'price': price,
+      'deposit_percentage': depositPercentage,
+      'payment_mode': paymentMode,
+      'deposit_type': depositType,
+      'deposit_value': depositValue,
       'is_active': isActive,
     }).eq('id', id).eq('pro_id', uid);
   }

@@ -352,4 +352,76 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get proConfirmPassword => 'Confirm password';
+
+  @override
+  String get proSettingsSectionSpotify => 'MUSIC (FEED)';
+
+  @override
+  String get proSettingsSpotifyTitle => 'Spotify';
+
+  @override
+  String get proSettingsSpotifyLinked => 'Spotify account connected';
+
+  @override
+  String get proSettingsSpotifyConnect => 'Connect Spotify';
+
+  @override
+  String get proSettingsSpotifyDisconnect => 'Disconnect Spotify';
+
+  @override
+  String get proSettingsSpotifyHint =>
+      'Link your account to see your top tracks in the pro feed music sheet.';
+
+  @override
+  String get proSettingsSpotifyMissingClientId =>
+      'SPOTIFY_CLIENT_ID missing in .env';
+
+  @override
+  String get spotifySheetTitle => 'Add music';
+
+  @override
+  String get spotifySheetLinkedHint =>
+      'Spotify linked — top tracks and richer search.';
+
+  @override
+  String get spotifySheetNotLinkedHint =>
+      'Not linked: search only. Connect Spotify in Pro settings.';
+
+  @override
+  String get spotifySheetOpenSettings => 'Settings';
+
+  @override
+  String get spotifySheetSearchHint => 'Search a track or artist…';
+
+  @override
+  String get spotifySheetTopTracksHeader => 'Your recent top tracks (Spotify)';
+
+  @override
+  String get spotifySheetNoResults => 'No results';
+
+  @override
+  String get spotifySheetEmptyTop =>
+      'No top tracks yet. Listen on Spotify and try again.';
+
+  @override
+  String get spotifySheetEmptyNeedLink =>
+      'Connect Spotify in Pro settings to show your top tracks here.';
+
+  @override
+  String spotifySheetTrackAdded(String name) {
+    return '$name — added to post';
+  }
+
+  @override
+  String get settingsLanguageScreenTitle => 'Language';
+
+  @override
+  String get settingsLanguageScreenSubtitle =>
+      'Choose Spotbook’s display language. Your preference is saved on this device.';
+
+  @override
+  String get settingsLanguageSavedSnack => 'Language saved';
+
+  @override
+  String get settingsLanguageMenuLabel => 'Language';
 }

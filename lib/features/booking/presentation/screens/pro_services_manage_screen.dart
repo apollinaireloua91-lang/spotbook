@@ -67,7 +67,7 @@ class ProServicesManageScreen extends ConsumerWidget {
                             color: AppColors.gris, size: 48),
                         const SizedBox(height: 16),
                         const Text(
-                          'Aucun service pour l’instant.',
+                          'Aucun service pour l\'instant.',
                           textAlign: TextAlign.center,
                           style: TextStyle(color: AppColors.gris, fontSize: 16),
                         ),
@@ -123,8 +123,18 @@ class ProServicesManageScreen extends ConsumerWidget {
     final priceCtrl = TextEditingController(
       text: existing != null ? existing.price.toStringAsFixed(2) : '',
     );
+    final fixedAmountCtrl = TextEditingController(
+      text: existing?.depositType == 'fixed' && existing?.depositValue != null
+          ? existing!.depositValue!.toStringAsFixed(2)
+          : '',
+    );
     var duration = existing?.durationMinutes ?? 60;
     var active = existing?.isActive ?? true;
+    var paymentMode = existing?.paymentMode ?? 'full';
+    var depositType = existing?.depositType ?? 'percentage';
+    var depositPctValue = existing?.depositType == 'percentage'
+        ? (existing?.depositValue ?? 30)
+        : 30.0;
 
     await showModalBottomSheet<void>(
       context: context,
@@ -143,6 +153,31 @@ class ProServicesManageScreen extends ConsumerWidget {
           ),
           child: StatefulBuilder(
             builder: (context, setModal) {
+              final price = double.tryParse(
+                priceCtrl.text.replaceAll(',', '.'),
+              );
+
+              // Compute preview amounts.
+              String? depositPreview;
+              String? remainingPreview;
+              if (price != null && price > 0 && paymentMode == 'deposit') {
+                double dep;
+                if (depositType == 'fixed') {
+                  final fixedVal = double.tryParse(
+                    fixedAmountCtrl.text.replaceAll(',', '.'),
+                  );
+                  dep = (fixedVal != null && fixedVal > 0)
+                      ? (fixedVal > price ? price : fixedVal)
+                      : 0;
+                } else {
+                  dep = price * depositPctValue / 100;
+                }
+                if (dep > 0) {
+                  depositPreview = dep.toStringAsFixed(2);
+                  remainingPreview = (price - dep).toStringAsFixed(2);
+                }
+              }
+
               return SingleChildScrollView(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -179,6 +214,7 @@ class ProServicesManageScreen extends ConsumerWidget {
                             hint: '80.00',
                             keyboardType: const TextInputType.numberWithOptions(
                                 decimal: true),
+                            onChanged: (_) => setModal(() {}),
                           ),
                         ),
                         const SizedBox(width: 12),
@@ -228,6 +264,158 @@ class ProServicesManageScreen extends ConsumerWidget {
                         ),
                       ],
                     ),
+
+                    // ─── Payment mode: full vs deposit ──────────────────
+                    const SizedBox(height: 20),
+                    const Text(
+                      'Mode de paiement',
+                      style: TextStyle(
+                        color: AppColors.gris,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    _PaymentModeRadio(
+                      label: 'Paiement complet',
+                      subtitle: 'Le client paie la totalité en ligne',
+                      selected: paymentMode == 'full',
+                      onTap: () => setModal(() => paymentMode = 'full'),
+                    ),
+                    const SizedBox(height: 8),
+                    _PaymentModeRadio(
+                      label: 'Acompte + reste sur place',
+                      subtitle: 'Le client paie un acompte en ligne, le reste au RDV',
+                      selected: paymentMode == 'deposit',
+                      onTap: () => setModal(() => paymentMode = 'deposit'),
+                    ),
+
+                    // ─── Deposit config (only if deposit mode) ──────────
+                    if (paymentMode == 'deposit') ...[
+                      const SizedBox(height: 16),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: GestureDetector(
+                              onTap: () => setModal(() => depositType = 'percentage'),
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(vertical: 10),
+                                decoration: BoxDecoration(
+                                  color: depositType == 'percentage'
+                                      ? AppColors.blanc.withAlpha(15)
+                                      : AppColors.surfaceAlt,
+                                  borderRadius: BorderRadius.circular(10),
+                                  border: Border.all(
+                                    color: depositType == 'percentage'
+                                        ? AppColors.blanc
+                                        : AppColors.border,
+                                  ),
+                                ),
+                                alignment: Alignment.center,
+                                child: Text(
+                                  'Pourcentage',
+                                  style: TextStyle(
+                                    color: depositType == 'percentage'
+                                        ? AppColors.blanc
+                                        : AppColors.gris,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: GestureDetector(
+                              onTap: () => setModal(() => depositType = 'fixed'),
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(vertical: 10),
+                                decoration: BoxDecoration(
+                                  color: depositType == 'fixed'
+                                      ? AppColors.blanc.withAlpha(15)
+                                      : AppColors.surfaceAlt,
+                                  borderRadius: BorderRadius.circular(10),
+                                  border: Border.all(
+                                    color: depositType == 'fixed'
+                                        ? AppColors.blanc
+                                        : AppColors.border,
+                                  ),
+                                ),
+                                alignment: Alignment.center,
+                                child: Text(
+                                  'Montant fixe',
+                                  style: TextStyle(
+                                    color: depositType == 'fixed'
+                                        ? AppColors.blanc
+                                        : AppColors.gris,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+                      if (depositType == 'percentage') ...[
+                        Row(
+                          children: [
+                            Text(
+                              '${depositPctValue.toInt()} %',
+                              style: const TextStyle(
+                                color: AppColors.blanc,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            Expanded(
+                              child: Slider(
+                                value: depositPctValue,
+                                min: 10,
+                                max: 50,
+                                divisions: 8,
+                                activeColor: AppColors.blanc,
+                                inactiveColor: AppColors.border,
+                                label: '${depositPctValue.toInt()} %',
+                                onChanged: (v) =>
+                                    setModal(() => depositPctValue = v),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ] else ...[
+                        SpotbookTextField(
+                          controller: fixedAmountCtrl,
+                          label: 'Montant de l\'acompte (CAD)',
+                          hint: '100.00',
+                          keyboardType: const TextInputType.numberWithOptions(
+                              decimal: true),
+                          onChanged: (_) => setModal(() {}),
+                        ),
+                      ],
+                      if (depositPreview != null && remainingPreview != null) ...[
+                        const SizedBox(height: 8),
+                        Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: AppColors.surfaceAlt,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: AppColors.border),
+                          ),
+                          child: Text(
+                            'Le client paiera $depositPreview \$ en ligne et $remainingPreview \$ sur place',
+                            style: const TextStyle(
+                              color: AppColors.gris,
+                              fontSize: 13,
+                              height: 1.4,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ],
+
                     if (existing != null) ...[
                       const SizedBox(height: 12),
                       SwitchListTile(
@@ -258,6 +446,25 @@ class ProServicesManageScreen extends ConsumerWidget {
                         );
                         if (price == null || price <= 0) return;
 
+                        // Resolve deposit value.
+                        final isDeposit = paymentMode == 'deposit';
+                        double? depValue;
+                        String? depType;
+                        double legacyPct = 1.0;
+                        if (isDeposit) {
+                          depType = depositType;
+                          if (depositType == 'percentage') {
+                            depValue = depositPctValue;
+                            legacyPct = depositPctValue / 100;
+                          } else {
+                            depValue = double.tryParse(
+                              fixedAmountCtrl.text.replaceAll(',', '.'),
+                            );
+                            if (depValue == null || depValue <= 0) return;
+                            legacyPct = (depValue / price).clamp(0.10, 1.0);
+                          }
+                        }
+
                         HapticFeedback.mediumImpact();
                         final n = ref.read(proServicesNotifierProvider.notifier);
                         final ok = existing == null
@@ -268,6 +475,10 @@ class ProServicesManageScreen extends ConsumerWidget {
                                     : descCtrl.text.trim(),
                                 durationMinutes: duration,
                                 price: price,
+                                depositPercentage: legacyPct,
+                                paymentMode: paymentMode,
+                                depositType: depType,
+                                depositValue: depValue,
                               )
                             : await n.updateService(
                                 existing,
@@ -278,6 +489,10 @@ class ProServicesManageScreen extends ConsumerWidget {
                                 durationMinutes: duration,
                                 price: price,
                                 isActive: active,
+                                depositPercentage: legacyPct,
+                                paymentMode: paymentMode,
+                                depositType: depType,
+                                depositValue: depValue,
                               );
                         if (ok && context.mounted) context.pop();
                       },
@@ -298,6 +513,68 @@ class ProServicesManageScreen extends ConsumerWidget {
   }
 }
 
+class _PaymentModeRadio extends StatelessWidget {
+  const _PaymentModeRadio({
+    required this.label,
+    required this.subtitle,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final String label;
+  final String subtitle;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        decoration: BoxDecoration(
+          color: selected ? AppColors.blanc.withAlpha(15) : AppColors.surfaceAlt,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: selected ? AppColors.blanc : AppColors.border,
+            width: selected ? 1.5 : 1,
+          ),
+        ),
+        child: Row(
+          children: [
+            Icon(
+              selected ? Icons.radio_button_checked : Icons.radio_button_off,
+              color: selected ? AppColors.blanc : AppColors.gris,
+              size: 20,
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    label,
+                    style: TextStyle(
+                      color: selected ? AppColors.blanc : AppColors.gris,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    subtitle,
+                    style: const TextStyle(color: AppColors.gris, fontSize: 11),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class _ServiceTile extends StatelessWidget {
   const _ServiceTile({
     required this.service,
@@ -310,6 +587,14 @@ class _ServiceTile extends StatelessWidget {
   final String priceLabel;
   final VoidCallback onEdit;
   final VoidCallback onToggle;
+
+  String get _depositLabel {
+    if (!service.isDepositMode) return 'Paiement complet';
+    if (service.depositType == 'fixed') {
+      return 'Acompte ${service.depositValue?.toStringAsFixed(0) ?? '—'} \$';
+    }
+    return 'Acompte ${service.depositValue?.toInt() ?? 30} %';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -334,7 +619,7 @@ class _ServiceTile extends StatelessWidget {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        '${service.durationMinutes} min · $priceLabel',
+                        '${service.durationMinutes} min · $priceLabel · $_depositLabel',
                         style: const TextStyle(color: AppColors.gris, fontSize: 13),
                       ),
                     ],

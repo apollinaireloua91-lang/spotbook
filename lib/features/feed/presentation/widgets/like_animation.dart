@@ -20,7 +20,7 @@ class _LikeAnimationState extends State<LikeAnimation>
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 700),
+      duration: const Duration(milliseconds: 600),
     );
     _scale = TweenSequence<double>([
       TweenSequenceItem(tween: Tween(begin: 0.0, end: 1.3), weight: 40),
@@ -52,8 +52,8 @@ class _LikeAnimationState extends State<LikeAnimation>
             scale: _scale.value,
             child: const Icon(
               Icons.favorite,
-              color: AppColors.error,
-              size: 100,
+              color: AppColors.rose,
+              size: 80,
             ),
           ),
         );

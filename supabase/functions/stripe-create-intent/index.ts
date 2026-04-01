@@ -1,12 +1,11 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
 import Stripe from "https://esm.sh/stripe@14.14.0?target=deno";
-
 import {
-  assertAmount,
-  assertUuid,
   getClientIp,
-  jsonHeaders,
+  isValidAmount,
+  isValidUuid,
+  jsonResponse,
   securityHeaders,
 } from "../_shared/security.ts";
 
@@ -21,13 +20,17 @@ serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
     );
 
-    // Auth check
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader) {
+      return jsonResponse({ error: "unauthorized" }, 401);
+    }
+
     const authClient = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
       Deno.env.get("SUPABASE_ANON_KEY") ?? "",
       {
         global: {
-          headers: { Authorization: req.headers.get("Authorization")! },
+          headers: { Authorization: authHeader },
         },
       }
     );
@@ -35,23 +38,13 @@ serve(async (req) => {
       data: { user },
     } = await authClient.auth.getUser();
     if (!user) {
-      return new Response(JSON.stringify({ error: "unauthorized" }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-        status: 401,
-      });
+      return jsonResponse({ error: "unauthorized" }, 401);
     }
 
     const { bookingId } = await req.json();
-    if (!bookingId) {
-      return new Response(
-        JSON.stringify({ error: "bookingId required" }),
-        {
-          headers: jsonHeaders,
-          status: 400,
-        }
-      );
+    if (!bookingId || !isValidUuid(String(bookingId))) {
+      return jsonResponse({ error: "bookingId must be a valid UUID" }, 400);
     }
-    assertUuid(bookingId, "bookingId");
 
     // Fetch booking
     const { data: booking, error: bErr } = await supabase
@@ -61,35 +54,29 @@ serve(async (req) => {
       .single();
 
     if (bErr || !booking) {
-      return new Response(JSON.stringify({ error: "booking_not_found" }), {
-        headers: jsonHeaders,
-        status: 404,
-      });
+      return jsonResponse({ error: "booking_not_found" }, 404);
     }
 
     // Verify ownership
     if (booking.client_id !== user.id) {
-      return new Response(JSON.stringify({ error: "unauthorized" }), {
-        headers: jsonHeaders,
-        status: 401,
-      });
+      return jsonResponse({ error: "unauthorized" }, 401);
     }
 
     // Verify status
     if (booking.status !== "pending_payment") {
-      return new Response(
-        JSON.stringify({ error: "booking_not_pending" }),
-        {
-          headers: jsonHeaders,
-          status: 400,
-        }
+      return jsonResponse({ error: "booking_not_pending" }, 400);
+    }
+
+    if (!isValidAmount(Number(booking.deposit_amount))) {
+      return jsonResponse(
+        { error: "deposit_amount must be > 0 and < 99999" },
+        400
       );
     }
 
-    assertAmount(Number(booking.deposit_amount ?? 0), "deposit_amount");
-
-    // Rate limiting payment attempts (3 / hour) by IP + user
-    const limiter = await fetch(
+    // Rate limit payment attempts by card/user fingerprint
+    const fingerprint = `${user.id}:${booking.id}:${getClientIp(req)}`;
+    const rateLimitResp = await fetch(
       `${Deno.env.get("SUPABASE_URL")}/functions/v1/rate-limiter`,
       {
         method: "POST",
@@ -98,17 +85,14 @@ serve(async (req) => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          scope: "payment",
-          identifier: `${getClientIp(req)}:${user.id}`,
+          type: "payment",
+          cardFingerprint: fingerprint,
         }),
-      },
+      }
     );
-    if (limiter.status === 429) {
-      const body = await limiter.json();
-      return new Response(
-        JSON.stringify({ error: body.message ?? "Trop de tentatives." }),
-        { headers: jsonHeaders, status: 429 },
-      );
+    if (rateLimitResp.status === 429) {
+      const data = await rateLimitResp.json();
+      return jsonResponse({ error: data.error }, 429);
     }
 
     // Already has a PaymentIntent — return existing clientSecret
@@ -122,7 +106,7 @@ serve(async (req) => {
       return new Response(
         JSON.stringify({ clientSecret: existing.client_secret }),
         {
-          headers: jsonHeaders,
+          headers: { ...securityHeaders, "Content-Type": "application/json" },
         }
       );
     }
@@ -139,6 +123,7 @@ serve(async (req) => {
     const params: Record<string, unknown> = {
       amount: depositCents,
       currency: (booking.currency || "cad").toLowerCase(),
+      automatic_payment_methods: { enabled: true },
       metadata: {
         bookingId: booking.id,
         clientId: user.id,
@@ -162,25 +147,15 @@ serve(async (req) => {
       .from("bookings")
       .update({ stripe_payment_intent_id: paymentIntent.id })
       .eq("id", bookingId);
-    await supabase.rpc("insert_audit_log", {
-      p_user_id: user.id,
-      p_action: "payment_initiated",
-      p_resource_type: "booking",
-      p_resource_id: bookingId,
-      p_metadata: { payment_intent_id: paymentIntent.id },
-      p_ip_address: getClientIp(req),
-    });
 
     return new Response(
       JSON.stringify({ clientSecret: paymentIntent.client_secret }),
       {
-        headers: jsonHeaders,
+        headers: { ...securityHeaders, "Content-Type": "application/json" },
       }
     );
   } catch (error) {
-    return new Response(JSON.stringify({ error: error.message }), {
-      headers: jsonHeaders,
-      status: 400,
-    });
+    console.error("stripe-create-intent error:", error);
+    return jsonResponse({ error: "internal_error" }, 500);
   }
 });

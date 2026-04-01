@@ -1,7 +1,15 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
+import { assertServiceRoleOnly, jsonResponse, securityHeaders } from "../_shared/security.ts";
 
-serve(async (_req) => {
+serve(async (req) => {
+  if (req.method === "OPTIONS") {
+    return new Response("ok", { headers: securityHeaders });
+  }
+
+  const forbidden = assertServiceRoleOnly(req);
+  if (forbidden) return forbidden;
+
   try {
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
@@ -73,14 +81,9 @@ serve(async (_req) => {
       }
     }
 
-    return new Response(
-      JSON.stringify({ success: true, generated: totalSlots }),
-      { headers: { "Content-Type": "application/json" } }
-    );
+    return jsonResponse({ success: true, generated: totalSlots });
   } catch (error) {
-    return new Response(JSON.stringify({ error: error.message }), {
-      headers: { "Content-Type": "application/json" },
-      status: 400,
-    });
+    console.error("generate-slots error:", error);
+    return jsonResponse({ error: "internal_error" }, 500);
   }
 });

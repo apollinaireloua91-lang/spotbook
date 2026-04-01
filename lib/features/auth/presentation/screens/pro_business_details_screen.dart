@@ -59,7 +59,7 @@ class _ProBusinessDetailsScreenState extends ConsumerState<ProBusinessDetailsScr
     try {
       await ref.read(_bizProvider.notifier).submit(businessName: _businessNameCtrl.text, city: _cityCtrl.text, bio: _bioCtrl.text);
       if (!mounted) return;
-      context.go('/pro/verification');
+      context.go('/pro/stripe-connect');
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString().replaceFirst('Exception: ', '')), backgroundColor: AppColors.error));

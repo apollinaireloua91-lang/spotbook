@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Review &amp; Publish</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#2badee",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101c22",
+                        "surface-dark": "#192b33",
+                        "text-secondary": "#92b7c9",
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans", "sans-serif"]
+                    },
+                    borderRadius: { "DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-white antialiased overflow-x-hidden selection:bg-primary/30">
+<div class="relative flex min-h-screen w-full flex-col pb-28">
+<!-- Top Navigation -->
+<header class="sticky top-0 z-50 flex items-center justify-between bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md p-4 pb-2 border-b border-slate-200 dark:border-slate-800/50">
+<button class="flex size-10 shrink-0 items-center justify-center rounded-full active:bg-slate-200 dark:active:bg-slate-800 transition-colors text-slate-900 dark:text-white">
+<span class="material-symbols-outlined">arrow_back_ios_new</span>
+</button>
+<h2 class="text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center">Review &amp; Publish</h2>
+<div class="flex items-center justify-end">
+<p class="text-text-secondary text-sm font-bold tracking-[0.015em] shrink-0">Step 5/5</p>
+</div>
+</header>
+<!-- Main Content -->
+<main class="flex flex-col gap-6 p-4">
+<!-- Instruction Text -->
+<div class="text-center px-4">
+<p class="text-slate-600 dark:text-text-secondary text-base font-normal leading-normal">
+                    Preview how your event will look to customers before going live.
+                </p>
+</div>
+<!-- Event Preview Card -->
+<div class="w-full">
+<div class="relative group overflow-hidden rounded-3xl bg-white dark:bg-surface-dark shadow-sm dark:shadow-[0_0_15px_rgba(0,0,0,0.3)] border border-slate-200 dark:border-slate-700/30">
+<!-- Edit Button Overlay -->
+<button class="absolute top-3 right-3 z-10 flex size-9 items-center justify-center rounded-full bg-black/40 backdrop-blur-md text-white hover:bg-black/60 transition-colors">
+<span class="material-symbols-outlined text-[20px]">edit</span>
+</button>
+<!-- Card Image -->
+<div class="w-full h-48 bg-cover bg-center" data-alt="Peaceful sunset yoga session by the water with silhouettes" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCR428l0whOzPMCe4XgszmRZYo2SFbMNMB3h0CMPAQVA8AOh7PWtQ-rb9liN87-x3XX1XdwlIMD2Z5ErDPaXDZBO53hMV0GAEJqIENhm5V7VQ-EzMWfkH7C6PipCaVLVnyRDFt5o_mYLm3ZgoOghwShmP8D7VcdziOuWaXagVLXg3-W206LC6F1L3poDcwcCwrw9hAPrwqdkpvJwUNkOPp1eMfPUVMj3DUAkWw35jEP-TYKn-prGT7tyMTvFfs1w365wQsnbGuMdnE");'>
+<div class="w-full h-full bg-gradient-to-t from-surface-dark/90 to-transparent"></div>
+</div>
+<!-- Card Content -->
+<div class="p-5 flex flex-col gap-4 -mt-6 relative z-10">
+<!-- Category Tag -->
+<div class="flex justify-between items-start">
+<span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-primary/20 text-primary border border-primary/20">
+                                Health &amp; Wellness
+                            </span>
+</div>
+<!-- Title & Host -->
+<div>
+<h3 class="text-xl font-bold leading-tight tracking-tight text-slate-900 dark:text-white mb-1">
+                                Sunset Yoga by the Bay
+                            </h3>
+<p class="text-sm text-slate-500 dark:text-text-secondary">Hosted by <span class="text-slate-900 dark:text-white font-medium">Sarah Jenkins</span></p>
+</div>
+<!-- Details Grid -->
+<div class="flex flex-col gap-3 border-t border-slate-100 dark:border-slate-700/50 pt-4">
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-primary mt-0.5">calendar_month</span>
+<div>
+<p class="text-sm font-semibold text-slate-900 dark:text-white">Sat, Oct 24 • 10:00 AM</p>
+<p class="text-xs text-slate-500 dark:text-text-secondary">2 hours duration</p>
+</div>
+</div>
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-primary mt-0.5">location_on</span>
+<div>
+<p class="text-sm font-semibold text-slate-900 dark:text-white">Marina Green Park</p>
+<p class="text-xs text-slate-500 dark:text-text-secondary">San Francisco, CA</p>
+</div>
+</div>
+</div>
+<!-- Price & Description Snippet -->
+<div class="flex items-end justify-between mt-2 pt-4 border-t border-slate-100 dark:border-slate-700/50">
+<p class="text-sm text-slate-500 dark:text-text-secondary line-clamp-2 max-w-[65%] leading-relaxed">
+                                Join us for a relaxing evening session designed to help you unwind and...
+                            </p>
+<div class="flex flex-col items-end">
+<span class="text-lg font-bold text-slate-900 dark:text-white">$25.00</span>
+<span class="text-[10px] uppercase tracking-wider text-slate-400 font-semibold">per person</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Set Status Section -->
+<div class="flex flex-col gap-3 mt-2">
+<h3 class="text-lg font-bold leading-tight tracking-[-0.015em] text-slate-900 dark:text-white">Set Status</h3>
+<div class="grid grid-cols-2 gap-4">
+<!-- Draft Option -->
+<label class="cursor-pointer relative">
+<input class="peer sr-only" name="status" type="radio" value="draft"/>
+<div class="flex flex-col items-center justify-center gap-2 p-4 rounded-2xl bg-white dark:bg-surface-dark border-2 border-transparent peer-checked:border-slate-400 dark:peer-checked:border-slate-500 peer-checked:bg-slate-100 dark:peer-checked:bg-slate-800 transition-all shadow-sm">
+<span class="material-symbols-outlined text-slate-400 dark:text-slate-500 text-3xl">edit_document</span>
+<span class="font-semibold text-slate-500 dark:text-slate-400">Save Draft</span>
+</div>
+</label>
+<!-- Publish Option -->
+<label class="cursor-pointer relative">
+<input checked="" class="peer sr-only" name="status" type="radio" value="publish"/>
+<div class="flex flex-col items-center justify-center gap-2 p-4 rounded-2xl bg-white dark:bg-surface-dark border-2 border-transparent peer-checked:border-primary peer-checked:bg-primary/10 transition-all shadow-sm relative overflow-hidden">
+<div class="absolute top-2 right-2 size-2 rounded-full bg-primary shadow-[0_0_8px_rgba(43,173,238,0.6)]"></div>
+<span class="material-symbols-outlined text-primary text-3xl">rocket_launch</span>
+<span class="font-semibold text-primary">Publish Now</span>
+</div>
+</label>
+</div>
+</div>
+<!-- Summary List -->
+<div class="bg-white dark:bg-surface-dark rounded-2xl p-5 shadow-sm mt-2">
+<div class="flex flex-col gap-4">
+<div class="flex justify-between items-center pb-4 border-b border-slate-100 dark:border-slate-700/50">
+<span class="text-slate-500 dark:text-text-secondary text-sm font-medium">Total Tickets</span>
+<span class="text-slate-900 dark:text-white text-sm font-semibold">50 Tickets</span>
+</div>
+<div class="flex justify-between items-center pb-4 border-b border-slate-100 dark:border-slate-700/50">
+<span class="text-slate-500 dark:text-text-secondary text-sm font-medium">Visibility</span>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-primary text-sm">public</span>
+<span class="text-slate-900 dark:text-white text-sm font-semibold">Public</span>
+</div>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-slate-500 dark:text-text-secondary text-sm font-medium">Payout Method</span>
+<div class="flex items-center gap-1.5">
+<span class="text-slate-900 dark:text-white text-sm font-semibold">Bank Account •••• 4281</span>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Sticky Footer -->
+<div class="fixed bottom-0 w-full p-4 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-xl border-t border-slate-200 dark:border-slate-800/50 z-50 safe-area-bottom">
+<button class="w-full flex items-center justify-center gap-2 h-14 rounded-full bg-primary text-background-dark text-base font-bold shadow-[0_4px_12px_rgba(43,173,238,0.3)] hover:shadow-[0_6px_16px_rgba(43,173,238,0.4)] active:scale-[0.98] transition-all">
+<span>Publish Event</span>
+<span class="material-symbols-outlined text-lg">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- Background Gradient Decoration -->
+<div class="fixed top-0 left-0 w-full h-screen pointer-events-none z-0 overflow-hidden">
+<div class="absolute -top-[20%] -right-[20%] w-[80%] h-[50%] rounded-full bg-primary/5 blur-[100px]"></div>
+<div class="absolute top-[40%] -left-[20%] w-[60%] h-[40%] rounded-full bg-purple-500/5 blur-[100px]"></div>
+</div>
+<style>
+        /* Extra padding for safe area on iOS devices with home indicator */
+        .safe-area-bottom {
+            padding-bottom: max(1rem, env(safe-area-inset-bottom));
+        }
+    </style>
+</body></html>

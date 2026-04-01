@@ -42,13 +42,27 @@ class MyVideosScreen extends ConsumerWidget {
             onPressed: () => context.pop(),
           ),
         ),
-        title: const Text('My Videos'),
+        title: const Text('Mes vidéos (compte)'),
         centerTitle: true,
       ),
       body: videos == null
           ? const Center(child: CircularProgressIndicator(color: AppColors.blanc))
           : videos.isEmpty
-              ? const Center(child: Text('No videos yet', style: TextStyle(color: AppColors.gris, fontSize: 15)))
+              ? Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(24),
+                    child: Text(
+                      'Aucune vidéo enregistrée sur ton compte pour l’instant.\n'
+                      'Crée-en une depuis l’onglet caméra : elles apparaîtront ici avec leur statut (en revue, publiée, etc.).',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: AppColors.gris.withValues(alpha: 0.95),
+                        fontSize: 15,
+                        height: 1.45,
+                      ),
+                    ),
+                  ),
+                )
               : ListView.builder(
                   padding: const EdgeInsets.all(16), itemCount: videos.length,
                   itemBuilder: (context, index) {

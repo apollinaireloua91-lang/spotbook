@@ -1,0 +1,574 @@
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+
+import '../../../../shared/theme/app_colors.dart';
+import '../../../../shared/theme/app_typography.dart';
+import '../../data/discover_search_repository.dart';
+import '../../domain/provider_search_result.dart';
+
+// ═════════════════════════════════════════════════════════════════════════════
+// PRO SEARCH SCREEN — Explorer (trending, pros nearby, events, inspirations)
+// ═════════════════════════════════════════════════════════════════════════════
+
+class ProSearchScreen extends ConsumerStatefulWidget {
+  const ProSearchScreen({super.key});
+
+  @override
+  ConsumerState<ProSearchScreen> createState() => _ProSearchScreenState();
+}
+
+class _ProSearchScreenState extends ConsumerState<ProSearchScreen> {
+  final _searchCtrl = TextEditingController();
+  List<ProviderSearchResult> _results = [];
+  bool _isSearching = false;
+
+  @override
+  void dispose() {
+    _searchCtrl.dispose();
+    super.dispose();
+  }
+
+  Future<void> _onSearch(String query) async {
+    if (query.trim().isEmpty) {
+      setState(() {
+        _results = [];
+        _isSearching = false;
+      });
+      return;
+    }
+    setState(() => _isSearching = true);
+    try {
+      final repo = ref.read(discoverSearchRepositoryProvider);
+      final results = await repo.getAllProviders();
+      // Client-side filter by name/category
+      final q = query.toLowerCase();
+      setState(() {
+        _results = results
+            .where((r) =>
+                r.displayName.toLowerCase().contains(q) ||
+                (r.category?.toLowerCase().contains(q) ?? false))
+            .toList();
+        _isSearching = false;
+      });
+    } catch (_) {
+      setState(() => _isSearching = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppColors.fond,
+      body: SafeArea(
+        child: CustomScrollView(
+          slivers: [
+            // ── Header ──
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.explore_rounded,
+                          color: AppColors.violetClair,
+                          size: 24,
+                        ),
+                        const SizedBox(width: 10),
+                        Text(
+                          'Explorer',
+                          style: AppTypography.proHubTitle,
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    // Search bar
+                    Container(
+                      height: 44,
+                      decoration: BoxDecoration(
+                        color: AppColors.surface,
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      child: TextField(
+                        controller: _searchCtrl,
+                        style: const TextStyle(
+                            color: AppColors.blanc, fontSize: 14),
+                        decoration: InputDecoration(
+                          hintText: 'Rechercher des pros, hashtags...',
+                          hintStyle: TextStyle(
+                              color: AppColors.gris.withAlpha(153)),
+                          prefixIcon: const Icon(Icons.search,
+                              color: AppColors.gris, size: 20),
+                          border: InputBorder.none,
+                          contentPadding:
+                              const EdgeInsets.symmetric(vertical: 12),
+                        ),
+                        onChanged: _onSearch,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            // ── Search results ──
+            if (_isSearching)
+              const SliverFillRemaining(
+                child: Center(
+                  child:
+                      CircularProgressIndicator(color: AppColors.violet),
+                ),
+              )
+            else if (_results.isNotEmpty)
+              SliverPadding(
+                padding: const EdgeInsets.all(20),
+                sliver: SliverList.separated(
+                  itemCount: _results.length,
+                  separatorBuilder: (_, __) => const SizedBox(height: 10),
+                  itemBuilder: (context, i) =>
+                      _ProSearchCard(result: _results[i]),
+                ),
+              )
+            else ...[
+              // ── Tendances (hashtags) ──
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 24, 20, 0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Tendances',
+                        style: TextStyle(
+                          color: AppColors.blanc,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      const _TrendingHashtags(),
+                    ],
+                  ),
+                ),
+              ),
+
+              // ── Pros populaires près de toi ──
+              const SliverToBoxAdapter(
+                child: Padding(
+                  padding: EdgeInsets.fromLTRB(20, 28, 20, 0),
+                  child: Text(
+                    'Pros populaires près de toi',
+                    style: TextStyle(
+                      color: AppColors.blanc,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+              ),
+              SliverToBoxAdapter(
+                child: _PopularProsSection(ref: ref),
+              ),
+
+              // ── Événements tendance ──
+              const SliverToBoxAdapter(
+                child: Padding(
+                  padding: EdgeInsets.fromLTRB(20, 28, 20, 0),
+                  child: Text(
+                    'Événements tendance',
+                    style: TextStyle(
+                      color: AppColors.blanc,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+              ),
+              const SliverToBoxAdapter(child: _TrendingEventsSection()),
+
+              // ── Inspirations (posts viraux) ──
+              const SliverToBoxAdapter(
+                child: Padding(
+                  padding: EdgeInsets.fromLTRB(20, 28, 20, 12),
+                  child: Text(
+                    'Inspirations',
+                    style: TextStyle(
+                      color: AppColors.blanc,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+              ),
+              const SliverToBoxAdapter(child: _InspirationGrid()),
+
+              const SliverToBoxAdapter(child: SizedBox(height: 100)),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ═════════════════════════════════════════════════════════════════════════════
+// TRENDING HASHTAGS — horizontal scroll pills
+// ═════════════════════════════════════════════════════════════════════════════
+
+class _TrendingHashtags extends StatelessWidget {
+  const _TrendingHashtags();
+
+  static const _hashtags = [
+    '#barbier', '#nailart', '#coach', '#fade', '#mtl',
+    '#beaute', '#tatouage', '#photoshoot', '#fitness', '#makeup',
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 34,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        itemCount: _hashtags.length,
+        separatorBuilder: (_, __) => const SizedBox(width: 8),
+        itemBuilder: (context, i) {
+          return Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
+            decoration: BoxDecoration(
+              color: AppColors.surface,
+              borderRadius: BorderRadius.circular(17),
+              border: Border.all(
+                color: AppColors.violet.withAlpha(77), // ~0.3
+                width: 1,
+              ),
+            ),
+            child: Text(
+              _hashtags[i],
+              style: const TextStyle(
+                color: AppColors.violetClair,
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+// ═════════════════════════════════════════════════════════════════════════════
+// POPULAR PROS NEARBY — horizontal grid
+// ═════════════════════════════════════════════════════════════════════════════
+
+class _PopularProsSection extends StatelessWidget {
+  const _PopularProsSection({required this.ref});
+
+  final WidgetRef ref;
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<List<ProviderSearchResult>>(
+      future: ref.read(discoverSearchRepositoryProvider).getAllProviders(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const SizedBox(
+            height: 180,
+            child: Center(
+              child: CircularProgressIndicator(color: AppColors.violet),
+            ),
+          );
+        }
+        final pros = (snapshot.data ?? []).take(10).toList();
+        if (pros.isEmpty) {
+          return const SizedBox(
+            height: 80,
+            child: Center(
+              child: Text(
+                'Aucun pro à proximité',
+                style: TextStyle(color: AppColors.gris, fontSize: 13),
+              ),
+            ),
+          );
+        }
+        return SizedBox(
+          height: 180,
+          child: ListView.separated(
+            padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
+            scrollDirection: Axis.horizontal,
+            itemCount: pros.length,
+            separatorBuilder: (_, __) => const SizedBox(width: 12),
+            itemBuilder: (context, i) => _ProPopularCard(pro: pros[i]),
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _ProPopularCard extends StatelessWidget {
+  const _ProPopularCard({required this.pro});
+
+  final ProviderSearchResult pro;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () => context.push('/client/provider/${pro.id}'),
+      child: Container(
+        width: 140,
+        decoration: BoxDecoration(
+          color: AppColors.surface,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: AppColors.border, width: 0.5),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            // Cover gradient
+            Container(
+              height: 70,
+              decoration: BoxDecoration(
+                borderRadius:
+                    const BorderRadius.vertical(top: Radius.circular(14)),
+                gradient: LinearGradient(
+                  colors: [
+                    AppColors.violet.withAlpha(102),
+                    AppColors.rose.withAlpha(77),
+                  ],
+                ),
+              ),
+              child: Center(
+                child: CircleAvatar(
+                  radius: 24,
+                  backgroundColor: AppColors.fond,
+                  backgroundImage: pro.avatarUrl != null
+                      ? CachedNetworkImageProvider(pro.avatarUrl!)
+                      : null,
+                  child: pro.avatarUrl == null
+                      ? Text(
+                          pro.displayName[0].toUpperCase(),
+                          style: const TextStyle(
+                            color: AppColors.blanc,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        )
+                      : null,
+                ),
+              ),
+            ),
+            const SizedBox(height: 8),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              child: Text(
+                pro.displayName,
+                style: const TextStyle(
+                  color: AppColors.blanc,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.center,
+              ),
+            ),
+            const SizedBox(height: 2),
+            if (pro.category != null)
+              Text(
+                pro.category!,
+                style: const TextStyle(color: AppColors.gris, fontSize: 10),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            const Spacer(),
+            if (pro.averageRating != null && pro.averageRating! > 0)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 10),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.star, color: AppColors.warning, size: 12),
+                    const SizedBox(width: 2),
+                    Text(
+                      pro.averageRating!.toStringAsFixed(1),
+                      style: const TextStyle(
+                        color: AppColors.blanc,
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ═════════════════════════════════════════════════════════════════════════════
+// TRENDING EVENTS — horizontal cards
+// ═════════════════════════════════════════════════════════════════════════════
+
+class _TrendingEventsSection extends StatelessWidget {
+  const _TrendingEventsSection();
+
+  @override
+  Widget build(BuildContext context) {
+    // Placeholder — will be wired to Supabase events query
+    return SizedBox(
+      height: 130,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
+        child: Container(
+          decoration: BoxDecoration(
+            color: AppColors.surface,
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: AppColors.border, width: 0.5),
+          ),
+          child: const Center(
+            child: Text(
+              'Événements à venir',
+              style: TextStyle(color: AppColors.gris, fontSize: 13),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ═════════════════════════════════════════════════════════════════════════════
+// INSPIRATION GRID — 3 columns, thumbnail posts
+// ═════════════════════════════════════════════════════════════════════════════
+
+class _InspirationGrid extends StatelessWidget {
+  const _InspirationGrid();
+
+  @override
+  Widget build(BuildContext context) {
+    // Placeholder grid — will be populated from trending posts
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: GridView.builder(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 3,
+          mainAxisSpacing: 4,
+          crossAxisSpacing: 4,
+          childAspectRatio: 0.75,
+        ),
+        itemCount: 6,
+        itemBuilder: (context, i) {
+          return Container(
+            decoration: BoxDecoration(
+              color: AppColors.surface,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Center(
+              child: Icon(
+                Icons.play_arrow_rounded,
+                color: AppColors.gris.withAlpha(77),
+                size: 28,
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+// ═════════════════════════════════════════════════════════════════════════════
+// PRO SEARCH CARD — result item
+// ═════════════════════════════════════════════════════════════════════════════
+
+class _ProSearchCard extends StatelessWidget {
+  const _ProSearchCard({required this.result});
+
+  final ProviderSearchResult result;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () => context.push('/client/provider/${result.id}'),
+      child: Container(
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: AppColors.surface,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: AppColors.border, width: 0.5),
+        ),
+        child: Row(
+          children: [
+            CircleAvatar(
+              radius: 24,
+              backgroundColor: AppColors.surfaceAlt,
+              backgroundImage: result.avatarUrl != null
+                  ? CachedNetworkImageProvider(result.avatarUrl!)
+                  : null,
+              child: result.avatarUrl == null
+                  ? Text(
+                      result.displayName[0].toUpperCase(),
+                      style: const TextStyle(
+                        color: AppColors.blanc,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    )
+                  : null,
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    result.displayName,
+                    style: const TextStyle(
+                      color: AppColors.blanc,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 3),
+                  Text(
+                    [
+                      if (result.category != null) result.category!,
+                      if (result.city != null) result.city!,
+                    ].join(' · '),
+                    style: const TextStyle(
+                      color: AppColors.gris,
+                      fontSize: 12,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
+            ),
+            if (result.averageRating != null && result.averageRating! > 0) ...[
+              const Icon(Icons.star, color: AppColors.warning, size: 14),
+              const SizedBox(width: 2),
+              Text(
+                result.averageRating!.toStringAsFixed(1),
+                style: const TextStyle(
+                  color: AppColors.blanc,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+}

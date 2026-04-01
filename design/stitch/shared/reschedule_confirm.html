@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="fr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#2badee",
+                        "success": "#22c55e",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101c22",
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<title>Confirmation de Report - Spotbook</title>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 min-h-screen flex flex-col">
+<div class="flex items-center bg-background-light dark:bg-background-dark p-4 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-10">
+<div class="text-slate-900 dark:text-slate-100 flex size-10 shrink-0 items-center justify-center cursor-pointer">
+<span class="material-symbols-outlined">arrow_back</span>
+</div>
+<h2 class="text-slate-900 dark:text-slate-100 text-lg font-bold leading-tight tracking-tight flex-1 text-center pr-10">Confirmation de report</h2>
+</div>
+<main class="flex-1 overflow-y-auto pb-24">
+<div class="flex flex-col px-6 py-8 items-center">
+<div class="mb-6 flex flex-col items-center">
+<div class="w-20 h-20 bg-success/20 rounded-full flex items-center justify-center mb-4">
+<span class="material-symbols-outlined text-success text-5xl font-bold">check_circle</span>
+</div>
+<h1 class="text-slate-900 dark:text-slate-100 text-2xl font-extrabold leading-tight text-center">Billet reporté avec succès !</h1>
+<p class="text-slate-600 dark:text-slate-400 text-sm font-normal leading-normal mt-2 text-center max-w-xs">
+                    Votre réservation Spotbook a été mise à jour. Un email de confirmation vient de vous être envoyé.
+                </p>
+</div>
+<div class="w-full max-w-md bg-white dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-700 p-6 mb-8">
+<h3 class="text-slate-900 dark:text-slate-100 text-sm font-bold uppercase tracking-wider mb-4">Récapitulatif du changement</h3>
+<div class="flex flex-col gap-4">
+<div class="flex items-start gap-4">
+<div class="bg-slate-100 dark:bg-slate-700 p-3 rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-slate-500 dark:text-slate-400">event_busy</span>
+</div>
+<div class="flex flex-col">
+<p class="text-slate-500 dark:text-slate-400 text-xs font-medium">Ancienne date</p>
+<p class="text-slate-700 dark:text-slate-300 text-sm font-semibold line-through">Jeudi 12 Octobre 2023, 14:00</p>
+</div>
+</div>
+<div class="flex justify-center py-1">
+<span class="material-symbols-outlined text-primary">south</span>
+</div>
+<div class="flex items-start gap-4">
+<div class="bg-success/10 dark:bg-success/20 p-3 rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-success">event_available</span>
+</div>
+<div class="flex flex-col">
+<p class="text-success text-xs font-medium">Nouvelle date</p>
+<p class="text-slate-900 dark:text-slate-100 text-base font-bold">Samedi 21 Octobre 2023, 18:30</p>
+</div>
+</div>
+</div>
+</div>
+<div class="w-full max-w-md bg-white dark:bg-slate-800 rounded-xl p-8 flex flex-col items-center shadow-lg border-2 border-primary/20">
+<p class="text-slate-900 dark:text-slate-100 text-sm font-bold mb-4">Votre nouveau QR Code</p>
+<div class="bg-white p-4 rounded-lg mb-4">
+<img alt="QR Code de réservation mis à jour" class="w-40 h-40" data-alt="Un QR code noir sur fond blanc" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBGmgkFX5yEVr7Ap_4DwhX3iRkaQetnw6dDXj4AKaYvUGVebje-DMcFe0pA26CiKoL5S1lhP_VOuiXXFkA5E2mzURDkJkyoz4XXOb3io4FsMldqHGcSuSA3z-0ubELYV6JtRpUAkjikqaLg3j0_zhBOe9P-JBd4GPI4y5kZjzSivJlZvTY_ImAkPzrrNsK8GSkDIFCcMkwP6QPj8aJiIv9vLdYeIPH6_YcDA52ltvjD70buACip7yK1Q3lLgwwP8VF0V48YbOAh-Gs"/>
+</div>
+<p class="text-slate-500 dark:text-slate-400 text-xs text-center">Présentez ce code à l'entrée de l'événement.</p>
+</div>
+<div class="w-full max-w-md flex flex-col gap-3 mt-8">
+<button class="w-full bg-primary hover:bg-primary/90 text-white font-bold py-4 rounded-xl transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined">confirmation_number</span>
+                    Voir mon nouveau billet
+                </button>
+<button class="w-full bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-900 dark:text-slate-100 font-bold py-4 rounded-xl transition-colors">
+                    Retour à mes réservations
+                </button>
+</div>
+</div>
+</main>
+<nav class="fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 flex justify-around items-center px-4 py-3 z-20">
+<a class="flex flex-col items-center gap-1 text-slate-400 dark:text-slate-500" href="#">
+<span class="material-symbols-outlined">home</span>
+<p class="text-[10px] font-medium uppercase tracking-widest">Accueil</p>
+</a>
+<a class="flex flex-col items-center gap-1 text-primary" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1">confirmation_number</span>
+<p class="text-[10px] font-medium uppercase tracking-widest">Billets</p>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-400 dark:text-slate-500" href="#">
+<span class="material-symbols-outlined">favorite</span>
+<p class="text-[10px] font-medium uppercase tracking-widest">Favoris</p>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-400 dark:text-slate-500" href="#">
+<span class="material-symbols-outlined">person</span>
+<p class="text-[10px] font-medium uppercase tracking-widest">Profil</p>
+</a>
+</nav>
+</body></html>

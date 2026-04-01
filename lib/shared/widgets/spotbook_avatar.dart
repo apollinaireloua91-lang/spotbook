@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
@@ -27,25 +29,46 @@ class SpotbookAvatar extends StatelessWidget {
   Widget build(BuildContext context) {
     final double size = radius * 2;
     final double badgeSize = radius * 0.45;
+    final bool hasBadge = isOnline || isVerified;
 
     return GestureDetector(
       onTap: onTap,
       child: SizedBox(
-        width: size + (isOnline || isVerified ? 4 : 0),
-        height: size + (isOnline || isVerified ? 4 : 0),
+        width: size + (hasBadge ? 4 : 0),
+        height: size + (hasBadge ? 4 : 0),
         child: Stack(
           children: [
-            // Avatar circle
-            Positioned(
-              top: 0,
-              left: 0,
-              child: _AvatarCircle(
-                imageUrl: imageUrl,
-                name: name,
-                radius: radius,
-                size: size,
+            // Gradient ring for verified pros
+            if (isVerified)
+              Positioned(
+                top: 0,
+                left: 0,
+                child: _GradientRing(radius: radius),
+              )
+            else
+              Positioned(
+                top: 0,
+                left: 0,
+                child: _AvatarCircle(
+                  imageUrl: imageUrl,
+                  name: name,
+                  radius: radius,
+                  size: size,
+                ),
               ),
-            ),
+
+            // Avatar circle (inside ring for verified)
+            if (isVerified)
+              Positioned(
+                top: 3,
+                left: 3,
+                child: _AvatarCircle(
+                  imageUrl: imageUrl,
+                  name: name,
+                  radius: radius - 3,
+                  size: size - 6,
+                ),
+              ),
 
             // Online badge (bottom-right green dot)
             if (isOnline)
@@ -63,7 +86,7 @@ class SpotbookAvatar extends StatelessWidget {
                 ),
               ),
 
-            // Verified badge (bottom-right checkmark) — takes priority over online
+            // Verified badge (bottom-right checkmark)
             if (isVerified && !isOnline)
               Positioned(
                 bottom: 0,
@@ -72,14 +95,14 @@ class SpotbookAvatar extends StatelessWidget {
                   width: badgeSize + 2,
                   height: badgeSize + 2,
                   decoration: BoxDecoration(
-                    color: AppColors.blanc,
+                    gradient: AppColors.gradientAccent,
                     shape: BoxShape.circle,
                     border: Border.all(color: AppColors.fond, width: 1.5),
                   ),
                   child: Icon(
-                    Icons.check,
+                    Icons.check_rounded,
                     size: badgeSize - 2,
-                    color: AppColors.fond,
+                    color: AppColors.blanc,
                   ),
                 ),
               ),
@@ -89,6 +112,68 @@ class SpotbookAvatar extends StatelessWidget {
     );
   }
 }
+
+// ── Gradient ring (anneau dégradé animé pour les pros vérifiés) ──────────────
+
+class _GradientRing extends StatefulWidget {
+  const _GradientRing({required this.radius});
+
+  final double radius;
+
+  @override
+  State<_GradientRing> createState() => _GradientRingState();
+}
+
+class _GradientRingState extends State<_GradientRing>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _ctrl;
+
+  @override
+  void initState() {
+    super.initState();
+    _ctrl = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 3),
+    )..repeat();
+  }
+
+  @override
+  void dispose() {
+    _ctrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final size = widget.radius * 2;
+    return AnimatedBuilder(
+      animation: _ctrl,
+      builder: (context, child) {
+        return Transform.rotate(
+          angle: _ctrl.value * 2 * math.pi,
+          child: Container(
+            width: size,
+            height: size,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: SweepGradient(
+                colors: const [
+                  AppColors.violet,
+                  AppColors.rose,
+                  AppColors.violetClair,
+                  AppColors.violet,
+                ],
+                stops: const [0.0, 0.33, 0.66, 1.0],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+// ── Avatar circle ────────────────────────────────────────────────────────────
 
 class _AvatarCircle extends StatelessWidget {
   const _AvatarCircle({

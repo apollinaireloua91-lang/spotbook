@@ -1,7 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import '../../payment/data/payment_repository.dart';
 import '../domain/booking_models.dart';
 import 'booking_repository.dart';
 
@@ -55,7 +54,23 @@ class BookingFlowState {
     return price < 0 ? 0 : price;
   }
 
-  double get depositPrice => (totalPrice * 0.30 * 100).roundToDouble() / 100;
+  bool get isDepositMode => selectedService?.paymentMode == 'deposit';
+
+  double get depositPrice {
+    if (selectedService == null) return 0;
+    if (!isDepositMode) return totalPrice;
+
+    final type = selectedService!.depositType ?? 'percentage';
+    final value = selectedService!.depositValue ?? 30;
+
+    if (type == 'fixed') {
+      return value > totalPrice ? totalPrice : value;
+    }
+    // percentage
+    return (totalPrice * value / 100 * 100).roundToDouble() / 100;
+  }
+
+  double get remainingPrice => totalPrice - depositPrice;
 
   BookingFlowState copyWith({
     int? step,
@@ -103,16 +118,34 @@ class BookingFlowNotifier extends Notifier<BookingFlowState> {
     return const BookingFlowState();
   }
 
-  void init(String proId) {
+  void init(String proId, {String? initialServiceId}) {
     _repo = ref.read(bookingRepositoryProvider);
     _proId = proId;
-    _loadServices();
+    _loadServices(initialServiceId: initialServiceId);
   }
 
-  Future<void> _loadServices() async {
-    state = state.copyWith(isLoading: true);
-    final services = await _repo.getProServices(_proId);
-    state = state.copyWith(services: services, isLoading: false);
+  Future<void> _loadServices({String? initialServiceId}) async {
+    state = state.copyWith(isLoading: true, error: null);
+    try {
+      final services = await _repo.getProServices(_proId);
+      ServiceModel? preSelected;
+      if (initialServiceId != null && services.isNotEmpty) {
+        for (final s in services) {
+          if (s.id == initialServiceId) {
+            preSelected = s;
+            break;
+          }
+        }
+      }
+      preSelected ??= services.isNotEmpty ? services.first : null;
+      state = state.copyWith(
+        services: services,
+        isLoading: false,
+        selectedService: preSelected,
+      );
+    } catch (e) {
+      state = state.copyWith(isLoading: false, error: e.toString());
+    }
   }
 
   void selectService(ServiceModel service) {
@@ -193,19 +226,23 @@ class BookingFlowNotifier extends Notifier<BookingFlowState> {
         serviceId: state.selectedService!.id,
         promoCodeId: state.promoCode?.id,
       );
-      state = state.copyWith(bookingResult: result, isCreating: false);
-
-      // Fetch clientSecret for Stripe payment
-      final bookingId = result['bookingId'] as String?;
-      if (bookingId != null) {
-        final paymentRepo = ref.read(paymentRepositoryProvider);
-        final secret = await paymentRepo.createPaymentIntent(bookingId);
-        state = state.copyWith(clientSecret: secret);
+      // clientSecret is already returned by create-booking-atomic
+      final clientSecret = result['clientSecret'] as String?;
+      if (clientSecret == null || clientSecret.isEmpty) {
+        throw Exception('Impossible d\'initialiser le paiement. Réessayez.');
       }
-    } catch (e) {
       state = state.copyWith(
-          isCreating: false, error: e.toString());
+        bookingResult: result,
+        clientSecret: clientSecret,
+        isCreating: false,
+      );
+    } catch (e) {
+      state = state.copyWith(isCreating: false, error: e.toString());
     }
+  }
+
+  void setPaying(bool value) {
+    state = state.copyWith(isPaying: value);
   }
 
   Future<bool> confirmPayment() async {
@@ -273,9 +310,13 @@ class ClientBookingsNotifier extends Notifier<ClientBookingsState> {
   }
 
   Future<void> _load() async {
-    final repo = ref.read(bookingRepositoryProvider);
-    final bookings = await repo.getClientBookings();
-    state = state.copyWith(bookings: bookings, isLoading: false);
+    try {
+      final repo = ref.read(bookingRepositoryProvider);
+      final bookings = await repo.getClientBookings();
+      state = state.copyWith(bookings: bookings, isLoading: false);
+    } catch (_) {
+      state = state.copyWith(bookings: [], isLoading: false);
+    }
   }
 
   Future<void> refresh() async {
@@ -317,9 +358,13 @@ class ProBookingsNotifier extends Notifier<ClientBookingsState> {
   }
 
   Future<void> _load() async {
-    final repo = ref.read(bookingRepositoryProvider);
-    final bookings = await repo.getProBookings();
-    state = state.copyWith(bookings: bookings, isLoading: false);
+    try {
+      final repo = ref.read(bookingRepositoryProvider);
+      final bookings = await repo.getProBookings();
+      state = state.copyWith(bookings: bookings, isLoading: false);
+    } catch (_) {
+      state = state.copyWith(bookings: [], isLoading: false);
+    }
   }
 
   Future<void> refresh() async {
@@ -404,4 +449,12 @@ final proRevenueDailyProvider = FutureProvider.family<
     List<({DateTime day, double amount})>, int>((ref, days) async {
   final repo = ref.watch(bookingRepositoryProvider);
   return repo.getProRevenueDaily(days: days);
+});
+
+// ─── Transactions (liste détaillée) ─────────────────────────
+
+final proTransactionsProvider = FutureProvider.family<
+    List<BookingModel>, int>((ref, days) async {
+  final repo = ref.watch(bookingRepositoryProvider);
+  return repo.getProTransactions(days: days);
 });

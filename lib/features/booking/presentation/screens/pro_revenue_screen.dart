@@ -10,8 +10,10 @@ import 'package:intl/intl.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/widgets/spotbook_loading_shimmer.dart';
 import '../../data/booking_notifier.dart';
+import '../../domain/booking_models.dart';
 
-/// Revenus pro : acomptes encaissés (RDV confirmés + terminés) sur la période.
+/// Revenus pro : acomptes encaissés (RDV confirmés + terminés) sur la période,
+/// avec liste de transactions, toggle période, et bouton "Retirer".
 class ProRevenueScreen extends ConsumerStatefulWidget {
   const ProRevenueScreen({super.key});
 
@@ -22,9 +24,12 @@ class ProRevenueScreen extends ConsumerStatefulWidget {
 class _ProRevenueScreenState extends ConsumerState<ProRevenueScreen> {
   int _periodDays = 30;
 
+  static const _commissionRate = 0.12;
+
   @override
   Widget build(BuildContext context) {
-    final async = ref.watch(proRevenueDailyProvider(_periodDays));
+    final chartAsync = ref.watch(proRevenueDailyProvider(_periodDays));
+    final txAsync = ref.watch(proTransactionsProvider(_periodDays));
 
     return Scaffold(
       backgroundColor: AppColors.fond,
@@ -32,7 +37,8 @@ class _ProRevenueScreenState extends ConsumerState<ProRevenueScreen> {
         backgroundColor: AppColors.fond,
         surfaceTintColor: Colors.transparent,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: AppColors.blanc, size: 20),
+          icon: const Icon(Icons.arrow_back_ios,
+              color: AppColors.blanc, size: 20),
           onPressed: () {
             HapticFeedback.lightImpact();
             context.pop();
@@ -47,8 +53,18 @@ class _ProRevenueScreenState extends ConsumerState<ProRevenueScreen> {
           ),
         ),
         centerTitle: true,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.settings_outlined,
+                color: AppColors.blanc, size: 22),
+            onPressed: () {
+              HapticFeedback.selectionClick();
+              context.push('/pro/stripe-setup');
+            },
+          ),
+        ],
       ),
-      body: async.when(
+      body: chartAsync.when(
         loading: () => const Padding(
           padding: EdgeInsets.all(20),
           child: SpotbookLoadingShimmer.card(itemCount: 4),
@@ -64,8 +80,10 @@ class _ProRevenueScreenState extends ConsumerState<ProRevenueScreen> {
           ),
         ),
         data: (series) {
-          final total = series.fold<double>(0, (a, p) => a + p.amount);
-          final maxVal = series.map((e) => e.amount).fold<double>(0, math.max);
+          final total =
+              series.fold<double>(0, (a, p) => a + p.amount);
+          final maxVal =
+              series.map((e) => e.amount).fold<double>(0, math.max);
           final maxY = maxVal <= 0 ? 50.0 : maxVal * 1.15;
 
           return RefreshIndicator(
@@ -73,15 +91,20 @@ class _ProRevenueScreenState extends ConsumerState<ProRevenueScreen> {
             backgroundColor: AppColors.surface,
             onRefresh: () async {
               ref.invalidate(proRevenueDailyProvider(_periodDays));
+              ref.invalidate(proTransactionsProvider(_periodDays));
             },
             child: ListView(
               padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
               children: [
                 const Text(
                   'Acomptes encaissés (confirmés + terminés), hors frais Stripe.',
-                  style: TextStyle(color: AppColors.gris, fontSize: 13, height: 1.4),
+                  style: TextStyle(
+                      color: AppColors.gris,
+                      fontSize: 13,
+                      height: 1.4),
                 ),
                 const SizedBox(height: 16),
+                // Period chips
                 Row(
                   children: [
                     _PeriodChip(
@@ -101,23 +124,32 @@ class _ProRevenueScreenState extends ConsumerState<ProRevenueScreen> {
                       selected: _periodDays == 90,
                       onTap: () => setState(() => _periodDays = 90),
                     ),
+                    const SizedBox(width: 8),
+                    _PeriodChip(
+                      label: '1 an',
+                      selected: _periodDays == 365,
+                      onTap: () => setState(() => _periodDays = 365),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 24),
+                // Total + Payout button
                 Container(
                   width: double.infinity,
                   padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
                     color: AppColors.surface,
                     borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: AppColors.border, width: 0.5),
+                    border:
+                        Border.all(color: AppColors.border, width: 0.5),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Text(
                         'Total sur la période',
-                        style: TextStyle(color: AppColors.gris, fontSize: 13),
+                        style: TextStyle(
+                            color: AppColors.gris, fontSize: 13),
                       ),
                       const SizedBox(height: 4),
                       Text(
@@ -128,10 +160,36 @@ class _ProRevenueScreenState extends ConsumerState<ProRevenueScreen> {
                           fontWeight: FontWeight.w800,
                         ),
                       ),
+                      const SizedBox(height: 14),
+                      SizedBox(
+                        width: double.infinity,
+                        height: 44,
+                        child: ElevatedButton.icon(
+                          onPressed: () {
+                            HapticFeedback.mediumImpact();
+                            context.push('/pro/payouts');
+                          },
+                          icon: const Icon(
+                              Icons.account_balance_outlined,
+                              size: 18),
+                          label: const Text('Retirer',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 15)),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.blanc,
+                            foregroundColor: AppColors.fond,
+                            shape: RoundedRectangleBorder(
+                                borderRadius:
+                                    BorderRadius.circular(12)),
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                 ),
                 const SizedBox(height: 24),
+                // Chart
                 const Text(
                   'Par jour',
                   style: TextStyle(
@@ -150,7 +208,8 @@ class _ProRevenueScreenState extends ConsumerState<ProRevenueScreen> {
                       gridData: FlGridData(
                         show: true,
                         drawVerticalLine: false,
-                        horizontalInterval: maxY > 0 ? maxY / 4 : 10,
+                        horizontalInterval:
+                            maxY > 0 ? maxY / 4 : 10,
                         getDrawingHorizontalLine: (_) => FlLine(
                           color: AppColors.border,
                           strokeWidth: 0.5,
@@ -164,7 +223,8 @@ class _ProRevenueScreenState extends ConsumerState<ProRevenueScreen> {
                           sideTitles: SideTitles(
                             showTitles: true,
                             reservedSize: 36,
-                            interval: maxY > 0 ? maxY / 4 : 10,
+                            interval:
+                                maxY > 0 ? maxY / 4 : 10,
                             getTitlesWidget: (v, _) => Text(
                               v >= 1000
                                   ? '${(v / 1000).toStringAsFixed(1)}k'
@@ -185,14 +245,18 @@ class _ProRevenueScreenState extends ConsumerState<ProRevenueScreen> {
                               if (i < 0 || i >= series.length) {
                                 return const SizedBox.shrink();
                               }
-                              final step = series.length > 20 ? 5 : 3;
-                              if (i % step != 0 && i != series.length - 1) {
+                              final step =
+                                  series.length > 20 ? 5 : 3;
+                              if (i % step != 0 &&
+                                  i != series.length - 1) {
                                 return const SizedBox.shrink();
                               }
                               return Padding(
-                                padding: const EdgeInsets.only(top: 6),
+                                padding:
+                                    const EdgeInsets.only(top: 6),
                                 child: Text(
-                                  DateFormat('d/M').format(series[i].day),
+                                  DateFormat('d/M')
+                                      .format(series[i].day),
                                   style: const TextStyle(
                                     color: AppColors.gris,
                                     fontSize: 9,
@@ -213,12 +277,15 @@ class _ProRevenueScreenState extends ConsumerState<ProRevenueScreen> {
                                 color: AppColors.grisClair,
                                 width: math.max(
                                   3.0,
-                                  math.min(14, 320 / series.length * 0.45),
+                                  math.min(14,
+                                      320 / series.length * 0.45),
                                 ),
-                                borderRadius: const BorderRadius.vertical(
+                                borderRadius:
+                                    const BorderRadius.vertical(
                                   top: Radius.circular(3),
                                 ),
-                                backDrawRodData: BackgroundBarChartRodData(
+                                backDrawRodData:
+                                    BackgroundBarChartRodData(
                                   show: true,
                                   toY: maxY,
                                   color: AppColors.surfaceAlt,
@@ -229,11 +296,16 @@ class _ProRevenueScreenState extends ConsumerState<ProRevenueScreen> {
                       ],
                       barTouchData: BarTouchData(
                         touchTooltipData: BarTouchTooltipData(
-                          getTooltipColor: (_) => AppColors.surfaceAlt,
-                          tooltipPadding: const EdgeInsets.all(8),
-                          getTooltipItem: (group, groupIndex, rod, rodIndex) {
+                          getTooltipColor: (_) =>
+                              AppColors.surfaceAlt,
+                          tooltipPadding:
+                              const EdgeInsets.all(8),
+                          getTooltipItem: (group, groupIndex,
+                              rod, rodIndex) {
                             final i = group.x.toInt();
-                            if (i < 0 || i >= series.length) return null;
+                            if (i < 0 || i >= series.length) {
+                              return null;
+                            }
                             final d = series[i].day;
                             return BarTooltipItem(
                               '${DateFormat.yMMMd().format(d)}\n',
@@ -244,7 +316,8 @@ class _ProRevenueScreenState extends ConsumerState<ProRevenueScreen> {
                               ),
                               children: [
                                 TextSpan(
-                                  text: '${series[i].amount.toStringAsFixed(2)} CAD',
+                                  text:
+                                      '${series[i].amount.toStringAsFixed(2)} CAD',
                                   style: const TextStyle(
                                     color: AppColors.grisClair,
                                     fontSize: 12,
@@ -258,22 +331,166 @@ class _ProRevenueScreenState extends ConsumerState<ProRevenueScreen> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 32),
-                TextButton(
-                  onPressed: () {
-                    HapticFeedback.selectionClick();
-                    context.push('/pro/stripe-setup');
-                  },
-                  child: const Text(
-                    'Paramètres Stripe Connect',
-                    style: TextStyle(color: AppColors.grisClair, fontSize: 14),
+                const SizedBox(height: 28),
+                // Transaction list header
+                const Text(
+                  'Transactions',
+                  style: TextStyle(
+                    color: AppColors.blanc,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
                   ),
+                ),
+                const SizedBox(height: 12),
+                // Transaction list
+                txAsync.when(
+                  loading: () => const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 20),
+                    child: Center(
+                        child: CircularProgressIndicator(
+                            color: AppColors.violet)),
+                  ),
+                  error: (e, _) => Text(e.toString(),
+                      style:
+                          const TextStyle(color: AppColors.gris)),
+                  data: (transactions) {
+                    if (transactions.isEmpty) {
+                      return const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 24),
+                        child: Center(
+                          child: Text(
+                              'Aucune transaction sur cette période',
+                              style: TextStyle(
+                                  color: AppColors.gris,
+                                  fontSize: 14)),
+                        ),
+                      );
+                    }
+                    return ListView.separated(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: transactions.length,
+                      separatorBuilder: (_, __) =>
+                          const SizedBox(height: 8),
+                      itemBuilder: (context, index) =>
+                          _TransactionRow(
+                        booking: transactions[index],
+                        commissionRate: _commissionRate,
+                      ),
+                    );
+                  },
                 ),
               ],
             ),
           );
         },
       ),
+    );
+  }
+}
+
+class _TransactionRow extends StatelessWidget {
+  const _TransactionRow({
+    required this.booking,
+    required this.commissionRate,
+  });
+
+  final BookingModel booking;
+  final double commissionRate;
+
+  @override
+  Widget build(BuildContext context) {
+    final gross = booking.depositAmount;
+    final commission = gross * commissionRate;
+    final net = gross - commission;
+    final dateFmt = DateFormat('dd/MM/yy').format(booking.createdAt);
+
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppColors.border),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  booking.clientName ?? 'Client',
+                  style: const TextStyle(
+                    color: AppColors.blanc,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 14,
+                  ),
+                ),
+              ),
+              Text(
+                dateFmt,
+                style: const TextStyle(
+                    color: AppColors.gris, fontSize: 12),
+              ),
+            ],
+          ),
+          const SizedBox(height: 4),
+          Text(
+            booking.serviceName ?? 'Service',
+            style: const TextStyle(
+                color: AppColors.gris, fontSize: 12),
+          ),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              _AmountLabel(
+                  label: 'Brut',
+                  value: '${gross.toStringAsFixed(2)} \$'),
+              const SizedBox(width: 16),
+              _AmountLabel(
+                  label: 'Commission',
+                  value: '-${commission.toStringAsFixed(2)} \$',
+                  color: AppColors.rose),
+              const SizedBox(width: 16),
+              _AmountLabel(
+                  label: 'Net',
+                  value: '${net.toStringAsFixed(2)} \$',
+                  color: AppColors.success),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _AmountLabel extends StatelessWidget {
+  const _AmountLabel({
+    required this.label,
+    required this.value,
+    this.color,
+  });
+
+  final String label;
+  final String value;
+  final Color? color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label,
+            style: const TextStyle(
+                color: AppColors.grisInactif, fontSize: 10)),
+        const SizedBox(height: 2),
+        Text(value,
+            style: TextStyle(
+              color: color ?? AppColors.blanc,
+              fontWeight: FontWeight.w600,
+              fontSize: 13,
+            )),
+      ],
     );
   }
 }
@@ -298,7 +515,8 @@ class _PeriodChip extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(20),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+          padding: const EdgeInsets.symmetric(
+              horizontal: 16, vertical: 10),
           child: Text(
             label,
             style: TextStyle(

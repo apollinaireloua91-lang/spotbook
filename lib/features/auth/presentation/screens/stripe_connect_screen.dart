@@ -1,13 +1,59 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../shared/theme/app_colors.dart';
+import '../../../profile/data/provider_settings_repository.dart';
 
-class StripeConnectScreen extends StatelessWidget {
+class _StripeConnectState {
+  const _StripeConnectState({this.isLoading = false});
+  final bool isLoading;
+  _StripeConnectState copyWith({bool? isLoading}) =>
+      _StripeConnectState(isLoading: isLoading ?? this.isLoading);
+}
+
+class _StripeConnectNotifier extends Notifier<_StripeConnectState> {
+  @override
+  _StripeConnectState build() => const _StripeConnectState();
+
+  Future<String?> startOnboarding() async {
+    state = state.copyWith(isLoading: true);
+    try {
+      final repo = ref.read(providerSettingsRepositoryProvider);
+      final url = await repo.fetchStripeConnectOnboardingUrl();
+      state = state.copyWith(isLoading: false);
+      return url;
+    } catch (_) {
+      state = state.copyWith(isLoading: false);
+      return null;
+    }
+  }
+}
+
+final _stripeConnectProvider =
+    NotifierProvider<_StripeConnectNotifier, _StripeConnectState>(
+  _StripeConnectNotifier.new,
+  isAutoDispose: true,
+);
+
+class StripeConnectScreen extends ConsumerWidget {
   const StripeConnectScreen({super.key});
 
+  Future<void> _openStripeOnboarding(BuildContext context, WidgetRef ref) async {
+    final url = await ref.read(_stripeConnectProvider.notifier).startOnboarding();
+    if (!context.mounted) return;
+    if (url != null) {
+      await launchUrl(Uri.parse(url), mode: LaunchMode.inAppBrowserView);
+    } else {
+      context.go('/pro');
+    }
+  }
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final s = ref.watch(_stripeConnectProvider);
+
     return Scaffold(
       backgroundColor: AppColors.fond,
       appBar: AppBar(
@@ -15,7 +61,8 @@ class StripeConnectScreen extends StatelessWidget {
         leading: Semantics(
           label: 'Retour',
           child: IconButton(
-            icon: const Icon(Icons.arrow_back_ios, color: AppColors.blanc, size: 20),
+            icon: const Icon(Icons.arrow_back_ios,
+                color: AppColors.blanc, size: 20),
             onPressed: () => context.pop(),
           ),
         ),
@@ -31,16 +78,13 @@ class StripeConnectScreen extends StatelessWidget {
           child: Column(
             children: [
               const Spacer(flex: 2),
-              // Wallet icon
               Container(
                 width: 80,
                 height: 80,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
                   color: AppColors.surfaceAlt,
-                  border: Border.all(
-                    color: AppColors.border,
-                  ),
+                  border: Border.all(color: AppColors.border),
                 ),
                 child: const Icon(
                   Icons.account_balance_wallet,
@@ -72,28 +116,34 @@ class StripeConnectScreen extends StatelessWidget {
                 width: double.infinity,
                 height: 52,
                 child: ElevatedButton(
-                  onPressed: () {
-                    // TODO: Open Stripe Connect onboarding WebView
-                    context.go('/pro');
-                  },
+                  onPressed: s.isLoading ? null : () => _openStripeOnboarding(context, ref),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.blanc,
                     foregroundColor: AppColors.fond,
+                    disabledBackgroundColor: AppColors.surfaceAlt,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  child: const Text(
-                    'Connecter avec Stripe',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
+                  child: s.isLoading
+                      ? const SizedBox(
+                          width: 22,
+                          height: 22,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: AppColors.blanc,
+                          ),
+                        )
+                      : const Text(
+                          'Connecter avec Stripe',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
                 ),
               ),
               const Spacer(),
-              // Trust badges
               _trustBadge(
                 Icons.lock,
                 'Transactions sécurisées SSL',
@@ -107,10 +157,13 @@ class StripeConnectScreen extends StatelessWidget {
               ),
               const SizedBox(height: 32),
               GestureDetector(
-                onTap: () {},
+                onTap: () => launchUrl(
+                  Uri.parse('mailto:support@spotbook.app'),
+                  mode: LaunchMode.externalApplication,
+                ),
                 child: const Text(
                   'Besoin d\'aide ? Contactez le support',
-                  style: TextStyle(color: AppColors.gris, fontSize: 13),
+                  style: TextStyle(color: AppColors.gris, fontSize: 13, decoration: TextDecoration.underline, decorationColor: AppColors.gris),
                 ),
               ),
               const SizedBox(height: 32),

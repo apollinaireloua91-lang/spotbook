@@ -1,0 +1,10 @@
+{
+  "scripts": {
+    "stitch:fetch-onboarding": "node scripts/fetch-stitch-screens.mjs"
+  },
+  "dependencies": {
+    "@dataconnect/generated": "file:src/dataconnect-generated",
+    "@google/stitch-sdk": "^0.0.3",
+    "firebase": "^12.11.0"
+  }
+}

@@ -9,13 +9,33 @@ import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/widgets/empty_state.dart';
 import '../../../../shared/widgets/spotbook_loading_shimmer.dart';
 import '../../data/event_notifier.dart';
+import '../../domain/event_models.dart';
 
-/// Choisir un événement avant d’ouvrir le scanner QR (flux pro Stitch).
-class ProScannerEventPickerScreen extends ConsumerWidget {
+/// Choisir un événement avant d’ouvrir le scanner QR, ou accès direct caméra s’il n’y en a qu’un.
+class ProScannerEventPickerScreen extends ConsumerStatefulWidget {
   const ProScannerEventPickerScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ProScannerEventPickerScreen> createState() =>
+      _ProScannerEventPickerScreenState();
+}
+
+class _ProScannerEventPickerScreenState
+    extends ConsumerState<ProScannerEventPickerScreen> {
+  bool _autoRoutedSingleEvent = false;
+
+  void _maybeOpenCameraForSingleEvent(List<EventModel> events) {
+    if (_autoRoutedSingleEvent || events.length != 1) return;
+    _autoRoutedSingleEvent = true;
+    final id = events.first.id;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      context.pushReplacement('/scanner/$id');
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final async = ref.watch(proEventsProvider);
 
     return Scaffold(
@@ -56,17 +76,49 @@ class ProScannerEventPickerScreen extends ConsumerWidget {
           ),
         ),
         data: (events) {
+          _maybeOpenCameraForSingleEvent(events);
+
           if (events.isEmpty) {
             return EmptyState.noEvents(
               onCta: () => context.push('/pro/events/create'),
             );
           }
+
+          if (events.length == 1) {
+            return const Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CircularProgressIndicator(color: AppColors.blanc),
+                  SizedBox(height: 16),
+                  Text(
+                    'Ouverture de la caméra…',
+                    style: TextStyle(color: AppColors.gris, fontSize: 14),
+                  ),
+                ],
+              ),
+            );
+          }
+
           return ListView.separated(
             padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
-            itemCount: events.length,
+            itemCount: events.length + 1,
             separatorBuilder: (_, __) => const SizedBox(height: 12),
             itemBuilder: (context, i) {
-              final e = events[i];
+              if (i == 0) {
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 4),
+                  child: Text(
+                    'Choisis l’événement concerné, puis scanne les QR des billets avec la caméra.',
+                    style: TextStyle(
+                      color: AppColors.gris.withValues(alpha: 0.95),
+                      fontSize: 13,
+                      height: 1.4,
+                    ),
+                  ),
+                );
+              }
+              final e = events[i - 1];
               final dateStr = e.eventDate != null
                   ? DateFormat('EEE d MMM · HH:mm').format(e.eventDate!.toLocal())
                   : 'Date à confirmer';

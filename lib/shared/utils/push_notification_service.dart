@@ -111,6 +111,12 @@ class PushNotificationService {
           router.push('/booking/$bookingId');
         }
         break;
+      case 'booking_reported':
+        final reportBookingId = message.data['bookingId'] as String?;
+        if (reportBookingId != null) {
+          router.push('/booking/$reportBookingId');
+        }
+        break;
       case 'waitlist':
         final eventId = message.data['eventId'] as String?;
         if (eventId != null) {

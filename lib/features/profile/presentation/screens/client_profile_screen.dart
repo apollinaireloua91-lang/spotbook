@@ -9,11 +9,12 @@ import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
+import '../../../../shared/theme/app_typography.dart';
 import '../../../../shared/widgets/spotbook_bottom_sheet.dart';
+import '../../../../shared/widgets/spotbook_section_title.dart';
 import '../../../../shared/widgets/spotbook_button.dart';
 import '../../../../shared/widgets/spotbook_card.dart';
 import '../../../chat/data/chat_repository.dart';
@@ -45,9 +46,7 @@ class ClientProfileScreen extends ConsumerWidget {
           child: Padding(
             padding: const EdgeInsets.all(24),
             child: Text(
-              e is StateError
-                  ? l10n.clientProfileNotSignedIn
-                  : l10n.error,
+              e is StateError ? l10n.clientProfileNotSignedIn : l10n.error,
               textAlign: TextAlign.center,
               style: const TextStyle(color: SpotbookColors.textSecondary),
             ),
@@ -77,7 +76,8 @@ class _ClientProfileLoadedView extends ConsumerWidget {
     String? memberLine;
     if (profile.createdAt != null) {
       final fmt = DateFormat.yMMMM(locale);
-      memberLine = l10n.clientProfileMemberSince(fmt.format(profile.createdAt!));
+      memberLine =
+          l10n.clientProfileMemberSince(fmt.format(profile.createdAt!));
     }
 
     return DefaultTabController(
@@ -110,19 +110,12 @@ class _ClientProfileLoadedView extends ConsumerWidget {
                     profile.fullName,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      color: SpotbookColors.textPrimary,
-                      fontSize: 17,
-                      fontWeight: FontWeight.w600,
-                      letterSpacing: 0.3,
-                    ),
+                    style: AppTypography.appBarTitle,
                   ),
                   Text(
                     l10n.clientProfileReviewsCount(data.reviewsCount),
-                    style: const TextStyle(
+                    style: AppTypography.appBarMetaLine.copyWith(
                       color: SpotbookColors.textSecondary,
-                      fontSize: 13,
-                      fontWeight: FontWeight.w400,
                     ),
                   ),
                 ],
@@ -152,14 +145,10 @@ class _ClientProfileLoadedView extends ConsumerWidget {
               pinned: true,
               delegate: _TabBarDelegate(
                 TabBar(
-                  indicatorColor: SpotbookColors.textPrimary,
+                  indicatorColor: SpotbookColors.accent,
                   labelColor: SpotbookColors.textPrimary,
-                  unselectedLabelColor: SpotbookColors.textSecondary,
+                  unselectedLabelColor: SpotbookColors.textDisabled,
                   indicatorWeight: 2,
-                  labelStyle: const TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 14,
-                  ),
                   tabs: [
                     Tab(text: l10n.favorites),
                     Tab(text: l10n.history),
@@ -197,18 +186,30 @@ class _ProfileHeaderSection extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     final profile = data.profile;
-    final isClientProfile =
-        profile.role == null || profile.role == 'client';
+    final isClientProfile = profile.role == null || profile.role == 'client';
     final showCollab =
         !data.isOwnProfile && data.viewerRole == 'pro' && isClientProfile;
 
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _CoverAndAvatarRow(
-            profile: profile,
+    return TweenAnimationBuilder<double>(
+      tween: Tween(begin: 0.0, end: 1.0),
+      duration: const Duration(milliseconds: 550),
+      builder: (_, t, child) {
+        final curved = Curves.easeOutCubic.transform(t);
+        return Opacity(
+          opacity: curved,
+          child: Transform.translate(
+            offset: Offset(0, 22 * (1 - curved)),
+            child: child,
+          ),
+        );
+      },
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: 16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _CoverAndAvatarRow(
+              profile: profile,
             isOwn: data.isOwnProfile,
             profileUserKey: profileUserKey,
           ),
@@ -220,10 +221,8 @@ class _ProfileHeaderSection extends ConsumerWidget {
               children: [
                 Text(
                   profile.fullName,
-                  style: const TextStyle(
+                  style: AppTypography.profileDisplayName.copyWith(
                     color: SpotbookColors.textPrimary,
-                    fontSize: 22,
-                    fontWeight: FontWeight.w700,
                   ),
                 ),
                 if (profile.username != null &&
@@ -231,9 +230,8 @@ class _ProfileHeaderSection extends ConsumerWidget {
                   const SizedBox(height: 4),
                   Text(
                     '@${profile.username}',
-                    style: const TextStyle(
+                    style: AppTypography.profileHandle.copyWith(
                       color: SpotbookColors.textSecondary,
-                      fontSize: 15,
                     ),
                   ),
                 ],
@@ -243,10 +241,8 @@ class _ProfileHeaderSection extends ConsumerWidget {
                     profile.bio!,
                     maxLines: 3,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
+                    style: AppTypography.profileBio.copyWith(
                       color: SpotbookColors.textSecondary,
-                      fontSize: 15,
-                      height: 1.4,
                     ),
                   ),
                 ],
@@ -290,18 +286,83 @@ class _ProfileHeaderSection extends ConsumerWidget {
                       ),
                   ],
                 ),
-                const SizedBox(height: 20),
-                Text(
-                  l10n.clientProfileConnectedSocials,
-                  style: const TextStyle(
-                    color: SpotbookColors.textSecondary,
-                    fontSize: 11,
-                    fontWeight: FontWeight.w600,
-                    letterSpacing: 1.2,
+                if (data.isOwnProfile) ...[
+                  const SizedBox(height: 20),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _ProfileStatChip(
+                          value: '${data.completedBookings.length}',
+                          label: 'RDV',
+                          icon: Icons.calendar_today_rounded,
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: _ProfileStatChip(
+                          value:
+                              '${data.favoritePros.length + data.favoriteVideos.length}',
+                          label: 'Favoris',
+                          icon: Icons.favorite_rounded,
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: _ProfileStatChip(
+                          value: '${data.reviewsCount}',
+                          label: 'Avis',
+                          icon: Icons.star_rounded,
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-                const SizedBox(height: 12),
-                _SocialRow(urls: data.socialUrls),
+                  const SizedBox(height: 20),
+                  SpotbookCard(
+                    padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SpotbookSectionTitle(
+                          label: 'Accès rapide',
+                          icon: Icons.bolt_rounded,
+                        ),
+                        const SizedBox(height: 8),
+                        _ProfileShortcutTile(
+                          icon: Icons.notifications_outlined,
+                          label: 'Notifications',
+                          onTap: () {
+                            HapticFeedback.lightImpact();
+                            context.push('/client/notifications');
+                          },
+                        ),
+                        Divider(
+                          height: 1,
+                          color: SpotbookColors.border.withValues(alpha: 0.6),
+                        ),
+                        _ProfileShortcutTile(
+                          icon: Icons.chat_bubble_outline,
+                          label: 'Messages',
+                          onTap: () {
+                            HapticFeedback.lightImpact();
+                            context.push('/client/messages');
+                          },
+                        ),
+                        Divider(
+                          height: 1,
+                          color: SpotbookColors.border.withValues(alpha: 0.6),
+                        ),
+                        _ProfileShortcutTile(
+                          icon: Icons.settings_outlined,
+                          label: 'Paramètres',
+                          onTap: () {
+                            HapticFeedback.lightImpact();
+                            context.push('/client/profile/settings');
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
                 if (showCollab) ...[
                   const SizedBox(height: 20),
                   SpotbookCard(
@@ -337,7 +398,8 @@ class _ProfileHeaderSection extends ConsumerWidget {
                         const SizedBox(height: 16),
                         SpotbookButton.primary(
                           label: l10n.clientProfileSendCollaborationRequest,
-                          onPressed: () => _openCollaboration(context, ref, data),
+                          onPressed: () =>
+                              _openCollaboration(context, ref, data),
                         ),
                       ],
                     ),
@@ -348,6 +410,7 @@ class _ProfileHeaderSection extends ConsumerWidget {
           ),
         ],
       ),
+    ),
     );
   }
 
@@ -460,7 +523,7 @@ class _CoverAndAvatarRow extends ConsumerWidget {
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         border: Border.all(
-                          color: SpotbookColors.textPrimary,
+                          color: SpotbookColors.accent,
                           width: 2,
                         ),
                         color: SpotbookColors.surfaceVariant,
@@ -473,7 +536,8 @@ class _CoverAndAvatarRow extends ConsumerWidget {
                                 placeholder: (_, __) => Shimmer.fromColors(
                                   baseColor: SpotbookColors.surface,
                                   highlightColor: SpotbookColors.surfaceVariant,
-                                  child: Container(color: SpotbookColors.surface),
+                                  child:
+                                      Container(color: SpotbookColors.surface),
                                 ),
                                 errorWidget: (_, __, ___) => const Icon(
                                   Icons.person,
@@ -541,7 +605,8 @@ class _CoverAndAvatarRow extends ConsumerWidget {
     );
     if (source == null || !context.mounted) return;
 
-    final picked = await ImagePicker().pickImage(source: source, imageQuality: 92);
+    final picked =
+        await ImagePicker().pickImage(source: source, imageQuality: 92);
     if (picked == null || !context.mounted) return;
 
     final cropped = await ImageCropper().cropImage(
@@ -553,7 +618,7 @@ class _CoverAndAvatarRow extends ConsumerWidget {
           toolbarTitle: l10n.edit,
           toolbarColor: SpotbookColors.surface,
           activeControlsWidgetColor: SpotbookColors.textPrimary,
-          dimmedLayerColor: Colors.black87,
+          dimmedLayerColor: AppColors.overlayPicker,
         ),
         IOSUiSettings(title: l10n.edit),
       ],
@@ -606,7 +671,8 @@ class _CoverAndAvatarRow extends ConsumerWidget {
     );
     if (source == null || !context.mounted) return;
 
-    final picked = await ImagePicker().pickImage(source: source, imageQuality: 92);
+    final picked =
+        await ImagePicker().pickImage(source: source, imageQuality: 92);
     if (picked == null || !context.mounted) return;
 
     final cropped = await ImageCropper().cropImage(
@@ -617,7 +683,7 @@ class _CoverAndAvatarRow extends ConsumerWidget {
           toolbarTitle: l10n.edit,
           toolbarColor: SpotbookColors.surface,
           activeControlsWidgetColor: SpotbookColors.textPrimary,
-          dimmedLayerColor: Colors.black87,
+          dimmedLayerColor: AppColors.overlayPicker,
           cropStyle: CropStyle.circle,
         ),
         IOSUiSettings(
@@ -642,63 +708,6 @@ class _CoverAndAvatarRow extends ConsumerWidget {
         );
       }
     }
-  }
-}
-
-class _SocialRow extends StatelessWidget {
-  const _SocialRow({required this.urls});
-
-  final Map<String, String> urls;
-
-  static const _platforms = [
-    ('tiktok', Icons.music_note),
-    ('facebook', Icons.facebook),
-    ('snapchat', Icons.photo_camera),
-    ('twitter', Icons.chat_bubble_outline),
-  ];
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: _platforms.map((e) {
-        final platform = e.$1;
-        final icon = e.$2;
-        final url = urls[platform];
-        final enabled = url != null && url.isNotEmpty;
-        return Padding(
-          padding: const EdgeInsets.only(right: 12),
-          child: Material(
-            color: SpotbookColors.surfaceVariant,
-            shape: const CircleBorder(),
-            child: InkWell(
-              customBorder: const CircleBorder(),
-              onTap: enabled
-                  ? () async {
-                      HapticFeedback.lightImpact();
-                      final link = urls[platform]!;
-                      final uri = Uri.tryParse(link);
-                      if (uri != null && await canLaunchUrl(uri)) {
-                        await launchUrl(uri,
-                            mode: LaunchMode.externalApplication);
-                      }
-                    }
-                  : null,
-              child: SizedBox(
-                width: 44,
-                height: 44,
-                child: Icon(
-                  icon,
-                  size: 22,
-                  color: enabled
-                      ? SpotbookColors.textPrimary
-                      : SpotbookColors.textDisabled,
-                ),
-              ),
-            ),
-          ),
-        );
-      }).toList(),
-    );
   }
 }
 
@@ -797,8 +806,7 @@ sealed class _FavoriteGridEntry {
   final String targetId;
   final String key;
 
-  factory _FavoriteGridEntry.pro(ClientFavoriteProItem item) =
-      _FavProEntry;
+  factory _FavoriteGridEntry.pro(ClientFavoriteProItem item) = _FavProEntry;
   factory _FavoriteGridEntry.video(ClientFavoriteVideoItem item) =
       _FavVideoEntry;
 
@@ -809,8 +817,7 @@ sealed class _FavoriteGridEntry {
 }
 
 final class _FavProEntry extends _FavoriteGridEntry {
-  _FavProEntry(this.item)
-      : super._(item.proId, 'pro_${item.proId}');
+  _FavProEntry(this.item) : super._(item.proId, 'pro_${item.proId}');
 
   final ClientFavoriteProItem item;
 
@@ -823,8 +830,7 @@ final class _FavProEntry extends _FavoriteGridEntry {
 }
 
 final class _FavVideoEntry extends _FavoriteGridEntry {
-  _FavVideoEntry(this.item)
-      : super._(item.videoId, 'vid_${item.videoId}');
+  _FavVideoEntry(this.item) : super._(item.videoId, 'vid_${item.videoId}');
 
   final ClientFavoriteVideoItem item;
 
@@ -856,7 +862,8 @@ class _ProFavoriteCell extends ConsumerWidget {
                   ? CachedNetworkImageProvider(item.avatarUrl!)
                   : null,
               child: item.avatarUrl == null
-                  ? const Icon(Icons.person, color: SpotbookColors.textSecondary)
+                  ? const Icon(Icons.person,
+                      color: SpotbookColors.textSecondary)
                   : null,
             ),
           ),
@@ -956,7 +963,7 @@ class _VideoFavoriteCell extends StatelessWidget {
                           padding: const EdgeInsets.symmetric(
                               horizontal: 6, vertical: 2),
                           decoration: BoxDecoration(
-                            color: Colors.black54,
+                            color: AppColors.shadowDark,
                             borderRadius: BorderRadius.circular(4),
                           ),
                           child: Text(
@@ -1109,7 +1116,9 @@ class _TicketsTab extends StatelessWidget {
                           baseColor: SpotbookColors.surface,
                           highlightColor: SpotbookColors.surfaceVariant,
                           child: Container(
-                              width: 64, height: 64, color: SpotbookColors.surface),
+                              width: 64,
+                              height: 64,
+                              color: SpotbookColors.surface),
                         ),
                         errorWidget: (_, __, ___) => Container(
                           width: 64,
@@ -1194,6 +1203,124 @@ class _PrivateTabHint extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class _ProfileStatChip extends StatefulWidget {
+  const _ProfileStatChip({
+    required this.value,
+    required this.label,
+    required this.icon,
+  });
+
+  final String value;
+  final String label;
+  final IconData icon;
+
+  @override
+  State<_ProfileStatChip> createState() => _ProfileStatChipState();
+}
+
+class _ProfileStatChipState extends State<_ProfileStatChip>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _ctrl = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 120),
+  );
+
+  @override
+  void dispose() {
+    _ctrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTapDown: (_) => _ctrl.forward(),
+      onTapUp: (_) => _ctrl.reverse(),
+      onTapCancel: () => _ctrl.reverse(),
+      child: AnimatedBuilder(
+        animation: _ctrl,
+        builder: (_, child) => Transform.scale(
+          scale: 1.0 - _ctrl.value * 0.06,
+          child: child,
+        ),
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 6),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                SpotbookColors.surfaceVariant,
+                SpotbookColors.surface,
+              ],
+            ),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: SpotbookColors.border),
+          ),
+          child: Column(
+            children: [
+              Icon(widget.icon, size: 22, color: SpotbookColors.textSecondary),
+              const SizedBox(height: 6),
+              Text(
+                widget.value,
+                style: const TextStyle(
+                  color: SpotbookColors.textPrimary,
+                  fontSize: 17,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                widget.label,
+                style: const TextStyle(
+                  color: SpotbookColors.textSecondary,
+                  fontSize: 10,
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: 0.3,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _ProfileShortcutTile extends StatelessWidget {
+  const _ProfileShortcutTile({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      leading: Icon(icon, color: SpotbookColors.textPrimary, size: 22),
+      title: Text(
+        label,
+        style: const TextStyle(
+          color: SpotbookColors.textPrimary,
+          fontSize: 15,
+          fontWeight: FontWeight.w500,
+        ),
+      ),
+      trailing: const Icon(
+        Icons.chevron_right,
+        color: SpotbookColors.textSecondary,
+      ),
+      onTap: onTap,
+      contentPadding: EdgeInsets.zero,
+      minLeadingWidth: 36,
     );
   }
 }

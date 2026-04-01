@@ -82,7 +82,7 @@ class ProAvailabilityScreen extends ConsumerWidget {
                                   SnackBar(
                                     content: Text(
                                       n == 0
-                                          ? 'Ajoute d’abord au moins une règle hebdomadaire.'
+                                          ? 'Ajoute d\'abord au moins une règle hebdomadaire.'
                                           : '$n créneaux mis à jour.',
                                     ),
                                     backgroundColor: AppColors.surface,
@@ -407,7 +407,7 @@ class ProAvailabilityScreen extends ConsumerWidget {
                     ),
                     const SizedBox(height: 12),
                     const Text(
-                      'Durée d’un créneau',
+                      'Durée d\'un créneau',
                       style: TextStyle(color: AppColors.gris, fontSize: 12),
                     ),
                     const SizedBox(height: 8),

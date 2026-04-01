@@ -1,7 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+
+import '../features/client/presentation/feed/client_feed_screen.dart';
+import '../features/client/presentation/feed/cubit/client_feed_cubit.dart';
+import '../features/client/presentation/search/client_search_screen.dart';
+import '../features/feed/data/video_repository.dart';
+import '../features/notifications/data/notification_repository.dart';
+import '../shared/animations/page_transitions.dart';
 
 import '../features/auth/presentation/screens/account_type_selection_screen.dart';
 import '../features/auth/presentation/screens/client_interest_categories_screen.dart';
@@ -11,16 +18,16 @@ import '../features/auth/presentation/screens/change_password_screen.dart';
 import '../features/auth/presentation/screens/login_screen.dart';
 import '../features/auth/presentation/screens/permission_location_screen.dart';
 import '../features/auth/presentation/screens/pro_business_details_screen.dart';
-import '../features/auth/presentation/screens/pro_verification_screen.dart';
 import '../features/auth/presentation/screens/sign_up_screen.dart';
 import '../features/auth/presentation/screens/splash_screen.dart';
 import '../features/auth/presentation/screens/stripe_connect_screen.dart';
+import '../features/auth/presentation/screens/forgot_password_screen.dart';
+import '../features/auth/presentation/screens/forgot_password_confirmation_screen.dart';
 import '../features/booking/presentation/screens/booking_cancellation_screen.dart';
 import '../features/booking/presentation/screens/booking_detail_screen.dart';
 import '../features/booking/presentation/screens/booking_flow_screen.dart';
 import '../features/booking/presentation/screens/my_bookings_screen.dart';
 import '../features/availability/presentation/screens/provider_availability_setup_screen.dart';
-import '../features/booking/presentation/screens/pro_calendar_hub_screen.dart';
 import '../features/booking/presentation/screens/pro_dashboard_screen.dart';
 import '../features/booking/presentation/screens/pro_revenue_screen.dart';
 import '../features/booking/presentation/screens/pro_services_manage_screen.dart';
@@ -32,38 +39,48 @@ import '../features/events/presentation/screens/event_detail_screen.dart';
 import '../features/events/presentation/screens/pro_event_sales_screen.dart';
 import '../features/events/presentation/screens/pro_events_list_screen.dart';
 import '../features/events/presentation/screens/pro_scanner_event_picker_screen.dart';
+import '../features/events/presentation/screens/client_events_discovery_screen.dart';
+import '../features/events/presentation/screens/my_tickets_screen.dart';
+import '../features/events/presentation/screens/provider_attendees_list_screen.dart';
+import '../features/events/presentation/screens/qr_scan_result_screen.dart';
 import '../features/events/presentation/screens/scanner_screen.dart';
 import '../features/events/presentation/screens/ticket_detail_screen.dart';
 import '../features/events/presentation/screens/waitlist_screen.dart';
 import '../features/favorites/presentation/screens/favorites_screen.dart';
-import '../features/feed/presentation/screens/discover_screen.dart';
+import '../features/booking/presentation/screens/provider_clients_list_screen.dart';
+import '../features/feed/presentation/screens/client_video_detail_screen.dart';
 import '../features/feed/presentation/screens/discover_search_map_screen.dart';
 import '../features/feed/presentation/screens/discover_search_results_screen.dart';
-import '../features/feed/presentation/screens/feed_screen.dart';
+import '../features/feed/presentation/screens/pro_feed_screen.dart';
+import '../features/feed/presentation/screens/pro_search_screen.dart';
 import '../features/feed/presentation/screens/my_videos_screen.dart';
+import '../features/booking/presentation/screens/pro_rdv_screen.dart';
+import '../features/feed/presentation/screens/provider_video_edit_screen.dart';
+import '../features/feed/presentation/screens/provider_video_publish_screen.dart';
 import '../features/feed/presentation/screens/upload_video_screen.dart';
+import '../features/payment/presentation/screens/provider_payout_history_screen.dart';
+import '../features/reviews/presentation/screens/provider_reviews_received_screen.dart';
 import '../features/moderation/presentation/screens/blocked_users_screen.dart';
 import '../features/notifications/presentation/screens/notification_history_screen.dart';
 import '../features/notifications/presentation/screens/notification_settings_screen.dart';
 import '../features/onboarding/presentation/screens/onboarding_screen.dart';
 import '../features/payment/presentation/screens/pro_subscription_screen.dart';
 import '../features/payment/presentation/screens/stripe_checkout_webview.dart';
-import '../features/chat/data/chat_repository.dart';
-import '../features/profile/data/datasources/provider_profile_remote_datasource.dart';
-import '../features/profile/data/profile_repository.dart';
 import '../features/profile/domain/entities/provider_profile_data.dart';
-import '../features/profile/presentation/bloc/public_provider_profile_bloc.dart';
 import '../features/profile/presentation/screens/client_profile_screen.dart';
 import '../features/profile/presentation/screens/edit_profile_screen.dart';
 import '../features/profile/presentation/screens/pro_profile_screen.dart';
-import '../features/profile/presentation/screens/provider_public_profile_client_view_screen.dart';
 import '../features/profile/presentation/screens/provider_public_video_screen.dart';
 import '../features/profile/presentation/screens/provider_settings_screen.dart';
 import '../features/profile/presentation/screens/pro_qr_code_screen.dart';
+import '../features/payment/presentation/screens/payment_receipt_screen.dart';
 import '../features/promo/presentation/screens/create_promo_code_screen.dart';
 import '../features/promo/presentation/screens/referral_screen.dart';
+import '../features/booking/presentation/screens/refund_request_screen.dart';
+import '../features/favorites/presentation/screens/saved_posts_screen.dart';
 import '../features/reviews/presentation/screens/review_screen.dart';
 import '../features/settings/presentation/screens/delete_account_screen.dart';
+import '../features/settings/presentation/screens/language_settings_screen.dart';
 import '../features/settings/presentation/screens/settings_screen.dart';
 import '../features/social/presentation/screens/pro_insights_screen.dart';
 import '../shared/widgets/placeholder_screen.dart';
@@ -77,6 +94,19 @@ final GlobalKey<NavigatorState> rootNavigatorKey =
 String? _legacyRedirect(GoRouterState state) {
   final path = state.uri.path;
   if (path == '/client/feed') return '/client';
+  if (path == '/client/search') return '/client/discover';
+  if (path.startsWith('/client/pro/')) {
+    final id = path.substring('/client/pro/'.length);
+    if (id.isNotEmpty && !id.contains('/')) {
+      return '/client/provider/$id';
+    }
+  }
+  if (path.startsWith('/client/ticket/')) {
+    final id = path.substring('/client/ticket/'.length);
+    if (id.isNotEmpty && !id.contains('/')) {
+      return '/client/ticket-purchase/$id';
+    }
+  }
   if (path == '/pro/feed') return '/pro';
   if (path == '/pro/appointments') return '/pro/calendar';
   if (path == '/pro/bookings') return '/pro/calendar';
@@ -84,10 +114,47 @@ String? _legacyRedirect(GoRouterState state) {
   return null;
 }
 
+/// Paths that don't require authentication.
+const _publicPaths = {
+  '/splash',
+  '/onboarding',
+  '/auth/login',
+  '/signup',
+  '/forgot-password',
+  '/forgot-password-confirmation',
+  '/account-type',
+  '/complete-profile',
+  '/',
+};
+
+String? _authAndRoleGuard(BuildContext context, GoRouterState state) {
+  // Legacy redirects first
+  final legacy = _legacyRedirect(state);
+  if (legacy != null) return legacy;
+
+  final path = state.uri.path;
+
+  // Allow public paths through
+  if (_publicPaths.contains(path)) return null;
+
+  // Check authentication
+  final session = Supabase.instance.client.auth.currentSession;
+  if (session == null) return '/auth/login';
+
+  // Check role-based routing
+  final user = Supabase.instance.client.auth.currentUser;
+  final role = user?.userMetadata?['role'] as String?;
+
+  if (path.startsWith('/pro') && role == 'client') return '/client';
+  if (path.startsWith('/client') && role == 'pro') return '/pro';
+
+  return null;
+}
+
 final appRouter = GoRouter(
   navigatorKey: rootNavigatorKey,
   initialLocation: '/splash',
-  redirect: (context, state) => _legacyRedirect(state),
+  redirect: (context, state) => _authAndRoleGuard(context, state),
   routes: [
     GoRoute(
       path: '/splash',
@@ -117,6 +184,15 @@ final appRouter = GoRouter(
       builder: (context, state) => const LoginScreen(),
     ),
     GoRoute(
+      path: '/auth/forgot-password',
+      builder: (context, state) => const ForgotPasswordScreen(),
+    ),
+    GoRoute(
+      path: '/auth/forgot-password-confirmation',
+      builder: (context, state) =>
+          const ForgotPasswordConfirmationScreen(),
+    ),
+    GoRoute(
       path: '/complete-profile',
       builder: (context, state) => const CompleteProfileScreen(),
     ),
@@ -140,7 +216,7 @@ final appRouter = GoRouter(
     ),
     GoRoute(
       path: '/pro/verification',
-      builder: (context, state) => const ProVerificationScreen(),
+      redirect: (_, __) => '/pro/stripe-connect',
     ),
     GoRoute(
       path: '/pro/stripe-connect',
@@ -150,17 +226,14 @@ final appRouter = GoRouter(
     // ─── Client : routes plein écran (hors bottom nav) ───
     GoRoute(
       path: '/client/provider/:providerId',
-      builder: (context, state) {
+      pageBuilder: (context, state) {
         final id = state.pathParameters['providerId'] ?? '';
-        final client = Supabase.instance.client;
-        return BlocProvider(
-          create: (_) => PublicProviderProfileBloc(
-            profileDatasource: ProviderProfileRemoteDatasource(client),
-            profileRepository: ProfileRepository(supabase: client),
-            chatRepository: ChatRepository(supabase: client),
-            supabase: client,
-          )..add(PublicProviderProfileStarted(id)),
-          child: const ProviderPublicProfileClientViewScreen(),
+        return fadeSlideTransitionPage(
+          key: state.pageKey,
+          child: ProProfileScreen(
+            proId: id,
+            showOwnerTools: false,
+          ),
         );
       },
     ),
@@ -176,21 +249,38 @@ final appRouter = GoRouter(
     ),
     GoRoute(
       path: '/client/booking-flow/:providerId',
+      pageBuilder: (context, state) => slideUpTransitionPage(
+        key: state.pageKey,
+        child: BookingFlowScreen(
+          providerId: state.pathParameters['providerId'] ?? '',
+          initialServiceId: state.uri.queryParameters['serviceId'],
+        ),
+      ),
+    ),
+    GoRoute(
+      path: '/client/booking/:serviceId/:proId',
       builder: (context, state) => BookingFlowScreen(
-        providerId: state.pathParameters['providerId'] ?? '',
+        providerId: state.pathParameters['proId'] ?? '',
+        initialServiceId: state.pathParameters['serviceId'],
       ),
     ),
     GoRoute(
       path: '/client/event/:eventId',
-      builder: (context, state) => EventDetailScreen(
-        eventId: state.pathParameters['eventId'] ?? '',
+      pageBuilder: (context, state) => fadeSlideTransitionPage(
+        key: state.pageKey,
+        child: EventDetailScreen(
+          eventId: state.pathParameters['eventId'] ?? '',
+        ),
       ),
     ),
     GoRoute(
       path: '/client/ticket-purchase/:eventId',
-      builder: (context, state) => EventDetailScreen(
-        eventId: state.pathParameters['eventId'] ?? '',
-        openPurchaseFlow: true,
+      pageBuilder: (context, state) => slideUpTransitionPage(
+        key: state.pageKey,
+        child: EventDetailScreen(
+          eventId: state.pathParameters['eventId'] ?? '',
+          openPurchaseFlow: true,
+        ),
       ),
     ),
     GoRoute(
@@ -200,15 +290,21 @@ final appRouter = GoRouter(
     ),
     GoRoute(
       path: '/client/messages/:conversationId',
-      builder: (context, state) => ChatScreen(
-        conversationId: state.pathParameters['conversationId'] ?? '',
-        otherUserName:
-            (state.extra as Map<String, String>?)?['otherUserName'],
+      pageBuilder: (context, state) => fadeSlideTransitionPage(
+        key: state.pageKey,
+        child: ChatScreen(
+          conversationId: state.pathParameters['conversationId'] ?? '',
+          otherUserName:
+              (state.extra as Map<String, String>?)?['otherUserName'],
+        ),
       ),
     ),
     GoRoute(
       path: '/client/notifications',
-      builder: (context, state) => const NotificationHistoryScreen(),
+      pageBuilder: (context, state) => fadeSlideTransitionPage(
+        key: state.pageKey,
+        child: const NotificationHistoryScreen(),
+      ),
     ),
 
     // ─── Pro : hors shell ───
@@ -218,15 +314,20 @@ final appRouter = GoRouter(
     ),
     GoRoute(
       path: '/pro/events/create',
-      builder: (context, state) => const CreateEventScreen(),
+      pageBuilder: (context, state) => slideUpTransitionPage(
+        key: state.pageKey,
+        child: const CreateEventScreen(),
+      ),
     ),
     GoRoute(
       path: '/pro/events/:eventId/edit',
-      builder: (context, state) => const CreateEventScreen(),
+      builder: (context, state) => CreateEventScreen(
+        eventId: state.pathParameters['eventId'],
+      ),
     ),
     GoRoute(
       path: '/pro/events/:eventId/attendees',
-      builder: (context, state) => ScannerScreen(
+      builder: (context, state) => ProviderAttendeesListScreen(
         eventId: state.pathParameters['eventId'] ?? '',
       ),
     ),
@@ -238,11 +339,20 @@ final appRouter = GoRouter(
     ),
     GoRoute(
       path: '/pro/video/edit',
-      builder: (context, state) => const UploadVideoScreen(),
+      builder: (context, state) {
+        final path = state.extra as String? ?? '';
+        return ProviderVideoEditScreen(videoPath: path);
+      },
     ),
     GoRoute(
       path: '/pro/video/publish',
-      builder: (context, state) => const UploadVideoScreen(),
+      pageBuilder: (context, state) {
+        final data = state.extra as Map<String, dynamic>?;
+        return slideUpTransitionPage(
+          key: state.pageKey,
+          child: ProviderVideoPublishScreen(editData: data),
+        );
+      },
     ),
     GoRoute(
       path: '/pro/messages',
@@ -263,12 +373,23 @@ final appRouter = GoRouter(
     ),
     GoRoute(
       path: '/pro/scanner',
-      builder: (context, state) =>
-          const ProScannerEventPickerScreen(),
+      pageBuilder: (context, state) => slideUpTransitionPage(
+        key: state.pageKey,
+        child: const ProScannerEventPickerScreen(),
+      ),
     ),
     GoRoute(
       path: '/pro/scanner/result',
-      redirect: (_, __) => '/pro/scanner',
+      pageBuilder: (context, state) {
+        final extra = state.extra as Map<String, dynamic>?;
+        final result = extra?['result'] as ScanResult? ??
+            const ScanResult(valid: false, reason: 'unknown');
+        final eventId = extra?['eventId'] as String? ?? '';
+        return scaleTransitionPage(
+          key: state.pageKey,
+          child: QrScanResultScreen(result: result, eventId: eventId),
+        );
+      },
     ),
     GoRoute(
       path: '/pro/stripe-setup',
@@ -285,15 +406,15 @@ final appRouter = GoRouter(
     GoRoute(
       path: '/pro/clients',
       builder: (context, state) =>
-          const MyBookingsScreen(forPro: true),
+          const ProviderClientsListScreen(),
     ),
     GoRoute(
       path: '/pro/payouts',
-      builder: (context, state) => const ProRevenueScreen(),
+      builder: (context, state) => const ProviderPayoutHistoryScreen(),
     ),
     GoRoute(
       path: '/pro/profile/reviews',
-      builder: (context, state) => const ProInsightsScreen(),
+      builder: (context, state) => const ProviderReviewsReceivedScreen(),
     ),
     GoRoute(
       path: '/pro/profile/notifications-settings',
@@ -313,11 +434,23 @@ final appRouter = GoRouter(
           routes: [
             GoRoute(
               path: '/client',
-              builder: (context, state) => const FeedScreen(),
+              builder: (context, state) {
+                final client = Supabase.instance.client;
+                return BlocProvider(
+                  create: (_) => ClientFeedCubit(
+                    videoRepository: VideoRepository(supabase: client),
+                    notificationRepository:
+                        NotificationRepository(supabase: client),
+                  ),
+                  child: const ClientFeedScreen(),
+                );
+              },
               routes: [
                 GoRoute(
                   path: 'video/:videoId',
-                  redirect: (_, __) => '/client',
+                  builder: (context, state) => ClientVideoDetailScreen(
+                    videoId: state.pathParameters['videoId'] ?? '',
+                  ),
                 ),
               ],
             ),
@@ -327,7 +460,7 @@ final appRouter = GoRouter(
           routes: [
             GoRoute(
               path: '/client/discover',
-              builder: (context, state) => const DiscoverScreen(),
+              builder: (context, state) => const ClientSearchScreen(),
               routes: [
                 GoRoute(
                   path: 'results',
@@ -341,7 +474,7 @@ final appRouter = GoRouter(
                 ),
                 GoRoute(
                   path: 'events',
-                  builder: (context, state) => const DiscoverScreen(),
+                  builder: (context, state) => const ClientEventsDiscoveryScreen(),
                 ),
               ],
             ),
@@ -355,7 +488,7 @@ final appRouter = GoRouter(
               routes: [
                 GoRoute(
                   path: 'tickets',
-                  builder: (context, state) => const MyBookingsScreen(),
+                  builder: (context, state) => const MyTicketsScreen(),
                 ),
                 GoRoute(
                   path: ':bookingId',
@@ -382,6 +515,18 @@ final appRouter = GoRouter(
                 GoRoute(
                   path: 'settings',
                   builder: (context, state) => const SettingsScreen(),
+                  routes: [
+                    GoRoute(
+                      path: 'change-password',
+                      builder: (context, state) =>
+                          const ChangePasswordScreen(),
+                    ),
+                    GoRoute(
+                      path: 'language',
+                      builder: (context, state) =>
+                          const LanguageSettingsScreen(),
+                    ),
+                  ],
                 ),
                 GoRoute(
                   path: 'favorites',
@@ -403,7 +548,7 @@ final appRouter = GoRouter(
           routes: [
             GoRoute(
               path: '/pro',
-              builder: (context, state) => const FeedScreen(),
+              builder: (context, state) => const ProFeedScreen(),
               routes: [
                 GoRoute(
                   path: 'dashboard',
@@ -421,7 +566,7 @@ final appRouter = GoRouter(
           routes: [
             GoRoute(
               path: '/pro/search',
-              builder: (context, state) => const DiscoverScreen(),
+              builder: (context, state) => const ProSearchScreen(),
               routes: [
                 GoRoute(
                   path: 'results',
@@ -449,7 +594,7 @@ final appRouter = GoRouter(
           routes: [
             GoRoute(
               path: '/pro/calendar',
-              builder: (context, state) => const ProCalendarHubScreen(),
+              builder: (context, state) => const ProRdvScreen(),
               routes: [
                 GoRoute(
                   path: 'bookings',
@@ -502,6 +647,11 @@ final appRouter = GoRouter(
                       path: 'change-password',
                       builder: (context, state) =>
                           const ChangePasswordScreen(),
+                    ),
+                    GoRoute(
+                      path: 'language',
+                      builder: (context, state) =>
+                          const LanguageSettingsScreen(),
                     ),
                   ],
                 ),
@@ -637,6 +787,25 @@ final appRouter = GoRouter(
     GoRoute(
       path: '/pro-insights',
       builder: (context, state) => const ProInsightsScreen(),
+    ),
+    GoRoute(
+      path: '/refund/:bookingId',
+      builder: (context, state) => RefundRequestScreen(
+        bookingId: state.pathParameters['bookingId'] ?? '',
+      ),
+    ),
+    GoRoute(
+      path: '/receipt/:bookingId',
+      pageBuilder: (context, state) => scaleTransitionPage(
+        key: state.pageKey,
+        child: PaymentReceiptScreen(
+          bookingId: state.pathParameters['bookingId'] ?? '',
+        ),
+      ),
+    ),
+    GoRoute(
+      path: '/saved-posts',
+      builder: (context, state) => const SavedPostsScreen(),
     ),
   ],
 );

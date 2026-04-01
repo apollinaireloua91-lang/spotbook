@@ -3,7 +3,14 @@ import 'package:flutter/services.dart';
 
 import '../theme/app_colors.dart';
 
-enum SpotbookButtonVariant { primary, secondary, outlined, ghost, destructive }
+enum SpotbookButtonVariant {
+  primary,
+  secondary,
+  outlined,
+  ghost,
+  destructive,
+  gradient,
+}
 
 class SpotbookButton extends StatefulWidget {
   const SpotbookButton({
@@ -61,6 +68,15 @@ class SpotbookButton extends StatefulWidget {
     this.width,
   }) : variant = SpotbookButtonVariant.destructive;
 
+  const SpotbookButton.gradient({
+    super.key,
+    required this.label,
+    required this.onPressed,
+    this.isLoading = false,
+    this.icon,
+    this.width,
+  }) : variant = SpotbookButtonVariant.gradient;
+
   final String label;
   final VoidCallback? onPressed;
   final SpotbookButtonVariant variant;
@@ -106,10 +122,12 @@ class _SpotbookButtonState extends State<SpotbookButton>
     final Color fg;
     final Border? border;
 
+    final bool isGradient = widget.variant == SpotbookButtonVariant.gradient;
+
     switch (widget.variant) {
       case SpotbookButtonVariant.primary:
-        bg = AppColors.blanc;
-        fg = AppColors.fond;
+        bg = AppColors.violet;
+        fg = AppColors.blanc;
         border = null;
       case SpotbookButtonVariant.secondary:
         bg = AppColors.surfaceAlt;
@@ -127,9 +145,14 @@ class _SpotbookButtonState extends State<SpotbookButton>
         bg = AppColors.error.withValues(alpha: 0.1);
         fg = AppColors.error;
         border = null;
+      case SpotbookButtonVariant.gradient:
+        bg = Colors.transparent; // gradient used instead
+        fg = AppColors.blanc;
+        border = null;
     }
 
-    final bool isPill = widget.variant == SpotbookButtonVariant.primary;
+    final bool isPill =
+        widget.variant == SpotbookButtonVariant.primary || isGradient;
     final double radius = isPill ? 28 : 12;
     final double height = isPill ? 56 : 48;
 
@@ -149,9 +172,32 @@ class _SpotbookButtonState extends State<SpotbookButton>
           width: widget.width ?? double.infinity,
           height: height,
           decoration: BoxDecoration(
-            color: bg,
+            color: isGradient ? null : bg,
+            gradient: isGradient ? AppColors.gradientAccent : null,
             borderRadius: BorderRadius.circular(radius),
             border: border,
+            boxShadow: isGradient
+                ? [
+                    BoxShadow(
+                      color: AppColors.violet.withAlpha(80),
+                      blurRadius: 16,
+                      offset: const Offset(0, 4),
+                    ),
+                    BoxShadow(
+                      color: AppColors.rose.withAlpha(40),
+                      blurRadius: 24,
+                      offset: const Offset(0, 8),
+                    ),
+                  ]
+                : widget.variant == SpotbookButtonVariant.primary
+                    ? [
+                        BoxShadow(
+                          color: AppColors.violet.withAlpha(90),
+                          blurRadius: 18,
+                          offset: const Offset(0, 5),
+                        ),
+                      ]
+                    : null,
           ),
           child: Center(
             child: widget.isLoading

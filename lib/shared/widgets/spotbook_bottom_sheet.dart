@@ -17,11 +17,13 @@ Future<T?> showSpotbookBottomSheet<T>({
   String? title,
   bool isDismissible = true,
   bool isScrollControlled = true,
+  bool useSafeArea = true,
 }) {
   return showModalBottomSheet<T>(
     context: context,
     isDismissible: isDismissible,
     isScrollControlled: isScrollControlled,
+    useSafeArea: useSafeArea,
     backgroundColor: Colors.transparent,
     builder: (_) => SpotbookBottomSheet(title: title, child: child),
   );
@@ -46,7 +48,7 @@ class SpotbookBottomSheet extends StatelessWidget {
 
     return Container(
       decoration: const BoxDecoration(
-        color: Color(0xFF0D0D0D),
+        color: AppColors.surfaceAlt,
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(24),
           topRight: Radius.circular(24),
@@ -56,7 +58,6 @@ class SpotbookBottomSheet extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           const SizedBox(height: 12),
-          // Drag handle
           Center(
             child: Container(
               width: 36,
@@ -68,23 +69,35 @@ class SpotbookBottomSheet extends StatelessWidget {
             ),
           ),
           if (title != null) ...[
-            const SizedBox(height: 16),
+            const SizedBox(height: 12),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Text(
-                title!,
-                style: const TextStyle(
-                  color: AppColors.blanc,
-                  fontSize: 17,
-                  fontWeight: FontWeight.w600,
-                ),
+              padding: const EdgeInsets.only(left: 20, right: 4),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      title!,
+                      style: const TextStyle(
+                        color: AppColors.blanc,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 0.2,
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () => Navigator.of(context).maybePop(),
+                    icon: const Icon(Icons.close, color: AppColors.gris),
+                    visualDensity: VisualDensity.compact,
+                  ),
+                ],
               ),
             ),
           ],
-          const SizedBox(height: 8),
+          const SizedBox(height: 4),
           Padding(
             padding: padding ??
-                EdgeInsets.fromLTRB(20, 8, 20, 20 + bottomInset),
+                EdgeInsets.fromLTRB(20, 4, 20, 20 + bottomInset),
             child: child,
           ),
         ],

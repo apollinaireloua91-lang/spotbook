@@ -266,6 +266,10 @@ class _NotificationTileState extends ConsumerState<_NotificationTile>
         final bookingId = n.data['bookingId'] as String?;
         if (bookingId != null) context.push('/booking/$bookingId');
         break;
+      case 'booking_reported':
+        final id = n.data['bookingId'] as String?;
+        if (id != null) context.push('/booking/$id');
+        break;
       case 'waitlist':
         final eventId = n.data['eventId'] as String?;
         if (eventId != null) context.push('/event/$eventId');

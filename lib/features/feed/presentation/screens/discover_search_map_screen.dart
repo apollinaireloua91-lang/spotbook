@@ -8,6 +8,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../../../../shared/theme/app_colors.dart';
+import '../../../../shared/utils/service_category_icons.dart';
 import '../../../../shared/widgets/spotbook_avatar.dart';
 import '../../../../shared/widgets/spotbook_button.dart';
 import '../../data/discover_notifier.dart';
@@ -30,6 +31,17 @@ const _kDarkMapStyle = '''[
   {"featureType":"transit","stylers":[{"visibility":"off"}]}
 ]''';
 
+/// Position carte : GPS réel du pro, sinon décal déterministe autour de [anchor] (ville / pas de GPS).
+LatLng _proMapLatLng(ProviderSearchResult pro, LatLng anchor) {
+  if (pro.latitude != null && pro.longitude != null) {
+    return LatLng(pro.latitude!, pro.longitude!);
+  }
+  final h = pro.id.hashCode;
+  final dx = ((h % 200) - 100) / 3200.0;
+  final dy = (((h >> 8) % 200) - 100) / 3200.0;
+  return LatLng(anchor.latitude + dx, anchor.longitude + dy);
+}
+
 class DiscoverSearchMapScreen extends ConsumerStatefulWidget {
   const DiscoverSearchMapScreen({super.key});
 
@@ -50,11 +62,32 @@ class _DiscoverSearchMapScreenState
 
   final Map<String, BitmapDescriptor> _markerIcons = {};
   List<ProviderSearchResult>? _lastProviders;
+  LatLng _mapAnchor = const LatLng(45.5017, -73.5673);
 
   static const CameraPosition _fallback = CameraPosition(
     target: LatLng(45.5017, -73.5673),
     zoom: 12,
   );
+
+  Future<LatLng> _computeMapAnchor(List<ProviderSearchResult> providers) async {
+    final coords = await ref
+        .read(discoverSearchRepositoryProvider)
+        .getCurrentUserCoordinates();
+    if (coords.lat != null && coords.lng != null) {
+      return LatLng(coords.lat!, coords.lng!);
+    }
+    for (final p in providers) {
+      if (p.latitude != null && p.longitude != null) {
+        return LatLng(p.latitude!, p.longitude!);
+      }
+    }
+    return _fallback.target;
+  }
+
+  Future<void> _refreshMapAnchor(List<ProviderSearchResult> providers) async {
+    final anchor = await _computeMapAnchor(providers);
+    if (mounted) setState(() => _mapAnchor = anchor);
+  }
 
   @override
   void initState() {
@@ -78,20 +111,22 @@ class _DiscoverSearchMapScreenState
     super.dispose();
   }
 
-  // ── Custom marker icons ──────────────────────────────────────────────
+  // ── Custom marker icons (category-based) ────────────────────────────
 
   void _buildMarkersAsync(List<ProviderSearchResult> providers) {
-    for (final p in providers.where((p) => p.hasCoordinates)) {
+    for (final p in providers) {
       if (_markerIcons.containsKey(p.id)) continue;
-      _makeMarkerIcon(p.displayName, isOnline: p.isOnline ?? false)
-          .then((icon) {
+      _makeMarkerIcon(
+        category: p.category,
+        isOnline: p.isOnline ?? false,
+      ).then((icon) {
         if (mounted) setState(() => _markerIcons[p.id] = icon);
       });
     }
   }
 
-  Future<BitmapDescriptor> _makeMarkerIcon(
-    String name, {
+  Future<BitmapDescriptor> _makeMarkerIcon({
+    String? category,
     bool isOnline = false,
   }) async {
     const int px = 80;
@@ -107,8 +142,8 @@ class _DiscoverSearchMapScreenState
       r,
       ui.Paint()
         ..color = isOnline
-            ? const ui.Color(0xFF00C851)
-            : const ui.Color(0xFF1A1A1A),
+            ? AppColors.success
+            : AppColors.surface,
     );
 
     // White border
@@ -116,22 +151,25 @@ class _DiscoverSearchMapScreenState
       const ui.Offset(half, half),
       r,
       ui.Paint()
-        ..color = const ui.Color(0xFFFFFFFF)
+        ..color = AppColors.blanc
         ..style = ui.PaintingStyle.stroke
         ..strokeWidth = 3.5,
     );
 
-    // Initials text
-    final initials = _initials(name);
+    // Category icon using Material Icons codepoint
+    final iconData = ServiceCategoryIcons.icon(category);
     final paraBuilder = ui.ParagraphBuilder(
       ui.ParagraphStyle(
         textAlign: ui.TextAlign.center,
-        fontWeight: ui.FontWeight.bold,
-        fontSize: px * 0.28,
+        fontSize: px * 0.38,
+        fontFamily: 'MaterialIcons',
       ),
     )
-      ..pushStyle(ui.TextStyle(color: const ui.Color(0xFFFFFFFF)))
-      ..addText(initials);
+      ..pushStyle(ui.TextStyle(
+        color: AppColors.blanc,
+        fontFamily: 'MaterialIcons',
+      ))
+      ..addText(String.fromCharCode(iconData.codePoint));
     final para = paraBuilder.build();
     para.layout(ui.ParagraphConstraints(width: px.toDouble()));
     canvas.drawParagraph(para, ui.Offset(0, (px - para.height) / 2));
@@ -139,17 +177,6 @@ class _DiscoverSearchMapScreenState
     final img = await recorder.endRecording().toImage(px, px);
     final bytes = await img.toByteData(format: ui.ImageByteFormat.png);
     return BitmapDescriptor.bytes(bytes!.buffer.asUint8List());
-  }
-
-  static String _initials(String name) {
-    final parts = name.trim().split(RegExp(r'\s+'));
-    if (parts.length >= 2 &&
-        parts[0].isNotEmpty &&
-        parts[1].isNotEmpty) {
-      return '${parts[0][0]}${parts[1][0]}'.toUpperCase();
-    }
-    if (parts[0].isNotEmpty) return parts[0][0].toUpperCase();
-    return '?';
   }
 
   // ── Camera ──────────────────────────────────────────────────────────
@@ -161,7 +188,9 @@ class _DiscoverSearchMapScreenState
     final coords = await ref
         .read(discoverSearchRepositoryProvider)
         .getCurrentUserCoordinates();
-    final mapped = providers.where((p) => p.hasCoordinates).toList();
+    final anchor = await _computeMapAnchor(providers);
+    if (mounted) setState(() => _mapAnchor = anchor);
+    final mapped = providers.map((p) => _proMapLatLng(p, anchor)).toList();
 
     if (mapped.isEmpty) {
       if (coords.lat != null && coords.lng != null) {
@@ -175,23 +204,20 @@ class _DiscoverSearchMapScreenState
 
     if (mapped.length == 1) {
       await ctrl.animateCamera(
-        CameraUpdate.newLatLngZoom(
-          LatLng(mapped.first.latitude!, mapped.first.longitude!),
-          13,
-        ),
+        CameraUpdate.newLatLngZoom(mapped.first, 13),
       );
       return;
     }
 
-    var minLat = mapped.first.latitude!;
-    var maxLat = mapped.first.latitude!;
-    var minLng = mapped.first.longitude!;
-    var maxLng = mapped.first.longitude!;
-    for (final p in mapped) {
-      minLat = math.min(minLat, p.latitude!);
-      maxLat = math.max(maxLat, p.latitude!);
-      minLng = math.min(minLng, p.longitude!);
-      maxLng = math.max(maxLng, p.longitude!);
+    var minLat = mapped.first.latitude;
+    var maxLat = mapped.first.latitude;
+    var minLng = mapped.first.longitude;
+    var maxLng = mapped.first.longitude;
+    for (final ll in mapped) {
+      minLat = math.min(minLat, ll.latitude);
+      maxLat = math.max(maxLat, ll.latitude);
+      minLng = math.min(minLng, ll.longitude);
+      maxLng = math.max(maxLng, ll.longitude);
     }
     if (coords.lat != null && coords.lng != null) {
       minLat = math.min(minLat, coords.lat!);
@@ -236,7 +262,10 @@ class _DiscoverSearchMapScreenState
     if (!identical(_lastProviders, s.nearbyProviders)) {
       _lastProviders = s.nearbyProviders;
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) _buildMarkersAsync(s.nearbyProviders);
+        if (mounted) {
+          _refreshMapAnchor(s.nearbyProviders);
+          _buildMarkersAsync(s.nearbyProviders);
+        }
       });
     }
 
@@ -248,14 +277,14 @@ class _DiscoverSearchMapScreenState
       }
     });
 
-    final withCoords =
-        s.nearbyProviders.where((p) => p.hasCoordinates).toList();
+    final anyWithoutGps =
+        s.nearbyProviders.any((p) => !p.hasCoordinates);
 
     final markers = <Marker>{
-      for (final p in withCoords)
+      for (final p in s.nearbyProviders)
         Marker(
           markerId: MarkerId(p.id),
-          position: LatLng(p.latitude!, p.longitude!),
+          position: _proMapLatLng(p, _mapAnchor),
           icon: _markerIcons[p.id] ?? BitmapDescriptor.defaultMarker,
           onTap: () => _selectPro(p),
         ),
@@ -333,6 +362,7 @@ class _DiscoverSearchMapScreenState
                     itemBuilder: (_, i) {
                       final cat = _kMapCategories[i];
                       final selected = s.selectedCategory == cat;
+                      final isAll = cat == 'All';
                       return GestureDetector(
                         onTap: () => n.setCategory(cat),
                         child: Container(
@@ -347,17 +377,30 @@ class _DiscoverSearchMapScreenState
                                 ? null
                                 : Border.all(color: AppColors.border),
                           ),
-                          child: Text(
-                            cat,
-                            style: TextStyle(
-                              color: selected
-                                  ? AppColors.fond
-                                  : AppColors.blanc,
-                              fontSize: 12,
-                              fontWeight: selected
-                                  ? FontWeight.w600
-                                  : FontWeight.w400,
-                            ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                isAll ? Icons.apps : ServiceCategoryIcons.icon(cat),
+                                size: 14,
+                                color: selected
+                                    ? AppColors.fond
+                                    : AppColors.blanc,
+                              ),
+                              const SizedBox(width: 5),
+                              Text(
+                                cat,
+                                style: TextStyle(
+                                  color: selected
+                                      ? AppColors.fond
+                                      : AppColors.blanc,
+                                  fontSize: 12,
+                                  fontWeight: selected
+                                      ? FontWeight.w600
+                                      : FontWeight.w400,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       );
@@ -384,10 +427,8 @@ class _DiscoverSearchMapScreenState
               ),
             ),
 
-          // ── No GPS warning ──
-          if (!s.isLoading &&
-              withCoords.isEmpty &&
-              s.nearbyProviders.isNotEmpty)
+          // ── Pros sans GPS : positions approximatives sur la carte ──
+          if (!s.isLoading && anyWithoutGps && s.nearbyProviders.isNotEmpty)
             Positioned(
               left: 20,
               right: 20,
@@ -396,12 +437,12 @@ class _DiscoverSearchMapScreenState
                 color: AppColors.surface,
                 borderRadius: BorderRadius.circular(14),
                 child: const Padding(
-                  padding: EdgeInsets.all(16),
+                  padding: EdgeInsets.all(14),
                   child: Text(
-                    'Les pros trouvés n\'ont pas de position GPS.\nUtilise la vue Liste pour les consulter.',
+                    'Certains pros n’ont pas de GPS : leur épingle est placée approximativement près de ta zone (ou Montréal). La liste indique la vraie ville.',
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                        color: AppColors.gris, fontSize: 13, height: 1.4),
+                        color: AppColors.gris, fontSize: 12, height: 1.35),
                   ),
                 ),
               ),
@@ -553,10 +594,20 @@ class _ProBottomCard extends StatelessWidget {
                         if (pro.category != null &&
                             pro.category!.isNotEmpty) ...[
                           const SizedBox(height: 2),
-                          Text(
-                            pro.category!,
-                            style: const TextStyle(
-                                color: AppColors.gris, fontSize: 14),
+                          Row(
+                            children: [
+                              Icon(
+                                ServiceCategoryIcons.icon(pro.category),
+                                color: AppColors.gris,
+                                size: 14,
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                pro.category!,
+                                style: const TextStyle(
+                                    color: AppColors.gris, fontSize: 14),
+                              ),
+                            ],
                           ),
                         ],
                         if (pro.city != null &&
@@ -599,6 +650,22 @@ class _ProBottomCard extends StatelessWidget {
                     ),
                 ],
               ),
+
+              // Description
+              if (pro.description != null &&
+                  pro.description!.trim().isNotEmpty) ...[
+                const SizedBox(height: 12),
+                Text(
+                  pro.description!.trim(),
+                  style: const TextStyle(
+                    color: AppColors.grisClair,
+                    fontSize: 13,
+                    height: 1.35,
+                  ),
+                  maxLines: 3,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
               const SizedBox(height: 16),
 
               // Action buttons
@@ -616,7 +683,7 @@ class _ProBottomCard extends StatelessWidget {
                     child: SpotbookButton.primary(
                       label: 'Réserver',
                       onPressed: () =>
-                          context.push('/client/provider/${pro.id}'),
+                          context.push('/client/booking-flow/${pro.id}'),
                     ),
                   ),
                 ],

@@ -1,0 +1,842 @@
+# SPOTBOOK — PROMPT COMPLET FULL-STACK
+# Version 4.0 — Build TOUT ce qui manque
+
+Tu es un développeur Flutter senior. Tu construis Spotbook, une super-app mobile (TikTok + Planity + Eventbrite). L'app existe déjà partiellement (60 écrans construits). Tu dois construire les 33 écrans manquants + corriger/compléter les flux existants pour que TOUT fonctionne à 100%.
+
+---
+
+## STACK & ARCHITECTURE
+
+**Tech** : Flutter 3.x, Dart 3.x, Supabase (backend + Realtime + Storage), Stripe Connect (paiements), Cloudflare Stream (vidéo), Firebase FCM (push), GoRouter (navigation), Bloc/Cubit (state), get_it + injectable (DI), dartz (Either), Hive (cache offline).
+
+**Architecture Clean** : Chaque feature = `data/` (datasources, models, repositories_impl) → `domain/` (entities, repositories interfaces, usecases) → `presentation/` (bloc, screens, widgets). Chaque repository retourne `Either<Failure, T>`. Chaque UseCase a une seule méthode `call()`. Chaque screen utilise `BlocProvider` pour injecter le Bloc + `BlocConsumer` (listener pour side-effects + builder pour UI).
+
+**Bilingue** : Toute l'UI en Français (défaut) + English. Fichiers ARB (`app_fr.arb` + `app_en.arb`). `AppLocalizations.of(context)` partout. Sélecteur de langue dans les Settings client ET pro. `LocaleCubit` + sauvegarde Hive.
+
+**Design** : Noir & blanc premium. Background `#000000`, surfaces `#0D0D0D` → `#1A1A1A` → `#222222`. Texte blanc `#FFFFFF` / gris `#B3B3B3` / `#666666`. Bouton primaire = blanc pill sur fond noir. Glassmorphism sur les overlays vidéo. Micro-animations sur chaque bouton (scale 97% au tap). Shimmer skeleton loading partout. Hero animations sur avatars. Transitions slide+fade entre écrans. HapticFeedback.lightImpact() sur les actions principales.
+
+---
+
+## NAVIGATION (GoRouter)
+
+**Client — 4 onglets** : Feed | Découvrir | Mes RDV | Profil
+**Pro — 5 onglets** : Feed | Recherche | 📹 Caméra (FAB) | RDV | Profil Pro
+
+Le Dashboard Pro est accessible depuis le Feed Pro (icône en haut), PAS un onglet.
+Les Événements sont accessibles depuis le Profil Pro, PAS un onglet.
+
+Boutons retour = TOUJOURS `context.pop()`. Bottom sheets = `showModalBottomSheet()`, PAS des routes. Booking flow = PageView interne, pas GoRouter. Écrans de confirmation = PAS de bouton retour, uniquement CTA. `PopScope` sur les formulaires avec alerte "Modifications non sauvegardées".
+
+---
+
+## CE QUI EXISTE DÉJÀ (60 écrans — NE PAS reconstruire)
+
+Onboarding 3 slides, Login, Sign up 5 steps, Account type selection, GPS permission, Interest categories, Interest goals, Client home feed, Client search, Client bookings, Provider home feed, Provider search, Provider camera, Video upload progress, Booking funnel 6 steps, Post-booking review, Reschedule selection + confirmation, Refund request, Public event page, Ticket purchase, Order summary, Payment success + QR, Digital ticket details, Event creation 5 steps, Event sales management, Ticket sales list, Promo codes management, Client profile, Client settings, Saved favorites, Provider profile, Provider QR code, Provider dashboard, Sales performance, Stripe Connect setup, Chat screen, Notifications history, QR scanner, Provider promo settings, Active tickets with cancel, Cancellation success/confirmation.
+
+---
+
+## CE QUE TU DOIS CONSTRUIRE (33 écrans + corrections)
+
+### PHASE 1 — COMPOSANTS PARTAGÉS (core/widgets/)
+
+Construire AVANT tout écran :
+
+**SpotbookButton** : `.primary()` (fond blanc, texte noir, pill H56 radius 28, ombre, scale animation tap) + `.outlined()` (transparent, bordure blanche) + `.ghost()` (texte seul) + `.destructive()` (fond rouge 10%, texte rouge). Tous avec loading state (CircularProgressIndicator).
+
+**SpotbookCard** : fond `#0D0D0D`, radius 16, border `0.5px #2A2A2A`, ombre subtile. Variante Glass (BackdropFilter blur 20 + blanc 20% opacity). Variante Highlight (border blanc 1.5px quand sélectionné).
+
+**SpotbookTextField** : fond `#1A1A1A`, radius 14, border gris → blanc au focus (animé 200ms), label + hint + prefix icon + suffix icon + error state + obscure mode.
+
+**SpotbookAppBar** : transparent, titre blanc, bouton retour `context.pop()`, actions optionnelles.
+
+**SpotbookBottomSheet** : poignée drag en haut, fond `#0D0D0D`, coins arrondis 24, slide up animé.
+
+**SpotbookAvatar** : circulaire, CachedNetworkImage, badge en ligne (point vert), badge vérifié (checkmark), fallback initiales.
+
+**SpotbookChip** : sélectionné = blanc + texte noir. Non sélectionné = `#1A1A1A` + texte blanc.
+
+**SpotbookEmptyState** : icône + titre + description + CTA. Variantes : pas de RDV, pas d'événements, pas de messages, pas de favoris.
+
+**SpotbookLoadingShimmer** : shimmer animé qui mime la forme du contenu réel. Variantes pour cards, listes, profils, feed.
+
+**SpotbookBottomNav** : 4 items client, 5 items pro avec FAB central caméra.
+
+**SpotbookStatusBadge** : fond couleur 10% + texte couleur. Confirmé=vert, En attente=orange, Annulé=rouge, Terminé=gris.
+
+---
+
+### PHASE 2 — AUTH (3 écrans)
+
+**13. forgot_password_screen** (Cubit) :
+Logo → titre "Mot de passe oublié" → sous-titre → champ email (SpotbookTextField) → bouton "Envoyer le lien" → lien "Retour connexion". Backend: `supabase.auth.resetPasswordForEmail(email)`. Succès → écran 14. Retour → login.
+
+**14. forgot_password_confirmation_screen** (StatelessWidget) :
+Icône email grande → "Vérifie ta boîte mail" → "[email masqué]" → "Retour connexion" → "Renvoyer". PAS de bouton retour.
+
+**15. pro_onboarding_services_screen** (Cubit) :
+Titre "Quelle est ta profession ?" → grille 2 colonnes (Coiffure, Ongles, Massage, Fitness, Photo, Tatouage, Maquillage, DJ, Autre) → chaque = SpotbookCard sélectionnable (multi-select, bordure blanche quand sélectionné) → bouton "Continuer". Backend: `INSERT provider_categories`. Navigation: signup/5 → ici → /pro (Feed).
+
+---
+
+### PHASE 3 — PROFILS (CRITIQUE — 2 profils totalement différents)
+
+#### PROFIL CLIENT (style Twitter/Threads) — Corriger l'existant
+
+L'écran existe mais doit être COMPLÉTÉ avec tous les boutons fonctionnels :
+
+```
+Layout :
+  AppBar : "Nom" + "X Reviews" [← retour] [⚙️]
+  COVER PHOTO (grande, tap → image picker avec crop)
+  AVATAR (sur la cover, tap → image picker avec crop circulaire)
+  [Edit Profile] bouton
+  Nom + @username + bio + 📍 ville + 📅 membre depuis
+  CONNECTED SOCIALS : icônes rondes [TikTok] [Facebook] [Snapchat] [Twitter] → tap ouvre app
+  Card "Contact for Collaboration" + [Send Request] → crée conversation
+  TabBar 3 onglets :
+    [Favoris] : providers + vidéos sauvegardés → tap → profil pro ou vidéo
+    [Historique] : RDV passés → tap → booking detail
+    [Tickets] : billets achetés → tap → ticket detail QR
+  Bottom nav 4 tabs
+```
+
+Boutons qui doivent FONCTIONNER :
+- [Edit Profile] → écran 35 (edit profile)
+- [⚙️] → settings client (existant) + sélecteur LANGUE (Français/English)
+- [Cover photo tap] → bottom sheet [Camera] [Galerie] → crop rectangulaire → upload Supabase Storage
+- [Avatar tap] → bottom sheet [Camera] [Galerie] → crop circulaire → upload
+- [Social icon tap] → url_launcher ouvre l'app externe
+- [Send Collaboration Request] → crée conversation messaging avec tag "collaboration"
+- [Swipe favori] → retirer des favoris + toast
+- [Tap item historique] → booking detail
+- [Tap ticket] → ticket numérique QR
+
+#### PROFIL PRO (style TikTok — HUB CENTRAL) — Corriger l'existant
+
+L'écran existe mais doit être COMPLÉTÉ. C'est le HUB CENTRAL du pro — tout est accessible depuis ici :
+
+```
+Layout :
+  AppBar : transparent [⚙️ Settings]
+  AVATAR centré + badge vérifié
+  NOM EN MAJUSCULES
+  [Badge profession] + Localisation
+  
+  ■ STRATEGIC OVERVIEW : bio pro dans une card
+  
+  ■ REACH ANALYTICS : 3 stats en grand (TikTok Reach | IG Presence | Subscribers)
+  
+  ■ QUICK ACTIONS (2 cards côte à côte) :
+    [📅 CALENDRIER / DISPOS] → écran 17 (availability)
+    [➕ CRÉER ÉVÉNEMENT] → event creation flow (existant)
+  
+  ■ VISUAL STREAMS : grille 4 miniatures vidéo → tap = lecture
+  
+  ■ ACTIVE SERVICES [Gérer →] : liste services avec nom + durée + prix
+    → "Gérer" → écran 16 (services management)
+  
+  ■ MES ÉVÉNEMENTS [Voir tout →] : prochains events avec stats ventes
+    → tap → event edit
+  
+  Bottom nav 5 tabs (Feed | Recherche | 📹 | RDV | Profil Pro)
+```
+
+Boutons qui doivent FONCTIONNER :
+- [⚙️] → écran 37 (provider settings) avec LANGUE + STRIPE CONNECT + politique annulation
+- [CALENDRIER / DISPOS] → écran 17 (master toggle + jours + créneaux + jours de repos)
+- [CRÉER ÉVÉNEMENT] → event creation 5 steps (existant)
+- [Gérer services] → écran 16 (CRUD services)
+- [Tap vidéo] → lecture plein écran
+- [Tap événement] → event edit (écran 34)
+
+#### PROFIL PRO VU PAR UN CLIENT (écran 18 — LE PLUS IMPORTANT pour la conversion)
+
+```
+Layout :
+  [← retour] [↗ Partager]
+  COVER PHOTO + AVATAR + badge vérifié + nom + profession + 📍
+  Stats : Abonnés | Avis (4.8★) | RDV complétés
+  Bio + liens sociaux
+  [Suivre] / [Suivi(e)] toggle → follow/unfollow
+  
+  2 QUICK ACTIONS (UNIQUEMENT côté client) :
+    [📅 BOOK APPT.] → active onglet Services → choisir service → booking flow
+    [🎫 BUY TICKET] → active onglet Événements → choisir event → achat billet
+  
+  TabBar 4 onglets :
+    [Vidéos] : grille 3 colonnes miniatures
+    [Services] : liste avec nom + durée + prix + [Réserver]
+    [Avis] : liste avec note + texte + date + avatar client
+    [Événements] : upcoming events par ce pro
+  
+  BARRE STICKY BAS : [Réserver] (primaire) + [Message] (outlined)
+```
+
+Boutons qui doivent FONCTIONNER :
+- [← retour] → context.pop() (Feed ou Search selon provenance)
+- [↗ Partager] → bottom sheet QR + Copier lien + SMS + WhatsApp + IG
+- [Suivre] → INSERT follows → compteur +1 → push au pro
+- [BOOK APPT.] → switch sur onglet Services
+- [BUY TICKET] → switch sur onglet Événements
+- [Réserver] par service → booking flow 6 étapes
+- [Réserver] sticky → booking flow avec premier service par défaut
+- [Message] sticky → messaging chat (conversation créée auto)
+
+---
+
+### PHASE 3B — BOOKING FLOW COMPLET (8 écrans)
+
+**16. provider_services_manage_screen** (Bloc) :
+Titre "Mes Services" → liste (SpotbookCard: nom + icône + durée + prix + toggle actif/inactif + edit + delete) → FAB "+" → modal: nom, description, catégorie dropdown, duration picker, prix, photo, toggle actif → "Enregistrer". Toggle actif = effet immédiat. Delete = confirmation dialogue. Validation: nom min 2, prix > 0, durée obligatoire.
+
+**17. provider_availability_setup_screen** (Bloc) :
+Master toggle "Accepter les réservations" (dialog quand OFF: "Les clients ne pourront plus réserver") → 7 jours avec toggle chacun → pour chaque jour actif: heure début + fin + "Ajouter créneau" + supprimer → section "Jours de repos": calendrier tap=toggle bloqué → dropdown intervalle min (0/15/30/60 min) → input max RDV/jour → "Enregistrer". Validation: fin > début, pas de chevauchement.
+
+**18. provider_public_profile_client_view_screen** (Bloc + Realtime) :
+Détaillé ci-dessus dans PROFIL PRO VU PAR UN CLIENT. Route: `/client/provider/:id`.
+
+**19. client_booking_detail_screen** (Bloc + Realtime) :
+Bannière statut (vert/orange/gris/rouge) → carte pro (avatar + nom + catégorie + note) → service + durée + prix → date & heure → lieu + [Ouvrir Maps] → boutons selon statut:
+- Confirmé: [Reporter] (bottom sheet calendrier → nouveaux créneaux → confirmer → push pro) | [Annuler] (bottom sheet → raison radio → confirmer → Stripe refund si applicable → push pro) | [💬 Contacter]
+- En attente: [Annuler]
+- Terminé: [Laisser un avis] (bottom sheet → 5 étoiles + texte + photo → envoyer → push pro) | [Réserver à nouveau] (→ booking flow même pro + même service pré-sélectionné)
+- Annulé: [Réserver à nouveau]
+Timeline des changements en bas.
+
+**20. provider_booking_detail_screen** (Bloc + Realtime) :
+Bannière statut → carte client (avatar + nom + nombre de RDV avec ce pro) → service + durée + prix + commission 12% + montant net → date & heure → boutons:
+- En attente: [Accepter] → push client "Confirmé" | [Refuser] → champ raison → push client | [Proposer autre horaire] → date/time picker → INSERT booking_proposals → push client (notification actionable: Accepter/Refuser)
+- Confirmé: [Marquer terminé] → confirmation → push client "Laisse un avis" → déclenche payout Stripe | [Annuler] → refund 100% | [💬 Contacter]
+- Terminé: voir l'avis
+Notes internes (auto-save debounce 2s, invisible au client).
+
+**21. provider_booking_accept_reject_screen** (Cubit, bottom sheet) :
+Résumé rapide → [Accepter] → push | [Refuser] → raison → push | [Proposer autre horaire] → picker → push.
+
+**22. client_cancel_booking_screen** (Cubit, bottom sheet) :
+"Annuler la réservation" → résumé → politique d'annulation affichée → raison (radio: Changement plans / Problème perso / Autre pro / Pro ne répond pas / Autre) → [Confirmer annulation] (rouge) + [Garder] (outlined) → UPDATE + refund Stripe si applicable → push pro.
+
+**23. provider_calendar_full_screen** (Bloc + Realtime) :
+Toggle Jour/Semaine/Mois → navigation < Mars 2026 > → blocs réservation colorés (tap → détail) → zones grises = indisponible → FAB "+" → [Bloquer créneau] ou [Ajouter RDV manuel]. Package: table_calendar.
+
+---
+
+### PHASE 4 — MESSAGING (1 écran)
+
+**24. messaging_inbox_screen** (Bloc + Realtime) :
+"Messages" → search bar → liste conversations triée par activité: avatar (avec badge en ligne) + nom + badge vérifié + dernier message tronqué + timestamp + compteur non-lus → swipe gauche: [Archiver] [Supprimer] → empty state si 0 conversations.
+Chaque conversation créée automatiquement lors d'une réservation. Premier message = message système "Réservation confirmée".
+Chat (existant) : texte + photos (image_picker → upload) + indicateur en ligne + read receipts (✓✓) + bouton appel (url_launcher tel:).
+
+---
+
+### PHASE 5 — FEED & VIDEO (5 écrans)
+
+Le Feed (existant) doit avoir ces 4 boutons d'interaction sur CHAQUE vidéo (colonne droite style TikTok) :
+
+```
+AVATAR PRO [+] (follow)
+👍 LIKE + compteur (toggle, double tap = like avec animation cœur Lottie)
+💬 COMMENT + compteur (bottom sheet commentaires)
+↗️ SHARE + compteur (share sheet natif)
+🔖 SAVE + compteur (toggle favori, sauvegardé dans profil client onglet Favoris)
+```
+
+Plus overlay bas : [📅 Réserver] + @username ✓ + description + #tags + 🎵 audio.
+Long press : bottom sheet [Copier lien] [Pas intéressé] [Signaler].
+Toggle en haut : [Abonnements] (vidéos des pros suivis) | [Pour toi] (algo).
+
+Tables nécessaires : `video_likes`, `video_favorites`, `follows`, `video_hidden` + compteurs dénormalisés sur `videos`.
+
+**25. provider_video_edit_screen** (Cubit) : preview plein écran + trim timeline + [Texte overlay] (draggable + couleurs) + [Musique] (bibliothèque) + [Filtres] (scroll horizontal preview) + [Stickers] + [Suivant]. Boutons caméra: switch front/back, flash, timer, import galerie.
+
+**26. provider_video_publish_screen** (Cubit) : miniature + description (300 chars + compteur) + tags # + "Lier un service" dropdown + toggles commentaires/partages + visibilité Public/Abonnés + [Publier] → upload Cloudflare → progress bar → succès toast → retour Feed.
+
+**27. client_video_detail_screen** (Bloc + Realtime) : vidéo plein écran + overlay (nom, description, tags, "Réserver") + tap commentaire → bottom sheet (liste + input + tri).
+
+**28. client_search_results_screen** (Bloc) : header requête + filtres (catégorie, distance, note min, prix, dispo) + toggle liste/carte + cards provider avec [Réserver].
+
+**29. client_search_map_view_screen** (Bloc) : Google Maps plein écran + marqueurs avatars + bottom sheet draggable + chips catégorie.
+
+**IMPORTANT pour la recherche** : Tout pro qui crée un compte dans la même ville/arrondissement qu'un client DOIT apparaître automatiquement dans son Discover. Requête PostGIS `ST_DWithin`. Pareil pour les événements.
+
+---
+
+### PHASE 6 — EVENTS (5 écrans)
+
+**30. client_events_discovery_screen** (Bloc) : toggle Liste/Carte + filtres horizontaux (Ce soir, Ce weekend, Ce mois, Catégorie, Prix, Distance) + cards événement + search bar.
+
+**31. client_my_tickets_screen** (Cubit) : "Mes Billets" → tabs À venir/Passés → cards (image + titre + date + lieu + type billet + statut) → tap → ticket numérique QR (existant). Bouton [Annuler billet] si politique le permet.
+
+**32. provider_attendees_list_screen** (Bloc + Realtime) : header "42/100 participants" + search + liste (avatar + nom + type billet + date achat + scanné ✓/○) + stats (Vendus/Scannés/Restants) + [Exporter CSV].
+
+**33. qr_scan_result_screen** (StatelessWidget) : plein écran centré : VALID (vert + check + infos) / INVALID (rouge + X) / ALREADY SCANNED (orange + warning + date/heure) + [Scanner un autre].
+
+**34. provider_event_edit_screen** : réutilise le flow create_event en mode édition (pré-rempli) + "Enregistrer les modifications".
+
+---
+
+### PHASE 7 — PROFILES & SETTINGS (6 écrans)
+
+**35. client_edit_profile_screen** (Cubit) :
+Avatar (tap → picker + crop) + cover photo + champs: nom, @username (vérification unicité debounce 500ms), bio (150 chars compteur), ville, URL, socials (TikTok, IG, Snap, Twitter) + [Enregistrer]. PopScope si modifs non sauvegardées.
+
+**36. provider_edit_profile_screen** (Cubit) :
+Mêmes champs + business name, catégorie principale dropdown, catégories secondaires chips, adresse travail (Google Places autocomplete), rayon d'intervention. PopScope.
+
+**37. provider_settings_screen** (StatelessWidget) :
+SECTIONS :
+- **COMPTE** : email, téléphone, [Changer mot de passe] (ancien + nouveau + confirmer + indicateur force)
+- **ENTREPRISE** : nom, catégorie, adresse → lien edit profile
+- **RÉSERVATIONS** : politique annulation (Flexible/Modérée/Stricte dropdown), délai minimum, intervalle entre RDV, max RDV/jour → sauvegardé dans `provider_settings`
+- **PAIEMENTS** : statut Stripe Connect (Actif ✅ / À configurer) → lien Stripe setup (existant) + historique virements. **C'est ici que le pro connecte ses infos bancaires pour recevoir et retirer son argent via Stripe Connect.**
+- **NOTIFICATIONS** : → lien écran 38
+- **CONFIDENTIALITÉ** : toggle profil public/privé, visibilité recherche
+- **LANGUE** : sélecteur Français / English → `LocaleCubit.changeLocale()` → sauvegardé Hive
+- **AIDE** : FAQ, contacter support (email)
+- [Se déconnecter] (dialogue confirmation → signOut → login)
+- [Supprimer mon compte] (rouge → écran: conséquences listées + taper "SUPPRIMER" + bouton grisé tant que pas match → soft delete + anonymisation + annul réservations + refunds)
+
+**38. provider_notification_settings_screen** (Cubit) :
+Toggles par groupe : Réservations (nouvelle/annulation/report/rappel + dropdown 1h/2h/24h), Événements (billet vendu/complet), Messages, Avis, Paiements (reçu/virement).
+
+**39. share_profile_modal** (StatelessWidget, bottom sheet) :
+QR code profil (qr_flutter) + nom + photo + [Copier lien] (clipboard + toast) + [SMS] + [WhatsApp] + [IG Stories] + [Plus...] (share_plus).
+
+**40. report_delete_account_screens** (2 Cubits) :
+Report (bottom sheet) : raison radio (Spam, Contenu inapproprié, Harcèlement, Faux profil, Autre + texte) → [Signaler] → "Merci, examen sous 24h" → contenu masqué.
+Delete (plein écran) : voir settings ci-dessus.
+
+---
+
+### PHASE 8 — DASHBOARD PRO (5 écrans, accessibles depuis Feed Pro → icône Dashboard)
+
+**41. provider_revenue_detail_screen** (Bloc) : solde disponible (grand) + graphique revenus (7j/30j/90j/1an) + transactions (date, client, service, brut, commission 12%/7%, net, statut) + [Retirer vers banque] (Stripe Connect payout). Package: fl_chart.
+
+**42. provider_reviews_received_screen** (Bloc + Realtime) : note moyenne (grand, ex: 4.8) + distribution étoiles (barres) + filtre (Tous/Par service/Par note) + liste avis (avatar + nom + date + étoiles + service + texte + [Répondre] inline).
+
+**43. provider_payout_history_screen** (Cubit) : liste virements (montant, date, statut processing/completed/failed, référence bancaire). Source: Stripe Connect API.
+
+**44. provider_analytics_detail_screen** (Bloc) : période (7j/30j/90j/1an) + graphiques (vues profil, réservations, revenus) + métriques (conversion, clients récurrents, valeur moyenne, top service). Package: fl_chart.
+
+**45. provider_clients_list_screen** (Bloc) : CRM simple → liste (avatar + nom + total RDV + dernier RDV + total dépensé + [💬 Message]) + search + tri (Plus de RDV / Plus récent / Plus gros dépenseur).
+
+---
+
+## FLUX DE PAIEMENT
+
+### Paiement RDV (6 étapes dans un PageView, pas GoRouter)
+
+```
+Step 1: Sélection service (liste, sélection unique, highlight)
+Step 2: Date (table_calendar, jours indispo grisés)
+Step 3: Horaire (chips créneaux calculés depuis provider_availability - bookings existants)
+  → Si 0 créneaux : empty state + [Changer date] + [Contacter pro]
+Step 4: Récapitulatif (pro card + service + date + heure + prix + code promo [Appliquer])
+  → Promo: valide = prix barré | invalide/expiré/déjà utilisé = erreur spécifique
+Step 5: Paiement sécurisé
+  → Canada: Stripe CardField + carte sauvegardée "Visa ••4242" [Modifier]
+  → Côte d'Ivoire: sélection Orange Money / MTN / Wave / Djamo → numéro → OTP
+  → 3D Secure si requis (WebView)
+  → Erreurs: carte refusée / fonds insuffisants / auth échouée / timeout → message + retry
+Step 6: Confirmation ✅
+  → Check animé (Lottie) + "Reservation Confirmed" + "Provider notified"
+  → Code SPT-XXXXX (copiable) + [Ajouter au calendrier] + [Voir mes RDV]
+  → PAS de bouton retour
+```
+
+**Après paiement** : INSERT bookings → Stripe charge → push pro "Nouvelle réservation" → push client "Confirmé" → conversation messaging créée auto → rappels J-1 et H-2 programmés → réservation apparaît dans /client/bookings ET /pro/bookings (Realtime).
+
+### Paiement Billet (3 étapes)
+
+```
+Page événement: image/vidéo + titre + tags + organisateur [Follow] + date + heure + lieu [Maps] + description + sélection tickets (type + quantité +/-) + prix total + [Pay Now]
+Récapitulatif: event card + détails commande + frais service + total + carte sauvegardée [Modifier] + [Confirmer et Payer $XX]
+Confirmation: ✅ Order Confirmed + TXN code + QR entry pass [Save PDF] + lieu [Maps] + [View All My Bookings] + [Return to Discovery]
+```
+
+**Après paiement** : INSERT tickets + QR signé serveur → PDF auto → push pro "Billet vendu" → push client "Billet confirmé" → rappel J-1 → billet dans /client/bookings.
+
+### Stripe Connect pour le Pro (recevoir & retirer de l'argent)
+
+Le pro DOIT pouvoir connecter ses informations bancaires via Stripe Connect :
+- Accessible depuis : Settings Pro → section PAIEMENTS → [Configurer Stripe Connect]
+- Flow : Stripe Connect Onboarding (WebView) → vérification identité → ajout compte bancaire
+- Statut affiché : "Non configuré" / "En cours de vérification" / "Actif ✅"
+- Une fois actif : les paiements des clients sont automatiquement versés (moins la commission)
+- [Retirer vers banque] dans écran 41 (revenue detail) → Stripe payout API
+- Commission : 12% sur services, 7% sur billets
+
+---
+
+## MY BOOKINGS (client) — Tout atterrit ici
+
+Les RDV ET les billets sont dans le même onglet "Mes RDV" (3ème tab client), triés par date :
+- Tab "À venir" : RDV + événements mélangés chronologiquement
+- Tab "Passés" : historique complet
+- Tab "Annulés" : annulations + remboursements
+- Chaque RDV a : [💬 Message] (contact direct pro) + [QR] si applicable
+- Chaque événement a : [🎫 View Tickets] → tickets QR
+- Tap RDV → booking detail (écran 19) avec tous les boutons fonctionnels
+- Tap événement → ticket numérique QR
+
+---
+
+## DISCOVER — Géolocalisation automatique
+
+```
+Quand un pro crée son compte :
+  → Sa localisation GPS / adresse est enregistrée
+  → Il apparaît IMMÉDIATEMENT dans le Discover des clients de la même zone
+  → Ses événements aussi
+
+Écran Discover :
+  Search bar + 📍 [Ville ▼] [Change City] (bottom sheet villes + GPS)
+  Chips : [All] [Services] [Providers] [Events]
+  "Top Services" (catégories locales) [See all →]
+  "Top Providers" (mieux notés dans la zone) [See all →]
+  "Upcoming Events" (événements proches) [See all →] + [Get Tickets]
+  "Popular Searches in [City]" chips
+
+Requête : PostGIS ST_DWithin(location, client_location, radius)
+```
+
+---
+
+## REALTIME SYNC (Supabase Realtime + FCM)
+
+### Configuration Supabase Dashboard
+
+**Activer Realtime sur ces tables** (Dashboard → Database → Tables → sélectionner → Enable Realtime) :
+
+```
+Tables à activer OBLIGATOIREMENT :
+  ✅ bookings          → nouvelles réservations, changements statut, annulations
+  ✅ tickets            → ventes de billets, scans, annulations
+  ✅ messages           → nouveaux messages dans le chat
+  ✅ conversations      → dernière activité, conversations créées
+  ✅ comments           → nouveaux commentaires sur les vidéos
+  ✅ video_likes        → compteur likes temps réel
+  ✅ video_favorites    → compteur saves temps réel
+  ✅ reviews            → nouveaux avis, réponses du pro
+  ✅ follows            → nouveau follower
+  ✅ notifications      → nouvelles notifications
+  ✅ booking_proposals  → contre-propositions d'horaire
+  ✅ services           → changements services (visible côté client)
+  ✅ provider_availability → changements dispos (créneaux côté client)
+```
+
+### Realtime Publication Configuration (SQL à exécuter dans Supabase SQL Editor)
+
+```sql
+-- Activer la publication Realtime pour toutes les tables nécessaires
+ALTER PUBLICATION supabase_realtime ADD TABLE bookings;
+ALTER PUBLICATION supabase_realtime ADD TABLE tickets;
+ALTER PUBLICATION supabase_realtime ADD TABLE messages;
+ALTER PUBLICATION supabase_realtime ADD TABLE conversations;
+ALTER PUBLICATION supabase_realtime ADD TABLE comments;
+ALTER PUBLICATION supabase_realtime ADD TABLE video_likes;
+ALTER PUBLICATION supabase_realtime ADD TABLE video_favorites;
+ALTER PUBLICATION supabase_realtime ADD TABLE reviews;
+ALTER PUBLICATION supabase_realtime ADD TABLE follows;
+ALTER PUBLICATION supabase_realtime ADD TABLE notifications;
+ALTER PUBLICATION supabase_realtime ADD TABLE booking_proposals;
+ALTER PUBLICATION supabase_realtime ADD TABLE services;
+ALTER PUBLICATION supabase_realtime ADD TABLE provider_availability;
+```
+
+### Row Level Security (RLS) — CRITIQUE pour le Realtime
+
+Le Realtime Supabase respecte les RLS. Si les policies ne sont pas bien configurées, les utilisateurs ne recevront PAS les événements temps réel. Voici les policies essentielles :
+
+```sql
+-- === BOOKINGS ===
+-- Le client voit ses propres réservations
+CREATE POLICY "clients_own_bookings" ON bookings
+  FOR SELECT USING (auth.uid() = client_id);
+-- Le pro voit les réservations qui le concernent
+CREATE POLICY "providers_own_bookings" ON bookings
+  FOR SELECT USING (auth.uid() = provider_id);
+-- Le client peut créer une réservation
+CREATE POLICY "clients_insert_bookings" ON bookings
+  FOR INSERT WITH CHECK (auth.uid() = client_id);
+-- Le pro peut mettre à jour le statut
+CREATE POLICY "providers_update_bookings" ON bookings
+  FOR UPDATE USING (auth.uid() = provider_id);
+-- Le client peut annuler
+CREATE POLICY "clients_update_bookings" ON bookings
+  FOR UPDATE USING (auth.uid() = client_id);
+
+-- === MESSAGES ===
+-- Seuls les 2 participants voient les messages
+CREATE POLICY "participants_messages" ON messages
+  FOR SELECT USING (
+    EXISTS (
+      SELECT 1 FROM conversations
+      WHERE conversations.id = messages.conversation_id
+      AND auth.uid() = ANY(conversations.participant_ids)
+    )
+  );
+CREATE POLICY "participants_insert_messages" ON messages
+  FOR INSERT WITH CHECK (auth.uid() = sender_id);
+
+-- === CONVERSATIONS ===
+CREATE POLICY "own_conversations" ON conversations
+  FOR SELECT USING (auth.uid() = ANY(participant_ids));
+
+-- === TICKETS ===
+CREATE POLICY "clients_own_tickets" ON tickets
+  FOR SELECT USING (auth.uid() = client_id);
+CREATE POLICY "providers_event_tickets" ON tickets
+  FOR SELECT USING (
+    EXISTS (SELECT 1 FROM events WHERE events.id = tickets.event_id AND events.provider_id = auth.uid())
+  );
+
+-- === COMMENTS ===
+CREATE POLICY "anyone_read_comments" ON comments
+  FOR SELECT USING (true);  -- Commentaires publics
+CREATE POLICY "auth_insert_comments" ON comments
+  FOR INSERT WITH CHECK (auth.uid() = user_id);
+
+-- === VIDEO LIKES / FAVORITES ===
+CREATE POLICY "anyone_read_likes" ON video_likes
+  FOR SELECT USING (true);
+CREATE POLICY "own_likes" ON video_likes
+  FOR INSERT WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "own_delete_likes" ON video_likes
+  FOR DELETE USING (auth.uid() = user_id);
+-- Même pattern pour video_favorites
+
+-- === FOLLOWS ===
+CREATE POLICY "anyone_read_follows" ON follows
+  FOR SELECT USING (true);
+CREATE POLICY "own_follows" ON follows
+  FOR INSERT WITH CHECK (auth.uid() = follower_id);
+CREATE POLICY "own_unfollow" ON follows
+  FOR DELETE USING (auth.uid() = follower_id);
+
+-- === REVIEWS ===
+CREATE POLICY "anyone_read_reviews" ON reviews
+  FOR SELECT USING (true);  -- Avis publics
+CREATE POLICY "clients_insert_reviews" ON reviews
+  FOR INSERT WITH CHECK (auth.uid() = client_id);
+CREATE POLICY "providers_reply_reviews" ON reviews
+  FOR UPDATE USING (auth.uid() = provider_id);  -- Seulement le champ provider_reply
+
+-- === NOTIFICATIONS ===
+CREATE POLICY "own_notifications" ON notifications
+  FOR SELECT USING (auth.uid() = user_id);
+
+-- === SERVICES (lecture publique) ===
+CREATE POLICY "anyone_read_active_services" ON services
+  FOR SELECT USING (is_active = true);
+CREATE POLICY "providers_manage_services" ON services
+  FOR ALL USING (auth.uid() = provider_id);
+
+-- === PROVIDERS (profil public lisible par tous) ===
+CREATE POLICY "anyone_read_providers" ON providers
+  FOR SELECT USING (true);
+CREATE POLICY "own_provider_profile" ON providers
+  FOR UPDATE USING (auth.uid() = id);
+
+-- === PROFILES ===
+CREATE POLICY "anyone_read_profiles" ON profiles
+  FOR SELECT USING (true);
+CREATE POLICY "own_profile" ON profiles
+  FOR UPDATE USING (auth.uid() = id);
+```
+
+### RealtimeService (core/services/realtime_service.dart)
+
+```dart
+class RealtimeService {
+  final SupabaseClient _client;
+  RealtimeService(this._client);
+
+  // === BOOKINGS ===
+  // Écoute les changements sur les réservations d'un pro
+  // Utilisé par : ProviderBookingsBloc, ProviderCalendarBloc
+  Stream<List<Map<String, dynamic>>> watchProviderBookings(String providerId) {
+    return _client
+        .from('bookings')
+        .stream(primaryKey: ['id'])
+        .eq('provider_id', providerId);
+  }
+
+  // Écoute les changements sur les réservations d'un client
+  // Utilisé par : ClientBookingsBloc
+  Stream<List<Map<String, dynamic>>> watchClientBookings(String clientId) {
+    return _client
+        .from('bookings')
+        .stream(primaryKey: ['id'])
+        .eq('client_id', clientId);
+  }
+
+  // === MESSAGING ===
+  // Écoute les nouveaux messages dans une conversation
+  // Utilisé par : ChatBloc
+  Stream<List<Map<String, dynamic>>> watchConversation(String conversationId) {
+    return _client
+        .from('messages')
+        .stream(primaryKey: ['id'])
+        .eq('conversation_id', conversationId)
+        .order('created_at');
+  }
+
+  // Écoute les conversations d'un utilisateur (pour l'inbox)
+  // Utilisé par : MessagingInboxBloc
+  Stream<List<Map<String, dynamic>>> watchUserConversations(String userId) {
+    return _client
+        .from('conversations')
+        .stream(primaryKey: ['id']);
+    // Filtré côté client car Supabase stream ne supporte pas @> sur arrays
+    // .where((conv) => (conv['participant_ids'] as List).contains(userId))
+  }
+
+  // === EVENTS & TICKETS ===
+  // Écoute les ventes de billets pour un événement
+  // Utilisé par : ProviderAttendeesBloc, EventSalesBloc
+  Stream<List<Map<String, dynamic>>> watchEventSales(String eventId) {
+    return _client
+        .from('tickets')
+        .stream(primaryKey: ['id'])
+        .eq('event_id', eventId);
+  }
+
+  // === VIDEO INTERACTIONS ===
+  // Écoute les likes sur une vidéo (compteur temps réel)
+  // Utilisé par : VideoDetailBloc, FeedBloc
+  Stream<List<Map<String, dynamic>>> watchVideoLikes(String videoId) {
+    return _client
+        .from('video_likes')
+        .stream(primaryKey: ['id'])
+        .eq('video_id', videoId);
+  }
+
+  // Écoute les commentaires sur une vidéo
+  // Utilisé par : CommentsBloc
+  Stream<List<Map<String, dynamic>>> watchVideoComments(String videoId) {
+    return _client
+        .from('comments')
+        .stream(primaryKey: ['id'])
+        .eq('video_id', videoId)
+        .order('created_at');
+  }
+
+  // === NOTIFICATIONS ===
+  // Écoute les nouvelles notifications d'un utilisateur
+  // Utilisé par : NotificationsBloc, badge compteur dans AppBar
+  Stream<List<Map<String, dynamic>>> watchNotifications(String userId) {
+    return _client
+        .from('notifications')
+        .stream(primaryKey: ['id'])
+        .eq('user_id', userId)
+        .order('created_at');
+  }
+
+  // === REVIEWS ===
+  // Écoute les nouveaux avis pour un pro
+  // Utilisé par : ProviderReviewsBloc
+  Stream<List<Map<String, dynamic>>> watchProviderReviews(String providerId) {
+    return _client
+        .from('reviews')
+        .stream(primaryKey: ['id'])
+        .eq('provider_id', providerId)
+        .order('created_at');
+  }
+
+  // === PRESENCE (statut en ligne) ===
+  // Pas un stream PostgreSQL mais un channel Supabase Presence
+  RealtimeChannel joinPresence(String userId) {
+    final channel = _client.channel('online_users');
+    channel.subscribe((status, [ref]) {
+      if (status == RealtimeSubscribeStatus.subscribed) {
+        channel.track({'user_id': userId, 'online_at': DateTime.now().toIso8601String()});
+      }
+    });
+    return channel;
+  }
+
+  // Écouter qui est en ligne
+  void onPresenceChange(RealtimeChannel channel, Function(List<Map<String, dynamic>>) callback) {
+    channel.onPresenceSync((payload) {
+      final presences = channel.presenceState();
+      final onlineUsers = presences.entries
+          .map((e) => e.value.first.payload)
+          .toList();
+      callback(onlineUsers);
+    });
+  }
+
+  // === BROADCAST (éphémère — indicateur de frappe) ===
+  void sendTypingIndicator(String conversationId, String userId) {
+    final channel = _client.channel('chat:$conversationId');
+    channel.sendBroadcastMessage(
+      event: 'typing',
+      payload: {'user_id': userId},
+    );
+  }
+
+  void onTypingIndicator(String conversationId, Function(String userId) callback) {
+    final channel = _client.channel('chat:$conversationId');
+    channel.onBroadcast(event: 'typing', callback: (payload) {
+      callback(payload['user_id'] as String);
+    });
+    channel.subscribe();
+  }
+}
+```
+
+### Comment connecter un Stream Realtime à un Bloc
+
+```dart
+// Pattern standard : le Bloc crée une subscription et écoute les changements
+
+class ProviderBookingsBloc extends Bloc<ProviderBookingsEvent, ProviderBookingsState> {
+  final RealtimeService _realtimeService;
+  StreamSubscription? _subscription;
+
+  ProviderBookingsBloc(this._realtimeService) : super(ProviderBookingsInitial()) {
+    on<StartWatching>((event, emit) {
+      _subscription?.cancel();
+      _subscription = _realtimeService.watchProviderBookings(event.providerId).listen(
+        (data) => add(DataReceived(data.map(BookingModel.fromJson).toList())),
+        onError: (error) => add(WatchError(error.toString())),
+      );
+    });
+    on<DataReceived>((event, emit) => emit(ProviderBookingsLoaded(event.bookings)));
+    on<WatchError>((event, emit) => emit(ProviderBookingsError(event.message)));
+  }
+
+  @override
+  Future<void> close() {
+    _subscription?.cancel();
+    return super.close();
+  }
+}
+```
+
+### Matrice complète : qui écoute quoi
+
+| Écran | Stream utilisé | Événements écoutés |
+|-------|---------------|-------------------|
+| Pro — Liste RDV | `watchProviderBookings` | Nouveau RDV, annulation, report |
+| Pro — Calendrier | `watchProviderBookings` | Mêmes + blocs horaires |
+| Pro — Détail RDV | `watchProviderBookings` (filtré par ID) | Changement statut |
+| Client — Mes RDV | `watchClientBookings` | Confirmation, refus, terminé |
+| Client — Détail RDV | `watchClientBookings` (filtré par ID) | Changement statut |
+| Chat | `watchConversation` | Nouveaux messages |
+| Inbox messages | `watchUserConversations` | Nouvelles conversations, activité |
+| Pro — Participants event | `watchEventSales` | Nouveau billet vendu |
+| Pro — Ventes event | `watchEventSales` | Compteur ventes |
+| Feed — Vidéo | `watchVideoLikes` | Compteur likes |
+| Commentaires | `watchVideoComments` | Nouveaux commentaires |
+| Pro — Avis | `watchProviderReviews` | Nouvel avis |
+| Badge 🔔 | `watchNotifications` | Nouvelles notifs (compteur) |
+| Chat — En ligne | Presence channel | Statut en ligne/hors ligne |
+| Chat — Frappe | Broadcast channel | "est en train d'écrire..." |
+
+### Push Notifications (FCM — quand l'utilisateur est HORS de l'app)
+
+Le Realtime ne fonctionne que quand l'app est ouverte. Quand l'utilisateur ferme l'app, il faut envoyer des push via Firebase Cloud Messaging. Ça se fait via des **Supabase Edge Functions** ou **Database Webhooks** :
+
+```sql
+-- Exemple : trigger qui envoie un push quand une réservation est créée
+CREATE OR REPLACE FUNCTION notify_new_booking()
+RETURNS trigger AS $$
+BEGIN
+  -- Appeler l'Edge Function qui envoie le push FCM
+  PERFORM net.http_post(
+    url := 'https://[project].supabase.co/functions/v1/send-push',
+    body := json_build_object(
+      'user_id', NEW.provider_id,
+      'title', 'Nouvelle réservation',
+      'body', 'Un client a réservé le ' || NEW.booking_date,
+      'route', '/pro/bookings/' || NEW.id
+    )::text,
+    headers := '{"Content-Type": "application/json", "Authorization": "Bearer [service_role_key]"}'::jsonb
+  );
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER on_new_booking
+  AFTER INSERT ON bookings
+  FOR EACH ROW
+  EXECUTE FUNCTION notify_new_booking();
+```
+
+Rappels automatiques J-1 et H-2 : via Supabase Edge Function + pg_cron (extension PostgreSQL pour les tâches planifiées).
+
+```sql
+-- Activer pg_cron
+CREATE EXTENSION IF NOT EXISTS pg_cron;
+
+-- Job qui tourne toutes les heures et envoie les rappels
+SELECT cron.schedule(
+  'send-booking-reminders',
+  '0 * * * *',  -- Toutes les heures
+  $$
+    SELECT net.http_post(
+      url := 'https://[project].supabase.co/functions/v1/send-reminders',
+      body := '{}'::text,
+      headers := '{"Content-Type": "application/json", "Authorization": "Bearer [service_role_key]"}'::jsonb
+    );
+  $$
+);
+```
+
+---
+
+## BASE DE DONNÉES (31 tables)
+
+Tables principales : `profiles`, `providers`, `categories`, `services`, `bookings`, `events`, `tickets`, `ticket_types`, `videos`, `reviews`, `conversations`, `messages`, `payments`, `notifications`, `promo_codes`, `promo_code_uses`.
+
+Tables additionnelles : `provider_availability`, `provider_blocked_dates`, `provider_settings`, `provider_categories`, `social_links`, `comments`, `booking_proposals`, `refunds`, `reports`, `notification_preferences`, `follows`, `video_likes`, `video_favorites`, `video_hidden`, `provider_favorites`.
+
+RLS : Clients = propres données. Pros = données les concernant. Profils pros publics = lisibles par tous authentifiés. Messages = 2 participants uniquement.
+
+---
+
+## PACKAGES
+
+```yaml
+dependencies:
+  flutter_bloc, go_router, supabase_flutter, get_it, injectable, dartz,
+  cached_network_image, shimmer, google_maps_flutter, video_player, camera,
+  image_picker, intl, flutter_stripe, firebase_messaging, qr_flutter,
+  mobile_scanner, table_calendar, fl_chart, url_launcher, hive_flutter,
+  equatable, flutter_localizations, share_plus, image_cropper, lottie
+```
+
+---
+
+## RÈGLES ABSOLUES
+
+1. Clean Architecture stricte sur CHAQUE écran (entity → model → repo interface → repo impl → datasource → usecase → bloc/cubit → screen).
+2. Navigation GoRouter. `context.pop()` pour retour. Bottom sheets ≠ routes.
+3. Bilingue FR/EN. `AppLocalizations.of(context)` partout. Zéro string hardcodée.
+4. Design premium noir & blanc. Micro-animations. Glassmorphism. Shimmer loading.
+5. `Either<Failure, T>` sur chaque méthode repository.
+6. Offline-first avec Hive pour données critiques.
+7. Responsive iPhone SE → iPhone 15 Pro Max.
+8. PopScope sur formulaires avec alerte modifications non sauvegardées.
+9. HapticFeedback sur actions principales.
+10. Chaque bouton a un flux. Chaque flux est documenté. Aucun bouton mort.
+
+---
+
+## ORDRE D'EXÉCUTION
+
+1. GoRouter complet (app_router.dart + ClientShell + ProviderShell)
+2. Phase 1 : composants partagés
+3. Phase 3 : PROFILS (les corriger/compléter en priorité)
+4. Phase 3B : Booking flow complet
+5. Phase 2 : Auth
+6. Phase 5 : Feed & Video (boutons interaction)
+7. Phase 4 : Messaging
+8. Phase 6 : Events
+9. Phase 7 : Profiles & Settings (dont Stripe Connect)
+10. Phase 8 : Dashboard Pro
+11. i18n : fichiers ARB fr + en
+12. Tests & polish

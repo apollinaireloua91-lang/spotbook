@@ -59,8 +59,40 @@ class _ProEventsListScreenState extends ConsumerState<ProEventsListScreen> {
                     ),
                   ),
                   IconButton(
-                    icon: const Icon(Icons.tune, color: AppColors.blanc, size: 26),
-                    onPressed: () {},
+                    icon: Icon(Icons.tune, color: _filter != _Filter.all ? AppColors.violet : AppColors.blanc, size: 26),
+                    onPressed: () {
+                      showModalBottomSheet(
+                        context: context,
+                        backgroundColor: AppColors.surface,
+                        shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                        ),
+                        builder: (_) => SafeArea(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const SizedBox(height: 12),
+                              Container(width: 40, height: 4, decoration: BoxDecoration(color: AppColors.gris, borderRadius: BorderRadius.circular(2))),
+                              const SizedBox(height: 16),
+                              const Text('Filtrer par statut', style: TextStyle(color: AppColors.blanc, fontSize: 16, fontWeight: FontWeight.w600)),
+                              const SizedBox(height: 12),
+                              ..._Filter.values.map((f) => ListTile(
+                                leading: Icon(
+                                  _filter == f ? Icons.radio_button_checked : Icons.radio_button_off,
+                                  color: _filter == f ? AppColors.violet : AppColors.gris,
+                                ),
+                                title: Text(f.label, style: const TextStyle(color: AppColors.blanc)),
+                                onTap: () {
+                                  setState(() => _filter = f);
+                                  Navigator.pop(context);
+                                },
+                              )),
+                              const SizedBox(height: 16),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
                   ),
                 ],
               ),

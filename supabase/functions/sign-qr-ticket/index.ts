@@ -1,7 +1,38 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
 import { encode as hexEncode } from "https://deno.land/std@0.168.0/encoding/hex.ts";
-import { assertUuid, jsonHeaders, securityHeaders } from "../_shared/security.ts";
+import {
+  isValidUuid,
+  jsonResponse,
+  securityHeadersFor,
+} from "../_shared/security.ts";
+
+async function assertCanSignTicket(
+  req: Request,
+  ticketOwnerUserId: string,
+): Promise<Response | null> {
+  const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
+  const auth = req.headers.get("Authorization") ?? "";
+  if (serviceKey && auth === `Bearer ${serviceKey}`) {
+    return null;
+  }
+
+  const supabase = createClient(
+    Deno.env.get("SUPABASE_URL") ?? "",
+    Deno.env.get("SUPABASE_ANON_KEY") ?? "",
+    { global: { headers: { Authorization: auth } } },
+  );
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) {
+    return jsonResponse({ error: "unauthorized" }, 401, undefined, req);
+  }
+  if (user.id !== ticketOwnerUserId) {
+    return jsonResponse({ error: "forbidden" }, 403, undefined, req);
+  }
+  return null;
+}
 
 async function hmacSha256(data: string, secret: string): Promise<string> {
   const key = await crypto.subtle.importKey(
@@ -21,7 +52,7 @@ async function hmacSha256(data: string, secret: string): Promise<string> {
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: securityHeaders });
+    return new Response("ok", { headers: securityHeadersFor(req) });
   }
 
   try {
@@ -31,16 +62,14 @@ serve(async (req) => {
     );
 
     const { ticketId } = await req.json();
-    if (!ticketId) {
-      return new Response(
-        JSON.stringify({ error: "ticketId required" }),
-        {
-          headers: jsonHeaders,
-          status: 400,
-        }
+    if (!ticketId || !isValidUuid(String(ticketId))) {
+      return jsonResponse(
+        { error: "ticketId doit être un UUID valide" },
+        400,
+        undefined,
+        req,
       );
     }
-    assertUuid(ticketId, "ticketId");
 
     const { data: ticket, error: tErr } = await supabase
       .from("tickets")
@@ -49,42 +78,36 @@ serve(async (req) => {
       .single();
 
     if (tErr || !ticket) {
-      return new Response(
-        JSON.stringify({ error: "ticket_not_found" }),
-        {
-          headers: jsonHeaders,
-          status: 404,
-        }
-      );
+      return jsonResponse({ error: "ticket_not_found" }, 404, undefined, req);
     }
 
+    const denied = await assertCanSignTicket(req, ticket.user_id as string);
+    if (denied) return denied;
+
     const data = `${ticket.id}|${ticket.event_id}|${ticket.user_id}|${ticket.purchased_at}`;
-    const secret = Deno.env.get("QR_SIGNING_SECRET") ?? "spotbook-qr-secret";
+    const secret = Deno.env.get("QR_SIGNING_SECRET") ?? "";
+    if (!secret || secret.length < 16) {
+      console.error("QR_SIGNING_SECRET manquant ou trop court (min 16 caractères)");
+      return jsonResponse({ error: "server_misconfigured" }, 500, undefined, req);
+    }
     const qrHash = await hmacSha256(data, secret);
 
     await supabase
       .from("tickets")
       .update({ qr_hash: qrHash, status: "valid" })
       .eq("id", ticketId);
-    await supabase.rpc("insert_audit_log", {
+    await supabase.rpc("log_audit_action", {
       p_user_id: ticket.user_id,
       p_action: "ticket_purchased",
       p_resource_type: "ticket",
       p_resource_id: ticket.id,
       p_metadata: { event_id: ticket.event_id },
-      p_ip_address: "edge",
     });
 
-    return new Response(
-      JSON.stringify({ success: true, qr_hash: qrHash }),
-      {
-        headers: jsonHeaders,
-      }
-    );
+    // Do not expose qr_hash in response — client retrieves ticket data via SELECT
+    return jsonResponse({ success: true, ticketId: ticketId }, 200, undefined, req);
   } catch (error) {
-    return new Response(JSON.stringify({ error: error.message }), {
-      headers: jsonHeaders,
-      status: 400,
-    });
+    console.error("sign-qr-ticket error:", error);
+    return jsonResponse({ error: "internal_error" }, 500, undefined, req);
   }
 });

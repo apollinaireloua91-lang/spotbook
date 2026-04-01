@@ -79,22 +79,32 @@ class ModerationRepository {
     required String targetId,
     required String targetType,
     required String reason,
+    String? details,
   }) async {
     final uid = _uid;
     if (uid == null) throw Exception('Not authenticated');
 
-    await _supabase.from('reports').insert({
+    final row = <String, dynamic>{
       'reporter_id': uid,
       'target_id': targetId,
       'target_type': targetType,
       'reason': reason,
-    });
+    };
+    final d = details?.trim();
+    if (d != null && d.isNotEmpty) {
+      row['details'] = d.length > 2000 ? d.substring(0, 2000) : d;
+    }
+
+    await _supabase.from('reports').insert(row);
     await _supabase.from('audit_logs').insert({
       'user_id': uid,
       'action': 'user_reported',
       'resource_type': targetType,
       'resource_id': targetId,
-      'metadata': {'reason': reason},
+      'metadata': {
+        'reason': reason,
+        if (d != null && d.isNotEmpty) 'has_details': true,
+      },
     });
   }
 }

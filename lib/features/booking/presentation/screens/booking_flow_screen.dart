@@ -10,9 +10,14 @@ import 'booking_bottom_sheet.dart';
 
 /// Route plein écran : ouvre le flux réservation 6 étapes (PageView dans le sheet).
 class BookingFlowScreen extends ConsumerStatefulWidget {
-  const BookingFlowScreen({super.key, required this.providerId});
+  const BookingFlowScreen({
+    super.key,
+    required this.providerId,
+    this.initialServiceId,
+  });
 
   final String providerId;
+  final String? initialServiceId;
 
   @override
   ConsumerState<BookingFlowScreen> createState() => _BookingFlowScreenState();
@@ -49,6 +54,7 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
       context,
       proId: widget.providerId,
       proProfile: _pro!,
+      initialServiceId: widget.initialServiceId,
     );
     if (mounted) context.pop();
   }

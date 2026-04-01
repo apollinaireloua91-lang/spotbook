@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/utils/analytics_service.dart';
+import '../../../../shared/utils/service_category_icons.dart';
 import '../../../profile/presentation/widgets/social_badge_widget.dart';
 import '../../data/discover_notifier.dart';
 import '../../domain/provider_search_result.dart';
@@ -199,22 +200,34 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
                 itemBuilder: (context, index) {
                   final cat = _filterCategories[index];
                   final selected = s.selectedCategory == cat;
+                  final isAll = cat == 'All';
                   return GestureDetector(
                     onTap: () => n.setCategory(cat),
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                       decoration: BoxDecoration(
-                        color: selected ? AppColors.blanc : AppColors.surface,
+                        color: selected ? AppColors.violet : Colors.transparent,
                         borderRadius: BorderRadius.circular(18),
-                        border: selected ? null : Border.all(color: AppColors.border),
+                        border: selected ? null : Border.all(color: AppColors.blanc.withAlpha(26)),
                       ),
-                      child: Text(
-                        cat,
-                        style: TextStyle(
-                          color: selected ? AppColors.fond : AppColors.blanc,
-                          fontSize: 12,
-                          fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
-                        ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            isAll ? Icons.apps : ServiceCategoryIcons.icon(cat),
+                            size: 14,
+                            color: selected ? AppColors.blanc : AppColors.gris,
+                          ),
+                          const SizedBox(width: 5),
+                          Text(
+                            cat,
+                            style: TextStyle(
+                              color: selected ? AppColors.blanc : AppColors.gris,
+                              fontSize: 12,
+                              fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   );
@@ -224,8 +237,45 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
             const SizedBox(height: 12),
             Expanded(
               child: s.isLoading
-                  ? const Center(child: CircularProgressIndicator(color: AppColors.blanc))
-                  : CustomScrollView(
+                  ? const Center(child: CircularProgressIndicator(color: AppColors.violet))
+                  : s.hasError
+                      ? Center(
+                          child: Padding(
+                            padding: const EdgeInsets.all(24),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Icon(Icons.cloud_off_outlined,
+                                    color: AppColors.gris, size: 48),
+                                const SizedBox(height: 16),
+                                const Text(
+                                  'Impossible de charger les professionnels.',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    color: AppColors.blanc,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                                const Text(
+                                  'Vérifie ta connexion puis réessaie.',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(color: AppColors.gris, fontSize: 14),
+                                ),
+                                const SizedBox(height: 20),
+                                FilledButton(
+                                  onPressed: () => n.reloadWithFilters(),
+                                  style: FilledButton.styleFrom(
+                                    backgroundColor: AppColors.violet,
+                                  ),
+                                  child: const Text('Réessayer'),
+                                ),
+                              ],
+                            ),
+                          ),
+                        )
+                      : CustomScrollView(
                       slivers: [
                         if (s.nearbyProviders.isNotEmpty) ...[
                           SliverToBoxAdapter(
@@ -336,7 +386,7 @@ class _FiltersSheet extends ConsumerWidget {
             value: s.maxDistance,
             min: 1,
             max: 100,
-            activeColor: AppColors.blanc,
+            activeColor: AppColors.violet,
             inactiveColor: AppColors.surfaceAlt,
             onChanged: n.setDistance,
           ),
@@ -353,7 +403,7 @@ class _FiltersSheet extends ConsumerWidget {
             min: 0,
             max: 5,
             divisions: 10,
-            activeColor: AppColors.blanc,
+            activeColor: AppColors.violet,
             inactiveColor: AppColors.surfaceAlt,
             onChanged: n.setRating,
           ),
@@ -369,7 +419,7 @@ class _FiltersSheet extends ConsumerWidget {
             value: s.maxPrice,
             min: 10,
             max: 500,
-            activeColor: AppColors.blanc,
+            activeColor: AppColors.violet,
             inactiveColor: AppColors.surfaceAlt,
             onChanged: n.setPrice,
           ),
@@ -377,7 +427,7 @@ class _FiltersSheet extends ConsumerWidget {
           SwitchListTile(
             title: const Text('Available Today', style: TextStyle(color: AppColors.blanc, fontSize: 16)),
             value: s.availableToday,
-            activeTrackColor: AppColors.blanc.withAlpha(128),
+            activeTrackColor: AppColors.violet.withAlpha(128),
             contentPadding: EdgeInsets.zero,
             onChanged: n.setAvailableToday,
           ),
@@ -391,11 +441,11 @@ class _FiltersSheet extends ConsumerWidget {
                 context.pop();
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.blanc,
-                foregroundColor: AppColors.fond,
+                backgroundColor: AppColors.violet,
+                foregroundColor: AppColors.blanc,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               ),
-              child: const Text('Apply Filters', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+              child: const Text('Appliquer', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
             ),
           ),
           SizedBox(height: MediaQuery.of(context).padding.bottom),
@@ -425,14 +475,34 @@ class _NearbyProCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              CircleAvatar(
-                radius: 28,
-                backgroundColor: AppColors.surfaceAlt,
-                backgroundImage:
-                    pro.avatarUrl != null ? CachedNetworkImageProvider(pro.avatarUrl!) : null,
-                child: pro.avatarUrl == null
-                    ? const Icon(Icons.storefront, color: AppColors.gris, size: 28)
-                    : null,
+              Stack(
+                children: [
+                  CircleAvatar(
+                    radius: 28,
+                    backgroundColor: AppColors.surfaceAlt,
+                    backgroundImage:
+                        pro.avatarUrl != null ? CachedNetworkImageProvider(pro.avatarUrl!) : null,
+                    child: pro.avatarUrl == null
+                        ? Icon(ServiceCategoryIcons.icon(pro.category), color: AppColors.gris, size: 28)
+                        : null,
+                  ),
+                  Positioned(
+                    right: 0,
+                    bottom: 0,
+                    child: Container(
+                      padding: const EdgeInsets.all(3),
+                      decoration: const BoxDecoration(
+                        color: AppColors.surface,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        ServiceCategoryIcons.icon(pro.category),
+                        size: 12,
+                        color: AppColors.blanc,
+                      ),
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(height: 8),
               Text(

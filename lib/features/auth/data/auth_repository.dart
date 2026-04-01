@@ -1,7 +1,14 @@
+import 'dart:convert';
+import 'dart:math';
+
+import 'package:crypto/crypto.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+
+import '../../../shared/utils/agent_debug_log.dart';
 
 final authRepositoryProvider = Provider<AuthRepository>((ref) {
   return AuthRepository(
@@ -87,6 +94,23 @@ class AuthRepository {
     required String address,
     required String role,
   }) async {
+    // #region agent log
+    final parts = email.split('@');
+    agentDebugLog(
+      hypothesisId: 'H2',
+      location: 'auth_repository.dart:signUpWithEmail',
+      message: 'Entrée avant Supabase signUp',
+      data: {
+        'emailLen': email.length,
+        'emailEmpty': email.isEmpty,
+        'emailHasAt': email.contains('@'),
+        'atCount': '@'.allMatches(email).length,
+        'localLen': parts.length >= 2 ? parts.first.length : 0,
+        'domainLen': parts.length >= 2 ? parts.last.length : 0,
+        'hasWhitespace': email.contains(RegExp(r'\s')),
+      },
+    );
+    // #endregion
     try {
       return await _supabase.auth.signUp(
         email: email,
@@ -111,6 +135,19 @@ class AuthRepository {
     required String email,
     required String password,
   }) async {
+    // #region agent log
+    agentDebugLog(
+      hypothesisId: 'H4',
+      location: 'auth_repository.dart:signInWithEmail',
+      message: 'Tentative connexion (métriques email, sans PII)',
+      data: {
+        'emailLen': email.length,
+        'emailEmpty': email.isEmpty,
+        'emailHasAt': email.contains('@'),
+        'passwordLen': password.length,
+      },
+    );
+    // #endregion
     try {
       await _guardRateLimiter({'type': 'login'});
 
@@ -120,14 +157,32 @@ class AuthRepository {
           password: password,
         ),
       );
+      // #region agent log
+      agentDebugLog(
+        hypothesisId: 'H2_session',
+        location: 'auth_repository.dart:signInWithEmail',
+        message: 'SESSION après signInWithPassword',
+        data: {
+          'hasSession': response.session != null,
+          'singletonMatchesRepo': identical(
+            _supabase,
+            Supabase.instance.client,
+          ),
+        },
+      );
+      // #endregion
       final uid = response.user?.id;
       if (uid != null) {
-        await _supabase.from('audit_logs').insert({
-          'user_id': uid,
-          'action': 'user_login',
-          'resource_type': 'auth',
-          'metadata': {'method': 'password'},
-        });
+        try {
+          await _supabase.from('audit_logs').insert({
+            'user_id': uid,
+            'action': 'user_login',
+            'resource_type': 'auth',
+            'metadata': {'method': 'password'},
+          });
+        } catch (e) {
+          debugPrint('[auth] audit_logs login insert ignored: $e');
+        }
       }
       return response;
     } on AuthException catch (e) {
@@ -161,7 +216,7 @@ class AuthRepository {
     if (email == null || email.isEmpty) {
       throw AuthException('Aucun email associé au compte');
     }
-    await _guardRateLimiter({'type': 'password_change'});
+    await _guardRateLimiter({'type': 'login'});
     await _runWithSessionRecovery(
       () => _supabase.auth.signInWithPassword(
         email: email,
@@ -176,14 +231,26 @@ class AuthRepository {
   Future<void> signOut() async {
     final uid = currentUserId;
     if (uid != null) {
-      await _supabase.from('audit_logs').insert({
-        'user_id': uid,
-        'action': 'user_logout',
-        'resource_type': 'auth',
-      });
+      try {
+        await _supabase.from('audit_logs').insert({
+          'user_id': uid,
+          'action': 'user_logout',
+          'resource_type': 'auth',
+        });
+      } catch (e) {
+        debugPrint('[auth] audit_logs logout insert ignored: $e');
+      }
     }
-    await _supabase.auth.signOut();
-    await _secureStorage.deleteAll();
+    try {
+      await _supabase.auth.signOut();
+    } catch (e) {
+      debugPrint('[auth] supabase signOut ignored: $e');
+    }
+    try {
+      await _secureStorage.deleteAll();
+    } catch (e) {
+      debugPrint('[auth] secureStorage deleteAll ignored: $e');
+    }
   }
 
   Future<Map<String, dynamic>?> getUserProfile() async {
@@ -235,11 +302,51 @@ class AuthRepository {
     }
   }
 
-  Future<bool> signInWithGoogle() async {
-    return _supabase.auth.signInWithOAuth(
-      OAuthProvider.google,
-      redirectTo: 'io.supabase.spotbook://login-callback',
+  String _generateNonce([int length = 32]) {
+    const charset =
+        '0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._';
+    final random = Random.secure();
+    return List.generate(
+      length,
+      (_) => charset[random.nextInt(charset.length)],
+    ).join();
+  }
+
+  String _sha256ofString(String input) {
+    final bytes = utf8.encode(input);
+    final digest = sha256.convert(bytes);
+    return digest.toString();
+  }
+
+  /// Retourne [null] si l'utilisateur a annulé le sélecteur Google.
+  Future<AuthResponse?> signInWithGoogle() async {
+    const webClientId =
+        String.fromEnvironment('GOOGLE_CLIENT_ID');
+    final rawNonce = _generateNonce();
+    final hashedNonce = _sha256ofString(rawNonce);
+    // Le nonce (SHA-256) est passé à initialize() pour être intégré dans l'id_token.
+    // On réinitialise à chaque tentative pour avoir un nonce frais.
+    await GoogleSignIn.instance.initialize(
+      serverClientId: webClientId,
+      nonce: hashedNonce,
     );
+    try {
+      final googleUser = await GoogleSignIn.instance.authenticate();
+      final idToken = googleUser.authentication.idToken;
+      if (idToken == null) {
+        throw AuthException("Impossible d'obtenir le token Google.");
+      }
+      return _supabase.auth.signInWithIdToken(
+        provider: OAuthProvider.google,
+        idToken: idToken,
+        nonce: rawNonce,
+      );
+    } on GoogleSignInException catch (e) {
+      if (e.code == GoogleSignInExceptionCode.canceled) return null;
+      throw AuthException(
+        'Erreur Google Sign-In (${e.code.name}): ${e.description ?? "inconnue"}',
+      );
+    }
   }
 
   Future<void> softDeleteAccount() async {
@@ -250,12 +357,16 @@ class AuthRepository {
           .from('users')
           .update({'deleted_at': DateTime.now().toIso8601String()}).eq('id', uid),
     );
-    await _supabase.from('audit_logs').insert({
-      'user_id': uid,
-      'action': 'user_deleted',
-      'resource_type': 'user',
-      'resource_id': uid,
-    });
+    try {
+      await _supabase.from('audit_logs').insert({
+        'user_id': uid,
+        'action': 'user_deleted',
+        'resource_type': 'user',
+        'resource_id': uid,
+      });
+    } catch (e) {
+      debugPrint('[auth] audit_logs delete insert ignored: $e');
+    }
     await signOut();
   }
 }

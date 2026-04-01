@@ -819,6 +819,7 @@ class _SettingsSection extends StatelessWidget {
   final AvailabilityNotifier notifier;
 
   static const _gapOptions = [0, 15, 30, 45, 60, 90, 120];
+  static const _advanceOptions = [1, 2, 4, 6, 12, 24, 48];
 
   @override
   Widget build(BuildContext context) {
@@ -828,6 +829,7 @@ class _SettingsSection extends StatelessWidget {
         padding: EdgeInsets.zero,
         child: Column(
           children: [
+            // Min gap between bookings
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
               child: Row(
@@ -871,6 +873,52 @@ class _SettingsSection extends StatelessWidget {
               ),
             ),
             const Divider(color: AppColors.border, height: 24),
+            // Min advance hours
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
+              child: Row(
+                children: [
+                  const Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Délai minimum avant réservation',
+                            style: TextStyle(
+                                color: AppColors.blanc,
+                                fontWeight: FontWeight.w600,
+                                fontSize: 14)),
+                        SizedBox(height: 2),
+                        Text('Temps minimum entre la réservation et le RDV',
+                            style: TextStyle(
+                                color: AppColors.gris, fontSize: 12)),
+                      ],
+                    ),
+                  ),
+                  DropdownButton<int>(
+                    value: _advanceOptions.contains(state.settings.minAdvanceHours)
+                        ? state.settings.minAdvanceHours
+                        : 2,
+                    dropdownColor: AppColors.surface,
+                    underline: const SizedBox.shrink(),
+                    style: const TextStyle(
+                        color: AppColors.blanc,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600),
+                    onChanged: (v) {
+                      if (v != null) notifier.updateMinAdvanceHours(v);
+                    },
+                    items: _advanceOptions
+                        .map((h) => DropdownMenuItem<int>(
+                              value: h,
+                              child: Text('${h}h'),
+                            ))
+                        .toList(),
+                  ),
+                ],
+              ),
+            ),
+            const Divider(color: AppColors.border, height: 24),
+            // Max bookings per day
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
               child: Row(

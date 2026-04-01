@@ -7,6 +7,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/widgets/spotbook_button.dart';
 import '../../data/auth_repository.dart';
+import '../../data/user_setup_repository.dart';
 
 class _LoginState {
   const _LoginState({
@@ -127,8 +128,23 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   Future<void> _googleSignIn() async {
     try {
-      await ref.read(authRepositoryProvider).signInWithGoogle();
-      // Navigation handled by auth state listener in app_router
+      final repo = ref.read(authRepositoryProvider);
+      final response = await repo.signInWithGoogle();
+      if (response == null) return; // annulé par l'utilisateur
+      if (!mounted) return;
+      await ref.read(userSetupRepositoryProvider).setupNewUser();
+      if (!mounted) return;
+      final profile = await repo.getUserProfile();
+      if (!mounted) return;
+      final role = profile?['role'] as String?;
+      switch (role) {
+        case 'client':
+          context.go('/client');
+        case 'pro':
+          context.go('/pro');
+        default:
+          context.go('/complete-profile');
+      }
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -147,19 +163,42 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
     return Scaffold(
       backgroundColor: AppColors.fond,
-      body: SafeArea(
+      body: DecoratedBox(
+        decoration: BoxDecoration(
+          gradient: RadialGradient(
+            center: const Alignment(0, -1.1),
+            radius: 1.4,
+            colors: [
+              AppColors.violet.withAlpha(75),
+              AppColors.fond,
+            ],
+          ),
+        ),
+        child: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24),
           child: Column(
             children: [
               const SizedBox(height: 48),
-              // Logo
+              // Logo avec gradient + glow
               Container(
                 width: 80,
                 height: 80,
                 decoration: BoxDecoration(
-                  color: AppColors.surface,
+                  gradient: AppColors.gradientAccent,
                   shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.violet.withAlpha(100),
+                      blurRadius: 24,
+                      spreadRadius: 2,
+                    ),
+                    BoxShadow(
+                      color: AppColors.rose.withAlpha(50),
+                      blurRadius: 32,
+                      offset: const Offset(0, 6),
+                    ),
+                  ],
                 ),
                 child: const Icon(
                   Icons.play_circle_outline,
@@ -218,21 +257,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               Align(
                 alignment: Alignment.centerRight,
                 child: GestureDetector(
-                  onTap: () {
-                    if (_emailCtrl.text.trim().isNotEmpty) {
-                      ref
-                          .read(authRepositoryProvider)
-                          .resetPassword(_emailCtrl.text.trim());
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Email de réinitialisation envoyé'),
-                        ),
-                      );
-                    }
-                  },
+                  onTap: () => context.push('/auth/forgot-password'),
                   child: const Text(
-                    'Forgot Password?',
-                    style: TextStyle(color: AppColors.gris, fontSize: 13),
+                    'Mot de passe oublié ?',
+                    style: TextStyle(color: AppColors.violetClair, fontSize: 13, fontWeight: FontWeight.w500),
                   ),
                 ),
               ),
@@ -276,17 +304,26 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   HapticFeedback.selectionClick();
                   context.go('/signup');
                 },
-                child: const Text(
-                  "Don't have an account? Sign Up",
-                  style: TextStyle(
-                    color: AppColors.blanc,
-                    fontSize: 14,
+                child: RichText(
+                  text: const TextSpan(
+                    style: TextStyle(color: AppColors.gris, fontSize: 14),
+                    children: [
+                      TextSpan(text: "Don't have an account? "),
+                      TextSpan(
+                        text: 'Sign Up',
+                        style: TextStyle(
+                          color: AppColors.violetClair,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
               const SizedBox(height: 32),
             ],
           ),
+        ),
         ),
       ),
     );
@@ -321,9 +358,19 @@ class _RoleToggle extends StatelessWidget {
           duration: const Duration(milliseconds: 200),
           padding: const EdgeInsets.symmetric(vertical: 12),
           decoration: BoxDecoration(
-            color: sel ? AppColors.surfaceAlt : Colors.transparent,
+            color: sel ? AppColors.violet.withAlpha(45) : Colors.transparent,
             borderRadius: BorderRadius.circular(8),
-            border: sel ? Border.all(color: AppColors.border) : null,
+            border: sel
+                ? Border.all(color: AppColors.violet.withAlpha(160), width: 1)
+                : null,
+            boxShadow: sel
+                ? [
+                    BoxShadow(
+                      color: AppColors.violet.withAlpha(40),
+                      blurRadius: 8,
+                    ),
+                  ]
+                : null,
           ),
           child: Center(
             child: Text(

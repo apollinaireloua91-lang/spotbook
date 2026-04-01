@@ -1,12 +1,9 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
 import Stripe from "https://esm.sh/stripe@14.14.0?target=deno";
+import { jsonResponse, securityHeaders } from "../_shared/security.ts";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
-};
+const corsHeaders = securityHeaders;
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -19,13 +16,17 @@ serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
     );
 
-    // Auth
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader) {
+      return jsonResponse({ error: "unauthorized" }, 401);
+    }
+
     const authClient = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
       Deno.env.get("SUPABASE_ANON_KEY") ?? "",
       {
         global: {
-          headers: { Authorization: req.headers.get("Authorization")! },
+          headers: { Authorization: authHeader },
         },
       }
     );
@@ -33,10 +34,7 @@ serve(async (req) => {
       data: { user },
     } = await authClient.auth.getUser();
     if (!user) {
-      return new Response(JSON.stringify({ error: "unauthorized" }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-        status: 401,
-      });
+      return jsonResponse({ error: "unauthorized" }, 401);
     }
 
     // Verify pro role
@@ -47,10 +45,7 @@ serve(async (req) => {
       .single();
 
     if (profile?.role !== "pro") {
-      return new Response(JSON.stringify({ error: "pro_only" }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-        status: 403,
-      });
+      return jsonResponse({ error: "pro_only" }, 403);
     }
 
     const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") ?? "", {
@@ -59,13 +54,7 @@ serve(async (req) => {
 
     const priceId = Deno.env.get("STRIPE_PRO_PREMIUM_PRICE_ID");
     if (!priceId) {
-      return new Response(
-        JSON.stringify({ error: "price_not_configured" }),
-        {
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-          status: 500,
-        }
-      );
+      return jsonResponse({ error: "price_not_configured" }, 500);
     }
 
     // Create Stripe Checkout session for subscription (29 CAD/month)
@@ -87,9 +76,7 @@ serve(async (req) => {
       }
     );
   } catch (error) {
-    return new Response(JSON.stringify({ error: error.message }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-      status: 400,
-    });
+    console.error("create-pro-subscription error:", error);
+    return jsonResponse({ error: "internal_error" }, 500);
   }
 });

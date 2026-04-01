@@ -119,5 +119,33 @@
   "proChangePasswordTitle": "Change password",
   "proCurrentPassword": "Current password",
   "proNewPassword": "New password",
-  "proConfirmPassword": "Confirm password"
+  "proConfirmPassword": "Confirm password",
+  "proSettingsSectionSpotify": "MUSIC (FEED)",
+  "proSettingsSpotifyTitle": "Spotify",
+  "proSettingsSpotifyLinked": "Spotify account connected",
+  "proSettingsSpotifyConnect": "Connect Spotify",
+  "proSettingsSpotifyDisconnect": "Disconnect Spotify",
+  "proSettingsSpotifyHint": "Link your account to see your top tracks in the pro feed music sheet.",
+  "proSettingsSpotifyMissingClientId": "SPOTIFY_CLIENT_ID missing in .env",
+  "spotifySheetTitle": "Add music",
+  "spotifySheetLinkedHint": "Spotify linked — top tracks and richer search.",
+  "spotifySheetNotLinkedHint": "Not linked: search only. Connect Spotify in Pro settings.",
+  "spotifySheetOpenSettings": "Settings",
+  "spotifySheetSearchHint": "Search a track or artist…",
+  "spotifySheetTopTracksHeader": "Your recent top tracks (Spotify)",
+  "spotifySheetNoResults": "No results",
+  "spotifySheetEmptyTop": "No top tracks yet. Listen on Spotify and try again.",
+  "spotifySheetEmptyNeedLink": "Connect Spotify in Pro settings to show your top tracks here.",
+  "spotifySheetTrackAdded": "{name} — added to post",
+  "@spotifySheetTrackAdded": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsLanguageScreenTitle": "Language",
+  "settingsLanguageScreenSubtitle": "Choose Spotbook’s display language. Your preference is saved on this device.",
+  "settingsLanguageSavedSnack": "Language saved",
+  "settingsLanguageMenuLabel": "Language"
 }
