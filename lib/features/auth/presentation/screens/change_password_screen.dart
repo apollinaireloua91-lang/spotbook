@@ -77,21 +77,21 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
-      backgroundColor: SpotbookColors.background,
+      backgroundColor: AppColors.fond,
       appBar: AppBar(
-        backgroundColor: SpotbookColors.background,
+        backgroundColor: AppColors.fond,
         leading: Semantics(
           label: l10n.cancel,
           child: IconButton(
             icon: const Icon(Icons.arrow_back_ios,
-                color: SpotbookColors.textPrimary, size: 20),
+                color: AppColors.blanc, size: 20),
             onPressed: () => context.pop(),
           ),
         ),
         title: Text(
           l10n.proChangePasswordTitle,
           style: const TextStyle(
-            color: SpotbookColors.textPrimary,
+            color: AppColors.blanc,
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -148,7 +148,7 @@ class _Field extends StatelessWidget {
         Text(
           label,
           style: const TextStyle(
-            color: SpotbookColors.textSecondary,
+            color: AppColors.gris,
             fontSize: 12,
             fontWeight: FontWeight.w600,
             letterSpacing: 0.5,
@@ -158,21 +158,21 @@ class _Field extends StatelessWidget {
         TextField(
           controller: controller,
           obscureText: obscure,
-          style: const TextStyle(color: SpotbookColors.textPrimary),
+          style: const TextStyle(color: AppColors.blanc),
           decoration: InputDecoration(
             filled: true,
-            fillColor: SpotbookColors.surfaceVariant,
+            fillColor: AppColors.surfaceAlt,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(14),
-              borderSide: const BorderSide(color: SpotbookColors.border),
+              borderSide: const BorderSide(color: AppColors.border),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(14),
-              borderSide: const BorderSide(color: SpotbookColors.border),
+              borderSide: const BorderSide(color: AppColors.border),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(14),
-              borderSide: const BorderSide(color: SpotbookColors.textPrimary),
+              borderSide: const BorderSide(color: AppColors.blanc),
             ),
           ),
         ),

@@ -265,4 +265,73 @@ class VideoRepository {
         .eq('user_id', userId);
     return (data as List).map((e) => e['video_id'] as String).toSet();
   }
+
+  Future<void> saveVideo(String videoId) async {
+    final uid = currentUserId;
+    if (uid == null) return;
+    await _supabase.from('post_saves').insert({
+      'user_id': uid,
+      'post_id': videoId,
+    });
+  }
+
+  Future<void> unsaveVideo(String videoId) async {
+    final uid = currentUserId;
+    if (uid == null) return;
+    await _supabase
+        .from('post_saves')
+        .delete()
+        .eq('user_id', uid)
+        .eq('post_id', videoId);
+  }
+
+  Future<List<VideoModel>> getFollowingFeed({int limit = 10, int offset = 0}) async {
+    final uid = currentUserId;
+    if (uid == null) return [];
+    final follows = await _supabase
+        .from('follows')
+        .select('following_id')
+        .eq('follower_id', uid);
+    final proIds = (follows as List).map((e) => e['following_id'] as String).toList();
+    if (proIds.isEmpty) return [];
+    final data = await _supabase
+        .from('videos')
+        .select(_selectWithPro)
+        .eq('status', 'approved')
+        .inFilter('pro_id', proIds)
+        .order('created_at', ascending: false)
+        .range(offset, offset + limit - 1);
+    final likedIds = await _getLikedVideoIds(uid);
+    return (data as List)
+        .map((json) => VideoModel.fromJson(json as Map<String, dynamic>,
+            isLiked: likedIds.contains(json['id'])))
+        .toList();
+  }
+
+  Future<List<VideoModel>> getDiscoverFeed({int limit = 10, int offset = 0}) async {
+    return getMoreVideos(offset: offset, limit: limit);
+  }
+
+  Future<List<VideoModel>> getMyVideosWithInteractions() async {
+    return getMyVideos();
+  }
+
+  Future<void> followPro(String proId) async {
+    final uid = currentUserId;
+    if (uid == null) return;
+    await _supabase.from('follows').insert({
+      'follower_id': uid,
+      'following_id': proId,
+    });
+  }
+
+  Future<void> unfollowPro(String proId) async {
+    final uid = currentUserId;
+    if (uid == null) return;
+    await _supabase
+        .from('follows')
+        .delete()
+        .eq('follower_id', uid)
+        .eq('following_id', proId);
+  }
 }

@@ -61,6 +61,7 @@ class UploadVideoNotifier extends Notifier<UploadVideoState> {
     required String title,
     required String description,
     required String hashtags,
+    String? linkedServiceId,
   }) async {
     state = state.copyWith(isUploading: true, uploadProgress: 0);
     try {

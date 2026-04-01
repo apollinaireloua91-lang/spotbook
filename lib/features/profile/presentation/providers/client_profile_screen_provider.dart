@@ -7,6 +7,8 @@ import '../../../events/domain/event_models.dart';
 import '../../data/profile_repository.dart';
 import '../../domain/profile_models.dart';
 
+export '../../domain/profile_models.dart' show ClientFavoriteProItem, ClientFavoriteVideoItem;
+
 /// Données agrégées pour l’écran profil client (équivalent d’un état « Cubit » chargé une fois).
 class ClientProfileScreenData {
   const ClientProfileScreenData({
@@ -51,10 +53,14 @@ final clientProfileScreenDataProvider = FutureProvider.autoDispose
 
   int reviewsCount = 0;
   try {
-    reviewsCount = await profileRepo.countReviewsLeftByClient(profileUserId);
+    reviewsCount = await profileRepo.countReviewsLeftByClient();
   } catch (_) {}
 
-  final socialUrls = await profileRepo.getClientSocialLinkUrls(profileUserId);
+  Map<String, String> socialUrls = {};
+  try {
+    final urls = await profileRepo.getClientSocialLinkUrls();
+    socialUrls = {for (var i = 0; i < urls.length; i++) '$i': urls[i]};
+  } catch (_) {}
 
   final isOwnProfile = profileUserId == sessionUid;
 
@@ -65,10 +71,12 @@ final clientProfileScreenDataProvider = FutureProvider.autoDispose
 
   if (isOwnProfile) {
     try {
-      favoritePros = await profileRepo.getClientFavoritePros(sessionUid);
+      final rawPros = await profileRepo.getClientFavoritePros();
+      favoritePros = rawPros.map((e) => ClientFavoriteProItem.fromJson(e)).toList();
     } catch (_) {}
     try {
-      favoriteVideos = await profileRepo.getClientFavoriteVideos(sessionUid);
+      final rawVideos = await profileRepo.getClientFavoriteVideos();
+      favoriteVideos = rawVideos.map((e) => ClientFavoriteVideoItem.fromJson(e)).toList();
     } catch (_) {}
     try {
       final allBookings = await bookingRepo.getClientBookings();

@@ -41,6 +41,12 @@ final eventsProvider = NotifierProvider<EventsNotifier, EventsState>(
   isAutoDispose: true,
 );
 
+// ─── Pro events (async) ──────────────────────────────────────
+
+final proEventsProvider = FutureProvider.autoDispose<List<EventModel>>((ref) async {
+  return ref.read(eventRepositoryProvider).getEvents();
+});
+
 // ─── Single event detail ────────────────────────────────────
 
 final eventDetailProvider =

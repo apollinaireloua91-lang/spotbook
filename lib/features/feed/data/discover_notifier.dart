@@ -3,7 +3,9 @@ import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
+import '../domain/provider_search_result.dart';
 import '../domain/video_model.dart';
+import 'discover_search_repository.dart';
 import 'video_repository.dart';
 
 class DiscoverState {
@@ -17,6 +19,9 @@ class DiscoverState {
     this.maxPrice = 200.0,
     this.searchHistory = const [],
     this.showHistory = false,
+    this.nearbyProviders = const [],
+    this.activeQuery,
+    this.error,
   });
 
   final List<VideoModel>? results;
@@ -28,6 +33,11 @@ class DiscoverState {
   final double maxPrice;
   final List<String> searchHistory;
   final bool showHistory;
+  final List<ProviderSearchResult> nearbyProviders;
+  final String? activeQuery;
+  final String? error;
+
+  bool get hasError => error != null;
 
   DiscoverState copyWith({
     List<VideoModel>? results,
@@ -39,7 +49,12 @@ class DiscoverState {
     double? maxPrice,
     List<String>? searchHistory,
     bool? showHistory,
+    List<ProviderSearchResult>? nearbyProviders,
+    String? activeQuery,
+    String? error,
     bool clearResults = false,
+    bool clearError = false,
+    bool clearActiveQuery = false,
   }) =>
       DiscoverState(
         results: clearResults ? null : (results ?? this.results),
@@ -51,6 +66,9 @@ class DiscoverState {
         maxPrice: maxPrice ?? this.maxPrice,
         searchHistory: searchHistory ?? this.searchHistory,
         showHistory: showHistory ?? this.showHistory,
+        nearbyProviders: nearbyProviders ?? this.nearbyProviders,
+        activeQuery: clearActiveQuery ? null : (activeQuery ?? this.activeQuery),
+        error: clearError ? null : (error ?? this.error),
       );
 }
 
@@ -141,16 +159,41 @@ class DiscoverNotifier extends Notifier<DiscoverState> {
 
   Future<void> search(String query) async {
     if (query.trim().isEmpty) {
+      state = state.copyWith(clearActiveQuery: true);
       _loadDefault();
       return;
     }
     _saveToHistory(query);
-    state = state.copyWith(isLoading: true);
+    state = state.copyWith(isLoading: true, activeQuery: query.trim());
     try {
       final videos = await ref.read(videoRepositoryProvider).searchVideos(query.trim());
-      state = state.copyWith(results: videos, isLoading: false);
-    } catch (_) {
-      state = state.copyWith(isLoading: false);
+      // Also search providers
+      List<ProviderSearchResult> providers = [];
+      try {
+        providers = await ref.read(discoverSearchRepositoryProvider).getAllProviders();
+      } catch (_) {}
+      state = state.copyWith(results: videos, nearbyProviders: providers, isLoading: false, clearError: true);
+    } catch (e) {
+      state = state.copyWith(isLoading: false, error: e.toString());
+    }
+  }
+
+  Future<void> reloadWithFilters() async {
+    state = state.copyWith(isLoading: true, clearError: true);
+    try {
+      List<ProviderSearchResult> providers = [];
+      try {
+        providers = await ref.read(discoverSearchRepositoryProvider).getAllProviders(
+          category: state.selectedCategory == 'All' ? null : state.selectedCategory,
+        );
+      } catch (_) {}
+      final repo = ref.read(videoRepositoryProvider);
+      final videos = state.selectedCategory == 'All'
+          ? await repo.searchVideos(state.activeQuery ?? '')
+          : await repo.getVideosByCategory(state.selectedCategory.toLowerCase());
+      state = state.copyWith(results: videos, nearbyProviders: providers, isLoading: false);
+    } catch (e) {
+      state = state.copyWith(isLoading: false, error: e.toString());
     }
   }
 }

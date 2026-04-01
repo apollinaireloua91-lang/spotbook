@@ -32,21 +32,21 @@ class ProviderSettingsScreen extends ConsumerWidget {
     final async = ref.watch(proSettingsProvider);
 
     return Scaffold(
-      backgroundColor: SpotbookColors.background,
+      backgroundColor: AppColors.fond,
       appBar: AppBar(
-        backgroundColor: SpotbookColors.background,
+        backgroundColor: AppColors.fond,
         leading: Semantics(
           label: l10n.cancel,
           child: IconButton(
             icon: const Icon(Icons.arrow_back_ios,
-                color: SpotbookColors.textPrimary, size: 20),
+                color: AppColors.blanc, size: 20),
             onPressed: () => context.pop(),
           ),
         ),
         title: Text(
           l10n.proSettingsTitle,
           style: const TextStyle(
-            color: SpotbookColors.textPrimary,
+            color: AppColors.blanc,
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -64,7 +64,7 @@ class ProviderSettingsScreen extends ConsumerWidget {
             child: Text(
               e.toString(),
               textAlign: TextAlign.center,
-              style: const TextStyle(color: SpotbookColors.textSecondary),
+              style: const TextStyle(color: AppColors.gris),
             ),
           ),
         ),
@@ -137,13 +137,13 @@ class _SettingsBody extends ConsumerWidget {
                 value: data.email.isEmpty ? '—' : data.email,
                 onTap: () => _showEmailSheet(context, ref, l10n),
               ),
-              const Divider(color: SpotbookColors.border, height: 1),
+              const Divider(color: AppColors.border, height: 1),
               _Tile(
                 label: l10n.proSettingsPhone,
                 value: data.phone?.isNotEmpty == true ? data.phone! : '—',
                 onTap: () => _showPhoneSheet(context, ref, l10n),
               ),
-              const Divider(color: SpotbookColors.border, height: 1),
+              const Divider(color: AppColors.border, height: 1),
               _Tile(
                 label: l10n.proSettingsChangePassword,
                 value: '',
@@ -164,7 +164,7 @@ class _SettingsBody extends ConsumerWidget {
                 showChevron: true,
                 onTap: () => context.push('/pro/profile/edit'),
               ),
-              const Divider(color: SpotbookColors.border, height: 1),
+              const Divider(color: AppColors.border, height: 1),
               _Tile(
                 label: l10n.proSettingsWorkAddress,
                 value: '',
@@ -197,7 +197,7 @@ class _SettingsBody extends ConsumerWidget {
                   patchSettings({'cancellation_policy': v});
                 },
               ),
-              const Divider(color: SpotbookColors.border, height: 24),
+              const Divider(color: AppColors.border, height: 24),
               _DropdownRow<int>(
                 label: l10n.proSettingsMinAdvance,
                 value: ProviderSettingsScreen._advanceHours
@@ -213,7 +213,7 @@ class _SettingsBody extends ConsumerWidget {
                   patchSettings({'min_advance_hours': v});
                 },
               ),
-              const Divider(color: SpotbookColors.border, height: 24),
+              const Divider(color: AppColors.border, height: 24),
               _DropdownRow<int>(
                 label: l10n.proSettingsMinGap,
                 value: ProviderSettingsScreen._gapMinutes
@@ -230,7 +230,7 @@ class _SettingsBody extends ConsumerWidget {
                   patchSettings({'min_gap_minutes': v});
                 },
               ),
-              const Divider(color: SpotbookColors.border, height: 24),
+              const Divider(color: AppColors.border, height: 24),
               _MaxBookingsField(
                 value: data.maxBookingsPerDay,
                 label: l10n.proSettingsMaxPerDay,
@@ -258,7 +258,7 @@ class _SettingsBody extends ConsumerWidget {
               Text(
                 l10n.proSettingsPaymentsInfo,
                 style: const TextStyle(
-                  color: SpotbookColors.textSecondary,
+                  color: AppColors.gris,
                   fontSize: 13,
                   height: 1.45,
                 ),
@@ -280,14 +280,14 @@ class _SettingsBody extends ConsumerWidget {
                 showChevron: true,
                 onTap: () => context.push('/pro/profile/promo-codes'),
               ),
-              const Divider(color: SpotbookColors.border, height: 1),
+              const Divider(color: AppColors.border, height: 1),
               _Tile(
                 label: 'Mon QR Code',
                 value: '',
                 showChevron: true,
                 onTap: () => context.push('/pro/profile/qr-code'),
               ),
-              const Divider(color: SpotbookColors.border, height: 1),
+              const Divider(color: AppColors.border, height: 1),
               _Tile(
                 label: 'Analytiques',
                 value: '',
@@ -314,11 +314,11 @@ class _SettingsBody extends ConsumerWidget {
                 contentPadding: EdgeInsets.zero,
                 title: Text(
                   l10n.proSettingsProfilePublic,
-                  style: const TextStyle(color: SpotbookColors.textPrimary),
+                  style: const TextStyle(color: AppColors.blanc),
                 ),
                 value: data.isPublic,
-                activeThumbColor: SpotbookColors.textPrimary,
-                activeTrackColor: SpotbookColors.textSecondary,
+                activeThumbColor: AppColors.blanc,
+                activeTrackColor: AppColors.gris,
                 onChanged: (v) {
                   HapticFeedback.selectionClick();
                   patchPro({'is_public': v});
@@ -328,11 +328,11 @@ class _SettingsBody extends ConsumerWidget {
                 contentPadding: EdgeInsets.zero,
                 title: Text(
                   l10n.proSettingsSearchVisible,
-                  style: const TextStyle(color: SpotbookColors.textPrimary),
+                  style: const TextStyle(color: AppColors.blanc),
                 ),
                 value: data.searchVisible,
-                activeThumbColor: SpotbookColors.textPrimary,
-                activeTrackColor: SpotbookColors.textSecondary,
+                activeThumbColor: AppColors.blanc,
+                activeTrackColor: AppColors.gris,
                 onChanged: (v) {
                   HapticFeedback.selectionClick();
                   patchPro({'search_visible': v});
@@ -370,7 +370,7 @@ class _SettingsBody extends ConsumerWidget {
                   }
                 },
               ),
-              const Divider(color: SpotbookColors.border, height: 1),
+              const Divider(color: AppColors.border, height: 1),
               _Tile(
                 label: l10n.proSettingsContactSupport,
                 value: '',
@@ -397,7 +397,7 @@ class _SettingsBody extends ConsumerWidget {
                 title: Text(
                   l10n.proSettingsSignOut,
                   style: const TextStyle(
-                    color: SpotbookColors.textPrimary,
+                    color: AppColors.blanc,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -408,7 +408,7 @@ class _SettingsBody extends ConsumerWidget {
                 title: Text(
                   l10n.proSettingsDeleteAccount,
                   style: const TextStyle(
-                    color: SpotbookColors.error,
+                    color: AppColors.error,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -439,15 +439,15 @@ class _SettingsBody extends ConsumerWidget {
             TextField(
               controller: ctrl,
               keyboardType: TextInputType.emailAddress,
-              style: const TextStyle(color: SpotbookColors.textPrimary),
+              style: const TextStyle(color: AppColors.blanc),
               decoration: InputDecoration(
                 labelText: l10n.email,
-                labelStyle: const TextStyle(color: SpotbookColors.textSecondary),
+                labelStyle: const TextStyle(color: AppColors.gris),
                 enabledBorder: const UnderlineInputBorder(
-                  borderSide: BorderSide(color: SpotbookColors.border),
+                  borderSide: BorderSide(color: AppColors.border),
                 ),
                 focusedBorder: const UnderlineInputBorder(
-                  borderSide: BorderSide(color: SpotbookColors.textPrimary),
+                  borderSide: BorderSide(color: AppColors.blanc),
                 ),
               ),
             ),
@@ -506,15 +506,15 @@ class _SettingsBody extends ConsumerWidget {
             TextField(
               controller: ctrl,
               keyboardType: TextInputType.phone,
-              style: const TextStyle(color: SpotbookColors.textPrimary),
+              style: const TextStyle(color: AppColors.blanc),
               decoration: InputDecoration(
                 labelText: l10n.proSettingsPhone,
-                labelStyle: const TextStyle(color: SpotbookColors.textSecondary),
+                labelStyle: const TextStyle(color: AppColors.gris),
                 enabledBorder: const UnderlineInputBorder(
-                  borderSide: BorderSide(color: SpotbookColors.border),
+                  borderSide: BorderSide(color: AppColors.border),
                 ),
                 focusedBorder: const UnderlineInputBorder(
-                  borderSide: BorderSide(color: SpotbookColors.textPrimary),
+                  borderSide: BorderSide(color: AppColors.blanc),
                 ),
               ),
             ),
@@ -563,21 +563,21 @@ class _SettingsBody extends ConsumerWidget {
     final ok = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: SpotbookColors.surface,
+        backgroundColor: AppColors.surface,
         title: Text(
           l10n.proSettingsSignOutTitle,
-          style: const TextStyle(color: SpotbookColors.textPrimary),
+          style: const TextStyle(color: AppColors.blanc),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
             child: Text(l10n.cancel,
-                style: const TextStyle(color: SpotbookColors.textSecondary)),
+                style: const TextStyle(color: AppColors.gris)),
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
             child: Text(l10n.proSettingsSignOutConfirm,
-                style: const TextStyle(color: SpotbookColors.textPrimary)),
+                style: const TextStyle(color: AppColors.blanc)),
           ),
         ],
       ),
@@ -621,7 +621,7 @@ class _SpotifyProSettingsBlockState extends ConsumerState<_SpotifyProSettingsBlo
             height: 24,
             child: CircularProgressIndicator(
               strokeWidth: 2,
-              color: SpotbookColors.textPrimary,
+              color: AppColors.blanc,
             ),
           ),
         ),
@@ -630,7 +630,7 @@ class _SpotifyProSettingsBlockState extends ConsumerState<_SpotifyProSettingsBlo
         padding: const EdgeInsets.symmetric(vertical: 12),
         child: Text(
           l10n.error,
-          style: const TextStyle(color: SpotbookColors.textSecondary),
+          style: const TextStyle(color: AppColors.gris),
         ),
       ),
       data: (info) {
@@ -643,7 +643,7 @@ class _SpotifyProSettingsBlockState extends ConsumerState<_SpotifyProSettingsBlo
                   Icons.music_note,
                   color: info.linked
                       ? AppColors.spotifyGreen
-                      : SpotbookColors.textSecondary,
+                      : AppColors.gris,
                   size: 22,
                 ),
                 const SizedBox(width: 10),
@@ -651,7 +651,7 @@ class _SpotifyProSettingsBlockState extends ConsumerState<_SpotifyProSettingsBlo
                   child: Text(
                     l10n.proSettingsSpotifyTitle,
                     style: const TextStyle(
-                      color: SpotbookColors.textPrimary,
+                      color: AppColors.blanc,
                       fontWeight: FontWeight.w600,
                       fontSize: 15,
                     ),
@@ -663,7 +663,7 @@ class _SpotifyProSettingsBlockState extends ConsumerState<_SpotifyProSettingsBlo
             Text(
               l10n.proSettingsSpotifyHint,
               style: const TextStyle(
-                color: SpotbookColors.textSecondary,
+                color: AppColors.gris,
                 fontSize: 13,
                 height: 1.4,
               ),
@@ -679,7 +679,7 @@ class _SpotifyProSettingsBlockState extends ConsumerState<_SpotifyProSettingsBlo
                     child: Text(
                       l10n.proSettingsSpotifyLinked,
                       style: const TextStyle(
-                        color: SpotbookColors.textPrimary,
+                        color: AppColors.blanc,
                         fontSize: 14,
                       ),
                     ),
@@ -796,7 +796,7 @@ class _SectionTitle extends StatelessWidget {
       child: Text(
         text,
         style: const TextStyle(
-          color: SpotbookColors.textSecondary,
+          color: AppColors.gris,
           fontSize: 11,
           fontWeight: FontWeight.w600,
           letterSpacing: 1.2,
@@ -827,22 +827,22 @@ class _Tile extends StatelessWidget {
       title: Text(
         label,
         style: const TextStyle(
-          color: SpotbookColors.textPrimary,
+          color: AppColors.blanc,
           fontWeight: FontWeight.w500,
         ),
       ),
       subtitle: value.isNotEmpty
           ? Text(
               value,
-              style: const TextStyle(color: SpotbookColors.textSecondary),
+              style: const TextStyle(color: AppColors.gris),
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
             )
           : null,
       trailing: showChevron
-          ? const Icon(Icons.chevron_right, color: SpotbookColors.textSecondary)
+          ? const Icon(Icons.chevron_right, color: AppColors.gris)
           : const Icon(Icons.edit_outlined,
-              color: SpotbookColors.textSecondary, size: 20),
+              color: AppColors.gris, size: 20),
     );
   }
 }
@@ -870,7 +870,7 @@ class _DropdownRow<T> extends StatelessWidget {
         Text(
           label,
           style: const TextStyle(
-            color: SpotbookColors.textSecondary,
+            color: AppColors.gris,
             fontSize: 12,
             fontWeight: FontWeight.w600,
             letterSpacing: 0.5,
@@ -880,8 +880,8 @@ class _DropdownRow<T> extends StatelessWidget {
         DropdownButton<T>(
           value: value,
           isExpanded: true,
-          dropdownColor: SpotbookColors.surfaceVariant,
-          style: const TextStyle(color: SpotbookColors.textPrimary, fontSize: 15),
+          dropdownColor: AppColors.surfaceAlt,
+          style: const TextStyle(color: AppColors.blanc, fontSize: 15),
           underline: const SizedBox(),
           items: items
               .map(
@@ -947,7 +947,7 @@ class _MaxBookingsFieldState extends State<_MaxBookingsField> {
         Text(
           widget.label,
           style: const TextStyle(
-            color: SpotbookColors.textSecondary,
+            color: AppColors.gris,
             fontSize: 12,
             fontWeight: FontWeight.w600,
             letterSpacing: 0.5,
@@ -957,21 +957,21 @@ class _MaxBookingsFieldState extends State<_MaxBookingsField> {
         TextField(
           controller: _c,
           keyboardType: TextInputType.number,
-          style: const TextStyle(color: SpotbookColors.textPrimary),
+          style: const TextStyle(color: AppColors.blanc),
           decoration: InputDecoration(
             filled: true,
-            fillColor: SpotbookColors.surfaceVariant,
+            fillColor: AppColors.surfaceAlt,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(14),
-              borderSide: const BorderSide(color: SpotbookColors.border),
+              borderSide: const BorderSide(color: AppColors.border),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(14),
-              borderSide: const BorderSide(color: SpotbookColors.border),
+              borderSide: const BorderSide(color: AppColors.border),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(14),
-              borderSide: const BorderSide(color: SpotbookColors.textPrimary),
+              borderSide: const BorderSide(color: AppColors.blanc),
             ),
           ),
           onEditingComplete: _commit,
@@ -1046,7 +1046,7 @@ class _StripeBlockState extends ConsumerState<_StripeBlock> {
         Text(
           _statusLine(l10n),
           style: const TextStyle(
-            color: SpotbookColors.textPrimary,
+            color: AppColors.blanc,
             fontSize: 14,
             height: 1.4,
           ),

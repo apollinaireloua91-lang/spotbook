@@ -154,4 +154,44 @@ class ProfileRepository {
       throw Exception(err ?? 'Link failed');
     }
   }
+
+  Future<List<Map<String, dynamic>>> getClientFavoritePros() async {
+    final uid = currentUserId;
+    if (uid == null) return [];
+    final data = await _supabase
+        .from('client_favorite_pros')
+        .select('*, profiles_pro(*, users(*))')
+        .eq('client_id', uid);
+    return (data as List).cast<Map<String, dynamic>>();
+  }
+
+  Future<List<Map<String, dynamic>>> getClientFavoriteVideos() async {
+    final uid = currentUserId;
+    if (uid == null) return [];
+    final data = await _supabase
+        .from('post_saves')
+        .select('*, videos(*, profiles_pro(*, users(*)))')
+        .eq('user_id', uid);
+    return (data as List).cast<Map<String, dynamic>>();
+  }
+
+  Future<List<String>> getClientSocialLinkUrls() async {
+    final uid = currentUserId;
+    if (uid == null) return [];
+    final data = await _supabase
+        .from('social_connections')
+        .select('handle, platform')
+        .eq('pro_id', uid);
+    return (data as List).map((e) => e['handle'] as String? ?? '').toList();
+  }
+
+  Future<int> countReviewsLeftByClient() async {
+    final uid = currentUserId;
+    if (uid == null) return 0;
+    final data = await _supabase
+        .from('reviews')
+        .select('id')
+        .eq('client_id', uid);
+    return (data as List).length;
+  }
 }

@@ -1215,9 +1215,15 @@ class _EventCtaStrip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final title = video.eventName ?? 'Événement';
-    final dateStr = video.eventDate != null
-        ? '${video.eventDate!.day}/${video.eventDate!.month}'
-        : '';
+    String dateStr = '';
+    if (video.eventDate != null) {
+      try {
+        final parsed = DateTime.parse(video.eventDate!);
+        dateStr = '${parsed.day}/${parsed.month}';
+      } catch (_) {
+        dateStr = video.eventDate!;
+      }
+    }
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),

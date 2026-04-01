@@ -37,11 +37,21 @@ class VideoFeedItem extends ConsumerStatefulWidget {
     required this.video,
     required this.isActive,
     required this.onLikeToggled,
+    this.index,
+    this.onToggleLike,
+    this.onToggleSave,
+    this.onToggleFollow,
+    this.useLocalHeartAnimation = false,
   });
 
   final VideoModel video;
   final bool isActive;
   final ValueChanged<bool> onLikeToggled;
+  final int? index;
+  final void Function(int index, bool liked)? onToggleLike;
+  final void Function(int index, bool saved)? onToggleSave;
+  final void Function(int index, bool followed)? onToggleFollow;
+  final bool useLocalHeartAnimation;
 
   @override
   ConsumerState<VideoFeedItem> createState() => _VideoFeedItemState();

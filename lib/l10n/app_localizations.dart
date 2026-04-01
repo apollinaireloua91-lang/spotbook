@@ -343,6 +343,420 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Partager'**
   String get share;
+
+  /// No description provided for @proSettingsTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Paramètres'**
+  String get proSettingsTitle;
+
+  /// No description provided for @proSettingsSavedToast.
+  ///
+  /// In fr, this message translates to:
+  /// **'Enregistré'**
+  String get proSettingsSavedToast;
+
+  /// No description provided for @proSettingsSectionAccount.
+  ///
+  /// In fr, this message translates to:
+  /// **'COMPTE'**
+  String get proSettingsSectionAccount;
+
+  /// No description provided for @proSettingsSectionBusiness.
+  ///
+  /// In fr, this message translates to:
+  /// **'ACTIVITÉ'**
+  String get proSettingsSectionBusiness;
+
+  /// No description provided for @proSettingsSectionBookings.
+  ///
+  /// In fr, this message translates to:
+  /// **'RÉSERVATIONS'**
+  String get proSettingsSectionBookings;
+
+  /// No description provided for @proSettingsSectionPayments.
+  ///
+  /// In fr, this message translates to:
+  /// **'PAIEMENTS'**
+  String get proSettingsSectionPayments;
+
+  /// No description provided for @proSettingsSectionSpotify.
+  ///
+  /// In fr, this message translates to:
+  /// **'SPOTIFY'**
+  String get proSettingsSectionSpotify;
+
+  /// No description provided for @proSettingsSectionNotifications.
+  ///
+  /// In fr, this message translates to:
+  /// **'NOTIFICATIONS'**
+  String get proSettingsSectionNotifications;
+
+  /// No description provided for @proSettingsSectionPrivacy.
+  ///
+  /// In fr, this message translates to:
+  /// **'CONFIDENTIALITÉ'**
+  String get proSettingsSectionPrivacy;
+
+  /// No description provided for @proSettingsSectionLanguage.
+  ///
+  /// In fr, this message translates to:
+  /// **'LANGUE'**
+  String get proSettingsSectionLanguage;
+
+  /// No description provided for @proSettingsSectionHelp.
+  ///
+  /// In fr, this message translates to:
+  /// **'AIDE'**
+  String get proSettingsSectionHelp;
+
+  /// No description provided for @proSettingsPhone.
+  ///
+  /// In fr, this message translates to:
+  /// **'Téléphone'**
+  String get proSettingsPhone;
+
+  /// No description provided for @proSettingsChangePassword.
+  ///
+  /// In fr, this message translates to:
+  /// **'Changer le mot de passe'**
+  String get proSettingsChangePassword;
+
+  /// No description provided for @proSettingsBusinessProfile.
+  ///
+  /// In fr, this message translates to:
+  /// **'Profil professionnel'**
+  String get proSettingsBusinessProfile;
+
+  /// No description provided for @proSettingsWorkAddress.
+  ///
+  /// In fr, this message translates to:
+  /// **'Adresse de travail'**
+  String get proSettingsWorkAddress;
+
+  /// No description provided for @proSettingsCancellationPolicy.
+  ///
+  /// In fr, this message translates to:
+  /// **'Politique d\'annulation'**
+  String get proSettingsCancellationPolicy;
+
+  /// No description provided for @proSettingsPolicyFlexible.
+  ///
+  /// In fr, this message translates to:
+  /// **'Flexible'**
+  String get proSettingsPolicyFlexible;
+
+  /// No description provided for @proSettingsPolicyModerate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Modérée'**
+  String get proSettingsPolicyModerate;
+
+  /// No description provided for @proSettingsPolicyStrict.
+  ///
+  /// In fr, this message translates to:
+  /// **'Stricte'**
+  String get proSettingsPolicyStrict;
+
+  /// No description provided for @proSettingsMinAdvance.
+  ///
+  /// In fr, this message translates to:
+  /// **'Réservation min. à l\'avance'**
+  String get proSettingsMinAdvance;
+
+  /// No description provided for @proSettingsHoursShort.
+  ///
+  /// In fr, this message translates to:
+  /// **'h'**
+  String get proSettingsHoursShort;
+
+  /// No description provided for @proSettingsMinGap.
+  ///
+  /// In fr, this message translates to:
+  /// **'Intervalle min. entre RDV'**
+  String get proSettingsMinGap;
+
+  /// No description provided for @proSettingsMinutesShort.
+  ///
+  /// In fr, this message translates to:
+  /// **'min'**
+  String get proSettingsMinutesShort;
+
+  /// No description provided for @proSettingsMaxPerDay.
+  ///
+  /// In fr, this message translates to:
+  /// **'Max RDV / jour'**
+  String get proSettingsMaxPerDay;
+
+  /// No description provided for @proSettingsPayoutHistory.
+  ///
+  /// In fr, this message translates to:
+  /// **'Historique des virements'**
+  String get proSettingsPayoutHistory;
+
+  /// No description provided for @proSettingsPaymentsInfo.
+  ///
+  /// In fr, this message translates to:
+  /// **'Les paiements sont gérés via Stripe Connect. Les virements sont effectués automatiquement.'**
+  String get proSettingsPaymentsInfo;
+
+  /// No description provided for @proSettingsStripeActive.
+  ///
+  /// In fr, this message translates to:
+  /// **'Stripe actif'**
+  String get proSettingsStripeActive;
+
+  /// No description provided for @proSettingsBankEnding.
+  ///
+  /// In fr, this message translates to:
+  /// **'Compte finissant par'**
+  String get proSettingsBankEnding;
+
+  /// No description provided for @proSettingsStripeVerifying.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vérification Stripe en cours...'**
+  String get proSettingsStripeVerifying;
+
+  /// No description provided for @proSettingsStripeNotConfigured.
+  ///
+  /// In fr, this message translates to:
+  /// **'Stripe non configuré'**
+  String get proSettingsStripeNotConfigured;
+
+  /// No description provided for @proSettingsStripeConfigure.
+  ///
+  /// In fr, this message translates to:
+  /// **'Configurer Stripe'**
+  String get proSettingsStripeConfigure;
+
+  /// No description provided for @proSettingsSpotifyTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Spotify'**
+  String get proSettingsSpotifyTitle;
+
+  /// No description provided for @proSettingsSpotifyHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Connecte ton compte Spotify pour ajouter tes morceaux favoris à tes vidéos.'**
+  String get proSettingsSpotifyHint;
+
+  /// No description provided for @proSettingsSpotifyLinked.
+  ///
+  /// In fr, this message translates to:
+  /// **'Compte Spotify connecté'**
+  String get proSettingsSpotifyLinked;
+
+  /// No description provided for @proSettingsSpotifyConnect.
+  ///
+  /// In fr, this message translates to:
+  /// **'Connecter Spotify'**
+  String get proSettingsSpotifyConnect;
+
+  /// No description provided for @proSettingsSpotifyDisconnect.
+  ///
+  /// In fr, this message translates to:
+  /// **'Déconnecter Spotify'**
+  String get proSettingsSpotifyDisconnect;
+
+  /// No description provided for @proSettingsSpotifyMissingClientId.
+  ///
+  /// In fr, this message translates to:
+  /// **'Configuration Spotify manquante'**
+  String get proSettingsSpotifyMissingClientId;
+
+  /// No description provided for @proSettingsNotifSettings.
+  ///
+  /// In fr, this message translates to:
+  /// **'Gérer les notifications'**
+  String get proSettingsNotifSettings;
+
+  /// No description provided for @proSettingsProfilePublic.
+  ///
+  /// In fr, this message translates to:
+  /// **'Profil public'**
+  String get proSettingsProfilePublic;
+
+  /// No description provided for @proSettingsSearchVisible.
+  ///
+  /// In fr, this message translates to:
+  /// **'Visible dans la recherche'**
+  String get proSettingsSearchVisible;
+
+  /// No description provided for @proSettingsLanguage.
+  ///
+  /// In fr, this message translates to:
+  /// **'Langue'**
+  String get proSettingsLanguage;
+
+  /// No description provided for @proSettingsLangFrench.
+  ///
+  /// In fr, this message translates to:
+  /// **'Français'**
+  String get proSettingsLangFrench;
+
+  /// No description provided for @proSettingsLangEnglish.
+  ///
+  /// In fr, this message translates to:
+  /// **'Anglais'**
+  String get proSettingsLangEnglish;
+
+  /// No description provided for @proSettingsFaq.
+  ///
+  /// In fr, this message translates to:
+  /// **'FAQ'**
+  String get proSettingsFaq;
+
+  /// No description provided for @proSettingsContactSupport.
+  ///
+  /// In fr, this message translates to:
+  /// **'Contacter le support'**
+  String get proSettingsContactSupport;
+
+  /// No description provided for @proSettingsDangerZone.
+  ///
+  /// In fr, this message translates to:
+  /// **'ZONE DANGER'**
+  String get proSettingsDangerZone;
+
+  /// No description provided for @proSettingsSignOut.
+  ///
+  /// In fr, this message translates to:
+  /// **'Se déconnecter'**
+  String get proSettingsSignOut;
+
+  /// No description provided for @proSettingsSignOutTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Déconnexion'**
+  String get proSettingsSignOutTitle;
+
+  /// No description provided for @proSettingsSignOutConfirm.
+  ///
+  /// In fr, this message translates to:
+  /// **'Confirmer'**
+  String get proSettingsSignOutConfirm;
+
+  /// No description provided for @proSettingsDeleteAccount.
+  ///
+  /// In fr, this message translates to:
+  /// **'Supprimer mon compte'**
+  String get proSettingsDeleteAccount;
+
+  /// No description provided for @proSettingsModifyEmailTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Modifier l\'email'**
+  String get proSettingsModifyEmailTitle;
+
+  /// No description provided for @proSettingsModifyPhoneTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Modifier le téléphone'**
+  String get proSettingsModifyPhoneTitle;
+
+  /// No description provided for @proChangePasswordTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Changer le mot de passe'**
+  String get proChangePasswordTitle;
+
+  /// No description provided for @proCurrentPassword.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mot de passe actuel'**
+  String get proCurrentPassword;
+
+  /// No description provided for @proNewPassword.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nouveau mot de passe'**
+  String get proNewPassword;
+
+  /// No description provided for @proConfirmPassword.
+  ///
+  /// In fr, this message translates to:
+  /// **'Les mots de passe ne correspondent pas'**
+  String get proConfirmPassword;
+
+  /// No description provided for @settingsLanguageScreenTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Langue'**
+  String get settingsLanguageScreenTitle;
+
+  /// No description provided for @settingsLanguageScreenSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Choisissez la langue de l\'application'**
+  String get settingsLanguageScreenSubtitle;
+
+  /// No description provided for @settingsLanguageSavedSnack.
+  ///
+  /// In fr, this message translates to:
+  /// **'Langue enregistrée'**
+  String get settingsLanguageSavedSnack;
+
+  /// No description provided for @spotifySheetTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajouter un morceau'**
+  String get spotifySheetTitle;
+
+  /// No description provided for @spotifySheetSearchHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rechercher un morceau...'**
+  String get spotifySheetSearchHint;
+
+  /// No description provided for @spotifySheetTopTracksHeader.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tes morceaux populaires'**
+  String get spotifySheetTopTracksHeader;
+
+  /// No description provided for @spotifySheetLinkedHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Compte Spotify connecté'**
+  String get spotifySheetLinkedHint;
+
+  /// No description provided for @spotifySheetNotLinkedHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Connecte Spotify dans les paramètres'**
+  String get spotifySheetNotLinkedHint;
+
+  /// No description provided for @spotifySheetNoResults.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun résultat'**
+  String get spotifySheetNoResults;
+
+  /// No description provided for @spotifySheetEmptyTop.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun morceau populaire'**
+  String get spotifySheetEmptyTop;
+
+  /// No description provided for @spotifySheetEmptyNeedLink.
+  ///
+  /// In fr, this message translates to:
+  /// **'Connecte ton compte Spotify'**
+  String get spotifySheetEmptyNeedLink;
+
+  /// No description provided for @spotifySheetOpenSettings.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ouvrir les paramètres'**
+  String get spotifySheetOpenSettings;
+
+  /// No description provided for @spotifySheetTrackAdded.
+  ///
+  /// In fr, this message translates to:
+  /// **'Morceau ajouté : {track}'**
+  String spotifySheetTrackAdded(String track);
 }
 
 class _AppLocalizationsDelegate

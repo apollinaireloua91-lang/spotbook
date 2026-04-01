@@ -3,29 +3,35 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../domain/video_model.dart';
 import 'video_repository.dart';
 
+enum FeedTab { discover, following }
+
 class FeedState {
   const FeedState({
     this.videos = const [],
     this.isLoading = true,
     this.currentIndex = 0,
     this.isLoadingMore = false,
+    this.activeTab = FeedTab.discover,
   });
   final List<VideoModel> videos;
   final bool isLoading;
   final int currentIndex;
   final bool isLoadingMore;
+  final FeedTab activeTab;
 
   FeedState copyWith({
     List<VideoModel>? videos,
     bool? isLoading,
     int? currentIndex,
     bool? isLoadingMore,
+    FeedTab? activeTab,
   }) =>
       FeedState(
         videos: videos ?? this.videos,
         isLoading: isLoading ?? this.isLoading,
         currentIndex: currentIndex ?? this.currentIndex,
         isLoadingMore: isLoadingMore ?? this.isLoadingMore,
+        activeTab: activeTab ?? this.activeTab,
       );
 }
 
@@ -59,6 +65,12 @@ class FeedNotifier extends Notifier<FeedState> {
     } catch (_) {
       state = state.copyWith(isLoadingMore: false);
     }
+  }
+
+  void switchTab(FeedTab tab) {
+    if (tab == state.activeTab) return;
+    state = state.copyWith(activeTab: tab, videos: [], currentIndex: 0, isLoading: true);
+    _loadInitial();
   }
 
   void setCurrentIndex(int index) {

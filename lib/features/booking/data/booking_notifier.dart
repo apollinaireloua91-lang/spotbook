@@ -389,3 +389,61 @@ final proDashboardProvider =
   ProDashboardNotifier.new,
   isAutoDispose: true,
 );
+
+// ─── Revenue daily data point ────────────────────────────────
+
+class RevenueDayPoint {
+  const RevenueDayPoint({required this.day, required this.amount});
+  final DateTime day;
+  final double amount;
+}
+
+// ─── Pro revenue daily provider ──────────────────────────────
+
+final proRevenueDailyProvider =
+    FutureProvider.autoDispose.family<List<RevenueDayPoint>, int>((ref, periodDays) async {
+  final repo = ref.watch(bookingRepositoryProvider);
+  final bookings = await repo.getProBookings();
+  final now = DateTime.now();
+  final cutoff = now.subtract(Duration(days: periodDays));
+  final confirmed = bookings.where((b) =>
+    (b.status == 'confirmed' || b.status == 'completed') &&
+    b.createdAt.isAfter(cutoff),
+  ).toList();
+
+  final map = <String, double>{};
+  for (var i = 0; i < periodDays; i++) {
+    final d = now.subtract(Duration(days: periodDays - 1 - i));
+    final key = '${d.year}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
+    map[key] = 0;
+  }
+  for (final b in confirmed) {
+    final key = '${b.createdAt.year}-${b.createdAt.month.toString().padLeft(2, '0')}-${b.createdAt.day.toString().padLeft(2, '0')}';
+    map[key] = (map[key] ?? 0) + b.depositAmount;
+  }
+  return map.entries.map((e) => RevenueDayPoint(
+    day: DateTime.parse(e.key),
+    amount: e.value,
+  )).toList();
+});
+
+// ─── Pro transactions provider ───────────────────────────────
+
+final proTransactionsProvider =
+    FutureProvider.autoDispose.family<List<BookingModel>, int>((ref, periodDays) async {
+  final repo = ref.watch(bookingRepositoryProvider);
+  final bookings = await repo.getProBookings();
+  final cutoff = DateTime.now().subtract(Duration(days: periodDays));
+  return bookings.where((b) =>
+    (b.status == 'confirmed' || b.status == 'completed') &&
+    b.createdAt.isAfter(cutoff),
+  ).toList();
+});
+
+// ─── Booking detail provider ─────────────────────────────────
+
+final bookingDetailProvider =
+    FutureProvider.autoDispose.family<BookingModel?, String>((ref, bookingId) async {
+  final repo = ref.watch(bookingRepositoryProvider);
+  return repo.getBookingById(bookingId);
+});

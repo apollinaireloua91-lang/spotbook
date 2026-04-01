@@ -131,4 +131,218 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get share => 'Partager';
+
+  @override
+  String get proSettingsTitle => 'Paramètres';
+
+  @override
+  String get proSettingsSavedToast => 'Enregistré';
+
+  @override
+  String get proSettingsSectionAccount => 'COMPTE';
+
+  @override
+  String get proSettingsSectionBusiness => 'ACTIVITÉ';
+
+  @override
+  String get proSettingsSectionBookings => 'RÉSERVATIONS';
+
+  @override
+  String get proSettingsSectionPayments => 'PAIEMENTS';
+
+  @override
+  String get proSettingsSectionSpotify => 'SPOTIFY';
+
+  @override
+  String get proSettingsSectionNotifications => 'NOTIFICATIONS';
+
+  @override
+  String get proSettingsSectionPrivacy => 'CONFIDENTIALITÉ';
+
+  @override
+  String get proSettingsSectionLanguage => 'LANGUE';
+
+  @override
+  String get proSettingsSectionHelp => 'AIDE';
+
+  @override
+  String get proSettingsPhone => 'Téléphone';
+
+  @override
+  String get proSettingsChangePassword => 'Changer le mot de passe';
+
+  @override
+  String get proSettingsBusinessProfile => 'Profil professionnel';
+
+  @override
+  String get proSettingsWorkAddress => 'Adresse de travail';
+
+  @override
+  String get proSettingsCancellationPolicy => 'Politique d\'annulation';
+
+  @override
+  String get proSettingsPolicyFlexible => 'Flexible';
+
+  @override
+  String get proSettingsPolicyModerate => 'Modérée';
+
+  @override
+  String get proSettingsPolicyStrict => 'Stricte';
+
+  @override
+  String get proSettingsMinAdvance => 'Réservation min. à l\'avance';
+
+  @override
+  String get proSettingsHoursShort => 'h';
+
+  @override
+  String get proSettingsMinGap => 'Intervalle min. entre RDV';
+
+  @override
+  String get proSettingsMinutesShort => 'min';
+
+  @override
+  String get proSettingsMaxPerDay => 'Max RDV / jour';
+
+  @override
+  String get proSettingsPayoutHistory => 'Historique des virements';
+
+  @override
+  String get proSettingsPaymentsInfo =>
+      'Les paiements sont gérés via Stripe Connect. Les virements sont effectués automatiquement.';
+
+  @override
+  String get proSettingsStripeActive => 'Stripe actif';
+
+  @override
+  String get proSettingsBankEnding => 'Compte finissant par';
+
+  @override
+  String get proSettingsStripeVerifying => 'Vérification Stripe en cours...';
+
+  @override
+  String get proSettingsStripeNotConfigured => 'Stripe non configuré';
+
+  @override
+  String get proSettingsStripeConfigure => 'Configurer Stripe';
+
+  @override
+  String get proSettingsSpotifyTitle => 'Spotify';
+
+  @override
+  String get proSettingsSpotifyHint =>
+      'Connecte ton compte Spotify pour ajouter tes morceaux favoris à tes vidéos.';
+
+  @override
+  String get proSettingsSpotifyLinked => 'Compte Spotify connecté';
+
+  @override
+  String get proSettingsSpotifyConnect => 'Connecter Spotify';
+
+  @override
+  String get proSettingsSpotifyDisconnect => 'Déconnecter Spotify';
+
+  @override
+  String get proSettingsSpotifyMissingClientId =>
+      'Configuration Spotify manquante';
+
+  @override
+  String get proSettingsNotifSettings => 'Gérer les notifications';
+
+  @override
+  String get proSettingsProfilePublic => 'Profil public';
+
+  @override
+  String get proSettingsSearchVisible => 'Visible dans la recherche';
+
+  @override
+  String get proSettingsLanguage => 'Langue';
+
+  @override
+  String get proSettingsLangFrench => 'Français';
+
+  @override
+  String get proSettingsLangEnglish => 'Anglais';
+
+  @override
+  String get proSettingsFaq => 'FAQ';
+
+  @override
+  String get proSettingsContactSupport => 'Contacter le support';
+
+  @override
+  String get proSettingsDangerZone => 'ZONE DANGER';
+
+  @override
+  String get proSettingsSignOut => 'Se déconnecter';
+
+  @override
+  String get proSettingsSignOutTitle => 'Déconnexion';
+
+  @override
+  String get proSettingsSignOutConfirm => 'Confirmer';
+
+  @override
+  String get proSettingsDeleteAccount => 'Supprimer mon compte';
+
+  @override
+  String get proSettingsModifyEmailTitle => 'Modifier l\'email';
+
+  @override
+  String get proSettingsModifyPhoneTitle => 'Modifier le téléphone';
+
+  @override
+  String get proChangePasswordTitle => 'Changer le mot de passe';
+
+  @override
+  String get proCurrentPassword => 'Mot de passe actuel';
+
+  @override
+  String get proNewPassword => 'Nouveau mot de passe';
+
+  @override
+  String get proConfirmPassword => 'Les mots de passe ne correspondent pas';
+
+  @override
+  String get settingsLanguageScreenTitle => 'Langue';
+
+  @override
+  String get settingsLanguageScreenSubtitle =>
+      'Choisissez la langue de l\'application';
+
+  @override
+  String get settingsLanguageSavedSnack => 'Langue enregistrée';
+
+  @override
+  String get spotifySheetTitle => 'Ajouter un morceau';
+
+  @override
+  String get spotifySheetSearchHint => 'Rechercher un morceau...';
+
+  @override
+  String get spotifySheetTopTracksHeader => 'Tes morceaux populaires';
+
+  @override
+  String get spotifySheetLinkedHint => 'Compte Spotify connecté';
+
+  @override
+  String get spotifySheetNotLinkedHint =>
+      'Connecte Spotify dans les paramètres';
+
+  @override
+  String get spotifySheetNoResults => 'Aucun résultat';
+
+  @override
+  String get spotifySheetEmptyTop => 'Aucun morceau populaire';
+
+  @override
+  String get spotifySheetEmptyNeedLink => 'Connecte ton compte Spotify';
+
+  @override
+  String get spotifySheetOpenSettings => 'Ouvrir les paramètres';
+
+  @override
+  String spotifySheetTrackAdded(String track) {
+    return 'Morceau ajouté : $track';
+  }
 }

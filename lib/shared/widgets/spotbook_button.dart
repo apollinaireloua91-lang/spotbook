@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 
 import '../theme/app_colors.dart';
 
-enum SpotbookButtonVariant { primary, secondary, outlined }
+enum SpotbookButtonVariant { primary, secondary, outlined, destructive, gradient }
 
 class SpotbookButton extends StatefulWidget {
   const SpotbookButton({
@@ -13,6 +13,7 @@ class SpotbookButton extends StatefulWidget {
     this.variant = SpotbookButtonVariant.primary,
     this.isLoading = false,
     this.icon,
+    this.width,
   });
 
   const SpotbookButton.primary({
@@ -21,6 +22,7 @@ class SpotbookButton extends StatefulWidget {
     required this.onPressed,
     this.isLoading = false,
     this.icon,
+    this.width,
   }) : variant = SpotbookButtonVariant.primary;
 
   const SpotbookButton.secondary({
@@ -29,6 +31,7 @@ class SpotbookButton extends StatefulWidget {
     required this.onPressed,
     this.isLoading = false,
     this.icon,
+    this.width,
   }) : variant = SpotbookButtonVariant.secondary;
 
   const SpotbookButton.outlined({
@@ -37,13 +40,33 @@ class SpotbookButton extends StatefulWidget {
     required this.onPressed,
     this.isLoading = false,
     this.icon,
+    this.width,
   }) : variant = SpotbookButtonVariant.outlined;
+
+  const SpotbookButton.destructive({
+    super.key,
+    required this.label,
+    required this.onPressed,
+    this.isLoading = false,
+    this.icon,
+    this.width,
+  }) : variant = SpotbookButtonVariant.destructive;
+
+  const SpotbookButton.gradient({
+    super.key,
+    required this.label,
+    required this.onPressed,
+    this.isLoading = false,
+    this.icon,
+    this.width,
+  }) : variant = SpotbookButtonVariant.gradient;
 
   final String label;
   final VoidCallback? onPressed;
   final SpotbookButtonVariant variant;
   final bool isLoading;
   final IconData? icon;
+  final double? width;
 
   @override
   State<SpotbookButton> createState() => _SpotbookButtonState();
@@ -82,20 +105,34 @@ class _SpotbookButtonState extends State<SpotbookButton>
     final Color bg;
     final Color fg;
     final Border? border;
+    final Gradient? gradient;
 
     switch (widget.variant) {
       case SpotbookButtonVariant.primary:
         bg = AppColors.blanc;
         fg = AppColors.fond;
         border = null;
+        gradient = null;
       case SpotbookButtonVariant.secondary:
         bg = AppColors.surfaceAlt;
         fg = AppColors.blanc;
         border = Border.all(color: AppColors.border);
+        gradient = null;
       case SpotbookButtonVariant.outlined:
         bg = Colors.transparent;
         fg = AppColors.blanc;
         border = Border.all(color: AppColors.border);
+        gradient = null;
+      case SpotbookButtonVariant.destructive:
+        bg = AppColors.rose.withAlpha(30);
+        fg = AppColors.roseClair;
+        border = null;
+        gradient = null;
+      case SpotbookButtonVariant.gradient:
+        bg = Colors.transparent;
+        fg = AppColors.blanc;
+        border = null;
+        gradient = AppColors.gradientAccent;
     }
 
     return GestureDetector(
@@ -111,10 +148,11 @@ class _SpotbookButtonState extends State<SpotbookButton>
       child: ScaleTransition(
         scale: _scale,
         child: Container(
-          width: double.infinity,
+          width: widget.width ?? double.infinity,
           height: 48,
           decoration: BoxDecoration(
-            color: bg,
+            color: gradient == null ? bg : null,
+            gradient: gradient,
             borderRadius: BorderRadius.circular(12),
             border: border,
           ),

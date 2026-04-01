@@ -174,6 +174,7 @@ class _ClientFeedScreenState extends State<ClientFeedScreen> {
                       return VideoFeedItem(
                         video: state.videos[index],
                         isActive: index == state.currentIndex,
+                        onLikeToggled: (liked) => cubit.toggleLike(index, liked),
                         index: index,
                         useLocalHeartAnimation: true,
                         onToggleLike: (i, l) => cubit.toggleLike(i, l),

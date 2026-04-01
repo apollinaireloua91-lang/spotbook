@@ -210,4 +210,26 @@ class AuthRepository {
       rethrow;
     }
   }
+
+  Future<void> changePassword({
+    required String currentPassword,
+    required String newPassword,
+  }) async {
+    // Re-authenticate with current password first
+    final email = currentUser?.email;
+    if (email == null) throw AuthException('No email found');
+    await _supabase.auth.signInWithPassword(
+      email: email,
+      password: currentPassword,
+    );
+    await _supabase.auth.updateUser(
+      UserAttributes(password: newPassword),
+    );
+  }
+
+  Future<void> updateEmail(String newEmail) async {
+    await _supabase.auth.updateUser(
+      UserAttributes(email: newEmail),
+    );
+  }
 }

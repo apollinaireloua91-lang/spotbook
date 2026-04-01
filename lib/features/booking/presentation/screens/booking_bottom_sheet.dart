@@ -12,12 +12,13 @@ import '../../../profile/domain/profile_models.dart';
 import '../../data/booking_notifier.dart';
 import '../../domain/booking_models.dart';
 
-void showBookingSheet(
+Future<void> showBookingSheet(
   BuildContext context, {
   required String proId,
   required ProProfile proProfile,
+  String? initialServiceId,
 }) {
-  showModalBottomSheet(
+  return showModalBottomSheet(
     context: context,
     isScrollControlled: true,
     backgroundColor: Colors.transparent,

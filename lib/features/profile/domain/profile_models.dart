@@ -30,6 +30,57 @@ class ClientProfile {
   }
 }
 
+class ClientFavoriteProItem {
+  const ClientFavoriteProItem({
+    required this.proId,
+    this.businessName,
+    this.avatarUrl,
+    this.category,
+  });
+
+  final String proId;
+  final String? businessName;
+  final String? avatarUrl;
+  final String? category;
+
+  factory ClientFavoriteProItem.fromJson(Map<String, dynamic> json) {
+    final pro = json['profiles_pro'] as Map<String, dynamic>? ?? {};
+    final user = pro['users'] as Map<String, dynamic>? ?? {};
+    return ClientFavoriteProItem(
+      proId: json['pro_id'] as String? ?? pro['id'] as String? ?? '',
+      businessName: pro['business_name'] as String?,
+      avatarUrl: user['avatar_url'] as String?,
+      category: pro['category'] as String?,
+    );
+  }
+}
+
+class ClientFavoriteVideoItem {
+  const ClientFavoriteVideoItem({
+    required this.videoId,
+    this.title,
+    this.thumbnailUrl,
+    this.proName,
+  });
+
+  final String videoId;
+  final String? title;
+  final String? thumbnailUrl;
+  final String? proName;
+
+  factory ClientFavoriteVideoItem.fromJson(Map<String, dynamic> json) {
+    final video = json['videos'] as Map<String, dynamic>? ?? {};
+    final pro = video['profiles_pro'] as Map<String, dynamic>? ?? {};
+    final user = pro['users'] as Map<String, dynamic>? ?? {};
+    return ClientFavoriteVideoItem(
+      videoId: json['post_id'] as String? ?? video['id'] as String? ?? '',
+      title: video['title'] as String?,
+      thumbnailUrl: video['thumbnail_url'] as String?,
+      proName: user['full_name'] as String? ?? pro['business_name'] as String?,
+    );
+  }
+}
+
 class SocialConnection {
   const SocialConnection({
     required this.id,

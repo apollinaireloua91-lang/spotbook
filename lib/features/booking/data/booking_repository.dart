@@ -240,4 +240,35 @@ class BookingRepository {
         .map((json) => BookingModel.fromJson(json as Map<String, dynamic>))
         .toList();
   }
+
+  Future<BookingModel?> getBookingById(String bookingId) async {
+    final data = await _supabase
+        .from('bookings')
+        .select(_bookingSelect)
+        .eq('id', bookingId)
+        .maybeSingle();
+    if (data == null) return null;
+    return BookingModel.fromJson(data);
+  }
+
+  Future<void> proConfirmBooking(String bookingId) async {
+    await _supabase
+        .from('bookings')
+        .update({'status': 'confirmed'})
+        .eq('id', bookingId);
+  }
+
+  Future<void> markBookingCompleted(String bookingId) async {
+    await _supabase
+        .from('bookings')
+        .update({'status': 'completed'})
+        .eq('id', bookingId);
+  }
+
+  Future<void> markRemainingPaid(String bookingId) async {
+    await _supabase
+        .from('bookings')
+        .update({'remaining_payment_status': 'paid'})
+        .eq('id', bookingId);
+  }
 }

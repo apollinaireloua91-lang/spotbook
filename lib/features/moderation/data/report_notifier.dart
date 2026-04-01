@@ -20,6 +20,10 @@ class ReportNotifier extends AsyncNotifier<ReportState> {
   @override
   Future<ReportState> build() async => const ReportState();
 
+  void reset() {
+    state = const AsyncValue.data(ReportState());
+  }
+
   void selectReason(String reason) {
     final current = state.asData?.value ?? const ReportState();
     state = AsyncValue.data(current.copyWith(selectedReason: reason));
@@ -28,6 +32,7 @@ class ReportNotifier extends AsyncNotifier<ReportState> {
   Future<void> submitReport({
     required String targetId,
     required String targetType,
+    String? details,
   }) async {
     final current = state.asData?.value ?? const ReportState();
     final reason = current.selectedReason;

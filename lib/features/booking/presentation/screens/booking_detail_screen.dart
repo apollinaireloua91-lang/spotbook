@@ -187,7 +187,7 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
           style: TextStyle(color: AppColors.blanc),
         ),
         content: Text(
-          'Vous confirmez avoir reçu ${booking.remainingAmount.toStringAsFixed(2)} ${booking.currency} sur place.',
+          'Vous confirmez avoir reçu ${(booking.remainingAmount ?? 0).toStringAsFixed(2)} ${booking.currency} sur place.',
           style: const TextStyle(color: AppColors.gris, height: 1.4),
         ),
         actions: [
@@ -665,7 +665,7 @@ class _InfoSection extends StatelessWidget {
             isProViewer
                 ? 'Reste à recevoir sur place'
                 : 'Reste à payer sur place',
-            '${booking.remainingAmount.toStringAsFixed(2)} ${booking.currency}',
+            '${(booking.remainingAmount ?? 0).toStringAsFixed(2)} ${booking.currency}',
             badgeLabel: remainingStatusLabel,
             badgeColor: remainingStatusColor,
           ),
@@ -680,7 +680,7 @@ class _InfoSection extends StatelessWidget {
               ),
             ),
             Text(
-              'Reste sur place : ${booking.remainingAmount.toStringAsFixed(2)} ${booking.currency} (pas de commission)',
+              'Reste sur place : ${(booking.remainingAmount ?? 0).toStringAsFixed(2)} ${booking.currency} (pas de commission)',
               style: const TextStyle(
                 color: AppColors.gris,
                 fontSize: 12,
