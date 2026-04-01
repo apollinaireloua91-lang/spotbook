@@ -557,8 +557,8 @@ class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
                   end: Alignment.topCenter,
                   stops: [0.0, 0.42, 1.0],
                   colors: [
-                    Colors.black,
-                    Colors.black54,
+                    AppColors.fond,
+                    AppColors.shadowDark,
                     Colors.transparent,
                   ],
                 ),
