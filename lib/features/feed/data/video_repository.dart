@@ -18,7 +18,7 @@ class VideoRepository {
   String? get currentUserId => _supabase.auth.currentUser?.id;
 
   static const _selectWithPro =
-      '*, profiles_pro!inner(id, business_name, category, is_top_pro, users!inner(full_name, avatar_url, city), social_connections(platform, followers_count, handle))';
+      '*, users!pro_id(id, full_name, display_name, avatar_url, username, city, profiles_pro(id, business_name, category, is_top_pro), social_connections(platform, followers_count, handle))';
 
   Future<List<VideoModel>> getScoredVideos({int limit = 10}) async {
     final uid = currentUserId;
@@ -96,10 +96,10 @@ class VideoRepository {
   Future<void> likeVideo(String videoId) async {
     final uid = currentUserId;
     if (uid == null) return;
-    await _supabase.from('video_likes').insert({
+    await _supabase.from('video_likes').upsert({
       'user_id': uid,
       'video_id': videoId,
-    });
+    }, onConflict: 'user_id, video_id');
   }
 
   Future<void> unlikeVideo(String videoId) async {
@@ -269,10 +269,10 @@ class VideoRepository {
   Future<void> saveVideo(String videoId) async {
     final uid = currentUserId;
     if (uid == null) return;
-    await _supabase.from('post_saves').insert({
+    await _supabase.from('post_saves').upsert({
       'user_id': uid,
       'post_id': videoId,
-    });
+    }, onConflict: 'user_id, post_id');
   }
 
   Future<void> unsaveVideo(String videoId) async {
@@ -319,10 +319,10 @@ class VideoRepository {
   Future<void> followPro(String proId) async {
     final uid = currentUserId;
     if (uid == null) return;
-    await _supabase.from('follows').insert({
+    await _supabase.from('follows').upsert({
       'follower_id': uid,
       'following_id': proId,
-    });
+    }, onConflict: 'follower_id, following_id');
   }
 
   Future<void> unfollowPro(String proId) async {

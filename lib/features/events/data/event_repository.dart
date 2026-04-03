@@ -17,7 +17,7 @@ class EventRepository {
   String? get currentUserId => _supabase.auth.currentUser?.id;
 
   static const _eventSelect =
-      '*, profiles_pro(business_name, users(full_name, avatar_url)), ticket_types(*)';
+      '*, users!pro_id(full_name, avatar_url, profiles_pro(business_name)), ticket_types(*)';
 
   Future<List<EventModel>> getEvents() async {
     final data = await _supabase
@@ -217,11 +217,11 @@ class EventRepository {
         .eq('ticket_type_id', ticketTypeId)
         .count(CountOption.exact);
 
-    await _supabase.from('waitlist').insert({
+    await _supabase.from('waitlist').upsert({
       'ticket_type_id': ticketTypeId,
       'user_id': uid,
       'position': (count.count) + 1,
-    });
+    }, onConflict: 'ticket_type_id, user_id');
   }
 
   Future<int> getScannedCount(String eventId) async {

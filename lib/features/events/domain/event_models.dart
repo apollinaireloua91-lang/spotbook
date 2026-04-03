@@ -41,8 +41,9 @@ class EventModel {
       ticketTypes.every((t) => t.soldCount >= t.quantity);
 
   factory EventModel.fromJson(Map<String, dynamic> json) {
-    final pro = json['profiles_pro'] as Map<String, dynamic>?;
-    final proUser = pro?['users'] as Map<String, dynamic>?;
+    // Join is now users!pro_id(... profiles_pro(...))
+    final proUser = json['users'] as Map<String, dynamic>?;
+    final pro = proUser?['profiles_pro'] as Map<String, dynamic>?;
     final types = (json['ticket_types'] as List<dynamic>?)
             ?.map((e) => TicketTypeModel.fromJson(e as Map<String, dynamic>))
             .toList() ??

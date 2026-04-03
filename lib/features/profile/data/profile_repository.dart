@@ -107,10 +107,10 @@ class ProfileRepository {
   Future<void> followUser(String targetId) async {
     final uid = currentUserId;
     if (uid == null) throw Exception('Not authenticated');
-    await _supabase.from('follows').insert({
+    await _supabase.from('follows').upsert({
       'follower_id': uid,
       'following_id': targetId,
-    });
+    }, onConflict: 'follower_id, following_id');
   }
 
   Future<void> unfollowUser(String targetId) async {
@@ -155,6 +155,23 @@ class ProfileRepository {
     }
   }
 
+  Future<void> saveSocialLink({
+    required String platform,
+    required String handle,
+  }) async {
+    final uid = currentUserId;
+    if (uid == null) throw Exception('Not authenticated');
+    await _supabase.from('social_connections').upsert(
+      {
+        'pro_id': uid,
+        'platform': platform,
+        'handle': handle,
+        'followers_count': 0,
+      },
+      onConflict: 'pro_id,platform',
+    );
+  }
+
   Future<List<Map<String, dynamic>>> getClientFavoritePros() async {
     final uid = currentUserId;
     if (uid == null) return [];
@@ -170,7 +187,7 @@ class ProfileRepository {
     if (uid == null) return [];
     final data = await _supabase
         .from('post_saves')
-        .select('*, videos(*, profiles_pro(*, users(*)))')
+        .select('*, videos(*, users!pro_id(id, full_name, avatar_url, profiles_pro(business_name, category)))')
         .eq('user_id', uid);
     return (data as List).cast<Map<String, dynamic>>();
   }
@@ -193,5 +210,48 @@ class ProfileRepository {
         .select('id')
         .eq('client_id', uid);
     return (data as List).length;
+  }
+
+  Future<int> countClientBookings() async {
+    final uid = currentUserId;
+    if (uid == null) return 0;
+    final data = await _supabase
+        .from('bookings')
+        .select('id')
+        .eq('client_id', uid);
+    return (data as List).length;
+  }
+
+  Future<int> countFollowing() async {
+    final uid = currentUserId;
+    if (uid == null) return 0;
+    final data = await _supabase
+        .from('follows')
+        .select('id')
+        .eq('follower_id', uid);
+    return (data as List).length;
+  }
+
+  Future<int> countClientTickets() async {
+    final uid = currentUserId;
+    if (uid == null) return 0;
+    final data = await _supabase
+        .from('tickets')
+        .select('id')
+        .eq('user_id', uid);
+    return (data as List).length;
+  }
+
+  Future<List<Map<String, dynamic>>> getRecentClientHistory({int limit = 5}) async {
+    final uid = currentUserId;
+    if (uid == null) return [];
+    final data = await _supabase
+        .from('bookings')
+        .select('*, services(name, price), profiles_pro(category, users(full_name))')
+        .eq('client_id', uid)
+        .inFilter('status', ['completed', 'cancelled_full_refund', 'cancelled_no_refund'])
+        .order('created_at', ascending: false)
+        .limit(limit);
+    return (data as List).cast<Map<String, dynamic>>();
   }
 }

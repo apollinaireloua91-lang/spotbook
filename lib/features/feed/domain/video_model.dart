@@ -74,9 +74,10 @@ class VideoModel {
   final String? spotifyTrackArtist;
 
   factory VideoModel.fromJson(Map<String, dynamic> json, {bool isLiked = false, bool isSaved = false}) {
-    final pro = json['profiles_pro'] as Map<String, dynamic>?;
-    final user = pro?['users'] as Map<String, dynamic>? ??
-        json['users'] as Map<String, dynamic>?;
+    // users is the top-level join (videos.pro_id → users.id),
+    // profiles_pro is nested inside users (users.id → profiles_pro.id)
+    final user = json['users'] as Map<String, dynamic>?;
+    final pro = user?['profiles_pro'] as Map<String, dynamic>?;
     final service = json['services'] as Map<String, dynamic>?;
     final event = json['events'] as Map<String, dynamic>?;
 
@@ -107,7 +108,7 @@ class VideoModel {
       isLiked: isLiked,
       isSaved: isSaved,
       savesCount: json['saves_count'] as int? ?? 0,
-      socialConnections: (pro?['social_connections'] as List<dynamic>?)
+      socialConnections: (user?['social_connections'] as List<dynamic>?)
               ?.map((e) => e as Map<String, dynamic>)
               .toList() ??
           [],
@@ -216,6 +217,7 @@ class CommentModel {
     required this.createdAt,
     this.userName,
     this.userAvatarUrl,
+    this.likeCount = 0,
   });
 
   final String id;
@@ -225,6 +227,7 @@ class CommentModel {
   final DateTime createdAt;
   final String? userName;
   final String? userAvatarUrl;
+  final int likeCount;
 
   factory CommentModel.fromJson(Map<String, dynamic> json) {
     final user = json['users'] as Map<String, dynamic>?;
@@ -236,6 +239,7 @@ class CommentModel {
       createdAt: DateTime.parse(json['created_at'] as String),
       userName: user?['full_name'] as String?,
       userAvatarUrl: user?['avatar_url'] as String?,
+      likeCount: (json['like_count'] as num?)?.toInt() ?? 0,
     );
   }
 }
