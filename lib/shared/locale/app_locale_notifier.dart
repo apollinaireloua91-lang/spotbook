@@ -24,7 +24,7 @@ class AppLocaleNotifier extends Notifier<Locale> {
 
   Future<void> _hydrate() async {
     try {
-      final box = await Hive.openBox<String>(_boxName);
+      final box = Hive.box<String>(_boxName);
       final code = box.get(_key, defaultValue: 'en') ?? 'en';
       state = Locale(code == 'fr' ? 'fr' : 'en');
     } catch (_) {
@@ -34,7 +34,7 @@ class AppLocaleNotifier extends Notifier<Locale> {
 
   Future<void> changeLocale(String languageCode) async {
     final locale = languageCode == 'en' ? const Locale('en') : const Locale('fr');
-    final box = await Hive.openBox<String>(_boxName);
+    final box = Hive.box<String>(_boxName);
     await box.put(_key, locale.languageCode);
     state = locale;
   }

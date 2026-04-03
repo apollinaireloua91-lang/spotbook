@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -15,6 +16,43 @@ final _onboardingPageProvider = NotifierProvider<_OnboardingPageNotifier, int>(
   _OnboardingPageNotifier.new,
   isAutoDispose: true,
 );
+
+class _SlideData {
+  const _SlideData({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.gradientColors,
+  });
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final List<Color> gradientColors;
+}
+
+const _slides = [
+  _SlideData(
+    icon: Icons.play_circle_fill_rounded,
+    title: 'Découvrez',
+    subtitle:
+        'Découvrez les meilleurs professionnels près de chez vous grâce à des vidéos immersives.',
+    gradientColors: [AppColors.violet, AppColors.violetClair],
+  ),
+  _SlideData(
+    icon: Icons.calendar_month_rounded,
+    title: 'Réservez',
+    subtitle:
+        'Réservez un service en quelques taps.\nPaiement sécurisé par Stripe.',
+    gradientColors: [AppColors.rose, AppColors.roseClair],
+  ),
+  _SlideData(
+    icon: Icons.confirmation_number_rounded,
+    title: 'Vivez',
+    subtitle:
+        'Participez aux meilleurs événements de votre ville avec vos billets QR.',
+    gradientColors: [AppColors.violet, AppColors.rose],
+  ),
+];
 
 class OnboardingScreen extends ConsumerStatefulWidget {
   const OnboardingScreen({super.key});
@@ -33,36 +71,41 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   }
 
   Future<void> _complete() async {
-    final box = await Hive.openBox<bool>('settings');
+    HapticFeedback.mediumImpact();
+    final box = Hive.box('settings');
     await box.put('onboarding_seen', true);
     if (!mounted) return;
-    context.go('/account-type');
+    context.go('/select-account-type');
   }
 
   void _nextPage() {
+    HapticFeedback.selectionClick();
     _controller.nextPage(
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.easeInOut,
+      duration: const Duration(milliseconds: 400),
+      curve: Curves.easeInOutCubic,
     );
   }
 
   @override
   Widget build(BuildContext context) {
     final currentPage = ref.watch(_onboardingPageProvider);
+    final bottomPadding = MediaQuery.of(context).padding.bottom;
 
     return Scaffold(
-      backgroundColor: AppColors.fondDark,
-      body: SafeArea(
-        child: Column(
-          children: [
-            Align(
+      backgroundColor: AppColors.fond,
+      body: Column(
+        children: [
+          // Skip button
+          SafeArea(
+            bottom: false,
+            child: Align(
               alignment: Alignment.topRight,
               child: Padding(
-                padding: const EdgeInsets.only(top: 16, right: 20),
-                child: GestureDetector(
-                  onTap: _complete,
+                padding: const EdgeInsets.only(top: 8, right: 20),
+                child: TextButton(
+                  onPressed: _complete,
                   child: const Text(
-                    'Skip',
+                    'Passer',
                     style: TextStyle(
                       color: AppColors.gris,
                       fontSize: 15,
@@ -72,204 +115,153 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                 ),
               ),
             ),
-            Expanded(
-              child: PageView(
-                controller: _controller,
-                onPageChanged: (i) => ref.read(_onboardingPageProvider.notifier).set(i),
-                children: [
-                  _buildSlide1(),
-                  _buildSlide2(),
-                  _buildSlide3(),
-                ],
-              ),
+          ),
+
+          // Page view slides
+          Expanded(
+            child: PageView.builder(
+              controller: _controller,
+              onPageChanged: (i) =>
+                  ref.read(_onboardingPageProvider.notifier).set(i),
+              itemCount: _slides.length,
+              itemBuilder: (context, index) =>
+                  _OnboardingSlide(data: _slides[index]),
             ),
-            Row(
+          ),
+
+          // Dot indicators
+          Padding(
+            padding: const EdgeInsets.only(bottom: 32),
+            child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: List.generate(3, (i) {
+                final isActive = i == currentPage;
                 return AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
+                  duration: const Duration(milliseconds: 300),
+                  curve: Curves.easeInOut,
                   margin: const EdgeInsets.symmetric(horizontal: 4),
-                  width: i == currentPage ? 24 : 8,
+                  width: isActive ? 28 : 8,
                   height: 8,
                   decoration: BoxDecoration(
-                    color: i == currentPage
-                        ? AppColors.accent
-                        : AppColors.gris.withAlpha(77),
                     borderRadius: BorderRadius.circular(4),
+                    gradient: isActive ? AppColors.gradientAccent : null,
+                    color: isActive ? null : AppColors.gris.withAlpha(60),
                   ),
                 );
               }),
             ),
-            const SizedBox(height: 24),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: SizedBox(
-                width: double.infinity,
-                height: 52,
+          ),
+
+          // Action button
+          Padding(
+            padding: EdgeInsets.fromLTRB(24, 0, 24, bottomPadding + 24),
+            child: SizedBox(
+              width: double.infinity,
+              height: 56,
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(16),
+                  gradient: AppColors.gradientAccent,
+                ),
                 child: ElevatedButton(
                   onPressed: currentPage < 2 ? _nextPage : _complete,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.accent,
-                    foregroundColor: AppColors.fondDark,
+                    backgroundColor: Colors.transparent,
+                    shadowColor: Colors.transparent,
+                    foregroundColor: AppColors.blanc,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(26),
+                      borderRadius: BorderRadius.circular(16),
                     ),
                   ),
-                  child: Text(
-                    currentPage < 2 ? 'Next →' : 'Get Started →',
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            if (currentPage == 2) ...[
-              const SizedBox(height: 16),
-              GestureDetector(
-                onTap: () => context.go('/login'),
-                child: RichText(
-                  text: const TextSpan(
-                    text: 'Existing user? ',
-                    style: TextStyle(color: AppColors.gris, fontSize: 14),
-                    children: [
-                      TextSpan(
-                        text: 'Log in',
-                        style: TextStyle(color: AppColors.accent),
+                  child: AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 200),
+                    child: Text(
+                      currentPage < 2 ? 'Suivant' : 'Commencer',
+                      key: ValueKey(currentPage < 2 ? 'next' : 'start'),
+                      style: const TextStyle(
+                        fontSize: 17,
+                        fontWeight: FontWeight.w600,
                       ),
-                    ],
+                    ),
                   ),
                 ),
               ),
-            ],
-            const SizedBox(height: 40),
-          ],
-        ),
+            ),
+          ),
+        ],
       ),
     );
   }
+}
 
-  Widget _buildSlide1() {
+class _OnboardingSlide extends StatelessWidget {
+  const _OnboardingSlide({required this.data});
+  final _SlideData data;
+
+  @override
+  Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 32),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
+          // Icon scene with gradient background
           Container(
-            width: 200,
-            height: 200,
+            width: 180,
+            height: 180,
             decoration: BoxDecoration(
-              color: AppColors.surfaceAuth,
-              borderRadius: BorderRadius.circular(24),
+              borderRadius: BorderRadius.circular(40),
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  data.gradientColors[0].withAlpha(30),
+                  data.gradientColors[1].withAlpha(15),
+                ],
+              ),
+              border: Border.all(
+                color: data.gradientColors[0].withAlpha(40),
+                width: 1,
+              ),
             ),
-            child: const Icon(Icons.play_circle_fill, size: 80, color: AppColors.accent),
+            child: Center(
+              child: ShaderMask(
+                shaderCallback: (rect) => LinearGradient(
+                  colors: data.gradientColors,
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ).createShader(rect),
+                child: Icon(
+                  data.icon,
+                  size: 80,
+                  color: AppColors.blanc,
+                ),
+              ),
+            ),
           ),
-          const SizedBox(height: 40),
-          RichText(
+          const SizedBox(height: 48),
+          // Title
+          Text(
+            data.title,
             textAlign: TextAlign.center,
-            text: const TextSpan(
-              style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, height: 1.3),
-              children: [
-                TextSpan(text: 'Watch. Discover. ', style: TextStyle(color: AppColors.blanc)),
-                TextSpan(text: 'Book.', style: TextStyle(color: AppColors.accent)),
-              ],
+            style: const TextStyle(
+              color: AppColors.blanc,
+              fontSize: 32,
+              fontWeight: FontWeight.w800,
+              letterSpacing: -0.5,
+              height: 1.2,
             ),
           ),
           const SizedBox(height: 16),
-          const Text(
-            'Explore local professionals through immersive video. See their skills in action before you book.',
+          // Subtitle
+          Text(
+            data.subtitle,
             textAlign: TextAlign.center,
-            style: TextStyle(color: AppColors.gris, fontSize: 15, height: 1.5),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildSlide2() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 32),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            width: 200,
-            height: 200,
-            decoration: BoxDecoration(
-              color: AppColors.surfaceAuth,
-              borderRadius: BorderRadius.circular(24),
-            ),
-            child: const Icon(Icons.calendar_month, size: 80, color: AppColors.accent),
-          ),
-          const SizedBox(height: 40),
-          const Text(
-            'Book Services & Events',
-            textAlign: TextAlign.center,
-            style: TextStyle(color: AppColors.blanc, fontSize: 28, fontWeight: FontWeight.bold, height: 1.3),
-          ),
-          const SizedBox(height: 16),
-          const Text(
-            'Connect with experts for 1:1 sessions or secure your spot at live workshops and events directly through the app.',
-            textAlign: TextAlign.center,
-            style: TextStyle(color: AppColors.gris, fontSize: 15, height: 1.5),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildSlide3() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 32),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            width: 200,
-            height: 200,
-            decoration: BoxDecoration(
-              color: AppColors.surfaceAuth,
-              borderRadius: BorderRadius.circular(24),
-            ),
-            child: const Icon(Icons.trending_up, size: 80, color: AppColors.accent),
-          ),
-          const SizedBox(height: 40),
-          const Text(
-            'Empower Your Business',
-            textAlign: TextAlign.center,
-            style: TextStyle(color: AppColors.blanc, fontSize: 28, fontWeight: FontWeight.bold, height: 1.3),
-          ),
-          const SizedBox(height: 24),
-          _featureCard(Icons.videocam, 'Create Content', 'Share your expertise with video'),
-          const SizedBox(height: 8),
-          _featureCard(Icons.calendar_today, 'Manage Bookings', 'Seamless scheduling system'),
-          const SizedBox(height: 8),
-          _featureCard(Icons.confirmation_number, 'Sell Event Tickets', 'Monetize exclusive events'),
-        ],
-      ),
-    );
-  }
-
-  Widget _featureCard(IconData icon, String title, String subtitle) {
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: AppColors.blanc.withAlpha(13),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.blanc.withAlpha(26)),
-      ),
-      child: Row(
-        children: [
-          Icon(icon, color: AppColors.accent, size: 24),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(title, style: const TextStyle(color: AppColors.blanc, fontSize: 14, fontWeight: FontWeight.w600)),
-                Text(subtitle, style: const TextStyle(color: AppColors.gris, fontSize: 12)),
-              ],
+            style: TextStyle(
+              color: AppColors.gris.withAlpha(200),
+              fontSize: 16,
+              fontWeight: FontWeight.w400,
+              height: 1.5,
             ),
           ),
         ],
