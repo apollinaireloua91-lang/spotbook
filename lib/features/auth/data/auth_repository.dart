@@ -45,6 +45,9 @@ class AuthRepository {
     required String age,
     required String address,
     required String role,
+    String city = '',
+    double? latitude,
+    double? longitude,
   }) async {
     try {
       return await _supabase.auth.signUp(
@@ -56,6 +59,9 @@ class AuthRepository {
           'phone': phone,
           'age': age,
           'address': address,
+          'city': city,
+          if (latitude != null) 'latitude': latitude,
+          if (longitude != null) 'longitude': longitude,
         },
       );
     } on AuthException catch (e) {
@@ -111,7 +117,11 @@ class AuthRepository {
 
   Future<AuthResponse> signInWithGoogle() async {
     const webClientId = String.fromEnvironment('GOOGLE_WEB_CLIENT_ID');
-    final googleSignIn = GoogleSignIn(serverClientId: webClientId);
+    const iosClientId = String.fromEnvironment('GOOGLE_IOS_CLIENT_ID');
+    final googleSignIn = GoogleSignIn(
+      clientId: iosClientId.isNotEmpty ? iosClientId : null,
+      serverClientId: webClientId,
+    );
     final googleUser = await googleSignIn.signIn();
     if (googleUser == null) {
       throw AuthException('Connexion Google annulée.');
@@ -124,6 +134,7 @@ class AuthRepository {
     final response = await _supabase.auth.signInWithIdToken(
       provider: OAuthProvider.google,
       idToken: idToken,
+      accessToken: googleAuth.accessToken,
     );
     final uid = response.user?.id;
     if (uid != null) {

@@ -6,6 +6,7 @@ import 'package:image_picker/image_picker.dart';
 
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/utils/analytics_service.dart';
+import '../../../../shared/widgets/address_autocomplete_field.dart';
 import '../../data/auth_repository.dart';
 import '../../data/category_repository.dart';
 import '../../data/user_setup_repository.dart';
@@ -76,6 +77,10 @@ class _SignUpNotifier extends Notifier<_SignUpState> {
     required String username,
     required String phone,
     required String businessName,
+    String address = '',
+    String city = '',
+    double? latitude,
+    double? longitude,
   }) async {
     state = state.copyWith(isLoading: true);
     try {
@@ -85,7 +90,10 @@ class _SignUpNotifier extends Notifier<_SignUpState> {
             fullName: fullName,
             phone: phone,
             age: '',
-            address: '',
+            address: address,
+            city: city,
+            latitude: latitude,
+            longitude: longitude,
             role: role,
           );
       await ref.read(userSetupRepositoryProvider).setupNewUser();
@@ -144,6 +152,12 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
   final _usernameCtrl = TextEditingController();
   final _phoneCtrl = TextEditingController();
   final _businessCtrl = TextEditingController();
+  final _addressCtrl = TextEditingController();
+
+  // Place details from Google Places autocomplete
+  String _city = '';
+  double? _latitude;
+  double? _longitude;
 
   bool get _isClient => widget.role == 'client';
   int get _totalSteps => _isClient ? 3 : 4;
@@ -158,6 +172,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
     _usernameCtrl.dispose();
     _phoneCtrl.dispose();
     _businessCtrl.dispose();
+    _addressCtrl.dispose();
     super.dispose();
   }
 
@@ -175,7 +190,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
     if (current == 0) {
       if (!_step1Key.currentState!.validate()) return;
       if (_passwordCtrl.text != _confirmCtrl.text) {
-        _showError('Les mots de passe ne correspondent pas.');
+        _showError('Passwords do not match.');
         return;
       }
     } else if (current == 1) {
@@ -205,6 +220,10 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
             username: _usernameCtrl.text.trim(),
             phone: _phoneCtrl.text.trim(),
             businessName: _businessCtrl.text.trim(),
+            address: _addressCtrl.text.trim(),
+            city: _city,
+            latitude: _latitude,
+            longitude: _longitude,
           );
       if (!mounted) return;
       _navigateToHome();
@@ -222,7 +241,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
     } on Exception catch (e) {
       if (!mounted) return;
       final msg = e.toString().replaceFirst('Exception: ', '');
-      if (!msg.contains('annulée')) _showError(msg);
+      if (!msg.contains('cancel')) _showError(msg);
     }
   }
 
@@ -269,7 +288,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                   ),
                   const Spacer(),
                   Text(
-                    'Étape ${s.currentStep + 1}/$_totalSteps',
+                    'Step ${s.currentStep + 1}/$_totalSteps',
                     style: const TextStyle(
                       color: AppColors.gris,
                       fontSize: 13,
@@ -360,6 +379,12 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
           formKey: _step2Key,
           nameCtrl: _nameCtrl,
           usernameCtrl: _usernameCtrl,
+          addressCtrl: _addressCtrl,
+          onPlaceSelected: (details) {
+            _city = details.city;
+            _latitude = details.latitude;
+            _longitude = details.longitude;
+          },
           onNext: _nextStep,
         ),
         _Step3Categories(
@@ -515,7 +540,7 @@ class _Step1EmailPassword extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: Text(
-                    'ou',
+                    'or',
                     style: TextStyle(
                         color: AppColors.gris.withAlpha(180), fontSize: 13),
                   ),
@@ -529,13 +554,13 @@ class _Step1EmailPassword extends StatelessWidget {
 
             _SignUpField(
               controller: emailCtrl,
-              label: 'Adresse email',
-              hint: 'nom@exemple.com',
+              label: 'Email address',
+              hint: 'name@example.com',
               icon: Icons.mail_outline_rounded,
               keyboardType: TextInputType.emailAddress,
               validator: (v) {
-                if (v == null || v.isEmpty) return 'Requis';
-                if (!v.contains('@')) return 'Email invalide';
+                if (v == null || v.isEmpty) return 'Required';
+                if (!v.contains('@')) return 'Invalid email';
                 return null;
               },
             ),
@@ -557,7 +582,7 @@ class _Step1EmailPassword extends StatelessWidget {
                 ),
               ),
               validator: (v) {
-                if (v == null || v.length < 6) return 'Min. 6 caractères';
+                if (v == null || v.length < 6) return 'Min. 6 characters';
                 return null;
               },
             ),
@@ -580,7 +605,7 @@ class _Step1EmailPassword extends StatelessWidget {
                 ),
               ),
               validator: (v) {
-                if (v == null || v.isEmpty) return 'Requis';
+                if (v == null || v.isEmpty) return 'Required';
                 return null;
               },
             ),
@@ -600,12 +625,16 @@ class _Step2ClientProfile extends StatelessWidget {
     required this.formKey,
     required this.nameCtrl,
     required this.usernameCtrl,
+    required this.addressCtrl,
+    required this.onPlaceSelected,
     required this.onNext,
   });
 
   final GlobalKey<FormState> formKey;
   final TextEditingController nameCtrl;
   final TextEditingController usernameCtrl;
+  final TextEditingController addressCtrl;
+  final ValueChanged<PlaceDetails> onPlaceSelected;
   final VoidCallback onNext;
 
   @override
@@ -619,7 +648,7 @@ class _Step2ClientProfile extends StatelessWidget {
           children: [
             const SizedBox(height: 28),
             const Text(
-              'Vos informations',
+              'Your information',
               style: TextStyle(
                 color: AppColors.blanc,
                 fontSize: 26,
@@ -629,25 +658,34 @@ class _Step2ClientProfile extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             const Text(
-              'Comment souhaitez-vous être connu(e) ?',
+              'How would you like to be known?',
               style: TextStyle(color: AppColors.gris, fontSize: 15),
             ),
             const SizedBox(height: 28),
             _SignUpField(
               controller: nameCtrl,
               label: 'Full name',
-              hint: 'Jean Dupont',
+              hint: 'John Doe',
               icon: Icons.person_outline_rounded,
-              validator: (v) => (v == null || v.isEmpty) ? 'Requis' : null,
+              validator: (v) => (v == null || v.isEmpty) ? 'Required' : null,
             ),
             const SizedBox(height: 16),
             _SignUpField(
               controller: usernameCtrl,
-              label: "Nom d'utilisateur",
-              hint: '@jean_dupont',
+              label: 'Username',
+              hint: '@johndoe',
               icon: Icons.alternate_email_rounded,
               textInputAction: TextInputAction.done,
-              validator: (v) => (v == null || v.isEmpty) ? 'Requis' : null,
+              validator: (v) => (v == null || v.isEmpty) ? 'Required' : null,
+            ),
+            const SizedBox(height: 16),
+            AddressAutocompleteField(
+              controller: addressCtrl,
+              label: 'Address',
+              hint: 'Start typing your address...',
+              icon: Icons.location_on_outlined,
+              fillColor: AppColors.surface,
+              onPlaceSelected: onPlaceSelected,
             ),
             const SizedBox(height: 28),
             _StepButton(label: 'Next', onPressed: onNext),
@@ -686,7 +724,7 @@ class _Step2ProProfile extends StatelessWidget {
           children: [
             const SizedBox(height: 28),
             const Text(
-              'Votre profil pro',
+              'Your Pro profile',
               style: TextStyle(
                 color: AppColors.blanc,
                 fontSize: 26,
@@ -696,34 +734,34 @@ class _Step2ProProfile extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             const Text(
-              'Présentez-vous à vos futurs clients.',
+              'Introduce yourself to your future clients.',
               style: TextStyle(color: AppColors.gris, fontSize: 15),
             ),
             const SizedBox(height: 28),
             _SignUpField(
               controller: nameCtrl,
               label: 'Full name',
-              hint: 'Jean Dupont',
+              hint: 'John Doe',
               icon: Icons.person_outline_rounded,
-              validator: (v) => (v == null || v.isEmpty) ? 'Requis' : null,
+              validator: (v) => (v == null || v.isEmpty) ? 'Required' : null,
             ),
             const SizedBox(height: 16),
             _SignUpField(
               controller: businessCtrl,
-              label: 'Nom de l\'entreprise',
-              hint: 'Studio Dupont',
+              label: 'Business name',
+              hint: 'Doe Studio',
               icon: Icons.store_outlined,
-              validator: (v) => (v == null || v.isEmpty) ? 'Requis' : null,
+              validator: (v) => (v == null || v.isEmpty) ? 'Required' : null,
             ),
             const SizedBox(height: 16),
             _SignUpField(
               controller: phoneCtrl,
-              label: 'Téléphone',
+              label: 'Phone number',
               hint: '+1 (555) 000-0000',
               icon: Icons.phone_outlined,
               keyboardType: TextInputType.phone,
               textInputAction: TextInputAction.done,
-              validator: (v) => (v == null || v.isEmpty) ? 'Requis' : null,
+              validator: (v) => (v == null || v.isEmpty) ? 'Required' : null,
             ),
             const SizedBox(height: 28),
             _StepButton(label: 'Next', onPressed: onNext),
@@ -916,7 +954,7 @@ class _Step4ProPhotoState extends State<_Step4ProPhoto> {
         children: [
           const SizedBox(height: 28),
           const Text(
-            'Photo de profil',
+            'Profile photo',
             style: TextStyle(
               color: AppColors.blanc,
               fontSize: 26,
@@ -926,7 +964,7 @@ class _Step4ProPhotoState extends State<_Step4ProPhoto> {
           ),
           const SizedBox(height: 8),
           const Text(
-            'Ajoutez une photo pour inspirer confiance à vos clients.',
+            'Add a photo to build trust with your clients.',
             style: TextStyle(color: AppColors.gris, fontSize: 15),
           ),
           const SizedBox(height: 40),
@@ -1006,7 +1044,7 @@ class _Step4ProPhotoState extends State<_Step4ProPhoto> {
             child: GestureDetector(
               onTap: widget.isLoading ? null : widget.onSkip,
               child: const Text(
-                'Passer pour le moment',
+                'Skip for now',
                 style: TextStyle(color: AppColors.gris, fontSize: 14),
               ),
             ),
