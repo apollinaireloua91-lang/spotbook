@@ -197,7 +197,7 @@ class _ProEventsListScreenState extends ConsumerState<ProEventsListScreen> {
       floatingActionButton: FloatingActionButton(
         backgroundColor: AppColors.blanc,
         foregroundColor: AppColors.fond,
-        onPressed: () => context.go('/pro/events/create'),
+        onPressed: () => context.go('/create-event'),
         child: const Icon(Icons.add, size: 28),
       ),
     );
@@ -232,7 +232,7 @@ class _EventCard extends StatelessWidget {
 
     return SpotbookCard(
       padding: EdgeInsets.zero,
-      onTap: () => context.go('/pro/events/${event.id}/sales'),
+      onTap: () => context.push('/event/${event.id}'),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -307,19 +307,19 @@ class _EventCard extends StatelessWidget {
                     _ActionBtn(
                       icon: Icons.edit_outlined,
                       label: 'Modifier',
-                      onTap: () => context.go('/pro/events/${event.id}/edit'),
+                      onTap: () => context.push('/event/${event.id}'),
                     ),
                     const SizedBox(width: 8),
                     _ActionBtn(
                       icon: Icons.visibility_outlined,
                       label: 'Page',
-                      onTap: () => context.go('/client/event/${event.id}'),
+                      onTap: () => context.go('/event/${event.id}'),
                     ),
                     const SizedBox(width: 8),
                     _ActionBtn(
                       icon: Icons.bar_chart_outlined,
                       label: 'Ventes',
-                      onTap: () => context.go('/pro/events/${event.id}/sales'),
+                      onTap: () => context.push('/event/${event.id}'),
                     ),
                   ],
                 ),
@@ -543,7 +543,7 @@ class _EmptyState extends StatelessWidget {
             ),
             const SizedBox(height: 24),
             TextButton(
-              onPressed: () => context.go('/pro/events/create'),
+              onPressed: () => context.go('/create-event'),
               child: const Text(
                 'Créer un événement',
                 style: TextStyle(color: AppColors.blanc, fontSize: 14),

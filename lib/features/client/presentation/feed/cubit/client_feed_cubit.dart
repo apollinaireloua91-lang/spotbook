@@ -210,6 +210,10 @@ class ClientFeedCubit extends Cubit<ClientFeedState> {
     emit(state.copyWith(videos: list));
   }
 
+  void countView(String videoId) {
+    _video.incrementViewCount(videoId);
+  }
+
   void clearTransientError() {
     if (state.error != null) emit(state.copyWith(clearError: true));
   }

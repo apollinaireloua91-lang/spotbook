@@ -41,21 +41,21 @@ class ProShell extends StatelessWidget {
             ),
             padding: EdgeInsets.only(bottom: bottomInset),
             child: SizedBox(
-              height: 66,
+              height: 68,
               child: Row(
                 children: [
-                  // ── Left: Feed + Recherche ──
+                  // ── Left: Feed + Dashboard ──
                   _ProNavItem(
                     label: 'Feed',
-                    icon: Icons.grid_view_outlined,
-                    activeIcon: Icons.grid_view_rounded,
+                    icon: Icons.play_circle_outline,
+                    activeIcon: Icons.play_circle_filled,
                     selected: navigationShell.currentIndex == 0,
                     onTap: () => _goBranch(0),
                   ),
                   _ProNavItem(
-                    label: 'Recherche',
-                    icon: Icons.search_outlined,
-                    activeIcon: Icons.search,
+                    label: 'Dashboard',
+                    icon: Icons.space_dashboard_outlined,
+                    activeIcon: Icons.space_dashboard,
                     selected: navigationShell.currentIndex == 1,
                     onTap: () => _goBranch(1),
                   ),
@@ -70,7 +70,7 @@ class ProShell extends StatelessWidget {
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          'Caméra',
+                          'Camera',
                           style: TextStyle(
                             fontSize: 9,
                             fontWeight:
@@ -82,20 +82,27 @@ class ProShell extends StatelessWidget {
                       ],
                     ),
                   ),
-                  // ── Right: RDV + Profil ──
+                  // ── Right: Search + RDV + Profile ──
                   _ProNavItem(
-                    label: 'RDV',
-                    icon: Icons.calendar_today_outlined,
-                    activeIcon: Icons.calendar_today,
+                    label: 'Search',
+                    icon: Icons.search_outlined,
+                    activeIcon: Icons.search,
                     selected: navigationShell.currentIndex == 3,
                     onTap: () => _goBranch(3),
                   ),
                   _ProNavItem(
-                    label: 'Profil',
-                    icon: Icons.person_outline,
-                    activeIcon: Icons.person,
+                    label: 'RDV',
+                    icon: Icons.calendar_today_outlined,
+                    activeIcon: Icons.calendar_today,
                     selected: navigationShell.currentIndex == 4,
                     onTap: () => _goBranch(4),
+                  ),
+                  _ProNavItem(
+                    label: 'Profile',
+                    icon: Icons.person_outline,
+                    activeIcon: Icons.person,
+                    selected: navigationShell.currentIndex == 5,
+                    onTap: () => _goBranch(5),
                   ),
                 ],
               ),
@@ -107,7 +114,7 @@ class ProShell extends StatelessWidget {
   }
 }
 
-/// Camera FAB — 48px white circle, surélevé -8px, spring scale + rotationZ.
+/// Camera FAB — 44px white circle, surélevé -5px, spring scale + rotationZ.
 class _CameraFab extends StatefulWidget {
   const _CameraFab({required this.isActive, required this.onTap});
 
@@ -158,7 +165,7 @@ class _CameraFabState extends State<_CameraFab>
     return GestureDetector(
       onTap: _handleTap,
       child: Transform.translate(
-        offset: const Offset(0, -6),
+        offset: const Offset(0, -5),
         child: AnimatedBuilder(
           animation: _ctrl,
           builder: (context, child) {
@@ -171,8 +178,8 @@ class _CameraFabState extends State<_CameraFab>
             );
           },
           child: Container(
-            width: 46,
-            height: 46,
+            width: 44,
+            height: 44,
             decoration: BoxDecoration(
               color: AppColors.blanc,
               shape: BoxShape.circle,

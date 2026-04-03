@@ -75,7 +75,7 @@ class NotificationRepository {
 
     await _supabase
         .from('notification_preferences')
-        .upsert({'user_id': uid, ...updates});
+        .upsert({'user_id': uid, ...updates}, onConflict: 'user_id');
   }
 
   Future<void> saveFcmToken(String token) async {
@@ -100,5 +100,24 @@ class NotificationRepository {
         .count(CountOption.exact);
 
     return result.count;
+  }
+
+  /// Returns unread counts grouped by type category for Pro notification dots.
+  Future<Map<String, int>> getUnreadCountsByCategory() async {
+    final uid = _uid;
+    if (uid == null) return {};
+
+    final data = await _supabase
+        .from('notifications')
+        .select('type')
+        .eq('user_id', uid)
+        .eq('is_read', false);
+
+    final counts = <String, int>{};
+    for (final row in data) {
+      final type = row['type'] as String? ?? 'general';
+      counts[type] = (counts[type] ?? 0) + 1;
+    }
+    return counts;
   }
 }

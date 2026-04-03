@@ -1055,7 +1055,16 @@ class _SaveBar extends StatelessWidget {
                               ),
                             );
                           }
-                        } catch (_) {}
+                        } catch (_) {
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Erreur lors de l\'enregistrement'),
+                                backgroundColor: AppColors.error,
+                              ),
+                            );
+                          }
+                        }
                       },
               ),
             )

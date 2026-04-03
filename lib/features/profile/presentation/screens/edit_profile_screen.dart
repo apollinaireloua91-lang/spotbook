@@ -1,10 +1,92 @@
+import 'dart:async';
+
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../shared/theme/app_colors.dart';
+import '../../../../shared/widgets/address_autocomplete_field.dart';
 import '../../../../shared/widgets/spotbook_button.dart';
+import '../../../../shared/widgets/spotbook_snackbar.dart';
 import '../../data/edit_profile_notifier.dart';
+import '../../data/profile_repository.dart';
+
+// ─── Social platform config ──────────────────────────────
+class _SocialPlatform {
+  const _SocialPlatform({
+    required this.key,
+    required this.label,
+    required this.icon,
+    required this.placeholder,
+    this.urlPattern,
+  });
+
+  final String key;
+  final String label;
+  final IconData icon;
+  final String placeholder;
+  final RegExp? urlPattern;
+}
+
+final _socialPlatforms = [
+  _SocialPlatform(
+    key: 'instagram',
+    label: 'Instagram',
+    icon: Icons.camera_alt_outlined,
+    placeholder: 'https://instagram.com/votre_profil',
+    urlPattern: RegExp(r'instagram\.com'),
+  ),
+  _SocialPlatform(
+    key: 'tiktok',
+    label: 'TikTok',
+    icon: Icons.music_note_outlined,
+    placeholder: 'https://tiktok.com/@votre_profil',
+    urlPattern: RegExp(r'tiktok\.com'),
+  ),
+  _SocialPlatform(
+    key: 'youtube',
+    label: 'YouTube',
+    icon: Icons.play_circle_outline,
+    placeholder: 'https://youtube.com/@votre_chaine',
+    urlPattern: RegExp(r'youtube\.com|youtu\.be'),
+  ),
+  _SocialPlatform(
+    key: 'snapchat',
+    label: 'Snapchat',
+    icon: Icons.photo_camera_front_outlined,
+    placeholder: 'https://snapchat.com/add/votre_snap',
+    urlPattern: RegExp(r'snapchat\.com'),
+  ),
+  _SocialPlatform(
+    key: 'twitter',
+    label: 'X / Twitter',
+    icon: Icons.alternate_email,
+    placeholder: 'https://x.com/votre_profil',
+    urlPattern: RegExp(r'twitter\.com|x\.com'),
+  ),
+  _SocialPlatform(
+    key: 'website',
+    label: 'Site web',
+    icon: Icons.language,
+    placeholder: 'https://votre-site.com',
+  ),
+  _SocialPlatform(
+    key: 'spotify',
+    label: 'Spotify',
+    icon: Icons.headphones_outlined,
+    placeholder: 'https://open.spotify.com/artist/...',
+    urlPattern: RegExp(r'spotify\.com'),
+  ),
+];
+
+// ═══════════════════════════════════════════════════════════
+// EDIT PROFILE SCREEN
+// ═══════════════════════════════════════════════════════════
 
 class EditProfileScreen extends ConsumerStatefulWidget {
   const EditProfileScreen({super.key});
@@ -17,16 +99,82 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
   final _nameCtrl = TextEditingController();
   final _usernameCtrl = TextEditingController();
   final _bioCtrl = TextEditingController();
-  final _cityCtrl = TextEditingController();
+  final _addressCtrl = TextEditingController();
+  final Map<String, TextEditingController> _socialCtrls = {};
   bool _controllersInitialized = false;
+  bool _isUploadingAvatar = false;
+  String? _avatarUrl;
+
+  // Username uniqueness check
+  Timer? _usernameDebounce;
+  String? _usernameError;
+  bool _isCheckingUsername = false;
+
+  @override
+  void initState() {
+    super.initState();
+    for (final p in _socialPlatforms) {
+      _socialCtrls[p.key] = TextEditingController();
+    }
+    _usernameCtrl.addListener(_onUsernameChanged);
+  }
 
   @override
   void dispose() {
+    _usernameDebounce?.cancel();
     _nameCtrl.dispose();
     _usernameCtrl.dispose();
     _bioCtrl.dispose();
-    _cityCtrl.dispose();
+    _addressCtrl.dispose();
+    for (final c in _socialCtrls.values) {
+      c.dispose();
+    }
     super.dispose();
+  }
+
+  static final _usernameRegex = RegExp(r'^[a-zA-Z0-9_]{3,20}$');
+
+  void _onUsernameChanged() {
+    _usernameDebounce?.cancel();
+    final username = _usernameCtrl.text.trim();
+    if (username.isEmpty || username.length < 3) {
+      setState(() {
+        _usernameError = username.isNotEmpty ? 'Min. 3 caractères' : null;
+        _isCheckingUsername = false;
+      });
+      return;
+    }
+    if (!_usernameRegex.hasMatch(username)) {
+      setState(() {
+        _usernameError = 'Lettres, chiffres et _ uniquement (3-20 car.)';
+        _isCheckingUsername = false;
+      });
+      return;
+    }
+
+    setState(() => _isCheckingUsername = true);
+    _usernameDebounce = Timer(const Duration(milliseconds: 500), () async {
+      try {
+        final supabase = Supabase.instance.client;
+        final uid = supabase.auth.currentUser?.id;
+        final result = await supabase
+            .from('users')
+            .select('id')
+            .eq('username', username)
+            .neq('id', uid ?? '')
+            .maybeSingle();
+
+        if (!mounted) return;
+        setState(() {
+          _isCheckingUsername = false;
+          _usernameError = result != null ? 'Ce nom est déjà pris' : null;
+        });
+      } catch (_) {
+        if (mounted) {
+          setState(() => _isCheckingUsername = false);
+        }
+      }
+    });
   }
 
   void _initControllers(EditProfileState s) {
@@ -36,51 +184,87 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
       _nameCtrl.text = s.proProfile!.businessName;
       _usernameCtrl.text = s.proProfile!.username ?? '';
       _bioCtrl.text = s.proProfile!.bio ?? '';
-      _cityCtrl.text = s.proProfile!.city ?? '';
+      _addressCtrl.text = s.proProfile!.city ?? '';
+      _avatarUrl = s.proProfile!.avatarUrl;
+      for (final conn in s.proProfile!.socialConnections) {
+        _socialCtrls[conn.platform]?.text = conn.handle;
+      }
     } else if (s.clientProfile != null) {
       _nameCtrl.text = s.clientProfile!.fullName;
       _usernameCtrl.text = s.clientProfile!.username ?? '';
-      _cityCtrl.text = s.clientProfile!.city ?? '';
+      _addressCtrl.text = s.clientProfile!.city ?? '';
+      _avatarUrl = s.clientProfile!.avatarUrl;
+    }
+  }
+
+  Future<void> _pickAvatar() async {
+    HapticFeedback.lightImpact();
+    final picker = ImagePicker();
+    final image = await picker.pickImage(
+      source: ImageSource.gallery,
+      maxWidth: 512,
+      maxHeight: 512,
+      imageQuality: 80,
+    );
+    if (image == null) return;
+
+    setState(() => _isUploadingAvatar = true);
+    try {
+      final bytes = await image.readAsBytes();
+      final ext = image.path.split('.').last;
+      final repo = ref.read(profileRepositoryProvider);
+      final url = await repo.uploadAvatar(bytes, ext);
+      if (mounted) {
+        setState(() {
+          _avatarUrl = url;
+          _isUploadingAvatar = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isUploadingAvatar = false);
+        showSpotbookSnackBar(context,
+            message: 'Erreur upload photo', type: SnackType.error);
+      }
     }
   }
 
   Future<void> _save() async {
+    if (_usernameError != null) return;
+    HapticFeedback.mediumImpact();
     try {
       await ref.read(editProfileProvider.notifier).saveProfile(
             fullName: _nameCtrl.text.trim(),
             username: _usernameCtrl.text.trim(),
             bio: _bioCtrl.text.trim(),
-            city: _cityCtrl.text.trim(),
+            city: _addressCtrl.text.trim(),
           );
+
+      // Save social links (pro only)
+      final s = ref.read(editProfileProvider);
+      if (s.isPro) {
+        final notifier = ref.read(editProfileProvider.notifier);
+        for (final p in _socialPlatforms) {
+          final value = _socialCtrls[p.key]?.text.trim() ?? '';
+          final existing = s.proProfile?.socialConnections
+              .where((c) => c.platform == p.key)
+              .firstOrNull;
+          final existingHandle = existing?.handle ?? '';
+          if (value != existingHandle) {
+            await notifier.saveSocialLink(platform: p.key, handle: value);
+          }
+        }
+      }
+
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Profile updated'), backgroundColor: AppColors.success),
-      );
+      showSpotbookSnackBar(context,
+          message: 'Profil mis à jour', type: SnackType.success);
       context.pop();
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(e.toString()), backgroundColor: AppColors.error),
-      );
+      showSpotbookSnackBar(context,
+          message: 'Erreur : ${e.toString()}', type: SnackType.error);
     }
-  }
-
-  Future<void> _linkSocial(String platform) async {
-    try {
-      await ref.read(editProfileProvider.notifier).linkSocial(platform);
-    } catch (_) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to link account'), backgroundColor: AppColors.error),
-        );
-      }
-    }
-  }
-
-  Future<void> _disconnectSocial(String platform) async {
-    try {
-      await ref.read(editProfileProvider.notifier).disconnectSocial(platform);
-    } catch (_) {}
   }
 
   @override
@@ -91,7 +275,8 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     if (s.isLoading) {
       return const Scaffold(
         backgroundColor: AppColors.fond,
-        body: Center(child: CircularProgressIndicator(color: AppColors.blanc)),
+        body: Center(
+            child: CircularProgressIndicator(color: AppColors.blanc)),
       );
     }
 
@@ -99,11 +284,20 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
       backgroundColor: AppColors.fond,
       appBar: AppBar(
         backgroundColor: AppColors.fond,
-        title: const Text('Edit Profile'),
+        surfaceTintColor: Colors.transparent,
+        title: Text(
+          'Modifier le profil',
+          style: GoogleFonts.dmSans(
+            color: AppColors.blanc,
+            fontWeight: FontWeight.w600,
+            fontSize: 17,
+          ),
+        ),
         centerTitle: true,
         leading: IconButton(
           onPressed: () => context.pop(),
-          icon: const Icon(Icons.arrow_back_ios, size: 20),
+          icon: const Icon(Icons.arrow_back_ios,
+              size: 20, color: AppColors.blanc),
         ),
       ),
       body: SafeArea(
@@ -112,32 +306,237 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildTextField('Name', _nameCtrl),
+              // ─── Avatar with photo picker ───
+              Center(
+                child: GestureDetector(
+                  onTap: _pickAvatar,
+                  child: Stack(
+                    children: [
+                      Container(
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: AppColors.violet,
+                            width: 2,
+                          ),
+                        ),
+                        child: CircleAvatar(
+                          radius: 48,
+                          backgroundColor: AppColors.surfaceAlt,
+                          backgroundImage: _avatarUrl != null
+                              ? CachedNetworkImageProvider(_avatarUrl!)
+                              : null,
+                          child: _isUploadingAvatar
+                              ? const CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: AppColors.blanc,
+                                )
+                              : _avatarUrl == null
+                                  ? const Icon(Icons.person,
+                                      size: 40, color: AppColors.gris)
+                                  : null,
+                        ),
+                      ),
+                      Positioned(
+                        bottom: 0,
+                        right: 0,
+                        child: Container(
+                          width: 30,
+                          height: 30,
+                          decoration: BoxDecoration(
+                            color: AppColors.violet,
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: AppColors.fond,
+                              width: 2,
+                            ),
+                          ),
+                          child: const Icon(
+                            Icons.camera_alt,
+                            color: AppColors.blanc,
+                            size: 14,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 8),
+              Center(
+                child: Text(
+                  'Modifier la photo',
+                  style: GoogleFonts.dmSans(
+                    color: AppColors.violetClair,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 24),
+
+              // ─── Name ───
+              _buildTextField('Nom affiché', _nameCtrl),
+
               const SizedBox(height: 16),
-              _buildTextField('Username', _usernameCtrl),
+
+              // ─── Username with uniqueness check ───
+              _buildLabel("Nom d'utilisateur"),
+              const SizedBox(height: 8),
+              TextField(
+                controller: _usernameCtrl,
+                style: const TextStyle(color: AppColors.blanc, fontSize: 15),
+                decoration: InputDecoration(
+                  filled: true,
+                  fillColor: AppColors.surface,
+                  prefixText: '@',
+                  prefixStyle: const TextStyle(
+                    color: AppColors.gris,
+                    fontSize: 15,
+                  ),
+                  suffixIcon: _isCheckingUsername
+                      ? const Padding(
+                          padding: EdgeInsets.all(14),
+                          child: SizedBox(
+                            width: 16,
+                            height: 16,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: AppColors.gris,
+                            ),
+                          ),
+                        )
+                      : _usernameError == null &&
+                              _usernameCtrl.text.trim().length >= 3
+                          ? const Icon(Icons.check_circle,
+                              color: AppColors.success, size: 20)
+                          : null,
+                  errorText: _usernameError,
+                  errorStyle: const TextStyle(
+                    color: AppColors.error,
+                    fontSize: 12,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(
+                      color: _usernameError != null
+                          ? AppColors.error
+                          : AppColors.border,
+                    ),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(
+                      color: _usernameError != null
+                          ? AppColors.error
+                          : AppColors.border,
+                    ),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(
+                      color: _usernameError != null
+                          ? AppColors.error
+                          : AppColors.violet,
+                    ),
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 14,
+                  ),
+                ),
+              ),
+
               const SizedBox(height: 16),
-              _buildTextField('City', _cityCtrl),
+
+              // ─── Bio (for all users) ───
+              _buildLabel('Bio'),
+              const SizedBox(height: 8),
+              TextField(
+                controller: _bioCtrl,
+                maxLines: 3,
+                maxLength: 160,
+                style: const TextStyle(color: AppColors.blanc, fontSize: 15),
+                decoration: InputDecoration(
+                  hintText: 'Décrivez-vous en quelques mots...',
+                  hintStyle: TextStyle(
+                    color: AppColors.gris.withAlpha(120),
+                    fontSize: 14,
+                  ),
+                  filled: true,
+                  fillColor: AppColors.surface,
+                  counterStyle: const TextStyle(color: AppColors.gris),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: const BorderSide(color: AppColors.border),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: const BorderSide(color: AppColors.border),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: const BorderSide(color: AppColors.violet),
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 14,
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 16),
+
+              // ─── Address with Google Places autocomplete ───
+              _buildLabel('Localisation'),
+              const SizedBox(height: 8),
+              AddressAutocompleteField(
+                controller: _addressCtrl,
+                label: '',
+                hint: 'Votre ville ou adresse',
+                icon: Icons.location_on_outlined,
+                fillColor: AppColors.surface,
+              ),
+
+              // ─── Social links (pro only) ───
               if (s.isPro) ...[
-                const SizedBox(height: 16),
-                _buildTextField('Bio', _bioCtrl, maxLines: 3),
                 const SizedBox(height: 32),
-                const Text(
-                  'Social Connections',
-                  style: TextStyle(color: AppColors.blanc, fontSize: 18, fontWeight: FontWeight.bold),
+                Text(
+                  'RÉSEAUX SOCIAUX',
+                  style: GoogleFonts.dmSans(
+                    color: AppColors.gris,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: 2,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  'Collez un lien et la plateforme sera détectée automatiquement.',
+                  style: GoogleFonts.dmSans(
+                    color: AppColors.gris,
+                    fontSize: 12,
+                  ),
                 ),
                 const SizedBox(height: 16),
-                _buildSocialSection('instagram', Icons.camera_alt_outlined, s),
-                const SizedBox(height: 12),
-                _buildSocialSection('tiktok', Icons.music_note_outlined, s),
-                const SizedBox(height: 12),
-                _buildSocialSection('youtube', Icons.play_circle_outline, s),
+                for (final p in _socialPlatforms) ...[
+                  _SocialLinkField(
+                    platform: p,
+                    controller: _socialCtrls[p.key]!,
+                  ),
+                  const SizedBox(height: 12),
+                ],
               ],
-              const SizedBox(height: 40),
+
+              const SizedBox(height: 32),
+
               SpotbookButton.primary(
-                label: 'Save Changes',
+                label: 'Enregistrer',
                 onPressed: _save,
                 isLoading: s.isSaving,
               ),
+              const SizedBox(height: 24),
             ],
           ),
         ),
@@ -145,71 +544,108 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     );
   }
 
-  Widget _buildTextField(String label, TextEditingController controller, {int maxLines = 1}) {
+  Widget _buildLabel(String text) {
+    return Text(
+      text,
+      style: GoogleFonts.dmSans(
+        color: AppColors.gris,
+        fontSize: 13,
+      ),
+    );
+  }
+
+  Widget _buildTextField(String label, TextEditingController controller,
+      {int maxLines = 1}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: const TextStyle(color: AppColors.gris, fontSize: 13)),
+        _buildLabel(label),
         const SizedBox(height: 8),
         TextField(
           controller: controller,
           maxLines: maxLines,
-          style: const TextStyle(color: AppColors.blanc),
+          style: const TextStyle(color: AppColors.blanc, fontSize: 15),
           decoration: InputDecoration(
             filled: true,
             fillColor: AppColors.surface,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide.none,
+              borderSide: const BorderSide(color: AppColors.border),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: AppColors.border),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: AppColors.violet),
+            ),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 14,
             ),
           ),
         ),
       ],
     );
   }
+}
 
-  Widget _buildSocialSection(String platform, IconData icon, EditProfileState s) {
-    final conn = s.proProfile?.socialConnections.where((e) => e.platform == platform).firstOrNull;
-    final isConnected = conn != null;
+// ═══════════════════════════════════════════════════════════
+// SOCIAL LINK FIELD
+// ═══════════════════════════════════════════════════════════
 
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: isConnected ? AppColors.success.withAlpha(77) : AppColors.border),
-      ),
-      child: Row(
-        children: [
-          Icon(icon, color: isConnected ? AppColors.success : AppColors.blanc, size: 24),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  platform.toUpperCase(),
-                  style: const TextStyle(color: AppColors.blanc, fontSize: 14, fontWeight: FontWeight.w600),
-                ),
-                if (isConnected)
-                  Text(
-                    '@${conn.handle} • ${conn.followersCount} followers',
-                    style: const TextStyle(color: AppColors.gris, fontSize: 12),
-                  ),
-              ],
-            ),
-          ),
-          if (isConnected)
-            TextButton(
-              onPressed: () => _disconnectSocial(platform),
-              child: const Text('Disconnect', style: TextStyle(color: AppColors.error)),
-            )
-          else
-            TextButton(
-              onPressed: () => _linkSocial(platform),
-              child: const Text('Link', style: TextStyle(color: AppColors.accent)),
-            ),
-        ],
+class _SocialLinkField extends StatelessWidget {
+  const _SocialLinkField({
+    required this.platform,
+    required this.controller,
+  });
+
+  final _SocialPlatform platform;
+  final TextEditingController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    return TextField(
+      controller: controller,
+      style: const TextStyle(color: AppColors.blanc, fontSize: 14),
+      decoration: InputDecoration(
+        prefixIcon: Icon(platform.icon, color: AppColors.gris, size: 20),
+        hintText: platform.placeholder,
+        hintStyle: TextStyle(
+          color: AppColors.gris.withAlpha(100),
+          fontSize: 13,
+        ),
+        labelText: platform.label,
+        labelStyle: GoogleFonts.dmSans(
+          color: AppColors.gris,
+          fontSize: 13,
+        ),
+        filled: true,
+        fillColor: AppColors.surface,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: AppColors.border),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: AppColors.border),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: AppColors.violet),
+        ),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 14,
+        ),
+        suffixIcon: controller.text.isNotEmpty
+            ? IconButton(
+                icon: const Icon(Icons.clear,
+                    color: AppColors.gris, size: 18),
+                onPressed: () => controller.clear(),
+              )
+            : null,
       ),
     );
   }

@@ -3,21 +3,21 @@ import 'package:google_fonts/google_fonts.dart';
 
 import 'app_colors.dart';
 
-/// Typographie Spotbook — Plus Jakarta Sans (lisible, moderne).
+/// Typographie Spotbook — DM Sans (corps, labels, boutons).
 /// Hiérarchie : logo marque → titres d’écran → sections (overline) → corps.
 abstract final class AppTypography {
-  /// Marque « Spotbook » — texte blanc uniquement (spec), lisible sur vidéo.
+  /// Marque « Spotbook » — DM Sans bold, 20px, blanc uniquement (spec).
   static TextStyle spotbookLogo({bool onVideoBackground = false}) {
-    return GoogleFonts.plusJakartaSans(
+    return GoogleFonts.dmSans(
       fontSize: 20,
-      fontWeight: FontWeight.w800,
+      fontWeight: FontWeight.bold,
       letterSpacing: -0.5,
       height: 1.05,
       color: AppColors.blanc,
       shadows: onVideoBackground
           ? const [
               Shadow(
-                color: Colors.black54,
+                color: AppColors.shadowTextLight,
                 blurRadius: 10,
                 offset: Offset(0, 1),
               ),
@@ -28,7 +28,7 @@ abstract final class AppTypography {
 
   /// Onglets « Découvrir / Abonnements » (style pilule feed client).
   static TextStyle feedTab({required bool active}) {
-    return GoogleFonts.plusJakartaSans(
+    return GoogleFonts.dmSans(
       fontSize: 13,
       fontWeight: active ? FontWeight.w600 : FontWeight.w500,
       height: 1.2,
@@ -39,7 +39,7 @@ abstract final class AppTypography {
   }
 
   /// Titre de bottom sheet (ex. « Créer »).
-  static TextStyle get sheetTitle => GoogleFonts.plusJakartaSans(
+  static TextStyle get sheetTitle => GoogleFonts.dmSans(
         fontSize: 18,
         fontWeight: FontWeight.w700,
         height: 1.2,
@@ -48,7 +48,7 @@ abstract final class AppTypography {
       );
 
   /// Titre AppBar standard (pas de dépendance au [ThemeData] — police garantie).
-  static TextStyle get appBarTitle => GoogleFonts.plusJakartaSans(
+  static TextStyle get appBarTitle => GoogleFonts.dmSans(
         color: AppColors.blanc,
         fontWeight: FontWeight.w600,
         fontSize: 17,
@@ -57,7 +57,7 @@ abstract final class AppTypography {
       );
 
   /// Sous-titre AppBar (ex. nombre d’avis).
-  static TextStyle get appBarMetaLine => GoogleFonts.plusJakartaSans(
+  static TextStyle get appBarMetaLine => GoogleFonts.dmSans(
         fontSize: 13,
         fontWeight: FontWeight.w400,
         height: 1.35,
@@ -65,7 +65,7 @@ abstract final class AppTypography {
       );
 
   /// Libellé option dans une sheet « Créer » (pro).
-  static TextStyle get createSheetOptionLabel => GoogleFonts.plusJakartaSans(
+  static TextStyle get createSheetOptionLabel => GoogleFonts.dmSans(
         fontSize: 12,
         fontWeight: FontWeight.w500,
         height: 1.2,
@@ -73,7 +73,7 @@ abstract final class AppTypography {
       );
 
   /// Libellés de section type maquette (uppercase, tracking large).
-  static TextStyle get sectionLabel => GoogleFonts.plusJakartaSans(
+  static TextStyle get sectionLabel => GoogleFonts.dmSans(
         fontSize: 11,
         fontWeight: FontWeight.w600,
         letterSpacing: 2,
@@ -82,7 +82,7 @@ abstract final class AppTypography {
       );
 
   /// Grands titres shell pro (Explorer, Agenda, etc.).
-  static TextStyle get proHubTitle => GoogleFonts.plusJakartaSans(
+  static TextStyle get proHubTitle => GoogleFonts.dmSans(
         fontSize: 22,
         fontWeight: FontWeight.w700,
         letterSpacing: -0.3,
@@ -91,7 +91,7 @@ abstract final class AppTypography {
       );
 
   /// Nom affiché profil (client, style « réseau social »).
-  static TextStyle get profileDisplayName => GoogleFonts.plusJakartaSans(
+  static TextStyle get profileDisplayName => GoogleFonts.dmSans(
         fontSize: 22,
         fontWeight: FontWeight.w700,
         height: 1.15,
@@ -100,7 +100,7 @@ abstract final class AppTypography {
       );
 
   /// @username et méta profil.
-  static TextStyle get profileHandle => GoogleFonts.plusJakartaSans(
+  static TextStyle get profileHandle => GoogleFonts.dmSans(
         fontSize: 15,
         fontWeight: FontWeight.w500,
         height: 1.35,
@@ -108,7 +108,7 @@ abstract final class AppTypography {
       );
 
   /// Bio / paragraphes secondaires profil.
-  static TextStyle get profileBio => GoogleFonts.plusJakartaSans(
+  static TextStyle get profileBio => GoogleFonts.dmSans(
         fontSize: 15,
         fontWeight: FontWeight.w400,
         height: 1.45,
@@ -117,25 +117,25 @@ abstract final class AppTypography {
 
   /// Légendes feed (nom pro, légende courte).
   static TextStyle feedCaption({bool emphasized = false}) {
-    return GoogleFonts.plusJakartaSans(
+    return GoogleFonts.dmSans(
       fontSize: 13,
       fontWeight: emphasized ? FontWeight.w700 : FontWeight.w500,
       height: 1.35,
       color: AppColors.blanc,
       shadows: const [
-        Shadow(color: Colors.black87, blurRadius: 6, offset: Offset(0, 1)),
+        Shadow(color: AppColors.overlayHeavy, blurRadius: 6, offset: Offset(0, 1)),
       ],
     );
   }
 
   /// Texte très petit sous les actions (compteurs like, etc.).
-  static TextStyle get feedActionCount => GoogleFonts.plusJakartaSans(
+  static TextStyle get feedActionCount => GoogleFonts.dmSans(
         fontSize: 10,
         fontWeight: FontWeight.w600,
         height: 1.1,
         color: AppColors.blanc,
         shadows: const [
-          Shadow(color: Colors.black87, blurRadius: 4, offset: Offset(0, 1)),
+          Shadow(color: AppColors.overlayHeavy, blurRadius: 4, offset: Offset(0, 1)),
         ],
       );
 
@@ -147,7 +147,7 @@ abstract final class AppTypography {
     final color = selected
         ? (isClientShell ? AppColors.violet : AppColors.blanc)
         : AppColors.grisInactif;
-    return GoogleFonts.plusJakartaSans(
+    return GoogleFonts.dmSans(
       fontSize: 9,
       fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
       height: 1.1,
@@ -158,7 +158,7 @@ abstract final class AppTypography {
 
   /// [ThemeData.textTheme] sombre basé sur Plus Jakarta Sans + couleurs Spotbook.
   static TextTheme darkTextTheme(TextTheme base) {
-    final jakarta = GoogleFonts.plusJakartaSansTextTheme(base);
+    final jakarta = GoogleFonts.dmSansTextTheme(base);
     return jakarta.copyWith(
       displayLarge: jakarta.displayLarge?.copyWith(
         color: AppColors.blanc,

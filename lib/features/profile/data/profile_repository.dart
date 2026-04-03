@@ -28,18 +28,25 @@ class ProfileRepository {
   Future<ProProfile> getProProfile(String proId) async {
     final uid = currentUserId;
     
-    // Fetch pro profile with user data and social connections
+    // Fetch pro profile with user data (social_links queried separately — no FK from profiles_pro)
     final data = await _supabase
         .from('profiles_pro')
-        .select('*, users(*), social_connections(*)')
+        .select('*, users(*)')
         .eq('id', proId)
         .single();
+
+    // Social links live in a separate table keyed by user_id
+    final socialLinksData = await _supabase
+        .from('social_links')
+        .select('*')
+        .eq('user_id', proId);
+    data['social_links'] = socialLinksData;
 
     bool isFollowed = false;
     if (uid != null) {
       final followData = await _supabase
           .from('follows')
-          .select('id')
+          .select('follower_id')
           .eq('follower_id', uid)
           .eq('following_id', proId)
           .maybeSingle();
@@ -127,9 +134,9 @@ class ProfileRepository {
     final uid = currentUserId;
     if (uid == null) return [];
     final data = await _supabase
-        .from('social_connections')
+        .from('social_links')
         .select()
-        .eq('pro_id', uid);
+        .eq('user_id', uid);
     return (data as List).map((e) => SocialConnection.fromJson(e)).toList();
   }
 
@@ -137,9 +144,9 @@ class ProfileRepository {
     final uid = currentUserId;
     if (uid == null) throw Exception('Not authenticated');
     await _supabase
-        .from('social_connections')
+        .from('social_links')
         .delete()
-        .eq('pro_id', uid)
+        .eq('user_id', uid)
         .eq('platform', platform);
   }
 
@@ -161,14 +168,14 @@ class ProfileRepository {
   }) async {
     final uid = currentUserId;
     if (uid == null) throw Exception('Not authenticated');
-    await _supabase.from('social_connections').upsert(
+    await _supabase.from('social_links').upsert(
       {
-        'pro_id': uid,
+        'user_id': uid,
         'platform': platform,
         'handle': handle,
         'followers_count': 0,
       },
-      onConflict: 'pro_id,platform',
+      onConflict: 'user_id,platform',
     );
   }
 
@@ -177,7 +184,7 @@ class ProfileRepository {
     if (uid == null) return [];
     final data = await _supabase
         .from('client_favorite_pros')
-        .select('*, profiles_pro(*, users(*))')
+        .select('*, users!pro_id(id, full_name, display_name, avatar_url, profiles_pro(business_name, category, city, rating_average, is_top_pro))')
         .eq('client_id', uid);
     return (data as List).cast<Map<String, dynamic>>();
   }
@@ -196,9 +203,9 @@ class ProfileRepository {
     final uid = currentUserId;
     if (uid == null) return [];
     final data = await _supabase
-        .from('social_connections')
+        .from('social_links')
         .select('handle, platform')
-        .eq('pro_id', uid);
+        .eq('user_id', uid);
     return (data as List).map((e) => e['handle'] as String? ?? '').toList();
   }
 
@@ -227,7 +234,7 @@ class ProfileRepository {
     if (uid == null) return 0;
     final data = await _supabase
         .from('follows')
-        .select('id')
+        .select('following_id')
         .eq('follower_id', uid);
     return (data as List).length;
   }
@@ -247,7 +254,7 @@ class ProfileRepository {
     if (uid == null) return [];
     final data = await _supabase
         .from('bookings')
-        .select('*, services(name, price), profiles_pro(category, users(full_name))')
+        .select('*, services(name, title, price), pro:users!pro_id(full_name, display_name, avatar_url, profiles_pro(business_name, category))')
         .eq('client_id', uid)
         .inFilter('status', ['completed', 'cancelled_full_refund', 'cancelled_no_refund'])
         .order('created_at', ascending: false)

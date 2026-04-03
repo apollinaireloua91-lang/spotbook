@@ -1,206 +1,265 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../shared/theme/app_colors.dart';
 
-class AccountTypeSelectionScreen extends StatelessWidget {
+class AccountTypeSelectionScreen extends StatefulWidget {
   const AccountTypeSelectionScreen({super.key});
+
+  @override
+  State<AccountTypeSelectionScreen> createState() =>
+      _AccountTypeSelectionScreenState();
+}
+
+class _AccountTypeSelectionScreenState
+    extends State<AccountTypeSelectionScreen> {
+  String? _selectedRole;
+
+  void _confirm() {
+    if (_selectedRole == null) return;
+    HapticFeedback.mediumImpact();
+    context.go('/signup/$_selectedRole');
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.fondDark,
+      backgroundColor: AppColors.fond,
       body: SafeArea(
-        child: Column(
-          children: [
-            // Top bar
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  GestureDetector(
-                    onTap: () => context.pop(),
-                    child: const Icon(Icons.arrow_back_ios,
-                        color: AppColors.blanc, size: 20),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 48),
+
+              const Text(
+                'Bienvenue sur\nSpotbook',
+                style: TextStyle(
+                  color: AppColors.blanc,
+                  fontSize: 28,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: -0.5,
+                  height: 1.2,
+                ),
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                'Comment allez-vous utiliser l\'application ?',
+                style: TextStyle(color: AppColors.gris, fontSize: 15),
+              ),
+              const SizedBox(height: 40),
+
+              // Client card
+              _RoleCard(
+                icon: Icons.explore_outlined,
+                title: 'Client',
+                subtitle: 'Je cherche des professionnels',
+                description: 'Découvrez, réservez, participez',
+                isSelected: _selectedRole == 'client',
+                gradientColors: const [AppColors.violet, AppColors.violetClair],
+                onTap: () {
+                  HapticFeedback.selectionClick();
+                  setState(() => _selectedRole = 'client');
+                },
+              ),
+              const SizedBox(height: 16),
+
+              // Pro card
+              _RoleCard(
+                icon: Icons.workspace_premium_outlined,
+                title: 'Professionnel',
+                subtitle: 'Je propose mes services',
+                description: 'Publiez, gérez, gagnez',
+                isSelected: _selectedRole == 'pro',
+                gradientColors: const [AppColors.rose, AppColors.roseClair],
+                onTap: () {
+                  HapticFeedback.selectionClick();
+                  setState(() => _selectedRole = 'pro');
+                },
+              ),
+
+              const Spacer(),
+
+              // Confirm button
+              SizedBox(
+                width: double.infinity,
+                height: 56,
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(14),
+                    gradient: _selectedRole != null
+                        ? AppColors.gradientAccent
+                        : LinearGradient(colors: [
+                            AppColors.violet.withAlpha(60),
+                            AppColors.rose.withAlpha(60),
+                          ]),
                   ),
-                  GestureDetector(
-                    onTap: () {},
-                    child: const Text(
-                      'Support',
-                      style: TextStyle(color: AppColors.gris, fontSize: 14),
+                  child: ElevatedButton(
+                    onPressed: _selectedRole != null ? _confirm : null,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.transparent,
+                      shadowColor: Colors.transparent,
+                      foregroundColor: AppColors.blanc,
+                      disabledBackgroundColor: Colors.transparent,
+                      disabledForegroundColor: AppColors.blanc.withAlpha(100),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
                     ),
-                  ),
-                ],
-              ),
-            ),
-            Expanded(
-              child: ListView(
-                padding: EdgeInsets.zero,
-                children: [
-                  // Experience section (Client)
-                  _ImmersiveSection(
-                    gradientColors: const [
-                      AppColors.surface,
-                      AppColors.fond,
-                    ],
-                    badge: 'EXPERIENCE',
-                    badgeColor: AppColors.accent,
-                    titlePrefix: 'Discover the\n',
-                    titleHighlight: 'Extraordinary.',
-                    highlightColor: AppColors.accent,
-                    subtitle:
-                        'Access exclusive events, world-class talent, and immersive content.',
-                    buttonLabel: 'Start Exploring →',
-                    onPressed: () => context.go('/signup', extra: 'client'),
-                  ),
-                  // Legacy section (Pro)
-                  _ImmersiveSection(
-                    gradientColors: const [
-                      AppColors.fond,
-                      AppColors.surface,
-                    ],
-                    badge: 'LEGACY',
-                    badgeColor: AppColors.accentGreen,
-                    titlePrefix: 'Build Your\n',
-                    titleHighlight: 'Empire.',
-                    highlightColor: AppColors.accentGreen,
-                    subtitle:
-                        'Scale your professional reach and monetize your unique vision.',
-                    buttonLabel: 'Launch Your Brand 🚀',
-                    onPressed: () => context.go('/signup', extra: 'pro'),
-                  ),
-                ],
-              ),
-            ),
-            // Bottom link
-            Padding(
-              padding: const EdgeInsets.only(bottom: 32, top: 8),
-              child: GestureDetector(
-                onTap: () {},
-                child: const Text(
-                  'NEED GUIDANCE? COMPARE ROLES',
-                  style: TextStyle(
-                    color: AppColors.gris,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
-                    letterSpacing: 1.2,
+                    child: const Text(
+                      'Continuer',
+                      style: TextStyle(
+                        fontSize: 17,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                   ),
                 ),
               ),
-            ),
-          ],
+              const SizedBox(height: 16),
+
+              // Already have an account link
+              Center(
+                child: GestureDetector(
+                  onTap: () => context.go('/login'),
+                  child: RichText(
+                    text: const TextSpan(
+                      text: 'Déjà un compte ? ',
+                      style: TextStyle(color: AppColors.gris, fontSize: 14),
+                      children: [
+                        TextSpan(
+                          text: 'Se connecter',
+                          style: TextStyle(
+                            color: AppColors.violetClair,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 32),
+            ],
+          ),
         ),
       ),
     );
   }
 }
 
-class _ImmersiveSection extends StatelessWidget {
-  const _ImmersiveSection({
-    required this.gradientColors,
-    required this.badge,
-    required this.badgeColor,
-    required this.titlePrefix,
-    required this.titleHighlight,
-    required this.highlightColor,
+class _RoleCard extends StatelessWidget {
+  const _RoleCard({
+    required this.icon,
+    required this.title,
     required this.subtitle,
-    required this.buttonLabel,
-    required this.onPressed,
+    required this.description,
+    required this.isSelected,
+    required this.gradientColors,
+    required this.onTap,
   });
 
-  final List<Color> gradientColors;
-  final String badge;
-  final Color badgeColor;
-  final String titlePrefix;
-  final String titleHighlight;
-  final Color highlightColor;
+  final IconData icon;
+  final String title;
   final String subtitle;
-  final String buttonLabel;
-  final VoidCallback onPressed;
+  final String description;
+  final bool isSelected;
+  final List<Color> gradientColors;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 48),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: gradientColors,
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 250),
+        curve: Curves.easeInOut,
+        padding: const EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? gradientColors[0].withAlpha(12)
+              : AppColors.surface,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: isSelected ? gradientColors[0] : AppColors.border,
+            width: isSelected ? 2 : 1,
+          ),
+          boxShadow: isSelected
+              ? [
+                  BoxShadow(
+                    color: gradientColors[0].withAlpha(25),
+                    blurRadius: 24,
+                    spreadRadius: 0,
+                  ),
+                ]
+              : null,
         ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: badgeColor.withAlpha(128)),
-            ),
-            child: Text(
-              badge,
-              style: TextStyle(
-                color: badgeColor,
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-                letterSpacing: 1.5,
+        child: Row(
+          children: [
+            Container(
+              width: 52,
+              height: 52,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16),
+                gradient: isSelected
+                    ? LinearGradient(colors: gradientColors)
+                    : null,
+                color: isSelected ? null : AppColors.surfaceAlt,
+              ),
+              child: Icon(
+                icon,
+                color: isSelected ? AppColors.blanc : AppColors.gris,
+                size: 26,
               ),
             ),
-          ),
-          const SizedBox(height: 20),
-          RichText(
-            text: TextSpan(
-              style: const TextStyle(
-                fontSize: 32,
-                fontWeight: FontWeight.bold,
-                height: 1.2,
-              ),
-              children: [
-                TextSpan(
-                  text: titlePrefix,
-                  style: const TextStyle(color: AppColors.blanc),
-                ),
-                TextSpan(
-                  text: titleHighlight,
-                  style: TextStyle(color: highlightColor),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 12),
-          Text(
-            subtitle,
-            style: const TextStyle(
-              color: AppColors.gris,
-              fontSize: 15,
-              height: 1.5,
-            ),
-          ),
-          const SizedBox(height: 24),
-          SizedBox(
-            width: double.infinity,
-            height: 52,
-            child: ElevatedButton(
-              onPressed: onPressed,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.blanc,
-                foregroundColor: AppColors.fondDark,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-              child: Text(
-                buttonLabel,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: TextStyle(
+                      color:
+                          isSelected ? AppColors.blanc : AppColors.grisClair,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    subtitle,
+                    style: TextStyle(
+                      color: isSelected
+                          ? AppColors.gris
+                          : AppColors.grisInactif,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    description,
+                    style: TextStyle(
+                      color: isSelected
+                          ? AppColors.gris.withAlpha(180)
+                          : AppColors.grisInactif.withAlpha(150),
+                      fontSize: 12,
+                    ),
+                  ),
+                ],
               ),
             ),
-          ),
-        ],
+            if (isSelected)
+              Icon(
+                Icons.check_circle_rounded,
+                color: gradientColors[0],
+                size: 24,
+              ),
+          ],
+        ),
       ),
     );
   }

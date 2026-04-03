@@ -55,6 +55,11 @@ class _ProSearchScreenState extends ConsumerState<ProSearchScreen> {
       });
     } catch (_) {
       setState(() => _isSearching = false);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Erreur de recherche'), backgroundColor: AppColors.error),
+        );
+      }
     }
   }
 
@@ -462,7 +467,7 @@ class _TrendingEventsSection extends ConsumerWidget {
             itemBuilder: (context, i) {
               final e = list[i];
               return GestureDetector(
-                onTap: () => context.push('/pro/events/${e['id']}'),
+                onTap: () => context.push('/event/${e['id']}'),
                 child: Container(
                   width: 200,
                   decoration: BoxDecoration(

@@ -23,13 +23,13 @@ class ReviewRepository {
     final uid = _uid;
     if (uid == null) throw Exception('Not authenticated');
 
-    await _supabase.from('reviews').insert({
+    await _supabase.from('reviews').upsert({
       'booking_id': bookingId,
       'client_id': uid,
       'pro_id': proId,
       'rating': rating,
       'comment': comment,
-    });
+    }, onConflict: 'booking_id');
   }
 
   Future<List<ReviewModel>> getProReviews(String proId) async {

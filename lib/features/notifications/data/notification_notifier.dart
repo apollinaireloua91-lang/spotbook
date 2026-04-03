@@ -1,5 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/realtime/realtime_events.dart';
+import '../../../core/realtime/realtime_manager.dart';
 import '../domain/notification_model.dart';
 import 'notification_repository.dart';
 
@@ -21,10 +25,30 @@ class NotificationListState {
 }
 
 class NotificationListNotifier extends Notifier<NotificationListState> {
+  StreamSubscription<RealtimeEvent>? _rtSub;
+
   @override
   NotificationListState build() {
+    _listenRealtime();
     _load();
+    ref.onDispose(() => _rtSub?.cancel());
     return const NotificationListState();
+  }
+
+  void _listenRealtime() {
+    _rtSub = ref.read(realtimeManagerProvider).notificationStream.listen((event) {
+      if (event is NotificationReceived) {
+        final notif = NotificationModel.fromJson(event.raw);
+        // Prepend new notification — avoid duplicates
+        if (!state.notifications.any((n) => n.id == notif.id)) {
+          state = state.copyWith(
+            notifications: [notif, ...state.notifications],
+          );
+          // Also bump unread count
+          ref.read(unreadNotifCountProvider.notifier).increment();
+        }
+      }
+    });
   }
 
   Future<void> _load() async {
@@ -142,4 +166,32 @@ class NotifPrefsNotifier extends Notifier<NotifPrefsState> {
 final notifPrefsProvider = NotifierProvider<NotifPrefsNotifier, NotifPrefsState>(
   NotifPrefsNotifier.new,
   isAutoDispose: true,
+);
+
+// ─── Unread notification count ──────────────────────────────
+
+class UnreadNotifCountNotifier extends Notifier<int> {
+  @override
+  int build() {
+    _load();
+    return 0;
+  }
+
+  Future<void> _load() async {
+    final count = await ref.read(notificationRepositoryProvider).getUnreadCount();
+    state = count;
+  }
+
+  void increment() => state = state + 1;
+
+  void decrement() {
+    if (state > 0) state = state - 1;
+  }
+
+  void reset() => state = 0;
+}
+
+final unreadNotifCountProvider =
+    NotifierProvider<UnreadNotifCountNotifier, int>(
+  UnreadNotifCountNotifier.new,
 );

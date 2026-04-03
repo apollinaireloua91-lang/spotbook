@@ -8,7 +8,14 @@ import '../../../profile/data/profile_repository.dart';
 import '../../../profile/domain/profile_models.dart';
 import 'booking_bottom_sheet.dart';
 
-/// Route plein écran : ouvre le flux réservation 6 étapes (PageView dans le sheet).
+/// Provider that fetches the pro profile for the booking flow entry.
+final _bookingProProvider =
+    FutureProvider.autoDispose.family<ProProfile, String>((ref, proId) async {
+  final repo = ref.read(profileRepositoryProvider);
+  return repo.getProProfile(proId);
+});
+
+/// Route plein écran : charge le profil pro puis ouvre le sheet de réservation.
 class BookingFlowScreen extends ConsumerStatefulWidget {
   const BookingFlowScreen({
     super.key,
@@ -24,45 +31,33 @@ class BookingFlowScreen extends ConsumerStatefulWidget {
 }
 
 class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
-  ProProfile? _pro;
-  Object? _error;
   bool _opened = false;
 
-  @override
-  void initState() {
-    super.initState();
-    _load();
-  }
-
-  Future<void> _load() async {
-    try {
-      final repo = ref.read(profileRepositoryProvider);
-      final pro = await repo.getProProfile(widget.providerId);
-      if (!mounted) return;
-      setState(() => _pro = pro);
-      await _openSheetIfReady();
-    } catch (e) {
-      if (!mounted) return;
-      setState(() => _error = e);
-    }
-  }
-
-  Future<void> _openSheetIfReady() async {
-    if (_opened || _pro == null || !mounted) return;
+  void _openSheet(ProProfile pro) {
+    if (_opened) return;
     _opened = true;
-    await showBookingSheet(
-      context,
-      proId: widget.providerId,
-      proProfile: _pro!,
-      initialServiceId: widget.initialServiceId,
-    );
-    if (mounted) context.pop();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!mounted) return;
+      await showBookingSheet(
+        context,
+        proId: widget.providerId,
+        proProfile: pro,
+        initialServiceId: widget.initialServiceId,
+      );
+      if (mounted) context.pop();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_error != null) {
-      return Scaffold(
+    final proAsync = ref.watch(_bookingProProvider(widget.providerId));
+
+    return proAsync.when(
+      loading: () => const Scaffold(
+        backgroundColor: AppColors.fond,
+        body: Center(child: SpotbookLoadingShimmer.profile()),
+      ),
+      error: (err, _) => Scaffold(
         backgroundColor: AppColors.fond,
         appBar: AppBar(
           backgroundColor: AppColors.fond,
@@ -74,30 +69,63 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
         body: Center(
           child: Padding(
             padding: const EdgeInsets.all(24),
-            child: Text(
-              _error.toString(),
-              textAlign: TextAlign.center,
-              style: const TextStyle(color: AppColors.gris),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.error_outline,
+                    color: AppColors.gris, size: 48),
+                const SizedBox(height: 16),
+                Text(
+                  'Impossible de charger le profil',
+                  style: const TextStyle(
+                    color: AppColors.blanc,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  err.toString(),
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(color: AppColors.gris, fontSize: 13),
+                ),
+                const SizedBox(height: 20),
+                GestureDetector(
+                  onTap: () => ref.invalidate(
+                    _bookingProProvider(widget.providerId),
+                  ),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 12,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppColors.surface,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: AppColors.border),
+                    ),
+                    child: const Text(
+                      'Réessayer',
+                      style: TextStyle(
+                        color: AppColors.blanc,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         ),
-      );
-    }
-
-    if (_pro == null) {
-      return const Scaffold(
-        backgroundColor: AppColors.fond,
-        body: Center(
-          child: SpotbookLoadingShimmer.profile(),
-        ),
-      );
-    }
-
-    return const Scaffold(
-      backgroundColor: AppColors.fond,
-      body: Center(
-        child: SpotbookLoadingShimmer.profile(),
       ),
+      data: (pro) {
+        _openSheet(pro);
+        return const Scaffold(
+          backgroundColor: AppColors.fond,
+          body: Center(child: SpotbookLoadingShimmer.profile()),
+        );
+      },
     );
   }
 }

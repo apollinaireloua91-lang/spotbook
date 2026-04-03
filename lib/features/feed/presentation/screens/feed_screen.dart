@@ -39,9 +39,9 @@ class _FeedScreenState extends ConsumerState<FeedScreen> {
         body: Center(child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
           Icon(Icons.play_circle_outline, size: 64, color: AppColors.gris.withAlpha(128)),
           const SizedBox(height: 16),
-          const Text('No videos yet', style: TextStyle(color: AppColors.blanc, fontSize: 18, fontWeight: FontWeight.w600)),
+          const Text('Aucune vidéo pour le moment', style: TextStyle(color: AppColors.blanc, fontSize: 18, fontWeight: FontWeight.w600)),
           const SizedBox(height: 8),
-          const Text('Videos from professionals will appear here', style: TextStyle(color: AppColors.gris, fontSize: 14)),
+          const Text('Les vidéos des professionnels apparaîtront ici', style: TextStyle(color: AppColors.gris, fontSize: 14)),
         ])),
       );
     }
@@ -58,7 +58,11 @@ class _FeedScreenState extends ConsumerState<FeedScreen> {
           return VideoFeedItem(
             video: s.videos[index],
             isActive: index == s.currentIndex,
+            index: index,
             onLikeToggled: (liked) => n.toggleLike(index, liked),
+            onToggleLike: n.toggleLike,
+            onToggleSave: n.toggleSave,
+            onToggleFollow: n.toggleFollow,
           );
         },
       ),

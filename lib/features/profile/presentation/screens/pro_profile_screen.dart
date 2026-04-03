@@ -5,7 +5,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../shared/theme/app_colors.dart';
+import '../../../../shared/utils/time_ago.dart';
 import '../../../../shared/widgets/spotbook_button.dart';
+import '../../../../shared/widgets/spotbook_loading_shimmer.dart';
 import '../../../booking/data/booking_repository.dart';
 import '../../../booking/domain/booking_models.dart';
 import '../../../booking/presentation/screens/booking_bottom_sheet.dart';
@@ -14,10 +16,13 @@ import '../../../events/domain/event_models.dart';
 import '../../../feed/data/video_repository.dart';
 import '../../../feed/domain/video_model.dart';
 import '../../../moderation/presentation/screens/report_sheet.dart';
+import '../../../reviews/data/review_repository.dart';
+import '../../../reviews/domain/review_model.dart';
 import '../../data/profile_repository.dart';
 import '../../domain/profile_models.dart';
 import '../widgets/pro_profile_content_widgets.dart';
 import '../widgets/social_badge_widget.dart';
+import '../widgets/traiteur_menu_tab.dart';
 
 final proProfileProvider =
     FutureProvider.family<ProProfile?, String>((ref, proId) async {
@@ -38,6 +43,11 @@ final proProfileServicesProvider =
 final proProfileEventsForProProvider =
     FutureProvider.family<List<EventModel>, String>((ref, proId) async {
   return ref.read(eventRepositoryProvider).getEventsByProId(proId);
+});
+
+final proProfileReviewsProvider =
+    FutureProvider.family<List<ReviewModel>, String>((ref, proId) async {
+  return ref.read(reviewRepositoryProvider).getProReviews(proId);
 });
 
 class ProProfileScreen extends ConsumerWidget {
@@ -178,8 +188,12 @@ class _ProProfileScaffold extends ConsumerWidget {
         .where((c) => c.followersCount >= 10000)
         .toList();
 
+    final isTraiteur =
+        profile.category.toLowerCase().contains('traiteur');
+    final tabCount = isTraiteur ? 5 : 4;
+
     return DefaultTabController(
-      length: 3,
+      length: tabCount,
       child: Builder(
         builder: (context) {
           final tabController = DefaultTabController.of(context);
@@ -370,8 +384,13 @@ class _ProProfileScaffold extends ConsumerWidget {
                             ),
                           ],
                         ),
-                        if (socialEligible.isNotEmpty) ...[
+                        if (profile.socialConnections.isNotEmpty) ...[
                           const SizedBox(height: 14),
+                          SocialLinksRow(
+                              connections: profile.socialConnections),
+                        ],
+                        if (socialEligible.isNotEmpty) ...[
+                          const SizedBox(height: 10),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
@@ -410,7 +429,7 @@ class _ProProfileScaffold extends ConsumerWidget {
                           child: Column(
                             children: [
                               SpotbookButton.primary(
-                                label: 'Book Appointment',
+                                label: 'Réserver un RDV',
                                 onPressed: () {
                                   HapticFeedback.mediumImpact();
                                   showBookingSheet(
@@ -422,10 +441,10 @@ class _ProProfileScaffold extends ConsumerWidget {
                               ),
                               const SizedBox(height: 12),
                               SpotbookButton.secondary(
-                                label: 'Buy Event Ticket',
+                                label: 'Acheter un billet',
                                 onPressed: () {
                                   HapticFeedback.mediumImpact();
-                                  tabController.animateTo(2);
+                                  tabController.animateTo(3);
                                 },
                               ),
                             ],
@@ -440,15 +459,26 @@ class _ProProfileScaffold extends ConsumerWidget {
                     pinned: true,
                     delegate: _SliverTabBarDelegate(
                       TabBar(
-                        indicatorColor: AppColors.blanc,
-                        indicatorWeight: 2,
+                        indicatorColor: AppColors.violet,
+                        indicatorWeight: 2.5,
+                        indicatorSize: TabBarIndicatorSize.label,
                         labelColor: AppColors.blanc,
                         unselectedLabelColor: AppColors.gris,
-                        dividerColor: Colors.transparent,
-                        tabs: const [
-                          Tab(text: 'Vidéos'),
-                          Tab(text: 'Services'),
-                          Tab(text: 'Événements'),
+                        dividerColor: AppColors.border,
+                        labelStyle: const TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 13,
+                        ),
+                        unselectedLabelStyle: const TextStyle(
+                          fontWeight: FontWeight.w400,
+                          fontSize: 13,
+                        ),
+                        tabs: [
+                          const Tab(text: 'Vidéos'),
+                          const Tab(text: 'Services'),
+                          if (isTraiteur) const Tab(text: 'Menu'),
+                          const Tab(text: 'Avis'),
+                          const Tab(text: 'Événements'),
                         ],
                       ),
                     ),
@@ -461,6 +491,13 @@ class _ProProfileScaffold extends ConsumerWidget {
                   _ProServicesList(
                     proId: profile.id,
                     proProfile: profile,
+                  ),
+                  if (isTraiteur)
+                    _TraiteurMenuWrapper(proId: profile.id),
+                  _ProReviewsList(
+                    proId: profile.id,
+                    rating: profile.rating,
+                    reviewsCount: profile.reviewsCount,
                   ),
                   _ProEventsList(proId: profile.id),
                 ],
@@ -514,11 +551,9 @@ class _ProVideosGrid extends ConsumerWidget {
     return async.when(
       data: (videos) {
         if (videos.isEmpty) {
-          return const Center(
-            child: Text(
-              'Aucune vidéo approuvée',
-              style: TextStyle(color: AppColors.gris, fontSize: 14),
-            ),
+          return const _ProTabEmpty(
+            icon: Icons.videocam_outlined,
+            text: 'Aucune vidéo',
           );
         }
         return GridView.builder(
@@ -530,20 +565,11 @@ class _ProVideosGrid extends ConsumerWidget {
             childAspectRatio: 0.72,
           ),
           itemCount: videos.length,
-          itemBuilder: (context, i) {
-            return VideoThumbnailCard(video: videos[i]);
-          },
+          itemBuilder: (_, i) => VideoThumbnailCard(video: videos[i]),
         );
       },
-      loading: () => const Center(
-        child: CircularProgressIndicator(color: AppColors.blanc),
-      ),
-      error: (e, _) => Center(
-        child: Text(
-          'Erreur : $e',
-          style: const TextStyle(color: AppColors.error),
-        ),
-      ),
+      loading: () => const SpotbookLoadingShimmer.card(itemCount: 4),
+      error: (e, _) => _ProTabError(onRetry: () => ref.invalidate(proProfileVideosProvider(proId))),
     );
   }
 }
@@ -564,32 +590,288 @@ class _ProServicesList extends ConsumerWidget {
     return async.when(
       data: (services) {
         if (services.isEmpty) {
-          return const Center(
-            child: Text(
-              'Aucun service',
-              style: TextStyle(color: AppColors.gris, fontSize: 14),
-            ),
+          return const _ProTabEmpty(
+            icon: Icons.design_services_outlined,
+            text: 'Aucun service',
           );
         }
         return ListView.builder(
           padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
           itemCount: services.length,
-          itemBuilder: (context, i) {
-            return ProServiceCard(
-              service: services[i],
-              proProfile: proProfile,
+          itemBuilder: (_, i) => ProServiceCard(
+            service: services[i],
+            proProfile: proProfile,
+          ),
+        );
+      },
+      loading: () => const SpotbookLoadingShimmer.list(itemCount: 3),
+      error: (e, _) => _ProTabError(onRetry: () => ref.invalidate(proProfileServicesProvider(proId))),
+    );
+  }
+}
+
+// ─── Reviews tab ─────────────────────────────────────────────────────────────
+
+class _ProReviewsList extends ConsumerWidget {
+  const _ProReviewsList({
+    required this.proId,
+    required this.rating,
+    required this.reviewsCount,
+  });
+
+  final String proId;
+  final double rating;
+  final int reviewsCount;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final async = ref.watch(proProfileReviewsProvider(proId));
+
+    return async.when(
+      data: (reviews) {
+        if (reviews.isEmpty) {
+          return const _ProTabEmpty(
+            icon: Icons.rate_review_outlined,
+            text: 'Aucun avis pour le moment',
+          );
+        }
+        return ListView.builder(
+          padding: const EdgeInsets.fromLTRB(16, 0, 16, 100),
+          itemCount: reviews.length + 1,
+          itemBuilder: (_, index) {
+            // Summary header
+            if (index == 0) {
+              return Padding(
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                child: _ReviewSummary(
+                  rating: rating,
+                  count: reviewsCount,
+                ),
+              );
+            }
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: _ReviewCard(review: reviews[index - 1]),
             );
           },
         );
       },
+      loading: () => const SpotbookLoadingShimmer.list(itemCount: 4),
+      error: (e, _) => _ProTabError(onRetry: () => ref.invalidate(proProfileReviewsProvider(proId))),
+    );
+  }
+}
+
+class _ReviewSummary extends StatelessWidget {
+  const _ReviewSummary({required this.rating, required this.count});
+  final double rating;
+  final int count;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: AppColors.border),
+      ),
+      child: Row(
+        children: [
+          Column(
+            children: [
+              Text(
+                rating.toStringAsFixed(1),
+                style: const TextStyle(
+                  color: AppColors.blanc,
+                  fontSize: 36,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: List.generate(5, (i) {
+                  return Icon(
+                    i < rating.round()
+                        ? Icons.star_rounded
+                        : Icons.star_outline_rounded,
+                    color: AppColors.warning,
+                    size: 16,
+                  );
+                }),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                '$count avis',
+                style: const TextStyle(
+                  color: AppColors.gris,
+                  fontSize: 12,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(width: 24),
+          Expanded(
+            child: Column(
+              children: [
+                for (int stars = 5; stars >= 1; stars--)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 4),
+                    child: Row(
+                      children: [
+                        Text(
+                          '$stars',
+                          style: const TextStyle(
+                            color: AppColors.gris,
+                            fontSize: 12,
+                          ),
+                        ),
+                        const SizedBox(width: 6),
+                        const Icon(Icons.star_rounded,
+                            color: AppColors.warning, size: 12),
+                        const SizedBox(width: 6),
+                        Expanded(
+                          child: Container(
+                            height: 6,
+                            decoration: BoxDecoration(
+                              color: AppColors.surfaceAlt,
+                              borderRadius: BorderRadius.circular(3),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ReviewCard extends StatelessWidget {
+  const _ReviewCard({required this.review});
+  final ReviewModel review;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppColors.border),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              CircleAvatar(
+                radius: 16,
+                backgroundColor: AppColors.surfaceAlt,
+                backgroundImage: review.clientAvatarUrl != null
+                    ? CachedNetworkImageProvider(review.clientAvatarUrl!)
+                    : null,
+                child: review.clientAvatarUrl == null
+                    ? const Icon(Icons.person, size: 14, color: AppColors.gris)
+                    : null,
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      review.clientName ?? 'Client',
+                      style: const TextStyle(
+                        color: AppColors.blanc,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    Text(
+                      timeAgo(review.createdAt),
+                      style: const TextStyle(
+                        color: AppColors.gris,
+                        fontSize: 11,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: List.generate(5, (i) {
+                  return Icon(
+                    i < review.rating
+                        ? Icons.star_rounded
+                        : Icons.star_outline_rounded,
+                    color: AppColors.warning,
+                    size: 14,
+                  );
+                }),
+              ),
+            ],
+          ),
+          if (review.comment != null &&
+              review.comment!.trim().isNotEmpty) ...[
+            const SizedBox(height: 10),
+            Text(
+              review.comment!,
+              style: const TextStyle(
+                color: AppColors.blanc,
+                fontSize: 13,
+                height: 1.45,
+              ),
+              maxLines: 4,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
+          if (review.serviceName != null) ...[
+            const SizedBox(height: 8),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+              decoration: BoxDecoration(
+                color: AppColors.violet.withAlpha(20),
+                borderRadius: BorderRadius.circular(6),
+              ),
+              child: Text(
+                review.serviceName!,
+                style: const TextStyle(
+                  color: AppColors.violetClair,
+                  fontSize: 11,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+}
+
+class _TraiteurMenuWrapper extends ConsumerWidget {
+  const _TraiteurMenuWrapper({required this.proId});
+
+  final String proId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final servicesAsync = ref.watch(proProfileServicesProvider(proId));
+    return servicesAsync.when(
+      data: (services) => TraiteurMenuTab(services: services),
       loading: () => const Center(
         child: CircularProgressIndicator(color: AppColors.blanc),
       ),
-      error: (e, _) => Center(
-        child: Text(
-          'Erreur : $e',
-          style: const TextStyle(color: AppColors.error),
-        ),
+      error: (_, __) => const Center(
+        child: Text('Erreur de chargement',
+            style: TextStyle(color: AppColors.gris)),
       ),
     );
   }
@@ -607,17 +889,15 @@ class _ProEventsList extends ConsumerWidget {
     return async.when(
       data: (events) {
         if (events.isEmpty) {
-          return const Center(
-            child: Text(
-              'Aucun événement',
-              style: TextStyle(color: AppColors.gris, fontSize: 14),
-            ),
+          return const _ProTabEmpty(
+            icon: Icons.event_outlined,
+            text: 'Aucun événement',
           );
         }
         return ListView.builder(
           padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
           itemCount: events.length,
-          itemBuilder: (context, i) {
+          itemBuilder: (_, i) {
             return Padding(
               padding: const EdgeInsets.only(bottom: 12),
               child: ProEventProfileCard(event: events[i]),
@@ -625,14 +905,76 @@ class _ProEventsList extends ConsumerWidget {
           },
         );
       },
-      loading: () => const Center(
-        child: CircularProgressIndicator(color: AppColors.blanc),
+      loading: () => const SpotbookLoadingShimmer.card(itemCount: 3),
+      error: (e, _) => _ProTabError(onRetry: () => ref.invalidate(proProfileEventsForProProvider(proId))),
+    );
+  }
+}
+
+// ─── Shared empty / error states ─────────────────────────────────────────────
+
+class _ProTabEmpty extends StatelessWidget {
+  const _ProTabEmpty({required this.icon, required this.text});
+  final IconData icon;
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            width: 64,
+            height: 64,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: AppColors.violet.withAlpha(20),
+            ),
+            child: Icon(icon, size: 28, color: AppColors.violet),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            text,
+            style: const TextStyle(color: AppColors.gris, fontSize: 14),
+          ),
+        ],
       ),
-      error: (e, _) => Center(
-        child: Text(
-          'Erreur : $e',
-          style: const TextStyle(color: AppColors.error),
-        ),
+    );
+  }
+}
+
+class _ProTabError extends StatelessWidget {
+  const _ProTabError({required this.onRetry});
+  final VoidCallback onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Icon(Icons.error_outline, color: AppColors.error, size: 36),
+          const SizedBox(height: 12),
+          const Text(
+            'Erreur de chargement',
+            style: TextStyle(color: AppColors.gris, fontSize: 14),
+          ),
+          const SizedBox(height: 12),
+          GestureDetector(
+            onTap: onRetry,
+            child: const Text(
+              'Réessayer',
+              style: TextStyle(
+                color: AppColors.violet,
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                decoration: TextDecoration.underline,
+                decorationColor: AppColors.violet,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

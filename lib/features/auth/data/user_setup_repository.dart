@@ -46,7 +46,7 @@ class UserSetupRepository {
     final currency = _currencyMap[countryCode] ?? 'CAD';
     final meta = user.userMetadata ?? {};
 
-    await _supabase.from('users').insert({
+    await _supabase.from('users').upsert({
       'id': user.id,
       'email': user.email,
       'full_name': meta['full_name'],
@@ -58,11 +58,19 @@ class UserSetupRepository {
       'country': countryCode,
       'currency': currency,
       'payment_provider': 'stripe',
-    });
+    }, onConflict: 'id');
 
-    await _supabase.from('notification_preferences').insert({
+    await _supabase.from('notification_preferences').upsert({
       'user_id': user.id,
-    });
+      'push_enabled': true,
+      'email_enabled': true,
+      'booking_reminders': true,
+      'new_messages': true,
+      'promotions': false,
+      'new_followers': true,
+      'booking_updates': true,
+      'event_updates': true,
+    }, onConflict: 'user_id');
   }
 
   Future<String?> _resolveCountry() async {

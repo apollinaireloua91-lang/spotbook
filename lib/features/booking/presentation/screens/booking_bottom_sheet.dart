@@ -5,12 +5,15 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:lottie/lottie.dart';
+import 'package:shimmer/shimmer.dart';
 
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/utils/analytics_service.dart';
+import '../../../../shared/widgets/confetti_overlay.dart';
 import '../../../profile/domain/profile_models.dart';
 import '../../data/booking_notifier.dart';
 import '../../domain/booking_models.dart';
+import '../widgets/person_count_picker.dart';
 
 Future<void> showBookingSheet(
   BuildContext context, {
@@ -25,6 +28,35 @@ Future<void> showBookingSheet(
     builder: (_) => _BookingSheet(proId: proId, proProfile: proProfile),
   );
 }
+
+// ─── Step labels ─────────────────────────────────────────
+const _stepLabels = [
+  'Service',
+  'Date',
+  'Heure',
+  'Résumé',
+  'Paiement',
+  'Confirmé',
+];
+
+const _frenchMonths = [
+  'Janvier',
+  'Février',
+  'Mars',
+  'Avril',
+  'Mai',
+  'Juin',
+  'Juillet',
+  'Août',
+  'Septembre',
+  'Octobre',
+  'Novembre',
+  'Décembre',
+];
+
+const _frenchDaysShort = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
+
+// ─── Main sheet ──────────────────────────────────────────
 
 class _BookingSheet extends ConsumerStatefulWidget {
   const _BookingSheet({required this.proId, required this.proProfile});
@@ -65,23 +97,18 @@ class _BookingSheetState extends ConsumerState<_BookingSheet> {
       builder: (context, scrollController) {
         return Container(
           decoration: const BoxDecoration(
-            color: AppColors.surface,
+            color: AppColors.fond,
             borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
           ),
           child: Column(
             children: [
               _buildHandle(),
-              LinearProgressIndicator(
-                value: (state.step + 1) / 6,
-                backgroundColor: AppColors.border,
-                valueColor:
-                    const AlwaysStoppedAnimation<Color>(AppColors.blanc),
-                minHeight: 2,
-              ),
+              _StepIndicator(currentStep: state.step),
+              const Divider(color: AppColors.border, height: 1),
               Expanded(
                 child: SingleChildScrollView(
                   controller: scrollController,
-                  padding: const EdgeInsets.all(20),
+                  padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
                   child: _buildStep(state),
                 ),
               ),
@@ -98,7 +125,7 @@ class _BookingSheetState extends ConsumerState<_BookingSheet> {
       width: 40,
       height: 4,
       decoration: BoxDecoration(
-        color: AppColors.gris,
+        color: AppColors.gris.withAlpha(80),
         borderRadius: BorderRadius.circular(2),
       ),
     );
@@ -134,7 +161,248 @@ class _BookingSheetState extends ConsumerState<_BookingSheet> {
   }
 }
 
-// ─── Step 1: Services + Promo ─────────────────────────────
+// ─── Step indicator dots ─────────────────────────────────
+
+class _StepIndicator extends StatelessWidget {
+  const _StepIndicator({required this.currentStep});
+  final int currentStep;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      child: Row(
+        children: List.generate(6, (i) {
+          final isActive = i == currentStep;
+          final isDone = i < currentStep;
+          return Expanded(
+            child: Padding(
+              padding: EdgeInsets.only(left: i == 0 ? 0 : 4),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  AnimatedContainer(
+                    duration: const Duration(milliseconds: 250),
+                    height: 3,
+                    decoration: BoxDecoration(
+                      color: isDone
+                          ? AppColors.violet
+                          : isActive
+                              ? AppColors.violetClair
+                              : AppColors.border,
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    _stepLabels[i],
+                    style: TextStyle(
+                      color: isActive || isDone
+                          ? AppColors.blanc
+                          : AppColors.gris.withAlpha(120),
+                      fontSize: 10,
+                      fontWeight:
+                          isActive ? FontWeight.w600 : FontWeight.normal,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
+            ),
+          );
+        }),
+      ),
+    );
+  }
+}
+
+// ─── Step header ─────────────────────────────────────────
+
+class _StepHeader extends StatelessWidget {
+  const _StepHeader({
+    required this.title,
+    this.subtitle,
+    this.onBack,
+  });
+  final String title;
+  final String? subtitle;
+  final VoidCallback? onBack;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 20),
+      child: Row(
+        children: [
+          if (onBack != null)
+            GestureDetector(
+              onTap: () {
+                HapticFeedback.selectionClick();
+                onBack!();
+              },
+              child: Container(
+                width: 36,
+                height: 36,
+                margin: const EdgeInsets.only(right: 12),
+                decoration: BoxDecoration(
+                  color: AppColors.surface,
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: AppColors.border),
+                ),
+                child: const Icon(
+                  Icons.arrow_back_ios_new,
+                  color: AppColors.blanc,
+                  size: 16,
+                ),
+              ),
+            ),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(
+                    color: AppColors.blanc,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                if (subtitle != null) ...[
+                  const SizedBox(height: 2),
+                  Text(
+                    subtitle!,
+                    style: TextStyle(
+                      color: AppColors.gris.withAlpha(180),
+                      fontSize: 13,
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ─── CTA button ──────────────────────────────────────────
+
+class _CtaButton extends StatelessWidget {
+  const _CtaButton({
+    required this.label,
+    required this.onPressed,
+    this.isLoading = false,
+  });
+  final String label;
+  final VoidCallback? onPressed;
+  final bool isLoading;
+
+  @override
+  Widget build(BuildContext context) {
+    final enabled = onPressed != null && !isLoading;
+    return GestureDetector(
+      onTap: enabled
+          ? () {
+              HapticFeedback.mediumImpact();
+              onPressed!();
+            }
+          : null,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        width: double.infinity,
+        height: 52,
+        decoration: BoxDecoration(
+          gradient: enabled ? AppColors.gradientAccent : null,
+          color: enabled ? null : AppColors.surfaceAlt,
+          borderRadius: BorderRadius.circular(14),
+        ),
+        child: Center(
+          child: isLoading
+              ? const SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(
+                    color: AppColors.blanc,
+                    strokeWidth: 2,
+                  ),
+                )
+              : Text(
+                  label,
+                  style: TextStyle(
+                    color: enabled ? AppColors.blanc : AppColors.gris,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+        ),
+      ),
+    );
+  }
+}
+
+// ─── Shimmer placeholders ────────────────────────────────
+
+class _ShimmerList extends StatelessWidget {
+  const _ShimmerList();
+  final int count = 4;
+
+  @override
+  Widget build(BuildContext context) {
+    return Shimmer.fromColors(
+      baseColor: AppColors.surface,
+      highlightColor: AppColors.surfaceAlt,
+      child: Column(
+        children: List.generate(
+          count,
+          (_) => Container(
+            margin: const EdgeInsets.only(bottom: 10),
+            height: 80,
+            decoration: BoxDecoration(
+              color: AppColors.surface,
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _ShimmerGrid extends StatelessWidget {
+  const _ShimmerGrid();
+
+  @override
+  Widget build(BuildContext context) {
+    return Shimmer.fromColors(
+      baseColor: AppColors.surface,
+      highlightColor: AppColors.surfaceAlt,
+      child: GridView.builder(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 4,
+          mainAxisSpacing: 10,
+          crossAxisSpacing: 10,
+          childAspectRatio: 2.2,
+        ),
+        itemCount: 12,
+        itemBuilder: (_, __) => Container(
+          decoration: BoxDecoration(
+            color: AppColors.surface,
+            borderRadius: BorderRadius.circular(10),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+// Step 1: Services + Promo
+// ═══════════════════════════════════════════════════════════
 
 class _Step1Services extends ConsumerWidget {
   const _Step1Services({
@@ -152,18 +420,17 @@ class _Step1Services extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Choisir un service',
-          style: TextStyle(
-            color: AppColors.blanc,
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-          ),
+        const _StepHeader(
+          title: 'Choisir un service',
+          subtitle: 'Sélectionnez la prestation souhaitée',
         ),
-        const SizedBox(height: 16),
         if (state.isLoading)
-          const Center(
-              child: CircularProgressIndicator(color: AppColors.blanc))
+          const _ShimmerList()
+        else if (state.services.isEmpty)
+          _EmptyState(
+            icon: Icons.content_cut,
+            message: 'Aucun service disponible',
+          )
         else
           ListView.separated(
             shrinkWrap: true,
@@ -176,84 +443,148 @@ class _Step1Services extends ConsumerWidget {
               return _ServiceTile(
                 service: service,
                 isSelected: isSelected,
-                onTap: () => ref
-                    .read(bookingFlowProvider.notifier)
-                    .selectService(service),
+                onTap: () {
+                  HapticFeedback.selectionClick();
+                  ref
+                      .read(bookingFlowProvider.notifier)
+                      .selectService(service);
+                },
               );
             },
           ),
+
+        // Person count picker for traiteur services
+        if (state.selectedService?.isTraiteurService == true) ...[
+          const SizedBox(height: 20),
+          PersonCountPicker(
+            service: state.selectedService!,
+            count: state.personCount,
+            onChanged: (count) =>
+                ref.read(bookingFlowProvider.notifier).setPersonCount(count),
+          ),
+        ],
+
         const SizedBox(height: 24),
-        const Text(
-          'Code promo',
-          style: TextStyle(
-            color: AppColors.blanc,
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
+
+        // Promo code section
+        Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: AppColors.surface,
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: AppColors.border),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Icon(Icons.local_offer_outlined,
+                      color: AppColors.violetClair, size: 18),
+                  const SizedBox(width: 8),
+                  const Text(
+                    'Code promo',
+                    style: TextStyle(
+                      color: AppColors.blanc,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: promoCtrl,
+                      style: const TextStyle(color: AppColors.blanc),
+                      textCapitalization: TextCapitalization.characters,
+                      decoration: InputDecoration(
+                        hintText: 'Entrer un code',
+                        hintStyle: const TextStyle(color: AppColors.gris),
+                        filled: true,
+                        fillColor: AppColors.surfaceAlt,
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 14,
+                          vertical: 12,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide.none,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  GestureDetector(
+                    onTap: state.promoApplied
+                        ? null
+                        : () {
+                            HapticFeedback.selectionClick();
+                            ref
+                                .read(bookingFlowProvider.notifier)
+                                .validatePromo(promoCtrl.text.trim());
+                          },
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
+                      ),
+                      decoration: BoxDecoration(
+                        color: state.promoApplied
+                            ? AppColors.success.withAlpha(30)
+                            : AppColors.violet,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Text(
+                        state.promoApplied ? 'Appliqué ✓' : 'Valider',
+                        style: TextStyle(
+                          color: state.promoApplied
+                              ? AppColors.success
+                              : AppColors.blanc,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
         ),
-        const SizedBox(height: 8),
-        Row(
-          children: [
-            Expanded(
-              child: TextField(
-                controller: promoCtrl,
-                style: const TextStyle(color: AppColors.blanc),
-                decoration: InputDecoration(
-                  hintText: 'Entrer un code',
-                  hintStyle: const TextStyle(color: AppColors.gris),
-                  filled: true,
-                  fillColor: AppColors.surfaceAlt,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(color: AppColors.border),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(color: AppColors.border),
+
+        if (state.error != null) ...[
+          const SizedBox(height: 10),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: AppColors.error.withAlpha(20),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Row(
+              children: [
+                const Icon(Icons.error_outline,
+                    color: AppColors.error, size: 16),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    state.error!,
+                    style:
+                        const TextStyle(color: AppColors.error, fontSize: 13),
                   ),
                 ),
-              ),
+              ],
             ),
-            const SizedBox(width: 8),
-            ElevatedButton(
-              onPressed: state.promoApplied
-                  ? null
-                  : () => ref
-                      .read(bookingFlowProvider.notifier)
-                      .validatePromo(promoCtrl.text.trim()),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.blanc,
-                foregroundColor: AppColors.fond,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12)),
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-              ),
-              child: Text(state.promoApplied ? 'Appliqué' : 'Valider'),
-            ),
-          ],
-        ),
-        if (state.error != null) ...[
-          const SizedBox(height: 8),
-          Text(state.error!,
-              style: const TextStyle(color: AppColors.error, fontSize: 13)),
-        ],
-        const SizedBox(height: 32),
-        SizedBox(
-          width: double.infinity,
-          child: ElevatedButton(
-            onPressed: state.selectedService != null ? onNext : null,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.blanc,
-              foregroundColor: AppColors.fond,
-              disabledBackgroundColor: AppColors.surfaceAlt,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12)),
-              padding: const EdgeInsets.symmetric(vertical: 16),
-            ),
-            child: const Text('Continuer',
-                style: TextStyle(fontWeight: FontWeight.bold)),
           ),
+        ],
+
+        const SizedBox(height: 28),
+        _CtaButton(
+          label: 'Continuer',
+          onPressed: state.selectedService != null ? onNext : null,
         ),
       ],
     );
@@ -275,18 +606,37 @@ class _ServiceTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
-      child: Container(
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: isSelected ? AppColors.blanc.withAlpha(20) : AppColors.surfaceAlt,
-          borderRadius: BorderRadius.circular(12),
+          color: isSelected
+              ? AppColors.violet.withAlpha(20)
+              : AppColors.surface,
+          borderRadius: BorderRadius.circular(14),
           border: Border.all(
-            color: isSelected ? AppColors.blanc : AppColors.border,
-            width: isSelected ? 2 : 1,
+            color: isSelected ? AppColors.violet : AppColors.border,
+            width: isSelected ? 1.5 : 1,
           ),
         ),
         child: Row(
           children: [
+            Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                color: isSelected
+                    ? AppColors.violet.withAlpha(40)
+                    : AppColors.surfaceAlt,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(
+                Icons.content_cut,
+                color: isSelected ? AppColors.violetClair : AppColors.gris,
+                size: 20,
+              ),
+            ),
+            const SizedBox(width: 14),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -295,36 +645,73 @@ class _ServiceTile extends StatelessWidget {
                     service.name,
                     style: const TextStyle(
                       color: AppColors.blanc,
-                      fontSize: 16,
+                      fontSize: 15,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
                   if (service.description != null) ...[
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 2),
                     Text(
                       service.description!,
                       style: const TextStyle(
-                          color: AppColors.gris, fontSize: 13),
-                      maxLines: 2,
+                        color: AppColors.gris,
+                        fontSize: 12,
+                      ),
+                      maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
                   ],
                   const SizedBox(height: 4),
-                  Text(
-                    '${service.durationMinutes} min',
-                    style: const TextStyle(
-                        color: AppColors.gris, fontSize: 12),
+                  Row(
+                    children: [
+                      Icon(Icons.schedule,
+                          size: 12,
+                          color: AppColors.gris.withAlpha(160)),
+                      const SizedBox(width: 4),
+                      Text(
+                        '${service.durationMinutes} min',
+                        style: TextStyle(
+                          color: AppColors.gris.withAlpha(160),
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
             ),
-            Text(
-              '${service.price.toStringAsFixed(2)} CA\$',
-              style: const TextStyle(
-                color: AppColors.blanc,
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text(
+                  '${service.price.toStringAsFixed(0)} €',
+                  style: TextStyle(
+                    color: isSelected ? AppColors.violetClair : AppColors.blanc,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                if (isSelected)
+                  Container(
+                    margin: const EdgeInsets.only(top: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 2,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppColors.violet.withAlpha(40),
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: const Text(
+                      'Sélectionné',
+                      style: TextStyle(
+                        color: AppColors.violetClair,
+                        fontSize: 10,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+              ],
             ),
           ],
         ),
@@ -333,161 +720,273 @@ class _ServiceTile extends StatelessWidget {
   }
 }
 
-// ─── Step 2: Calendar ─────────────────────────────────────
+// ═══════════════════════════════════════════════════════════
+// Step 2: Calendar with month navigation
+// ═══════════════════════════════════════════════════════════
 
-class _Step2Calendar extends ConsumerWidget {
+class _Step2Calendar extends ConsumerStatefulWidget {
   const _Step2Calendar({required this.state});
-
   final BookingFlowState state;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<_Step2Calendar> createState() => _Step2CalendarState();
+}
+
+class _Step2CalendarState extends ConsumerState<_Step2Calendar> {
+  late int _year;
+  late int _month;
+
+  @override
+  void initState() {
+    super.initState();
     final now = DateTime.now();
-    final daysInMonth = DateUtils.getDaysInMonth(now.year, now.month);
-    final availableSet = state.availableDates.toSet();
+    _year = now.year;
+    _month = now.month;
+  }
+
+  void _previousMonth() {
+    final now = DateTime.now();
+    if (_year == now.year && _month == now.month) return;
+    setState(() {
+      _month--;
+      if (_month < 1) {
+        _month = 12;
+        _year--;
+      }
+    });
+  }
+
+  void _nextMonth() {
+    setState(() {
+      _month++;
+      if (_month > 12) {
+        _month = 1;
+        _year++;
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final now = DateTime.now();
+    final daysInMonth = DateUtils.getDaysInMonth(_year, _month);
+    final firstWeekday = DateTime(_year, _month, 1).weekday; // 1=Mon
+    final availableSet = widget.state.availableDates.toSet();
+    final canGoPrev = !(_year == now.year && _month == now.month);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          children: [
-            IconButton(
-              icon: const Icon(Icons.arrow_back, color: AppColors.blanc),
-              onPressed: () =>
-                  ref.read(bookingFlowProvider.notifier).previousStep(),
-            ),
-            const Text(
-              'Choisir une date',
-              style: TextStyle(
-                color: AppColors.blanc,
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ],
+        _StepHeader(
+          title: 'Choisir une date',
+          subtitle: 'Les jours disponibles sont en surbrillance',
+          onBack: () =>
+              ref.read(bookingFlowProvider.notifier).previousStep(),
         ),
-        const SizedBox(height: 16),
-        if (state.isLoading)
-          const Center(
-              child: CircularProgressIndicator(color: AppColors.blanc))
-        else
+
+        if (widget.state.isLoading)
+          const _ShimmerGrid()
+        else ...[
+          // Month nav
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+            decoration: BoxDecoration(
+              color: AppColors.surface,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                IconButton(
+                  icon: Icon(
+                    Icons.chevron_left,
+                    color: canGoPrev ? AppColors.blanc : AppColors.gris.withAlpha(60),
+                  ),
+                  onPressed: canGoPrev ? _previousMonth : null,
+                ),
+                Text(
+                  '${_frenchMonths[_month - 1]} $_year',
+                  style: const TextStyle(
+                    color: AppColors.blanc,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.chevron_right, color: AppColors.blanc),
+                  onPressed: _nextMonth,
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 12),
+
+          // Day of week labels
+          Row(
+            children: _frenchDaysShort
+                .map(
+                  (d) => Expanded(
+                    child: Center(
+                      child: Text(
+                        d,
+                        style: TextStyle(
+                          color: AppColors.gris.withAlpha(160),
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ),
+                )
+                .toList(),
+          ),
+          const SizedBox(height: 8),
+
+          // Calendar grid
           GridView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 7,
-              mainAxisSpacing: 8,
-              crossAxisSpacing: 8,
+              mainAxisSpacing: 6,
+              crossAxisSpacing: 6,
             ),
-            itemCount: daysInMonth,
+            itemCount: daysInMonth + (firstWeekday - 1),
             itemBuilder: (context, index) {
-              final day = index + 1;
-              final date = DateTime(now.year, now.month, day);
+              // Empty cells for alignment
+              if (index < firstWeekday - 1) {
+                return const SizedBox.shrink();
+              }
+              final day = index - (firstWeekday - 1) + 1;
+              if (day > daysInMonth) return const SizedBox.shrink();
+
+              final date = DateTime(_year, _month, day);
               final dateStr = date.toIso8601String().split('T')[0];
               final isAvailable = availableSet.contains(dateStr);
-              final isSelected = state.selectedDate == dateStr;
-              final isPast = date.isBefore(DateTime(now.year, now.month, now.day));
+              final isSelected = widget.state.selectedDate == dateStr;
+              final isPast = date.isBefore(
+                DateTime(now.year, now.month, now.day),
+              );
+              final isToday = date.year == now.year &&
+                  date.month == now.month &&
+                  date.day == now.day;
 
               return GestureDetector(
                 onTap: isAvailable && !isPast
                     ? () {
+                        HapticFeedback.selectionClick();
                         ref
                             .read(bookingFlowProvider.notifier)
                             .selectDate(dateStr);
                         ref.read(bookingFlowProvider.notifier).nextStep();
                       }
                     : null,
-                child: Container(
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
                     color: isSelected
-                        ? AppColors.blanc
-                        : (!isAvailable || isPast)
-                            ? AppColors.surfaceAlt.withAlpha(80)
-                            : AppColors.surfaceAlt,
-                    borderRadius: BorderRadius.circular(8),
-                    border: isSelected
-                        ? Border.all(color: AppColors.blanc, width: 2)
+                        ? AppColors.violet
+                        : isAvailable && !isPast
+                            ? AppColors.surface
+                            : Colors.transparent,
+                    borderRadius: BorderRadius.circular(10),
+                    border: isToday && !isSelected
+                        ? Border.all(
+                            color: AppColors.violetClair.withAlpha(100),
+                          )
                         : null,
                   ),
                   child: Text(
                     '$day',
                     style: TextStyle(
                       color: isSelected
-                          ? AppColors.fond
-                          : (!isAvailable || isPast)
-                              ? AppColors.gris.withAlpha(100)
-                              : AppColors.blanc,
+                          ? AppColors.blanc
+                          : isAvailable && !isPast
+                              ? AppColors.blanc
+                              : AppColors.gris.withAlpha(60),
                       fontWeight:
-                          isSelected ? FontWeight.bold : FontWeight.normal,
+                          isSelected || isToday ? FontWeight.bold : FontWeight.normal,
+                      fontSize: 14,
                     ),
                   ),
                 ),
               );
             },
           ),
+        ],
       ],
     );
   }
 }
 
-// ─── Step 3: Time slots grid ──────────────────────────────
+// ═══════════════════════════════════════════════════════════
+// Step 3: Time slots grid
+// ═══════════════════════════════════════════════════════════
 
 class _Step3Slots extends ConsumerWidget {
   const _Step3Slots({required this.state});
-
   final BookingFlowState state;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // Format selected date in French
+    String dateLabel = state.selectedDate ?? '';
+    if (state.selectedDate != null) {
+      try {
+        final parts = state.selectedDate!.split('-');
+        final d = DateTime(
+          int.parse(parts[0]),
+          int.parse(parts[1]),
+          int.parse(parts[2]),
+        );
+        final day = d.day;
+        final month = _frenchMonths[d.month - 1];
+        dateLabel = '$day $month';
+      } catch (_) {}
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          children: [
-            IconButton(
-              icon: const Icon(Icons.arrow_back, color: AppColors.blanc),
-              onPressed: () =>
-                  ref.read(bookingFlowProvider.notifier).previousStep(),
-            ),
-            Text(
-              'Créneaux — ${state.selectedDate ?? ''}',
-              style: const TextStyle(
-                color: AppColors.blanc,
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ],
+        _StepHeader(
+          title: 'Choisir un créneau',
+          subtitle: dateLabel,
+          onBack: () =>
+              ref.read(bookingFlowProvider.notifier).previousStep(),
         ),
-        const SizedBox(height: 16),
-        if (state.error != null) ...[
+
+        if (state.error != null)
           Container(
             width: double.infinity,
             padding: const EdgeInsets.all(12),
-            margin: const EdgeInsets.only(bottom: 12),
+            margin: const EdgeInsets.only(bottom: 16),
             decoration: BoxDecoration(
-              color: AppColors.error.withAlpha(30),
+              color: AppColors.error.withAlpha(20),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: Text(
-              state.error!,
-              style: const TextStyle(color: AppColors.error),
+            child: Row(
+              children: [
+                const Icon(Icons.warning_amber_rounded,
+                    color: AppColors.error, size: 16),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    state.error!,
+                    style: const TextStyle(
+                        color: AppColors.error, fontSize: 13),
+                  ),
+                ),
+              ],
             ),
           ),
-        ],
+
         if (state.isLoading)
-          const Center(
-              child: CircularProgressIndicator(color: AppColors.blanc))
+          const _ShimmerGrid()
         else if (state.timeSlots.isEmpty)
-          const Center(
-            child: Padding(
-              padding: EdgeInsets.all(32),
-              child: Text(
-                'Aucun créneau disponible',
-                style: TextStyle(color: AppColors.gris, fontSize: 16),
-              ),
-            ),
+          _EmptyState(
+            icon: Icons.event_busy,
+            message: 'Aucun créneau disponible pour cette date',
           )
         else
           GridView.builder(
@@ -507,32 +1006,38 @@ class _Step3Slots extends ConsumerWidget {
               return GestureDetector(
                 onTap: slot.isAvailable
                     ? () {
+                        HapticFeedback.selectionClick();
                         ref
                             .read(bookingFlowProvider.notifier)
                             .selectSlot(slot);
                         ref.read(bookingFlowProvider.notifier).nextStep();
                       }
                     : null,
-                child: Container(
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
                     color: !slot.isAvailable
-                        ? AppColors.surfaceAlt.withAlpha(80)
+                        ? AppColors.surfaceAlt.withAlpha(60)
                         : isSelected
-                            ? AppColors.blanc
-                            : AppColors.surfaceAlt,
+                            ? AppColors.violet
+                            : AppColors.surface,
                     borderRadius: BorderRadius.circular(10),
                     border: isSelected
-                        ? Border.all(color: AppColors.blanc, width: 2)
-                        : Border.all(color: AppColors.border),
+                        ? null
+                        : Border.all(
+                            color: slot.isAvailable
+                                ? AppColors.border
+                                : Colors.transparent,
+                          ),
                   ),
                   child: Text(
                     slot.startTime.substring(0, 5),
                     style: TextStyle(
                       color: !slot.isAvailable
-                          ? AppColors.gris.withAlpha(100)
+                          ? AppColors.gris.withAlpha(80)
                           : isSelected
-                              ? AppColors.fond
+                              ? AppColors.blanc
                               : AppColors.blanc,
                       fontWeight: FontWeight.w600,
                       fontSize: 14,
@@ -547,7 +1052,9 @@ class _Step3Slots extends ConsumerWidget {
   }
 }
 
-// ─── Step 4: Summary ──────────────────────────────────────
+// ═══════════════════════════════════════════════════════════
+// Step 4: Summary
+// ═══════════════════════════════════════════════════════════
 
 class _Step4Summary extends ConsumerWidget {
   const _Step4Summary({
@@ -560,111 +1067,234 @@ class _Step4Summary extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // Format date nicely
+    String dateDisplay = state.selectedDate ?? '';
+    if (state.selectedDate != null) {
+      try {
+        final parts = state.selectedDate!.split('-');
+        final d = DateTime(
+          int.parse(parts[0]),
+          int.parse(parts[1]),
+          int.parse(parts[2]),
+        );
+        dateDisplay = '${d.day} ${_frenchMonths[d.month - 1]} ${d.year}';
+      } catch (_) {}
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          children: [
-            IconButton(
-              icon: const Icon(Icons.arrow_back, color: AppColors.blanc),
-              onPressed: () =>
-                  ref.read(bookingFlowProvider.notifier).previousStep(),
-            ),
-            const Text(
-              'Récapitulatif',
-              style: TextStyle(
-                color: AppColors.blanc,
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ],
+        _StepHeader(
+          title: 'Récapitulatif',
+          subtitle: 'Vérifiez les détails de votre réservation',
+          onBack: () =>
+              ref.read(bookingFlowProvider.notifier).previousStep(),
         ),
-        const SizedBox(height: 20),
-        // Pro info
-        Row(
-          children: [
-            CircleAvatar(
-              radius: 28,
-              backgroundColor: AppColors.surfaceAlt,
-              backgroundImage: proProfile.avatarUrl != null
-                  ? CachedNetworkImageProvider(proProfile.avatarUrl!)
-                  : null,
-              child: proProfile.avatarUrl == null
-                  ? const Icon(Icons.person, color: AppColors.gris)
-                  : null,
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    proProfile.businessName,
-                    style: const TextStyle(
-                      color: AppColors.blanc,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  if (proProfile.category.isNotEmpty)
-                    Text(
-                      proProfile.category,
-                      style: const TextStyle(
-                          color: AppColors.gris, fontSize: 13),
-                    ),
-                ],
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 24),
-        _SummaryRow(
-            label: 'Service', value: state.selectedService?.name ?? ''),
-        _SummaryRow(label: 'Date', value: state.selectedDate ?? ''),
-        _SummaryRow(
-          label: 'Heure',
-          value: state.selectedSlot?.startTime.substring(0, 5) ?? '',
-        ),
-        _SummaryRow(
-          label: 'Durée',
-          value: '${state.selectedService?.durationMinutes ?? 0} min',
-        ),
-        const Divider(color: AppColors.border, height: 32),
-        if (state.promoApplied && state.promoCode != null)
-          _SummaryRow(
-            label: 'Promo (${state.promoCode!.code})',
-            value: state.promoCode!.discountType == 'percentage'
-                ? '-${state.promoCode!.discountValue.toStringAsFixed(0)}%'
-                : '-${state.promoCode!.discountValue.toStringAsFixed(2)} CA\$',
-            valueColor: AppColors.success,
+
+        // Pro card
+        Container(
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            color: AppColors.surface,
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: AppColors.border),
           ),
-        _SummaryRow(
-          label: 'Total',
-          value: '${state.totalPrice.toStringAsFixed(2)} CA\$',
+          child: Row(
+            children: [
+              CircleAvatar(
+                radius: 24,
+                backgroundColor: AppColors.surfaceAlt,
+                backgroundImage: proProfile.avatarUrl != null
+                    ? CachedNetworkImageProvider(proProfile.avatarUrl!)
+                    : null,
+                child: proProfile.avatarUrl == null
+                    ? const Icon(Icons.person, color: AppColors.gris, size: 20)
+                    : null,
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      proProfile.businessName,
+                      style: const TextStyle(
+                        color: AppColors.blanc,
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    if (proProfile.category.isNotEmpty)
+                      Text(
+                        proProfile.category,
+                        style: const TextStyle(
+                          color: AppColors.gris,
+                          fontSize: 12,
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 4,
+                ),
+                decoration: BoxDecoration(
+                  color: AppColors.violet.withAlpha(30),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Text(
+                  'Pro',
+                  style: TextStyle(
+                    color: AppColors.violetClair,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
-        _SummaryRow(
-          label: 'Acompte à payer',
-          value: '${state.depositPrice.toStringAsFixed(2)} CA\$',
-          isBold: true,
+        const SizedBox(height: 16),
+
+        // Details card
+        Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: AppColors.surface,
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: AppColors.border),
+          ),
+          child: Column(
+            children: [
+              _DetailRow(
+                icon: Icons.content_cut,
+                label: 'Service',
+                value: state.selectedService?.name ?? '',
+              ),
+              const Divider(color: AppColors.border, height: 20),
+              _DetailRow(
+                icon: Icons.calendar_today,
+                label: 'Date',
+                value: dateDisplay,
+              ),
+              const Divider(color: AppColors.border, height: 20),
+              _DetailRow(
+                icon: Icons.schedule,
+                label: 'Heure',
+                value: state.selectedSlot?.startTime.substring(0, 5) ?? '',
+              ),
+              const Divider(color: AppColors.border, height: 20),
+              _DetailRow(
+                icon: Icons.timelapse,
+                label: 'Durée',
+                value: '${state.selectedService?.durationMinutes ?? 0} min',
+              ),
+            ],
+          ),
         ),
-        const SizedBox(height: 32),
-        SizedBox(
-          width: double.infinity,
-          child: ElevatedButton(
-            onPressed: () =>
-                ref.read(bookingFlowProvider.notifier).nextStep(),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.blanc,
-              foregroundColor: AppColors.fond,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12)),
-              padding: const EdgeInsets.symmetric(vertical: 16),
-            ),
-            child: Text(
-              'Payer ${state.depositPrice.toStringAsFixed(2)} CA\$',
-              style: const TextStyle(fontWeight: FontWeight.bold),
-            ),
+        const SizedBox(height: 16),
+
+        // Pricing card
+        Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: AppColors.surface,
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: AppColors.border),
+          ),
+          child: Column(
+            children: [
+              _PriceRow(
+                label: 'Prix du service',
+                value:
+                    '${state.selectedService?.price.toStringAsFixed(2) ?? '0'} €',
+              ),
+              if (state.promoApplied && state.promoCode != null) ...[
+                const SizedBox(height: 8),
+                _PriceRow(
+                  label: 'Promo (${state.promoCode!.code})',
+                  value: state.promoCode!.discountType == 'percentage'
+                      ? '-${state.promoCode!.discountValue.toStringAsFixed(0)}%'
+                      : '-${state.promoCode!.discountValue.toStringAsFixed(2)} €',
+                  valueColor: AppColors.success,
+                ),
+              ],
+              const Divider(color: AppColors.border, height: 20),
+              _PriceRow(
+                label: 'Total',
+                value: '${state.totalPrice.toStringAsFixed(2)} €',
+              ),
+              const SizedBox(height: 8),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: AppColors.violet.withAlpha(15),
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: AppColors.violet.withAlpha(40)),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.info_outline,
+                        color: AppColors.violetClair, size: 16),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        'Acompte de 30% à payer maintenant : ${state.depositPrice.toStringAsFixed(2)} €',
+                        style: const TextStyle(
+                          color: AppColors.violetClair,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+
+        const SizedBox(height: 28),
+        _CtaButton(
+          label: 'Payer ${state.depositPrice.toStringAsFixed(2)} €',
+          onPressed: () =>
+              ref.read(bookingFlowProvider.notifier).nextStep(),
+        ),
+      ],
+    );
+  }
+}
+
+class _DetailRow extends StatelessWidget {
+  const _DetailRow({
+    required this.icon,
+    required this.label,
+    required this.value,
+  });
+  final IconData icon;
+  final String label;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Icon(icon, color: AppColors.gris, size: 16),
+        const SizedBox(width: 10),
+        Text(
+          label,
+          style: const TextStyle(color: AppColors.gris, fontSize: 14),
+        ),
+        const Spacer(),
+        Text(
+          value,
+          style: const TextStyle(
+            color: AppColors.blanc,
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
           ),
         ),
       ],
@@ -672,53 +1302,44 @@ class _Step4Summary extends ConsumerWidget {
   }
 }
 
-class _SummaryRow extends StatelessWidget {
-  const _SummaryRow({
+class _PriceRow extends StatelessWidget {
+  const _PriceRow({
     required this.label,
     required this.value,
-    this.isBold = false,
     this.valueColor,
   });
-
   final String label;
   final String value;
-  final bool isBold;
   final Color? valueColor;
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            label,
-            style: TextStyle(
-              color: AppColors.gris,
-              fontSize: 14,
-              fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
-            ),
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          label,
+          style: const TextStyle(color: AppColors.gris, fontSize: 14),
+        ),
+        Text(
+          value,
+          style: TextStyle(
+            color: valueColor ?? AppColors.blanc,
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
           ),
-          Text(
-            value,
-            style: TextStyle(
-              color: valueColor ?? AppColors.blanc,
-              fontSize: 14,
-              fontWeight: isBold ? FontWeight.bold : FontWeight.w500,
-            ),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
 
-// ─── Step 5: Payment ──────────────────────────────────────
+// ═══════════════════════════════════════════════════════════
+// Step 5: Payment (Stripe)
+// ═══════════════════════════════════════════════════════════
 
 class _Step5Payment extends ConsumerWidget {
   const _Step5Payment({required this.state});
-
   final BookingFlowState state;
 
   @override
@@ -726,148 +1347,202 @@ class _Step5Payment extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          children: [
-            IconButton(
-              icon: const Icon(Icons.arrow_back, color: AppColors.blanc),
-              onPressed: () =>
-                  ref.read(bookingFlowProvider.notifier).previousStep(),
-            ),
-            const Text(
-              'Paiement',
-              style: TextStyle(
-                color: AppColors.blanc,
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ],
+        _StepHeader(
+          title: 'Paiement',
+          subtitle: 'Acompte de ${state.depositPrice.toStringAsFixed(2)} €',
+          onBack: () =>
+              ref.read(bookingFlowProvider.notifier).previousStep(),
         ),
-        const SizedBox(height: 24),
+
+        // Card input
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: AppColors.surfaceAlt,
-            borderRadius: BorderRadius.circular(12),
+            color: AppColors.surface,
+            borderRadius: BorderRadius.circular(14),
             border: Border.all(color: AppColors.border),
           ),
-          child: CardField(
-            decoration: InputDecoration(
-              filled: true,
-              fillColor: AppColors.surfaceAlt,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: AppColors.border),
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: AppColors.border),
-              ),
-            ),
-          ),
-        ),
-        const SizedBox(height: 12),
-        Text(
-          'Acompte de ${state.depositPrice.toStringAsFixed(2)} CA\$',
-          style: const TextStyle(
-            color: AppColors.gris,
-            fontSize: 13,
-          ),
-        ),
-        if (state.error != null) ...[
-          const SizedBox(height: 8),
-          Text(state.error!,
-              style: const TextStyle(color: AppColors.error, fontSize: 13)),
-        ],
-        const SizedBox(height: 32),
-        SizedBox(
-          width: double.infinity,
-          height: 52,
-          child: ElevatedButton(
-            onPressed: (state.isCreating || state.isPaying)
-                ? null
-                : () async {
-                    HapticFeedback.mediumImpact();
-
-                    // Step 1: Create booking + get clientSecret
-                    if (state.bookingResult == null) {
-                      await AnalyticsService.instance.capture(
-                        'booking_started',
-                        properties: {
-                          'pro_id': state.selectedSlot?.proId ?? '',
-                          'service_id': state.selectedService?.id ?? '',
-                        },
-                      );
-                      await ref
-                          .read(bookingFlowProvider.notifier)
-                          .createBooking();
-                    }
-                    final flowState = ref.read(bookingFlowProvider);
-                    final clientSecret = flowState.clientSecret;
-                    if (clientSecret == null) return;
-
-                    // Step 2: Confirm payment via Stripe SDK
-                    try {
-                      await Stripe.instance.confirmPayment(
-                        paymentIntentClientSecret: clientSecret,
-                        data: const PaymentMethodParams.card(
-                          paymentMethodData: PaymentMethodData(),
-                        ),
-                      );
-                      // Payment succeeded — go to confirmation
-                      await AnalyticsService.instance.capture(
-                        'booking_completed',
-                        properties: {
-                          'booking_id': flowState.bookingResult?['bookingId']?.toString() ?? '',
-                          'pro_id': state.selectedSlot?.proId ?? '',
-                        },
-                      );
-                      ref.read(bookingFlowProvider.notifier).nextStep();
-                    } on StripeException catch (e) {
-                      await AnalyticsService.instance.capture(
-                        'payment_failed',
-                        properties: {
-                          'booking_id': flowState.bookingResult?['bookingId']?.toString() ?? '',
-                          'error': e.error.localizedMessage ?? 'payment_failed',
-                        },
-                      );
-                      if (!context.mounted) return;
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            e.error.localizedMessage ?? 'Paiement échoué',
-                          ),
-                          backgroundColor: AppColors.error,
-                        ),
-                      );
-                    }
-                  },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.blanc,
-              foregroundColor: AppColors.fond,
-              disabledBackgroundColor: AppColors.surfaceAlt,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12)),
-            ),
-            child: (state.isCreating || state.isPaying)
-                ? const SizedBox(
-                    height: 20,
-                    width: 20,
-                    child: CircularProgressIndicator(
-                        color: AppColors.gris, strokeWidth: 2),
-                  )
-                : Text(
-                    'Payer ${state.depositPrice.toStringAsFixed(2)} CA\$',
-                    style: const TextStyle(fontWeight: FontWeight.bold),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  const Icon(Icons.credit_card,
+                      color: AppColors.violetClair, size: 18),
+                  const SizedBox(width: 8),
+                  const Text(
+                    'Carte bancaire',
+                    style: TextStyle(
+                      color: AppColors.blanc,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
+                  const Spacer(),
+                  Icon(Icons.lock_outline,
+                      color: AppColors.gris.withAlpha(120), size: 14),
+                  const SizedBox(width: 4),
+                  Text(
+                    'Sécurisé',
+                    style: TextStyle(
+                      color: AppColors.gris.withAlpha(120),
+                      fontSize: 11,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 14),
+              CardField(
+                decoration: InputDecoration(
+                  filled: true,
+                  fillColor: AppColors.surfaceAlt,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide.none,
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide.none,
+                  ),
+                ),
+              ),
+            ],
           ),
+        ),
+
+        const SizedBox(height: 16),
+
+        // Payment summary
+        Container(
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            color: AppColors.surface,
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: AppColors.border),
+          ),
+          child: Column(
+            children: [
+              _PriceRow(
+                label: 'Total du service',
+                value: '${state.totalPrice.toStringAsFixed(2)} €',
+              ),
+              const SizedBox(height: 6),
+              _PriceRow(
+                label: 'Acompte (30%)',
+                value: '${state.depositPrice.toStringAsFixed(2)} €',
+                valueColor: AppColors.violetClair,
+              ),
+              const SizedBox(height: 6),
+              _PriceRow(
+                label: 'Reste à payer sur place',
+                value:
+                    '${(state.totalPrice - state.depositPrice).toStringAsFixed(2)} €',
+              ),
+            ],
+          ),
+        ),
+
+        if (state.error != null) ...[
+          const SizedBox(height: 12),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: AppColors.error.withAlpha(20),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Row(
+              children: [
+                const Icon(Icons.error_outline,
+                    color: AppColors.error, size: 16),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    state.error!,
+                    style:
+                        const TextStyle(color: AppColors.error, fontSize: 13),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+
+        const SizedBox(height: 28),
+        _CtaButton(
+          label: 'Payer ${state.depositPrice.toStringAsFixed(2)} €',
+          isLoading: state.isCreating || state.isPaying,
+          onPressed: (state.isCreating || state.isPaying)
+              ? null
+              : () async {
+                  HapticFeedback.mediumImpact();
+
+                  // Step 1: Create booking + get clientSecret
+                  if (state.bookingResult == null) {
+                    await AnalyticsService.instance.capture(
+                      'booking_started',
+                      properties: {
+                        'pro_id': state.selectedSlot?.proId ?? '',
+                        'service_id': state.selectedService?.id ?? '',
+                      },
+                    );
+                    await ref
+                        .read(bookingFlowProvider.notifier)
+                        .createBooking();
+                  }
+                  final flowState = ref.read(bookingFlowProvider);
+                  final clientSecret = flowState.clientSecret;
+                  if (clientSecret == null) return;
+
+                  // Step 2: Confirm payment via Stripe SDK
+                  try {
+                    await Stripe.instance.confirmPayment(
+                      paymentIntentClientSecret: clientSecret,
+                      data: const PaymentMethodParams.card(
+                        paymentMethodData: PaymentMethodData(),
+                      ),
+                    );
+                    await AnalyticsService.instance.capture(
+                      'booking_completed',
+                      properties: {
+                        'booking_id':
+                            flowState.bookingResult?['bookingId']?.toString() ??
+                                '',
+                        'pro_id': state.selectedSlot?.proId ?? '',
+                      },
+                    );
+                    ref.read(bookingFlowProvider.notifier).nextStep();
+                  } on StripeException catch (e) {
+                    await AnalyticsService.instance.capture(
+                      'payment_failed',
+                      properties: {
+                        'booking_id':
+                            flowState.bookingResult?['bookingId']?.toString() ??
+                                '',
+                        'error':
+                            e.error.localizedMessage ?? 'payment_failed',
+                      },
+                    );
+                    if (!context.mounted) return;
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          e.error.localizedMessage ?? 'Paiement échoué',
+                        ),
+                        backgroundColor: AppColors.error,
+                      ),
+                    );
+                  }
+                },
         ),
       ],
     );
   }
 }
 
-// ─── Step 6: Confirmation ─────────────────────────────────
+// ═══════════════════════════════════════════════════════════
+// Step 6: Confirmation
+// ═══════════════════════════════════════════════════════════
 
 class _Step6Confirmation extends StatelessWidget {
   const _Step6Confirmation({
@@ -883,23 +1558,49 @@ class _Step6Confirmation extends StatelessWidget {
     final bookingCode =
         state.bookingResult?['bookingCode'] as String? ?? 'SPT-XXXXXXXX';
 
-    return Column(
+    // Format date
+    String dateDisplay = '';
+    if (state.selectedDate != null) {
+      try {
+        final parts = state.selectedDate!.split('-');
+        final d = DateTime(
+          int.parse(parts[0]),
+          int.parse(parts[1]),
+          int.parse(parts[2]),
+        );
+        dateDisplay = '${d.day} ${_frenchMonths[d.month - 1]} ${d.year}';
+      } catch (_) {
+        dateDisplay = state.selectedDate!;
+      }
+    }
+
+    return Stack(
       children: [
-        const SizedBox(height: 20),
+        Column(
+      children: [
+        const SizedBox(height: 12),
         SizedBox(
-          height: 150,
-          width: 150,
+          height: 130,
+          width: 130,
           child: Lottie.asset(
             'assets/animations/success.json',
             repeat: false,
-            errorBuilder: (_, __, ___) => const Icon(
-              Icons.check_circle,
-              color: AppColors.success,
-              size: 100,
+            errorBuilder: (_, __, ___) => Container(
+              width: 80,
+              height: 80,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: AppColors.success.withAlpha(25),
+              ),
+              child: const Icon(
+                Icons.check_circle,
+                color: AppColors.success,
+                size: 60,
+              ),
             ),
           ),
         ),
-        const SizedBox(height: 24),
+        const SizedBox(height: 20),
         const Text(
           'Réservation confirmée !',
           style: TextStyle(
@@ -908,90 +1609,180 @@ class _Step6Confirmation extends StatelessWidget {
             fontWeight: FontWeight.bold,
           ),
         ),
-        const SizedBox(height: 12),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-          decoration: BoxDecoration(
-            color: AppColors.surfaceAlt,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: AppColors.border),
-          ),
-          child: Text(
-            bookingCode,
-            style: const TextStyle(
-              color: AppColors.blanc,
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              letterSpacing: 2,
-            ),
+        const SizedBox(height: 8),
+        Text(
+          'Votre RDV est bien enregistré',
+          style: TextStyle(
+            color: AppColors.gris.withAlpha(180),
+            fontSize: 14,
           ),
         ),
         const SizedBox(height: 20),
-        Text(
-          '${state.selectedService?.name ?? ''} avec ${proProfile.businessName}',
-          style: const TextStyle(color: AppColors.gris, fontSize: 14),
-          textAlign: TextAlign.center,
-        ),
-        const SizedBox(height: 4),
-        Text(
-          '${state.selectedDate ?? ''} à ${state.selectedSlot?.startTime.substring(0, 5) ?? ''}',
-          style: const TextStyle(color: AppColors.gris, fontSize: 14),
-        ),
-        const SizedBox(height: 32),
-        SizedBox(
+
+        // Booking code card
+        Container(
           width: double.infinity,
-          child: OutlinedButton.icon(
-            onPressed: () {
-              final date = state.selectedDate;
-              final time = state.selectedSlot?.startTime;
-              if (date != null && time != null) {
-                final parts = date.split('-');
-                final timeParts = time.split(':');
-                final start = DateTime(
-                  int.parse(parts[0]),
-                  int.parse(parts[1]),
-                  int.parse(parts[2]),
-                  int.parse(timeParts[0]),
-                  int.parse(timeParts[1]),
-                );
-                final end = start.add(Duration(
-                    minutes: state.selectedService?.durationMinutes ?? 60));
-                Add2Calendar.addEvent2Cal(Event(
-                  title: '${state.selectedService?.name} — ${proProfile.businessName}',
-                  description: 'Code : $bookingCode',
-                  startDate: start,
-                  endDate: end,
-                ));
-              }
-            },
-            icon: const Icon(Icons.calendar_today, size: 18),
-            style: OutlinedButton.styleFrom(
-              foregroundColor: AppColors.blanc,
-              side: const BorderSide(color: AppColors.border),
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12)),
-              padding: const EdgeInsets.symmetric(vertical: 14),
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          decoration: BoxDecoration(
+            gradient: AppColors.gradientAccent,
+            borderRadius: BorderRadius.circular(14),
+          ),
+          child: Column(
+            children: [
+              Text(
+                'Code de réservation',
+                style: TextStyle(
+                  color: AppColors.blanc.withAlpha(200),
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                bookingCode,
+                style: const TextStyle(
+                  color: AppColors.blanc,
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 2,
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 16),
+
+        // Details card
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: AppColors.surface,
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: AppColors.border),
+          ),
+          child: Column(
+            children: [
+              _DetailRow(
+                icon: Icons.content_cut,
+                label: 'Service',
+                value: state.selectedService?.name ?? '',
+              ),
+              const SizedBox(height: 10),
+              _DetailRow(
+                icon: Icons.person,
+                label: 'Pro',
+                value: proProfile.businessName,
+              ),
+              const SizedBox(height: 10),
+              _DetailRow(
+                icon: Icons.calendar_today,
+                label: 'Date',
+                value: dateDisplay,
+              ),
+              const SizedBox(height: 10),
+              _DetailRow(
+                icon: Icons.schedule,
+                label: 'Heure',
+                value:
+                    state.selectedSlot?.startTime.substring(0, 5) ?? '',
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 24),
+
+        // Add to calendar
+        GestureDetector(
+          onTap: () {
+            HapticFeedback.selectionClick();
+            final date = state.selectedDate;
+            final time = state.selectedSlot?.startTime;
+            if (date != null && time != null) {
+              final dateParts = date.split('-');
+              final timeParts = time.split(':');
+              final start = DateTime(
+                int.parse(dateParts[0]),
+                int.parse(dateParts[1]),
+                int.parse(dateParts[2]),
+                int.parse(timeParts[0]),
+                int.parse(timeParts[1]),
+              );
+              final end = start.add(Duration(
+                minutes: state.selectedService?.durationMinutes ?? 60,
+              ));
+              Add2Calendar.addEvent2Cal(Event(
+                title:
+                    '${state.selectedService?.name} — ${proProfile.businessName}',
+                description: 'Code : $bookingCode',
+                startDate: start,
+                endDate: end,
+              ));
+            }
+          },
+          child: Container(
+            width: double.infinity,
+            height: 48,
+            decoration: BoxDecoration(
+              color: AppColors.surface,
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: AppColors.border),
             ),
-            label: const Text('Ajouter au calendrier'),
+            child: const Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.calendar_today, color: AppColors.blanc, size: 16),
+                SizedBox(width: 8),
+                Text(
+                  'Ajouter au calendrier',
+                  style: TextStyle(
+                    color: AppColors.blanc,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
         const SizedBox(height: 12),
-        SizedBox(
-          width: double.infinity,
-          child: ElevatedButton(
-            onPressed: () => Navigator.of(context).pop(),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.blanc,
-              foregroundColor: AppColors.fond,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12)),
-              padding: const EdgeInsets.symmetric(vertical: 16),
-            ),
-            child: const Text('Fermer',
-                style: TextStyle(fontWeight: FontWeight.bold)),
-          ),
+
+        _CtaButton(
+          label: 'Fermer',
+          onPressed: () => Navigator.of(context).pop(),
         ),
       ],
+        ),
+        const Positioned.fill(child: ConfettiOverlay()),
+      ],
+    );
+  }
+}
+
+// ─── Empty state ─────────────────────────────────────────
+
+class _EmptyState extends StatelessWidget {
+  const _EmptyState({required this.icon, required this.message});
+  final IconData icon;
+  final String message;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 40),
+        child: Column(
+          children: [
+            Icon(icon, color: AppColors.gris.withAlpha(100), size: 48),
+            const SizedBox(height: 12),
+            Text(
+              message,
+              style: const TextStyle(color: AppColors.gris, fontSize: 15),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

@@ -1,21 +1,42 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../shared/theme/app_colors.dart';
 
 class _Goal {
-  const _Goal({required this.icon, required this.title, required this.description});
+  const _Goal({
+    required this.icon,
+    required this.title,
+    required this.description,
+  });
   final IconData icon;
   final String title;
   final String description;
 }
 
 const _goals = [
-  _Goal(icon: Icons.trending_up, title: 'Discover new trends', description: 'Explore the latest videos and styles'),
-  _Goal(icon: Icons.pin_drop, title: 'Book a nearby pro', description: 'Find and schedule professional services'),
-  _Goal(icon: Icons.confirmation_number, title: 'Attend local events', description: 'Get tickets for upcoming gatherings'),
-  _Goal(icon: Icons.attach_money, title: 'Compare service prices', description: 'Find the best value for your needs'),
+  _Goal(
+    icon: Icons.trending_up,
+    title: 'Découvrir les tendances',
+    description: 'Explorez les dernières vidéos et styles du moment',
+  ),
+  _Goal(
+    icon: Icons.pin_drop,
+    title: 'Réserver un pro proche',
+    description: 'Trouvez et réservez un service près de chez vous',
+  ),
+  _Goal(
+    icon: Icons.confirmation_number_outlined,
+    title: 'Participer à des événements',
+    description: 'Achetez des billets pour les prochains événements',
+  ),
+  _Goal(
+    icon: Icons.attach_money,
+    title: 'Comparer les prix',
+    description: 'Trouvez le meilleur rapport qualité-prix',
+  ),
 ];
 
 class _GoalNotifier extends Notifier<int?> {
@@ -24,7 +45,10 @@ class _GoalNotifier extends Notifier<int?> {
   void select(int index) => state = index;
 }
 
-final _selectedGoalProvider = NotifierProvider<_GoalNotifier, int?>(_GoalNotifier.new, isAutoDispose: true);
+final _selectedGoalProvider = NotifierProvider<_GoalNotifier, int?>(
+  _GoalNotifier.new,
+  isAutoDispose: true,
+);
 
 class ClientInterestGoalsScreen extends ConsumerWidget {
   const ClientInterestGoalsScreen({super.key});
@@ -32,65 +56,228 @@ class ClientInterestGoalsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final selectedIndex = ref.watch(_selectedGoalProvider);
+    final bottomPadding = MediaQuery.of(context).padding.bottom;
 
     return Scaffold(
-      backgroundColor: AppColors.fondDark,
+      backgroundColor: AppColors.fond,
       appBar: AppBar(
-        backgroundColor: AppColors.fondDark,
-        leading: IconButton(onPressed: () => context.pop(), icon: const Icon(Icons.arrow_back_ios, size: 20)),
-        title: const Text('Onboarding', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
-        centerTitle: true,
+        backgroundColor: AppColors.fond,
+        elevation: 0,
+        leading: IconButton(
+          onPressed: () => context.pop(),
+          icon: const Icon(
+            Icons.arrow_back_ios_rounded,
+            color: AppColors.blanc,
+            size: 20,
+          ),
+        ),
       ),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
-          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            const SizedBox(height: 8),
-            Row(children: [
-              Container(padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4), decoration: BoxDecoration(borderRadius: BorderRadius.circular(12), color: AppColors.accent.withAlpha(26)),
-                child: const Text('STEP 2 OF 2', style: TextStyle(color: AppColors.accent, fontSize: 11, fontWeight: FontWeight.w600, letterSpacing: 0.5))),
-              const Spacer(),
-              const Text('90%', style: TextStyle(color: AppColors.gris, fontSize: 12)),
-            ]),
-            const SizedBox(height: 8),
-            ClipRRect(borderRadius: BorderRadius.circular(4), child: const LinearProgressIndicator(value: 0.9, backgroundColor: AppColors.surfaceAuth, valueColor: AlwaysStoppedAnimation<Color>(AppColors.accent), minHeight: 4)),
-            const SizedBox(height: 24),
-            const Text("What's your goal today?", style: TextStyle(color: AppColors.blanc, fontSize: 24, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 8),
-            const Text('Tell us what you\'re looking for so we can tailor your experience and find the best matches.', style: TextStyle(color: AppColors.gris, fontSize: 14)),
-            const SizedBox(height: 24),
-            Expanded(child: ListView.separated(
-              itemCount: _goals.length, separatorBuilder: (_, __) => const SizedBox(height: 12),
-              itemBuilder: (context, index) {
-                final goal = _goals[index];
-                final isSelected = selectedIndex == index;
-                return GestureDetector(
-                  onTap: () => ref.read(_selectedGoalProvider.notifier).select(index),
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 200), padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(color: AppColors.surfaceAuth, borderRadius: BorderRadius.circular(16), border: Border.all(color: isSelected ? AppColors.accent : Colors.transparent, width: 2)),
-                    child: Row(children: [
-                      Icon(goal.icon, color: isSelected ? AppColors.accent : AppColors.blanc, size: 28),
-                      const SizedBox(width: 16),
-                      Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                        Text(goal.title, style: const TextStyle(color: AppColors.blanc, fontSize: 16, fontWeight: FontWeight.w600)),
-                        const SizedBox(height: 4),
-                        Text(goal.description, style: const TextStyle(color: AppColors.gris, fontSize: 13)),
-                      ])),
-                      if (isSelected) const Icon(Icons.check_circle, color: AppColors.accent, size: 24),
-                    ]),
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Step indicator
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 4,
                   ),
-                );
-              },
-            )),
-            const SizedBox(height: 16),
-            SizedBox(width: double.infinity, height: 52, child: ElevatedButton(
-              onPressed: selectedIndex != null ? () => context.go('/client/location') : null,
-              style: ElevatedButton.styleFrom(backgroundColor: AppColors.accent, foregroundColor: AppColors.fondDark, disabledBackgroundColor: AppColors.accent.withAlpha(77), disabledForegroundColor: AppColors.fondDark.withAlpha(128), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
-              child: const Text('Finish Setup ✓', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
-            )),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8),
+                    color: AppColors.violet.withAlpha(25),
+                  ),
+                  child: const Text(
+                    'ÉTAPE 2/3',
+                    style: TextStyle(
+                      color: AppColors.violet,
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(4),
+              child: const LinearProgressIndicator(
+                value: 0.66,
+                backgroundColor: AppColors.surface,
+                valueColor: AlwaysStoppedAnimation<Color>(AppColors.violet),
+                minHeight: 4,
+              ),
+            ),
             const SizedBox(height: 24),
-          ]),
+
+            // Title
+            const Text(
+              'Quel est votre objectif ?',
+              style: TextStyle(
+                color: AppColors.blanc,
+                fontSize: 24,
+                fontWeight: FontWeight.w800,
+                letterSpacing: -0.5,
+              ),
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              'Dites-nous ce que vous recherchez pour personnaliser votre expérience.',
+              style: TextStyle(
+                color: AppColors.gris,
+                fontSize: 14,
+                height: 1.4,
+              ),
+            ),
+            const SizedBox(height: 24),
+
+            // Goals list
+            Expanded(
+              child: ListView.separated(
+                padding: EdgeInsets.zero,
+                itemCount: _goals.length,
+                separatorBuilder: (_, __) => const SizedBox(height: 12),
+                itemBuilder: (context, index) {
+                  final goal = _goals[index];
+                  final isSelected = selectedIndex == index;
+                  return GestureDetector(
+                    onTap: () {
+                      HapticFeedback.selectionClick();
+                      ref.read(_selectedGoalProvider.notifier).select(index);
+                    },
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: isSelected
+                            ? AppColors.violet.withAlpha(15)
+                            : AppColors.surface,
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color:
+                              isSelected ? AppColors.violet : AppColors.border,
+                          width: isSelected ? 2 : 1,
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 44,
+                            height: 44,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(12),
+                              color: isSelected
+                                  ? AppColors.violet.withAlpha(25)
+                                  : AppColors.surfaceAlt,
+                            ),
+                            child: Icon(
+                              goal.icon,
+                              color: isSelected
+                                  ? AppColors.violet
+                                  : AppColors.gris,
+                              size: 22,
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  goal.title,
+                                  style: TextStyle(
+                                    color: isSelected
+                                        ? AppColors.blanc
+                                        : AppColors.grisClair,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  goal.description,
+                                  style: TextStyle(
+                                    color: isSelected
+                                        ? AppColors.gris
+                                        : AppColors.grisInactif,
+                                    fontSize: 13,
+                                    height: 1.3,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          if (isSelected)
+                            const Icon(
+                              Icons.check_circle_rounded,
+                              color: AppColors.violet,
+                              size: 22,
+                            ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+            const SizedBox(height: 12),
+
+            // Continue button
+            SizedBox(
+              width: double.infinity,
+              height: 56,
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(14),
+                  gradient: selectedIndex != null
+                      ? AppColors.gradientAccent
+                      : LinearGradient(colors: [
+                          AppColors.violet.withAlpha(60),
+                          AppColors.rose.withAlpha(60),
+                        ]),
+                ),
+                child: ElevatedButton(
+                  onPressed: selectedIndex != null
+                      ? () {
+                          HapticFeedback.mediumImpact();
+                          context.go('/client/location');
+                        }
+                      : null,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.transparent,
+                    shadowColor: Colors.transparent,
+                    foregroundColor: AppColors.blanc,
+                    disabledBackgroundColor: Colors.transparent,
+                    disabledForegroundColor: AppColors.blanc.withAlpha(100),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                  ),
+                  child: const Text(
+                    'Continuer',
+                    style: TextStyle(
+                      fontSize: 17,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+            Center(
+              child: GestureDetector(
+                onTap: () => context.go('/client/location'),
+                child: const Text(
+                  'Passer pour le moment',
+                  style: TextStyle(color: AppColors.gris, fontSize: 14),
+                ),
+              ),
+            ),
+            SizedBox(height: bottomPadding + 16),
+          ],
         ),
       ),
     );

@@ -359,7 +359,13 @@ class _CommentsSheetState extends ConsumerState<_CommentsSheet> {
           .addComment(widget.videoId, text);
       _ctrl.clear();
       ref.invalidate(_commentsProvider(widget.videoId));
-    } catch (_) {}
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Impossible d\'envoyer le commentaire'), backgroundColor: AppColors.error),
+        );
+      }
+    }
     if (mounted) setState(() => _isSending = false);
   }
 

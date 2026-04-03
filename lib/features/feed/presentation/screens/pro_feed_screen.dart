@@ -10,6 +10,7 @@ import 'package:share_plus/share_plus.dart';
 
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/theme/app_typography.dart';
+import '../../../../shared/utils/time_ago.dart';
 import '../../../../shared/widgets/spotbook_avatar.dart';
 import '../../../../shared/widgets/spotbook_bottom_sheet.dart';
 import '../../data/pro_feed_notifier.dart';
@@ -1504,7 +1505,7 @@ class _NotificationsSheetContent extends ConsumerWidget {
               title:
                   item['title'] as String? ?? 'Notification',
               subtitle: item['body'] as String? ?? '',
-              timestamp: _timeAgo(
+              timestamp: timeAgo(
                   DateTime.parse(item['created_at'] as String)),
               isUnread: !isRead,
             );
@@ -1558,7 +1559,7 @@ class _BookingsSheetContent extends ConsumerWidget {
               iconColor: _bookingColor(status),
               title: serviceTitle ?? 'Réservation',
               subtitle: _bookingLabel(status),
-              timestamp: _timeAgo(
+              timestamp: timeAgo(
                   DateTime.parse(item['created_at'] as String)),
             );
           },
@@ -1631,7 +1632,7 @@ class _TicketSalesSheetContent extends ConsumerWidget {
               title: event?['title'] as String? ??
                   'Billet vendu',
               subtitle: 'Billet acheté',
-              timestamp: _timeAgo(DateTime.parse(
+              timestamp: timeAgo(DateTime.parse(
                   item['purchased_at'] as String)),
             );
           },
@@ -1672,7 +1673,7 @@ class _MessagesSheetContent extends ConsumerWidget {
               title:
                   item['sender_name'] as String? ?? 'Client',
               subtitle: item['body'] as String? ?? '',
-              timestamp: _timeAgo(
+              timestamp: timeAgo(
                   DateTime.parse(item['created_at'] as String)),
               isUnread: !isRead,
             );
@@ -1836,14 +1837,7 @@ class _NotifItem extends StatelessWidget {
 // HELPERS
 // ═════════════════════════════════════════════════════════════════════
 
-String _timeAgo(DateTime date) {
-  final diff = DateTime.now().difference(date);
-  if (diff.inMinutes < 1) return 'À l\'instant';
-  if (diff.inMinutes < 60) return 'Il y a ${diff.inMinutes}min';
-  if (diff.inHours < 24) return 'Il y a ${diff.inHours}h';
-  if (diff.inDays < 7) return 'Il y a ${diff.inDays}j';
-  return '${date.day}/${date.month}/${date.year}';
-}
+// timeAgo() is now imported from shared/utils/time_ago.dart
 
 String _formatCount(int count) {
   if (count >= 1000000) {

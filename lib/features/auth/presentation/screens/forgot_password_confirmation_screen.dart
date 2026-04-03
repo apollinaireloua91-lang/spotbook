@@ -63,11 +63,11 @@ class _ForgotPasswordConfirmationScreenState
                   height: 96,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: AppColors.success.withValues(alpha: 0.12),
+                    color: AppColors.violet.withAlpha(25),
                   ),
                   child: const Icon(
                     Icons.mark_email_read_outlined,
-                    color: AppColors.success,
+                    color: AppColors.violet,
                     size: 44,
                   ),
                 ),
@@ -121,7 +121,7 @@ class _ForgotPasswordConfirmationScreenState
                   variant: SpotbookButtonVariant.primary,
                   onPressed: () {
                     HapticFeedback.mediumImpact();
-                    context.go('/auth/login');
+                    context.go('/login');
                   },
                 ),
               ),

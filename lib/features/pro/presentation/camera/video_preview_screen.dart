@@ -181,11 +181,8 @@ class _VideoPreviewScreenState extends State<VideoPreviewScreen> {
                 backgroundColor: AppColors.success,
               ),
             );
-            // Pop back to feed
-            context.pop();
-            if (Navigator.of(context).canPop()) {
-              Navigator.of(context).pop();
-            }
+            // Pop back to camera tab, then to feed
+            context.go('/pro/feed');
           } else if (state.step == UploadStep.error) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
@@ -209,7 +206,7 @@ class _VideoPreviewScreenState extends State<VideoPreviewScreen> {
               backgroundColor: AppColors.fond,
               leading: IconButton(
                 icon: const Icon(Icons.arrow_back, color: AppColors.blanc),
-                onPressed: isWorking ? null : () => Navigator.of(context).pop(),
+                onPressed: isWorking ? null : () => context.pop(),
               ),
               title: const Text(
                 'Aperçu',

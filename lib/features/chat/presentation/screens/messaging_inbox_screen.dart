@@ -141,7 +141,7 @@ class _MessagingInboxScreenState extends ConsumerState<MessagingInboxScreen> {
             child: SpotbookLoadingShimmer.list(itemCount: 8),
           ),
         false when state.conversations.isEmpty => EmptyState.noMessages(
-            onCta: () => context.go('/client/search'),
+            onCta: () => context.go('/client/discover'),
           ),
         false => Column(
             children: [

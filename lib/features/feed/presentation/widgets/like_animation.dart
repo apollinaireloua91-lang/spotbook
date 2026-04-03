@@ -52,7 +52,7 @@ class _LikeAnimationState extends State<LikeAnimation>
             scale: _scale.value,
             child: const Icon(
               Icons.favorite,
-              color: AppColors.error,
+              color: AppColors.rose,
               size: 100,
             ),
           ),

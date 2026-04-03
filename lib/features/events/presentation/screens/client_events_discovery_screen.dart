@@ -255,7 +255,7 @@ class _EventCard extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         HapticFeedback.lightImpact();
-        context.push('/client/event/${event.id}');
+        context.push('/event/${event.id}');
       },
       child: Container(
         decoration: BoxDecoration(

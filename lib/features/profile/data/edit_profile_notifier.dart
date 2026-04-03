@@ -99,6 +99,21 @@ class EditProfileNotifier extends Notifier<EditProfileState> {
     await ref.read(profileRepositoryProvider).disconnectSocial(platform);
     await _loadProfile();
   }
+
+  Future<void> saveSocialLink({
+    required String platform,
+    required String handle,
+  }) async {
+    if (handle.trim().isEmpty) {
+      await ref.read(profileRepositoryProvider).disconnectSocial(platform);
+    } else {
+      await ref.read(profileRepositoryProvider).saveSocialLink(
+            platform: platform,
+            handle: handle.trim(),
+          );
+    }
+    await _loadProfile();
+  }
 }
 
 final editProfileProvider =

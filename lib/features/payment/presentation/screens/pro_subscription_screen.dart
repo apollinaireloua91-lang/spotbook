@@ -65,11 +65,12 @@ class ProSubscriptionScreen extends ConsumerWidget {
         ),
         centerTitle: true,
       ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: Column(
-          children: [
-            const SizedBox(height: 24),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Column(
+            children: [
+              const SizedBox(height: 24),
             Container(
               width: 80,
               height: 80,
@@ -119,7 +120,7 @@ class ProSubscriptionScreen extends ConsumerWidget {
               title: 'Auto-approbation vidéos',
               subtitle: 'Vos vidéos sont publiées instantanément.',
             ),
-            const Spacer(),
+            const SizedBox(height: 32),
             if (state.error != null) ...[
               Text(
                 state.error!,
@@ -206,6 +207,7 @@ class ProSubscriptionScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 32),
           ],
+          ),
         ),
       ),
     );

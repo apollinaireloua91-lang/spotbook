@@ -589,7 +589,7 @@ class _SettingsBody extends ConsumerWidget {
       } catch (e) {
         debugPrint('[pro_settings] signOut error ignored: $e');
       }
-      if (context.mounted) context.go('/auth/login');
+      if (context.mounted) context.go('/login');
     }
   }
 }

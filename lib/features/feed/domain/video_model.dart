@@ -23,7 +23,7 @@ class VideoModel {
     this.isSaved = false,
     this.isFollowed = false,
     this.savesCount = 0,
-    this.socialConnections = const [],
+    this.proRatingAverage = 0.0,
     this.durationSeconds,
     this.serviceId,
     this.serviceName,
@@ -60,7 +60,7 @@ class VideoModel {
   final bool isSaved;
   final bool isFollowed;
   final int savesCount;
-  final List<Map<String, dynamic>> socialConnections;
+  final double proRatingAverage;
   final double? durationSeconds;
   final String? serviceId;
   final String? serviceName;
@@ -108,22 +108,22 @@ class VideoModel {
       isLiked: isLiked,
       isSaved: isSaved,
       savesCount: json['saves_count'] as int? ?? 0,
-      socialConnections: (user?['social_connections'] as List<dynamic>?)
-              ?.map((e) => e as Map<String, dynamic>)
-              .toList() ??
-          [],
+      proRatingAverage: (pro?['rating_average'] as num?)?.toDouble() ?? 0.0,
       durationSeconds: (json['duration_seconds'] as num?)?.toDouble() ??
           (json['duration'] as num?)?.toDouble(),
       serviceId: json['service_id'] as String?,
-      serviceName: service?['name'] as String? ??
+      serviceName: service?['title'] as String? ??
+          service?['name'] as String? ??
           json['service_name'] as String?,
       servicePrice: (service?['price'] as num?)?.toDouble() ??
           (json['service_price'] as num?)?.toDouble(),
       serviceNextSlot: json['service_next_slot'] as String?,
       eventId: json['event_id'] as String?,
-      eventName: event?['name'] as String? ??
+      eventName: event?['title'] as String? ??
+          event?['name'] as String? ??
           json['event_name'] as String?,
-      eventDate: event?['date'] as String? ??
+      eventDate: event?['event_date'] as String? ??
+          event?['date'] as String? ??
           json['event_date'] as String?,
       proCategory: pro?['category'] as String?,
       spotifyTrackTitle: json['spotify_track_title'] as String?,
@@ -155,7 +155,7 @@ class VideoModel {
     bool? isSaved,
     bool? isFollowed,
     int? savesCount,
-    List<Map<String, dynamic>>? socialConnections,
+    double? proRatingAverage,
     double? durationSeconds,
     String? serviceId,
     String? serviceName,
@@ -192,7 +192,7 @@ class VideoModel {
       isSaved: isSaved ?? this.isSaved,
       isFollowed: isFollowed ?? this.isFollowed,
       savesCount: savesCount ?? this.savesCount,
-      socialConnections: socialConnections ?? this.socialConnections,
+      proRatingAverage: proRatingAverage ?? this.proRatingAverage,
       durationSeconds: durationSeconds ?? this.durationSeconds,
       serviceId: serviceId ?? this.serviceId,
       serviceName: serviceName ?? this.serviceName,

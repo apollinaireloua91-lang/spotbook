@@ -68,6 +68,14 @@
 				</array>
 			</dict>
 		</dict>
+		<key>NSCameraUsageDescription</key>
+		<string>Spotbook a besoin de la caméra pour enregistrer vos vidéos de prestation.</string>
+		<key>NSMicrophoneUsageDescription</key>
+		<string>Spotbook a besoin du microphone pour enregistrer l'audio de vos vidéos.</string>
+		<key>NSLocationWhenInUseUsageDescription</key>
+		<string>Spotbook needs your location to show nearby pros on the map</string>
+		<key>NSPhotoLibraryUsageDescription</key>
+		<string>Spotbook a besoin d'accéder à votre galerie pour sélectionner des vidéos.</string>
 		<key>UIApplicationSupportsIndirectInputEvents</key>
 		<true/>
 		<key>UILaunchStoryboardName</key>

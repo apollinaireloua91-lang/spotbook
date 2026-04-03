@@ -131,10 +131,10 @@ class _RefundRequestScreenState extends ConsumerState<RefundRequestScreen> {
       if (mounted) {
         setState(() => _isSubmitting = false);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
+          const SnackBar(
             backgroundColor: AppColors.error,
-            content: Text(e.toString(),
-                style: const TextStyle(color: AppColors.blanc)),
+            content: Text('Une erreur est survenue. Veuillez réessayer.',
+                style: TextStyle(color: AppColors.blanc)),
           ),
         );
       }
@@ -386,7 +386,7 @@ class _RefundRequestScreenState extends ConsumerState<RefundRequestScreen> {
         children: [
           Icon(icon, color: AppColors.gris, size: 16),
           const SizedBox(width: 8),
-          Text(text, style: const TextStyle(color: AppColors.gris, fontSize: 14)),
+          Expanded(child: Text(text, style: const TextStyle(color: AppColors.gris, fontSize: 14))),
         ],
       ),
     );

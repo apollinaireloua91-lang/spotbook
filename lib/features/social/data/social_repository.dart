@@ -25,13 +25,13 @@ class SocialRepository {
   }) async {
     final uid = _uid;
     if (uid == null) throw Exception('Not authenticated');
-    await _supabase.from('reviews').insert({
+    await _supabase.from('reviews').upsert({
       'booking_id': bookingId,
       'client_id': uid,
       'pro_id': proId,
       'rating': rating,
       'comment': comment,
-    });
+    }, onConflict: 'booking_id');
   }
 
   Future<void> toggleFavorite({
@@ -57,14 +57,14 @@ class SocialRepository {
           .eq('target_id', targetId);
       return;
     }
-    await _supabase.from('favorites').insert({
+    await _supabase.from('favorites').upsert({
       'user_id': uid,
       'target_id': targetId,
       'target_type': targetType,
       'target_name': targetName,
       'target_image_url': targetImageUrl,
       'target_subtitle': targetSubtitle,
-    });
+    }, onConflict: 'user_id, target_id');
   }
 
   Future<List<FavoriteModel>> getFavorites(String targetType) async {

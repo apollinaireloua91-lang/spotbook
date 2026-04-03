@@ -1,18 +1,23 @@
+import 'dart:math' as math;
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/theme/app_typography.dart';
+import '../../../../shared/widgets/animated_counter.dart';
 import '../../data/booking_notifier.dart';
 import '../../data/booking_repository.dart';
 import '../../domain/booking_models.dart';
 
 // ═════════════════════════════════════════════════════════════════════════════
-// PRO RDV SCREEN — Agenda with 3 tabs, WeekStrip, Timeline, Revenue summary
+// PRO RDV SCREEN — Square/Calendly-style calendar with stats, week strip,
+// time slots, and revenue chart
 // ═════════════════════════════════════════════════════════════════════════════
 
 class ProRdvScreen extends ConsumerStatefulWidget {
@@ -22,15 +27,89 @@ class ProRdvScreen extends ConsumerStatefulWidget {
   ConsumerState<ProRdvScreen> createState() => _ProRdvScreenState();
 }
 
-class _ProRdvScreenState extends ConsumerState<ProRdvScreen> {
-  int _activeTab = 0; // 0=Aujourd'hui, 1=À venir, 2=Historique
+class _ProRdvScreenState extends ConsumerState<ProRdvScreen>
+    with SingleTickerProviderStateMixin {
   DateTime _selectedDate = DateTime.now();
+  late AnimationController _staggerCtrl;
 
-  static const _tabs = ["Aujourd'hui", 'À venir', 'Historique'];
+  @override
+  void initState() {
+    super.initState();
+    _staggerCtrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1200),
+    )..forward();
+  }
+
+  @override
+  void dispose() {
+    _staggerCtrl.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(proBookingsProvider);
+
+    // Filter bookings for the selected day
+    final dateStr = DateFormat('yyyy-MM-dd').format(_selectedDate);
+    final dayBookings = state.bookings
+        .where((b) => b.slotDate == dateStr)
+        .toList()
+      ..sort((a, b) =>
+          (a.slotStartTime ?? '').compareTo(b.slotStartTime ?? ''));
+
+    // Stats
+    final now = DateTime.now();
+    final todayStr = DateFormat('yyyy-MM-dd').format(now);
+    final todayBookings =
+        state.bookings.where((b) => b.slotDate == todayStr).toList();
+    final confirmedToday =
+        todayBookings.where((b) => b.status == 'confirmed').length;
+    final pendingToday = todayBookings
+        .where(
+            (b) => b.status == 'pending_payment' || b.status == 'pending')
+        .length;
+
+    // Month stats
+    final monthStart = DateTime(now.year, now.month, 1);
+    final monthBookings = state.bookings.where((b) {
+      final d = DateTime.tryParse(b.slotDate ?? '');
+      return d != null && !d.isBefore(monthStart);
+    }).length;
+
+    // Week revenue
+    final monday = now.subtract(Duration(days: now.weekday - 1));
+    final weekBookings = state.bookings.where((b) {
+      final d = DateTime.tryParse(b.slotDate ?? '');
+      if (d == null) return false;
+      return !d.isBefore(monday) &&
+          d.isBefore(monday.add(const Duration(days: 7))) &&
+          (b.status == 'confirmed' || b.status == 'completed');
+    }).toList();
+
+    final weekRevenue = weekBookings.fold<double>(
+        0, (sum, b) => sum + b.totalAmount * 0.88);
+
+    // Weekly revenue by day for chart
+    final weekData = List.generate(7, (i) {
+      final day = monday.add(Duration(days: i));
+      final dayStr = DateFormat('yyyy-MM-dd').format(day);
+      final dayRev = state.bookings
+          .where((b) =>
+              b.slotDate == dayStr &&
+              (b.status == 'confirmed' || b.status == 'completed'))
+          .fold<double>(0, (sum, b) => sum + b.totalAmount * 0.88);
+      return _DailyRevenue(
+        dayLabel: _shortDay(day.weekday),
+        amount: dayRev,
+        isToday: day.day == now.day &&
+            day.month == now.month &&
+            day.year == now.year,
+      );
+    });
+
+    final weekClientCount = weekBookings.map((b) => b.clientName).toSet().length;
 
     return Scaffold(
       backgroundColor: AppColors.fond,
@@ -38,88 +117,100 @@ class _ProRdvScreenState extends ConsumerState<ProRdvScreen> {
         child: RefreshIndicator(
           color: AppColors.violet,
           onRefresh: () => ref.read(proBookingsProvider.notifier).refresh(),
-          child: CustomScrollView(
+          child: ListView(
             physics: const AlwaysScrollableScrollPhysics(),
-            slivers: [
+            padding: const EdgeInsets.fromLTRB(20, 16, 20, 100),
+            children: [
               // ── Header ──
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.calendar_month_rounded,
-                        color: AppColors.violetClair,
-                        size: 24,
-                      ),
-                      const SizedBox(width: 10),
-                      Text(
-                        'Agenda',
-                        style: AppTypography.proHubTitle,
-                      ),
-                      const Spacer(),
-                      Semantics(
-                        label: 'Configurer calendrier et disponibilités',
-                        child: GestureDetector(
-                          onTap: () {
-                            HapticFeedback.mediumImpact();
-                            context.push('/pro/profile/availability');
-                          },
-                          child: Container(
-                            width: 36,
-                            height: 36,
-                            decoration: BoxDecoration(
-                              color: AppColors.surface,
-                              borderRadius: BorderRadius.circular(10),
-                              border: Border.all(
-                                color: AppColors.border,
-                                width: 0.5,
-                              ),
-                            ),
-                            child: const Icon(
-                              Icons.add,
-                              color: AppColors.blanc,
-                              size: 18,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
+              Row(
+                children: [
+                  const Icon(
+                    Icons.calendar_month_rounded,
+                    color: AppColors.violetClair,
+                    size: 24,
                   ),
-                ),
-              ),
-
-              // ── Revenue Summary Card ──
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
-                  child: _RevenueSummaryCard(bookings: state.bookings),
-                ),
-              ),
-
-              // ── Tab bar ──
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
-                  child: _TabBar(
-                    tabs: _tabs,
-                    activeIndex: _activeTab,
-                    onTap: (i) => setState(() => _activeTab = i),
+                  const SizedBox(width: 10),
+                  Text('Agenda', style: AppTypography.proHubTitle),
+                  const Spacer(),
+                  _HeaderButton(
+                    icon: Icons.event_outlined,
+                    onTap: () {
+                      HapticFeedback.mediumImpact();
+                      context.push('/create-event');
+                    },
                   ),
-                ),
+                  const SizedBox(width: 8),
+                  _HeaderButton(
+                    icon: Icons.payments_outlined,
+                    onTap: () {
+                      HapticFeedback.mediumImpact();
+                      context.push('/pro/services');
+                    },
+                  ),
+                  const SizedBox(width: 8),
+                  _HeaderButton(
+                    icon: Icons.tune,
+                    onTap: () {
+                      HapticFeedback.mediumImpact();
+                      context.push('/pro/availability');
+                    },
+                  ),
+                ],
               ),
 
-              // ── Tab content ──
+              const SizedBox(height: 20),
+
+              // ── Stats Row ──
+              _StatsRow(
+                staggerCtrl: _staggerCtrl,
+                todayCount: todayBookings.length,
+                confirmedCount: confirmedToday,
+                pendingCount: pendingToday,
+                monthCount: monthBookings,
+              ),
+
+              const SizedBox(height: 20),
+
+              // ── Calendar Week Strip ──
+              _CalendarWeekStrip(
+                selectedDate: _selectedDate,
+                bookings: state.bookings,
+                onDateSelected: (d) {
+                  HapticFeedback.selectionClick();
+                  setState(() => _selectedDate = d);
+                },
+              ),
+
+              const SizedBox(height: 20),
+
+              // ── Time Slots ──
               if (state.isLoading)
-                const SliverFillRemaining(
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 40),
                   child: Center(
-                    child: CircularProgressIndicator(color: AppColors.violet),
+                    child:
+                        CircularProgressIndicator(color: AppColors.violet),
                   ),
                 )
+              else if (dayBookings.isEmpty)
+                _EmptyDayState(
+                  date: _selectedDate,
+                  onAddTap: () {
+                    HapticFeedback.mediumImpact();
+                    context.push('/pro/availability');
+                  },
+                )
               else
-                ..._buildTabContent(state),
+                ..._buildTimeSlots(dayBookings),
 
-              const SliverToBoxAdapter(child: SizedBox(height: 100)),
+              const SizedBox(height: 24),
+
+              // ── Revenue Section ──
+              _RevenueSection(
+                weekRevenue: weekRevenue,
+                weekClientCount: weekClientCount,
+                weekData: weekData,
+              ),
             ],
           ),
         ),
@@ -127,161 +218,86 @@ class _ProRdvScreenState extends ConsumerState<ProRdvScreen> {
     );
   }
 
-  List<Widget> _buildTabContent(ClientBookingsState state) {
-    switch (_activeTab) {
-      case 0:
-        return _buildTodayTab(state);
-      case 1:
-        return _buildUpcomingTab(state);
-      case 2:
-        return _buildHistoryTab(state);
-      default:
-        return [];
-    }
-  }
+  List<Widget> _buildTimeSlots(List<BookingModel> bookings) {
+    final widgets = <Widget>[];
 
-  // ── Tab 0: Aujourd'hui ──
-
-  List<Widget> _buildTodayTab(ClientBookingsState state) {
-    return [
-      // Week strip
-      SliverToBoxAdapter(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
-          child: _WeekStrip(
-            selectedDate: _selectedDate,
-            onDateSelected: (d) => setState(() => _selectedDate = d),
-          ),
-        ),
-      ),
-      // Timeline
-      SliverToBoxAdapter(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
-          child: _TimelineView(
-            bookings: _filterByDate(state.bookings, _selectedDate),
-            onConfirm: (id) => _confirmBooking(id),
-            onDecline: (id) => _declineBooking(id),
-            onComplete: (id) => _completeBooking(id),
-            onContact: (id) => _contactClient(id),
-          ),
-        ),
-      ),
-    ];
-  }
-
-  // ── Tab 1: À venir ──
-
-  List<Widget> _buildUpcomingTab(ClientBookingsState state) {
-    final upcoming = state.upcoming;
-    if (upcoming.isEmpty) {
-      return [
-        const SliverFillRemaining(
-          child: Center(
-            child: Text(
-              'Aucun RDV à venir',
-              style: TextStyle(color: AppColors.gris, fontSize: 14),
-            ),
-          ),
-        ),
-      ];
-    }
-
-    // Group by date
-    final grouped = <String, List<BookingModel>>{};
-    for (final b in upcoming) {
-      final key = b.slotDate ?? 'Sans date';
-      grouped.putIfAbsent(key, () => []).add(b);
-    }
-
-    return [
-      SliverPadding(
-        padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
-        sliver: SliverList.builder(
-          itemCount: grouped.length,
-          itemBuilder: (context, i) {
-            final entry = grouped.entries.elementAt(i);
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(top: 16, bottom: 8),
-                  child: Text(
-                    _formatDateHeader(entry.key),
-                    style: const TextStyle(
-                      color: AppColors.gris,
-                      fontSize: 11,
-                      fontWeight: FontWeight.w600,
-                      letterSpacing: 0.6,
-                    ),
-                  ),
+    for (int i = 0; i < bookings.length; i++) {
+      // Insert empty slot if there's a gap > 60min between bookings
+      if (i > 0) {
+        final prevEnd = _estimateEndTime(bookings[i - 1]);
+        final currStart = _parseTime(bookings[i].slotStartTime);
+        if (prevEnd != null && currStart != null) {
+          final gapMinutes =
+              currStart.difference(prevEnd).inMinutes;
+          if (gapMinutes >= 60) {
+            final gapLabel = _formatTimeOfDay(prevEnd);
+            widgets.add(
+              Padding(
+                padding: const EdgeInsets.only(bottom: 10),
+                child: _EmptySlotCard(
+                  timeLabel: gapLabel,
+                  onTap: () {
+                    HapticFeedback.mediumImpact();
+                    context.push('/pro/availability');
+                  },
                 ),
-                ...entry.value.map(
-                  (b) => Padding(
-                    padding: const EdgeInsets.only(bottom: 10),
-                    child: _ReservationSlot(
-                      booking: b,
-                      onConfirm: () => _confirmBooking(b.id),
-                      onDecline: () => _declineBooking(b.id),
-                      onComplete: () => _completeBooking(b.id),
-                      onContact: () => _contactClient(b.id),
-                    ),
-                  ),
-                ),
-              ],
+              ),
             );
-          },
-        ),
-      ),
-    ];
-  }
+          }
+        }
+      }
 
-  // ── Tab 2: Historique ──
-
-  List<Widget> _buildHistoryTab(ClientBookingsState state) {
-    final history = [...state.past, ...state.cancelled];
-    if (history.isEmpty) {
-      return [
-        const SliverFillRemaining(
-          child: Center(
-            child: Text(
-              'Aucun historique',
-              style: TextStyle(color: AppColors.gris, fontSize: 14),
-            ),
+      widgets.add(
+        Padding(
+          padding: const EdgeInsets.only(bottom: 10),
+          child: _TimeSlotCard(
+            booking: bookings[i],
+            index: i,
+            onConfirm: bookings[i].status == 'pending_payment' ||
+                    bookings[i].status == 'pending'
+                ? () => _confirmBooking(bookings[i].id)
+                : null,
+            onDecline: bookings[i].status == 'pending_payment' ||
+                    bookings[i].status == 'pending'
+                ? () => _declineBooking(bookings[i].id)
+                : null,
+            onComplete: bookings[i].status == 'confirmed'
+                ? () => _completeBooking(bookings[i].id)
+                : null,
+            onTap: () => context.push('/booking/${bookings[i].id}'),
           ),
         ),
-      ];
+      );
     }
 
-    return [
-      SliverPadding(
-        padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
-        sliver: SliverList.separated(
-          itemCount: history.length,
-          separatorBuilder: (_, __) => const SizedBox(height: 10),
-          itemBuilder: (context, i) => _ReservationSlot(
-            booking: history[i],
-            onConfirm: null,
-            onDecline: null,
-            onComplete: null,
-            onContact: null,
-          ),
-        ),
-      ),
-    ];
+    return widgets;
   }
 
-  // ── Helpers ──
-
-  List<BookingModel> _filterByDate(List<BookingModel> bookings, DateTime date) {
-    final dateStr = DateFormat('yyyy-MM-dd').format(date);
-    return bookings.where((b) => b.slotDate == dateStr).toList();
+  DateTime? _parseTime(String? timeStr) {
+    if (timeStr == null || timeStr.length < 5) return null;
+    final parts = timeStr.substring(0, 5).split(':');
+    if (parts.length < 2) return null;
+    final h = int.tryParse(parts[0]);
+    final m = int.tryParse(parts[1]);
+    if (h == null || m == null) return null;
+    return DateTime(_selectedDate.year, _selectedDate.month,
+        _selectedDate.day, h, m);
   }
 
-  String _formatDateHeader(String dateStr) {
-    final parsed = DateTime.tryParse(dateStr);
-    if (parsed == null) return dateStr;
-    return DateFormat.yMMMMd('fr_CA').format(parsed).toUpperCase();
+  DateTime? _estimateEndTime(BookingModel booking) {
+    final start = _parseTime(booking.slotStartTime);
+    if (start == null) return null;
+    final dur = booking.serviceDurationMinutes ?? 60;
+    return start.add(Duration(minutes: dur));
+  }
+
+  String _formatTimeOfDay(DateTime dt) {
+    return '${dt.hour.toString().padLeft(2, '0')}:${dt.minute.toString().padLeft(2, '0')}';
+  }
+
+  String _shortDay(int weekday) {
+    const days = ['L', 'M', 'M', 'J', 'V', 'S', 'D'];
+    return days[weekday - 1];
   }
 
   Future<void> _confirmBooking(String bookingId) async {
@@ -293,10 +309,8 @@ class _ProRdvScreenState extends ConsumerState<ProRdvScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             backgroundColor: AppColors.surface,
-            content: Text(
-              'Réservation confirmée',
-              style: TextStyle(color: AppColors.blanc),
-            ),
+            content: Text('Réservation confirmée',
+                style: TextStyle(color: AppColors.blanc)),
           ),
         );
       }
@@ -305,10 +319,8 @@ class _ProRdvScreenState extends ConsumerState<ProRdvScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             backgroundColor: AppColors.error,
-            content: Text(
-              e.toString(),
-              style: const TextStyle(color: AppColors.blanc),
-            ),
+            content:
+                Text(e.toString(), style: const TextStyle(color: AppColors.blanc)),
           ),
         );
       }
@@ -318,16 +330,16 @@ class _ProRdvScreenState extends ConsumerState<ProRdvScreen> {
   Future<void> _completeBooking(String bookingId) async {
     HapticFeedback.mediumImpact();
     try {
-      await ref.read(bookingRepositoryProvider).markBookingCompleted(bookingId);
+      await ref
+          .read(bookingRepositoryProvider)
+          .markBookingCompleted(bookingId);
       ref.invalidate(proBookingsProvider);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             backgroundColor: AppColors.surface,
-            content: Text(
-              'Rendez-vous marqué terminé',
-              style: TextStyle(color: AppColors.blanc),
-            ),
+            content: Text('Rendez-vous marqué terminé',
+                style: TextStyle(color: AppColors.blanc)),
           ),
         );
       }
@@ -336,10 +348,8 @@ class _ProRdvScreenState extends ConsumerState<ProRdvScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             backgroundColor: AppColors.error,
-            content: Text(
-              e.toString(),
-              style: const TextStyle(color: AppColors.blanc),
-            ),
+            content:
+                Text(e.toString(), style: const TextStyle(color: AppColors.blanc)),
           ),
         );
       }
@@ -350,590 +360,624 @@ class _ProRdvScreenState extends ConsumerState<ProRdvScreen> {
     HapticFeedback.lightImpact();
     context.push('/cancel-booking/$bookingId');
   }
-
-  void _contactClient(String bookingId) {
-    context.push('/pro/messages');
-  }
 }
 
 // ═════════════════════════════════════════════════════════════════════════════
-// REVENUE SUMMARY CARD
+// HEADER BUTTON
 // ═════════════════════════════════════════════════════════════════════════════
 
-class _RevenueSummaryCard extends StatelessWidget {
-  const _RevenueSummaryCard({required this.bookings});
+class _HeaderButton extends StatelessWidget {
+  const _HeaderButton({required this.icon, required this.onTap});
 
-  final List<BookingModel> bookings;
+  final IconData icon;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    final now = DateTime.now();
-    final thisMonth = bookings.where((b) {
-      return b.status == 'confirmed' || b.status == 'completed';
-    }).where((b) {
-      final d = DateTime.tryParse(b.slotDate ?? '');
-      return d != null && d.month == now.month && d.year == now.year;
-    }).toList();
-
-    final thisWeek = thisMonth.where((b) {
-      final d = DateTime.tryParse(b.slotDate ?? '');
-      if (d == null) return false;
-      final diff = now.difference(d).inDays;
-      return diff >= 0 && diff < 7;
-    }).toList();
-
-    final monthRevenue = thisMonth.fold<double>(
-        0, (sum, b) => sum + b.totalAmount * 0.88); // 12% commission
-    final weekRevenue = thisWeek.fold<double>(
-        0, (sum, b) => sum + b.totalAmount * 0.88);
-
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        gradient: const LinearGradient(
-          colors: [AppColors.violet, AppColors.violetClair],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 36,
+        height: 36,
+        decoration: BoxDecoration(
+          color: AppColors.blanc.withAlpha(10),
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: AppColors.border, width: 0.5),
         ),
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Ce mois',
-                  style: TextStyle(
-                    color: AppColors.blanc.withAlpha(179),
-                    fontSize: 11,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  '\$${monthRevenue.toStringAsFixed(0)}',
-                  style: const TextStyle(
-                    color: AppColors.blanc,
-                    fontSize: 24,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                Text(
-                  '${thisMonth.length} réservation${thisMonth.length > 1 ? 's' : ''}',
-                  style: TextStyle(
-                    color: AppColors.blanc.withAlpha(153),
-                    fontSize: 11,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Container(
-            width: 1,
-            height: 50,
-            color: AppColors.blanc.withAlpha(61),
-          ),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.only(left: 20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Cette semaine',
-                    style: TextStyle(
-                      color: AppColors.blanc.withAlpha(179),
-                      fontSize: 11,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    '\$${weekRevenue.toStringAsFixed(0)}',
-                    style: const TextStyle(
-                      color: AppColors.blanc,
-                      fontSize: 24,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  Text(
-                    '${thisWeek.length} réservation${thisWeek.length > 1 ? 's' : ''}',
-                    style: TextStyle(
-                      color: AppColors.blanc.withAlpha(153),
-                      fontSize: 11,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
+        child: Icon(icon, color: AppColors.blanc, size: 18),
       ),
     );
   }
 }
 
 // ═════════════════════════════════════════════════════════════════════════════
-// TAB BAR
+// STATS ROW — 4 animated stat cards
 // ═════════════════════════════════════════════════════════════════════════════
 
-class _TabBar extends StatelessWidget {
-  const _TabBar({
-    required this.tabs,
-    required this.activeIndex,
-    required this.onTap,
+class _StatsRow extends StatelessWidget {
+  const _StatsRow({
+    required this.staggerCtrl,
+    required this.todayCount,
+    required this.confirmedCount,
+    required this.pendingCount,
+    required this.monthCount,
   });
 
-  final List<String> tabs;
-  final int activeIndex;
-  final ValueChanged<int> onTap;
+  final AnimationController staggerCtrl;
+  final int todayCount;
+  final int confirmedCount;
+  final int pendingCount;
+  final int monthCount;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(4),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(12),
+    final cards = [
+      _StatData(
+        value: todayCount,
+        color: AppColors.violet,
+        label: "RDV aujourd'hui",
       ),
-      child: Row(
-        children: List.generate(tabs.length, (i) {
-          final isActive = i == activeIndex;
-          return Expanded(
-            child: GestureDetector(
-              onTap: () {
-                HapticFeedback.selectionClick();
-                onTap(i);
-              },
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 200),
-                padding: const EdgeInsets.symmetric(vertical: 10),
-                decoration: BoxDecoration(
-                  color: isActive ? AppColors.violet : Colors.transparent,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Text(
-                  tabs[i],
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: isActive ? AppColors.blanc : AppColors.grisInactif,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-            ),
-          );
-        }),
+      _StatData(
+        value: confirmedCount,
+        color: AppColors.success,
+        label: 'Confirmés',
+        meta: '/ $todayCount total',
       ),
-    );
-  }
-}
-
-// ═════════════════════════════════════════════════════════════════════════════
-// WEEK STRIP — horizontal 7-day selector
-// ═════════════════════════════════════════════════════════════════════════════
-
-class _WeekStrip extends StatelessWidget {
-  const _WeekStrip({
-    required this.selectedDate,
-    required this.onDateSelected,
-  });
-
-  final DateTime selectedDate;
-  final ValueChanged<DateTime> onDateSelected;
-
-  @override
-  Widget build(BuildContext context) {
-    // Show 7 days starting from Monday of the current week
-    final now = DateTime.now();
-    final monday = now.subtract(Duration(days: now.weekday - 1));
-    final days = List.generate(7, (i) => monday.add(Duration(days: i)));
+      _StatData(
+        value: pendingCount,
+        color: AppColors.catering,
+        label: 'En attente',
+        meta: 'à confirmer',
+      ),
+      _StatData(
+        value: monthCount,
+        color: AppColors.rose,
+        label: 'Ce mois',
+      ),
+    ];
 
     return SizedBox(
-      height: 72,
+      height: 90,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
-        itemCount: days.length,
+        itemCount: cards.length,
         separatorBuilder: (_, __) => const SizedBox(width: 8),
         itemBuilder: (context, i) {
-          final day = days[i];
-          final isSelected = day.year == selectedDate.year &&
-              day.month == selectedDate.month &&
-              day.day == selectedDate.day;
-          final isToday = day.year == now.year &&
-              day.month == now.month &&
-              day.day == now.day;
-
-          return GestureDetector(
-            onTap: () {
-              HapticFeedback.selectionClick();
-              onDateSelected(day);
-            },
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 200),
-              width: 46,
-              decoration: BoxDecoration(
-                color: isSelected ? AppColors.violet : Colors.transparent,
-                borderRadius: BorderRadius.circular(14),
-                border: isToday && !isSelected
-                    ? Border.all(color: AppColors.violet.withAlpha(102))
-                    : null,
+          final interval = Interval(
+            i * 0.1,
+            0.4 + i * 0.1,
+            curve: Curves.easeOutCubic,
+          );
+          return SlideTransition(
+            position: Tween<Offset>(
+              begin: const Offset(0.3, 0),
+              end: Offset.zero,
+            ).animate(CurvedAnimation(
+              parent: staggerCtrl,
+              curve: interval,
+            )),
+            child: FadeTransition(
+              opacity: CurvedAnimation(
+                parent: staggerCtrl,
+                curve: interval,
               ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    _dayAbbr(day.weekday),
-                    style: TextStyle(
-                      color: isSelected
-                          ? AppColors.blanc
-                          : AppColors.grisInactif,
-                      fontSize: 10,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
-                    '${day.day}',
-                    style: TextStyle(
-                      color: isSelected ? AppColors.blanc : AppColors.gris,
-                      fontSize: 16,
-                      fontWeight:
-                          isSelected ? FontWeight.w700 : FontWeight.w500,
-                    ),
-                  ),
-                ],
-              ),
+              child: _StatCard(data: cards[i]),
             ),
           );
         },
       ),
     );
   }
-
-  String _dayAbbr(int weekday) {
-    const abbrs = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
-    return abbrs[weekday - 1];
-  }
 }
 
-// ═════════════════════════════════════════════════════════════════════════════
-// TIMELINE VIEW — 30min slots
-// ═════════════════════════════════════════════════════════════════════════════
-
-class _TimelineView extends StatelessWidget {
-  const _TimelineView({
-    required this.bookings,
-    required this.onConfirm,
-    required this.onDecline,
-    required this.onComplete,
-    required this.onContact,
+class _StatData {
+  const _StatData({
+    required this.value,
+    required this.color,
+    required this.label,
+    this.meta,
   });
+  final int value;
+  final Color color;
+  final String label;
+  final String? meta;
+}
 
-  final List<BookingModel> bookings;
-  final ValueChanged<String>? onConfirm;
-  final ValueChanged<String>? onDecline;
-  final ValueChanged<String>? onComplete;
-  final ValueChanged<String>? onContact;
+class _StatCard extends StatelessWidget {
+  const _StatCard({required this.data});
+
+  final _StatData data;
 
   @override
   Widget build(BuildContext context) {
-    if (bookings.isEmpty) {
-      return Container(
-        padding: const EdgeInsets.all(24),
-        decoration: BoxDecoration(
-          color: AppColors.surface,
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: AppColors.border, width: 0.5),
-        ),
-        child: const Center(
-          child: Text(
-            'Aucun RDV pour cette journée',
-            style: TextStyle(color: AppColors.gris, fontSize: 13),
+    return Container(
+      constraints: const BoxConstraints(minWidth: 95),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: AppColors.surfaceAlt,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: AppColors.border, width: 0.5),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          AnimatedCounter(
+            value: data.value,
+            style: GoogleFonts.dmSans(
+              fontSize: 20,
+              fontWeight: FontWeight.w800,
+              color: data.color,
+            ),
+            duration: const Duration(milliseconds: 400),
           ),
-        ),
-      );
-    }
-
-    return Column(
-      children: bookings.map((b) {
-        return Padding(
-          padding: const EdgeInsets.only(bottom: 12),
-          child: _ReservationSlot(
-            booking: b,
-            onConfirm: b.status == 'pending_payment'
-                ? () => onConfirm?.call(b.id)
-                : null,
-            onDecline: b.status == 'pending_payment'
-                ? () => onDecline?.call(b.id)
-                : null,
-            onComplete: b.status == 'confirmed'
-                ? () => onComplete?.call(b.id)
-                : null,
-            onContact: b.status == 'confirmed'
-                ? () => onContact?.call(b.id)
-                : null,
+          const SizedBox(height: 4),
+          Text(
+            data.label,
+            style: GoogleFonts.dmSans(
+              fontSize: 9,
+              color: AppColors.gris,
+            ),
           ),
-        );
-      }).toList(),
+          if (data.meta != null) ...[
+            const SizedBox(height: 2),
+            Text(
+              data.meta!,
+              style: GoogleFonts.dmSans(
+                fontSize: 9,
+                fontWeight: FontWeight.w600,
+                color: AppColors.gris,
+              ),
+            ),
+          ],
+        ],
+      ),
     );
   }
 }
 
 // ═════════════════════════════════════════════════════════════════════════════
-// RESERVATION SLOT CARD
+// CALENDAR WEEK STRIP — 7-day strip with status dots
 // ═════════════════════════════════════════════════════════════════════════════
 
-class _ReservationSlot extends StatelessWidget {
-  const _ReservationSlot({
-    required this.booking,
-    this.onConfirm,
-    this.onDecline,
-    this.onComplete,
-    this.onContact,
+class _CalendarWeekStrip extends StatefulWidget {
+  const _CalendarWeekStrip({
+    required this.selectedDate,
+    required this.bookings,
+    required this.onDateSelected,
   });
 
-  final BookingModel booking;
-  final VoidCallback? onConfirm;
-  final VoidCallback? onDecline;
-  final VoidCallback? onComplete;
-  final VoidCallback? onContact;
+  final DateTime selectedDate;
+  final List<BookingModel> bookings;
+  final ValueChanged<DateTime> onDateSelected;
 
-  Color get _statusBorderColor {
-    return switch (booking.status) {
-      'confirmed' => AppColors.success,
-      'pending_payment' => AppColors.violet,
-      'completed' => AppColors.grisInactif,
-      _ => AppColors.rose,
-    };
+  @override
+  State<_CalendarWeekStrip> createState() => _CalendarWeekStripState();
+}
+
+class _CalendarWeekStripState extends State<_CalendarWeekStrip> {
+  late DateTime _weekStart;
+
+  @override
+  void initState() {
+    super.initState();
+    _weekStart = _getMonday(widget.selectedDate);
   }
 
-  String get _statusLabel {
-    return switch (booking.status) {
-      'confirmed' => 'Confirmée',
-      'pending_payment' => 'En attente',
-      'completed' => 'Terminée',
-      'cancelled_full_refund' || 'cancelled_no_refund' => 'Annulée',
-      _ => booking.status,
-    };
+  DateTime _getMonday(DateTime date) {
+    return date.subtract(Duration(days: date.weekday - 1));
   }
 
-  Color get _statusBadgeColor {
-    return switch (booking.status) {
-      'confirmed' => AppColors.success,
-      'pending_payment' => AppColors.violet,
-      'completed' => AppColors.grisInactif,
-      _ => AppColors.error,
-    };
+  void _prevWeek() {
+    setState(() {
+      _weekStart = _weekStart.subtract(const Duration(days: 7));
+    });
+  }
+
+  void _nextWeek() {
+    setState(() {
+      _weekStart = _weekStart.add(const Duration(days: 7));
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    final name = booking.clientName ?? 'Client';
+    final now = DateTime.now();
+    final days = List.generate(7, (i) => _weekStart.add(Duration(days: i)));
+    final monthName = DateFormat('MMMM yyyy', 'fr_FR').format(_weekStart);
+
+    return Column(
+      children: [
+        // Month header with arrows
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            _NavArrow(icon: Icons.chevron_left, onTap: _prevWeek),
+            const SizedBox(width: 12),
+            Text(
+              monthName[0].toUpperCase() + monthName.substring(1),
+              style: GoogleFonts.dmSans(
+                fontSize: 13,
+                fontWeight: FontWeight.w700,
+                color: AppColors.blanc,
+              ),
+            ),
+            const SizedBox(width: 12),
+            _NavArrow(icon: Icons.chevron_right, onTap: _nextWeek),
+          ],
+        ),
+        const SizedBox(height: 12),
+        // 7-day row
+        Row(
+          children: days.map((day) {
+            final isSelected = day.year == widget.selectedDate.year &&
+                day.month == widget.selectedDate.month &&
+                day.day == widget.selectedDate.day;
+            final isToday = day.year == now.year &&
+                day.month == now.month &&
+                day.day == now.day;
+
+            // Get dots (status indicators for this day)
+            final dayStr = DateFormat('yyyy-MM-dd').format(day);
+            final dayBookings =
+                widget.bookings.where((b) => b.slotDate == dayStr).toList();
+            final dots = _buildDots(dayBookings);
+
+            return Expanded(
+              child: GestureDetector(
+                onTap: () => widget.onDateSelected(day),
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  curve: Curves.easeOut,
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  decoration: BoxDecoration(
+                    color: isSelected
+                        ? AppColors.violet
+                        : isToday
+                            ? AppColors.violet.withAlpha(38)
+                            : Colors.transparent,
+                    borderRadius: BorderRadius.circular(12),
+                    border: isToday && !isSelected
+                        ? Border.all(
+                            color: AppColors.violet.withAlpha(77),
+                            width: 1,
+                          )
+                        : null,
+                  ),
+                  child: Column(
+                    children: [
+                      Text(
+                        _dayName(day.weekday),
+                        style: GoogleFonts.dmSans(
+                          fontSize: 9,
+                          color: isSelected
+                              ? AppColors.blanc
+                              : AppColors.grisInactif,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        '${day.day}',
+                        style: GoogleFonts.dmSans(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          color: isSelected
+                              ? AppColors.blanc
+                              : AppColors.gris,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      if (dots.isNotEmpty)
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: dots,
+                        )
+                      else
+                        const SizedBox(height: 4),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          }).toList(),
+        ),
+      ],
+    );
+  }
+
+  List<Widget> _buildDots(List<BookingModel> bookings) {
+    if (bookings.isEmpty) return [];
+    final statuses = bookings
+        .map((b) => b.status)
+        .toSet()
+        .take(4)
+        .toList();
+    return statuses.map((s) {
+      final color = switch (s) {
+        'confirmed' => AppColors.success,
+        'pending_payment' || 'pending' => AppColors.catering,
+        'completed' => AppColors.violet,
+        _ => AppColors.rose,
+      };
+      return Container(
+        width: 4,
+        height: 4,
+        margin: const EdgeInsets.symmetric(horizontal: 1),
+        decoration: BoxDecoration(
+          color: color,
+          shape: BoxShape.circle,
+        ),
+      );
+    }).toList();
+  }
+
+  String _dayName(int weekday) {
+    const names = ['LUN', 'MAR', 'MER', 'JEU', 'VEN', 'SAM', 'DIM'];
+    return names[weekday - 1];
+  }
+}
+
+class _NavArrow extends StatelessWidget {
+  const _NavArrow({required this.icon, required this.onTap});
+
+  final IconData icon;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 24,
+        height: 24,
+        decoration: BoxDecoration(
+          color: AppColors.blanc.withAlpha(10),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Icon(icon, color: AppColors.gris, size: 16),
+      ),
+    );
+  }
+}
+
+// ═════════════════════════════════════════════════════════════════════════════
+// TIME SLOT CARD — with status color bar
+// ═════════════════════════════════════════════════════════════════════════════
+
+class _TimeSlotCard extends StatelessWidget {
+  const _TimeSlotCard({
+    required this.booking,
+    required this.index,
+    required this.onTap,
+    this.onConfirm,
+    this.onDecline,
+    this.onComplete,
+  });
+
+  final BookingModel booking;
+  final int index;
+  final VoidCallback onTap;
+  final VoidCallback? onConfirm;
+  final VoidCallback? onDecline;
+  final VoidCallback? onComplete;
+
+  Color get _barColor => switch (booking.status) {
+        'confirmed' => AppColors.success,
+        'pending_payment' || 'pending' => AppColors.catering,
+        'completed' => AppColors.violet,
+        _ => AppColors.rose,
+      };
+
+  String get _statusLabel => switch (booking.status) {
+        'confirmed' => '✓ Confirmé',
+        'pending_payment' || 'pending' => '⏳ En attente',
+        'completed' => '✓ Terminé',
+        _ => 'Annulé',
+      };
+
+  Color get _badgeBg => switch (booking.status) {
+        'confirmed' => AppColors.success.withAlpha(31),
+        'pending_payment' || 'pending' =>
+          AppColors.catering.withAlpha(31),
+        'completed' => AppColors.violet.withAlpha(31),
+        _ => AppColors.error.withAlpha(31),
+      };
+
+  Color get _badgeText => switch (booking.status) {
+        'confirmed' => AppColors.success,
+        'pending_payment' || 'pending' => AppColors.catering,
+        'completed' => AppColors.statusCompleted,
+        _ => AppColors.error,
+      };
+
+  @override
+  Widget build(BuildContext context) {
     final time = booking.slotStartTime != null &&
             booking.slotStartTime!.length >= 5
         ? booking.slotStartTime!.substring(0, 5)
         : '';
+    final name = booking.clientName ?? 'Client';
 
-    return Container(
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(14),
-        border: Border(
-          left: BorderSide(color: _statusBorderColor, width: 3),
-        ),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(14),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Top row: avatar + name + service + status
-            Row(
-              children: [
-                CircleAvatar(
-                  radius: 18,
-                  backgroundColor: AppColors.surfaceAlt,
-                  backgroundImage: booking.clientAvatarUrl != null
-                      ? CachedNetworkImageProvider(booking.clientAvatarUrl!)
-                      : null,
-                  child: booking.clientAvatarUrl == null
-                      ? Text(
-                          name[0].toUpperCase(),
-                          style: const TextStyle(
-                            color: AppColors.blanc,
-                            fontSize: 13,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        )
-                      : null,
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        name,
-                        style: const TextStyle(
-                          color: AppColors.blanc,
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      if (booking.serviceName != null)
-                        Text(
-                          booking.serviceName!,
-                          style: const TextStyle(
-                            color: AppColors.gris,
-                            fontSize: 11,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                    ],
-                  ),
-                ),
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: _statusBadgeColor.withAlpha(31),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Text(
-                    _statusLabel,
-                    style: TextStyle(
-                      color: _statusBadgeColor,
-                      fontSize: 10,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-              ],
+    return GestureDetector(
+      onTap: onTap,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Time label
+          SizedBox(
+            width: 42,
+            child: Text(
+              time,
+              style: GoogleFonts.dmSans(
+                fontSize: 10,
+                fontWeight: FontWeight.w600,
+                color: AppColors.grisInactif,
+              ),
             ),
-
-            const SizedBox(height: 12),
-
-            // Pills: time, duration, price
-            Wrap(
-              spacing: 8,
-              runSpacing: 6,
-              children: [
-                if (time.isNotEmpty) _Pill(icon: Icons.schedule, text: time),
-                if (booking.serviceDurationMinutes != null)
-                  _Pill(
-                    icon: Icons.hourglass_bottom,
-                    text: '${booking.serviceDurationMinutes} min',
-                  ),
-                _Pill(
-                  icon: Icons.attach_money,
-                  text: '\$${booking.totalAmount.toStringAsFixed(0)}',
-                ),
-              ],
-            ),
-
-            // Actions
-            if (onConfirm != null ||
-                onDecline != null ||
-                onComplete != null ||
-                onContact != null)
-              Padding(
-                padding: const EdgeInsets.only(top: 12),
+          ),
+          // Card
+          Expanded(
+            child: Container(
+              decoration: BoxDecoration(
+                color: AppColors.surfaceAlt,
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: AppColors.border, width: 0.5),
+              ),
+              child: IntrinsicHeight(
                 child: Row(
                   children: [
-                    if (booking.status == 'pending_payment' &&
-                        onConfirm != null) ...[
-                      Expanded(
-                        child: _ActionButton(
-                          label: 'Confirmer',
-                          color: AppColors.success,
-                          icon: Icons.check,
-                          onTap: onConfirm!,
+                    // Color bar
+                    Container(
+                      width: 3,
+                      decoration: BoxDecoration(
+                        color: _barColor,
+                        borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(14),
+                          bottomLeft: Radius.circular(14),
                         ),
                       ),
-                      const SizedBox(width: 8),
-                    ],
-                    if (booking.status == 'pending_payment' &&
-                        onDecline != null) ...[
-                      Expanded(
-                        child: _ActionButton(
-                          label: 'Refuser',
-                          color: AppColors.error,
-                          textColor: AppColors.error,
-                          icon: Icons.close,
-                          onTap: onDecline!,
-                          outlined: true,
+                    ),
+                    // Content
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(10, 10, 12, 10),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Name + badge
+                            Row(
+                              children: [
+                                CircleAvatar(
+                                  radius: 14,
+                                  backgroundColor: AppColors.surface,
+                                  backgroundImage:
+                                      booking.clientAvatarUrl != null
+                                          ? CachedNetworkImageProvider(
+                                              booking.clientAvatarUrl!)
+                                          : null,
+                                  child: booking.clientAvatarUrl == null
+                                      ? Text(
+                                          name[0].toUpperCase(),
+                                          style: const TextStyle(
+                                            color: AppColors.blanc,
+                                            fontSize: 10,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        )
+                                      : null,
+                                ),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    name,
+                                    style: GoogleFonts.dmSans(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w700,
+                                      color: AppColors.blanc,
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 6, vertical: 3),
+                                  decoration: BoxDecoration(
+                                    color: _badgeBg,
+                                    borderRadius: BorderRadius.circular(6),
+                                  ),
+                                  child: Text(
+                                    _statusLabel,
+                                    style: GoogleFonts.dmSans(
+                                      fontSize: 9,
+                                      fontWeight: FontWeight.w600,
+                                      color: _badgeText,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            // Service name
+                            if (booking.serviceName != null) ...[
+                              const SizedBox(height: 6),
+                              Text(
+                                booking.serviceName!,
+                                style: GoogleFonts.dmSans(
+                                  fontSize: 10,
+                                  color: AppColors.gris,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ],
+                            // Meta: duration + price
+                            const SizedBox(height: 4),
+                            Row(
+                              children: [
+                                if (booking.serviceDurationMinutes !=
+                                    null) ...[
+                                  const Icon(Icons.schedule,
+                                      size: 11, color: AppColors.grisInactif),
+                                  const SizedBox(width: 3),
+                                  Text(
+                                    '${booking.serviceDurationMinutes} min',
+                                    style: GoogleFonts.dmSans(
+                                      fontSize: 9,
+                                      color: AppColors.grisInactif,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 10),
+                                ],
+                                const Icon(Icons.attach_money,
+                                    size: 11, color: AppColors.grisInactif),
+                                Text(
+                                  '\$${booking.totalAmount.toStringAsFixed(0)}',
+                                  style: GoogleFonts.dmSans(
+                                    fontSize: 9,
+                                    color: AppColors.grisInactif,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            // Action buttons
+                            if (onConfirm != null ||
+                                onDecline != null ||
+                                onComplete != null) ...[
+                              const SizedBox(height: 8),
+                              Row(
+                                children: [
+                                  if (onConfirm != null)
+                                    _SlotAction(
+                                      label: 'Confirmer',
+                                      color: AppColors.success,
+                                      onTap: onConfirm!,
+                                    ),
+                                  if (onConfirm != null && onDecline != null)
+                                    const SizedBox(width: 6),
+                                  if (onDecline != null)
+                                    _SlotAction(
+                                      label: 'Refuser',
+                                      color: AppColors.error,
+                                      outlined: true,
+                                      onTap: onDecline!,
+                                    ),
+                                  if (onComplete != null)
+                                    _SlotAction(
+                                      label: 'Terminer',
+                                      color: AppColors.violet,
+                                      onTap: onComplete!,
+                                    ),
+                                ],
+                              ),
+                            ],
+                          ],
                         ),
                       ),
-                      const SizedBox(width: 8),
-                    ],
-                    if (booking.status == 'confirmed') ...[
-                      if (onComplete != null)
-                        Expanded(
-                          child: _ActionButton(
-                            label: 'Terminer',
-                            color: AppColors.violet,
-                            icon: Icons.check_circle,
-                            onTap: onComplete!,
-                          ),
-                        ),
-                      if (onContact != null) ...[
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: _ActionButton(
-                            label: 'Contacter',
-                            color: AppColors.surface,
-                            textColor: AppColors.blanc,
-                            icon: Icons.chat_bubble_outline,
-                            onTap: onContact!,
-                            outlined: true,
-                          ),
-                        ),
-                      ],
-                    ],
+                    ),
                   ],
                 ),
               ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-// ── Small pill widget ────────────────────────────────────────────────────────
-
-class _Pill extends StatelessWidget {
-  const _Pill({required this.icon, required this.text});
-
-  final IconData icon;
-  final String text;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        color: AppColors.surfaceAlt,
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, color: AppColors.gris, size: 12),
-          const SizedBox(width: 4),
-          Text(
-            text,
-            style: const TextStyle(
-              color: AppColors.gris,
-              fontSize: 11,
-              fontWeight: FontWeight.w500,
             ),
           ),
         ],
@@ -942,22 +986,16 @@ class _Pill extends StatelessWidget {
   }
 }
 
-// ── Action button ────────────────────────────────────────────────────────────
-
-class _ActionButton extends StatelessWidget {
-  const _ActionButton({
+class _SlotAction extends StatelessWidget {
+  const _SlotAction({
     required this.label,
     required this.color,
-    required this.icon,
     required this.onTap,
-    this.textColor,
     this.outlined = false,
   });
 
   final String label;
   final Color color;
-  final Color? textColor;
-  final IconData icon;
   final VoidCallback onTap;
   final bool outlined;
 
@@ -966,30 +1004,321 @@ class _ActionButton extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
         decoration: BoxDecoration(
           color: outlined ? Colors.transparent : color,
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(8),
           border: outlined
               ? Border.all(color: AppColors.border, width: 1)
               : null,
         ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, color: textColor ?? AppColors.blanc, size: 14),
-            const SizedBox(width: 6),
-            Text(
-              label,
-              style: TextStyle(
-                color: textColor ?? AppColors.blanc,
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ],
+        child: Text(
+          label,
+          style: GoogleFonts.dmSans(
+            fontSize: 10,
+            fontWeight: FontWeight.w600,
+            color: outlined ? color : AppColors.blanc,
+          ),
         ),
       ),
     );
   }
+}
+
+// ═════════════════════════════════════════════════════════════════════════════
+// EMPTY SLOT CARD — dashed border gap between bookings
+// ═════════════════════════════════════════════════════════════════════════════
+
+class _EmptySlotCard extends StatelessWidget {
+  const _EmptySlotCard({required this.timeLabel, required this.onTap});
+
+  final String timeLabel;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(
+          width: 42,
+          child: Text(
+            timeLabel,
+            style: GoogleFonts.dmSans(
+              fontSize: 10,
+              fontWeight: FontWeight.w600,
+              color: AppColors.grisInactif,
+            ),
+          ),
+        ),
+        Expanded(
+          child: GestureDetector(
+            onTap: onTap,
+            child: Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(
+                  color: AppColors.surface,
+                  width: 1.5,
+                ),
+              ),
+              child: Center(
+                child: Text(
+                  '+ Disponible',
+                  style: GoogleFonts.dmSans(
+                    fontSize: 10,
+                    color: AppColors.grisInactif,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+// ═════════════════════════════════════════════════════════════════════════════
+// EMPTY DAY STATE
+// ═════════════════════════════════════════════════════════════════════════════
+
+class _EmptyDayState extends StatelessWidget {
+  const _EmptyDayState({required this.date, required this.onAddTap});
+
+  final DateTime date;
+  final VoidCallback onAddTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final label = DateFormat('EEEE d MMMM', 'fr_FR').format(date);
+    return Container(
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(
+          color: AppColors.border,
+          width: 1,
+          strokeAlign: BorderSide.strokeAlignCenter,
+        ),
+      ),
+      child: Column(
+        children: [
+          const Icon(Icons.event_available,
+              color: AppColors.grisInactif, size: 32),
+          const SizedBox(height: 10),
+          Text(
+            'Aucun RDV le $label',
+            textAlign: TextAlign.center,
+            style: GoogleFonts.dmSans(
+              fontSize: 13,
+              color: AppColors.gris,
+            ),
+          ),
+          const SizedBox(height: 12),
+          GestureDetector(
+            onTap: onAddTap,
+            child: Text(
+              '+ Gérer les disponibilités',
+              style: GoogleFonts.dmSans(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: AppColors.violet,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ═════════════════════════════════════════════════════════════════════════════
+// REVENUE SECTION — with bar chart
+// ═════════════════════════════════════════════════════════════════════════════
+
+class _RevenueSection extends StatefulWidget {
+  const _RevenueSection({
+    required this.weekRevenue,
+    required this.weekClientCount,
+    required this.weekData,
+  });
+
+  final double weekRevenue;
+  final int weekClientCount;
+  final List<_DailyRevenue> weekData;
+
+  @override
+  State<_RevenueSection> createState() => _RevenueSectionState();
+}
+
+class _RevenueSectionState extends State<_RevenueSection>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _barCtrl;
+
+  @override
+  void initState() {
+    super.initState();
+    _barCtrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 800),
+    )..forward();
+  }
+
+  @override
+  void dispose() {
+    _barCtrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final maxAmount = widget.weekData
+        .map((d) => d.amount)
+        .fold<double>(0, (a, b) => math.max(a, b));
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Header
+        Row(
+          children: [
+            Text(
+              '💰 Revenus',
+              style: GoogleFonts.dmSans(
+                fontSize: 13,
+                fontWeight: FontWeight.w700,
+                color: AppColors.blanc,
+              ),
+            ),
+            const SizedBox(width: 8),
+            Container(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(
+                color: AppColors.blanc.withAlpha(10),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Text(
+                'Cette semaine',
+                style: GoogleFonts.dmSans(
+                  fontSize: 10,
+                  color: AppColors.gris,
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        // Card
+        Container(
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            color: AppColors.surfaceAlt,
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: AppColors.border, width: 0.5),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Revenue amount
+              Text(
+                '\$${widget.weekRevenue.toStringAsFixed(0)}',
+                style: GoogleFonts.dmSans(
+                  fontSize: 24,
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.success,
+                ),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                '${widget.weekClientCount} client${widget.weekClientCount > 1 ? 's' : ''}',
+                style: GoogleFonts.dmSans(
+                  fontSize: 10,
+                  color: AppColors.gris,
+                ),
+              ),
+              const SizedBox(height: 14),
+              // Bar chart
+              SizedBox(
+                height: 48,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: widget.weekData.asMap().entries.map((entry) {
+                    final i = entry.key;
+                    final d = entry.value;
+                    final fraction =
+                        maxAmount > 0 ? d.amount / maxAmount : 0.0;
+
+                    return Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 2),
+                        child: AnimatedBuilder(
+                          animation: _barCtrl,
+                          builder: (context, _) {
+                            final delay = i * 0.1;
+                            final progress = ((_barCtrl.value - delay) /
+                                    (1 - delay))
+                                .clamp(0.0, 1.0);
+                            final curved =
+                                Curves.easeOutBack.transform(progress);
+                            return FractionallySizedBox(
+                              heightFactor: fraction * curved,
+                              alignment: Alignment.bottomCenter,
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: d.isToday
+                                      ? AppColors.violet
+                                      : AppColors.violet.withAlpha(77),
+                                  borderRadius: const BorderRadius.vertical(
+                                    top: Radius.circular(4),
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ),
+              const SizedBox(height: 6),
+              // Day labels
+              Row(
+                children: widget.weekData.map((d) {
+                  return Expanded(
+                    child: Text(
+                      d.dayLabel,
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.dmSans(
+                        fontSize: 8,
+                        color: d.isToday
+                            ? AppColors.blanc
+                            : AppColors.grisInactif,
+                        fontWeight:
+                            d.isToday ? FontWeight.w600 : FontWeight.w400,
+                      ),
+                    ),
+                  );
+                }).toList(),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _DailyRevenue {
+  const _DailyRevenue({
+    required this.dayLabel,
+    required this.amount,
+    required this.isToday,
+  });
+  final String dayLabel;
+  final double amount;
+  final bool isToday;
 }

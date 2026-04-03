@@ -42,7 +42,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
           .resetPassword(_emailCtrl.text.trim());
 
       if (!mounted) return;
-      context.go('/auth/forgot-password-confirmation');
+      context.go('/forgot-password-confirmation');
     } catch (e) {
       if (!mounted) return;
       final msg = e.toString();
@@ -78,7 +78,8 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
           padding: const EdgeInsets.symmetric(horizontal: 24),
           child: Form(
             key: _formKey,
-            child: Column(
+            child: SingleChildScrollView(
+              child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(height: 24),
@@ -137,7 +138,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(14),
                       borderSide:
-                          const BorderSide(color: AppColors.blanc),
+                          const BorderSide(color: AppColors.violet),
                     ),
                     errorBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(14),
@@ -173,7 +174,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                   onPressed: _isLoading ? null : _submit,
                 ),
 
-                const Spacer(),
+                const SizedBox(height: 32),
 
                 // Back to login
                 Center(
@@ -193,7 +194,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                             TextSpan(
                               text: 'Se connecter',
                               style: TextStyle(
-                                color: AppColors.blanc,
+                                color: AppColors.violetClair,
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
@@ -205,6 +206,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                 ),
                 const SizedBox(height: 16),
               ],
+            ),
             ),
           ),
         ),

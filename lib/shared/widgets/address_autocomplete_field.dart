@@ -6,6 +6,25 @@ import 'package:http/http.dart' as http;
 
 import '../theme/app_colors.dart';
 
+/// Structured result from Google Place Details.
+class PlaceDetails {
+  const PlaceDetails({
+    required this.address,
+    required this.city,
+    this.province,
+    this.postalCode,
+    required this.latitude,
+    required this.longitude,
+  });
+
+  final String address;
+  final String city;
+  final String? province;
+  final String? postalCode;
+  final double latitude;
+  final double longitude;
+}
+
 class AddressAutocompleteField extends StatefulWidget {
   const AddressAutocompleteField({
     super.key,
@@ -14,6 +33,7 @@ class AddressAutocompleteField extends StatefulWidget {
     this.hint,
     this.icon,
     this.fillColor,
+    this.onPlaceSelected,
   });
 
   final TextEditingController controller;
@@ -21,6 +41,9 @@ class AddressAutocompleteField extends StatefulWidget {
   final String? hint;
   final IconData? icon;
   final Color? fillColor;
+
+  /// Called when a user taps a suggestion and Place Details are resolved.
+  final ValueChanged<PlaceDetails>? onPlaceSelected;
 
   @override
   State<AddressAutocompleteField> createState() =>
@@ -57,7 +80,7 @@ class _AddressAutocompleteFieldState extends State<AddressAutocompleteField> {
       final uri = Uri.https(
         'maps.googleapis.com',
         '/maps/api/place/autocomplete/json',
-        {'input': query, 'key': _apiKey},
+        {'input': query, 'key': _apiKey, 'types': 'address'},
       );
       final response = await http.get(uri);
       if (response.statusCode == 200) {
@@ -73,6 +96,7 @@ class _AddressAutocompleteFieldState extends State<AddressAutocompleteField> {
                             ?['secondary_text'] as String?) ??
                         '',
                     full: (p['description'] as String?) ?? '',
+                    placeId: (p['place_id'] as String?) ?? '',
                   ))
               .toList();
         });
@@ -81,6 +105,69 @@ class _AddressAutocompleteFieldState extends State<AddressAutocompleteField> {
       debugPrint('Error fetching places: $e');
     } finally {
       setState(() => _isLoading = false);
+    }
+  }
+
+  Future<void> _selectPlace(_PlacePrediction prediction) async {
+    widget.controller.text = prediction.full;
+    setState(() => _predictions = []);
+    FocusScope.of(context).unfocus();
+
+    if (prediction.placeId.isEmpty || widget.onPlaceSelected == null) return;
+
+    try {
+      final uri = Uri.https(
+        'maps.googleapis.com',
+        '/maps/api/place/details/json',
+        {
+          'place_id': prediction.placeId,
+          'fields': 'address_components,geometry',
+          'key': _apiKey,
+        },
+      );
+      final response = await http.get(uri);
+      if (response.statusCode != 200) return;
+
+      final result =
+          (json.decode(response.body) as Map<String, dynamic>)['result']
+              as Map<String, dynamic>?;
+      if (result == null) return;
+
+      final components =
+          (result['address_components'] as List?)?.cast<Map<String, dynamic>>() ?? [];
+      final geometry = result['geometry'] as Map<String, dynamic>?;
+      final location = geometry?['location'] as Map<String, dynamic>?;
+
+      String city = '';
+      String? province;
+      String? postalCode;
+
+      for (final c in components) {
+        final types = (c['types'] as List).cast<String>();
+        if (types.contains('locality')) {
+          city = c['long_name'] as String? ?? '';
+        } else if (types.contains('administrative_area_level_1')) {
+          province = c['long_name'] as String?;
+        } else if (types.contains('postal_code')) {
+          postalCode = c['long_name'] as String?;
+        }
+      }
+
+      final lat = (location?['lat'] as num?)?.toDouble();
+      final lng = (location?['lng'] as num?)?.toDouble();
+
+      if (lat != null && lng != null) {
+        widget.onPlaceSelected!(PlaceDetails(
+          address: prediction.full,
+          city: city,
+          province: province,
+          postalCode: postalCode,
+          latitude: lat,
+          longitude: lng,
+        ));
+      }
+    } catch (e) {
+      debugPrint('Error fetching place details: $e');
     }
   }
 
@@ -96,11 +183,17 @@ class _AddressAutocompleteFieldState extends State<AddressAutocompleteField> {
           decoration: InputDecoration(
             labelText: widget.label,
             hintText: widget.hint,
+            labelStyle: const TextStyle(color: AppColors.gris),
+            hintStyle: TextStyle(color: AppColors.gris.withAlpha(128)),
             prefixIcon: widget.icon != null
-                ? Icon(widget.icon, color: AppColors.gris)
+                ? Icon(widget.icon, color: AppColors.gris, size: 20)
                 : null,
             fillColor: widget.fillColor,
-            filled: widget.fillColor != null ? true : null,
+            filled: widget.fillColor != null,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide.none,
+            ),
           ),
         ),
         if (_isLoading)
@@ -131,16 +224,14 @@ class _AddressAutocompleteFieldState extends State<AddressAutocompleteField> {
               itemBuilder: (context, index) {
                 final prediction = _predictions[index];
                 return ListTile(
+                  leading: const Icon(Icons.location_on_outlined,
+                      color: AppColors.gris, size: 20),
                   title: Text(prediction.primary,
                       style: const TextStyle(color: AppColors.blanc)),
                   subtitle: Text(prediction.secondary,
                       style: const TextStyle(
                           color: AppColors.gris, fontSize: 12)),
-                  onTap: () {
-                    widget.controller.text = prediction.full;
-                    setState(() => _predictions = []);
-                    FocusScope.of(context).unfocus();
-                  },
+                  onTap: () => _selectPlace(prediction),
                 );
               },
             ),
@@ -155,9 +246,11 @@ class _PlacePrediction {
     required this.primary,
     required this.secondary,
     required this.full,
+    required this.placeId,
   });
 
   final String primary;
   final String secondary;
   final String full;
+  final String placeId;
 }

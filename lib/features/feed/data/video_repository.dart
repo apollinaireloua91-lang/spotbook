@@ -18,7 +18,7 @@ class VideoRepository {
   String? get currentUserId => _supabase.auth.currentUser?.id;
 
   static const _selectWithPro =
-      '*, users!pro_id(id, full_name, display_name, avatar_url, username, city, profiles_pro(id, business_name, category, is_top_pro), social_connections(platform, followers_count, handle))';
+      '*, users!pro_id(id, full_name, display_name, avatar_url, username, city, profiles_pro(id, business_name, category, city, rating_average, is_top_pro)), services(id, title, price, duration_minutes), events(id, title, event_date, location)';
 
   Future<List<VideoModel>> getScoredVideos({int limit = 10}) async {
     final uid = currentUserId;

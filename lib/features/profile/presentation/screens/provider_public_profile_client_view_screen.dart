@@ -18,6 +18,7 @@ import '../../../reviews/domain/review_model.dart';
 import '../../domain/entities/provider_profile_data.dart';
 import '../bloc/public_provider_profile_bloc.dart';
 import '../widgets/share_profile_modal.dart';
+import '../widgets/social_badge_widget.dart';
 
 /// Profil pro vu par le client (conversion) — route hors shell.
 ///
@@ -73,24 +74,6 @@ class _ProviderPublicProfileClientViewScreenState
         return Uri.parse('https://www.facebook.com/$h');
       default:
         return null;
-    }
-  }
-
-  IconData _socialIcon(String platform) {
-    switch (platform.toLowerCase()) {
-      case 'tiktok':
-        return Icons.music_note;
-      case 'instagram':
-        return Icons.camera_alt_outlined;
-      case 'youtube':
-        return Icons.play_circle_outline;
-      case 'twitter':
-      case 'x':
-        return Icons.chat_bubble_outline;
-      case 'facebook':
-        return Icons.facebook;
-      default:
-        return Icons.link;
     }
   }
 
@@ -265,7 +248,6 @@ class _ProviderPublicProfileClientViewScreenState
                   _tabController.animateTo(3);
                 },
                 onOpenSocial: _openSocial,
-                socialIcon: _socialIcon,
                 onVideoTap: (v) {
                   HapticFeedback.lightImpact();
                   context.push('/client/profile-video', extra: v);
@@ -285,7 +267,6 @@ class _ReadyBody extends StatelessWidget {
     required this.onBookTap,
     required this.onTicketTap,
     required this.onOpenSocial,
-    required this.socialIcon,
     required this.onVideoTap,
   });
 
@@ -294,7 +275,6 @@ class _ReadyBody extends StatelessWidget {
   final VoidCallback onBookTap;
   final VoidCallback onTicketTap;
   final Future<void> Function(ProviderSocialLink) onOpenSocial;
-  final IconData Function(String platform) socialIcon;
   final void Function(VideoEntity) onVideoTap;
 
   @override
@@ -423,17 +403,15 @@ class _ReadyBody extends StatelessWidget {
                       alignment: WrapAlignment.center,
                       children: [
                         for (final link in p.socialLinks)
-                          IconButton(
-                            onPressed: () {
+                          GestureDetector(
+                            onTap: () {
                               HapticFeedback.lightImpact();
                               onOpenSocial(link);
                             },
-                            icon: Icon(
-                              socialIcon(link.platform),
-                              color: AppColors.blanc,
-                              size: 26,
+                            child: SocialIcon(
+                              platform: link.platform,
+                              size: 40,
                             ),
-                            tooltip: link.platform,
                           ),
                       ],
                     ),
@@ -478,7 +456,7 @@ class _ReadyBody extends StatelessWidget {
             controller: tabController,
             labelColor: AppColors.blanc,
             unselectedLabelColor: AppColors.gris,
-            indicatorColor: AppColors.blanc,
+            indicatorColor: AppColors.violet,
             indicatorWeight: 2,
             labelStyle: const TextStyle(
               fontSize: 12,
@@ -679,6 +657,12 @@ class _VideosTab extends StatelessWidget {
   final List<VideoEntity> videos;
   final void Function(VideoEntity) onVideoTap;
 
+  static String _formatViews(int count) {
+    if (count >= 1000000) return '${(count / 1000000).toStringAsFixed(1)}M';
+    if (count >= 1000) return '${(count / 1000).toStringAsFixed(1)}K';
+    return '$count';
+  }
+
   @override
   Widget build(BuildContext context) {
     if (videos.isEmpty) {
@@ -704,23 +688,61 @@ class _VideosTab extends StatelessWidget {
           onTap: () => onVideoTap(v),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(8),
-            child: v.thumbnailUrl != null && v.thumbnailUrl!.isNotEmpty
-                ? CachedNetworkImage(
-                    imageUrl: v.thumbnailUrl!,
-                    fit: BoxFit.cover,
-                    placeholder: (_, __) =>
-                        const SpotbookLoadingShimmer.card(itemCount: 1),
-                    errorWidget: (_, __, ___) => Container(
-                      color: AppColors.surfaceAlt,
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                v.thumbnailUrl != null && v.thumbnailUrl!.isNotEmpty
+                    ? CachedNetworkImage(
+                        imageUrl: v.thumbnailUrl!,
+                        fit: BoxFit.cover,
+                        placeholder: (_, __) =>
+                            const SpotbookLoadingShimmer.card(itemCount: 1),
+                        errorWidget: (_, __, ___) => Container(
+                          color: AppColors.surfaceAlt,
+                        ),
+                      )
+                    : Container(
+                        color: AppColors.surfaceAlt,
+                        child: const Icon(
+                          Icons.play_circle_outline,
+                          color: AppColors.gris,
+                        ),
+                      ),
+                Positioned(
+                  left: 6,
+                  bottom: 6,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 6,
+                      vertical: 2,
                     ),
-                  )
-                : Container(
-                    color: AppColors.surfaceAlt,
-                    child: const Icon(
-                      Icons.play_circle_outline,
-                      color: AppColors.gris,
+                    decoration: BoxDecoration(
+                      color: Colors.black.withAlpha(153),
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(
+                          Icons.play_arrow,
+                          color: AppColors.blanc,
+                          size: 12,
+                        ),
+                        const SizedBox(width: 2),
+                        Text(
+                          _formatViews(v.viewsCount),
+                          style: const TextStyle(
+                            color: AppColors.blanc,
+                            fontSize: 10,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
+                ),
+              ],
+            ),
           ),
         );
       },
@@ -925,7 +947,7 @@ class _EventsTab extends StatelessWidget {
           padding: EdgeInsets.zero,
           onTap: () {
             HapticFeedback.lightImpact();
-            context.push('/client/event/${e.id}');
+            context.push('/event/${e.id}');
           },
           child: Padding(
             padding: const EdgeInsets.all(14),

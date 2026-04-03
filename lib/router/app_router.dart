@@ -1,19 +1,32 @@
+import 'dart:io';
+
 import 'package:go_router/go_router.dart';
 
+import '../core/animations/page_transitions.dart';
+import '../features/pro/presentation/camera/video_preview_screen.dart';
 import '../features/auth/presentation/screens/account_type_selection_screen.dart';
 import '../features/auth/presentation/screens/client_interest_categories_screen.dart';
 import '../features/auth/presentation/screens/client_interest_goals_screen.dart';
 import '../features/auth/presentation/screens/complete_profile_screen.dart';
+import '../features/auth/presentation/screens/forgot_password_confirmation_screen.dart';
+import '../features/auth/presentation/screens/forgot_password_screen.dart';
 import '../features/auth/presentation/screens/login_screen.dart';
 import '../features/auth/presentation/screens/permission_location_screen.dart';
+import '../features/auth/presentation/screens/pro_interest_categories_screen.dart';
 import '../features/auth/presentation/screens/pro_business_details_screen.dart';
 import '../features/auth/presentation/screens/pro_verification_screen.dart';
 import '../features/auth/presentation/screens/sign_up_screen.dart';
 import '../features/auth/presentation/screens/splash_screen.dart';
 import '../features/auth/presentation/screens/stripe_connect_screen.dart';
+import '../features/auth/presentation/screens/change_password_screen.dart';
 import '../features/booking/presentation/screens/booking_cancellation_screen.dart';
+import '../features/booking/presentation/screens/booking_detail_screen.dart';
 import '../features/booking/presentation/screens/my_bookings_screen.dart';
 import '../features/booking/presentation/screens/pro_dashboard_screen.dart';
+import '../features/booking/presentation/screens/pro_rdv_screen.dart';
+import '../features/booking/presentation/screens/pro_services_manage_screen.dart';
+import '../features/booking/presentation/screens/pro_revenue_screen.dart';
+import '../features/availability/presentation/screens/provider_availability_setup_screen.dart';
 import '../features/events/domain/event_models.dart';
 import '../features/events/presentation/screens/create_event_screen.dart';
 import '../features/events/presentation/screens/event_detail_screen.dart';
@@ -21,10 +34,15 @@ import '../features/events/presentation/screens/pro_my_events_screen.dart';
 import '../features/events/presentation/screens/scanner_screen.dart';
 import '../features/events/presentation/screens/ticket_detail_screen.dart';
 import '../features/events/presentation/screens/waitlist_screen.dart';
-import '../features/feed/presentation/screens/discover_screen.dart';
+import '../features/client/presentation/search/client_search_screen.dart';
 import '../features/feed/presentation/screens/feed_screen.dart';
 import '../features/feed/presentation/screens/my_videos_screen.dart';
 import '../features/feed/presentation/screens/upload_video_screen.dart';
+import '../features/pro/presentation/camera/video_capture_screen.dart';
+import '../features/feed/presentation/screens/pro_search_screen.dart';
+import '../features/pro/presentation/feed/pro_feed_screen.dart';
+import '../features/profile/presentation/screens/pro_qr_code_screen.dart';
+import '../features/events/presentation/screens/pro_scanner_event_picker_screen.dart';
 import '../features/onboarding/presentation/screens/onboarding_screen.dart';
 import '../features/payment/presentation/screens/pro_subscription_screen.dart';
 import '../features/payment/presentation/screens/stripe_checkout_webview.dart';
@@ -43,7 +61,14 @@ import '../features/promo/presentation/screens/referral_screen.dart';
 import '../features/reviews/presentation/screens/review_screen.dart';
 import '../features/settings/presentation/screens/settings_screen.dart';
 import '../features/social/presentation/screens/pro_insights_screen.dart';
-import '../shared/widgets/placeholder_screen.dart';
+import '../features/chat/presentation/screens/messaging_inbox_screen.dart';
+import '../features/booking/presentation/screens/booking_flow_screen.dart';
+import '../features/booking/presentation/screens/refund_request_screen.dart';
+import '../features/events/presentation/screens/my_tickets_screen.dart';
+import '../features/events/presentation/screens/client_events_discovery_screen.dart';
+import '../features/favorites/presentation/screens/saved_posts_screen.dart';
+import '../features/settings/presentation/screens/language_settings_screen.dart';
+import '../features/payment/presentation/screens/payment_receipt_screen.dart';
 import 'client_shell.dart';
 import 'pro_shell.dart';
 
@@ -61,17 +86,28 @@ final appRouter = GoRouter(
       builder: (context, state) => const OnboardingScreen(),
     ),
     GoRoute(
-      path: '/account-type',
+      path: '/select-account-type',
       builder: (context, state) => const AccountTypeSelectionScreen(),
     ),
     GoRoute(
-      path: '/signup',
-      builder: (context, state) =>
-          SignUpScreen(initialRole: state.extra as String?),
+      path: '/signup/client',
+      builder: (context, state) => const SignUpScreen(role: 'client'),
+    ),
+    GoRoute(
+      path: '/signup/pro',
+      builder: (context, state) => const SignUpScreen(role: 'pro'),
     ),
     GoRoute(
       path: '/login',
       builder: (context, state) => const LoginScreen(),
+    ),
+    GoRoute(
+      path: '/forgot-password',
+      builder: (context, state) => const ForgotPasswordScreen(),
+    ),
+    GoRoute(
+      path: '/forgot-password-confirmation',
+      builder: (context, state) => const ForgotPasswordConfirmationScreen(),
     ),
 
     // ─── Post-inscription ───
@@ -107,6 +143,10 @@ final appRouter = GoRouter(
       path: '/pro/stripe-connect',
       builder: (context, state) => const StripeConnectScreen(),
     ),
+    GoRoute(
+      path: '/pro/interests',
+      builder: (context, state) => const ProInterestCategoriesScreen(),
+    ),
 
     // ─── Client shell (BottomNav 4 tabs) ───
     StatefulShellRoute.indexedStack(
@@ -125,7 +165,7 @@ final appRouter = GoRouter(
           routes: [
             GoRoute(
               path: '/client/discover',
-              builder: (context, state) => const DiscoverScreen(),
+              builder: (context, state) => const ClientSearchScreen(),
             ),
           ],
         ),
@@ -148,11 +188,21 @@ final appRouter = GoRouter(
       ],
     ),
 
-    // ─── Pro shell (6 onglets + FAB Caméra) ───
+    // ─── Pro shell (Feed + Dashboard + FAB Camera + Search + RDV + Profile) ───
     StatefulShellRoute.indexedStack(
       builder: (context, state, navigationShell) =>
           ProShell(navigationShell: navigationShell),
       branches: [
+        // 0 — Feed (TikTok-style, Pro-specific top bar + right column)
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: '/pro/feed',
+              builder: (context, state) => const ProFeedScreen(),
+            ),
+          ],
+        ),
+        // 1 — Dashboard
         StatefulShellBranch(
           routes: [
             GoRoute(
@@ -164,32 +214,26 @@ final appRouter = GoRouter(
         StatefulShellBranch(
           routes: [
             GoRoute(
-              path: '/pro/discover',
-              builder: (context, state) => const DiscoverScreen(),
-            ),
-          ],
-        ),
-        StatefulShellBranch(
-          routes: [
-            GoRoute(
               path: '/pro/camera',
-              builder: (context, state) => const UploadVideoScreen(),
+              builder: (context, state) => const VideoCaptureScreen(),
             ),
           ],
         ),
+        // 3 — Search
         StatefulShellBranch(
           routes: [
             GoRoute(
-              path: '/pro/bookings',
-              builder: (context, state) => const MyBookingsScreen(),
+              path: '/pro/search',
+              builder: (context, state) => const ProSearchScreen(),
             ),
           ],
         ),
+        // 4 — RDV
         StatefulShellBranch(
           routes: [
             GoRoute(
-              path: '/pro/events',
-              builder: (context, state) => const ProMyEventsScreen(),
+              path: '/pro/rdv',
+              builder: (context, state) => const ProRdvScreen(),
             ),
           ],
         ),
@@ -204,10 +248,48 @@ final appRouter = GoRouter(
       ],
     ),
 
-    // ─── Routes partagées ───
+    // ─── Routes Pro (sub-screens) ───
+    GoRoute(
+      path: '/pro/services',
+      builder: (context, state) => const ProServicesManageScreen(),
+    ),
+    GoRoute(
+      path: '/pro/availability',
+      builder: (context, state) => const ProviderAvailabilitySetupScreen(),
+    ),
+    GoRoute(
+      path: '/pro/revenue',
+      builder: (context, state) => const ProRevenueScreen(),
+    ),
+    GoRoute(
+      path: '/pro/events',
+      builder: (context, state) => const ProMyEventsScreen(),
+    ),
+    GoRoute(
+      path: '/pro/qr-code',
+      builder: (context, state) => const ProQrCodeScreen(),
+    ),
+    GoRoute(
+      path: '/pro/scanner-picker',
+      builder: (context, state) => const ProScannerEventPickerScreen(),
+    ),
+    GoRoute(
+      path: '/pro/publish',
+      builder: (context, state) =>
+          VideoPreviewScreen(videoFile: state.extra! as File),
+    ),
+
+    // ─── Routes partagées (avec transitions 3D) ───
     GoRoute(
       path: '/settings',
-      builder: (context, state) => const SettingsScreen(),
+      pageBuilder: (context, state) => FadeSlideTransitionPage(
+        key: state.pageKey,
+        child: const SettingsScreen(),
+      ),
+    ),
+    GoRoute(
+      path: '/change-password',
+      builder: (context, state) => const ChangePasswordScreen(),
     ),
     GoRoute(
       path: '/delete-account',
@@ -223,11 +305,14 @@ final appRouter = GoRouter(
     ),
     GoRoute(
       path: '/chat/:conversationId',
-      builder: (context, state) {
+      pageBuilder: (context, state) {
         final extra = state.extra as Map<String, String>?;
-        return ChatScreen(
-          conversationId: state.pathParameters['conversationId'] ?? '',
-          otherUserName: extra?['otherUserName'],
+        return FadeSlideTransitionPage(
+          key: state.pageKey,
+          child: ChatScreen(
+            conversationId: state.pathParameters['conversationId'] ?? '',
+            otherUserName: extra?['otherUserName'],
+          ),
         );
       },
     ),
@@ -241,18 +326,27 @@ final appRouter = GoRouter(
     ),
     GoRoute(
       path: '/edit-profile',
-      builder: (context, state) => const EditProfileScreen(),
+      pageBuilder: (context, state) => FadeSlideTransitionPage(
+        key: state.pageKey,
+        child: const EditProfileScreen(),
+      ),
     ),
     GoRoute(
       path: '/pro/:proId',
-      builder: (context, state) => ProProfileScreen(
-        proId: state.pathParameters['proId'] ?? '',
+      pageBuilder: (context, state) => FadeSlideTransitionPage(
+        key: state.pageKey,
+        child: ProProfileScreen(
+          proId: state.pathParameters['proId'] ?? '',
+        ),
       ),
     ),
     GoRoute(
       path: '/event/:eventId',
-      builder: (context, state) => EventDetailScreen(
-        eventId: state.pathParameters['eventId'] ?? '',
+      pageBuilder: (context, state) => DepthTransitionPage(
+        key: state.pageKey,
+        child: EventDetailScreen(
+          eventId: state.pathParameters['eventId'] ?? '',
+        ),
       ),
     ),
     GoRoute(
@@ -261,8 +355,10 @@ final appRouter = GoRouter(
     ),
     GoRoute(
       path: '/ticket-detail',
-      builder: (context, state) =>
-          TicketDetailScreen(ticket: state.extra! as TicketModel),
+      pageBuilder: (context, state) => ScaleRotateTransitionPage(
+        key: state.pageKey,
+        child: TicketDetailScreen(ticket: state.extra! as TicketModel),
+      ),
     ),
     GoRoute(
       path: '/scanner/:eventId',
@@ -282,8 +378,11 @@ final appRouter = GoRouter(
     ),
     GoRoute(
       path: '/booking/:bookingId',
-      builder: (context, state) => PlaceholderScreen(
-        title: 'Booking ${state.pathParameters['bookingId'] ?? ''}',
+      pageBuilder: (context, state) => FadeSlideTransitionPage(
+        key: state.pageKey,
+        child: BookingDetailScreen(
+          bookingId: state.pathParameters['bookingId'] ?? '',
+        ),
       ),
     ),
     GoRoute(
@@ -331,6 +430,63 @@ final appRouter = GoRouter(
     GoRoute(
       path: '/pro-insights',
       builder: (context, state) => const ProInsightsScreen(),
+    ),
+
+    // ─── Routes Client (sub-screens) ───
+    GoRoute(
+      path: '/client/messages',
+      builder: (context, state) =>
+          const MessagingInboxScreen(isProShell: false),
+    ),
+    GoRoute(
+      path: '/client/booking-flow/:proId',
+      pageBuilder: (context, state) => FadeSlideTransitionPage(
+        key: state.pageKey,
+        child: BookingFlowScreen(
+          providerId: state.pathParameters['proId'] ?? '',
+          initialServiceId: state.uri.queryParameters['serviceId'],
+        ),
+      ),
+    ),
+    GoRoute(
+      path: '/client/events',
+      pageBuilder: (context, state) => FadeSlideTransitionPage(
+        key: state.pageKey,
+        child: const ClientEventsDiscoveryScreen(),
+      ),
+    ),
+    GoRoute(
+      path: '/client/tickets',
+      builder: (context, state) => const MyTicketsScreen(),
+    ),
+
+    // ─── Route Pro messages ───
+    GoRoute(
+      path: '/pro/messages',
+      builder: (context, state) =>
+          const MessagingInboxScreen(isProShell: true),
+    ),
+
+    // ─── Routes partagées supplémentaires ───
+    GoRoute(
+      path: '/refund/:bookingId',
+      builder: (context, state) => RefundRequestScreen(
+        bookingId: state.pathParameters['bookingId'] ?? '',
+      ),
+    ),
+    GoRoute(
+      path: '/saved-posts',
+      builder: (context, state) => const SavedPostsScreen(),
+    ),
+    GoRoute(
+      path: '/language-settings',
+      builder: (context, state) => const LanguageSettingsScreen(),
+    ),
+    GoRoute(
+      path: '/payment-receipt/:bookingId',
+      builder: (context, state) => PaymentReceiptScreen(
+        bookingId: state.pathParameters['bookingId'] ?? '',
+      ),
     ),
   ],
 );

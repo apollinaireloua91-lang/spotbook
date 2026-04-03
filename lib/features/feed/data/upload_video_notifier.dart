@@ -1,8 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:video_compress/video_compress.dart';
 
-import 'video_repository.dart';
+import '../../../core/services/cloudflare_stream_service.dart';
 
 class UploadVideoState {
   const UploadVideoState({
@@ -65,9 +66,10 @@ class UploadVideoNotifier extends Notifier<UploadVideoState> {
   }) async {
     state = state.copyWith(isUploading: true, uploadProgress: 0);
     try {
-      final repo = ref.read(videoRepositoryProvider);
+      final cfService = CloudflareStreamService(Supabase.instance.client);
 
-      state = state.copyWith(uploadProgress: 0.1);
+      // Compress
+      state = state.copyWith(uploadProgress: 0.05);
       final compressed = await VideoCompress.compressVideo(
         state.videoFile!.path,
         quality: VideoQuality.MediumQuality,
@@ -75,15 +77,9 @@ class UploadVideoNotifier extends Notifier<UploadVideoState> {
       final compressedFile = compressed?.file;
       if (compressedFile == null) throw Exception('Compression failed');
 
-      state = state.copyWith(uploadProgress: 0.3);
-      final uploadData = await repo.getCloudflareUploadUrl();
-      final cloudflareId = uploadData['videoId'] as String;
+      state = state.copyWith(uploadProgress: 0.10);
 
-      state = state.copyWith(uploadProgress: 0.5);
-      // TODO: Use proper TUS upload client in production
-      await compressedFile.readAsBytes();
-
-      state = state.copyWith(uploadProgress: 0.8);
+      // Parse hashtags
       final tags = hashtags
           .split(',')
           .map((h) => h.trim().replaceAll('#', ''))
@@ -91,17 +87,19 @@ class UploadVideoNotifier extends Notifier<UploadVideoState> {
           .take(5)
           .toList();
 
-      await repo.submitForModeration(
+      // Full pipeline: get URL → TUS upload → submit metadata
+      await cfService.publishVideo(
+        videoFile: compressedFile,
         title: title,
         description: description,
         category: state.selectedCategory!,
         duration: state.videoDuration,
-        cloudflareId: cloudflareId,
-        streamUrl:
-            'https://customer-${const String.fromEnvironment("CLOUDFLARE_CUSTOMER_CODE")}.cloudflarestream.com/$cloudflareId/manifest/video.m3u8',
-        thumbnailUrl:
-            'https://customer-${const String.fromEnvironment("CLOUDFLARE_CUSTOMER_CODE")}.cloudflarestream.com/$cloudflareId/thumbnails/thumbnail.jpg',
         hashtags: tags,
+        serviceId: linkedServiceId,
+        onProgress: (progress) {
+          // Scale from 0.10 to 1.0 (compression took 0-0.10)
+          state = state.copyWith(uploadProgress: 0.10 + progress * 0.90);
+        },
       );
 
       state = state.copyWith(uploadProgress: 1.0);

@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 final authRepositoryProvider = Provider<AuthRepository>((ref) {
@@ -108,6 +109,34 @@ class AuthRepository {
     }
   }
 
+  Future<AuthResponse> signInWithGoogle() async {
+    const webClientId = String.fromEnvironment('GOOGLE_WEB_CLIENT_ID');
+    final googleSignIn = GoogleSignIn(serverClientId: webClientId);
+    final googleUser = await googleSignIn.signIn();
+    if (googleUser == null) {
+      throw AuthException('Connexion Google annulée.');
+    }
+    final googleAuth = await googleUser.authentication;
+    final idToken = googleAuth.idToken;
+    if (idToken == null) {
+      throw AuthException('Impossible de récupérer le token Google.');
+    }
+    final response = await _supabase.auth.signInWithIdToken(
+      provider: OAuthProvider.google,
+      idToken: idToken,
+    );
+    final uid = response.user?.id;
+    if (uid != null) {
+      await _supabase.from('audit_logs').insert({
+        'user_id': uid,
+        'action': 'user_login',
+        'resource_type': 'auth',
+        'metadata': {'provider': 'google'},
+      });
+    }
+    return response;
+  }
+
   Future<void> resetPassword(String email) async {
     final limiter = await _supabase.functions.invoke(
       'rate-limiter',
@@ -131,6 +160,7 @@ class AuthRepository {
         'resource_type': 'auth',
       });
     }
+    await _supabase.removeAllChannels();
     await _supabase.auth.signOut();
     await _secureStorage.deleteAll();
   }

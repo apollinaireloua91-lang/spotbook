@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../features/notifications/data/notification_repository.dart';
+import '../theme/app_colors.dart';
 
 class PushNotificationService {
   PushNotificationService({required NotificationRepository repository})
@@ -59,28 +60,28 @@ class PushNotificationService {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: const Color(0xFF111111),
+        backgroundColor: AppColors.surface,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: Text(
           title,
-          style: const TextStyle(color: Color(0xFFFFFFFF), fontWeight: FontWeight.bold, fontSize: 16),
+          style: const TextStyle(color: AppColors.blanc, fontWeight: FontWeight.bold, fontSize: 16),
         ),
         content: Text(
           body,
-          style: const TextStyle(color: Color(0xFF888888), fontSize: 14),
+          style: const TextStyle(color: AppColors.gris, fontSize: 14),
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text('OK', style: TextStyle(color: Color(0xFFFFFFFF))),
+            onPressed: () => ctx.pop(),
+            child: const Text('OK', style: TextStyle(color: AppColors.blanc)),
           ),
           if (message.data['type'] != null)
             TextButton(
               onPressed: () {
-                Navigator.of(ctx).pop();
+                ctx.pop();
                 _navigateFromNotification(context, message);
               },
-              child: const Text('Voir', style: TextStyle(color: Color(0xFFFFFFFF), fontWeight: FontWeight.bold)),
+              child: const Text('Voir', style: TextStyle(color: AppColors.blanc, fontWeight: FontWeight.bold)),
             ),
         ],
       ),

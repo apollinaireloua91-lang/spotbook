@@ -90,7 +90,7 @@ class ProCalendarHubScreen extends ConsumerWidget {
                       icon: Icons.event_outlined,
                       onPressed: () {
                         HapticFeedback.lightImpact();
-                        context.push('/pro/events/create');
+                        context.push('/create-event');
                       },
                     ),
                   ],

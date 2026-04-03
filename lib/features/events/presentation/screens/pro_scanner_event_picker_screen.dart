@@ -80,7 +80,7 @@ class _ProScannerEventPickerScreenState
 
           if (events.isEmpty) {
             return EmptyState.noEvents(
-              onCta: () => context.push('/pro/events/create'),
+              onCta: () => context.push('/create-event'),
             );
           }
 

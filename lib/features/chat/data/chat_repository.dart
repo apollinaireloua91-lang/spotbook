@@ -46,14 +46,14 @@ class ChatRepository {
       return ConversationModel.fromJson(existing, currentUserId ?? '');
     }
 
-    // Create new conversation
+    // Create new conversation (upsert to handle race condition)
     final data = await _supabase
         .from('conversations')
-        .insert({
+        .upsert({
           'client_id': clientId,
           'pro_id': proId,
           'booking_id': bookingId,
-        })
+        }, onConflict: 'client_id, pro_id')
         .select('*, client_user:client_id(full_name, avatar_url), pro_user:pro_id(full_name, avatar_url)')
         .single();
 

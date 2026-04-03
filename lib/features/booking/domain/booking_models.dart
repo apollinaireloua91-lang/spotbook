@@ -10,6 +10,13 @@ class ServiceModel {
     this.depositType,
     this.depositValue,
     this.paymentMode,
+    // Traiteur-specific fields
+    this.cuisineType,
+    this.minPersons,
+    this.maxPersons,
+    this.pricePerPerson,
+    this.menuItems = const [],
+    this.extraOptions = const [],
   });
 
   final String id;
@@ -23,9 +30,26 @@ class ServiceModel {
   final double? depositValue;
   final String? paymentMode;
 
+  // Traiteur-specific
+  final String? cuisineType;
+  final int? minPersons;
+  final int? maxPersons;
+  final double? pricePerPerson;
+  final List<MenuItemModel> menuItems;
+  final List<TraiteurExtraOption> extraOptions;
+
   bool get isDepositMode => paymentMode == 'deposit';
+  bool get isTraiteurService => pricePerPerson != null;
+
+  double totalForPersons(int persons) {
+    if (pricePerPerson != null) return pricePerPerson! * persons;
+    return price;
+  }
 
   factory ServiceModel.fromJson(Map<String, dynamic> json) {
+    final menuItemsRaw = json['menu_items'] as List<dynamic>? ?? [];
+    final extrasRaw = json['extra_options'] as List<dynamic>? ?? [];
+
     return ServiceModel(
       id: json['id'] as String,
       proId: json['pro_id'] as String,
@@ -37,6 +61,71 @@ class ServiceModel {
       depositType: json['deposit_type'] as String?,
       depositValue: (json['deposit_value'] as num?)?.toDouble(),
       paymentMode: json['payment_mode'] as String?,
+      cuisineType: json['cuisine_type'] as String?,
+      minPersons: json['min_persons'] as int?,
+      maxPersons: json['max_persons'] as int?,
+      pricePerPerson: (json['price_per_person'] as num?)?.toDouble(),
+      menuItems: menuItemsRaw
+          .map((e) => MenuItemModel.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      extraOptions: extrasRaw
+          .map((e) => TraiteurExtraOption.fromJson(e as Map<String, dynamic>))
+          .toList(),
+    );
+  }
+}
+
+class MenuItemModel {
+  const MenuItemModel({
+    required this.id,
+    required this.name,
+    this.description,
+    this.photoUrl,
+    this.category,
+    this.isVegetarian = false,
+    this.isVegan = false,
+    this.isGlutenFree = false,
+  });
+
+  final String id;
+  final String name;
+  final String? description;
+  final String? photoUrl;
+  final String? category;
+  final bool isVegetarian;
+  final bool isVegan;
+  final bool isGlutenFree;
+
+  factory MenuItemModel.fromJson(Map<String, dynamic> json) {
+    return MenuItemModel(
+      id: json['id'] as String? ?? '',
+      name: json['name'] as String? ?? '',
+      description: json['description'] as String?,
+      photoUrl: json['photo_url'] as String?,
+      category: json['category'] as String?,
+      isVegetarian: json['is_vegetarian'] as bool? ?? false,
+      isVegan: json['is_vegan'] as bool? ?? false,
+      isGlutenFree: json['is_gluten_free'] as bool? ?? false,
+    );
+  }
+}
+
+class TraiteurExtraOption {
+  const TraiteurExtraOption({
+    required this.id,
+    required this.name,
+    required this.pricePerPerson,
+  });
+
+  final String id;
+  final String name;
+  final double pricePerPerson;
+
+  factory TraiteurExtraOption.fromJson(Map<String, dynamic> json) {
+    return TraiteurExtraOption(
+      id: json['id'] as String? ?? '',
+      name: json['name'] as String? ?? '',
+      pricePerPerson: (json['price_per_person'] as num?)?.toDouble() ?? 0,
     );
   }
 }
@@ -171,10 +260,11 @@ class BookingModel {
   factory BookingModel.fromJson(Map<String, dynamic> json) {
     final service = json['services'] as Map<String, dynamic>?;
     final slot = json['time_slots'] as Map<String, dynamic>?;
-    final pro = json['profiles_pro'] as Map<String, dynamic>?;
-    final proUser = pro?['users'] as Map<String, dynamic>?;
-    final client = json['users'] as Map<String, dynamic>? ??
-        json['client'] as Map<String, dynamic>?;
+    // New structure: pro:users!pro_id(..., profiles_pro(...))
+    final proUser = json['pro'] as Map<String, dynamic>?;
+    final pro = proUser?['profiles_pro'] as Map<String, dynamic>?;
+    final client = json['client'] as Map<String, dynamic>? ??
+        json['users'] as Map<String, dynamic>?;
 
     final deposit = (json['deposit_amount'] as num?)?.toDouble() ?? 0;
     final total = (json['total_amount'] as num?)?.toDouble() ?? 0;
@@ -197,7 +287,7 @@ class BookingModel {
       createdAt: DateTime.parse(json['created_at'] as String),
       proName: proUser?['full_name'] as String? ??
           pro?['business_name'] as String?,
-      serviceName: service?['name'] as String?,
+      serviceName: service?['title'] as String? ?? service?['name'] as String?,
       slotDate: slot?['date'] as String?,
       slotStartTime: slot?['start_time'] as String?,
       proAvatarUrl: proUser?['avatar_url'] as String?,

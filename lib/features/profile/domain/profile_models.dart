@@ -70,8 +70,9 @@ class ClientFavoriteVideoItem {
 
   factory ClientFavoriteVideoItem.fromJson(Map<String, dynamic> json) {
     final video = json['videos'] as Map<String, dynamic>? ?? {};
-    final pro = video['profiles_pro'] as Map<String, dynamic>? ?? {};
-    final user = pro['users'] as Map<String, dynamic>? ?? {};
+    // Structure: videos(*, users!pro_id(..., profiles_pro(...)))
+    final user = video['users'] as Map<String, dynamic>? ?? {};
+    final pro = user['profiles_pro'] as Map<String, dynamic>? ?? {};
     return ClientFavoriteVideoItem(
       videoId: json['post_id'] as String? ?? video['id'] as String? ?? '',
       title: video['title'] as String?,
@@ -137,7 +138,7 @@ class ProProfile {
 
   factory ProProfile.fromJson(Map<String, dynamic> json, {bool isFollowedByMe = false}) {
     final user = json['users'] as Map<String, dynamic>? ?? {};
-    final socials = (json['social_connections'] as List<dynamic>?)
+    final socials = (json['social_links'] as List<dynamic>?)
             ?.map((e) => SocialConnection.fromJson(e as Map<String, dynamic>))
             .toList() ??
         [];

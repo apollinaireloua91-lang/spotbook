@@ -72,7 +72,7 @@ class VideoThumbnailCard extends StatelessWidget {
                         vertical: 2,
                       ),
                       decoration: BoxDecoration(
-                        color: Colors.black.withValues(alpha: 0.72),
+                        color: AppColors.overlayStrong,
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: Text(

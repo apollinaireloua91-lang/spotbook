@@ -57,7 +57,7 @@ class _CommentsSheetState extends ConsumerState<CommentsSheet> {
               child: s.isLoading
                   ? const Center(child: CircularProgressIndicator(color: AppColors.blanc))
                   : s.comments.isEmpty
-                      ? const Center(child: Text('No comments yet', style: TextStyle(color: AppColors.gris, fontSize: 14)))
+                      ? const Center(child: Text('Aucun commentaire pour le moment', style: TextStyle(color: AppColors.gris, fontSize: 14)))
                       : ListView.builder(controller: scrollController, reverse: true, itemCount: s.comments.length,
                           itemBuilder: (context, index) => _CommentTile(comment: s.comments[s.comments.length - 1 - index])),
             ),
@@ -66,7 +66,7 @@ class _CommentsSheetState extends ConsumerState<CommentsSheet> {
               padding: EdgeInsets.only(left: 16, right: 8, bottom: MediaQuery.of(context).viewInsets.bottom + 8, top: 8),
               child: Row(children: [
                 Expanded(child: TextField(controller: _textCtrl, style: const TextStyle(color: AppColors.blanc, fontSize: 14),
-                  decoration: InputDecoration(hintText: 'Add a comment...', hintStyle: const TextStyle(color: AppColors.gris), filled: true, fillColor: AppColors.surfaceAlt, border: OutlineInputBorder(borderRadius: BorderRadius.circular(24), borderSide: BorderSide.none), contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10)))),
+                  decoration: InputDecoration(hintText: 'Ajouter un commentaire...', hintStyle: const TextStyle(color: AppColors.gris), filled: true, fillColor: AppColors.surfaceAlt, border: OutlineInputBorder(borderRadius: BorderRadius.circular(24), borderSide: BorderSide.none), contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10)))),
                 IconButton(onPressed: _sendComment, icon: const Icon(Icons.send, color: AppColors.accent, size: 22)),
               ]),
             ),

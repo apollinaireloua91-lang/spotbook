@@ -100,662 +100,662 @@ abstract class AppLocalizations {
 
   /// No description provided for @appName.
   ///
-  /// In fr, this message translates to:
+  /// In en, this message translates to:
   /// **'Spotbook'**
   String get appName;
 
   /// No description provided for @feed.
   ///
-  /// In fr, this message translates to:
+  /// In en, this message translates to:
   /// **'Feed'**
   String get feed;
 
   /// No description provided for @discover.
   ///
-  /// In fr, this message translates to:
-  /// **'Découvrir'**
+  /// In en, this message translates to:
+  /// **'Discover'**
   String get discover;
 
   /// No description provided for @myBookings.
   ///
-  /// In fr, this message translates to:
-  /// **'Mes RDV'**
+  /// In en, this message translates to:
+  /// **'My Bookings'**
   String get myBookings;
 
   /// No description provided for @profile.
   ///
-  /// In fr, this message translates to:
-  /// **'Profil'**
+  /// In en, this message translates to:
+  /// **'Profile'**
   String get profile;
 
   /// No description provided for @dashboard.
   ///
-  /// In fr, this message translates to:
+  /// In en, this message translates to:
   /// **'Dashboard'**
   String get dashboard;
 
   /// No description provided for @search.
   ///
-  /// In fr, this message translates to:
-  /// **'Recherche'**
+  /// In en, this message translates to:
+  /// **'Search'**
   String get search;
 
   /// No description provided for @camera.
   ///
-  /// In fr, this message translates to:
-  /// **'Caméra'**
+  /// In en, this message translates to:
+  /// **'Camera'**
   String get camera;
 
   /// No description provided for @appointments.
   ///
-  /// In fr, this message translates to:
-  /// **'Rendez-vous'**
+  /// In en, this message translates to:
+  /// **'Appointments'**
   String get appointments;
 
   /// No description provided for @events.
   ///
-  /// In fr, this message translates to:
-  /// **'Événements'**
+  /// In en, this message translates to:
+  /// **'Events'**
   String get events;
 
   /// No description provided for @settings.
   ///
-  /// In fr, this message translates to:
-  /// **'Paramètres'**
+  /// In en, this message translates to:
+  /// **'Settings'**
   String get settings;
 
   /// No description provided for @notifications.
   ///
-  /// In fr, this message translates to:
+  /// In en, this message translates to:
   /// **'Notifications'**
   String get notifications;
 
   /// No description provided for @login.
   ///
-  /// In fr, this message translates to:
-  /// **'Se connecter'**
+  /// In en, this message translates to:
+  /// **'Log in'**
   String get login;
 
   /// No description provided for @register.
   ///
-  /// In fr, this message translates to:
-  /// **'S\'inscrire'**
+  /// In en, this message translates to:
+  /// **'Sign up'**
   String get register;
 
   /// No description provided for @continueWithGoogle.
   ///
-  /// In fr, this message translates to:
-  /// **'Continuer avec Google'**
+  /// In en, this message translates to:
+  /// **'Continue with Google'**
   String get continueWithGoogle;
 
   /// No description provided for @orSeparator.
   ///
-  /// In fr, this message translates to:
-  /// **'ou'**
+  /// In en, this message translates to:
+  /// **'or'**
   String get orSeparator;
 
   /// No description provided for @email.
   ///
-  /// In fr, this message translates to:
+  /// In en, this message translates to:
   /// **'Email'**
   String get email;
 
   /// No description provided for @password.
   ///
-  /// In fr, this message translates to:
-  /// **'Mot de passe'**
+  /// In en, this message translates to:
+  /// **'Password'**
   String get password;
 
   /// No description provided for @noAccount.
   ///
-  /// In fr, this message translates to:
-  /// **'Pas de compte ? S\'inscrire'**
+  /// In en, this message translates to:
+  /// **'No account? Sign up'**
   String get noAccount;
 
   /// No description provided for @alreadyAccount.
   ///
-  /// In fr, this message translates to:
-  /// **'Déjà un compte ? Se connecter'**
+  /// In en, this message translates to:
+  /// **'Already have an account? Log in'**
   String get alreadyAccount;
 
   /// No description provided for @chooseRole.
   ///
-  /// In fr, this message translates to:
-  /// **'Choisissez votre rôle'**
+  /// In en, this message translates to:
+  /// **'Choose your role'**
   String get chooseRole;
 
   /// No description provided for @client.
   ///
-  /// In fr, this message translates to:
+  /// In en, this message translates to:
   /// **'Client'**
   String get client;
 
   /// No description provided for @pro.
   ///
-  /// In fr, this message translates to:
-  /// **'Professionnel'**
+  /// In en, this message translates to:
+  /// **'Professional'**
   String get pro;
 
   /// No description provided for @book.
   ///
-  /// In fr, this message translates to:
-  /// **'Réserver'**
+  /// In en, this message translates to:
+  /// **'Book'**
   String get book;
 
   /// No description provided for @cancel.
   ///
-  /// In fr, this message translates to:
-  /// **'Annuler'**
+  /// In en, this message translates to:
+  /// **'Cancel'**
   String get cancel;
 
   /// No description provided for @confirm.
   ///
-  /// In fr, this message translates to:
-  /// **'Confirmer'**
+  /// In en, this message translates to:
+  /// **'Confirm'**
   String get confirm;
 
   /// No description provided for @save.
   ///
-  /// In fr, this message translates to:
-  /// **'Enregistrer'**
+  /// In en, this message translates to:
+  /// **'Save'**
   String get save;
 
   /// No description provided for @delete.
   ///
-  /// In fr, this message translates to:
-  /// **'Supprimer'**
+  /// In en, this message translates to:
+  /// **'Delete'**
   String get delete;
 
   /// No description provided for @edit.
   ///
-  /// In fr, this message translates to:
-  /// **'Modifier'**
+  /// In en, this message translates to:
+  /// **'Edit'**
   String get edit;
 
   /// No description provided for @loading.
   ///
-  /// In fr, this message translates to:
-  /// **'Chargement...'**
+  /// In en, this message translates to:
+  /// **'Loading...'**
   String get loading;
 
   /// No description provided for @error.
   ///
-  /// In fr, this message translates to:
-  /// **'Erreur'**
+  /// In en, this message translates to:
+  /// **'Error'**
   String get error;
 
   /// No description provided for @retry.
   ///
-  /// In fr, this message translates to:
-  /// **'Réessayer'**
+  /// In en, this message translates to:
+  /// **'Retry'**
   String get retry;
 
   /// No description provided for @offline.
   ///
-  /// In fr, this message translates to:
-  /// **'Hors connexion'**
+  /// In en, this message translates to:
+  /// **'Offline'**
   String get offline;
 
   /// No description provided for @favorites.
   ///
-  /// In fr, this message translates to:
-  /// **'Favoris'**
+  /// In en, this message translates to:
+  /// **'Favorites'**
   String get favorites;
 
   /// No description provided for @history.
   ///
-  /// In fr, this message translates to:
-  /// **'Historique'**
+  /// In en, this message translates to:
+  /// **'History'**
   String get history;
 
   /// No description provided for @myTickets.
   ///
-  /// In fr, this message translates to:
-  /// **'Mes Billets'**
+  /// In en, this message translates to:
+  /// **'My Tickets'**
   String get myTickets;
 
   /// No description provided for @consentMessage.
   ///
-  /// In fr, this message translates to:
-  /// **'Nous utilisons des cookies analytiques pour améliorer votre expérience.'**
+  /// In en, this message translates to:
+  /// **'We use analytics cookies to improve your experience.'**
   String get consentMessage;
 
   /// No description provided for @accept.
   ///
-  /// In fr, this message translates to:
-  /// **'Accepter'**
+  /// In en, this message translates to:
+  /// **'Accept'**
   String get accept;
 
   /// No description provided for @decline.
   ///
-  /// In fr, this message translates to:
-  /// **'Refuser'**
+  /// In en, this message translates to:
+  /// **'Decline'**
   String get decline;
 
   /// No description provided for @scanQr.
   ///
-  /// In fr, this message translates to:
-  /// **'Scanner QR'**
+  /// In en, this message translates to:
+  /// **'Scan QR'**
   String get scanQr;
 
   /// No description provided for @share.
   ///
-  /// In fr, this message translates to:
-  /// **'Partager'**
+  /// In en, this message translates to:
+  /// **'Share'**
   String get share;
 
   /// No description provided for @proSettingsTitle.
   ///
-  /// In fr, this message translates to:
-  /// **'Paramètres'**
+  /// In en, this message translates to:
+  /// **'Settings'**
   String get proSettingsTitle;
 
   /// No description provided for @proSettingsSavedToast.
   ///
-  /// In fr, this message translates to:
-  /// **'Enregistré'**
+  /// In en, this message translates to:
+  /// **'Saved'**
   String get proSettingsSavedToast;
 
   /// No description provided for @proSettingsSectionAccount.
   ///
-  /// In fr, this message translates to:
-  /// **'COMPTE'**
+  /// In en, this message translates to:
+  /// **'ACCOUNT'**
   String get proSettingsSectionAccount;
 
   /// No description provided for @proSettingsSectionBusiness.
   ///
-  /// In fr, this message translates to:
-  /// **'ACTIVITÉ'**
+  /// In en, this message translates to:
+  /// **'BUSINESS'**
   String get proSettingsSectionBusiness;
 
   /// No description provided for @proSettingsSectionBookings.
   ///
-  /// In fr, this message translates to:
-  /// **'RÉSERVATIONS'**
+  /// In en, this message translates to:
+  /// **'BOOKINGS'**
   String get proSettingsSectionBookings;
 
   /// No description provided for @proSettingsSectionPayments.
   ///
-  /// In fr, this message translates to:
-  /// **'PAIEMENTS'**
+  /// In en, this message translates to:
+  /// **'PAYMENTS'**
   String get proSettingsSectionPayments;
 
   /// No description provided for @proSettingsSectionSpotify.
   ///
-  /// In fr, this message translates to:
+  /// In en, this message translates to:
   /// **'SPOTIFY'**
   String get proSettingsSectionSpotify;
 
   /// No description provided for @proSettingsSectionNotifications.
   ///
-  /// In fr, this message translates to:
+  /// In en, this message translates to:
   /// **'NOTIFICATIONS'**
   String get proSettingsSectionNotifications;
 
   /// No description provided for @proSettingsSectionPrivacy.
   ///
-  /// In fr, this message translates to:
-  /// **'CONFIDENTIALITÉ'**
+  /// In en, this message translates to:
+  /// **'PRIVACY'**
   String get proSettingsSectionPrivacy;
 
   /// No description provided for @proSettingsSectionLanguage.
   ///
-  /// In fr, this message translates to:
-  /// **'LANGUE'**
+  /// In en, this message translates to:
+  /// **'LANGUAGE'**
   String get proSettingsSectionLanguage;
 
   /// No description provided for @proSettingsSectionHelp.
   ///
-  /// In fr, this message translates to:
-  /// **'AIDE'**
+  /// In en, this message translates to:
+  /// **'HELP'**
   String get proSettingsSectionHelp;
 
   /// No description provided for @proSettingsPhone.
   ///
-  /// In fr, this message translates to:
-  /// **'Téléphone'**
+  /// In en, this message translates to:
+  /// **'Phone'**
   String get proSettingsPhone;
 
   /// No description provided for @proSettingsChangePassword.
   ///
-  /// In fr, this message translates to:
-  /// **'Changer le mot de passe'**
+  /// In en, this message translates to:
+  /// **'Change password'**
   String get proSettingsChangePassword;
 
   /// No description provided for @proSettingsBusinessProfile.
   ///
-  /// In fr, this message translates to:
-  /// **'Profil professionnel'**
+  /// In en, this message translates to:
+  /// **'Business profile'**
   String get proSettingsBusinessProfile;
 
   /// No description provided for @proSettingsWorkAddress.
   ///
-  /// In fr, this message translates to:
-  /// **'Adresse de travail'**
+  /// In en, this message translates to:
+  /// **'Work address'**
   String get proSettingsWorkAddress;
 
   /// No description provided for @proSettingsCancellationPolicy.
   ///
-  /// In fr, this message translates to:
-  /// **'Politique d\'annulation'**
+  /// In en, this message translates to:
+  /// **'Cancellation policy'**
   String get proSettingsCancellationPolicy;
 
   /// No description provided for @proSettingsPolicyFlexible.
   ///
-  /// In fr, this message translates to:
+  /// In en, this message translates to:
   /// **'Flexible'**
   String get proSettingsPolicyFlexible;
 
   /// No description provided for @proSettingsPolicyModerate.
   ///
-  /// In fr, this message translates to:
-  /// **'Modérée'**
+  /// In en, this message translates to:
+  /// **'Moderate'**
   String get proSettingsPolicyModerate;
 
   /// No description provided for @proSettingsPolicyStrict.
   ///
-  /// In fr, this message translates to:
-  /// **'Stricte'**
+  /// In en, this message translates to:
+  /// **'Strict'**
   String get proSettingsPolicyStrict;
 
   /// No description provided for @proSettingsMinAdvance.
   ///
-  /// In fr, this message translates to:
-  /// **'Réservation min. à l\'avance'**
+  /// In en, this message translates to:
+  /// **'Min. advance booking'**
   String get proSettingsMinAdvance;
 
   /// No description provided for @proSettingsHoursShort.
   ///
-  /// In fr, this message translates to:
+  /// In en, this message translates to:
   /// **'h'**
   String get proSettingsHoursShort;
 
   /// No description provided for @proSettingsMinGap.
   ///
-  /// In fr, this message translates to:
-  /// **'Intervalle min. entre RDV'**
+  /// In en, this message translates to:
+  /// **'Min. gap between bookings'**
   String get proSettingsMinGap;
 
   /// No description provided for @proSettingsMinutesShort.
   ///
-  /// In fr, this message translates to:
+  /// In en, this message translates to:
   /// **'min'**
   String get proSettingsMinutesShort;
 
   /// No description provided for @proSettingsMaxPerDay.
   ///
-  /// In fr, this message translates to:
-  /// **'Max RDV / jour'**
+  /// In en, this message translates to:
+  /// **'Max bookings / day'**
   String get proSettingsMaxPerDay;
 
   /// No description provided for @proSettingsPayoutHistory.
   ///
-  /// In fr, this message translates to:
-  /// **'Historique des virements'**
+  /// In en, this message translates to:
+  /// **'Payout history'**
   String get proSettingsPayoutHistory;
 
   /// No description provided for @proSettingsPaymentsInfo.
   ///
-  /// In fr, this message translates to:
-  /// **'Les paiements sont gérés via Stripe Connect. Les virements sont effectués automatiquement.'**
+  /// In en, this message translates to:
+  /// **'Payments are managed via Stripe Connect. Payouts are made automatically.'**
   String get proSettingsPaymentsInfo;
 
   /// No description provided for @proSettingsStripeActive.
   ///
-  /// In fr, this message translates to:
-  /// **'Stripe actif'**
+  /// In en, this message translates to:
+  /// **'Stripe active'**
   String get proSettingsStripeActive;
 
   /// No description provided for @proSettingsBankEnding.
   ///
-  /// In fr, this message translates to:
-  /// **'Compte finissant par'**
+  /// In en, this message translates to:
+  /// **'Account ending in'**
   String get proSettingsBankEnding;
 
   /// No description provided for @proSettingsStripeVerifying.
   ///
-  /// In fr, this message translates to:
-  /// **'Vérification Stripe en cours...'**
+  /// In en, this message translates to:
+  /// **'Stripe verification in progress...'**
   String get proSettingsStripeVerifying;
 
   /// No description provided for @proSettingsStripeNotConfigured.
   ///
-  /// In fr, this message translates to:
-  /// **'Stripe non configuré'**
+  /// In en, this message translates to:
+  /// **'Stripe not configured'**
   String get proSettingsStripeNotConfigured;
 
   /// No description provided for @proSettingsStripeConfigure.
   ///
-  /// In fr, this message translates to:
-  /// **'Configurer Stripe'**
+  /// In en, this message translates to:
+  /// **'Configure Stripe'**
   String get proSettingsStripeConfigure;
 
   /// No description provided for @proSettingsSpotifyTitle.
   ///
-  /// In fr, this message translates to:
+  /// In en, this message translates to:
   /// **'Spotify'**
   String get proSettingsSpotifyTitle;
 
   /// No description provided for @proSettingsSpotifyHint.
   ///
-  /// In fr, this message translates to:
-  /// **'Connecte ton compte Spotify pour ajouter tes morceaux favoris à tes vidéos.'**
+  /// In en, this message translates to:
+  /// **'Connect your Spotify account to add your favorite tracks to your videos.'**
   String get proSettingsSpotifyHint;
 
   /// No description provided for @proSettingsSpotifyLinked.
   ///
-  /// In fr, this message translates to:
-  /// **'Compte Spotify connecté'**
+  /// In en, this message translates to:
+  /// **'Spotify account connected'**
   String get proSettingsSpotifyLinked;
 
   /// No description provided for @proSettingsSpotifyConnect.
   ///
-  /// In fr, this message translates to:
-  /// **'Connecter Spotify'**
+  /// In en, this message translates to:
+  /// **'Connect Spotify'**
   String get proSettingsSpotifyConnect;
 
   /// No description provided for @proSettingsSpotifyDisconnect.
   ///
-  /// In fr, this message translates to:
-  /// **'Déconnecter Spotify'**
+  /// In en, this message translates to:
+  /// **'Disconnect Spotify'**
   String get proSettingsSpotifyDisconnect;
 
   /// No description provided for @proSettingsSpotifyMissingClientId.
   ///
-  /// In fr, this message translates to:
-  /// **'Configuration Spotify manquante'**
+  /// In en, this message translates to:
+  /// **'Spotify configuration missing'**
   String get proSettingsSpotifyMissingClientId;
 
   /// No description provided for @proSettingsNotifSettings.
   ///
-  /// In fr, this message translates to:
-  /// **'Gérer les notifications'**
+  /// In en, this message translates to:
+  /// **'Manage notifications'**
   String get proSettingsNotifSettings;
 
   /// No description provided for @proSettingsProfilePublic.
   ///
-  /// In fr, this message translates to:
-  /// **'Profil public'**
+  /// In en, this message translates to:
+  /// **'Public profile'**
   String get proSettingsProfilePublic;
 
   /// No description provided for @proSettingsSearchVisible.
   ///
-  /// In fr, this message translates to:
-  /// **'Visible dans la recherche'**
+  /// In en, this message translates to:
+  /// **'Visible in search'**
   String get proSettingsSearchVisible;
 
   /// No description provided for @proSettingsLanguage.
   ///
-  /// In fr, this message translates to:
-  /// **'Langue'**
+  /// In en, this message translates to:
+  /// **'Language'**
   String get proSettingsLanguage;
 
   /// No description provided for @proSettingsLangFrench.
   ///
-  /// In fr, this message translates to:
-  /// **'Français'**
+  /// In en, this message translates to:
+  /// **'French'**
   String get proSettingsLangFrench;
 
   /// No description provided for @proSettingsLangEnglish.
   ///
-  /// In fr, this message translates to:
-  /// **'Anglais'**
+  /// In en, this message translates to:
+  /// **'English'**
   String get proSettingsLangEnglish;
 
   /// No description provided for @proSettingsFaq.
   ///
-  /// In fr, this message translates to:
+  /// In en, this message translates to:
   /// **'FAQ'**
   String get proSettingsFaq;
 
   /// No description provided for @proSettingsContactSupport.
   ///
-  /// In fr, this message translates to:
-  /// **'Contacter le support'**
+  /// In en, this message translates to:
+  /// **'Contact support'**
   String get proSettingsContactSupport;
 
   /// No description provided for @proSettingsDangerZone.
   ///
-  /// In fr, this message translates to:
-  /// **'ZONE DANGER'**
+  /// In en, this message translates to:
+  /// **'DANGER ZONE'**
   String get proSettingsDangerZone;
 
   /// No description provided for @proSettingsSignOut.
   ///
-  /// In fr, this message translates to:
-  /// **'Se déconnecter'**
+  /// In en, this message translates to:
+  /// **'Sign out'**
   String get proSettingsSignOut;
 
   /// No description provided for @proSettingsSignOutTitle.
   ///
-  /// In fr, this message translates to:
-  /// **'Déconnexion'**
+  /// In en, this message translates to:
+  /// **'Sign out'**
   String get proSettingsSignOutTitle;
 
   /// No description provided for @proSettingsSignOutConfirm.
   ///
-  /// In fr, this message translates to:
-  /// **'Confirmer'**
+  /// In en, this message translates to:
+  /// **'Confirm'**
   String get proSettingsSignOutConfirm;
 
   /// No description provided for @proSettingsDeleteAccount.
   ///
-  /// In fr, this message translates to:
-  /// **'Supprimer mon compte'**
+  /// In en, this message translates to:
+  /// **'Delete my account'**
   String get proSettingsDeleteAccount;
 
   /// No description provided for @proSettingsModifyEmailTitle.
   ///
-  /// In fr, this message translates to:
-  /// **'Modifier l\'email'**
+  /// In en, this message translates to:
+  /// **'Change email'**
   String get proSettingsModifyEmailTitle;
 
   /// No description provided for @proSettingsModifyPhoneTitle.
   ///
-  /// In fr, this message translates to:
-  /// **'Modifier le téléphone'**
+  /// In en, this message translates to:
+  /// **'Change phone'**
   String get proSettingsModifyPhoneTitle;
 
   /// No description provided for @proChangePasswordTitle.
   ///
-  /// In fr, this message translates to:
-  /// **'Changer le mot de passe'**
+  /// In en, this message translates to:
+  /// **'Change password'**
   String get proChangePasswordTitle;
 
   /// No description provided for @proCurrentPassword.
   ///
-  /// In fr, this message translates to:
-  /// **'Mot de passe actuel'**
+  /// In en, this message translates to:
+  /// **'Current password'**
   String get proCurrentPassword;
 
   /// No description provided for @proNewPassword.
   ///
-  /// In fr, this message translates to:
-  /// **'Nouveau mot de passe'**
+  /// In en, this message translates to:
+  /// **'New password'**
   String get proNewPassword;
 
   /// No description provided for @proConfirmPassword.
   ///
-  /// In fr, this message translates to:
-  /// **'Les mots de passe ne correspondent pas'**
+  /// In en, this message translates to:
+  /// **'Passwords do not match'**
   String get proConfirmPassword;
 
   /// No description provided for @settingsLanguageScreenTitle.
   ///
-  /// In fr, this message translates to:
-  /// **'Langue'**
+  /// In en, this message translates to:
+  /// **'Language'**
   String get settingsLanguageScreenTitle;
 
   /// No description provided for @settingsLanguageScreenSubtitle.
   ///
-  /// In fr, this message translates to:
-  /// **'Choisissez la langue de l\'application'**
+  /// In en, this message translates to:
+  /// **'Choose the app language'**
   String get settingsLanguageScreenSubtitle;
 
   /// No description provided for @settingsLanguageSavedSnack.
   ///
-  /// In fr, this message translates to:
-  /// **'Langue enregistrée'**
+  /// In en, this message translates to:
+  /// **'Language saved'**
   String get settingsLanguageSavedSnack;
 
   /// No description provided for @spotifySheetTitle.
   ///
-  /// In fr, this message translates to:
-  /// **'Ajouter un morceau'**
+  /// In en, this message translates to:
+  /// **'Add a track'**
   String get spotifySheetTitle;
 
   /// No description provided for @spotifySheetSearchHint.
   ///
-  /// In fr, this message translates to:
-  /// **'Rechercher un morceau...'**
+  /// In en, this message translates to:
+  /// **'Search for a track...'**
   String get spotifySheetSearchHint;
 
   /// No description provided for @spotifySheetTopTracksHeader.
   ///
-  /// In fr, this message translates to:
-  /// **'Tes morceaux populaires'**
+  /// In en, this message translates to:
+  /// **'Your top tracks'**
   String get spotifySheetTopTracksHeader;
 
   /// No description provided for @spotifySheetLinkedHint.
   ///
-  /// In fr, this message translates to:
-  /// **'Compte Spotify connecté'**
+  /// In en, this message translates to:
+  /// **'Spotify account linked'**
   String get spotifySheetLinkedHint;
 
   /// No description provided for @spotifySheetNotLinkedHint.
   ///
-  /// In fr, this message translates to:
-  /// **'Connecte Spotify dans les paramètres'**
+  /// In en, this message translates to:
+  /// **'Connect Spotify in settings'**
   String get spotifySheetNotLinkedHint;
 
   /// No description provided for @spotifySheetNoResults.
   ///
-  /// In fr, this message translates to:
-  /// **'Aucun résultat'**
+  /// In en, this message translates to:
+  /// **'No results'**
   String get spotifySheetNoResults;
 
   /// No description provided for @spotifySheetEmptyTop.
   ///
-  /// In fr, this message translates to:
-  /// **'Aucun morceau populaire'**
+  /// In en, this message translates to:
+  /// **'No top tracks'**
   String get spotifySheetEmptyTop;
 
   /// No description provided for @spotifySheetEmptyNeedLink.
   ///
-  /// In fr, this message translates to:
-  /// **'Connecte ton compte Spotify'**
+  /// In en, this message translates to:
+  /// **'Connect your Spotify account'**
   String get spotifySheetEmptyNeedLink;
 
   /// No description provided for @spotifySheetOpenSettings.
   ///
-  /// In fr, this message translates to:
-  /// **'Ouvrir les paramètres'**
+  /// In en, this message translates to:
+  /// **'Open settings'**
   String get spotifySheetOpenSettings;
 
   /// No description provided for @spotifySheetTrackAdded.
   ///
-  /// In fr, this message translates to:
-  /// **'Morceau ajouté : {track}'**
+  /// In en, this message translates to:
+  /// **'Track added: {track}'**
   String spotifySheetTrackAdded(String track);
 }
 

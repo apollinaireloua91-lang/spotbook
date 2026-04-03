@@ -15,7 +15,7 @@ class BookingRepository {
   String? get currentUserId => _supabase.auth.currentUser?.id;
 
   static const _bookingSelect =
-      '*, services(name, price, duration_minutes), time_slots(date, start_time, end_time), profiles_pro(business_name, users(full_name, avatar_url))';
+      '*, services(name, title, price, duration_minutes), time_slots(date, start_time, end_time), client:users!client_id(full_name, display_name, avatar_url), pro:users!pro_id(full_name, display_name, avatar_url, profiles_pro(business_name, category, city))';
 
   // ─── Slots & dates ────────────────────────────────────────
 
@@ -270,5 +270,38 @@ class BookingRepository {
         .from('bookings')
         .update({'remaining_payment_status': 'paid'})
         .eq('id', bookingId);
+  }
+
+  // ─── Reviews ─────────────────────────────────────────────
+
+  Future<void> submitReview({
+    required String bookingId,
+    required String proId,
+    required int rating,
+    required String comment,
+  }) async {
+    final uid = currentUserId;
+    if (uid == null) throw Exception('Not authenticated');
+
+    await _supabase.from('reviews').upsert({
+      'booking_id': bookingId,
+      'client_id': uid,
+      'pro_id': proId,
+      'rating': rating,
+      'comment': comment,
+    }, onConflict: 'booking_id');
+  }
+
+  Future<bool> hasReviewedBooking(String bookingId) async {
+    final uid = currentUserId;
+    if (uid == null) return false;
+
+    final data = await _supabase
+        .from('reviews')
+        .select('id')
+        .eq('booking_id', bookingId)
+        .eq('client_id', uid)
+        .maybeSingle();
+    return data != null;
   }
 }

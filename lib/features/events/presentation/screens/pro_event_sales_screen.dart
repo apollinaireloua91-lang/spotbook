@@ -87,7 +87,7 @@ class ProEventSalesScreen extends ConsumerWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.edit_outlined, color: AppColors.blanc),
-            onPressed: () => context.push('/pro/events/create'),
+            onPressed: () => context.push('/create-event'),
           ),
         ],
       ),

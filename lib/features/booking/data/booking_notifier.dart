@@ -1,6 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../../core/realtime/realtime_events.dart';
+import '../../../core/realtime/realtime_manager.dart';
 import '../../payment/data/payment_repository.dart';
 import '../domain/booking_models.dart';
 import 'booking_repository.dart';
@@ -24,6 +28,7 @@ class BookingFlowState {
     this.bookingResult,
     this.clientSecret,
     this.error,
+    this.personCount = 1,
   });
 
   final int step;
@@ -41,10 +46,16 @@ class BookingFlowState {
   final Map<String, dynamic>? bookingResult;
   final String? clientSecret;
   final String? error;
+  final int personCount;
 
   double get totalPrice {
     if (selectedService == null) return 0;
-    double price = selectedService!.price;
+    double price;
+    if (selectedService!.isTraiteurService) {
+      price = selectedService!.totalForPersons(personCount);
+    } else {
+      price = selectedService!.price;
+    }
     if (promoCode != null) {
       if (promoCode!.discountType == 'percentage') {
         price -= price * promoCode!.discountValue / 100;
@@ -73,6 +84,7 @@ class BookingFlowState {
     Map<String, dynamic>? bookingResult,
     String? clientSecret,
     String? error,
+    int? personCount,
   }) =>
       BookingFlowState(
         step: step ?? this.step,
@@ -90,6 +102,7 @@ class BookingFlowState {
         bookingResult: bookingResult ?? this.bookingResult,
         clientSecret: clientSecret ?? this.clientSecret,
         error: error,
+        personCount: personCount ?? this.personCount,
       );
 }
 
@@ -116,7 +129,14 @@ class BookingFlowNotifier extends Notifier<BookingFlowState> {
   }
 
   void selectService(ServiceModel service) {
-    state = state.copyWith(selectedService: service);
+    state = state.copyWith(
+      selectedService: service,
+      personCount: service.minPersons ?? 1,
+    );
+  }
+
+  void setPersonCount(int count) {
+    state = state.copyWith(personCount: count);
   }
 
   Future<void> validatePromo(String code) async {
@@ -266,10 +286,23 @@ class ClientBookingsState {
 }
 
 class ClientBookingsNotifier extends Notifier<ClientBookingsState> {
+  StreamSubscription<RealtimeEvent>? _rtSub;
+
   @override
   ClientBookingsState build() {
+    _listenRealtime();
     _load();
+    ref.onDispose(() => _rtSub?.cancel());
     return const ClientBookingsState();
+  }
+
+  void _listenRealtime() {
+    _rtSub = ref.read(realtimeManagerProvider).bookingStream.listen((event) {
+      if (event is BookingStatusChanged) {
+        // Refetch the full list to get JOINed data (pro name, service, etc.)
+        _load();
+      }
+    });
   }
 
   Future<void> _load() async {
@@ -299,6 +332,26 @@ class ClientBookingsNotifier extends Notifier<ClientBookingsState> {
       return false;
     }
   }
+
+  Future<bool> submitReview({
+    required String bookingId,
+    required String proId,
+    required int rating,
+    required String comment,
+  }) async {
+    try {
+      final repo = ref.read(bookingRepositoryProvider);
+      await repo.submitReview(
+        bookingId: bookingId,
+        proId: proId,
+        rating: rating,
+        comment: comment,
+      );
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
 }
 
 final clientBookingsProvider =
@@ -310,10 +363,23 @@ final clientBookingsProvider =
 // ─── Pro bookings list ──────────────────────────────────────
 
 class ProBookingsNotifier extends Notifier<ClientBookingsState> {
+  StreamSubscription<RealtimeEvent>? _rtSub;
+
   @override
   ClientBookingsState build() {
+    _listenRealtime();
     _load();
+    ref.onDispose(() => _rtSub?.cancel());
     return const ClientBookingsState();
+  }
+
+  void _listenRealtime() {
+    _rtSub = ref.read(realtimeManagerProvider).bookingStream.listen((event) {
+      if (event is BookingCreated || event is BookingStatusChanged) {
+        // Refetch full list — new booking or status change
+        _load();
+      }
+    });
   }
 
   Future<void> _load() async {
@@ -339,43 +405,190 @@ final proBookingsProvider =
 class ProDashboardState {
   const ProDashboardState({
     this.isLoading = true,
+    this.error,
     this.stats = const {},
     this.upcomingBookings = const [],
+    this.proName,
+    this.proAvatarUrl,
+    this.nextEvent,
+    this.ticketsSold = 0,
+    this.revenueChange,
   });
   final bool isLoading;
+  final String? error;
   final Map<String, dynamic> stats;
   final List<BookingModel> upcomingBookings;
+  final String? proName;
+  final String? proAvatarUrl;
+  final Map<String, dynamic>? nextEvent;
+  final int ticketsSold;
+  final double? revenueChange;
 
   ProDashboardState copyWith({
     bool? isLoading,
+    String? error,
     Map<String, dynamic>? stats,
     List<BookingModel>? upcomingBookings,
+    String? proName,
+    String? proAvatarUrl,
+    Map<String, dynamic>? nextEvent,
+    int? ticketsSold,
+    double? revenueChange,
   }) =>
       ProDashboardState(
         isLoading: isLoading ?? this.isLoading,
+        error: error,
         stats: stats ?? this.stats,
         upcomingBookings: upcomingBookings ?? this.upcomingBookings,
+        proName: proName ?? this.proName,
+        proAvatarUrl: proAvatarUrl ?? this.proAvatarUrl,
+        nextEvent: nextEvent ?? this.nextEvent,
+        ticketsSold: ticketsSold ?? this.ticketsSold,
+        revenueChange: revenueChange ?? this.revenueChange,
       );
 }
 
 class ProDashboardNotifier extends Notifier<ProDashboardState> {
+  StreamSubscription<RealtimeEvent>? _bookingSub;
+  StreamSubscription<RealtimeEvent>? _ticketSub;
+
   @override
   ProDashboardState build() {
+    _listenRealtime();
     _load();
+    ref.onDispose(() {
+      _bookingSub?.cancel();
+      _ticketSub?.cancel();
+    });
     return const ProDashboardState();
   }
 
+  void _listenRealtime() {
+    final rt = ref.read(realtimeManagerProvider);
+    // New booking or status change → refresh dashboard stats
+    _bookingSub = rt.bookingStream.listen((event) {
+      if (event is BookingCreated || event is BookingStatusChanged) {
+        _load();
+      }
+    });
+    // Ticket sold → refresh
+    _ticketSub = rt.ticketStream.listen((event) {
+      if (event is TicketSold) {
+        _load();
+      }
+    });
+  }
+
   Future<void> _load() async {
-    final repo = ref.read(bookingRepositoryProvider);
-    final results = await Future.wait([
-      repo.getProDashboardStats(),
-      repo.getUpcomingProBookings(),
-    ]);
-    state = state.copyWith(
-      isLoading: false,
-      stats: results[0] as Map<String, dynamic>,
-      upcomingBookings: results[1] as List<BookingModel>,
-    );
+    try {
+      final repo = ref.read(bookingRepositoryProvider);
+      final supabase = Supabase.instance.client;
+      final uid = supabase.auth.currentUser?.id;
+      if (uid == null) {
+        state = state.copyWith(isLoading: false, error: 'Non connecté');
+        return;
+      }
+
+      // Fetch all data in parallel
+      final results = await Future.wait([
+        repo.getProDashboardStats(),
+        repo.getUpcomingProBookings(limit: 3),
+        _fetchProInfo(supabase, uid),
+        _fetchNextEvent(supabase, uid),
+        _fetchTicketsSold(supabase, uid),
+        _fetchRevenueChange(supabase, uid),
+      ]);
+
+      final proInfo = results[2] as Map<String, dynamic>;
+      final nextEvent = results[3] as Map<String, dynamic>?;
+
+      state = state.copyWith(
+        isLoading: false,
+        stats: results[0] as Map<String, dynamic>,
+        upcomingBookings: results[1] as List<BookingModel>,
+        proName: proInfo['name'] as String?,
+        proAvatarUrl: proInfo['avatar_url'] as String?,
+        nextEvent: nextEvent,
+        ticketsSold: results[4] as int,
+        revenueChange: results[5] as double?,
+      );
+    } catch (e) {
+      state = state.copyWith(isLoading: false, error: e.toString());
+    }
+  }
+
+  Future<Map<String, dynamic>> _fetchProInfo(
+      SupabaseClient supabase, String uid) async {
+    final data = await supabase
+        .from('profiles_pro')
+        .select('business_name, users(full_name, avatar_url)')
+        .eq('id', uid)
+        .maybeSingle();
+    if (data == null) return {};
+    final user = data['users'] as Map<String, dynamic>?;
+    return {
+      'name': user?['full_name'] ?? data['business_name'] ?? 'Pro',
+      'avatar_url': user?['avatar_url'],
+    };
+  }
+
+  Future<Map<String, dynamic>?> _fetchNextEvent(
+      SupabaseClient supabase, String uid) async {
+    final data = await supabase
+        .from('events')
+        .select('id, title, event_date, location, cover_url')
+        .eq('pro_id', uid)
+        .eq('is_active', true)
+        .gte('event_date', DateTime.now().toIso8601String())
+        .order('event_date')
+        .limit(1)
+        .maybeSingle();
+    return data;
+  }
+
+  Future<int> _fetchTicketsSold(
+      SupabaseClient supabase, String uid) async {
+    final data = await supabase
+        .from('tickets')
+        .select('id')
+        .eq('status', 'valid')
+        .inFilter('event_id',
+          (await supabase
+            .from('events')
+            .select('id')
+            .eq('pro_id', uid))
+            .map((e) => e['id'] as String)
+            .toList(),
+        );
+    return (data as List).length;
+  }
+
+  Future<double?> _fetchRevenueChange(
+      SupabaseClient supabase, String uid) async {
+    final now = DateTime.now();
+    final thisMonthStart = DateTime(now.year, now.month, 1);
+    final lastMonthStart = DateTime(now.year, now.month - 1, 1);
+
+    final bookings = await supabase
+        .from('bookings')
+        .select('deposit_amount, created_at')
+        .eq('pro_id', uid)
+        .inFilter('status', ['confirmed', 'completed'])
+        .gte('created_at', lastMonthStart.toIso8601String());
+
+    double thisMonth = 0;
+    double lastMonth = 0;
+    for (final b in bookings as List) {
+      final created = DateTime.parse(b['created_at'] as String);
+      final amount = (b['deposit_amount'] as num?)?.toDouble() ?? 0;
+      if (created.isAfter(thisMonthStart) || created.isAtSameMomentAs(thisMonthStart)) {
+        thisMonth += amount;
+      } else {
+        lastMonth += amount;
+      }
+    }
+    if (lastMonth == 0) return null;
+    return ((thisMonth - lastMonth) / lastMonth) * 100;
   }
 
   Future<void> refresh() async {

@@ -20,17 +20,27 @@ class ProfileRepository {
     required String category,
     required String city,
     required String bio,
+    String? address,
+    double? latitude,
+    double? longitude,
   }) async {
     final uid = _uid;
     if (uid == null) throw Exception('User not authenticated');
     await _supabase.from('profiles_pro').upsert({
-      'user_id': uid,
+      'id': uid,
       'business_name': businessName,
       'category': category,
       'city': city,
       'bio': bio,
+      if (latitude != null) 'latitude': latitude,
+      if (longitude != null) 'longitude': longitude,
     });
-    await _supabase.from('users').update({'city': city}).eq('id', uid);
+    await _supabase.from('users').update({
+      'city': city,
+      if (address != null) 'address': address,
+      if (latitude != null) 'latitude': latitude,
+      if (longitude != null) 'longitude': longitude,
+    }).eq('id', uid);
   }
 
   Future<String> uploadKycDocument(Uint8List bytes, String ext) async {
@@ -49,7 +59,7 @@ class ProfileRepository {
     await _supabase.from('profiles_pro').update({
       'kyc_status': 'pending',
       'phone': phone,
-    }).eq('user_id', uid);
+    }).eq('id', uid);
   }
 
   Future<void> requestLocationAndSave() async {

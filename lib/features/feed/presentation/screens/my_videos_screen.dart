@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../shared/theme/app_colors.dart';
 import '../../data/my_videos_notifier.dart';
@@ -13,11 +14,12 @@ class MyVideosScreen extends ConsumerWidget {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Delete video?'),
-        content: const Text('This action cannot be undone.'),
+        backgroundColor: AppColors.surface,
+        title: const Text('Supprimer la vidéo ?', style: TextStyle(color: AppColors.blanc)),
+        content: const Text('Cette action est irréversible.', style: TextStyle(color: AppColors.gris)),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
-          TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Delete', style: TextStyle(color: AppColors.error))),
+          TextButton(onPressed: () => ctx.pop(false), child: const Text('Annuler', style: TextStyle(color: AppColors.gris))),
+          TextButton(onPressed: () => ctx.pop(true), child: const Text('Supprimer', style: TextStyle(color: AppColors.error))),
         ],
       ),
     );
@@ -32,11 +34,11 @@ class MyVideosScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: AppColors.fond,
-      appBar: AppBar(backgroundColor: AppColors.fond, title: const Text('My Videos'), centerTitle: true),
+      appBar: AppBar(backgroundColor: AppColors.fond, title: const Text('Mes vidéos', style: TextStyle(color: AppColors.blanc)), centerTitle: true),
       body: videos == null
           ? const Center(child: CircularProgressIndicator(color: AppColors.blanc))
           : videos.isEmpty
-              ? const Center(child: Text('No videos yet', style: TextStyle(color: AppColors.gris, fontSize: 15)))
+              ? const Center(child: Text('Aucune vidéo pour le moment', style: TextStyle(color: AppColors.gris, fontSize: 15)))
               : ListView.builder(
                   padding: const EdgeInsets.all(16), itemCount: videos.length,
                   itemBuilder: (context, index) {
@@ -73,7 +75,7 @@ class _VideoCard extends StatelessWidget {
           ]),
           if (video.status == 'rejected' && video.rejectionReason != null) ...[
             const SizedBox(height: 6),
-            Text('Reason: ${video.rejectionReason}', style: const TextStyle(color: AppColors.error, fontSize: 12)),
+            Text('Raison : ${video.rejectionReason}', style: const TextStyle(color: AppColors.error, fontSize: 12)),
           ],
           const SizedBox(height: 8),
           Row(children: [
@@ -95,10 +97,10 @@ class _StatusBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final (Color bg, Color fg, String label) = switch (status) {
-      'approved' => (AppColors.success.withAlpha(26), AppColors.success, 'Published'),
-      'pending_review' => (AppColors.warning.withAlpha(26), AppColors.warning, 'In Review'),
-      'rejected' => (AppColors.error.withAlpha(26), AppColors.error, 'Rejected'),
-      'flagged' => (AppColors.warning.withAlpha(26), AppColors.warning, 'Flagged'),
+      'approved' => (AppColors.success.withAlpha(26), AppColors.success, 'Publié'),
+      'pending_review' => (AppColors.warning.withAlpha(26), AppColors.warning, 'En révision'),
+      'rejected' => (AppColors.error.withAlpha(26), AppColors.error, 'Refusé'),
+      'flagged' => (AppColors.warning.withAlpha(26), AppColors.warning, 'Signalé'),
       _ => (AppColors.gris.withAlpha(26), AppColors.gris, status),
     };
     return Container(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4), decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(8)),

@@ -9,9 +9,9 @@ class StripeConnectScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.fondDark,
+      backgroundColor: AppColors.fond,
       appBar: AppBar(
-        backgroundColor: AppColors.fondDark,
+        backgroundColor: AppColors.fond,
         leading: IconButton(
           onPressed: () => context.pop(),
           icon: const Icon(Icons.arrow_back_ios, size: 20),
@@ -70,12 +70,18 @@ class StripeConnectScreen extends StatelessWidget {
                 height: 52,
                 child: ElevatedButton(
                   onPressed: () {
-                    // TODO: Open Stripe Connect onboarding WebView
-                    context.go('/pro/dashboard');
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text(
+                          'Stripe Connect coming soon! You will be notified when payments are enabled.',
+                        ),
+                        backgroundColor: AppColors.violet,
+                      ),
+                    );
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.blanc,
-                    foregroundColor: AppColors.fondDark,
+                    foregroundColor: AppColors.fond,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -104,7 +110,9 @@ class StripeConnectScreen extends StatelessWidget {
               ),
               const SizedBox(height: 32),
               GestureDetector(
-                onTap: () {},
+                onTap: () {
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('support@spotbook.app'), backgroundColor: AppColors.surface));
+                },
                 child: const Text(
                   'Besoin d\'aide ? Contactez le support',
                   style: TextStyle(color: AppColors.accent, fontSize: 13),

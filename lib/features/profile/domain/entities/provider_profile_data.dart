@@ -101,7 +101,7 @@ class ProviderEntity {
 
   factory ProviderEntity.fromJson(Map<String, dynamic> json) {
     final user = json['users'] as Map<String, dynamic>? ?? {};
-    final socials = (json['social_connections'] as List<dynamic>?) ?? [];
+    final socials = (json['social_links'] as List<dynamic>?) ?? [];
 
     int tiktokReach = 0;
     int igPresence = 0;

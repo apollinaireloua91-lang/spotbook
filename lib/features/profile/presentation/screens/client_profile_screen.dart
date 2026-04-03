@@ -614,7 +614,7 @@ class _SpecialActionsSection extends ConsumerWidget {
             onPressed: () async {
               Navigator.of(ctx).pop();
               await Supabase.instance.client.auth.signOut();
-              if (context.mounted) context.go('/auth/login');
+              if (context.mounted) context.go('/login');
             },
             child: const Text(
               'Déconnexion',

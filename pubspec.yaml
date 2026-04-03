@@ -52,7 +52,7 @@ dependencies:
 
   crypto: ^3.0.3
 
-  google_sign_in: ^7.2.0
+  google_sign_in: ^6.2.1
 
   flutter_web_auth_2: ^4.1.0
 
@@ -69,6 +69,12 @@ dependencies:
   video_compress: ^3.1.2
 
   image_picker: ^1.1.2
+
+  camera: ^0.11.1
+
+  permission_handler: ^11.3.1
+
+  path_provider: ^2.1.4
 
   # Audio (Spotify previews)
 
@@ -126,6 +132,10 @@ dependencies:
 
   url_launcher: ^6.3.1
 
+  vector_math: ^2.2.0
+
+  flutter_svg: ^2.0.17
+
   http: ^1.2.1
   http_parser: ^4.1.0
 
@@ -160,11 +170,12 @@ flutter_launcher_icons:
     generate: false
 
 flutter_native_splash:
-  color: "#0D0D14"
-  image: assets/images/logo_white.png
+  color: "#FFFFFF"
+  image: assets/images/logo.png
   android_12:
-    color: "#0D0D14"
-    image: assets/images/logo_white.png
+    color: "#FFFFFF"
+    image: assets/images/logo.png
+    icon_background_color: "#FFFFFF"
   ios: true
 
 flutter:

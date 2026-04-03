@@ -115,9 +115,11 @@ class _EventDetailBody extends StatelessWidget {
                   children: [
                     const Icon(Icons.calendar_today, color: AppColors.gris, size: 16),
                     const SizedBox(width: 8),
-                    Text(
-                      DateFormat('EEEE d MMMM yyyy, HH:mm', 'fr_FR').format(event.eventDate!),
-                      style: const TextStyle(color: AppColors.gris, fontSize: 14),
+                    Expanded(
+                      child: Text(
+                        DateFormat('EEEE d MMMM yyyy, HH:mm', 'fr_FR').format(event.eventDate!),
+                        style: const TextStyle(color: AppColors.gris, fontSize: 14),
+                      ),
                     ),
                   ],
                 ),
@@ -152,9 +154,12 @@ class _EventDetailBody extends StatelessWidget {
                           : null,
                     ),
                     const SizedBox(width: 10),
-                    Text(
-                      event.proName!,
-                      style: const TextStyle(color: AppColors.blanc, fontSize: 15, fontWeight: FontWeight.w600),
+                    Expanded(
+                      child: Text(
+                        event.proName!,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(color: AppColors.blanc, fontSize: 15, fontWeight: FontWeight.w600),
+                      ),
                     ),
                   ],
                 ),

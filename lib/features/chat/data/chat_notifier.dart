@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../../core/realtime/realtime_events.dart';
+import '../../../core/realtime/realtime_manager.dart';
 import '../domain/chat_models.dart';
 import 'chat_repository.dart';
 
@@ -27,10 +29,27 @@ class ConversationsState {
 }
 
 class ConversationsNotifier extends Notifier<ConversationsState> {
+  StreamSubscription<RealtimeEvent>? _rtSub;
+
   @override
   ConversationsState build() {
+    _listenRealtime();
     _load();
+    ref.onDispose(() => _rtSub?.cancel());
     return const ConversationsState();
+  }
+
+  void _listenRealtime() {
+    _rtSub = ref.read(realtimeManagerProvider).conversationStream.listen((event) {
+      if (event is ConversationUpdated || event is InboxMessageReceived) {
+        // Refetch to get updated last_message + correct ordering
+        _load();
+        // Bump unread badge
+        if (event is InboxMessageReceived) {
+          ref.read(unreadMessageCountProvider.notifier).increment();
+        }
+      }
+    });
   }
 
   Future<void> _load() async {
@@ -167,4 +186,34 @@ class ChatNotifier extends Notifier<ChatState> {
 final chatProvider = NotifierProvider<ChatNotifier, ChatState>(
   ChatNotifier.new,
   isAutoDispose: true,
+);
+
+// ─── Unread message count ──────────────────────────────────
+
+class UnreadMessageCountNotifier extends Notifier<int> {
+  @override
+  int build() {
+    _load();
+    return 0;
+  }
+
+  Future<void> _load() async {
+    final repo = ref.read(chatRepositoryProvider);
+    final convs = await repo.getConversations();
+    // Count conversations with unread messages
+    state = convs.where((c) => c.unreadCount > 0).length;
+  }
+
+  void increment() => state = state + 1;
+
+  void decrement() {
+    if (state > 0) state = state - 1;
+  }
+
+  void reset() => state = 0;
+}
+
+final unreadMessageCountProvider =
+    NotifierProvider<UnreadMessageCountNotifier, int>(
+  UnreadMessageCountNotifier.new,
 );

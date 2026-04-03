@@ -112,11 +112,20 @@ class ProviderProfileRemoteDatasource {
   // ─── Requêtes privées ──────────────────────────────────────────────────────
 
   Future<Map<String, dynamic>> _fetchProvider(String providerId) async {
-    return _client
+    final data = await _client
         .from('profiles_pro')
-        .select('*, users(*), social_connections(*)')
+        .select('*, users(*)')
         .eq('id', providerId)
         .single();
+
+    // Social links queried separately — no FK from profiles_pro
+    final socialLinks = await _client
+        .from('social_links')
+        .select('*')
+        .eq('user_id', providerId);
+    data['social_links'] = socialLinks;
+
+    return data;
   }
 
   Future<List<dynamic>> _fetchServices(String providerId) async {
@@ -192,7 +201,7 @@ class ProviderProfileRemoteDatasource {
         .limit(3);
   }
 
-  /// Upsert un lien social dans la table social_connections.
+  /// Upsert un lien social dans la table social_links.
   Future<void> upsertSocialLink({
     required String proId,
     required String platform,
@@ -206,15 +215,15 @@ class ProviderProfileRemoteDatasource {
         ) ??
         platform;
 
-    await _client.from('social_connections').upsert(
+    await _client.from('social_links').upsert(
       {
-        'pro_id': proId,
+        'user_id': proId,
         'platform': platform,
         'handle': handle,
         'url': url,
         'updated_at': DateTime.now().toIso8601String(),
       },
-      onConflict: 'pro_id,platform',
+      onConflict: 'user_id,platform',
     );
   }
 

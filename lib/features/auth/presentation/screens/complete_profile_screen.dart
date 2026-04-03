@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
@@ -7,12 +8,25 @@ import '../../../../shared/theme/app_colors.dart';
 import '../../data/auth_repository.dart';
 
 class _ProfileState {
-  const _ProfileState({this.avatarUrl, this.isUploading = false, this.isSaving = false});
+  const _ProfileState({
+    this.avatarUrl,
+    this.isUploading = false,
+    this.isSaving = false,
+  });
   final String? avatarUrl;
   final bool isUploading;
   final bool isSaving;
-  _ProfileState copyWith({String? avatarUrl, bool? isUploading, bool? isSaving, bool clearAvatar = false}) =>
-      _ProfileState(avatarUrl: clearAvatar ? null : (avatarUrl ?? this.avatarUrl), isUploading: isUploading ?? this.isUploading, isSaving: isSaving ?? this.isSaving);
+  _ProfileState copyWith({
+    String? avatarUrl,
+    bool? isUploading,
+    bool? isSaving,
+    bool clearAvatar = false,
+  }) =>
+      _ProfileState(
+        avatarUrl: clearAvatar ? null : (avatarUrl ?? this.avatarUrl),
+        isUploading: isUploading ?? this.isUploading,
+        isSaving: isSaving ?? this.isSaving,
+      );
 }
 
 class _ProfileNotifier extends Notifier<_ProfileState> {
@@ -31,14 +45,17 @@ class _ProfileNotifier extends Notifier<_ProfileState> {
     }
   }
 
-  Future<void> save({required String displayName, required String bio}) async {
+  Future<void> save({
+    required String displayName,
+    required String bio,
+  }) async {
     state = state.copyWith(isSaving: true);
     try {
       await ref.read(authRepositoryProvider).updateProfile(
-        fullName: displayName,
-        bio: bio.isNotEmpty ? bio : null,
-        avatarUrl: state.avatarUrl,
-      );
+            fullName: displayName,
+            bio: bio.isNotEmpty ? bio : null,
+            avatarUrl: state.avatarUrl,
+          );
       state = state.copyWith(isSaving: false);
     } catch (_) {
       state = state.copyWith(isSaving: false);
@@ -49,15 +66,20 @@ class _ProfileNotifier extends Notifier<_ProfileState> {
   String? get userRole => ref.read(authRepositoryProvider).currentUserRole;
 }
 
-final _profileProvider = NotifierProvider<_ProfileNotifier, _ProfileState>(_ProfileNotifier.new, isAutoDispose: true);
+final _profileProvider = NotifierProvider<_ProfileNotifier, _ProfileState>(
+  _ProfileNotifier.new,
+  isAutoDispose: true,
+);
 
 class CompleteProfileScreen extends ConsumerStatefulWidget {
   const CompleteProfileScreen({super.key});
   @override
-  ConsumerState<CompleteProfileScreen> createState() => _CompleteProfileScreenState();
+  ConsumerState<CompleteProfileScreen> createState() =>
+      _CompleteProfileScreenState();
 }
 
-class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen> with SingleTickerProviderStateMixin {
+class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen>
+    with SingleTickerProviderStateMixin {
   final _displayNameCtrl = TextEditingController();
   final _bioCtrl = TextEditingController();
   late final AnimationController _checkController;
@@ -66,34 +88,67 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen> w
   @override
   void initState() {
     super.initState();
-    _checkController = AnimationController(vsync: this, duration: const Duration(milliseconds: 600));
-    _checkScale = CurvedAnimation(parent: _checkController, curve: Curves.elasticOut);
+    _checkController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 600),
+    );
+    _checkScale = CurvedAnimation(
+      parent: _checkController,
+      curve: Curves.elasticOut,
+    );
     _checkController.forward();
-    _displayNameCtrl.text = ref.read(authRepositoryProvider).currentUserFullName ?? '';
+    _displayNameCtrl.text =
+        ref.read(authRepositoryProvider).currentUserFullName ?? '';
   }
 
   @override
   void dispose() {
-    _checkController.dispose(); _displayNameCtrl.dispose(); _bioCtrl.dispose(); super.dispose();
+    _checkController.dispose();
+    _displayNameCtrl.dispose();
+    _bioCtrl.dispose();
+    super.dispose();
   }
 
   Future<void> _pickAvatar() async {
-    final image = await ImagePicker().pickImage(source: ImageSource.gallery, maxWidth: 512, maxHeight: 512, imageQuality: 80);
+    final image = await ImagePicker().pickImage(
+      source: ImageSource.gallery,
+      maxWidth: 512,
+      maxHeight: 512,
+      imageQuality: 80,
+    );
     if (image == null) return;
     try {
       await ref.read(_profileProvider.notifier).uploadAvatar(image);
     } catch (_) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Upload failed'), backgroundColor: AppColors.error));
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Échec de l\'upload'),
+            backgroundColor: AppColors.error,
+          ),
+        );
+      }
     }
   }
 
   Future<void> _save() async {
+    HapticFeedback.mediumImpact();
     try {
-      await ref.read(_profileProvider.notifier).save(displayName: _displayNameCtrl.text.trim(), bio: _bioCtrl.text.trim());
+      await ref.read(_profileProvider.notifier).save(
+            displayName: _displayNameCtrl.text.trim(),
+            bio: _bioCtrl.text.trim(),
+          );
       if (!mounted) return;
       _navigateNext();
     } catch (_) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Save failed'), backgroundColor: AppColors.error));
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Échec de la sauvegarde'),
+            backgroundColor: AppColors.error,
+          ),
+        );
+      }
     }
   }
 
@@ -105,40 +160,266 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen> w
   @override
   Widget build(BuildContext context) {
     final s = ref.watch(_profileProvider);
+    final bottomPadding = MediaQuery.of(context).padding.bottom;
+
     return Scaffold(
-      backgroundColor: AppColors.fondDark,
-      body: SafeArea(child: SingleChildScrollView(padding: const EdgeInsets.symmetric(horizontal: 24), child: Column(children: [
-        const SizedBox(height: 48),
-        ScaleTransition(scale: _checkScale, child: Container(width: 64, height: 64, decoration: const BoxDecoration(shape: BoxShape.circle, color: AppColors.accentGreen), child: const Icon(Icons.check, color: AppColors.blanc, size: 32))),
-        const SizedBox(height: 16),
-        const Text('Account Created!', style: TextStyle(color: AppColors.accentGreen, fontSize: 18, fontWeight: FontWeight.w600)),
-        const SizedBox(height: 24),
-        const Text('Complete your profile', style: TextStyle(color: AppColors.blanc, fontSize: 28, fontWeight: FontWeight.bold)),
-        const SizedBox(height: 8),
-        const Text('Add a photo and bio so providers know who they\'re working with.', textAlign: TextAlign.center, style: TextStyle(color: AppColors.gris, fontSize: 15)),
-        const SizedBox(height: 32),
-        GestureDetector(
-          onTap: s.isUploading ? null : _pickAvatar,
-          child: Stack(children: [
-            CircleAvatar(radius: 50, backgroundColor: AppColors.surfaceAuth, backgroundImage: s.avatarUrl != null ? NetworkImage(s.avatarUrl!) : null, child: s.avatarUrl == null ? const Icon(Icons.person, size: 40, color: AppColors.gris) : null),
-            Positioned(bottom: 0, right: 0, child: Container(width: 32, height: 32, decoration: const BoxDecoration(shape: BoxShape.circle, color: AppColors.accent),
-              child: s.isUploading ? const Padding(padding: EdgeInsets.all(8), child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.blanc)) : const Icon(Icons.camera_alt, size: 16, color: AppColors.blanc))),
-          ]),
+      backgroundColor: AppColors.fond,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 24),
+          child: Column(
+            children: [
+              const SizedBox(height: 48),
+
+              // Animated check
+              ScaleTransition(
+                scale: _checkScale,
+                child: Container(
+                  width: 72,
+                  height: 72,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: AppColors.gradientAccent,
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColors.violet.withAlpha(40),
+                        blurRadius: 24,
+                        spreadRadius: 0,
+                      ),
+                    ],
+                  ),
+                  child: const Icon(
+                    Icons.check_rounded,
+                    color: AppColors.blanc,
+                    size: 36,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              const Text(
+                'Compte créé !',
+                style: TextStyle(
+                  color: AppColors.violet,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              const SizedBox(height: 24),
+
+              // Title
+              const Text(
+                'Complétez votre profil',
+                style: TextStyle(
+                  color: AppColors.blanc,
+                  fontSize: 26,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: -0.5,
+                ),
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                'Ajoutez une photo et une bio pour que les pros sachent à qui ils ont affaire.',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: AppColors.gris,
+                  fontSize: 15,
+                  height: 1.4,
+                ),
+              ),
+              const SizedBox(height: 32),
+
+              // Avatar picker
+              GestureDetector(
+                onTap: s.isUploading ? null : _pickAvatar,
+                child: Stack(
+                  children: [
+                    CircleAvatar(
+                      radius: 50,
+                      backgroundColor: AppColors.surface,
+                      backgroundImage: s.avatarUrl != null
+                          ? NetworkImage(s.avatarUrl!)
+                          : null,
+                      child: s.avatarUrl == null
+                          ? const Icon(
+                              Icons.person,
+                              size: 40,
+                              color: AppColors.gris,
+                            )
+                          : null,
+                    ),
+                    Positioned(
+                      bottom: 0,
+                      right: 0,
+                      child: Container(
+                        width: 34,
+                        height: 34,
+                        decoration: const BoxDecoration(
+                          shape: BoxShape.circle,
+                          gradient: AppColors.gradientAccent,
+                        ),
+                        child: s.isUploading
+                            ? const Padding(
+                                padding: EdgeInsets.all(8),
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: AppColors.blanc,
+                                ),
+                              )
+                            : const Icon(
+                                Icons.camera_alt,
+                                size: 16,
+                                color: AppColors.blanc,
+                              ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 32),
+
+              // Display Name
+              TextField(
+                controller: _displayNameCtrl,
+                style: const TextStyle(color: AppColors.blanc, fontSize: 15),
+                decoration: InputDecoration(
+                  hintText: 'Nom complet',
+                  hintStyle: const TextStyle(
+                    color: AppColors.gris,
+                    fontSize: 15,
+                  ),
+                  prefixIcon: const Icon(
+                    Icons.person_outline,
+                    color: AppColors.gris,
+                    size: 20,
+                  ),
+                  filled: true,
+                  fillColor: AppColors.surface,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: const BorderSide(color: AppColors.border),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: const BorderSide(color: AppColors.border),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: const BorderSide(color: AppColors.violet),
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 16,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+
+              // Bio
+              TextField(
+                controller: _bioCtrl,
+                style: const TextStyle(color: AppColors.blanc, fontSize: 15),
+                maxLines: 3,
+                decoration: InputDecoration(
+                  hintText: 'Bio — parlez un peu de vous…',
+                  hintStyle: TextStyle(
+                    color: AppColors.gris.withAlpha(128),
+                    fontSize: 15,
+                  ),
+                  prefixIcon: const Padding(
+                    padding: EdgeInsets.only(bottom: 40),
+                    child: Icon(
+                      Icons.edit_outlined,
+                      color: AppColors.gris,
+                      size: 20,
+                    ),
+                  ),
+                  filled: true,
+                  fillColor: AppColors.surface,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: const BorderSide(color: AppColors.border),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: const BorderSide(color: AppColors.border),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: const BorderSide(color: AppColors.violet),
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 16,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 32),
+
+              // Save button
+              SizedBox(
+                width: double.infinity,
+                height: 56,
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(14),
+                    gradient: AppColors.gradientAccent,
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColors.violet.withAlpha(30),
+                        blurRadius: 16,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: ElevatedButton(
+                    onPressed: s.isSaving ? null : _save,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.transparent,
+                      shadowColor: Colors.transparent,
+                      foregroundColor: AppColors.blanc,
+                      disabledBackgroundColor: Colors.transparent,
+                      disabledForegroundColor: AppColors.blanc.withAlpha(100),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                    ),
+                    child: s.isSaving
+                        ? const SizedBox(
+                            width: 22,
+                            height: 22,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2.5,
+                              color: AppColors.blanc,
+                            ),
+                          )
+                        : const Text(
+                            'Enregistrer',
+                            style: TextStyle(
+                              fontSize: 17,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+
+              // Skip
+              GestureDetector(
+                onTap: _navigateNext,
+                child: const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 8),
+                  child: Text(
+                    'Passer pour le moment',
+                    style: TextStyle(color: AppColors.gris, fontSize: 14),
+                  ),
+                ),
+              ),
+              SizedBox(height: bottomPadding + 24),
+            ],
+          ),
         ),
-        const SizedBox(height: 32),
-        TextField(controller: _displayNameCtrl, style: const TextStyle(color: AppColors.blanc), decoration: InputDecoration(labelText: 'Display Name', labelStyle: const TextStyle(color: AppColors.gris), prefixIcon: const Icon(Icons.edit, color: AppColors.gris, size: 20), filled: true, fillColor: AppColors.surfaceAuth, border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none))),
-        const SizedBox(height: 16),
-        TextField(controller: _bioCtrl, style: const TextStyle(color: AppColors.blanc), maxLines: 3, decoration: InputDecoration(labelText: 'Bio', hintText: 'Tell us a little about yourself...', labelStyle: const TextStyle(color: AppColors.gris), hintStyle: TextStyle(color: AppColors.gris.withAlpha(128)), filled: true, fillColor: AppColors.surfaceAuth, border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none))),
-        const SizedBox(height: 32),
-        SizedBox(width: double.infinity, height: 52, child: ElevatedButton(
-          onPressed: s.isSaving ? null : _save,
-          style: ElevatedButton.styleFrom(backgroundColor: AppColors.accent, foregroundColor: AppColors.fondDark, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
-          child: s.isSaving ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.fondDark)) : const Text('Save Profile', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
-        )),
-        const SizedBox(height: 16),
-        GestureDetector(onTap: _navigateNext, child: const Text('Skip for now', style: TextStyle(color: AppColors.gris, fontSize: 14))),
-        const SizedBox(height: 32),
-      ]))),
+      ),
     );
   }
 }
