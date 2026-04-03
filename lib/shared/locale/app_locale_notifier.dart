@@ -19,16 +19,16 @@ class AppLocaleNotifier extends Notifier<Locale> {
       _scheduled = true;
       Future<void>.microtask(_hydrate);
     }
-    return const Locale('fr');
+    return const Locale('en');
   }
 
   Future<void> _hydrate() async {
     try {
       final box = await Hive.openBox<String>(_boxName);
-      final code = box.get(_key, defaultValue: 'fr') ?? 'fr';
-      state = Locale(code == 'en' ? 'en' : 'fr');
+      final code = box.get(_key, defaultValue: 'en') ?? 'en';
+      state = Locale(code == 'fr' ? 'fr' : 'en');
     } catch (_) {
-      state = const Locale('fr');
+      state = const Locale('en');
     }
   }
 
