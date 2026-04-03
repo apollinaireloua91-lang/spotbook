@@ -1,17 +1,22 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shimmer/shimmer.dart';
 
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/utils/analytics_service.dart';
-import '../../../profile/presentation/widgets/social_badge_widget.dart';
+import '../../../auth/data/category_repository.dart';
 import '../../data/discover_notifier.dart';
+import '../../domain/provider_search_result.dart';
 import '../../domain/video_model.dart';
 
-const _filterCategories = [
-  'All', 'Coiffure', 'Beauté', 'Fitness', 'Photo',
-  'Musique', 'Cuisine', 'Massage', 'Tatouage', 'Mode', 'Coaching',
+/// Fallback categories when Supabase data hasn't loaded yet.
+const _fallbackCategories = [
+  'All', 'Coiffure', 'Barbier', 'Esthétique', 'Massage',
+  'Fitness', 'Photographie', 'Musique / DJ', 'Tatouage',
+  'Mode', 'Cuisine', 'Coaching',
 ];
 
 class DiscoverScreen extends ConsumerStatefulWidget {
@@ -44,13 +49,12 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
   }
 
   void _openFilters() {
+    HapticFeedback.lightImpact();
     showModalBottomSheet(
       context: context,
-      backgroundColor: AppColors.surface,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (context) => const _FiltersSheet(),
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (_) => const _FiltersSheet(),
     );
   }
 
@@ -64,8 +68,9 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
       body: SafeArea(
         child: Column(
           children: [
+            // ─── Search bar + filter ───
             Padding(
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
               child: Row(
                 children: [
                   Expanded(
@@ -76,21 +81,38 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
                       onSubmitted: (v) {
                         _focusNode.unfocus();
                         n.search(v);
-                        AnalyticsService.instance.capture('search_performed', properties: {
-                          'query_length': v.length,
-                          'source': 'submit',
-                        });
+                        AnalyticsService.instance.capture(
+                          'search_performed',
+                          properties: {
+                            'query_length': v.length,
+                            'source': 'submit',
+                          },
+                        );
                       },
-                      style: const TextStyle(color: AppColors.blanc, fontSize: 14),
+                      style: const TextStyle(
+                        color: AppColors.blanc,
+                        fontSize: 14,
+                      ),
                       decoration: InputDecoration(
-                        hintText: 'Search professionals, services...',
-                        hintStyle: const TextStyle(color: AppColors.gris),
-                        prefixIcon: const Icon(Icons.search, color: AppColors.gris, size: 20),
+                        hintText: 'Rechercher un professionnel...',
+                        hintStyle: const TextStyle(
+                          color: AppColors.gris,
+                          fontSize: 14,
+                        ),
+                        prefixIcon: const Icon(
+                          Icons.search,
+                          color: AppColors.gris,
+                          size: 20,
+                        ),
                         suffixIcon: ValueListenableBuilder<TextEditingValue>(
                           valueListenable: _searchCtrl,
-                          builder: (context, value, _) => value.text.isNotEmpty
+                          builder: (_, value, __) => value.text.isNotEmpty
                               ? IconButton(
-                                  icon: const Icon(Icons.clear, color: AppColors.gris, size: 18),
+                                  icon: const Icon(
+                                    Icons.clear,
+                                    color: AppColors.gris,
+                                    size: 18,
+                                  ),
                                   onPressed: () {
                                     _searchCtrl.clear();
                                     n.search('');
@@ -100,110 +122,388 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
                         ),
                         filled: true,
                         fillColor: AppColors.surface,
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide.none,
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 12,
+                        ),
                       ),
                     ),
                   ),
                   const SizedBox(width: 8),
-                  IconButton(
-                    onPressed: _openFilters,
-                    icon: const Icon(Icons.tune, color: AppColors.blanc),
-                    style: IconButton.styleFrom(
-                      backgroundColor: AppColors.surface,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  GestureDetector(
+                    onTap: _openFilters,
+                    child: Container(
+                      width: 44,
+                      height: 44,
+                      decoration: BoxDecoration(
+                        color: AppColors.surface,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: AppColors.border),
+                      ),
+                      child: const Icon(
+                        Icons.tune,
+                        color: AppColors.blanc,
+                        size: 20,
+                      ),
                     ),
                   ),
                 ],
               ),
             ),
+
+            // ─── Search history dropdown ───
             if (s.showHistory && s.searchHistory.isNotEmpty)
               Container(
-                margin: const EdgeInsets.symmetric(horizontal: 16),
+                margin: const EdgeInsets.fromLTRB(16, 8, 16, 0),
                 padding: const EdgeInsets.symmetric(vertical: 8),
                 decoration: BoxDecoration(
                   color: AppColors.surface,
                   borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: AppColors.border),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 4,
+                      ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Text('Recent Searches', style: TextStyle(color: AppColors.gris, fontSize: 12)),
+                          const Text(
+                            'Recherches récentes',
+                            style: TextStyle(
+                              color: AppColors.gris,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
                           GestureDetector(
                             onTap: n.clearHistory,
-                            child: const Text('Clear', style: TextStyle(color: AppColors.accent, fontSize: 12)),
+                            child: const Text(
+                              'Effacer',
+                              style: TextStyle(
+                                color: AppColors.violet,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
                           ),
                         ],
                       ),
                     ),
-                    ...s.searchHistory.map((query) => ListTile(
-                          leading: const Icon(Icons.history, color: AppColors.gris, size: 20),
-                          title: Text(query, style: const TextStyle(color: AppColors.blanc, fontSize: 14)),
-                          dense: true,
-                          onTap: () {
-                            _searchCtrl.text = query;
-                            _focusNode.unfocus();
-                            n.search(query);
-                            AnalyticsService.instance.capture('search_performed', properties: {
+                    ...s.searchHistory.map(
+                      (query) => ListTile(
+                        leading: const Icon(
+                          Icons.history,
+                          color: AppColors.gris,
+                          size: 18,
+                        ),
+                        title: Text(
+                          query,
+                          style: const TextStyle(
+                            color: AppColors.blanc,
+                            fontSize: 14,
+                          ),
+                        ),
+                        dense: true,
+                        visualDensity: VisualDensity.compact,
+                        onTap: () {
+                          _searchCtrl.text = query;
+                          _focusNode.unfocus();
+                          n.search(query);
+                          AnalyticsService.instance.capture(
+                            'search_performed',
+                            properties: {
                               'query_length': query.length,
                               'source': 'history',
-                            });
-                          },
-                        )),
+                            },
+                          );
+                        },
+                      ),
+                    ),
                   ],
                 ),
               ),
-            SizedBox(
+
+            const SizedBox(height: 12),
+
+            // ─── Category chips ───
+            Consumer(
+              builder: (context, cRef, _) {
+                final asyncCats = cRef.watch(proCategoriesProvider);
+                final categories = asyncCats.when(
+                  data: (cats) => ['All', ...cats.map((c) => c.label)],
+                  loading: () => _fallbackCategories,
+                  error: (_, __) => _fallbackCategories,
+                );
+                return SizedBox(
               height: 36,
               child: ListView.separated(
                 scrollDirection: Axis.horizontal,
                 padding: const EdgeInsets.symmetric(horizontal: 16),
-                itemCount: _filterCategories.length,
+                itemCount: categories.length,
                 separatorBuilder: (_, __) => const SizedBox(width: 8),
-                itemBuilder: (context, index) {
-                  final cat = _filterCategories[index];
-                  final selected = s.selectedCategory == cat;
+                itemBuilder: (_, index) {
+                  final label = categories[index];
+                  final dbCat = label;
+                  final selected = s.selectedCategory == dbCat;
                   return GestureDetector(
-                    onTap: () => n.setCategory(cat),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                    onTap: () {
+                      HapticFeedback.selectionClick();
+                      n.setCategory(dbCat);
+                    },
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 8,
+                      ),
                       decoration: BoxDecoration(
-                        color: selected ? AppColors.blanc : AppColors.surface,
-                        borderRadius: BorderRadius.circular(18),
-                        border: selected ? null : Border.all(color: AppColors.border),
+                        gradient:
+                            selected ? AppColors.gradientAccent : null,
+                        color: selected ? null : AppColors.surface,
+                        borderRadius: BorderRadius.circular(20),
+                        border: selected
+                            ? null
+                            : Border.all(color: AppColors.border),
                       ),
                       child: Text(
-                        cat,
+                        label,
                         style: TextStyle(
-                          color: selected ? AppColors.fond : AppColors.blanc,
+                          color: selected
+                              ? AppColors.blanc
+                              : AppColors.gris,
                           fontSize: 12,
-                          fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
+                          fontWeight:
+                              selected ? FontWeight.w600 : FontWeight.w400,
                         ),
                       ),
                     ),
                   );
                 },
               ),
+            );
+              },
             ),
-            const SizedBox(height: 12),
+
+            const SizedBox(height: 16),
+
+            // ─── Content area ───
             Expanded(
               child: s.isLoading
-                  ? const Center(child: CircularProgressIndicator(color: AppColors.blanc))
-                  : s.results == null || s.results!.isEmpty
-                      ? const Center(child: Text('No results', style: TextStyle(color: AppColors.gris, fontSize: 15)))
-                      : GridView.builder(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2, crossAxisSpacing: 10, mainAxisSpacing: 10, childAspectRatio: 0.65,
-                          ),
-                          itemCount: s.results!.length,
-                          itemBuilder: (context, index) => _ProCard(video: s.results![index]),
+                  ? const _ShimmerGrid()
+                  : s.hasError
+                      ? _ErrorState(
+                          onRetry: () => n.reloadWithFilters(),
+                        )
+                      : _buildResults(s),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildResults(DiscoverState s) {
+    // Prioritize provider results if available
+    if (s.nearbyProviders.isNotEmpty) {
+      return _ProvidersGrid(providers: s.nearbyProviders);
+    }
+    // Fall back to video results
+    if (s.results != null && s.results!.isNotEmpty) {
+      return _VideosGrid(videos: s.results!);
+    }
+    // Empty state
+    return _EmptyState(
+      hasQuery: s.activeQuery != null && s.activeQuery!.isNotEmpty,
+    );
+  }
+}
+
+// ─── Providers grid ──────────────────────────────────────────────────────────
+
+class _ProvidersGrid extends StatelessWidget {
+  const _ProvidersGrid({required this.providers});
+  final List<ProviderSearchResult> providers;
+
+  @override
+  Widget build(BuildContext context) {
+    return GridView.builder(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        crossAxisSpacing: 12,
+        mainAxisSpacing: 12,
+        childAspectRatio: 0.78,
+      ),
+      itemCount: providers.length,
+      itemBuilder: (_, index) => _ProviderCard(provider: providers[index]),
+    );
+  }
+}
+
+class _ProviderCard extends StatelessWidget {
+  const _ProviderCard({required this.provider});
+  final ProviderSearchResult provider;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () => context.push('/pro/${provider.id}'),
+      child: Container(
+        decoration: BoxDecoration(
+          color: AppColors.surface,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: AppColors.border),
+        ),
+        child: Column(
+          children: [
+            const SizedBox(height: 20),
+            // Avatar
+            Container(
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: AppColors.violet.withAlpha(80),
+                  width: 2,
+                ),
+              ),
+              child: CircleAvatar(
+                radius: 32,
+                backgroundColor: AppColors.surfaceAlt,
+                backgroundImage: provider.avatarUrl != null
+                    ? CachedNetworkImageProvider(provider.avatarUrl!)
+                    : null,
+                child: provider.avatarUrl == null
+                    ? const Icon(
+                        Icons.person,
+                        size: 28,
+                        color: AppColors.gris,
+                      )
+                    : null,
+              ),
+            ),
+            const SizedBox(height: 10),
+            // Name
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              child: Text(
+                provider.displayName,
+                style: const TextStyle(
+                  color: AppColors.blanc,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                ),
+                textAlign: TextAlign.center,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            const SizedBox(height: 4),
+            // Category badge
+            if (provider.category != null)
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 8,
+                  vertical: 2,
+                ),
+                decoration: BoxDecoration(
+                  color: AppColors.violet.withAlpha(25),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  provider.category!,
+                  style: const TextStyle(
+                    color: AppColors.violetClair,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+            const Spacer(),
+            // Bottom row: rating + distance/price
+            Padding(
+              padding: const EdgeInsets.fromLTRB(12, 0, 12, 14),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  if (provider.averageRating != null &&
+                      provider.averageRating! > 0) ...[
+                    const Icon(
+                      Icons.star_rounded,
+                      color: AppColors.warning,
+                      size: 14,
+                    ),
+                    const SizedBox(width: 2),
+                    Text(
+                      provider.averageRating!.toStringAsFixed(1),
+                      style: const TextStyle(
+                        color: AppColors.blanc,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    if (provider.reviewCount != null &&
+                        provider.reviewCount! > 0) ...[
+                      const SizedBox(width: 2),
+                      Text(
+                        '(${provider.reviewCount})',
+                        style: const TextStyle(
+                          color: AppColors.gris,
+                          fontSize: 11,
                         ),
+                      ),
+                    ],
+                  ],
+                  if (provider.distanceKm != null) ...[
+                    if (provider.averageRating != null &&
+                        provider.averageRating! > 0)
+                      const Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 6),
+                        child: Text(
+                          '·',
+                          style: TextStyle(color: AppColors.gris),
+                        ),
+                      ),
+                    Icon(
+                      Icons.location_on_outlined,
+                      color: AppColors.gris,
+                      size: 12,
+                    ),
+                    const SizedBox(width: 2),
+                    Text(
+                      '${provider.distanceKm!.toStringAsFixed(1)} km',
+                      style: const TextStyle(
+                        color: AppColors.gris,
+                        fontSize: 11,
+                      ),
+                    ),
+                  ],
+                  if (provider.minPrice != null) ...[
+                    const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 6),
+                      child: Text(
+                        '·',
+                        style: TextStyle(color: AppColors.gris),
+                      ),
+                    ),
+                    Text(
+                      'dès ${provider.minPrice!.toStringAsFixed(0)} \$',
+                      style: const TextStyle(
+                        color: AppColors.gris,
+                        fontSize: 11,
+                      ),
+                    ),
+                  ],
+                ],
+              ),
             ),
           ],
         ),
@@ -212,101 +512,30 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
   }
 }
 
-class _FiltersSheet extends ConsumerWidget {
-  const _FiltersSheet();
+// ─── Videos grid (fallback) ──────────────────────────────────────────────────
+
+class _VideosGrid extends StatelessWidget {
+  const _VideosGrid({required this.videos});
+  final List<VideoModel> videos;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final s = ref.watch(discoverProvider);
-    final n = ref.read(discoverProvider.notifier);
-
-    return Padding(
-      padding: const EdgeInsets.all(24),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text('Filters', style: TextStyle(color: AppColors.blanc, fontSize: 20, fontWeight: FontWeight.bold)),
-          const SizedBox(height: 24),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Text('Max Distance', style: TextStyle(color: AppColors.blanc, fontSize: 16)),
-              Text('${s.maxDistance.toInt()} km', style: const TextStyle(color: AppColors.accent, fontSize: 16)),
-            ],
-          ),
-          Slider(
-            value: s.maxDistance,
-            min: 1,
-            max: 100,
-            activeColor: AppColors.accent,
-            inactiveColor: AppColors.surfaceAlt,
-            onChanged: n.setDistance,
-          ),
-          const SizedBox(height: 16),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Text('Min Rating', style: TextStyle(color: AppColors.blanc, fontSize: 16)),
-              Text(s.minRating.toStringAsFixed(1), style: const TextStyle(color: AppColors.accent, fontSize: 16)),
-            ],
-          ),
-          Slider(
-            value: s.minRating,
-            min: 0,
-            max: 5,
-            divisions: 10,
-            activeColor: AppColors.accent,
-            inactiveColor: AppColors.surfaceAlt,
-            onChanged: n.setRating,
-          ),
-          const SizedBox(height: 16),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Text('Max Price', style: TextStyle(color: AppColors.blanc, fontSize: 16)),
-              Text('\$${s.maxPrice.toInt()}', style: const TextStyle(color: AppColors.accent, fontSize: 16)),
-            ],
-          ),
-          Slider(
-            value: s.maxPrice,
-            min: 10,
-            max: 500,
-            activeColor: AppColors.accent,
-            inactiveColor: AppColors.surfaceAlt,
-            onChanged: n.setPrice,
-          ),
-          const SizedBox(height: 16),
-          SwitchListTile(
-            title: const Text('Available Today', style: TextStyle(color: AppColors.blanc, fontSize: 16)),
-            value: s.availableToday,
-            activeTrackColor: AppColors.accent.withAlpha(128),
-            contentPadding: EdgeInsets.zero,
-            onChanged: n.setAvailableToday,
-          ),
-          const SizedBox(height: 24),
-          SizedBox(
-            width: double.infinity,
-            height: 52,
-            child: ElevatedButton(
-              onPressed: () => context.pop(),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.accent,
-                foregroundColor: AppColors.fondDark,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-              ),
-              child: const Text('Apply Filters', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
-            ),
-          ),
-          SizedBox(height: MediaQuery.of(context).padding.bottom),
-        ],
+  Widget build(BuildContext context) {
+    return GridView.builder(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        crossAxisSpacing: 12,
+        mainAxisSpacing: 12,
+        childAspectRatio: 0.65,
       ),
+      itemCount: videos.length,
+      itemBuilder: (_, index) => _VideoCard(video: videos[index]),
     );
   }
 }
 
-class _ProCard extends StatelessWidget {
-  const _ProCard({required this.video});
+class _VideoCard extends StatelessWidget {
+  const _VideoCard({required this.video});
   final VideoModel video;
 
   @override
@@ -316,55 +545,487 @@ class _ProCard extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           color: AppColors.surface,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(14),
           border: Border.all(color: AppColors.border),
         ),
+        clipBehavior: Clip.antiAlias,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Thumbnail
             Expanded(
-              child: ClipRRect(
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
-                child: SizedBox(
-                  width: double.infinity,
-                  child: video.thumbnailUrl != null
-                      ? CachedNetworkImage(imageUrl: video.thumbnailUrl!, fit: BoxFit.cover, errorWidget: (_, __, ___) => Container(color: AppColors.surfaceAlt))
-                      : Container(color: AppColors.surfaceAlt, child: const Icon(Icons.videocam, color: AppColors.gris, size: 32)),
-                ),
+              child: SizedBox(
+                width: double.infinity,
+                child: video.thumbnailUrl != null
+                    ? CachedNetworkImage(
+                        imageUrl: video.thumbnailUrl!,
+                        fit: BoxFit.cover,
+                        errorWidget: (_, __, ___) =>
+                            Container(color: AppColors.surfaceAlt),
+                      )
+                    : Container(
+                        color: AppColors.surfaceAlt,
+                        child: const Center(
+                          child: Icon(
+                            Icons.play_circle_outline,
+                            color: AppColors.gris,
+                            size: 32,
+                          ),
+                        ),
+                      ),
               ),
             ),
+            // Info
             Padding(
-              padding: const EdgeInsets.all(8),
+              padding: const EdgeInsets.all(10),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(children: [
-                    CircleAvatar(
-                      radius: 12,
-                      backgroundColor: AppColors.surfaceAlt,
-                      backgroundImage: video.proAvatarUrl != null ? CachedNetworkImageProvider(video.proAvatarUrl!) : null,
-                      child: video.proAvatarUrl == null ? const Icon(Icons.person, size: 12, color: AppColors.gris) : null,
+                  Row(
+                    children: [
+                      CircleAvatar(
+                        radius: 12,
+                        backgroundColor: AppColors.surfaceAlt,
+                        backgroundImage: video.proAvatarUrl != null
+                            ? CachedNetworkImageProvider(
+                                video.proAvatarUrl!)
+                            : null,
+                        child: video.proAvatarUrl == null
+                            ? const Icon(
+                                Icons.person,
+                                size: 12,
+                                color: AppColors.gris,
+                              )
+                            : null,
+                      ),
+                      const SizedBox(width: 6),
+                      Expanded(
+                        child: Text(
+                          video.proName ?? 'Pro',
+                          style: const TextStyle(
+                            color: AppColors.blanc,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    video.title,
+                    style: const TextStyle(
+                      color: AppColors.grisClair,
+                      fontSize: 11,
                     ),
-                    const SizedBox(width: 6),
-                    Expanded(child: Text(video.proName ?? 'Pro', style: const TextStyle(color: AppColors.blanc, fontSize: 12, fontWeight: FontWeight.w600), overflow: TextOverflow.ellipsis)),
-                  ]),
-                  if (video.socialConnections.isNotEmpty) ...[
-                    const SizedBox(height: 4),
-                    Wrap(
-                      spacing: 4,
-                      children: video.socialConnections
-                          .map((c) => SocialBadgeWidget(
-                                platform: c['platform'] as String,
-                                followersCount: c['followers_count'] as int,
-                              ))
-                          .toList(),
-                    ),
-                  ],
-                  const SizedBox(height: 4),
-                  Text(video.title, style: const TextStyle(color: AppColors.grisClair, fontSize: 11), maxLines: 2, overflow: TextOverflow.ellipsis),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ],
               ),
             ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ─── Empty state ─────────────────────────────────────────────────────────────
+
+class _EmptyState extends StatelessWidget {
+  const _EmptyState({required this.hasQuery});
+  final bool hasQuery;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 40),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              width: 80,
+              height: 80,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: AppColors.violet.withAlpha(25),
+              ),
+              child: const Icon(
+                Icons.search_off_rounded,
+                size: 36,
+                color: AppColors.violet,
+              ),
+            ),
+            const SizedBox(height: 20),
+            Text(
+              hasQuery
+                  ? 'Aucun résultat'
+                  : 'Aucun professionnel trouvé',
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                color: AppColors.blanc,
+                fontSize: 17,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              hasQuery
+                  ? 'Essayez avec d\'autres mots-clés\nou modifiez vos filtres'
+                  : 'Découvrez bientôt les meilleurs\nprofessionnels près de chez vous',
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                color: AppColors.gris,
+                fontSize: 14,
+                height: 1.5,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ─── Error state ─────────────────────────────────────────────────────────────
+
+class _ErrorState extends StatelessWidget {
+  const _ErrorState({required this.onRetry});
+  final VoidCallback onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 40),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              width: 80,
+              height: 80,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: AppColors.error.withAlpha(25),
+              ),
+              child: const Icon(
+                Icons.wifi_off_rounded,
+                size: 36,
+                color: AppColors.error,
+              ),
+            ),
+            const SizedBox(height: 20),
+            const Text(
+              'Erreur de chargement',
+              style: TextStyle(
+                color: AppColors.blanc,
+                fontSize: 17,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              'Vérifiez votre connexion\net réessayez',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: AppColors.gris,
+                fontSize: 14,
+                height: 1.5,
+              ),
+            ),
+            const SizedBox(height: 24),
+            GestureDetector(
+              onTap: onRetry,
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 10,
+                ),
+                decoration: BoxDecoration(
+                  color: AppColors.violet,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Text(
+                  'Réessayer',
+                  style: TextStyle(
+                    color: AppColors.blanc,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ─── Shimmer grid ────────────────────────────────────────────────────────────
+
+class _ShimmerGrid extends StatelessWidget {
+  const _ShimmerGrid();
+
+  @override
+  Widget build(BuildContext context) {
+    return Shimmer.fromColors(
+      baseColor: AppColors.surface,
+      highlightColor: AppColors.surfaceAlt,
+      child: GridView.builder(
+        physics: const NeverScrollableScrollPhysics(),
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          crossAxisSpacing: 12,
+          mainAxisSpacing: 12,
+          childAspectRatio: 0.78,
+        ),
+        itemCount: 6,
+        itemBuilder: (_, __) => Container(
+          decoration: BoxDecoration(
+            color: AppColors.surface,
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Column(
+            children: [
+              const SizedBox(height: 20),
+              Container(
+                width: 64,
+                height: 64,
+                decoration: const BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: AppColors.surfaceAlt,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Container(
+                width: 80,
+                height: 14,
+                decoration: BoxDecoration(
+                  color: AppColors.surfaceAlt,
+                  borderRadius: BorderRadius.circular(7),
+                ),
+              ),
+              const SizedBox(height: 8),
+              Container(
+                width: 50,
+                height: 10,
+                decoration: BoxDecoration(
+                  color: AppColors.surfaceAlt,
+                  borderRadius: BorderRadius.circular(5),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ─── Filters sheet ───────────────────────────────────────────────────────────
+
+class _FiltersSheet extends ConsumerWidget {
+  const _FiltersSheet();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final s = ref.watch(discoverProvider);
+    final n = ref.read(discoverProvider.notifier);
+
+    return Container(
+      padding: const EdgeInsets.fromLTRB(24, 16, 24, 0),
+      decoration: const BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      child: SafeArea(
+        top: false,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Handle
+            Center(
+              child: Container(
+                width: 36,
+                height: 4,
+                margin: const EdgeInsets.only(bottom: 20),
+                decoration: BoxDecoration(
+                  color: AppColors.gris.withAlpha(100),
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+            ),
+            const Text(
+              'Filtres',
+              style: TextStyle(
+                color: AppColors.blanc,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 24),
+
+            // Distance
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'Distance max',
+                  style: TextStyle(color: AppColors.blanc, fontSize: 15),
+                ),
+                Text(
+                  '${s.maxDistance.toInt()} km',
+                  style: const TextStyle(
+                    color: AppColors.violet,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+            SliderTheme(
+              data: SliderTheme.of(context).copyWith(
+                activeTrackColor: AppColors.violet,
+                inactiveTrackColor: AppColors.surfaceAlt,
+                thumbColor: AppColors.violet,
+                overlayColor: AppColors.violet.withAlpha(30),
+              ),
+              child: Slider(
+                value: s.maxDistance,
+                min: 1,
+                max: 100,
+                onChanged: n.setDistance,
+              ),
+            ),
+            const SizedBox(height: 12),
+
+            // Rating
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'Note minimum',
+                  style: TextStyle(color: AppColors.blanc, fontSize: 15),
+                ),
+                Row(
+                  children: [
+                    const Icon(
+                      Icons.star_rounded,
+                      color: AppColors.warning,
+                      size: 16,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      s.minRating.toStringAsFixed(1),
+                      style: const TextStyle(
+                        color: AppColors.violet,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            SliderTheme(
+              data: SliderTheme.of(context).copyWith(
+                activeTrackColor: AppColors.violet,
+                inactiveTrackColor: AppColors.surfaceAlt,
+                thumbColor: AppColors.violet,
+                overlayColor: AppColors.violet.withAlpha(30),
+              ),
+              child: Slider(
+                value: s.minRating,
+                min: 0,
+                max: 5,
+                divisions: 10,
+                onChanged: n.setRating,
+              ),
+            ),
+            const SizedBox(height: 12),
+
+            // Price
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'Prix max',
+                  style: TextStyle(color: AppColors.blanc, fontSize: 15),
+                ),
+                Text(
+                  '${s.maxPrice.toInt()} \$',
+                  style: const TextStyle(
+                    color: AppColors.violet,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+            SliderTheme(
+              data: SliderTheme.of(context).copyWith(
+                activeTrackColor: AppColors.violet,
+                inactiveTrackColor: AppColors.surfaceAlt,
+                thumbColor: AppColors.violet,
+                overlayColor: AppColors.violet.withAlpha(30),
+              ),
+              child: Slider(
+                value: s.maxPrice,
+                min: 10,
+                max: 500,
+                onChanged: n.setPrice,
+              ),
+            ),
+            const SizedBox(height: 12),
+
+            // Available today
+            SwitchListTile(
+              title: const Text(
+                'Disponible aujourd\'hui',
+                style: TextStyle(color: AppColors.blanc, fontSize: 15),
+              ),
+              value: s.availableToday,
+              activeTrackColor: AppColors.violet.withAlpha(128),
+              activeThumbColor: AppColors.violet,
+              inactiveTrackColor: AppColors.surfaceAlt,
+              contentPadding: EdgeInsets.zero,
+              onChanged: n.setAvailableToday,
+            ),
+            const SizedBox(height: 20),
+
+            // Apply button
+            SizedBox(
+              width: double.infinity,
+              height: 50,
+              child: ElevatedButton(
+                onPressed: () {
+                  n.reloadWithFilters();
+                  context.pop();
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.violet,
+                  foregroundColor: AppColors.blanc,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  elevation: 0,
+                ),
+                child: const Text(
+                  'Appliquer les filtres',
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
           ],
         ),
       ),

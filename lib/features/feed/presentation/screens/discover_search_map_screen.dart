@@ -9,15 +9,18 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/utils/service_category_icons.dart';
+import '../../../auth/data/category_repository.dart';
 import '../../../../shared/widgets/spotbook_avatar.dart';
 import '../../../../shared/widgets/spotbook_button.dart';
 import '../../data/discover_notifier.dart';
 import '../../data/discover_search_repository.dart';
 import '../../domain/provider_search_result.dart';
 
-const _kMapCategories = [
-  'All', 'Coiffure', 'Beauté', 'Fitness', 'Photo',
-  'Musique', 'Cuisine', 'Massage', 'Tatouage', 'Mode', 'Coaching',
+/// Fallback categories for map filter when Supabase hasn't loaded yet.
+const _kMapCategoriesFallback = [
+  'All', 'Coiffure', 'Barbier', 'Esthétique', 'Massage',
+  'Fitness', 'Photographie', 'Musique / DJ', 'Tatouage',
+  'Mode', 'Cuisine', 'Coaching',
 ];
 
 const _kDarkMapStyle = '''[
@@ -351,16 +354,24 @@ class _DiscoverSearchMapScreenState
                   ),
                 ),
                 const SizedBox(height: 10),
-                SizedBox(
+                Builder(
+                  builder: (_) {
+                    final asyncCats = ref.watch(proCategoriesProvider);
+                    final mapCategories = asyncCats.when(
+                      data: (cats) => ['All', ...cats.map((c) => c.label)],
+                      loading: () => _kMapCategoriesFallback,
+                      error: (_, __) => _kMapCategoriesFallback,
+                    );
+                    return SizedBox(
                   height: 36,
                   child: ListView.separated(
                     scrollDirection: Axis.horizontal,
                     padding: const EdgeInsets.symmetric(horizontal: 16),
-                    itemCount: _kMapCategories.length,
+                    itemCount: mapCategories.length,
                     separatorBuilder: (_, __) =>
                         const SizedBox(width: 8),
                     itemBuilder: (_, i) {
-                      final cat = _kMapCategories[i];
+                      final cat = mapCategories[i];
                       final selected = s.selectedCategory == cat;
                       final isAll = cat == 'All';
                       return GestureDetector(
@@ -406,6 +417,8 @@ class _DiscoverSearchMapScreenState
                       );
                     },
                   ),
+                );
+                  },
                 ),
               ],
             ),
@@ -540,7 +553,7 @@ class _ProBottomCard extends StatelessWidget {
               BorderRadius.vertical(top: Radius.circular(20)),
           boxShadow: [
             BoxShadow(
-              color: Color(0x55000000),
+              color: AppColors.overlayLight,
               blurRadius: 24,
               offset: Offset(0, -4),
             ),

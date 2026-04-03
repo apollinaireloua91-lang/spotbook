@@ -11,9 +11,11 @@ import '../../../../shared/widgets/spotbook_button.dart';
 import '../../data/discover_notifier.dart';
 import '../../domain/provider_search_result.dart';
 
-const _kResultsCategories = [
-  'All', 'Coiffure', 'Beauté', 'Fitness', 'Photo',
-  'Musique', 'Cuisine', 'Massage', 'Tatouage', 'Mode', 'Coaching',
+/// Fallback categories when Supabase data hasn't loaded yet.
+const _kResultsCategoriesFallback = [
+  'All', 'Coiffure', 'Barbier', 'Esthétique', 'Massage',
+  'Fitness', 'Photographie', 'Musique / DJ', 'Tatouage',
+  'Mode', 'Cuisine', 'Coaching',
 ];
 
 class DiscoverSearchResultsScreen extends ConsumerStatefulWidget {
@@ -127,10 +129,10 @@ class _DiscoverSearchResultsScreenState
               child: ListView.separated(
                 scrollDirection: Axis.horizontal,
                 padding: const EdgeInsets.symmetric(horizontal: 16),
-                itemCount: _kResultsCategories.length,
+                itemCount: _kResultsCategoriesFallback.length,
                 separatorBuilder: (_, __) => const SizedBox(width: 8),
                 itemBuilder: (_, i) {
-                  final cat = _kResultsCategories[i];
+                  final cat = _kResultsCategoriesFallback[i];
                   final selected = s.selectedCategory == cat;
                   return GestureDetector(
                     onTap: () => n.setCategory(cat),

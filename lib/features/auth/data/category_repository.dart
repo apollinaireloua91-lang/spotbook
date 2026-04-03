@@ -103,6 +103,19 @@ class ProCategory {
   };
 }
 
+/// Converts a list of ProCategory into a flat list suitable for filter pills.
+/// Prepends an "All" entry at index 0.
+List<({String key, String label, String emoji})> toFilterPills(List<ProCategory> cats) {
+  return [
+    (key: 'all', label: 'All', emoji: ''),
+    ...cats.map((c) => (
+          key: c.label,
+          label: c.label,
+          emoji: c.emoji ?? '',
+        )),
+  ];
+}
+
 class CategoryRepository {
   CategoryRepository({required SupabaseClient supabase}) : _supabase = supabase;
 
