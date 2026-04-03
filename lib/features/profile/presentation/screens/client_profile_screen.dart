@@ -1,16 +1,21 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../shared/theme/app_colors.dart';
-import '../../../../shared/widgets/spotbook_button.dart';
-import '../../../booking/data/booking_notifier.dart';
-import '../../../booking/domain/booking_models.dart';
-import '../../../events/data/event_notifier.dart';
-import '../../../favorites/data/favorite_notifier.dart';
+import '../../../../shared/widgets/spotbook_loading_shimmer.dart';
 import '../../data/profile_repository.dart';
 import '../../domain/profile_models.dart';
+import '../widgets/become_pro_sheet.dart';
+import '../widgets/profile_hero.dart';
+import '../widgets/profile_stats_row.dart';
+import '../widgets/settings_list.dart';
+
+// ─── Providers ──────────────────────────────────────────────────────────────
 
 class ClientProfileNotifier extends AsyncNotifier<ClientProfile?> {
   @override
@@ -26,207 +31,229 @@ final clientProfileProvider =
   ClientProfileNotifier.new,
 );
 
+/// Stats: {rdv, following, events, reviews}
+final clientStatsProvider =
+    FutureProvider.autoDispose<Map<String, int>>((ref) async {
+  final repo = ref.read(profileRepositoryProvider);
+  final results = await Future.wait([
+    repo.countClientBookings(),
+    repo.countFollowing(),
+    repo.countClientTickets(),
+    repo.countReviewsLeftByClient(),
+  ]);
+  return {
+    'rdv': results[0],
+    'following': results[1],
+    'events': results[2],
+    'reviews': results[3],
+  };
+});
+
+/// Favorite pros list for horizontal scroll
+final clientFavProsProvider =
+    FutureProvider.autoDispose<List<ClientFavoriteProItem>>((ref) async {
+  final repo = ref.read(profileRepositoryProvider);
+  final data = await repo.getClientFavoritePros();
+  return data.map((e) => ClientFavoriteProItem.fromJson(e)).toList();
+});
+
+/// Recent booking history
+final clientHistoryProvider =
+    FutureProvider.autoDispose<List<Map<String, dynamic>>>((ref) async {
+  final repo = ref.read(profileRepositoryProvider);
+  return repo.getRecentClientHistory();
+});
+
+// ─── Screen ─────────────────────────────────────────────────────────────────
+
 class ClientProfileScreen extends ConsumerWidget {
   const ClientProfileScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final profileAsync = ref.watch(clientProfileProvider);
-    final uid = ref.watch(profileRepositoryProvider).currentUserId;
 
     return Scaffold(
       backgroundColor: AppColors.fond,
-      appBar: AppBar(
-        backgroundColor: AppColors.fond,
-        elevation: 0,
-        scrolledUnderElevation: 0,
-        centerTitle: true,
-        title: const Text(
-          'Mon Profil',
-          style: TextStyle(
-            color: AppColors.blanc,
-            fontWeight: FontWeight.w600,
-            fontSize: 17,
-          ),
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.settings_outlined, color: AppColors.blanc),
-            onPressed: () => context.push('/settings'),
-          ),
-        ],
-      ),
       body: profileAsync.when(
         data: (profile) {
-          if (profile == null) {
-            return const Center(
-              child: Text(
-                'Non authentifié',
-                style: TextStyle(color: AppColors.gris),
-              ),
-            );
-          }
-          final isOwn = uid != null && profile.id == uid;
-          return _ClientProfileBody(profile: profile, isOwnProfile: isOwn);
+          if (profile == null) return const _UnauthenticatedState();
+          return _ProfileBody(profile: profile);
         },
-        loading: () => const Center(
-          child: CircularProgressIndicator(color: AppColors.blanc),
-        ),
-        error: (err, _) => Center(
-          child: Text(
-            'Erreur : $err',
-            style: const TextStyle(color: AppColors.error),
-          ),
+        loading: () => const SpotbookLoadingShimmer.profile(),
+        error: (err, _) => _ErrorState(
+          onRetry: () => ref.invalidate(clientProfileProvider),
         ),
       ),
     );
   }
 }
 
-class _ClientProfileBody extends StatelessWidget {
-  const _ClientProfileBody({
-    required this.profile,
-    required this.isOwnProfile,
-  });
+// ─── Main body ──────────────────────────────────────────────────────────────
+
+class _ProfileBody extends ConsumerWidget {
+  const _ProfileBody({required this.profile});
 
   final ClientProfile profile;
-  final bool isOwnProfile;
 
   @override
-  Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 3,
-      child: NestedScrollView(
-        headerSliverBuilder: (context, innerBoxIsScrolled) {
-          return [
-            SliverToBoxAdapter(
-              child: Column(
+  Widget build(BuildContext context, WidgetRef ref) {
+    final statsAsync = ref.watch(clientStatsProvider);
+    final favProsAsync = ref.watch(clientFavProsProvider);
+    final historyAsync = ref.watch(clientHistoryProvider);
+
+    return SafeArea(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.only(bottom: 100),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Header: "Mon Profil" centered + settings gear right
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+              child: Stack(
+                alignment: Alignment.center,
                 children: [
-                  SizedBox(
-                    height: 140 + 36,
-                    child: Stack(
-                      clipBehavior: Clip.none,
-                      children: [
-                        Container(
-                          height: 140,
-                          width: double.infinity,
+                  Center(
+                    child: Text(
+                      'Mon Profil',
+                      style: GoogleFonts.dmSans(
+                        color: AppColors.blanc,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    right: 0,
+                    child: GestureDetector(
+                      onTap: () => context.push('/settings'),
+                      child: Container(
+                        width: 36,
+                        height: 36,
+                        decoration: BoxDecoration(
                           color: AppColors.surface,
-                          child: profile.coverUrl != null
-                              ? CachedNetworkImage(
-                                  imageUrl: profile.coverUrl!,
-                                  fit: BoxFit.cover,
-                                  width: double.infinity,
-                                  height: 140,
-                                )
-                              : null,
+                          borderRadius: BorderRadius.circular(10),
                         ),
-                        Positioned(
-                          bottom: -36,
-                          left: 0,
-                          right: 0,
-                          child: Center(
-                            child: Container(
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                  color: AppColors.blanc,
-                                  width: 2,
-                                ),
-                              ),
-                              child: CircleAvatar(
-                                radius: 36,
-                                backgroundColor: AppColors.surfaceAlt,
-                                backgroundImage: profile.avatarUrl != null
-                                    ? CachedNetworkImageProvider(
-                                        profile.avatarUrl!,
-                                      )
-                                    : null,
-                                child: profile.avatarUrl == null
-                                    ? const Icon(
-                                        Icons.person,
-                                        size: 40,
-                                        color: AppColors.gris,
-                                      )
-                                    : null,
-                              ),
-                            ),
+                        child: const Icon(
+                          Icons.settings_outlined,
+                          color: AppColors.blanc,
+                          size: 18,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            // ─── Hero Section ───
+            ProfileHero(profile: profile),
+
+            // ─── Stats Row ───
+            statsAsync.when(
+              data: (stats) => ProfileStatsRow(
+                totalRdv: stats['rdv'] ?? 0,
+                totalFollowing: stats['following'] ?? 0,
+                totalEvents: stats['events'] ?? 0,
+                totalReviews: stats['reviews'] ?? 0,
+              ),
+              loading: () => const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16),
+                child: SpotbookLoadingShimmer.card(itemCount: 1),
+              ),
+              error: (_, __) => const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                child: Text(
+                  'Impossible de charger les statistiques',
+                  style: TextStyle(color: AppColors.gris, fontSize: 12),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 16),
+
+            // ─── Edit Profile Button ───
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 60),
+              child: GestureDetector(
+                onTap: () {
+                  HapticFeedback.lightImpact();
+                  context.push('/edit-profile');
+                },
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  decoration: BoxDecoration(
+                    color: AppColors.surface,
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: AppColors.border),
+                  ),
+                  child: const Center(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          '✏️',
+                          style: TextStyle(fontSize: 14),
+                        ),
+                        SizedBox(width: 6),
+                        Text(
+                          'Modifier mon profil',
+                          style: TextStyle(
+                            color: AppColors.blanc,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
                       ],
                     ),
                   ),
-                  const SizedBox(height: 48),
-                  Text(
-                    profile.fullName,
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      color: AppColors.blanc,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  if (profile.username != null) ...[
-                    const SizedBox(height: 4),
-                    Text(
-                      '@${profile.username}',
-                      style: const TextStyle(
-                        color: AppColors.gris,
-                        fontSize: 14,
-                      ),
-                    ),
-                  ],
-                  if (profile.city != null && profile.city!.isNotEmpty) ...[
-                    const SizedBox(height: 4),
-                    Text(
-                      '📍 ${profile.city}',
-                      style: const TextStyle(
-                        color: AppColors.gris,
-                        fontSize: 13,
-                      ),
-                    ),
-                  ],
-                  if (isOwnProfile) ...[
-                    const SizedBox(height: 16),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 24),
-                      child: SpotbookButton.outlined(
-                        label: 'Modifier le profil',
-                        onPressed: () => context.push('/edit-profile'),
-                      ),
-                    ),
-                  ],
-                  const SizedBox(height: 24),
-                  Container(
-                    height: 1,
-                    color: AppColors.border,
-                  ),
-                ],
-              ),
-            ),
-            SliverPersistentHeader(
-              pinned: true,
-              delegate: _SliverTabBarDelegate(
-                TabBar(
-                  indicatorColor: AppColors.blanc,
-                  indicatorWeight: 2,
-                  labelColor: AppColors.blanc,
-                  unselectedLabelColor: AppColors.gris,
-                  dividerColor: Colors.transparent,
-                  tabs: const [
-                    Tab(text: 'Favoris'),
-                    Tab(text: 'Historique'),
-                    Tab(text: 'Billets'),
-                  ],
                 ),
               ),
             ),
-          ];
-        },
-        body: const TabBarView(
-          children: [
-            _ClientFavoritesTab(),
-            _ClientHistoryTab(),
-            _ClientTicketsTab(),
+
+            const SizedBox(height: 28),
+
+            // ─── Favorite Pros (horizontal scroll) ───
+            favProsAsync.when(
+              data: (favPros) {
+                if (favPros.isEmpty) return const _EmptyFavorites();
+                return _FavoriteProsList(favPros: favPros);
+              },
+              loading: () => const SizedBox.shrink(),
+              error: (_, __) => const SizedBox.shrink(),
+            ),
+
+            // ─── Recent History ───
+            historyAsync.when(
+              data: (history) {
+                if (history.isEmpty) return const _EmptyHistory();
+                return _RecentHistory(items: history);
+              },
+              loading: () => const SizedBox.shrink(),
+              error: (_, __) => const SizedBox.shrink(),
+            ),
+
+            // ─── Settings ───
+            Padding(
+              padding: const EdgeInsets.only(left: 16, bottom: 10),
+              child: Text(
+                'Paramètres',
+                style: GoogleFonts.dmSans(
+                  color: AppColors.blanc,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+            _SettingsSection(context: context),
+
+            const SizedBox(height: 16),
+
+            // ─── Become Pro + Logout ───
+            _SpecialActionsSection(context: context),
           ],
         ),
       ),
@@ -234,196 +261,589 @@ class _ClientProfileBody extends StatelessWidget {
   }
 }
 
-class _SliverTabBarDelegate extends SliverPersistentHeaderDelegate {
-  _SliverTabBarDelegate(this._tabBar);
+// ─── Favorite Pros horizontal scroll ────────────────────────────────────────
 
-  final TabBar _tabBar;
+class _FavoriteProsList extends StatelessWidget {
+  const _FavoriteProsList({required this.favPros});
 
-  @override
-  double get minExtent => _tabBar.preferredSize.height;
-
-  @override
-  double get maxExtent => _tabBar.preferredSize.height;
+  final List<ClientFavoriteProItem> favPros;
 
   @override
-  Widget build(
-    BuildContext context,
-    double shrinkOffset,
-    bool overlapsContent,
-  ) {
-    return ColoredBox(
-      color: AppColors.fond,
-      child: _tabBar,
-    );
-  }
-
-  @override
-  bool shouldRebuild(covariant _SliverTabBarDelegate oldDelegate) {
-    return oldDelegate._tabBar != _tabBar;
-  }
-}
-
-bool _isHistoryBooking(BookingModel b) {
-  if (b.isPast || b.isCancelled) return true;
-  final raw = b.slotDate;
-  if (raw == null || raw.isEmpty) return false;
-  final d = DateTime.tryParse(raw);
-  if (d == null) return false;
-  return !d.isAfter(DateTime.now());
-}
-
-class _ClientFavoritesTab extends ConsumerWidget {
-  const _ClientFavoritesTab();
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final state = ref.watch(favoritesListProvider);
-
-    if (state.isLoading) {
-      return const Center(
-        child: CircularProgressIndicator(color: AppColors.blanc),
-      );
-    }
-
-    final items = [...state.proFavorites, ...state.eventFavorites];
-    if (items.isEmpty) {
-      return const Center(
-        child: Text(
-          'Aucun favori pour le moment',
-          style: TextStyle(color: AppColors.gris, fontSize: 14),
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Row(
+            children: [
+              Text(
+                'Mes Pros favoris',
+                style: GoogleFonts.dmSans(
+                  color: AppColors.blanc,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const Spacer(),
+              GestureDetector(
+                onTap: () => context.push('/favorites'),
+                child: Text(
+                  'Voir tout',
+                  style: GoogleFonts.dmSans(
+                    color: AppColors.violetClair,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
-      );
-    }
-
-    return ListView.separated(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-      itemCount: items.length,
-      separatorBuilder: (_, __) => const SizedBox(height: 8),
-      itemBuilder: (context, i) {
-        final fav = items[i];
-        return ListTile(
-          tileColor: AppColors.surface,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-            side: const BorderSide(color: AppColors.border),
+        const SizedBox(height: 12),
+        SizedBox(
+          height: 86,
+          child: ListView.separated(
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            itemCount: favPros.length,
+            separatorBuilder: (_, __) => const SizedBox(width: 16),
+            itemBuilder: (_, index) =>
+                _FavProAvatar(pro: favPros[index]),
           ),
-          title: Text(
-            fav.targetName ?? 'Favori',
-            style: const TextStyle(color: AppColors.blanc, fontSize: 15),
-          ),
-          subtitle: Text(
-            fav.targetType == 'pro' ? 'Pro' : 'Événement',
-            style: const TextStyle(color: AppColors.gris, fontSize: 12),
-          ),
-          onTap: () {
-            if (fav.targetType == 'pro') {
-              context.push('/pro/${fav.targetId}');
-            } else {
-              context.push('/event/${fav.targetId}');
-            }
-          },
-        );
-      },
+        ),
+        const SizedBox(height: 24),
+      ],
     );
   }
 }
 
-class _ClientHistoryTab extends ConsumerWidget {
-  const _ClientHistoryTab();
+class _FavProAvatar extends StatelessWidget {
+  const _FavProAvatar({required this.pro});
+
+  final ClientFavoriteProItem pro;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final state = ref.watch(clientBookingsProvider);
-
-    if (state.isLoading) {
-      return const Center(
-        child: CircularProgressIndicator(color: AppColors.blanc),
-      );
-    }
-
-    final past = state.bookings.where(_isHistoryBooking).toList()
-      ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
-
-    if (past.isEmpty) {
-      return const Center(
-        child: Text(
-          'Aucun historique de rendez-vous',
-          style: TextStyle(color: AppColors.gris, fontSize: 14),
-        ),
-      );
-    }
-
-    return ListView.separated(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-      itemCount: past.length,
-      separatorBuilder: (_, __) => const SizedBox(height: 8),
-      itemBuilder: (context, i) {
-        final b = past[i];
-        return ListTile(
-          tileColor: AppColors.surface,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-            side: const BorderSide(color: AppColors.border),
-          ),
-          title: Text(
-            b.serviceName ?? 'Service',
-            style: const TextStyle(color: AppColors.blanc, fontSize: 15),
-          ),
-          subtitle: Text(
-            b.proName ?? '',
-            style: const TextStyle(color: AppColors.gris, fontSize: 12),
-          ),
-        );
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        HapticFeedback.lightImpact();
+        context.push('/pro/${pro.proId}');
       },
+      child: SizedBox(
+        width: 60,
+        child: Column(
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(color: AppColors.violet, width: 2),
+              ),
+              child: CircleAvatar(
+                radius: 28,
+                backgroundColor: AppColors.surfaceAlt,
+                backgroundImage: pro.avatarUrl != null
+                    ? CachedNetworkImageProvider(pro.avatarUrl!)
+                    : null,
+                child: pro.avatarUrl == null
+                    ? const Icon(Icons.person, size: 24, color: AppColors.gris)
+                    : null,
+              ),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              pro.businessName ?? 'Pro',
+              style: const TextStyle(
+                color: AppColors.gris,
+                fontSize: 10,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
 
-class _ClientTicketsTab extends ConsumerWidget {
-  const _ClientTicketsTab();
+// ─── Recent history ─────────────────────────────────────────────────────────
+
+class _RecentHistory extends StatelessWidget {
+  const _RecentHistory({required this.items});
+
+  final List<Map<String, dynamic>> items;
+
+  String _categoryEmoji(String? category) {
+    switch (category?.toLowerCase()) {
+      case 'barbier':
+      case 'coiffure':
+        return '💇';
+      case 'nails':
+      case 'esthétique':
+        return '💅';
+      case 'massage':
+      case 'bien-être':
+        return '💆';
+      case 'traiteur':
+      case 'cuisine':
+        return '🍽️';
+      case 'photographie':
+        return '📸';
+      case 'fitness':
+        return '🏋️';
+      default:
+        return '📋';
+    }
+  }
+
+  String _formatDate(String? dateStr) {
+    if (dateStr == null) return '';
+    try {
+      final d = DateTime.parse(dateStr);
+      const months = [
+        'jan', 'fév', 'mar', 'avr', 'mai', 'juin',
+        'juil', 'août', 'sep', 'oct', 'nov', 'déc',
+      ];
+      return '${d.day} ${months[d.month - 1]}';
+    } catch (_) {
+      return '';
+    }
+  }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final state = ref.watch(userTicketsProvider);
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Row(
+            children: [
+              Text(
+                'Historique récent',
+                style: GoogleFonts.dmSans(
+                  color: AppColors.blanc,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const Spacer(),
+              Builder(
+                builder: (ctx) => GestureDetector(
+                  onTap: () => ctx.push('/client/bookings'),
+                  child: Text(
+                    'Voir tout',
+                    style: GoogleFonts.dmSans(
+                      color: AppColors.violetClair,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 10),
+        ...items.map((item) {
+          final service = item['services'] as Map<String, dynamic>?;
+          final pro = item['profiles_pro'] as Map<String, dynamic>?;
+          final category = pro?['category'] as String?;
+          final price = (service?['price'] as num?)?.toDouble() ?? 0;
 
-    if (state.isLoading) {
-      return const Center(
-        child: CircularProgressIndicator(color: AppColors.blanc),
-      );
-    }
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+            child: Row(
+              children: [
+                Container(
+                  width: 36,
+                  height: 36,
+                  decoration: BoxDecoration(
+                    color: AppColors.violet.withAlpha(30),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Center(
+                    child: Text(
+                      _categoryEmoji(category),
+                      style: const TextStyle(fontSize: 18),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        service?['name'] as String? ?? 'Service',
+                        style: const TextStyle(
+                          color: AppColors.blanc,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      Text(
+                        _formatDate(item['created_at'] as String?),
+                        style: const TextStyle(
+                          color: AppColors.gris,
+                          fontSize: 11,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Text(
+                  '${price.toStringAsFixed(0)} \$',
+                  style: const TextStyle(
+                    color: AppColors.violetClair,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ],
+            ),
+          );
+        }),
+        const SizedBox(height: 24),
+      ],
+    );
+  }
+}
 
-    if (state.tickets.isEmpty) {
-      return const Center(
-        child: Text(
-          'Aucun billet',
+// ─── Settings section ───────────────────────────────────────────────────────
+
+class _SettingsSection extends StatelessWidget {
+  const _SettingsSection({required this.context});
+
+  final BuildContext context;
+
+  @override
+  Widget build(BuildContext _) {
+    return SettingsList(
+      items: [
+        SettingsItemData(
+          icon: '🔔',
+          label: 'Notifications',
+          onTap: () => context.push('/notification-settings'),
+        ),
+        SettingsItemData(
+          icon: '💳',
+          label: 'Paiement',
+          onTap: () => context.push('/settings'),
+        ),
+        SettingsItemData(
+          icon: '🔒',
+          label: 'Confidentialité',
+          onTap: () => context.push('/settings'),
+        ),
+        SettingsItemData(
+          icon: '🌍',
+          label: 'Langue',
+          onTap: () => context.push('/language-settings'),
+        ),
+        SettingsItemData(
+          icon: '⭐',
+          label: 'Mes avis',
+          onTap: () => context.push('/favorites'),
+        ),
+      ],
+    );
+  }
+}
+
+// ─── Become Pro + Logout ────────────────────────────────────────────────────
+
+class _SpecialActionsSection extends ConsumerWidget {
+  const _SpecialActionsSection({required this.context});
+
+  final BuildContext context;
+
+  @override
+  Widget build(BuildContext _, WidgetRef ref) {
+    return SettingsList(
+      items: [
+        SettingsItemData(
+          icon: '🚀',
+          label: 'Devenir Pro',
+          textColor: AppColors.violetClair,
+          isSpecial: true,
+          onTap: () => BecomeProSheet.show(context),
+        ),
+        SettingsItemData(
+          icon: '🚪',
+          label: 'Se déconnecter',
+          textColor: AppColors.roseClair,
+          isSpecial: true,
+          onTap: () => _showLogoutDialog(context),
+        ),
+      ],
+    );
+  }
+
+  void _showLogoutDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AppColors.surface,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        title: const Text(
+          'Se déconnecter',
+          style: TextStyle(
+            color: AppColors.blanc,
+            fontSize: 17,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        content: const Text(
+          'Voulez-vous vraiment vous déconnecter ?',
           style: TextStyle(color: AppColors.gris, fontSize: 14),
         ),
-      );
-    }
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: const Text(
+              'Annuler',
+              style: TextStyle(color: AppColors.gris),
+            ),
+          ),
+          TextButton(
+            onPressed: () async {
+              Navigator.of(ctx).pop();
+              await Supabase.instance.client.auth.signOut();
+              if (context.mounted) context.go('/auth/login');
+            },
+            child: const Text(
+              'Déconnexion',
+              style: TextStyle(
+                color: AppColors.roseClair,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
 
-    return ListView.separated(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-      itemCount: state.tickets.length,
-      separatorBuilder: (_, __) => const SizedBox(height: 8),
-      itemBuilder: (context, i) {
-        final t = state.tickets[i];
-        return ListTile(
-          tileColor: AppColors.surface,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-            side: const BorderSide(color: AppColors.border),
+// ─── Unauthenticated state ──────────────────────────────────────────────────
+
+class _UnauthenticatedState extends StatelessWidget {
+  const _UnauthenticatedState();
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Icon(Icons.person_off_outlined,
+              color: AppColors.gris, size: 48),
+          const SizedBox(height: 12),
+          const Text(
+            'Non authentifié',
+            style: TextStyle(color: AppColors.gris, fontSize: 16),
           ),
-          title: Text(
-            t.eventTitle ?? 'Événement',
-            style: const TextStyle(color: AppColors.blanc, fontSize: 15),
+          const SizedBox(height: 16),
+          GestureDetector(
+            onTap: () => context.go('/login'),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
+              decoration: BoxDecoration(
+                color: AppColors.violet,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Text(
+                'Se connecter',
+                style: TextStyle(
+                  color: AppColors.blanc,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
           ),
-          subtitle: Text(
-            t.ticketTypeName ?? '',
-            style: const TextStyle(color: AppColors.gris, fontSize: 12),
+        ],
+      ),
+    );
+  }
+}
+
+// ─── Empty favorites ────────────────────────────────────────────────────────
+
+class _EmptyFavorites extends StatelessWidget {
+  const _EmptyFavorites();
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'My favorite Pros',
+            style: GoogleFonts.dmSans(
+              color: AppColors.blanc,
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+            ),
           ),
-          onTap: () => context.push('/ticket-detail', extra: t),
-        );
-      },
+          const SizedBox(height: 12),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(vertical: 20),
+            decoration: BoxDecoration(
+              color: AppColors.surface,
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: AppColors.blanc.withAlpha(10)),
+            ),
+            child: Column(
+              children: [
+                Icon(
+                  Icons.favorite_border_rounded,
+                  color: AppColors.gris.withAlpha(120),
+                  size: 28,
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Like Pros to find them here',
+                  style: TextStyle(
+                    color: AppColors.gris.withAlpha(160),
+                    fontSize: 13,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ─── Empty history ──────────────────────────────────────────────────────────
+
+class _EmptyHistory extends StatelessWidget {
+  const _EmptyHistory();
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Recent history',
+            style: GoogleFonts.dmSans(
+              color: AppColors.blanc,
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(vertical: 20),
+            decoration: BoxDecoration(
+              color: AppColors.surface,
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: AppColors.blanc.withAlpha(10)),
+            ),
+            child: Column(
+              children: [
+                Icon(
+                  Icons.history_rounded,
+                  color: AppColors.gris.withAlpha(120),
+                  size: 28,
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Your bookings will appear here',
+                  style: TextStyle(
+                    color: AppColors.gris.withAlpha(160),
+                    fontSize: 13,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ─── Error state ────────────────────────────────────────────────────────────
+
+class _ErrorState extends StatelessWidget {
+  const _ErrorState({required this.onRetry});
+
+  final VoidCallback onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 40),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              width: 80,
+              height: 80,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: AppColors.error.withAlpha(25),
+              ),
+              child: const Icon(
+                Icons.error_outline,
+                size: 36,
+                color: AppColors.error,
+              ),
+            ),
+            const SizedBox(height: 20),
+            const Text(
+              'Erreur de chargement',
+              style: TextStyle(
+                color: AppColors.blanc,
+                fontSize: 17,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              'Impossible de charger votre profil',
+              style: TextStyle(color: AppColors.gris, fontSize: 14),
+            ),
+            const SizedBox(height: 20),
+            GestureDetector(
+              onTap: onRetry,
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 10,
+                ),
+                decoration: BoxDecoration(
+                  color: AppColors.violet,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Text(
+                  'Réessayer',
+                  style: TextStyle(
+                    color: AppColors.blanc,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
