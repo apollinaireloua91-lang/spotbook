@@ -3,31 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:shimmer/shimmer.dart';
-
 import '../../../../shared/theme/app_colors.dart';
 import '../../../auth/data/auth_repository.dart';
-import '../../../../shared/utils/analytics_service.dart';
-
-// ─── Analytics consent notifier ─────────────────────────────
-
-class AnalyticsConsentNotifier extends AsyncNotifier<bool?> {
-  @override
-  Future<bool?> build() async {
-    return AnalyticsService.instance.getConsent();
-  }
-
-  Future<void> setConsent(bool value) async {
-    state = const AsyncValue.loading();
-    await AnalyticsService.instance.setConsent(value);
-    state = AsyncValue.data(value);
-  }
-}
-
-final analyticsConsentProvider =
-    AsyncNotifierProvider<AnalyticsConsentNotifier, bool?>(
-  AnalyticsConsentNotifier.new,
-);
 
 // ═════════════════════════════════════════════════════════════════════════════
 // SETTINGS SCREEN — Shared, role-aware (Client / Pro)
@@ -115,13 +92,13 @@ class SettingsScreen extends ConsumerWidget {
               items: [
                 _SettingsItem(
                   icon: Icons.event_note_outlined,
-                  label: 'Politique d\'annulation',
+                  label: 'Cancellation policy',
                   subtitle: 'Refund < 48h: deposit retained',
                   onTap: () {
                     showDialog(context: context, builder: (_) => AlertDialog(
                       backgroundColor: AppColors.surface,
-                      title: const Text('Politique d\'annulation', style: TextStyle(color: AppColors.blanc)),
-                      content: const Text('Annulation < 48h avant le RDV : l\'acompte est conservé par le pro.\nAnnulation > 48h : remboursement intégral.', style: TextStyle(color: AppColors.gris)),
+                      title: const Text('Cancellation policy', style: TextStyle(color: AppColors.blanc)),
+                      content: const Text('Cancellation < 48h before appointment: deposit is kept by the pro.\nCancellation > 48h: full refund.', style: TextStyle(color: AppColors.gris)),
                       actions: [TextButton(onPressed: () => context.pop(), child: const Text('OK'))],
                     ));
                   },
@@ -158,29 +135,6 @@ class SettingsScreen extends ConsumerWidget {
                   label: 'Revenue & Stats',
                   onTap: () => context.push('/pro/revenue'),
                 ),
-                _SettingsItem(
-                  icon: Icons.workspace_premium_outlined,
-                  label: 'Pro Subscription',
-                  onTap: () => context.push('/pro-subscription'),
-                ),
-              ],
-            ),
-
-          // ── Pro: Promo ──
-          if (isPro)
-            _SettingsSection(
-              title: 'PROMOTIONS',
-              items: [
-                _SettingsItem(
-                  icon: Icons.confirmation_number_outlined,
-                  label: 'Promo codes',
-                  onTap: () => context.push('/promo-codes'),
-                ),
-                _SettingsItem(
-                  icon: Icons.insights_outlined,
-                  label: 'Social analytics',
-                  onTap: () => context.push('/pro-insights'),
-                ),
               ],
             ),
 
@@ -201,42 +155,28 @@ class SettingsScreen extends ConsumerWidget {
             ],
           ),
 
-          // ── Social ──
+          // ── Preferences ──
           _SettingsSection(
-            title: 'SOCIAL',
+            title: 'PREFERENCES',
             items: [
               _SettingsItem(
-                icon: Icons.favorite_border,
-                label: 'Favorites',
-                onTap: () => context.push('/favorites'),
+                icon: Icons.language_outlined,
+                label: 'Language',
+                onTap: () => context.push('/language-settings'),
               ),
-              _SettingsItem(
-                icon: Icons.card_giftcard_outlined,
-                label: 'Referral',
-                onTap: () => context.push('/referral'),
-              ),
-              _SettingsItem(
-                icon: Icons.block,
-                label: 'Blocked users',
-                onTap: () => context.push('/blocked-users'),
-              ),
+              if (isPro)
+                _SettingsItem(
+                  icon: Icons.star_outline,
+                  label: 'My Reviews',
+                  onTap: () => context.push('/review'),
+                ),
             ],
           ),
-
-          // ── Privacy / RGPD ──
-          const _AnalyticsConsentTile(),
 
           // ── Support ──
           _SettingsSection(
             title: 'SUPPORT',
             items: [
-              _SettingsItem(
-                icon: Icons.help_outline,
-                label: 'Centre d\'aide',
-                onTap: () {
-                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Centre d\'aide bientôt disponible'), backgroundColor: AppColors.surface));
-                },
-              ),
               _SettingsItem(
                 icon: Icons.email_outlined,
                 label: 'Contact us',
@@ -253,9 +193,9 @@ class SettingsScreen extends ConsumerWidget {
             items: [
               _SettingsItem(
                 icon: Icons.description_outlined,
-                label: 'Conditions d\'utilisation',
+                label: 'Terms of service',
                 onTap: () {
-                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Conditions d\'utilisation bientôt disponibles'), backgroundColor: AppColors.surface));
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Terms of service coming soon'), backgroundColor: AppColors.surface));
                 },
               ),
               _SettingsItem(
@@ -468,93 +408,3 @@ class _SettingsItem extends StatelessWidget {
   }
 }
 
-// ═════════════════════════════════════════════════════════════════════════════
-// ANALYTICS CONSENT — RGPD
-// ═════════════════════════════════════════════════════════════════════════════
-
-class _AnalyticsConsentTile extends ConsumerWidget {
-  const _AnalyticsConsentTile();
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final consentAsync = ref.watch(analyticsConsentProvider);
-    return _SettingsSection(
-      title: 'PRIVACY',
-      items: [
-        _ConsentItem(consentAsync: consentAsync),
-      ],
-    );
-  }
-}
-
-class _ConsentItem extends ConsumerWidget {
-  const _ConsentItem({required this.consentAsync});
-
-  final AsyncValue<bool?> consentAsync;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-      decoration: const BoxDecoration(
-        border: Border(
-          bottom: BorderSide(color: AppColors.border, width: 0.5),
-        ),
-      ),
-      child: consentAsync.when(
-        data: (value) => Row(
-          children: [
-            const Icon(Icons.analytics_outlined,
-                color: AppColors.blanc, size: 22),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Analytics (GDPR)',
-                    style: GoogleFonts.dmSans(
-                      color: AppColors.blanc,
-                      fontSize: 15,
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    'Initialized only after consent.',
-                    style: GoogleFonts.dmSans(
-                      color: AppColors.gris,
-                      fontSize: 12,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Switch(
-              value: value ?? false,
-              activeTrackColor: AppColors.violet,
-              inactiveTrackColor: AppColors.surfaceAlt,
-              onChanged: (v) async {
-                HapticFeedback.mediumImpact();
-                await ref
-                    .read(analyticsConsentProvider.notifier)
-                    .setConsent(v);
-              },
-            ),
-          ],
-        ),
-        loading: () => Shimmer.fromColors(
-          baseColor: AppColors.surface,
-          highlightColor: AppColors.surfaceAlt,
-          child: Container(height: 42, color: AppColors.surface),
-        ),
-        error: (_, __) => Text(
-          'Failed to load consent',
-          style: GoogleFonts.dmSans(
-            color: AppColors.error,
-            fontSize: 13,
-          ),
-        ),
-      ),
-    );
-  }
-}

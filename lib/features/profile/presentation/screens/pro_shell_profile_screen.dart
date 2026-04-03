@@ -8,6 +8,7 @@ import 'package:intl/intl.dart';
 
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/widgets/spotbook_button.dart';
+import '../../../auth/data/auth_repository.dart';
 import '../../../booking/data/booking_repository.dart';
 import '../../../booking/domain/booking_models.dart';
 import '../../../events/data/event_repository.dart';
@@ -22,8 +23,7 @@ import '../widgets/social_link_sheets.dart';
 import '../widgets/traiteur_soumission_sheet.dart';
 
 // ═════════════════════════════════════════════════════════════════════════════
-// PRO SHELL PROFILE — Self-view with header, socials, actions, content tabs,
-// and conditional Traiteur section
+// PRO SHELL PROFILE — Premium centered self-view
 // ═════════════════════════════════════════════════════════════════════════════
 
 // ─── Providers ────────────────────────────────────────────────────────────────
@@ -70,7 +70,7 @@ class ProShellProfileScreen extends ConsumerWidget {
           return const Scaffold(
             backgroundColor: AppColors.fond,
             body: Center(
-              child: Text('Non connecté',
+              child: Text('Not signed in',
                   style: TextStyle(color: AppColors.gris)),
             ),
           );
@@ -86,7 +86,7 @@ class ProShellProfileScreen extends ConsumerWidget {
       error: (e, _) => Scaffold(
         backgroundColor: AppColors.fond,
         body: Center(
-          child: Text('Erreur : $e',
+          child: Text('Error: $e',
               style: const TextStyle(color: AppColors.error)),
         ),
       ),
@@ -125,13 +125,12 @@ class _ProSelfProfileBody extends ConsumerWidget {
               // ── Header ──
               _ProfileHeader(profile: profile),
 
-              const SizedBox(height: 20),
+              const SizedBox(height: 16),
 
-              // ── Social Links Grid ──
-              if (profile.socialConnections.isNotEmpty) ...[
-                _SocialGrid(connections: profile.socialConnections),
-                const SizedBox(height: 20),
-              ],
+              // ── Social Icons Row ──
+              _SocialIconsRow(connections: profile.socialConnections),
+
+              const SizedBox(height: 20),
 
               // ── Quick Actions ──
               _QuickActions(profile: profile),
@@ -140,7 +139,7 @@ class _ProSelfProfileBody extends ConsumerWidget {
 
               // ── Videos Section ──
               _SectionHeader(
-                title: 'Mes vidéos',
+                title: 'My videos',
                 onSeeAll: () => context.push('/pro/feed'),
               ),
               const SizedBox(height: 10),
@@ -150,7 +149,7 @@ class _ProSelfProfileBody extends ConsumerWidget {
 
               // ── Services Section ──
               _SectionHeader(
-                title: 'Mes services',
+                title: 'My services',
                 onSeeAll: () => context.push('/pro/services'),
               ),
               const SizedBox(height: 10),
@@ -171,11 +170,21 @@ class _ProSelfProfileBody extends ConsumerWidget {
 
               // ── Events Section ──
               _SectionHeader(
-                title: 'Mes événements',
+                title: 'My events',
                 onSeeAll: () => context.push('/pro/events'),
               ),
               const SizedBox(height: 10),
               _EventsList(ref: ref),
+
+              const SizedBox(height: 32),
+
+              // ── Settings Section ──
+              const _InlineSettingsSection(),
+
+              const SizedBox(height: 20),
+
+              // ── Log Out Button ──
+              const _LogOutButton(),
             ],
           ),
         ),
@@ -185,7 +194,7 @@ class _ProSelfProfileBody extends ConsumerWidget {
 }
 
 // ═════════════════════════════════════════════════════════════════════════════
-// PROFILE HEADER — avatar, name, category badge, location
+// PROFILE HEADER — avatar 80px, name 22px UPPERCASE, badge, city
 // ═════════════════════════════════════════════════════════════════════════════
 
 class _ProfileHeader extends StatefulWidget {
@@ -250,7 +259,8 @@ class _ProfileHeaderState extends State<_ProfileHeader>
           ),
         ),
         const SizedBox(height: 8),
-        // Avatar with breathing animation
+
+        // Avatar 80px with violet border + breathing animation
         AnimatedBuilder(
           animation: _breathAnim,
           builder: (context, child) {
@@ -260,15 +270,18 @@ class _ProfileHeaderState extends State<_ProfileHeader>
             );
           },
           child: Container(
-            width: 72,
-            height: 72,
+            width: 80,
+            height: 80,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               border: Border.all(color: AppColors.violet, width: 2.5),
               gradient: const LinearGradient(
                 begin: Alignment(-0.5, -0.5),
                 end: Alignment(0.5, 0.5),
-                colors: [AppColors.violetDarkGradient, AppColors.violetDarkGradientEnd],
+                colors: [
+                  AppColors.violetDarkGradient,
+                  AppColors.violetDarkGradientEnd,
+                ],
               ),
             ),
             child: profile.avatarUrl != null
@@ -276,15 +289,15 @@ class _ProfileHeaderState extends State<_ProfileHeader>
                     child: CachedNetworkImage(
                       imageUrl: profile.avatarUrl!,
                       fit: BoxFit.cover,
-                      width: 72,
-                      height: 72,
+                      width: 80,
+                      height: 80,
                     ),
                   )
                 : Center(
                     child: Text(
                       initial,
                       style: GoogleFonts.dmSans(
-                        fontSize: 24,
+                        fontSize: 28,
                         fontWeight: FontWeight.w800,
                         color: AppColors.blanc,
                       ),
@@ -292,55 +305,62 @@ class _ProfileHeaderState extends State<_ProfileHeader>
                   ),
           ),
         ),
-        const SizedBox(height: 12),
-        // Name
+        const SizedBox(height: 14),
+
+        // Name — bold 22px UPPERCASE
         Text(
           name.toUpperCase(),
           style: GoogleFonts.dmSans(
-            fontSize: 16,
+            fontSize: 22,
             fontWeight: FontWeight.w800,
             color: AppColors.blanc,
-            letterSpacing: 0.5,
+            letterSpacing: 0.8,
           ),
           textAlign: TextAlign.center,
         ),
-        const SizedBox(height: 6),
-        // Category badge
+        const SizedBox(height: 8),
+
+        // Category badge pill
         if (profile.category.isNotEmpty)
           Container(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
             decoration: BoxDecoration(
-              color: AppColors.blanc,
-              borderRadius: BorderRadius.circular(16),
+              color: AppColors.violet.withAlpha(25),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                color: AppColors.violet.withAlpha(60),
+                width: 0.5,
+              ),
             ),
             child: Text(
               profile.category,
               style: GoogleFonts.dmSans(
-                fontSize: 9,
+                fontSize: 11,
                 fontWeight: FontWeight.w600,
-                color: AppColors.fond,
+                color: AppColors.violetClair,
               ),
             ),
           ),
-        const SizedBox(height: 6),
-        // Location
+        const SizedBox(height: 8),
+
+        // City / location
         if (profile.city != null && profile.city!.trim().isNotEmpty)
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const Icon(Icons.location_on,
-                  size: 12, color: AppColors.grisInactif),
+                  size: 13, color: AppColors.gris),
               const SizedBox(width: 3),
               Text(
                 profile.city!,
                 style: GoogleFonts.dmSans(
-                  fontSize: 12,
-                  color: AppColors.grisInactif,
+                  fontSize: 13,
+                  color: AppColors.gris,
                 ),
               ),
             ],
           ),
+
         // Rating
         if (profile.reviewsCount > 0) ...[
           const SizedBox(height: 6),
@@ -350,7 +370,7 @@ class _ProfileHeaderState extends State<_ProfileHeader>
               const Icon(Icons.star, color: AppColors.warning, size: 14),
               const SizedBox(width: 3),
               Text(
-                '${profile.rating.toStringAsFixed(1)} (${profile.reviewsCount} avis)',
+                '${profile.rating.toStringAsFixed(1)} (${profile.reviewsCount} reviews)',
                 style: GoogleFonts.dmSans(
                   fontSize: 12,
                   color: AppColors.gris,
@@ -359,6 +379,7 @@ class _ProfileHeaderState extends State<_ProfileHeader>
             ],
           ),
         ],
+
         // Bio
         if (profile.bio != null && profile.bio!.trim().isNotEmpty) ...[
           const SizedBox(height: 10),
@@ -374,10 +395,11 @@ class _ProfileHeaderState extends State<_ProfileHeader>
             ),
           ),
         ],
-        const SizedBox(height: 14),
-        // Edit profile button
+        const SizedBox(height: 16),
+
+        // Edit Profile button — full width outline
         SpotbookButton.outlined(
-          label: 'Modifier le profil',
+          label: 'Edit Profile',
           onPressed: () {
             HapticFeedback.mediumImpact();
             context.push('/edit-profile');
@@ -389,22 +411,13 @@ class _ProfileHeaderState extends State<_ProfileHeader>
 }
 
 // ═════════════════════════════════════════════════════════════════════════════
-// SOCIAL GRID — 4 columns
+// SOCIAL ICONS ROW — centered, real PNG assets
 // ═════════════════════════════════════════════════════════════════════════════
 
-class _SocialGrid extends StatelessWidget {
-  const _SocialGrid({required this.connections});
+class _SocialIconsRow extends StatelessWidget {
+  const _SocialIconsRow({required this.connections});
 
   final List<SocialConnection> connections;
-
-  static const _platformColors = {
-    'tiktok': AppColors.brandTikTokDark,
-    'instagram': AppColors.brandInstagramAlt,
-    'youtube': AppColors.brandYouTube,
-    'snapchat': AppColors.brandSnapchat,
-    'twitter': AppColors.brandTwitter,
-    'spotify': AppColors.spotifyGreen,
-  };
 
   void _onTapSocial(BuildContext context, SocialConnection conn) async {
     final info = platformInfoFor(conn.platform.toLowerCase());
@@ -413,6 +426,7 @@ class _SocialGrid extends StatelessWidget {
     await showModalBottomSheet<String>(
       context: context,
       backgroundColor: AppColors.fond,
+      isScrollControlled: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -438,6 +452,7 @@ class _SocialGrid extends StatelessWidget {
       await showModalBottomSheet<String>(
         context: context,
         backgroundColor: AppColors.fond,
+        isScrollControlled: true,
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
         ),
@@ -448,76 +463,101 @@ class _SocialGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Wrap(
-      spacing: 8,
-      runSpacing: 8,
-      children: [
-        for (final conn in connections)
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          for (final conn in connections) ...[
+            GestureDetector(
+              onTap: () => _onTapSocial(context, conn),
+              child: _SocialIconTile(
+                platform: conn.platform,
+                isLinked: true,
+              ),
+            ),
+            const SizedBox(width: 10),
+          ],
+          // Add platform button
           GestureDetector(
-            onTap: () => _onTapSocial(context, conn),
-            child: _SocialIcon(
-              platform: conn.platform,
-              isLinked: true,
-              color: _platformColors[conn.platform.toLowerCase()] ??
-                  AppColors.surface,
+            onTap: () => _onAddPlatform(context),
+            child: Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: AppColors.border, width: 1.5),
+              ),
+              child: const Icon(Icons.add,
+                  color: AppColors.grisInactif, size: 18),
             ),
           ),
-        // Add platform button
-        GestureDetector(
-          onTap: () => _onAddPlatform(context),
-          child: Container(
-            width: 42,
-            height: 42,
-            decoration: BoxDecoration(
-              color: AppColors.surfaceAlt,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: AppColors.border, width: 0.5),
-            ),
-            child: const Icon(Icons.add, color: AppColors.grisInactif, size: 18),
-          ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
 
-class _SocialIcon extends StatelessWidget {
-  const _SocialIcon({
+class _SocialIconTile extends StatelessWidget {
+  const _SocialIconTile({
     required this.platform,
     required this.isLinked,
-    required this.color,
   });
 
   final String platform;
   final bool isLinked;
-  final Color color;
 
   @override
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        SocialIcon(platform: platform, size: 42),
+        Container(
+          width: 44,
+          height: 44,
+          decoration: BoxDecoration(
+            color: AppColors.surface,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: AppColors.border),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(10),
+            child: _buildBrandImage(),
+          ),
+        ),
         if (isLinked)
           Positioned(
             right: 0,
             bottom: 0,
             child: Container(
-              width: 8,
-              height: 8,
+              width: 10,
+              height: 10,
               decoration: BoxDecoration(
                 color: AppColors.success,
                 shape: BoxShape.circle,
-                border: Border.all(color: AppColors.fond, width: 1),
+                border: Border.all(color: AppColors.fond, width: 1.5),
               ),
             ),
           ),
       ],
     );
   }
+
+  Widget _buildBrandImage() {
+    final info = platformInfoFor(platform.toLowerCase());
+    if (info != null) {
+      return SocialPlatformBrandIcon(
+        platform: info,
+        size: 24,
+        brandAssetFit: BoxFit.contain,
+      );
+    }
+    // Fallback to generic SocialIcon from social_badge_widget
+    return SocialIcon(platform: platform, size: 24);
+  }
 }
 
 // ═════════════════════════════════════════════════════════════════════════════
-// QUICK ACTIONS — row of action buttons
+// QUICK ACTIONS — English labels
 // ═════════════════════════════════════════════════════════════════════════════
 
 class _QuickActions extends StatelessWidget {
@@ -537,19 +577,19 @@ class _QuickActions extends StatelessWidget {
         const SizedBox(width: 8),
         _QuickActionBtn(
           icon: Icons.event_outlined,
-          label: 'Événements',
+          label: 'Events',
           onTap: () => context.push('/pro/events'),
         ),
         const SizedBox(width: 8),
         _QuickActionBtn(
           icon: Icons.bar_chart_rounded,
-          label: 'Revenus',
+          label: 'Revenue',
           onTap: () => context.push('/pro/revenue'),
         ),
         const SizedBox(width: 8),
         _QuickActionBtn(
           icon: Icons.schedule_outlined,
-          label: 'Dispo',
+          label: 'Availability',
           onTap: () => context.push('/pro/availability'),
         ),
       ],
@@ -577,7 +617,7 @@ class _QuickActionBtn extends StatelessWidget {
           onTap();
         },
         child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 12),
+          padding: const EdgeInsets.symmetric(vertical: 14),
           decoration: BoxDecoration(
             color: AppColors.surfaceAlt,
             borderRadius: BorderRadius.circular(12),
@@ -586,11 +626,11 @@ class _QuickActionBtn extends StatelessWidget {
           child: Column(
             children: [
               Icon(icon, color: AppColors.violet, size: 20),
-              const SizedBox(height: 4),
+              const SizedBox(height: 5),
               Text(
                 label,
                 style: GoogleFonts.dmSans(
-                  fontSize: 9,
+                  fontSize: 10,
                   color: AppColors.gris,
                   fontWeight: FontWeight.w500,
                 ),
@@ -604,7 +644,7 @@ class _QuickActionBtn extends StatelessWidget {
 }
 
 // ═════════════════════════════════════════════════════════════════════════════
-// SECTION HEADER
+// SECTION HEADER — English
 // ═════════════════════════════════════════════════════════════════════════════
 
 class _SectionHeader extends StatelessWidget {
@@ -630,7 +670,7 @@ class _SectionHeader extends StatelessWidget {
           GestureDetector(
             onTap: onSeeAll,
             child: Text(
-              'Voir tout',
+              'See all',
               style: GoogleFonts.dmSans(
                 fontSize: 11,
                 color: AppColors.violet,
@@ -661,8 +701,8 @@ class _VideosRow extends StatelessWidget {
         if (videos.isEmpty) {
           return _EmptySection(
             icon: Icons.videocam_outlined,
-            text: 'Aucune vidéo',
-            actionLabel: '+ Ajouter une vidéo',
+            text: 'No video yet',
+            actionLabel: '+ Add a video',
             onAction: () => context.push('/pro/camera'),
           );
         }
@@ -722,7 +762,7 @@ class _AddVideoCard extends StatelessWidget {
             const Icon(Icons.add, color: AppColors.grisInactif, size: 24),
             const SizedBox(height: 6),
             Text(
-              'Ajouter',
+              'Add',
               style: GoogleFonts.dmSans(
                 fontSize: 10,
                 color: AppColors.grisInactif,
@@ -753,8 +793,8 @@ class _ServicesList extends StatelessWidget {
         if (services.isEmpty) {
           return _EmptySection(
             icon: Icons.design_services_outlined,
-            text: 'Aucun service',
-            actionLabel: '+ Ajouter un service',
+            text: 'No service yet',
+            actionLabel: '+ Add a service',
             onAction: () => context.push('/pro/services'),
           );
         }
@@ -859,8 +899,8 @@ class _EventsList extends StatelessWidget {
         if (events.isEmpty) {
           return _EmptySection(
             icon: Icons.event_outlined,
-            text: 'Aucun événement',
-            actionLabel: '+ Créer un événement',
+            text: 'No event yet',
+            actionLabel: '+ Create an event',
             onAction: () => context.push('/pro/events'),
           );
         }
@@ -892,7 +932,7 @@ class _ProSelfEventCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final dateStr = event.eventDate != null
-        ? DateFormat.yMMMd('fr_FR').format(event.eventDate!)
+        ? DateFormat.yMMMd('en_US').format(event.eventDate!)
         : '—';
 
     return GestureDetector(
@@ -906,7 +946,6 @@ class _ProSelfEventCard extends StatelessWidget {
         ),
         child: Row(
           children: [
-            // Date badge
             Container(
               width: 44,
               height: 44,
@@ -975,7 +1014,6 @@ class _TraiteurSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Collect menu items from traiteur services
     final allItems = <MenuItemModel>[];
     for (final s in services) {
       allItems.addAll(s.menuItems);
@@ -986,29 +1024,20 @@ class _TraiteurSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Banner
         _TraiteurBanner(),
-
         const SizedBox(height: 14),
-
-        // Menu Grid
         if (allItems.isNotEmpty) ...[
-          _SectionHeader(title: 'Mon menu'),
+          const _SectionHeader(title: 'My menu'),
           const SizedBox(height: 10),
           _MenuGrid(items: allItems.take(4).toList()),
           const SizedBox(height: 14),
         ],
-
-        // Forfaits
         if (traiteurServices.isNotEmpty) ...[
-          _SectionHeader(title: 'Mes forfaits'),
+          const _SectionHeader(title: 'My packages'),
           const SizedBox(height: 10),
-          for (final f in traiteurServices)
-            _ForfaitCard(service: f),
+          for (final f in traiteurServices) _ForfaitCard(service: f),
           const SizedBox(height: 14),
         ],
-
-        // Soumission CTA
         _SoumissionCTA(proId: proId),
       ],
     );
@@ -1046,7 +1075,7 @@ class _TraiteurBanner extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                '🍽️ Section Traiteur',
+                'Catering Section',
                 style: GoogleFonts.dmSans(
                   fontSize: 13,
                   fontWeight: FontWeight.w700,
@@ -1055,7 +1084,7 @@ class _TraiteurBanner extends StatelessWidget {
               ),
               const SizedBox(height: 4),
               Text(
-                'Gérez votre menu, forfaits et demandes de soumission',
+                'Manage your menu, packages and quote requests',
                 style: GoogleFonts.dmSans(
                   fontSize: 10,
                   color: AppColors.blanc.withAlpha(204),
@@ -1068,8 +1097,6 @@ class _TraiteurBanner extends StatelessWidget {
     );
   }
 }
-
-// ── Menu Grid ────────────────────────────────────────────────────────────────
 
 class _MenuGrid extends StatelessWidget {
   const _MenuGrid({required this.items});
@@ -1107,7 +1134,6 @@ class _MenuItemCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Image zone with emoji
           Container(
             height: 60,
             decoration: BoxDecoration(
@@ -1125,7 +1151,6 @@ class _MenuItemCard extends StatelessWidget {
               ),
             ),
           ),
-          // Body
           Expanded(
             child: Padding(
               padding: const EdgeInsets.fromLTRB(8, 6, 8, 6),
@@ -1164,17 +1189,15 @@ class _MenuItemCard extends StatelessWidget {
 
   String _getEmoji(String name) {
     final lower = name.toLowerCase();
-    if (lower.contains('poulet') || lower.contains('braisé')) return '🍗';
-    if (lower.contains('mafé') || lower.contains('curry')) return '🍛';
-    if (lower.contains('thiébou') || lower.contains('riz')) return '🥘';
+    if (lower.contains('poulet') || lower.contains('braise')) return '🍗';
+    if (lower.contains('mafe') || lower.contains('curry')) return '🍛';
+    if (lower.contains('thiebou') || lower.contains('riz')) return '🥘';
     if (lower.contains('suya') || lower.contains('viande')) return '🥩';
     if (lower.contains('poisson')) return '🐟';
-    if (lower.contains('salade') || lower.contains('végé')) return '🥬';
+    if (lower.contains('salade') || lower.contains('vege')) return '🥬';
     return '🍽️';
   }
 }
-
-// ── Forfait Card ─────────────────────────────────────────────────────────────
 
 class _ForfaitCard extends StatelessWidget {
   const _ForfaitCard({required this.service});
@@ -1217,16 +1240,14 @@ class _ForfaitCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 6),
-          // Capacity
           if (service.minPersons != null || service.maxPersons != null)
             Text(
-              '👥 ${service.minPersons ?? 1} — ${service.maxPersons ?? '∞'} personnes',
+              '${service.minPersons ?? 1} — ${service.maxPersons ?? '∞'} people',
               style: GoogleFonts.dmSans(
                 fontSize: 8,
                 color: AppColors.grisInactif,
               ),
             ),
-          // Menu items as tags
           if (service.menuItems.isNotEmpty) ...[
             const SizedBox(height: 8),
             Wrap(
@@ -1261,8 +1282,6 @@ class _ForfaitCard extends StatelessWidget {
   }
 }
 
-// ── Soumission CTA ───────────────────────────────────────────────────────────
-
 class _SoumissionCTA extends StatelessWidget {
   const _SoumissionCTA({required this.proId});
 
@@ -1292,7 +1311,8 @@ class _SoumissionCTA extends StatelessWidget {
                 borderRadius: BorderRadius.circular(8),
               ),
               child: const Center(
-                child: Text('📋', style: TextStyle(fontSize: 18)),
+                child: Icon(Icons.description_outlined,
+                    color: AppColors.blanc, size: 18),
               ),
             ),
             const SizedBox(width: 12),
@@ -1301,7 +1321,7 @@ class _SoumissionCTA extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Demandes de soumission',
+                    'Quote requests',
                     style: GoogleFonts.dmSans(
                       fontSize: 12,
                       fontWeight: FontWeight.w700,
@@ -1309,7 +1329,7 @@ class _SoumissionCTA extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    'Devis en 24-48h · Dépôt 30%',
+                    'Quotes in 24-48h · 30% deposit',
                     style: GoogleFonts.dmSans(
                       fontSize: 9,
                       color: AppColors.blanc.withAlpha(204),
@@ -1321,6 +1341,197 @@ class _SoumissionCTA extends StatelessWidget {
             const Icon(Icons.arrow_forward_ios,
                 color: AppColors.blanc, size: 14),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+// ═════════════════════════════════════════════════════════════════════════════
+// INLINE SETTINGS SECTION — clean, only essentials
+// ═════════════════════════════════════════════════════════════════════════════
+
+class _InlineSettingsSection extends StatelessWidget {
+  const _InlineSettingsSection();
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'SETTINGS',
+          style: GoogleFonts.dmSans(
+            color: AppColors.gris,
+            fontSize: 11,
+            fontWeight: FontWeight.w600,
+            letterSpacing: 2,
+          ),
+        ),
+        const SizedBox(height: 12),
+        _SettingsTile(
+          icon: Icons.notifications_outlined,
+          label: 'Notifications',
+          onTap: () => context.push('/notification-settings'),
+        ),
+        _SettingsTile(
+          icon: Icons.language_outlined,
+          label: 'Language',
+          onTap: () => context.push('/language-settings'),
+        ),
+        _SettingsTile(
+          icon: Icons.star_outline,
+          label: 'My Reviews',
+          onTap: () => context.push('/review'),
+        ),
+        _SettingsTile(
+          icon: Icons.account_balance_outlined,
+          label: 'Stripe Connect',
+          subtitle: 'Payment setup',
+          onTap: () => context.push('/pro/stripe-connect'),
+        ),
+      ],
+    );
+  }
+}
+
+class _SettingsTile extends StatelessWidget {
+  const _SettingsTile({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+    this.subtitle,
+  });
+
+  final IconData icon;
+  final String label;
+  final String? subtitle;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        HapticFeedback.selectionClick();
+        onTap();
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 14),
+        decoration: const BoxDecoration(
+          border: Border(
+            bottom: BorderSide(color: AppColors.border, width: 0.5),
+          ),
+        ),
+        child: Row(
+          children: [
+            Icon(icon, color: AppColors.blanc, size: 20),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    label,
+                    style: GoogleFonts.dmSans(
+                      color: AppColors.blanc,
+                      fontSize: 14,
+                    ),
+                  ),
+                  if (subtitle != null)
+                    Text(
+                      subtitle!,
+                      style: GoogleFonts.dmSans(
+                        color: AppColors.gris,
+                        fontSize: 11,
+                      ),
+                    ),
+                ],
+              ),
+            ),
+            const Icon(Icons.arrow_forward_ios,
+                color: AppColors.gris, size: 13),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ═════════════════════════════════════════════════════════════════════════════
+// LOG OUT BUTTON — rose style, functional
+// ═════════════════════════════════════════════════════════════════════════════
+
+class _LogOutButton extends ConsumerWidget {
+  const _LogOutButton();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return GestureDetector(
+      onTap: () async {
+        HapticFeedback.mediumImpact();
+        final confirmed = await showDialog<bool>(
+          context: context,
+          builder: (_) => AlertDialog(
+            backgroundColor: AppColors.surface,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            title: Text(
+              'Log out?',
+              style: GoogleFonts.dmSans(
+                color: AppColors.blanc,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            content: Text(
+              'You will be redirected to the login screen.',
+              style: GoogleFonts.dmSans(
+                color: AppColors.gris,
+                fontSize: 14,
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: Text(
+                  'Cancel',
+                  style: GoogleFonts.dmSans(color: AppColors.gris),
+                ),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                child: Text(
+                  'Log out',
+                  style: GoogleFonts.dmSans(
+                    color: AppColors.roseClair,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+
+        if (confirmed == true && context.mounted) {
+          await ref.read(authRepositoryProvider).signOut();
+          if (context.mounted) context.go('/login');
+        }
+      },
+      child: Container(
+        height: 48,
+        decoration: BoxDecoration(
+          color: AppColors.rose.withAlpha(30),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Center(
+          child: Text(
+            'Log out',
+            style: GoogleFonts.dmSans(
+              color: AppColors.roseClair,
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
         ),
       ),
     );
