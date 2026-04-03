@@ -215,11 +215,10 @@ class ClientSearchCubit extends Cubit<ClientSearchState> {
       }).toList()
         ..sort((a, b) => a.distKm.compareTo(b.distKm));
 
-      // Fetch upcoming events
+      // Fetch upcoming events — price lives in ticket_types, not events
       final eventsData = await supabase
           .from('events')
-          .select(
-              'id, title, location, latitude, longitude, event_date, start_time, total_capacity, tickets_sold, price, cover_url, pro_id')
+          .select('*, ticket_types(id, name, price, quantity, sold_count)')
           .eq('is_active', true)
           .gte('event_date', DateTime.now().toIso8601String())
           .order('event_date');
@@ -245,6 +244,12 @@ class ClientSearchCubit extends Cubit<ClientSearchState> {
       final events = eventsData.map((raw) {
         final e = Map<String, dynamic>.from(raw as Map);
         final dateStr = e['event_date'] as String? ?? '';
+        // Price comes from the first ticket type, not from the events table
+        final ticketTypes =
+            (e['ticket_types'] as List<dynamic>?) ?? [];
+        final startingPrice = ticketTypes.isNotEmpty
+            ? (ticketTypes[0]['price'] as num?)?.toDouble() ?? 0
+            : 0.0;
         return EventSearchResult(
           id: e['id'] as String,
           title: e['title'] as String? ?? '',
@@ -255,7 +260,7 @@ class ClientSearchCubit extends Cubit<ClientSearchState> {
           time: e['start_time'] as String? ?? '',
           totalSpots: (e['total_capacity'] as int?) ?? 0,
           soldSpots: (e['tickets_sold'] as int?) ?? 0,
-          price: (e['price'] as num?)?.toDouble() ?? 0,
+          price: startingPrice,
           imageUrl: e['cover_url'] as String?,
           proName: eventUserMap[e['pro_id'] as String?],
         );
