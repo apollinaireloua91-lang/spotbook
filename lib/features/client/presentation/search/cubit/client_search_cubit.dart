@@ -134,29 +134,17 @@ class ClientSearchCubit extends Cubit<ClientSearchState> {
 
       final supabase = Supabase.instance.client;
 
-      // Fetch pros + their user data
+      // Fetch pros with joined user data in a single query
       final prosData = await supabase
           .from('profiles_pro')
           .select(
-              'id, business_name, category, description, average_rating, review_count')
+              '*, users!id(full_name, display_name, avatar_url, username, latitude, longitude, city)')
           .eq('is_public', true)
           .eq('search_visible', true)
-          .order('average_rating', ascending: false);
+          .order('rating_average', ascending: false);
 
       final proIds =
           prosData.map((p) => p['id'] as String).toList();
-
-      final usersData = proIds.isEmpty
-          ? <dynamic>[]
-          : await supabase
-              .from('users')
-              .select('id, full_name, avatar_url, city, latitude, longitude')
-              .inFilter('id', proIds);
-
-      final userMap = <String, Map<String, dynamic>>{
-        for (final u in usersData)
-          u['id'] as String: Map<String, dynamic>.from(u as Map),
-      };
 
       // Fetch services for all pros
       final servicesData = proIds.isEmpty
@@ -184,7 +172,7 @@ class ClientSearchCubit extends Cubit<ClientSearchState> {
       final prosWithDist = prosData.map((raw) {
         final p = Map<String, dynamic>.from(raw as Map);
         final id = p['id'] as String;
-        final u = userMap[id] ?? {};
+        final u = (p['users'] as Map<String, dynamic>?) ?? {};
         final lat = (u['latitude'] as num?)?.toDouble() ?? _defaultLat;
         final lng = (u['longitude'] as num?)?.toDouble() ?? _defaultLng;
         final services = servicesMap[id] ?? [];
@@ -204,7 +192,7 @@ class ClientSearchCubit extends Cubit<ClientSearchState> {
           location: (u['city'] as String?) ?? 'Montréal',
           lat: lat,
           lng: lng,
-          rating: (p['average_rating'] as num?)?.toDouble() ?? 0,
+          rating: (p['rating_average'] as num?)?.toDouble() ?? 0,
           reviews: (p['review_count'] as int?) ?? 0,
           distKm: _haversineKm(userLat, userLng, lat, lng),
           priceRange: priceRange,
