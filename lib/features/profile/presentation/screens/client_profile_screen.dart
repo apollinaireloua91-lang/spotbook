@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../shared/theme/app_colors.dart';
@@ -108,19 +109,9 @@ class _ProfileBody extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Header with subtle radial gradient
-            Container(
-              decoration: BoxDecoration(
-                gradient: RadialGradient(
-                  center: Alignment.topCenter,
-                  radius: 1.2,
-                  colors: [
-                    AppColors.violet.withAlpha(20), // rgba(108,62,244,0.08)
-                    Colors.transparent,
-                  ],
-                ),
-              ),
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+            // Header
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
               child: Stack(
                 alignment: Alignment.center,
                 children: [
@@ -129,8 +120,9 @@ class _ProfileBody extends ConsumerWidget {
                       'My Profile',
                       style: GoogleFonts.dmSans(
                         color: AppColors.blanc,
-                        fontSize: 16,
+                        fontSize: 18,
                         fontWeight: FontWeight.w700,
+                        letterSpacing: -0.3,
                       ),
                     ),
                   ),
@@ -142,15 +134,18 @@ class _ProfileBody extends ConsumerWidget {
                         context.push('/settings');
                       },
                       child: Container(
-                        width: 36,
-                        height: 36,
+                        width: 38,
+                        height: 38,
                         decoration: BoxDecoration(
                           color: AppColors.surface,
-                          borderRadius: BorderRadius.circular(10),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: AppColors.blanc.withAlpha(13),
+                          ),
                         ),
                         child: const Icon(
                           Icons.settings_outlined,
-                          color: AppColors.blanc,
+                          color: AppColors.gris,
                           size: 18,
                         ),
                       ),
@@ -189,7 +184,7 @@ class _ProfileBody extends ConsumerWidget {
 
             // ─── Edit Profile Button ───
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 40),
+              padding: const EdgeInsets.symmetric(horizontal: 16),
               child: GestureDetector(
                 onTap: () {
                   HapticFeedback.lightImpact();
@@ -197,12 +192,13 @@ class _ProfileBody extends ConsumerWidget {
                 },
                 child: Container(
                   width: double.infinity,
-                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  padding: const EdgeInsets.symmetric(vertical: 13),
                   decoration: BoxDecoration(
-                    color: Colors.transparent,
+                    color: AppColors.surface,
                     borderRadius: BorderRadius.circular(14),
                     border: Border.all(
-                        color: AppColors.blanc.withAlpha(26)), // 0.1 opacity
+                      color: AppColors.blanc.withAlpha(26),
+                    ),
                   ),
                   child: Center(
                     child: Text(
@@ -451,65 +447,73 @@ class _RecentHistory extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 10),
-        ...items.map((item) {
-          final service = item['services'] as Map<String, dynamic>?;
-          final pro = item['profiles_pro'] as Map<String, dynamic>?;
-          final category = pro?['category'] as String?;
-          final price = (service?['price'] as num?)?.toDouble() ?? 0;
+        ListView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          padding: EdgeInsets.zero,
+          itemCount: items.length,
+          itemBuilder: (_, index) {
+            final item = items[index];
+            final service = item['services'] as Map<String, dynamic>?;
+            final pro = item['profiles_pro'] as Map<String, dynamic>?;
+            final category = pro?['category'] as String?;
+            final price = (service?['price'] as num?)?.toDouble() ?? 0;
 
-          return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-            child: Row(
-              children: [
-                Container(
-                  width: 36,
-                  height: 36,
-                  decoration: BoxDecoration(
-                    color: AppColors.violet.withAlpha(30),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Center(
-                    child: Text(
-                      _categoryEmoji(category),
-                      style: const TextStyle(fontSize: 18),
+            return Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+              child: Row(
+                children: [
+                  Container(
+                    width: 36,
+                    height: 36,
+                    decoration: BoxDecoration(
+                      color: AppColors.violet.withAlpha(30),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Center(
+                      child: Text(
+                        _categoryEmoji(category),
+                        style: const TextStyle(fontSize: 18),
+                      ),
                     ),
                   ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        service?['name'] as String? ?? 'Service',
-                        style: const TextStyle(
-                          color: AppColors.blanc,
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          service?['name'] as String? ?? 'Service',
+                          style: const TextStyle(
+                            color: AppColors.blanc,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
-                      ),
-                      Text(
-                        _formatDate(item['created_at'] as String?),
-                        style: const TextStyle(
-                          color: AppColors.gris,
-                          fontSize: 11,
+                        Text(
+                          _formatDate(item['created_at'] as String?),
+                          style: const TextStyle(
+                            color: AppColors.gris,
+                            fontSize: 11,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-                Text(
-                  '${price.toStringAsFixed(0)} \$',
-                  style: const TextStyle(
-                    color: AppColors.violetClair,
-                    fontSize: 13,
-                    fontWeight: FontWeight.w700,
+                  Text(
+                    '${price.toStringAsFixed(0)} \$',
+                    style: const TextStyle(
+                      color: AppColors.violetClair,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
-                ),
-              ],
-            ),
-          );
-        }),
+                ],
+              ),
+            );
+          },
+        ),
         const SizedBox(height: 24),
       ],
     );
@@ -531,16 +535,6 @@ class _SettingsSection extends StatelessWidget {
           icon: 'notifications_outlined',
           label: 'Notifications',
           onTap: () => context.push('/notification-settings'),
-        ),
-        SettingsItemData(
-          icon: 'credit_card',
-          label: 'Payment',
-          onTap: () => context.push('/settings'),
-        ),
-        SettingsItemData(
-          icon: 'lock_outline',
-          label: 'Privacy',
-          onTap: () => context.push('/settings'),
         ),
         SettingsItemData(
           icon: 'language',
@@ -633,35 +627,44 @@ class _SpecialActionsSection extends ConsumerWidget {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
         ),
-        title: const Text(
+        title: Text(
           'Log out',
-          style: TextStyle(
+          style: GoogleFonts.dmSans(
             color: AppColors.blanc,
             fontSize: 17,
             fontWeight: FontWeight.w700,
           ),
         ),
-        content: const Text(
+        content: Text(
           'Are you sure you want to log out?',
-          style: TextStyle(color: AppColors.gris, fontSize: 14),
+          style: GoogleFonts.dmSans(
+            color: AppColors.gris,
+            fontSize: 14,
+          ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text(
+            child: Text(
               'Cancel',
-              style: TextStyle(color: AppColors.gris),
+              style: GoogleFonts.dmSans(color: AppColors.gris),
             ),
           ),
           TextButton(
             onPressed: () async {
               Navigator.of(ctx).pop();
+              // Clear local Hive caches
+              for (final name in ['settings', 'app_settings', 'search_history']) {
+                if (Hive.isBoxOpen(name)) {
+                  await Hive.box(name).clear();
+                }
+              }
               await Supabase.instance.client.auth.signOut();
               if (context.mounted) context.go('/login');
             },
-            child: const Text(
+            child: Text(
               'Log out',
-              style: TextStyle(
+              style: GoogleFonts.dmSans(
                 color: AppColors.roseClair,
                 fontWeight: FontWeight.w600,
               ),

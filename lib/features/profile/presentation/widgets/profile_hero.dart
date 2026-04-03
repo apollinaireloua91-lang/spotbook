@@ -57,8 +57,8 @@ class _ProfileHeroState extends State<ProfileHero>
             );
           },
           child: Container(
-            width: 90,
-            height: 90,
+            width: 86,
+            height: 86,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               gradient: AppColors.gradientAccent,
@@ -85,14 +85,14 @@ class _ProfileHeroState extends State<ProfileHero>
                 padding: const EdgeInsets.all(2),
                 child: p.avatarUrl != null
                     ? CircleAvatar(
-                        radius: 42,
+                        radius: 38,
                         backgroundColor: AppColors.surfaceAlt,
                         backgroundImage:
                             CachedNetworkImageProvider(p.avatarUrl!),
                       )
                     : Container(
-                        width: 84,
-                        height: 84,
+                        width: 76,
+                        height: 76,
                         decoration: const BoxDecoration(
                           shape: BoxShape.circle,
                           gradient: AppColors.gradientAccent,
@@ -152,7 +152,7 @@ class _ProfileHeroState extends State<ProfileHero>
 
         // Bio
         Padding(
-          padding: const EdgeInsets.only(top: 8),
+          padding: const EdgeInsets.only(top: 8, left: 32, right: 32),
           child: (p.bio != null && p.bio!.trim().isNotEmpty)
               ? Text(
                   p.bio!,
@@ -162,6 +162,7 @@ class _ProfileHeroState extends State<ProfileHero>
                   style: GoogleFonts.dmSans(
                     color: AppColors.blanc.withAlpha(153),
                     fontSize: 13,
+                    fontStyle: FontStyle.italic,
                   ),
                 )
               : Text(
