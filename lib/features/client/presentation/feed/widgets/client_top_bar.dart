@@ -83,12 +83,12 @@ class _FeedTabGroup extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           _TabButton(
-            label: 'Découvrir',
+            label: 'Discover',
             isActive: activeTab == FeedTab.discover,
             onTap: () => onTabChanged(FeedTab.discover),
           ),
           _TabButton(
-            label: 'Abonnements',
+            label: 'Following',
             isActive: activeTab == FeedTab.following,
             onTap: () => onTabChanged(FeedTab.following),
           ),

@@ -30,16 +30,16 @@ void showBlockConfirmDialog(
     builder: (ctx) => AlertDialog(
       backgroundColor: AppColors.surface,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      title: const Text('Bloquer cet utilisateur ?',
+      title: const Text('Block this user?',
           style: TextStyle(color: AppColors.blanc, fontSize: 17, fontWeight: FontWeight.bold)),
       content: Text(
-        '${userName ?? 'Cet utilisateur'} ne pourra plus voir votre profil ni vous contacter.',
+        '${userName ?? 'This user'} will no longer be able to see your profile or contact you.',
         style: const TextStyle(color: AppColors.gris, fontSize: 14),
       ),
       actions: [
         TextButton(
           onPressed: () => Navigator.of(ctx).pop(),
-          child: const Text('Annuler', style: TextStyle(color: AppColors.gris)),
+          child: const Text('Cancel', style: TextStyle(color: AppColors.gris)),
         ),
         TextButton(
           onPressed: () async {
@@ -49,13 +49,13 @@ void showBlockConfirmDialog(
             if (context.mounted) {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
-                  content: Text('Utilisateur bloqué'),
+                  content: Text('User blocked'),
                   backgroundColor: AppColors.success,
                 ),
               );
             }
           },
-          child: const Text('Bloquer',
+          child: const Text('Block',
               style: TextStyle(color: AppColors.error, fontWeight: FontWeight.bold)),
         ),
       ],
@@ -69,11 +69,11 @@ class _ReportSheet extends ConsumerWidget {
   final String targetType;
 
   static const _reasons = [
-    'Contenu inapproprié',
-    'Spam ou arnaque',
-    'Harcèlement',
-    'Faux profil',
-    'Autre',
+    'Inappropriate content',
+    'Spam or scam',
+    'Harassment',
+    'Fake profile',
+    'Other',
   ];
 
   @override
@@ -106,7 +106,7 @@ class _ReportSheet extends ConsumerWidget {
             ),
           ),
           const SizedBox(height: 20),
-          const Text('Signaler',
+          const Text('Report',
               style: TextStyle(color: AppColors.blanc, fontSize: 20, fontWeight: FontWeight.bold)),
           const SizedBox(height: 4),
           const Text('Pourquoi signalez-vous ce contenu ?',
@@ -188,7 +188,7 @@ class _ReportSheet extends ConsumerWidget {
                         strokeWidth: 2,
                       ),
                     )
-                  : const Text('Envoyer le signalement',
+                  : const Text('Submit report',
                       style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
             ),
           ),

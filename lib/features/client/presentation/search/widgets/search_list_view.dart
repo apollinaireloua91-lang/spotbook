@@ -50,7 +50,7 @@ class _SearchListViewState extends State<SearchListView>
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  'Aucun résultat',
+                  'No results',
                   style: GoogleFonts.dmSans(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,

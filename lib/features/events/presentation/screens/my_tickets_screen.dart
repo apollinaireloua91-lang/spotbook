@@ -86,17 +86,17 @@ class _MyTicketsScreenState extends ConsumerState<MyTicketsScreen>
                 _TicketList(
                   tickets: upcoming,
                   emptyIcon: Icons.confirmation_number_outlined,
-                  emptyLabel: 'Aucun billet à venir',
+                  emptyLabel: 'No upcoming tickets',
                   emptySubLabel:
-                      'Vos prochains événements apparaîtront ici.',
+                      'Your upcoming events will appear here.',
                   onRefresh: () =>
                       ref.read(userTicketsProvider.notifier).refresh(),
                 ),
                 _TicketList(
                   tickets: past,
                   emptyIcon: Icons.history,
-                  emptyLabel: 'Aucun billet passé',
-                  emptySubLabel: 'Vos événements passés apparaîtront ici.',
+                  emptyLabel: 'No past tickets',
+                  emptySubLabel: 'Your past events will appear here.',
                   onRefresh: () =>
                       ref.read(userTicketsProvider.notifier).refresh(),
                 ),
@@ -234,7 +234,7 @@ class _TicketCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      ticket.eventTitle ?? 'Événement',
+                      ticket.eventTitle ?? 'Event',
                       style: const TextStyle(
                         color: AppColors.blanc,
                         fontWeight: FontWeight.w600,

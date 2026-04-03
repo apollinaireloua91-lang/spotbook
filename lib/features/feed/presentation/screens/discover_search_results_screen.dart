@@ -81,7 +81,7 @@ class _DiscoverSearchResultsScreenState
                       style: const TextStyle(
                           color: AppColors.blanc, fontSize: 14),
                       decoration: InputDecoration(
-                        hintText: 'Rechercher un professionnel...',
+                        hintText: 'Search for a professional...',
                         hintStyle: const TextStyle(
                             color: AppColors.gris, fontSize: 14),
                         prefixIcon: const Icon(Icons.search,
@@ -295,10 +295,10 @@ class _EmptyState extends StatelessWidget {
               const SizedBox(height: 16),
               Text(
                 hasError
-                    ? 'Erreur de connexion.\nTirez pour réessayer.'
+                    ? 'Connection error.\nPull to retry.'
                     : (query != null && query!.isNotEmpty
                         ? 'Aucun résultat pour\n« $query »'
-                        : 'Aucun professionnel disponible.\nTirez pour actualiser.'),
+                        : 'No professionals available.\nPull to refresh.'),
                 textAlign: TextAlign.center,
                 style: const TextStyle(
                   color: AppColors.gris,

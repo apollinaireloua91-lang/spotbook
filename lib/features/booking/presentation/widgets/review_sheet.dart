@@ -107,7 +107,7 @@ class _ReviewSheetState extends State<ReviewSheet> {
 
               // Title
               const Text(
-                'Laisser un avis',
+                'Leave a review',
                 style: TextStyle(
                   color: AppColors.blanc,
                   fontSize: 18,
@@ -158,7 +158,7 @@ class _ReviewSheetState extends State<ReviewSheet> {
                   fontSize: 14,
                 ),
                 decoration: InputDecoration(
-                  hintText: 'Partagez votre expérience...',
+                  hintText: 'Share your experience...',
                   hintStyle: TextStyle(
                     color: AppColors.gris.withAlpha(150),
                   ),

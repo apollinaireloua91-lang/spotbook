@@ -422,14 +422,14 @@ class _Step1Services extends ConsumerWidget {
       children: [
         const _StepHeader(
           title: 'Choisir un service',
-          subtitle: 'Sélectionnez la prestation souhaitée',
+          subtitle: 'Select the desired service',
         ),
         if (state.isLoading)
           const _ShimmerList()
         else if (state.services.isEmpty)
           _EmptyState(
             icon: Icons.content_cut,
-            message: 'Aucun service disponible',
+            message: 'No services available',
           )
         else
           ListView.separated(
@@ -986,7 +986,7 @@ class _Step3Slots extends ConsumerWidget {
         else if (state.timeSlots.isEmpty)
           _EmptyState(
             icon: Icons.event_busy,
-            message: 'Aucun créneau disponible pour cette date',
+            message: 'No slots available for this date',
           )
         else
           GridView.builder(
@@ -1602,7 +1602,7 @@ class _Step6Confirmation extends StatelessWidget {
         ),
         const SizedBox(height: 20),
         const Text(
-          'Réservation confirmée !',
+          'Booking confirmed!',
           style: TextStyle(
             color: AppColors.blanc,
             fontSize: 22,
@@ -1734,7 +1734,7 @@ class _Step6Confirmation extends StatelessWidget {
                 Icon(Icons.calendar_today, color: AppColors.blanc, size: 16),
                 SizedBox(width: 8),
                 Text(
-                  'Ajouter au calendrier',
+                  'Add to calendar',
                   style: TextStyle(
                     color: AppColors.blanc,
                     fontSize: 15,
@@ -1748,7 +1748,7 @@ class _Step6Confirmation extends StatelessWidget {
         const SizedBox(height: 12),
 
         _CtaButton(
-          label: 'Fermer',
+          label: 'Close',
           onPressed: () => Navigator.of(context).pop(),
         ),
       ],

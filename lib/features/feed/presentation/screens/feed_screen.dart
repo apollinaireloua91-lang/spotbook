@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -5,6 +7,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/theme/app_typography.dart';
+import '../../../notifications/data/notification_notifier.dart';
 import '../../data/feed_notifier.dart';
 import '../widgets/video_feed_item.dart';
 
@@ -106,10 +109,11 @@ class _FeedScreenState extends ConsumerState<FeedScreen> {
               ),
               child: Row(
                 children: [
-                  // Spotbook logo — white, DM Sans bold 20
+                  // Spotbook logo — white, DM Sans bold 19
                   Text('Spotbook',
                       style: AppTypography.spotbookLogo(
-                          onVideoBackground: true)),
+                              onVideoBackground: true)
+                          .copyWith(fontSize: 19)),
 
                   const Spacer(),
 
@@ -124,23 +128,8 @@ class _FeedScreenState extends ConsumerState<FeedScreen> {
 
                   const Spacer(),
 
-                  // Bell notification icon
-                  GestureDetector(
-                    onTap: () => context.push('/notifications'),
-                    child: Container(
-                      width: 36,
-                      height: 36,
-                      decoration: BoxDecoration(
-                        color: AppColors.blanc.withAlpha(20),
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(
-                        Icons.notifications_outlined,
-                        color: AppColors.blanc,
-                        size: 20,
-                      ),
-                    ),
-                  ),
+                  // Bell notification icon — 34×34
+                  _NotificationBell(onTap: () => context.push('/notifications')),
                 ],
               ),
             ),
@@ -164,8 +153,8 @@ class _FeedTabPill extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(3),
       decoration: BoxDecoration(
-        color: AppColors.blanc.withAlpha(25),
-        borderRadius: BorderRadius.circular(20),
+        color: AppColors.blanc.withAlpha(15), // rgba(255,255,255,0.06)
+        borderRadius: BorderRadius.circular(10),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -202,15 +191,83 @@ class _TabItem extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+        duration: const Duration(milliseconds: 250),
+        curve: Curves.easeOut,
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
         decoration: BoxDecoration(
-          color: isActive ? AppColors.blanc.withAlpha(30) : Colors.transparent,
-          borderRadius: BorderRadius.circular(18),
+          color: isActive
+              ? AppColors.violet.withAlpha(128) // rgba(108,62,244,0.5)
+              : Colors.transparent,
+          borderRadius: BorderRadius.circular(8),
         ),
-        child: Text(
-          label,
-          style: AppTypography.feedTab(active: isActive),
+        child: AnimatedDefaultTextStyle(
+          duration: const Duration(milliseconds: 200),
+          style: TextStyle(
+            color: isActive
+                ? AppColors.blanc
+                : AppColors.blanc.withAlpha(115), // rgba(255,255,255,0.45)
+            fontSize: 13,
+            fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
+          ),
+          child: Text(label),
+        ),
+      ),
+    );
+  }
+}
+
+// ─── Notification bell with unread dot ──────────────────────────────────────
+
+class _NotificationBell extends ConsumerWidget {
+  const _NotificationBell({required this.onTap});
+
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final unread = ref.watch(unreadNotifCountProvider);
+
+    return GestureDetector(
+      onTap: onTap,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(11),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+          child: Container(
+            width: 34,
+            height: 34,
+            decoration: BoxDecoration(
+              color: AppColors.surfaceAlt.withAlpha(217), // rgba(22,22,31,0.85)
+              borderRadius: BorderRadius.circular(11),
+              border: Border.all(
+                  color: AppColors.blanc.withAlpha(26)), // rgba(255,255,255,0.1)
+            ),
+            child: Stack(
+              children: [
+                const Center(
+                  child: Icon(
+                    Icons.notifications_outlined,
+                    color: AppColors.blanc,
+                    size: 19,
+                  ),
+                ),
+                if (unread > 0)
+                  Positioned(
+                    top: 5,
+                    right: 5,
+                    child: Container(
+                      width: 7,
+                      height: 7,
+                      decoration: BoxDecoration(
+                        color: AppColors.rose,
+                        shape: BoxShape.circle,
+                        border: Border.all(color: AppColors.fond, width: 1),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ),
         ),
       ),
     );

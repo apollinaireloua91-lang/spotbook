@@ -21,7 +21,7 @@ class NotificationHistoryScreen extends ConsumerWidget {
       appBar: AppBar(
         backgroundColor: AppColors.fond,
         leading: Semantics(
-          label: 'Retour',
+          label: 'Back',
           child: IconButton(
             icon: const Icon(Icons.arrow_back_ios, color: AppColors.blanc, size: 20),
             onPressed: () {
@@ -36,7 +36,7 @@ class NotificationHistoryScreen extends ConsumerWidget {
         actions: [
           if (state.notifications.any((n) => !n.isRead))
             Semantics(
-              label: 'Tout marquer comme lu',
+              label: 'Mark all as read',
               child: IconButton(
                 icon: const Icon(Icons.done_all, color: AppColors.blanc),
                 onPressed: () {
@@ -56,7 +56,7 @@ class NotificationHistoryScreen extends ConsumerWidget {
                     children: [
                       Icon(Icons.notifications_off_outlined, color: AppColors.gris, size: 48),
                       SizedBox(height: 12),
-                      Text('Aucune notification',
+                      Text('No notifications',
                           style: TextStyle(color: AppColors.gris, fontSize: 15)),
                     ],
                   ),

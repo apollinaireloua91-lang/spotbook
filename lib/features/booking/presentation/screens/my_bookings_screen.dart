@@ -82,7 +82,7 @@ class _MyBookingsScreenState extends ConsumerState<MyBookingsScreen>
         backgroundColor: AppColors.fond,
         surfaceTintColor: Colors.transparent,
         title: Text(
-          'Mes Réservations',
+          'My Bookings',
           style: GoogleFonts.dmSans(
             color: AppColors.blanc,
             fontSize: 20,

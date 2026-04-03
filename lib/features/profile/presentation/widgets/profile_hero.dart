@@ -83,17 +83,33 @@ class _ProfileHeroState extends State<ProfileHero>
                   color: AppColors.fond,
                 ),
                 padding: const EdgeInsets.all(2),
-                child: CircleAvatar(
-                  radius: 42,
-                  backgroundColor: AppColors.surfaceAlt,
-                  backgroundImage: p.avatarUrl != null
-                      ? CachedNetworkImageProvider(p.avatarUrl!)
-                      : null,
-                  child: p.avatarUrl == null
-                      ? const Icon(Icons.person,
-                          size: 38, color: AppColors.gris)
-                      : null,
-                ),
+                child: p.avatarUrl != null
+                    ? CircleAvatar(
+                        radius: 42,
+                        backgroundColor: AppColors.surfaceAlt,
+                        backgroundImage:
+                            CachedNetworkImageProvider(p.avatarUrl!),
+                      )
+                    : Container(
+                        width: 84,
+                        height: 84,
+                        decoration: const BoxDecoration(
+                          shape: BoxShape.circle,
+                          gradient: AppColors.gradientAccent,
+                        ),
+                        child: Center(
+                          child: Text(
+                            p.fullName.isNotEmpty
+                                ? p.fullName[0].toUpperCase()
+                                : '?',
+                            style: GoogleFonts.dmSans(
+                              fontSize: 32,
+                              fontWeight: FontWeight.w800,
+                              color: AppColors.blanc,
+                            ),
+                          ),
+                        ),
+                      ),
               ),
             ),
           ),
@@ -113,18 +129,50 @@ class _ProfileHeroState extends State<ProfileHero>
           ),
         ),
 
-        // Handle
-        if (p.username != null && p.username!.isNotEmpty) ...[
-          const SizedBox(height: 4),
-          Text(
-            '@${p.username}',
-            style: GoogleFonts.dmSans(
-              color: AppColors.gris,
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
+        // Handle — from username or email prefix
+        Builder(builder: (_) {
+          final handle = (p.username != null && p.username!.isNotEmpty)
+              ? p.username!
+              : p.email.contains('@')
+                  ? p.email.split('@').first
+                  : null;
+          if (handle == null) return const SizedBox(height: 4);
+          return Padding(
+            padding: const EdgeInsets.only(top: 4),
+            child: Text(
+              '@$handle',
+              style: GoogleFonts.dmSans(
+                color: AppColors.gris,
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+              ),
             ),
-          ),
-        ],
+          );
+        }),
+
+        // Bio
+        Padding(
+          padding: const EdgeInsets.only(top: 8),
+          child: (p.bio != null && p.bio!.trim().isNotEmpty)
+              ? Text(
+                  p.bio!,
+                  textAlign: TextAlign.center,
+                  maxLines: 3,
+                  overflow: TextOverflow.ellipsis,
+                  style: GoogleFonts.dmSans(
+                    color: AppColors.blanc.withAlpha(153),
+                    fontSize: 13,
+                  ),
+                )
+              : Text(
+                  'Tap to add a bio',
+                  style: GoogleFonts.dmSans(
+                    color: AppColors.grisInactif,
+                    fontSize: 13,
+                    fontStyle: FontStyle.italic,
+                  ),
+                ),
+        ),
 
         // City
         if (p.city != null && p.city!.isNotEmpty) ...[

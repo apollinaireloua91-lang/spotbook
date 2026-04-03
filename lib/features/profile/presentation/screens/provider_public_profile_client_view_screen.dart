@@ -94,7 +94,7 @@ class _ProviderPublicProfileClientViewScreenState
           const SnackBar(
             backgroundColor: AppColors.surface,
             content: Text(
-              'Aucun service réservable pour le moment.',
+              'No bookable services at this time.',
               style: TextStyle(color: AppColors.blanc),
             ),
           ),
@@ -668,7 +668,7 @@ class _VideosTab extends StatelessWidget {
     if (videos.isEmpty) {
       return const Center(
         child: Text(
-          'Aucune vidéo pour l’instant.',
+          'No videos yet.',
           style: TextStyle(color: AppColors.gris),
         ),
       );
@@ -765,7 +765,7 @@ class _ServicesTab extends StatelessWidget {
     if (active.isEmpty) {
       return const Center(
         child: Text(
-          'Aucun service disponible.',
+          'No services available.',
           style: TextStyle(color: AppColors.gris),
         ),
       );
@@ -827,7 +827,7 @@ class _ReviewsTab extends StatelessWidget {
     if (reviews.isEmpty) {
       return const Center(
         child: Text(
-          'Pas encore d’avis.',
+          'No reviews yet.',
           style: TextStyle(color: AppColors.gris),
         ),
       );
@@ -930,7 +930,7 @@ class _EventsTab extends StatelessWidget {
     if (events.isEmpty) {
       return const Center(
         child: Text(
-          'Aucun événement à venir.',
+          'No upcoming events.',
           style: TextStyle(color: AppColors.gris),
         ),
       );

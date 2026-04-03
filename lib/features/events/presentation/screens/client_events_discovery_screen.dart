@@ -82,7 +82,7 @@ class _ClientEventsDiscoveryScreenState
     return Scaffold(
       backgroundColor: AppColors.fond,
       appBar: const SpotbookAppBar(
-        title: 'Événements',
+        title: 'Events',
         showBack: true,
       ),
       body: Column(
@@ -166,7 +166,7 @@ class _ClientEventsDiscoveryScreenState
                             Icon(Icons.event_busy,
                                 color: AppColors.gris, size: 48),
                             SizedBox(height: 12),
-                            Text('Aucun événement trouvé',
+                            Text('No events found',
                                 style: TextStyle(
                                     color: AppColors.gris,
                                     fontSize: 15)),

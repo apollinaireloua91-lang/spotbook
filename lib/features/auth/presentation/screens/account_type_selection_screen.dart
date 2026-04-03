@@ -35,7 +35,7 @@ class _AccountTypeSelectionScreenState
               const SizedBox(height: 48),
 
               const Text(
-                'Bienvenue sur\nSpotbook',
+                'Welcome to\nSpotbook',
                 style: TextStyle(
                   color: AppColors.blanc,
                   fontSize: 28,
@@ -69,7 +69,7 @@ class _AccountTypeSelectionScreenState
               // Pro card
               _RoleCard(
                 icon: Icons.workspace_premium_outlined,
-                title: 'Professionnel',
+                title: 'Professional',
                 subtitle: 'Je propose mes services',
                 description: 'Publiez, gérez, gagnez',
                 isSelected: _selectedRole == 'pro',
@@ -126,11 +126,11 @@ class _AccountTypeSelectionScreenState
                   onTap: () => context.go('/login'),
                   child: RichText(
                     text: const TextSpan(
-                      text: 'Déjà un compte ? ',
+                      text: 'Already have an account? ',
                       style: TextStyle(color: AppColors.gris, fontSize: 14),
                       children: [
                         TextSpan(
-                          text: 'Se connecter',
+                          text: 'Sign in',
                           style: TextStyle(
                             color: AppColors.violetClair,
                             fontWeight: FontWeight.w600,

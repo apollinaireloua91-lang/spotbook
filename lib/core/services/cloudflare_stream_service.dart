@@ -4,6 +4,8 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../shared/utils/cloudflare_stream_urls.dart';
+
 /// Result of requesting a direct upload URL from Cloudflare Stream.
 class UploadSession {
   const UploadSession({
@@ -18,16 +20,12 @@ class UploadSession {
   final String videoUid;
 
   /// HLS playback URL (available after processing).
-  String get playbackUrl {
-    const customerCode = String.fromEnvironment('CLOUDFLARE_CUSTOMER_CODE');
-    return 'https://customer-$customerCode.cloudflarestream.com/$videoUid/manifest/video.m3u8';
-  }
+  String get playbackUrl =>
+      cloudflareManifestUrl(videoUid) ?? '';
 
   /// Thumbnail URL (available after processing).
-  String get thumbnailUrl {
-    const customerCode = String.fromEnvironment('CLOUDFLARE_CUSTOMER_CODE');
-    return 'https://customer-$customerCode.cloudflarestream.com/$videoUid/thumbnails/thumbnail.jpg';
-  }
+  String get thumbnailUrl =>
+      cloudflareThumbnailUrl(videoUid) ?? '';
 }
 
 /// Service that handles the complete Cloudflare Stream upload pipeline:

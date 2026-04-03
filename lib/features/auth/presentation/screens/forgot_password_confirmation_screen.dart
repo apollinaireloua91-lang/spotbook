@@ -117,7 +117,7 @@ class _ForgotPasswordConfirmationScreenState
               FadeTransition(
                 opacity: _fadeAnim,
                 child: SpotbookButton(
-                  label: 'Retour à la connexion',
+                  label: 'Back to sign in',
                   variant: SpotbookButtonVariant.primary,
                   onPressed: () {
                     HapticFeedback.mediumImpact();

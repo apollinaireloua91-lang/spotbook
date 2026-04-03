@@ -28,10 +28,10 @@ class _BecomeProSheetState extends State<BecomeProSheet>
   late final AnimationController _controller;
 
   static const _advantages = [
-    (icon: '🎬', title: 'Publiez des vidéos', desc: 'Montrez vos prestations au monde'),
-    (icon: '📅', title: 'Gérez vos services', desc: 'Créneaux, prix, disponibilités'),
-    (icon: '🎟️', title: 'Vendez des billets', desc: 'Organisez et monétisez vos événements'),
-    (icon: '💰', title: 'Recevez des paiements', desc: 'Stripe Connect intégré, sécurisé'),
+    (icon: '🎬', title: 'Publish videos', desc: 'Showcase your services worldwide'),
+    (icon: '📅', title: 'Manage your services', desc: 'Slots, pricing, availability'),
+    (icon: '🎟️', title: 'Sell tickets', desc: 'Organize and monetize your events'),
+    (icon: '💰', title: 'Receive payments', desc: 'Integrated, secure Stripe Connect'),
   ];
 
   @override
@@ -83,7 +83,7 @@ class _BecomeProSheetState extends State<BecomeProSheet>
             shaderCallback: (bounds) =>
                 AppColors.gradientAccent.createShader(bounds),
             child: Text(
-              'Devenir Pro',
+              'Become Pro',
               style: GoogleFonts.dmSans(
                 color: AppColors.blanc,
                 fontSize: 22,
@@ -93,7 +93,7 @@ class _BecomeProSheetState extends State<BecomeProSheet>
           ),
           const SizedBox(height: 4),
           Text(
-            'Développez votre activité sur Spotbook',
+            'Grow your business on Spotbook',
             style: GoogleFonts.dmSans(
               color: AppColors.gris,
               fontSize: 13,
@@ -196,7 +196,7 @@ class _BecomeProSheetState extends State<BecomeProSheet>
                 ),
                 child: Center(
                   child: Text(
-                    'Créer un compte Pro',
+                    'Create a Pro account',
                     style: GoogleFonts.dmSans(
                       color: AppColors.blanc,
                       fontSize: 16,

@@ -75,7 +75,7 @@ class ProProfileScreen extends ConsumerWidget {
             ),
             body: const Center(
               child: Text(
-                'Profil introuvable',
+                'Profile not found',
                 style: TextStyle(color: AppColors.gris),
               ),
             ),
@@ -136,7 +136,7 @@ class _ProProfileScaffold extends ConsumerWidget {
                 contentPadding: EdgeInsets.zero,
                 leading:
                     const Icon(Icons.flag_outlined, color: AppColors.blanc),
-                title: const Text('Signaler',
+                title: const Text('Report',
                     style: TextStyle(color: AppColors.blanc)),
                 onTap: () {
                   Navigator.of(ctx).pop();
@@ -150,7 +150,7 @@ class _ProProfileScaffold extends ConsumerWidget {
               ListTile(
                 contentPadding: EdgeInsets.zero,
                 leading: const Icon(Icons.block, color: AppColors.error),
-                title: const Text('Bloquer',
+                title: const Text('Block',
                     style: TextStyle(color: AppColors.error)),
                 onTap: () {
                   Navigator.of(ctx).pop();
@@ -478,7 +478,7 @@ class _ProProfileScaffold extends ConsumerWidget {
                           const Tab(text: 'Services'),
                           if (isTraiteur) const Tab(text: 'Menu'),
                           const Tab(text: 'Avis'),
-                          const Tab(text: 'Événements'),
+                          const Tab(text: 'Events'),
                         ],
                       ),
                     ),
@@ -553,7 +553,7 @@ class _ProVideosGrid extends ConsumerWidget {
         if (videos.isEmpty) {
           return const _ProTabEmpty(
             icon: Icons.videocam_outlined,
-            text: 'Aucune vidéo',
+            text: 'No videos',
           );
         }
         return GridView.builder(
@@ -592,7 +592,7 @@ class _ProServicesList extends ConsumerWidget {
         if (services.isEmpty) {
           return const _ProTabEmpty(
             icon: Icons.design_services_outlined,
-            text: 'Aucun service',
+            text: 'No services',
           );
         }
         return ListView.builder(
@@ -632,7 +632,7 @@ class _ProReviewsList extends ConsumerWidget {
         if (reviews.isEmpty) {
           return const _ProTabEmpty(
             icon: Icons.rate_review_outlined,
-            text: 'Aucun avis pour le moment',
+            text: 'No reviews yet',
           );
         }
         return ListView.builder(
@@ -870,7 +870,7 @@ class _TraiteurMenuWrapper extends ConsumerWidget {
         child: CircularProgressIndicator(color: AppColors.blanc),
       ),
       error: (_, __) => const Center(
-        child: Text('Erreur de chargement',
+        child: Text('Loading error',
             style: TextStyle(color: AppColors.gris)),
       ),
     );
@@ -891,7 +891,7 @@ class _ProEventsList extends ConsumerWidget {
         if (events.isEmpty) {
           return const _ProTabEmpty(
             icon: Icons.event_outlined,
-            text: 'Aucun événement',
+            text: 'No events',
           );
         }
         return ListView.builder(
@@ -957,7 +957,7 @@ class _ProTabError extends StatelessWidget {
           const Icon(Icons.error_outline, color: AppColors.error, size: 36),
           const SizedBox(height: 12),
           const Text(
-            'Erreur de chargement',
+            'Loading error',
             style: TextStyle(color: AppColors.gris, fontSize: 14),
           ),
           const SizedBox(height: 12),

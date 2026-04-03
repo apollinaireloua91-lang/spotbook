@@ -175,7 +175,7 @@ class _TicketCardState extends State<TicketCard>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  t.eventTitle ?? 'Événement',
+                  t.eventTitle ?? 'Event',
                   style: const TextStyle(
                     color: AppColors.blanc,
                     fontWeight: FontWeight.w700,
@@ -282,7 +282,7 @@ class _TicketCardState extends State<TicketCard>
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            t.eventTitle ?? 'Événement',
+            t.eventTitle ?? 'Event',
             style: const TextStyle(
               color: AppColors.blanc,
               fontWeight: FontWeight.w700,

@@ -317,7 +317,7 @@ class _FilterSheetState extends State<FilterSheet> {
             controller: _proNameController,
             style: const TextStyle(color: AppColors.blanc, fontSize: 14),
             decoration: InputDecoration(
-              hintText: 'Rechercher un pro...',
+              hintText: 'Search for a pro...',
               hintStyle: TextStyle(color: AppColors.gris.withAlpha(150)),
               prefixIcon: const Icon(
                 Icons.search,

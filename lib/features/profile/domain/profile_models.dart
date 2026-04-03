@@ -7,6 +7,7 @@ class ClientProfile {
     this.coverUrl,
     this.city,
     this.username,
+    this.bio,
   });
 
   final String id;
@@ -16,6 +17,7 @@ class ClientProfile {
   final String? coverUrl;
   final String? city;
   final String? username;
+  final String? bio;
 
   factory ClientProfile.fromJson(Map<String, dynamic> json) {
     return ClientProfile(
@@ -26,6 +28,7 @@ class ClientProfile {
       coverUrl: json['cover_url'] as String?,
       city: json['city'] as String?,
       username: json['username'] as String?,
+      bio: json['bio'] as String?,
     );
   }
 }

@@ -19,7 +19,7 @@ class _Goal {
 const _goals = [
   _Goal(
     icon: Icons.trending_up,
-    title: 'Découvrir les tendances',
+    title: 'Discover trends',
     description: 'Explorez les dernières vidéos et styles du moment',
   ),
   _Goal(

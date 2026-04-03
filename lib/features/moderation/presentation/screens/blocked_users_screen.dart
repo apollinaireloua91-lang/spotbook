@@ -61,7 +61,7 @@ class BlockedUsersScreen extends ConsumerWidget {
       appBar: AppBar(
         backgroundColor: AppColors.fond,
         leading: Semantics(
-          label: 'Retour',
+          label: 'Back',
           child: IconButton(
             icon: const Icon(Icons.arrow_back_ios, color: AppColors.blanc, size: 20),
             onPressed: () {
@@ -98,7 +98,7 @@ class BlockedUsersScreen extends ConsumerWidget {
                     children: [
                       Icon(Icons.block, color: AppColors.gris, size: 48),
                       SizedBox(height: 12),
-                      Text('Aucun utilisateur bloqué',
+                      Text('No blocked users',
                           style: TextStyle(color: AppColors.gris, fontSize: 15)),
                     ],
                   ),
@@ -155,7 +155,7 @@ class BlockedUsersScreen extends ConsumerWidget {
                                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                                 padding: const EdgeInsets.symmetric(horizontal: 16),
                               ),
-                              child: const Text('Débloquer',
+                              child: const Text('Unblock',
                                   style: TextStyle(color: AppColors.blanc, fontSize: 13, fontWeight: FontWeight.w500)),
                             ),
                           ),

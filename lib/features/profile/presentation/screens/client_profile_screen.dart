@@ -108,8 +108,18 @@ class _ProfileBody extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Header: "Mon Profil" centered + settings gear right
-            Padding(
+            // Header with subtle radial gradient
+            Container(
+              decoration: BoxDecoration(
+                gradient: RadialGradient(
+                  center: Alignment.topCenter,
+                  radius: 1.2,
+                  colors: [
+                    AppColors.violet.withAlpha(20), // rgba(108,62,244,0.08)
+                    Colors.transparent,
+                  ],
+                ),
+              ),
               padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
               child: Stack(
                 alignment: Alignment.center,
@@ -127,7 +137,10 @@ class _ProfileBody extends ConsumerWidget {
                   Positioned(
                     right: 0,
                     child: GestureDetector(
-                      onTap: () => context.push('/settings'),
+                      onTap: () {
+                        HapticFeedback.lightImpact();
+                        context.push('/settings');
+                      },
                       child: Container(
                         width: 36,
                         height: 36,
@@ -176,7 +189,7 @@ class _ProfileBody extends ConsumerWidget {
 
             // ─── Edit Profile Button ───
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 60),
+              padding: const EdgeInsets.symmetric(horizontal: 40),
               child: GestureDetector(
                 onTap: () {
                   HapticFeedback.lightImpact();
@@ -184,28 +197,21 @@ class _ProfileBody extends ConsumerWidget {
                 },
                 child: Container(
                   width: double.infinity,
-                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  padding: const EdgeInsets.symmetric(vertical: 12),
                   decoration: BoxDecoration(
-                    color: AppColors.surface,
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(color: AppColors.border),
+                    color: Colors.transparent,
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(
+                        color: AppColors.blanc.withAlpha(26)), // 0.1 opacity
                   ),
-                  child: const Center(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.edit_outlined,
-                            size: 16, color: AppColors.blanc),
-                        SizedBox(width: 6),
-                        Text(
-                          'Edit profile',
-                          style: TextStyle(
-                            color: AppColors.blanc,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
+                  child: Center(
+                    child: Text(
+                      'Edit Profile',
+                      style: GoogleFonts.dmSans(
+                        color: AppColors.blanc,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ),
                 ),
@@ -560,23 +566,62 @@ class _SpecialActionsSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext _, WidgetRef ref) {
-    return SettingsList(
-      items: [
-        SettingsItemData(
-          icon: 'rocket_launch',
-          label: 'Become a Pro',
-          textColor: AppColors.violetClair,
-          isSpecial: true,
-          onTap: () => BecomeProSheet.show(context),
-        ),
-        SettingsItemData(
-          icon: 'logout',
-          label: 'Log out',
-          textColor: AppColors.roseClair,
-          isSpecial: true,
-          onTap: () => _showLogoutDialog(context),
-        ),
-      ],
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Column(
+        children: [
+          const SizedBox(height: 16),
+          // Become Pro
+          GestureDetector(
+            onTap: () {
+              HapticFeedback.lightImpact();
+              BecomeProSheet.show(context);
+            },
+            child: Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              decoration: BoxDecoration(
+                color: AppColors.violet.withAlpha(15), // rgba(108,62,244,0.06)
+                borderRadius: BorderRadius.circular(14),
+              ),
+              child: Center(
+                child: Text(
+                  'Become Pro',
+                  style: GoogleFonts.dmSans(
+                    color: AppColors.violetClair,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 8),
+          // Log out
+          GestureDetector(
+            onTap: () => _showLogoutDialog(context),
+            child: Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              decoration: BoxDecoration(
+                color: AppColors.rose.withAlpha(15), // rgba(244,62,143,0.06)
+                borderRadius: BorderRadius.circular(14),
+              ),
+              child: Center(
+                child: Text(
+                  'Log out',
+                  style: GoogleFonts.dmSans(
+                    color: AppColors.roseClair,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 40),
+        ],
+      ),
     );
   }
 

@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:better_player_plus/better_player_plus.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -390,34 +392,88 @@ class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
 
                 const SizedBox(height: 12),
 
-                // "Réserver maintenant" CTA
+                // CTA strip — glassmorphism
                 if (widget.video.serviceId != null)
-                  GestureDetector(
-                    onTap: () => context.push(
-                      '/client/booking-flow/${widget.video.proId}?serviceId=${widget.video.serviceId}',
-                    ),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 10),
-                      decoration: BoxDecoration(
-                        gradient: AppColors.gradientAccent,
-                        borderRadius: BorderRadius.circular(24),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Icon(Icons.calendar_today,
-                              color: AppColors.blanc, size: 14),
-                          const SizedBox(width: 6),
-                          Text(
-                            'Book${widget.video.servicePrice != null ? ' · ${widget.video.servicePrice!.toStringAsFixed(0)} \$' : ''}',
-                            style: const TextStyle(
-                              color: AppColors.blanc,
-                              fontSize: 13,
-                              fontWeight: FontWeight.w700,
-                            ),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: BackdropFilter(
+                      filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 14, vertical: 10),
+                        decoration: BoxDecoration(
+                          color: const Color(0xE61A1330), // rgba(26,19,48,0.9)
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: AppColors.violet
+                                .withAlpha(77), // rgba(108,62,244,0.3)
                           ),
-                        ],
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Flexible(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    widget.video.serviceName ?? 'Service',
+                                    style: const TextStyle(
+                                      color: AppColors.blanc,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  if (widget.video.servicePrice != null)
+                                    Text(
+                                      '${widget.video.servicePrice!.toStringAsFixed(0)} \$',
+                                      style: TextStyle(
+                                        color: AppColors.blanc.withAlpha(180),
+                                        fontSize: 11,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            GestureDetector(
+                              onTap: () {
+                                HapticFeedback.lightImpact();
+                                context.push(
+                                  '/client/booking-flow/${widget.video.proId}?serviceId=${widget.video.serviceId}',
+                                );
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 16, vertical: 8),
+                                decoration: BoxDecoration(
+                                  color: AppColors.violet,
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: const Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(Icons.calendar_today,
+                                        color: AppColors.blanc, size: 13),
+                                    SizedBox(width: 5),
+                                    Text(
+                                      'Book',
+                                      style: TextStyle(
+                                        color: AppColors.blanc,
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -473,6 +529,20 @@ class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
                       onTap: _openComments,
                     ),
                     const SizedBox(height: 18),
+                    BookmarkBounce(
+                      isSaved: widget.video.isSaved,
+                      child: _ActionButton(
+                        icon: widget.video.isSaved
+                            ? Icons.bookmark
+                            : Icons.bookmark_border,
+                        label: widget.video.isSaved ? 'Saved' : 'Save',
+                        color: widget.video.isSaved
+                            ? AppColors.violet
+                            : AppColors.blanc,
+                        onTap: _toggleSave,
+                      ),
+                    ),
+                    const SizedBox(height: 18),
                     _ActionButton(
                       icon: Icons.reply,
                       label: 'Share',
@@ -485,20 +555,6 @@ class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
                         );
                       },
                       mirrorIcon: true,
-                    ),
-                    const SizedBox(height: 18),
-                    BookmarkBounce(
-                      isSaved: widget.video.isSaved,
-                      child: _ActionButton(
-                        icon: widget.video.isSaved
-                            ? Icons.bookmark
-                            : Icons.bookmark_border,
-                        label: widget.video.isSaved ? 'Saved' : 'Save',
-                        color: widget.video.isSaved
-                            ? AppColors.warning
-                            : AppColors.blanc,
-                        onTap: _toggleSave,
-                      ),
                     ),
                     const SizedBox(height: 18),
                     _ActionButton(

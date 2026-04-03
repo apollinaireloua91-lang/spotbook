@@ -79,7 +79,7 @@ class _CommentBottomSheetState extends ConsumerState<CommentBottomSheet> {
                 child: Row(
                   children: [
                     Text(
-                      'Commentaires',
+                      'Comments',
                       style: const TextStyle(
                         color: AppColors.blanc,
                         fontSize: 15,
@@ -195,7 +195,7 @@ class _CommentBottomSheetState extends ConsumerState<CommentBottomSheet> {
                             fontSize: 13,
                           ),
                           decoration: InputDecoration(
-                            hintText: 'Ajouter un commentaire...',
+                            hintText: 'Add a comment...',
                             hintStyle: TextStyle(
                               color: AppColors.gris.withAlpha(120),
                               fontSize: 13,

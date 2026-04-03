@@ -87,7 +87,7 @@ class ClientInterestCategoriesScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 8),
             const Text(
-              'Sélectionnez les catégories qui vous intéressent pour personnaliser votre feed.',
+              'Select categories you\'re interested in to personalize your feed.',
               style: TextStyle(
                 color: AppColors.gris,
                 fontSize: 14,

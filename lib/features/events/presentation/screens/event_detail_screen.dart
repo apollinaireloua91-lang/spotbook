@@ -71,7 +71,7 @@ class _EventDetailBody extends StatelessWidget {
           pinned: true,
           backgroundColor: AppColors.fond,
           leading: Semantics(
-            label: 'Retour',
+            label: 'Back',
             child: IconButton(
               icon: const Icon(Icons.arrow_back_ios, color: AppColors.blanc, size: 20),
               onPressed: () {
@@ -171,10 +171,10 @@ class _EventDetailBody extends StatelessWidget {
                 ),
               ],
               const SizedBox(height: 24),
-              const Text('Billets', style: TextStyle(color: AppColors.blanc, fontSize: 18, fontWeight: FontWeight.bold)),
+              const Text('Tickets', style: TextStyle(color: AppColors.blanc, fontSize: 18, fontWeight: FontWeight.bold)),
               const SizedBox(height: 12),
               if (event.ticketTypes.isEmpty)
-                const Text('Aucun billet disponible', style: TextStyle(color: AppColors.gris, fontSize: 14))
+                const Text('No tickets available', style: TextStyle(color: AppColors.gris, fontSize: 14))
               else
                 ListView.separated(
                   shrinkWrap: true,

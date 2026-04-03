@@ -38,42 +38,42 @@ final _socialPlatforms = [
     key: 'instagram',
     label: 'Instagram',
     icon: Icons.camera_alt_outlined,
-    placeholder: 'https://instagram.com/votre_profil',
+    placeholder: 'https://instagram.com/your_profile',
     urlPattern: RegExp(r'instagram\.com'),
   ),
   _SocialPlatform(
     key: 'tiktok',
     label: 'TikTok',
     icon: Icons.music_note_outlined,
-    placeholder: 'https://tiktok.com/@votre_profil',
+    placeholder: 'https://tiktok.com/@your_profile',
     urlPattern: RegExp(r'tiktok\.com'),
   ),
   _SocialPlatform(
     key: 'youtube',
     label: 'YouTube',
     icon: Icons.play_circle_outline,
-    placeholder: 'https://youtube.com/@votre_chaine',
+    placeholder: 'https://youtube.com/@your_channel',
     urlPattern: RegExp(r'youtube\.com|youtu\.be'),
   ),
   _SocialPlatform(
     key: 'snapchat',
     label: 'Snapchat',
     icon: Icons.photo_camera_front_outlined,
-    placeholder: 'https://snapchat.com/add/votre_snap',
+    placeholder: 'https://snapchat.com/add/your_snap',
     urlPattern: RegExp(r'snapchat\.com'),
   ),
   _SocialPlatform(
     key: 'twitter',
     label: 'X / Twitter',
     icon: Icons.alternate_email,
-    placeholder: 'https://x.com/votre_profil',
+    placeholder: 'https://x.com/your_profile',
     urlPattern: RegExp(r'twitter\.com|x\.com'),
   ),
   _SocialPlatform(
     key: 'website',
-    label: 'Site web',
+    label: 'Website',
     icon: Icons.language,
-    placeholder: 'https://votre-site.com',
+    placeholder: 'https://your-site.com',
   ),
   _SocialPlatform(
     key: 'spotify',
@@ -224,7 +224,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
       if (mounted) {
         setState(() => _isUploadingAvatar = false);
         showSpotbookSnackBar(context,
-            message: 'Erreur upload photo', type: SnackType.error);
+            message: 'Photo upload error', type: SnackType.error);
       }
     }
   }
@@ -258,7 +258,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
 
       if (!mounted) return;
       showSpotbookSnackBar(context,
-          message: 'Profil mis à jour', type: SnackType.success);
+          message: 'Profile updated', type: SnackType.success);
       context.pop();
     } catch (e) {
       if (!mounted) return;
@@ -286,7 +286,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
         backgroundColor: AppColors.fond,
         surfaceTintColor: Colors.transparent,
         title: Text(
-          'Modifier le profil',
+          'Edit profile',
           style: GoogleFonts.dmSans(
             color: AppColors.blanc,
             fontWeight: FontWeight.w600,
@@ -365,7 +365,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
               const SizedBox(height: 8),
               Center(
                 child: Text(
-                  'Modifier la photo',
+                  'Change photo',
                   style: GoogleFonts.dmSans(
                     color: AppColors.violetClair,
                     fontSize: 13,
@@ -377,12 +377,12 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
               const SizedBox(height: 24),
 
               // ─── Name ───
-              _buildTextField('Nom affiché', _nameCtrl),
+              _buildTextField('Display name', _nameCtrl),
 
               const SizedBox(height: 16),
 
               // ─── Username with uniqueness check ───
-              _buildLabel("Nom d'utilisateur"),
+              _buildLabel('Username'),
               const SizedBox(height: 8),
               TextField(
                 controller: _usernameCtrl,
@@ -459,7 +459,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                 maxLength: 160,
                 style: const TextStyle(color: AppColors.blanc, fontSize: 15),
                 decoration: InputDecoration(
-                  hintText: 'Décrivez-vous en quelques mots...',
+                  hintText: 'Describe yourself in a few words...',
                   hintStyle: TextStyle(
                     color: AppColors.gris.withAlpha(120),
                     fontSize: 14,
@@ -489,12 +489,12 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
               const SizedBox(height: 16),
 
               // ─── Address with Google Places autocomplete ───
-              _buildLabel('Localisation'),
+              _buildLabel('Location'),
               const SizedBox(height: 8),
               AddressAutocompleteField(
                 controller: _addressCtrl,
                 label: '',
-                hint: 'Votre ville ou adresse',
+                hint: 'Your city or address',
                 icon: Icons.location_on_outlined,
                 fillColor: AppColors.surface,
               ),
@@ -503,7 +503,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
               if (s.isPro) ...[
                 const SizedBox(height: 32),
                 Text(
-                  'RÉSEAUX SOCIAUX',
+                  'SOCIAL LINKS',
                   style: GoogleFonts.dmSans(
                     color: AppColors.gris,
                     fontSize: 11,
@@ -513,7 +513,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  'Collez un lien et la plateforme sera détectée automatiquement.',
+                  'Paste a link and the platform will be auto-detected.',
                   style: GoogleFonts.dmSans(
                     color: AppColors.gris,
                     fontSize: 12,
@@ -532,7 +532,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
               const SizedBox(height: 32),
 
               SpotbookButton.primary(
-                label: 'Enregistrer',
+                label: 'Save',
                 onPressed: _save,
                 isLoading: s.isSaving,
               ),

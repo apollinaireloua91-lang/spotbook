@@ -26,9 +26,8 @@ class ConsentBanner extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             const Text(
-              'Nous utilisons des cookies analytiques pour améliorer '
-              'votre expérience. Vous pouvez changer d\'avis à tout '
-              'moment dans les paramètres.',
+              'We use analytics cookies to improve your experience. '
+              'You can change your mind at any time in settings.',
               style: TextStyle(
                 color: AppColors.grisClair,
                 fontSize: 14,
@@ -41,14 +40,14 @@ class ConsentBanner extends StatelessWidget {
                 Expanded(
                   child: OutlinedButton(
                     onPressed: onDecline,
-                    child: const Text('Refuser'),
+                    child: const Text('Decline'),
                   ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: ElevatedButton(
                     onPressed: onAccept,
-                    child: const Text('Accepter'),
+                    child: const Text('Accept'),
                   ),
                 ),
               ],

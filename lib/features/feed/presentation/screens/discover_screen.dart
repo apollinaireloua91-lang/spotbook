@@ -94,7 +94,7 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
                         fontSize: 14,
                       ),
                       decoration: InputDecoration(
-                        hintText: 'Rechercher un professionnel...',
+                        hintText: 'Search for a professional...',
                         hintStyle: const TextStyle(
                           color: AppColors.gris,
                           fontSize: 14,
@@ -177,7 +177,7 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           const Text(
-                            'Recherches récentes',
+                            'Recent searches',
                             style: TextStyle(
                               color: AppColors.gris,
                               fontSize: 12,
@@ -662,8 +662,8 @@ class _EmptyState extends StatelessWidget {
             const SizedBox(height: 20),
             Text(
               hasQuery
-                  ? 'Aucun résultat'
-                  : 'Aucun professionnel trouvé',
+                  ? 'No results'
+                  : 'No professionals found',
               textAlign: TextAlign.center,
               style: const TextStyle(
                 color: AppColors.blanc,
@@ -719,7 +719,7 @@ class _ErrorState extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             const Text(
-              'Erreur de chargement',
+              'Loading error',
               style: TextStyle(
                 color: AppColors.blanc,
                 fontSize: 17,
@@ -862,7 +862,7 @@ class _FiltersSheet extends ConsumerWidget {
               ),
             ),
             const Text(
-              'Filtres',
+              'Filters',
               style: TextStyle(
                 color: AppColors.blanc,
                 fontSize: 20,

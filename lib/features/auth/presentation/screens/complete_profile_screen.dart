@@ -123,7 +123,7 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen>
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Échec de l\'upload'),
+            content: Text('Upload failed'),
             backgroundColor: AppColors.error,
           ),
         );
@@ -144,7 +144,7 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen>
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Échec de la sauvegarde'),
+            content: Text('Save failed'),
             backgroundColor: AppColors.error,
           ),
         );
@@ -282,7 +282,7 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen>
                 controller: _displayNameCtrl,
                 style: const TextStyle(color: AppColors.blanc, fontSize: 15),
                 decoration: InputDecoration(
-                  hintText: 'Nom complet',
+                  hintText: 'Full name',
                   hintStyle: const TextStyle(
                     color: AppColors.gris,
                     fontSize: 15,
@@ -393,7 +393,7 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen>
                             ),
                           )
                         : const Text(
-                            'Enregistrer',
+                            'Save',
                             style: TextStyle(
                               fontSize: 17,
                               fontWeight: FontWeight.w600,

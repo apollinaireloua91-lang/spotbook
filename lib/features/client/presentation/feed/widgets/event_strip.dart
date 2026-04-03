@@ -38,7 +38,7 @@ class EventStrip extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    eventName ?? 'Événement',
+                    eventName ?? 'Event',
                     style: const TextStyle(
                       color: AppColors.blanc,
                       fontSize: 12,

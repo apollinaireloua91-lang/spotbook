@@ -41,26 +41,26 @@ LinearGradient _categoryGradient(String? category) {
       return (
         bg: AppColors.success.withAlpha(38),
         fg: AppColors.success,
-        label: '✓ Confirmé',
+        label: '✓ Confirmed',
       );
     case 'pending_payment':
       return (
         bg: AppColors.violet.withAlpha(38),
         fg: AppColors.violetClair,
-        label: '⏳ En attente',
+        label: '⏳ Pending',
       );
     case 'completed':
       return (
         bg: AppColors.gris.withAlpha(38),
         fg: AppColors.gris,
-        label: '✓ Terminé',
+        label: '✓ Completed',
       );
     case 'cancelled_full_refund':
     case 'cancelled_no_refund':
       return (
         bg: AppColors.error.withAlpha(38),
         fg: AppColors.error,
-        label: '✗ Annulé',
+        label: '✗ Cancelled',
       );
     default:
       return (
@@ -223,7 +223,7 @@ class _ReservationCardState extends State<ReservationCard>
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          b.proName ?? 'Professionnel',
+                          b.proName ?? 'Professional',
                           style: const TextStyle(
                             color: AppColors.blanc,
                             fontWeight: FontWeight.w700,
@@ -300,7 +300,7 @@ class _ReservationCardState extends State<ReservationCard>
                         borderRadius: BorderRadius.circular(6),
                       ),
                       child: Text(
-                        'Acompte : ${b.depositAmount.toStringAsFixed(0)} \$',
+                        'Deposit: ${b.depositAmount.toStringAsFixed(0)} \$',
                         style: const TextStyle(
                           color: AppColors.warning,
                           fontSize: 11,
@@ -319,7 +319,7 @@ class _ReservationCardState extends State<ReservationCard>
                   children: [
                     Expanded(
                       child: _ActionButton(
-                        label: 'Annuler',
+                        label: 'Cancel',
                         bgColor: AppColors.rose.withAlpha(30),
                         textColor: AppColors.roseClair,
                         onTap: widget.onCancel ?? () {
@@ -331,7 +331,7 @@ class _ReservationCardState extends State<ReservationCard>
                     const SizedBox(width: 10),
                     Expanded(
                       child: _ActionButton(
-                        label: '💬 Contacter',
+                        label: '💬 Message',
                         bgColor: AppColors.violet,
                         textColor: AppColors.blanc,
                         onTap: widget.onContact,
@@ -347,7 +347,7 @@ class _ReservationCardState extends State<ReservationCard>
                   children: [
                     Expanded(
                       child: _ActionButton(
-                        label: '⭐ Laisser un avis',
+                        label: '⭐ Leave review',
                         bgColor: AppColors.violet.withAlpha(20),
                         textColor: AppColors.violetClair,
                         onTap: widget.onReview ?? () {
@@ -363,7 +363,7 @@ class _ReservationCardState extends State<ReservationCard>
                     const SizedBox(width: 10),
                     Expanded(
                       child: _ActionButton(
-                        label: '🔄 Réserver',
+                        label: '🔄 Rebook',
                         bgColor: AppColors.surface,
                         textColor: AppColors.blanc,
                         borderColor: AppColors.border,
@@ -387,10 +387,10 @@ class _ReservationCardState extends State<ReservationCard>
     if (date == null) return '--/--';
     try {
       final parsed = DateTime.parse(date);
-      const days = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
+      const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
       const months = [
-        'jan', 'fév', 'mar', 'avr', 'mai', 'juin',
-        'juil', 'août', 'sep', 'oct', 'nov', 'déc',
+        'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+        'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
       ];
       return '${days[parsed.weekday - 1]} ${parsed.day} ${months[parsed.month - 1]}';
     } catch (_) {

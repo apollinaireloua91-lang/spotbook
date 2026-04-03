@@ -77,7 +77,7 @@ class _RefundRequestScreenState extends ConsumerState<RefundRequestScreen> {
         backgroundColor: AppColors.surface,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: const Text(
-          'Confirmer l\'annulation ?',
+          'Confirm cancellation?',
           style: TextStyle(color: AppColors.blanc),
         ),
         content: Text(
@@ -119,8 +119,8 @@ class _RefundRequestScreenState extends ConsumerState<RefundRequestScreen> {
           backgroundColor: AppColors.surface,
           content: Text(
             isRefunded
-                ? 'Réservation annulée — remboursement en cours.'
-                : 'Réservation annulée — aucun remboursement (< 48h).',
+                ? 'Booking cancelled — refund in progress.'
+                : 'Booking cancelled — no refund (< 48h).',
             style: const TextStyle(color: AppColors.blanc),
           ),
         ),
@@ -133,7 +133,7 @@ class _RefundRequestScreenState extends ConsumerState<RefundRequestScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             backgroundColor: AppColors.error,
-            content: Text('Une erreur est survenue. Veuillez réessayer.',
+            content: Text('An error occurred. Please try again.',
                 style: TextStyle(color: AppColors.blanc)),
           ),
         );
@@ -148,7 +148,7 @@ class _RefundRequestScreenState extends ConsumerState<RefundRequestScreen> {
       appBar: AppBar(
         backgroundColor: AppColors.fond,
         leading: Semantics(
-          label: 'Retour',
+          label: 'Back',
           child: IconButton(
             icon: const Icon(Icons.arrow_back_ios, color: AppColors.blanc,
                 size: 20),
@@ -169,7 +169,7 @@ class _RefundRequestScreenState extends ConsumerState<RefundRequestScreen> {
                   CircularProgressIndicator(color: AppColors.violet))
           : _booking == null
               ? const Center(
-                  child: Text('Réservation introuvable',
+                  child: Text('Booking not found',
                       style: TextStyle(color: AppColors.gris)))
               : _buildContent(_booking!),
     );
@@ -297,7 +297,7 @@ class _RefundRequestScreenState extends ConsumerState<RefundRequestScreen> {
                     Text(
                       isFullRefund
                           ? 'Remboursement complet'
-                          : 'Aucun remboursement',
+                          : 'No refund',
                       style: TextStyle(
                         color: isFullRefund
                             ? AppColors.success
@@ -367,7 +367,7 @@ class _RefundRequestScreenState extends ConsumerState<RefundRequestScreen> {
 
           // Submit button
           SpotbookButton(
-            label: 'Annuler la réservation',
+            label: 'Cancel booking',
             variant: SpotbookButtonVariant.destructive,
             isLoading: _isSubmitting,
             onPressed: _isSubmitting ? null : _submitRefund,

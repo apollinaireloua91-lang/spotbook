@@ -75,7 +75,7 @@ class _SavedPostsScreenState extends ConsumerState<SavedPostsScreen> {
       appBar: AppBar(
         backgroundColor: AppColors.fond,
         leading: Semantics(
-          label: 'Retour',
+          label: 'Back',
           child: IconButton(
             icon: const Icon(Icons.arrow_back_ios, color: AppColors.blanc,
                 size: 20),
@@ -193,12 +193,12 @@ class _SavedPostsScreenState extends ConsumerState<SavedPostsScreen> {
               color: AppColors.gris.withValues(alpha: 0.5), size: 56),
           const SizedBox(height: 12),
           const Text(
-            'Aucun post sauvegardé',
+            'No saved posts',
             style: TextStyle(color: AppColors.gris, fontSize: 15),
           ),
           const SizedBox(height: 4),
           const Text(
-            'Appuyez sur l\'icône signet pour sauvegarder des vidéos',
+            'Tap the bookmark icon to save videos',
             style: TextStyle(color: AppColors.grisInactif, fontSize: 13),
             textAlign: TextAlign.center,
           ),

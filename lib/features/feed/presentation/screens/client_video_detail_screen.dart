@@ -393,7 +393,7 @@ class _CommentsSheetState extends ConsumerState<_CommentsSheet> {
           const Padding(
             padding: EdgeInsets.all(16),
             child: Text(
-              'Commentaires',
+              'Comments',
               style: TextStyle(
                 color: AppColors.blanc,
                 fontWeight: FontWeight.bold,
@@ -414,7 +414,7 @@ class _CommentsSheetState extends ConsumerState<_CommentsSheet> {
               data: (comments) {
                 if (comments.isEmpty) {
                   return const Center(
-                    child: Text('Aucun commentaire',
+                    child: Text('No comments',
                         style: TextStyle(color: AppColors.gris)),
                   );
                 }
@@ -482,7 +482,7 @@ class _CommentsSheetState extends ConsumerState<_CommentsSheet> {
                       style: const TextStyle(
                           color: AppColors.blanc, fontSize: 14),
                       decoration: InputDecoration(
-                        hintText: 'Ajouter un commentaire…',
+                        hintText: 'Add a comment...',
                         hintStyle: TextStyle(
                             color: AppColors.gris.withAlpha(128)),
                         border: InputBorder.none,

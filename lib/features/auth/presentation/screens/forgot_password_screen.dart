@@ -62,7 +62,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
       appBar: AppBar(
         backgroundColor: AppColors.fond,
         leading: Semantics(
-          label: 'Retour',
+          label: 'Back',
           child: IconButton(
             icon: const Icon(Icons.arrow_back_ios,
                 color: AppColors.blanc, size: 20),
@@ -84,7 +84,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
               children: [
                 const SizedBox(height: 24),
                 const Text(
-                  'Mot de passe oublié',
+                  'Forgot password',
                   style: TextStyle(
                     color: AppColors.blanc,
                     fontSize: 28,
@@ -187,12 +187,12 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                       padding: EdgeInsets.symmetric(vertical: 16),
                       child: Text.rich(
                         TextSpan(
-                          text: 'Vous vous souvenez ? ',
+                          text: 'Remember it? ',
                           style:
                               TextStyle(color: AppColors.gris, fontSize: 14),
                           children: [
                             TextSpan(
-                              text: 'Se connecter',
+                              text: 'Sign in',
                               style: TextStyle(
                                 color: AppColors.violetClair,
                                 fontWeight: FontWeight.w600,

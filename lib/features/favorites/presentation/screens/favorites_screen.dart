@@ -33,7 +33,7 @@ class FavoritesScreen extends ConsumerWidget {
               },
             ),
           ),
-          title: const Text('Favoris',
+          title: const Text('Favorites',
               style: TextStyle(color: AppColors.blanc, fontWeight: FontWeight.bold)),
           centerTitle: true,
           bottom: const TabBar(
@@ -42,7 +42,7 @@ class FavoritesScreen extends ConsumerWidget {
             unselectedLabelColor: AppColors.gris,
             tabs: [
               Tab(text: 'Pros'),
-              Tab(text: 'Événements'),
+              Tab(text: 'Events'),
             ],
           ),
         ),
@@ -53,13 +53,13 @@ class FavoritesScreen extends ConsumerWidget {
                   _FavoritesList(
                     favorites: state.proFavorites,
                     emptyIcon: Icons.person_outline,
-                    emptyLabel: 'Aucun pro en favoris',
+                    emptyLabel: 'No favorite pros',
                     onTap: (fav) => context.push('/pro/${fav.targetId}'),
                   ),
                   _FavoritesList(
                     favorites: state.eventFavorites,
                     emptyIcon: Icons.event_outlined,
-                    emptyLabel: 'Aucun événement en favoris',
+                    emptyLabel: 'No favorite events',
                     onTap: (fav) => context.push('/event/${fav.targetId}'),
                   ),
                 ],
@@ -179,7 +179,7 @@ class _FavoriteCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    favorite.targetName ?? 'Sans nom',
+                    favorite.targetName ?? 'Unnamed',
                     style: const TextStyle(color: AppColors.blanc, fontSize: 15, fontWeight: FontWeight.w600),
                   ),
                   if (favorite.targetSubtitle != null)

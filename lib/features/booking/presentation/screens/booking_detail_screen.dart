@@ -130,11 +130,11 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Annuler', style: TextStyle(color: AppColors.gris)),
+            child: const Text('Cancel', style: TextStyle(color: AppColors.gris)),
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Confirmer', style: TextStyle(color: AppColors.blanc)),
+            child: const Text('Confirm', style: TextStyle(color: AppColors.blanc)),
           ),
         ],
       ),
@@ -183,7 +183,7 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
         backgroundColor: AppColors.surface,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: const Text(
-          'Confirmer le paiement du solde ?',
+          'Confirm balance payment?',
           style: TextStyle(color: AppColors.blanc),
         ),
         content: Text(
@@ -193,11 +193,11 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Annuler', style: TextStyle(color: AppColors.gris)),
+            child: const Text('Cancel', style: TextStyle(color: AppColors.gris)),
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Confirmer', style: TextStyle(color: AppColors.blanc)),
+            child: const Text('Confirm', style: TextStyle(color: AppColors.blanc)),
           ),
         ],
       ),
@@ -250,7 +250,7 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
           const SnackBar(
             backgroundColor: AppColors.surface,
             content: Text(
-              'Réservation acceptée',
+              'Booking accepted',
               style: TextStyle(color: AppColors.blanc),
             ),
           ),
@@ -294,7 +294,7 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
         data: (booking) {
           if (booking == null) {
             return _ErrorScaffold(
-              message: 'Réservation introuvable',
+              message: 'Booking not found',
               onBack: () => context.pop(),
             );
           }
@@ -901,7 +901,7 @@ class _Actions extends StatelessWidget {
           if (booking.status == 'confirmed') ...[
             const SizedBox(height: 12),
             SpotbookButton.destructive(
-              label: 'Annuler le RDV',
+              label: 'Cancel booking',
               onPressed: busy
                   ? null
                   : () {
@@ -934,7 +934,7 @@ class _Actions extends StatelessWidget {
         if (booking.isUpcoming) ...[
           const SizedBox(height: 12),
           SpotbookButton.destructive(
-            label: 'Annuler le RDV',
+            label: 'Cancel booking',
             onPressed: busy
                 ? null
                 : () {

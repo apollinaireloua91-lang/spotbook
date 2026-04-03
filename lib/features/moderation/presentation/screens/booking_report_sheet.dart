@@ -31,12 +31,12 @@ class _BookingReportSheet extends ConsumerStatefulWidget {
 
 class _BookingReportSheetState extends ConsumerState<_BookingReportSheet> {
   static const _reasons = [
-    'Comportement inapproprié',
+    'Inappropriate behavior',
     'No-show / absence',
-    'Problème de paiement ou remboursement',
-    'Prestation non conforme à l’annonce',
-    'Harcèlement ou menaces',
-    'Autre',
+    'Payment or refund issue',
+    'Service did not match listing',
+    'Harassment or threats',
+    'Other',
   ];
 
   final _detailsCtrl = TextEditingController();
@@ -77,7 +77,7 @@ class _BookingReportSheetState extends ConsumerState<_BookingReportSheet> {
               ),
               const SizedBox(height: 20),
               const Text(
-                'Signaler ce rendez-vous',
+                'Report this booking',
                 style: TextStyle(
                   color: AppColors.blanc,
                   fontSize: 20,
@@ -86,7 +86,7 @@ class _BookingReportSheetState extends ConsumerState<_BookingReportSheet> {
               ),
               const SizedBox(height: 4),
               const Text(
-                'Pourquoi signalez-vous ce RDV ? Les détails aident l’équipe de modération.',
+                'Why are you reporting this booking? Details help the moderation team.',
                 style: TextStyle(color: AppColors.gris, fontSize: 14, height: 1.35),
               ),
               const SizedBox(height: 16),
@@ -122,7 +122,7 @@ class _BookingReportSheetState extends ConsumerState<_BookingReportSheet> {
               }),
               const SizedBox(height: 12),
               const Text(
-                'Précisions (optionnel, max 500 caractères)',
+                'Details (optional, max 500 characters)',
                 style: TextStyle(color: AppColors.gris, fontSize: 12, fontWeight: FontWeight.w600),
               ),
               const SizedBox(height: 8),
@@ -147,7 +147,7 @@ class _BookingReportSheetState extends ConsumerState<_BookingReportSheet> {
                     borderRadius: BorderRadius.circular(12),
                     borderSide: const BorderSide(color: AppColors.blanc, width: 1),
                   ),
-                  hintText: 'Contexte, dates, échanges…',
+                  hintText: 'Context, dates, exchanges…',
                   hintStyle: TextStyle(color: AppColors.gris.withValues(alpha: 0.7)),
                   counterStyle: const TextStyle(color: AppColors.gris),
                 ),
@@ -173,7 +173,7 @@ class _BookingReportSheetState extends ConsumerState<_BookingReportSheet> {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
                                   content: Text(
-                                    'Signalement envoyé. Merci, examen sous 24 h.',
+                                    'Report submitted. Thank you, review within 24h.',
                                   ),
                                   backgroundColor: AppColors.success,
                                 ),
@@ -206,7 +206,7 @@ class _BookingReportSheetState extends ConsumerState<_BookingReportSheet> {
                           ),
                         )
                       : const Text(
-                          'Envoyer le signalement',
+                          'Submit report',
                           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                         ),
                 ),

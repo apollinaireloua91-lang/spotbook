@@ -115,7 +115,7 @@ class _ClientNotifSheetState extends ConsumerState<ClientNotifSheet>
                                 ),
                                 const SizedBox(height: 10),
                                 const Text(
-                                  'Aucune notification',
+                                  'No notifications',
                                   style: TextStyle(
                                     color: AppColors.gris,
                                     fontSize: 13,

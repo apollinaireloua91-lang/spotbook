@@ -20,14 +20,14 @@ class BookingCancellationScreen extends ConsumerWidget {
       appBar: AppBar(
         backgroundColor: AppColors.fond,
         leading: Semantics(
-          label: 'Retour',
+          label: 'Back',
           child: IconButton(
             icon: const Icon(Icons.arrow_back, color: AppColors.blanc),
             onPressed: () => context.pop(),
           ),
         ),
         title: const Text(
-          'Annuler le RDV',
+          'Cancel booking',
           style: TextStyle(color: AppColors.blanc, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
@@ -60,7 +60,7 @@ class BookingCancellationScreen extends ConsumerWidget {
               icon: Icons.cancel_outlined,
               color: AppColors.error,
               text:
-                  'Moins de 48h avant le RDV : le pro conserve l\'acompte. Aucun remboursement.',
+                  'Less than 48h before appointment: the pro retains the deposit. No refund.',
             ),
             const SizedBox(height: 32),
             Container(
@@ -114,7 +114,7 @@ class BookingCancellationScreen extends ConsumerWidget {
                         child: CircularProgressIndicator(
                             color: AppColors.blanc, strokeWidth: 2),
                       )
-                    : const Text('Confirmer l\'annulation',
+                    : const Text('Confirm cancellation',
                         style: TextStyle(fontWeight: FontWeight.bold)),
               ),
             ),
@@ -130,7 +130,7 @@ class BookingCancellationScreen extends ConsumerWidget {
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12)),
                 ),
-                child: const Text('Retour'),
+                child: const Text('Back'),
               ),
             ),
           ],

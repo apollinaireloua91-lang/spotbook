@@ -112,7 +112,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final email = _emailCtrl.text.trim();
     final password = _passwordCtrl.text;
     if (email.isEmpty || password.isEmpty) {
-      _showError('Veuillez remplir tous les champs.');
+      _showError('Please fill in all fields.');
       return;
     }
     try {
@@ -217,7 +217,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               // Password
               _AuthField(
                 controller: _passwordCtrl,
-                hint: 'Mot de passe',
+                hint: 'Password',
                 prefixIcon: Icons.lock_outline_rounded,
                 obscureText: s.obscurePassword,
                 textInputAction: TextInputAction.done,
@@ -241,7 +241,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 child: GestureDetector(
                   onTap: () => context.push('/forgot-password'),
                   child: const Text(
-                    'Mot de passe oublié ?',
+                    'Forgot password?',
                     style: TextStyle(
                       color: AppColors.violetClair,
                       fontSize: 13,
@@ -254,7 +254,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
               // Sign in button (gradient)
               _GradientButton(
-                label: 'Se connecter',
+                label: 'Sign in',
                 isLoading: s.isLoading,
                 onPressed: anyLoading ? null : _signIn,
               ),
@@ -272,7 +272,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: Text(
-                      'ou continuer avec',
+                      'or continue with',
                       style: TextStyle(
                         color: AppColors.gris.withAlpha(180),
                         fontSize: 13,
@@ -291,7 +291,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
               // Google button
               _SocialButton(
-                label: 'Continuer avec Google',
+                label: 'Continue with Google',
                 icon: Icons.g_mobiledata_rounded,
                 iconColor: AppColors.fond,
                 backgroundColor: AppColors.blanc,
@@ -304,7 +304,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               // Apple button (iOS only)
               if (Platform.isIOS)
                 _SocialButton(
-                  label: 'Continuer avec Apple',
+                  label: 'Continue with Apple',
                   icon: Icons.apple_rounded,
                   iconColor: AppColors.blanc,
                   backgroundColor: AppColors.surface,
@@ -312,7 +312,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   borderColor: AppColors.border,
                   onPressed: () {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Apple Sign In — bientôt disponible (v1.1)'), backgroundColor: AppColors.surface),
+                      const SnackBar(content: Text('Apple Sign In — coming soon (v1.1)'), backgroundColor: AppColors.surface),
                     );
                   },
                 ),
@@ -325,11 +325,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   onTap: anyLoading ? null : () => context.go('/select-account-type'),
                   child: RichText(
                     text: const TextSpan(
-                      text: 'Pas de compte ? ',
+                      text: 'No account? ',
                       style: TextStyle(color: AppColors.gris, fontSize: 14),
                       children: [
                         TextSpan(
-                          text: "S'inscrire",
+                          text: 'Sign up',
                           style: TextStyle(
                             color: AppColors.violetClair,
                             fontWeight: FontWeight.w600,

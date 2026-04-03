@@ -27,7 +27,7 @@ class TicketDetailScreen extends ConsumerWidget {
       appBar: AppBar(
         backgroundColor: AppColors.fond,
         leading: Semantics(
-          label: 'Retour',
+          label: 'Back',
           child: IconButton(
             icon: const Icon(Icons.arrow_back_ios, color: AppColors.blanc, size: 20),
             onPressed: () {
@@ -81,7 +81,7 @@ class TicketDetailScreen extends ConsumerWidget {
               ),
             const SizedBox(height: 20),
             Text(
-              ticket.eventTitle ?? 'Événement',
+              ticket.eventTitle ?? 'Event',
               style: const TextStyle(color: AppColors.blanc, fontSize: 22, fontWeight: FontWeight.bold),
               textAlign: TextAlign.center,
             ),
@@ -165,14 +165,14 @@ class TicketDetailScreen extends ConsumerWidget {
                   onPressed: () {
                     HapticFeedback.mediumImpact();
                     Add2Calendar.addEvent2Cal(Event(
-                      title: ticket.eventTitle ?? 'Événement Spotbook',
+                      title: ticket.eventTitle ?? 'Spotbook Event',
                       startDate: ticket.eventDate!,
                       endDate: ticket.eventDate!.add(const Duration(hours: 3)),
                       location: ticket.eventLocation,
                     ));
                   },
                   icon: const Icon(Icons.calendar_month, color: AppColors.blanc, size: 20),
-                  label: const Text('Ajouter au calendrier',
+                  label: const Text('Add to calendar',
                       style: TextStyle(color: AppColors.blanc, fontWeight: FontWeight.w500)),
                   style: OutlinedButton.styleFrom(
                     side: const BorderSide(color: AppColors.border),
