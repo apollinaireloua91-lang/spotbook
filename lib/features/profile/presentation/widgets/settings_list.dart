@@ -64,10 +64,21 @@ class _SettingsItemTile extends StatefulWidget {
 class _SettingsItemTileState extends State<_SettingsItemTile> {
   double _chevronOffset = 0;
 
+  static const _iconMap = <String, IconData>{
+    'notifications_outlined': Icons.notifications_outlined,
+    'credit_card': Icons.credit_card,
+    'lock_outline': Icons.lock_outline,
+    'language': Icons.language,
+    'star_outline': Icons.star_outline,
+    'rocket_launch': Icons.rocket_launch,
+    'logout': Icons.logout,
+  };
+
   @override
   Widget build(BuildContext context) {
     final textColor =
         widget.item.textColor ?? AppColors.grisClair;
+    final iconData = _iconMap[widget.item.icon];
 
     return GestureDetector(
       onTap: () {
@@ -82,10 +93,13 @@ class _SettingsItemTileState extends State<_SettingsItemTile> {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         child: Row(
           children: [
-            Text(
-              widget.item.icon,
-              style: const TextStyle(fontSize: 16),
-            ),
+            if (iconData != null)
+              Icon(iconData, size: 18, color: textColor)
+            else
+              Text(
+                widget.item.icon,
+                style: const TextStyle(fontSize: 16),
+              ),
             const SizedBox(width: 12),
             Expanded(
               child: Text(
@@ -102,13 +116,10 @@ class _SettingsItemTileState extends State<_SettingsItemTile> {
             AnimatedContainer(
               duration: const Duration(milliseconds: 150),
               transform: Matrix4.translationValues(_chevronOffset, 0, 0),
-              child: Text(
-                '›',
-                style: TextStyle(
-                  color: AppColors.grisInactif,
-                  fontSize: 18,
-                  fontWeight: FontWeight.w300,
-                ),
+              child: const Icon(
+                Icons.chevron_right,
+                size: 18,
+                color: AppColors.grisInactif,
               ),
             ),
           ],

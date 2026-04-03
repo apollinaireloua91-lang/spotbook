@@ -57,38 +57,43 @@ class _ProfileHeroState extends State<ProfileHero>
             );
           },
           child: Container(
+            width: 90,
+            height: 90,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              border: Border.all(color: AppColors.surface, width: 3),
+              gradient: AppColors.gradientAccent,
               boxShadow: [
                 BoxShadow(
-                  color: AppColors.violet.withAlpha(40),
-                  blurRadius: 20,
+                  color: AppColors.violet.withAlpha(60),
+                  blurRadius: 24,
+                  spreadRadius: 4,
+                ),
+                BoxShadow(
+                  color: AppColors.rose.withAlpha(30),
+                  blurRadius: 32,
                   spreadRadius: 2,
                 ),
               ],
             ),
-            child: Container(
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(color: AppColors.violet, width: 2),
-              ),
-              child: CircleAvatar(
-                radius: 42,
-                backgroundColor: AppColors.surfaceAlt,
-                backgroundImage: p.avatarUrl != null
-                    ? CachedNetworkImageProvider(p.avatarUrl!)
-                    : null,
-                child: p.avatarUrl == null
-                    ? ShaderMask(
-                        shaderCallback: (bounds) =>
-                            AppColors.gradientAccent.createShader(bounds),
-                        child: const Text(
-                          '😎',
-                          style: TextStyle(fontSize: 36),
-                        ),
-                      )
-                    : null,
+            child: Padding(
+              padding: const EdgeInsets.all(3),
+              child: Container(
+                decoration: const BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: AppColors.fond,
+                ),
+                padding: const EdgeInsets.all(2),
+                child: CircleAvatar(
+                  radius: 42,
+                  backgroundColor: AppColors.surfaceAlt,
+                  backgroundImage: p.avatarUrl != null
+                      ? CachedNetworkImageProvider(p.avatarUrl!)
+                      : null,
+                  child: p.avatarUrl == null
+                      ? const Icon(Icons.person,
+                          size: 38, color: AppColors.gris)
+                      : null,
+                ),
               ),
             ),
           ),
@@ -96,14 +101,15 @@ class _ProfileHeroState extends State<ProfileHero>
 
         const SizedBox(height: 14),
 
-        // Name
+        // Name — Clash Display substitute (DM Sans bold)
         Text(
           p.fullName,
           textAlign: TextAlign.center,
           style: GoogleFonts.dmSans(
             color: AppColors.blanc,
-            fontSize: 20,
-            fontWeight: FontWeight.w700,
+            fontSize: 22,
+            fontWeight: FontWeight.w800,
+            letterSpacing: -0.3,
           ),
         ),
 

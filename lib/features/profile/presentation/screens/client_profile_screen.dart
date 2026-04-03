@@ -116,7 +116,7 @@ class _ProfileBody extends ConsumerWidget {
                 children: [
                   Center(
                     child: Text(
-                      'Mon Profil',
+                      'My Profile',
                       style: GoogleFonts.dmSans(
                         color: AppColors.blanc,
                         fontSize: 16,
@@ -165,7 +165,7 @@ class _ProfileBody extends ConsumerWidget {
               error: (_, __) => const Padding(
                 padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 child: Text(
-                  'Impossible de charger les statistiques',
+                  'Unable to load stats',
                   style: TextStyle(color: AppColors.gris, fontSize: 12),
                   textAlign: TextAlign.center,
                 ),
@@ -194,13 +194,11 @@ class _ProfileBody extends ConsumerWidget {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(
-                          '✏️',
-                          style: TextStyle(fontSize: 14),
-                        ),
+                        Icon(Icons.edit_outlined,
+                            size: 16, color: AppColors.blanc),
                         SizedBox(width: 6),
                         Text(
-                          'Modifier mon profil',
+                          'Edit profile',
                           style: TextStyle(
                             color: AppColors.blanc,
                             fontSize: 14,
@@ -240,7 +238,7 @@ class _ProfileBody extends ConsumerWidget {
             Padding(
               padding: const EdgeInsets.only(left: 16, bottom: 10),
               child: Text(
-                'Paramètres',
+                'Settings',
                 style: GoogleFonts.dmSans(
                   color: AppColors.blanc,
                   fontSize: 14,
@@ -278,7 +276,7 @@ class _FavoriteProsList extends StatelessWidget {
           child: Row(
             children: [
               Text(
-                'Mes Pros favoris',
+                'My favorite Pros',
                 style: GoogleFonts.dmSans(
                   color: AppColors.blanc,
                   fontSize: 14,
@@ -289,7 +287,7 @@ class _FavoriteProsList extends StatelessWidget {
               GestureDetector(
                 onTap: () => context.push('/favorites'),
                 child: Text(
-                  'Voir tout',
+                  'See all',
                   style: GoogleFonts.dmSans(
                     color: AppColors.violetClair,
                     fontSize: 12,
@@ -403,8 +401,8 @@ class _RecentHistory extends StatelessWidget {
     try {
       final d = DateTime.parse(dateStr);
       const months = [
-        'jan', 'fév', 'mar', 'avr', 'mai', 'juin',
-        'juil', 'août', 'sep', 'oct', 'nov', 'déc',
+        'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+        'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
       ];
       return '${d.day} ${months[d.month - 1]}';
     } catch (_) {
@@ -422,7 +420,7 @@ class _RecentHistory extends StatelessWidget {
           child: Row(
             children: [
               Text(
-                'Historique récent',
+                'Recent history',
                 style: GoogleFonts.dmSans(
                   color: AppColors.blanc,
                   fontSize: 14,
@@ -434,7 +432,7 @@ class _RecentHistory extends StatelessWidget {
                 builder: (ctx) => GestureDetector(
                   onTap: () => ctx.push('/client/bookings'),
                   child: Text(
-                    'Voir tout',
+                    'See all',
                     style: GoogleFonts.dmSans(
                       color: AppColors.violetClair,
                       fontSize: 12,
@@ -524,28 +522,28 @@ class _SettingsSection extends StatelessWidget {
     return SettingsList(
       items: [
         SettingsItemData(
-          icon: '🔔',
+          icon: 'notifications_outlined',
           label: 'Notifications',
           onTap: () => context.push('/notification-settings'),
         ),
         SettingsItemData(
-          icon: '💳',
-          label: 'Paiement',
+          icon: 'credit_card',
+          label: 'Payment',
           onTap: () => context.push('/settings'),
         ),
         SettingsItemData(
-          icon: '🔒',
-          label: 'Confidentialité',
+          icon: 'lock_outline',
+          label: 'Privacy',
           onTap: () => context.push('/settings'),
         ),
         SettingsItemData(
-          icon: '🌍',
-          label: 'Langue',
+          icon: 'language',
+          label: 'Language',
           onTap: () => context.push('/language-settings'),
         ),
         SettingsItemData(
-          icon: '⭐',
-          label: 'Mes avis',
+          icon: 'star_outline',
+          label: 'My reviews',
           onTap: () => context.push('/favorites'),
         ),
       ],
@@ -565,15 +563,15 @@ class _SpecialActionsSection extends ConsumerWidget {
     return SettingsList(
       items: [
         SettingsItemData(
-          icon: '🚀',
-          label: 'Devenir Pro',
+          icon: 'rocket_launch',
+          label: 'Become a Pro',
           textColor: AppColors.violetClair,
           isSpecial: true,
           onTap: () => BecomeProSheet.show(context),
         ),
         SettingsItemData(
-          icon: '🚪',
-          label: 'Se déconnecter',
+          icon: 'logout',
+          label: 'Log out',
           textColor: AppColors.roseClair,
           isSpecial: true,
           onTap: () => _showLogoutDialog(context),
@@ -591,7 +589,7 @@ class _SpecialActionsSection extends ConsumerWidget {
           borderRadius: BorderRadius.circular(16),
         ),
         title: const Text(
-          'Se déconnecter',
+          'Log out',
           style: TextStyle(
             color: AppColors.blanc,
             fontSize: 17,
@@ -599,14 +597,14 @@ class _SpecialActionsSection extends ConsumerWidget {
           ),
         ),
         content: const Text(
-          'Voulez-vous vraiment vous déconnecter ?',
+          'Are you sure you want to log out?',
           style: TextStyle(color: AppColors.gris, fontSize: 14),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(),
             child: const Text(
-              'Annuler',
+              'Cancel',
               style: TextStyle(color: AppColors.gris),
             ),
           ),
@@ -617,7 +615,7 @@ class _SpecialActionsSection extends ConsumerWidget {
               if (context.mounted) context.go('/login');
             },
             child: const Text(
-              'Déconnexion',
+              'Log out',
               style: TextStyle(
                 color: AppColors.roseClair,
                 fontWeight: FontWeight.w600,
@@ -645,7 +643,7 @@ class _UnauthenticatedState extends StatelessWidget {
               color: AppColors.gris, size: 48),
           const SizedBox(height: 12),
           const Text(
-            'Non authentifié',
+            'Not signed in',
             style: TextStyle(color: AppColors.gris, fontSize: 16),
           ),
           const SizedBox(height: 16),
@@ -658,7 +656,7 @@ class _UnauthenticatedState extends StatelessWidget {
                 borderRadius: BorderRadius.circular(12),
               ),
               child: const Text(
-                'Se connecter',
+                'Sign in',
                 style: TextStyle(
                   color: AppColors.blanc,
                   fontWeight: FontWeight.w600,
@@ -808,7 +806,7 @@ class _ErrorState extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             const Text(
-              'Erreur de chargement',
+              'Loading error',
               style: TextStyle(
                 color: AppColors.blanc,
                 fontSize: 17,
@@ -817,7 +815,7 @@ class _ErrorState extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             const Text(
-              'Impossible de charger votre profil',
+              'Unable to load your profile',
               style: TextStyle(color: AppColors.gris, fontSize: 14),
             ),
             const SizedBox(height: 20),
@@ -833,7 +831,7 @@ class _ErrorState extends StatelessWidget {
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: const Text(
-                  'Réessayer',
+                  'Retry',
                   style: TextStyle(
                     color: AppColors.blanc,
                     fontWeight: FontWeight.w600,

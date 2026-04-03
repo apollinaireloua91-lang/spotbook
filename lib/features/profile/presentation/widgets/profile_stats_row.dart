@@ -32,13 +32,25 @@ class ProfileStatsRow extends StatelessWidget {
       child: IntrinsicHeight(
         child: Row(
           children: [
-            _StatItem(value: totalRdv, label: 'RDV'),
+            _StatItem(
+                value: totalRdv,
+                label: 'Appointments',
+                color: AppColors.violet),
             _Divider(),
-            _StatItem(value: totalFollowing, label: 'Pros suivis'),
+            _StatItem(
+                value: totalFollowing,
+                label: 'Following',
+                color: AppColors.violetClair),
             _Divider(),
-            _StatItem(value: totalEvents, label: 'Événements'),
+            _StatItem(
+                value: totalEvents,
+                label: 'Events',
+                color: AppColors.rose),
             _Divider(),
-            _StatItem(value: totalReviews, label: 'Avis'),
+            _StatItem(
+                value: totalReviews,
+                label: 'Reviews',
+                color: AppColors.warning),
           ],
         ),
       ),
@@ -47,10 +59,15 @@ class ProfileStatsRow extends StatelessWidget {
 }
 
 class _StatItem extends StatelessWidget {
-  const _StatItem({required this.value, required this.label});
+  const _StatItem({
+    required this.value,
+    required this.label,
+    required this.color,
+  });
 
   final int value;
   final String label;
+  final Color color;
 
   @override
   Widget build(BuildContext context) {
@@ -61,7 +78,7 @@ class _StatItem extends StatelessWidget {
           AnimatedCounter(
             value: value,
             style: GoogleFonts.dmSans(
-              color: AppColors.blanc,
+              color: color,
               fontSize: 18,
               fontWeight: FontWeight.w800,
             ),

@@ -187,7 +187,7 @@ class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
               ListTile(
                 contentPadding: EdgeInsets.zero,
                 leading: const Icon(Icons.flag_outlined, color: AppColors.blanc),
-                title: const Text('Signaler', style: TextStyle(color: AppColors.blanc)),
+                title: const Text('Report', style: TextStyle(color: AppColors.blanc)),
                 onTap: () {
                   Navigator.of(ctx).pop();
                   showReportSheet(
@@ -200,7 +200,7 @@ class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
               ListTile(
                 contentPadding: EdgeInsets.zero,
                 leading: const Icon(Icons.block, color: AppColors.error),
-                title: const Text('Bloquer ce pro', style: TextStyle(color: AppColors.error)),
+                title: const Text('Block this pro', style: TextStyle(color: AppColors.error)),
                 onTap: () {
                   Navigator.of(ctx).pop();
                   showBlockConfirmDialog(
@@ -317,7 +317,7 @@ class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
                               borderRadius: BorderRadius.circular(6),
                             ),
                             child: const Text(
-                              'Suivre',
+                              'Follow',
                               style: TextStyle(
                                 color: AppColors.blanc,
                                 fontSize: 12,
@@ -410,7 +410,7 @@ class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
                               color: AppColors.blanc, size: 14),
                           const SizedBox(width: 6),
                           Text(
-                            'Réserver${widget.video.servicePrice != null ? ' · ${widget.video.servicePrice!.toStringAsFixed(0)} \$' : ''}',
+                            'Book${widget.video.servicePrice != null ? ' · ${widget.video.servicePrice!.toStringAsFixed(0)} \$' : ''}',
                             style: const TextStyle(
                               color: AppColors.blanc,
                               fontSize: 13,
@@ -475,7 +475,7 @@ class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
                     const SizedBox(height: 18),
                     _ActionButton(
                       icon: Icons.reply,
-                      label: 'Partager',
+                      label: 'Share',
                       onTap: () {
                         showModalBottomSheet(
                           context: context,
@@ -493,7 +493,7 @@ class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
                         icon: widget.video.isSaved
                             ? Icons.bookmark
                             : Icons.bookmark_border,
-                        label: widget.video.isSaved ? 'Sauvé' : 'Sauver',
+                        label: widget.video.isSaved ? 'Saved' : 'Save',
                         color: widget.video.isSaved
                             ? AppColors.warning
                             : AppColors.blanc,
