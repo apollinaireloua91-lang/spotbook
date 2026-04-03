@@ -5,12 +5,14 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/widgets/address_autocomplete_field.dart';
+import '../../../catering/data/catering_repository.dart';
+import '../../../catering/domain/catering_models.dart';
 
 // ═════════════════════════════════════════════════════════════════════════════
-// TRAITEUR SOUMISSION BOTTOM SHEET — Full form with deposit preview
+// CATERING QUOTE REQUEST — English, dynamic forfaits from catering_forfaits
 // ═════════════════════════════════════════════════════════════════════════════
 
-/// Opens the Traiteur soumission form sheet.
+/// Opens the catering quote request form.
 void showTraiteurSoumissionSheet(BuildContext context, {required String proId}) {
   HapticFeedback.mediumImpact();
   showModalBottomSheet<void>(
@@ -36,53 +38,69 @@ class _SoumissionSheetState extends State<_SoumissionSheet> {
   final _locationCtrl = TextEditingController();
   final _notesCtrl = TextEditingController();
 
-  String _eventType = 'Mariage';
+  late final CateringRepository _repo;
+
+  String _eventType = 'Wedding';
   DateTime _date = DateTime.now().add(const Duration(days: 14));
   TimeOfDay _time = const TimeOfDay(hour: 18, minute: 0);
-  String _forfait = 'Essentiel 25\$';
   final Set<String> _dietaryPrefs = {};
   bool _isSubmitting = false;
 
+  // Dynamic forfaits loaded from Supabase
+  List<CateringForfait> _forfaits = [];
+  CateringForfait? _selectedForfait;
+  bool _loadingForfaits = true;
+
   static const _eventTypes = [
-    'Mariage',
-    'Anniversaire',
-    'Fête familiale',
+    'Wedding',
+    'Birthday',
     'Corporate',
     'Baby shower',
     'Graduation',
     'Gala',
-    'Autre',
-  ];
-
-  static const _forfaits = [
-    'Essentiel 25\$',
-    'Premium 45\$',
-    'Grand événement 38\$',
-    'Menu personnalisé',
+    'Other',
   ];
 
   static const _dietaryOptions = [
     '🥩 Standard',
-    '🥬 Végétarien',
-    '🌱 Végane',
-    '🚫 Sans gluten',
-    '🥜 Sans noix',
+    '🥬 Vegetarian',
+    '🌱 Vegan',
+    '🚫 Gluten-free',
+    '🥜 Nut-free',
     '🐟 Halal',
-    '✡️ Casher',
+    '✡️ Kosher',
   ];
 
-  double get _forfaitPrice {
-    if (_forfait.contains('25')) return 25;
-    if (_forfait.contains('45')) return 45;
-    if (_forfait.contains('38')) return 38;
-    return 0;
-  }
+  double get _forfaitPrice => _selectedForfait?.pricePerPerson ?? 0;
 
   int get _guestCount => int.tryParse(_guestsCtrl.text) ?? 0;
 
   double get _totalEstimate => _forfaitPrice * _guestCount;
 
-  double get _depositAmount => (_totalEstimate * 0.30 * 100).roundToDouble() / 100;
+  double get _depositAmount =>
+      (_totalEstimate * 0.30 * 100).roundToDouble() / 100;
+
+  @override
+  void initState() {
+    super.initState();
+    _repo = CateringRepository(Supabase.instance.client);
+    _loadForfaits();
+  }
+
+  Future<void> _loadForfaits() async {
+    try {
+      final forfaits = await _repo.getForfaits(widget.proId);
+      if (mounted) {
+        setState(() {
+          _forfaits = forfaits;
+          if (forfaits.isNotEmpty) _selectedForfait = forfaits.first;
+          _loadingForfaits = false;
+        });
+      }
+    } catch (_) {
+      if (mounted) setState(() => _loadingForfaits = false);
+    }
+  }
 
   @override
   void dispose() {
@@ -98,7 +116,7 @@ class _SoumissionSheetState extends State<_SoumissionSheet> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           backgroundColor: AppColors.error,
-          content: Text('Veuillez entrer le nombre d\'invités',
+          content: Text('Please enter the number of guests',
               style: TextStyle(color: AppColors.blanc)),
         ),
       );
@@ -110,23 +128,25 @@ class _SoumissionSheetState extends State<_SoumissionSheet> {
 
     try {
       final userId = Supabase.instance.client.auth.currentUser?.id;
-      await Supabase.instance.client.from('catering_submissions').insert({
-        'pro_id': widget.proId,
-        'client_id': userId,
-        'event_type': _eventType,
-        'guest_count': _guestCount,
-        'event_date': _date.toIso8601String(),
-        'event_time': '${_time.hour.toString().padLeft(2, '0')}:${_time.minute.toString().padLeft(2, '0')}',
-        'location': _locationCtrl.text,
-        'forfait': _forfait,
-        'budget': double.tryParse(_budgetCtrl.text),
-        'dietary_prefs': _dietaryPrefs.toList(),
-        'notes': _notesCtrl.text,
-        'estimated_total': _totalEstimate,
-        'deposit_amount': _depositAmount,
-        'deposit_percentage': 30,
-        'status': 'pending',
-      });
+      final timeStr =
+          '${_time.hour.toString().padLeft(2, '0')}:${_time.minute.toString().padLeft(2, '0')}';
+
+      await _repo.submitQuote(
+        proId: widget.proId,
+        clientId: userId ?? '',
+        eventType: _eventType,
+        guestCount: _guestCount,
+        eventDate: _date,
+        eventTime: timeStr,
+        location: _locationCtrl.text,
+        forfaitId: _selectedForfait?.id,
+        forfaitName: _selectedForfait?.name,
+        budget: double.tryParse(_budgetCtrl.text),
+        dietaryPrefs: _dietaryPrefs.toList(),
+        notes: _notesCtrl.text,
+        estimatedTotal: _totalEstimate,
+        depositAmount: _depositAmount,
+      );
 
       if (mounted) {
         Navigator.of(context).pop();
@@ -134,7 +154,7 @@ class _SoumissionSheetState extends State<_SoumissionSheet> {
           const SnackBar(
             backgroundColor: AppColors.success,
             content: Text(
-              '✅ Demande envoyée ! Réponse en 24-48h.',
+              'Quote request sent! Response in 24-48h.',
               style: TextStyle(color: AppColors.blanc),
             ),
           ),
@@ -145,7 +165,7 @@ class _SoumissionSheetState extends State<_SoumissionSheet> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             backgroundColor: AppColors.error,
-            content: Text('Erreur : $e',
+            content: Text('Error: $e',
                 style: const TextStyle(color: AppColors.blanc)),
           ),
         );
@@ -186,7 +206,7 @@ class _SoumissionSheetState extends State<_SoumissionSheet> {
             child: Row(
               children: [
                 Text(
-                  '📋 Demande de soumission',
+                  '📋 Request a Quote',
                   style: GoogleFonts.dmSans(
                     fontSize: 16,
                     fontWeight: FontWeight.w700,
@@ -195,7 +215,8 @@ class _SoumissionSheetState extends State<_SoumissionSheet> {
                 ),
                 const Spacer(),
                 IconButton(
-                  icon: const Icon(Icons.close, color: AppColors.gris, size: 20),
+                  icon: const Icon(Icons.close,
+                      color: AppColors.gris, size: 20),
                   onPressed: () => Navigator.of(context).pop(),
                 ),
               ],
@@ -207,7 +228,7 @@ class _SoumissionSheetState extends State<_SoumissionSheet> {
               padding: EdgeInsets.fromLTRB(20, 16, 20, 20 + bottomInset),
               children: [
                 // Event type
-                _buildLabel('Type d\'événement'),
+                _buildLabel('Event type'),
                 const SizedBox(height: 6),
                 _buildDropdown(
                   value: _eventType,
@@ -218,11 +239,11 @@ class _SoumissionSheetState extends State<_SoumissionSheet> {
                 const SizedBox(height: 16),
 
                 // Guest count
-                _buildLabel('Nombre d\'invités'),
+                _buildLabel('Number of guests'),
                 const SizedBox(height: 6),
                 _buildTextField(
                   controller: _guestsCtrl,
-                  hint: 'Ex: 50',
+                  hint: 'E.g. 50',
                   keyboardType: TextInputType.number,
                   onChanged: (_) => setState(() {}),
                 ),
@@ -237,32 +258,60 @@ class _SoumissionSheetState extends State<_SoumissionSheet> {
                 const SizedBox(height: 16),
 
                 // Time
-                _buildLabel('Heure'),
+                _buildLabel('Time'),
                 const SizedBox(height: 6),
                 _buildTimePicker(),
 
                 const SizedBox(height: 16),
 
                 // Location
-                _buildLabel('Lieu'),
+                _buildLabel('Location'),
                 const SizedBox(height: 6),
                 AddressAutocompleteField(
                   controller: _locationCtrl,
                   label: '',
-                  hint: 'Adresse ou salle',
+                  hint: 'Address or venue',
                   fillColor: AppColors.fond,
                 ),
 
                 const SizedBox(height: 16),
 
-                // Forfait
-                _buildLabel('Forfait'),
+                // Package (dynamic from catering_forfaits)
+                _buildLabel('Package'),
                 const SizedBox(height: 6),
-                _buildDropdown(
-                  value: _forfait,
-                  items: _forfaits,
-                  onChanged: (v) => setState(() => _forfait = v!),
-                ),
+                if (_loadingForfaits)
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 8),
+                    child: Center(
+                      child: SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(
+                          color: AppColors.catering,
+                          strokeWidth: 2,
+                        ),
+                      ),
+                    ),
+                  )
+                else if (_forfaits.isEmpty)
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 14, vertical: 12),
+                    decoration: BoxDecoration(
+                      color: AppColors.fond,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: AppColors.border),
+                    ),
+                    child: Text(
+                      'No packages available — custom quote',
+                      style: GoogleFonts.dmSans(
+                        fontSize: 13,
+                        color: AppColors.grisInactif,
+                      ),
+                    ),
+                  )
+                else
+                  _buildForfaitDropdown(),
 
                 const SizedBox(height: 16),
 
@@ -271,14 +320,14 @@ class _SoumissionSheetState extends State<_SoumissionSheet> {
                 const SizedBox(height: 6),
                 _buildTextField(
                   controller: _budgetCtrl,
-                  hint: 'Ex: 2000 \$',
+                  hint: 'E.g. \$2,000',
                   keyboardType: TextInputType.number,
                 ),
 
                 const SizedBox(height: 16),
 
                 // Dietary preferences
-                _buildLabel('Préférences alimentaires'),
+                _buildLabel('Dietary preferences'),
                 const SizedBox(height: 8),
                 _DietaryChips(
                   options: _dietaryOptions,
@@ -301,7 +350,7 @@ class _SoumissionSheetState extends State<_SoumissionSheet> {
                 const SizedBox(height: 6),
                 _buildTextField(
                   controller: _notesCtrl,
-                  hint: 'Détails, thème, demandes spéciales...',
+                  hint: 'Details, theme, special requests...',
                   maxLines: 3,
                 ),
 
@@ -310,7 +359,7 @@ class _SoumissionSheetState extends State<_SoumissionSheet> {
                 // Deposit preview
                 if (_guestCount > 0 && _forfaitPrice > 0)
                   _DepositPreview(
-                    forfait: _forfait,
+                    forfaitName: _selectedForfait?.name ?? '',
                     guestCount: _guestCount,
                     totalEstimate: _totalEstimate,
                     depositAmount: _depositAmount,
@@ -343,7 +392,7 @@ class _SoumissionSheetState extends State<_SoumissionSheet> {
                               ),
                             )
                           : Text(
-                              'Envoyer la demande de soumission',
+                              'Submit Quote Request',
                               style: GoogleFonts.dmSans(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w700,
@@ -443,6 +492,44 @@ class _SoumissionSheetState extends State<_SoumissionSheet> {
               .map((e) => DropdownMenuItem(value: e, child: Text(e)))
               .toList(),
           onChanged: onChanged,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildForfaitDropdown() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14),
+      decoration: BoxDecoration(
+        color: AppColors.fond,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppColors.border),
+      ),
+      child: DropdownButtonHideUnderline(
+        child: DropdownButton<String>(
+          value: _selectedForfait?.id,
+          isExpanded: true,
+          dropdownColor: AppColors.surface,
+          icon: const Icon(Icons.keyboard_arrow_down,
+              color: AppColors.gris, size: 20),
+          style: GoogleFonts.dmSans(
+            fontSize: 13,
+            color: AppColors.blanc,
+          ),
+          items: _forfaits.map((f) {
+            return DropdownMenuItem(
+              value: f.id,
+              child: Text(
+                '${f.name} — \$${f.pricePerPerson.toStringAsFixed(0)}/pers.',
+              ),
+            );
+          }).toList(),
+          onChanged: (id) {
+            setState(() {
+              _selectedForfait =
+                  _forfaits.firstWhere((f) => f.id == id);
+            });
+          },
         ),
       ),
     );
@@ -589,9 +676,7 @@ class _DietaryChips extends StatelessWidget {
               opt,
               style: GoogleFonts.dmSans(
                 fontSize: 11,
-                color: isSelected
-                    ? AppColors.cateringLight
-                    : AppColors.gris,
+                color: isSelected ? AppColors.cateringLight : AppColors.gris,
                 fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
               ),
             ),
@@ -608,13 +693,13 @@ class _DietaryChips extends StatelessWidget {
 
 class _DepositPreview extends StatelessWidget {
   const _DepositPreview({
-    required this.forfait,
+    required this.forfaitName,
     required this.guestCount,
     required this.totalEstimate,
     required this.depositAmount,
   });
 
-  final String forfait;
+  final String forfaitName;
   final int guestCount;
   final double totalEstimate;
   final double depositAmount;
@@ -632,12 +717,12 @@ class _DepositPreview extends StatelessWidget {
       ),
       child: Column(
         children: [
-          _PreviewLine(label: 'Forfait', value: forfait),
+          _PreviewLine(label: 'Package', value: forfaitName),
           const SizedBox(height: 6),
-          _PreviewLine(label: 'Invités', value: '$guestCount personnes'),
+          _PreviewLine(label: 'Guests', value: '$guestCount people'),
           const SizedBox(height: 6),
           _PreviewLine(
-            label: 'Total estimé',
+            label: 'Estimated total',
             value: '\$${totalEstimate.toStringAsFixed(0)}',
           ),
           const SizedBox(height: 8),
@@ -647,7 +732,7 @@ class _DepositPreview extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Dépôt 30%',
+                'Deposit 30%',
                 style: GoogleFonts.dmSans(
                   fontSize: 12,
                   fontWeight: FontWeight.w600,

@@ -10,11 +10,15 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/widgets/spotbook_avatar.dart';
 import '../../../../shared/widgets/spotbook_loading_shimmer.dart';
+import '../../../catering/data/catering_repository.dart';
+import '../../../catering/domain/catering_models.dart';
+import '../../../catering/presentation/widgets/catering_section_widgets.dart';
 import '../../../reviews/domain/review_model.dart';
 import '../../domain/entities/provider_profile_data.dart';
 import '../bloc/public_provider_profile_bloc.dart';
 import '../widgets/share_profile_modal.dart';
 import '../widgets/social_badge_widget.dart';
+import '../widgets/traiteur_soumission_sheet.dart';
 
 /// Pro public profile seen by clients — premium design with social links,
 /// video grid, services, reviews, and events tabs.
@@ -450,6 +454,15 @@ class _ReadyBody extends StatelessWidget {
             ],
           ),
         ),
+
+        // ── CATERING SECTION (conditional — Cuisine/Traiteur/Chef) ──
+        if (isCateringCategory(p.profession))
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
+              child: _ClientCateringSection(proId: p.id),
+            ),
+          ),
 
         // ── PINNED TAB BAR ──
         SliverPersistentHeader(
@@ -1641,6 +1654,118 @@ class _EventsTab extends StatelessWidget {
           ),
         );
       },
+    );
+  }
+}
+
+// ═════════════════════════════════════════════════════════════════════════════
+// CLIENT CATERING SECTION — shows menu, packages, gallery, quote CTA
+// ═════════════════════════════════════════════════════════════════════════════
+
+class _ClientCateringSection extends StatefulWidget {
+  const _ClientCateringSection({required this.proId});
+
+  final String proId;
+
+  @override
+  State<_ClientCateringSection> createState() => _ClientCateringSectionState();
+}
+
+class _ClientCateringSectionState extends State<_ClientCateringSection> {
+  late final CateringRepository _repo;
+  List<CateringMenuItem> _menuItems = [];
+  List<CateringForfait> _forfaits = [];
+  List<CateringGalleryItem> _gallery = [];
+  bool _loading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _repo = CateringRepository(Supabase.instance.client);
+    _loadData();
+  }
+
+  Future<void> _loadData() async {
+    try {
+      final results = await Future.wait([
+        _repo.getMenuItems(widget.proId),
+        _repo.getForfaits(widget.proId),
+        _repo.getGallery(widget.proId),
+      ]);
+      if (mounted) {
+        setState(() {
+          _menuItems = results[0] as List<CateringMenuItem>;
+          _forfaits = results[1] as List<CateringForfait>;
+          _gallery = results[2] as List<CateringGalleryItem>;
+          _loading = false;
+        });
+      }
+    } catch (_) {
+      if (mounted) setState(() => _loading = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_loading) {
+      return const Padding(
+        padding: EdgeInsets.symmetric(vertical: 16),
+        child: Center(
+          child: SizedBox(
+            width: 20,
+            height: 20,
+            child: CircularProgressIndicator(
+              color: AppColors.catering,
+              strokeWidth: 2,
+            ),
+          ),
+        ),
+      );
+    }
+
+    // Don't show section if Pro has no catering content at all
+    if (_menuItems.isEmpty && _forfaits.isEmpty && _gallery.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const CateringBanner(),
+        const SizedBox(height: 14),
+
+        // ── Menu Items ──
+        if (_menuItems.isNotEmpty) ...[
+          const CateringSectionHeader(title: 'MENU'),
+          const SizedBox(height: 10),
+          CateringMenuGrid(items: _menuItems),
+          const SizedBox(height: 14),
+        ],
+
+        // ── Packages ──
+        if (_forfaits.isNotEmpty) ...[
+          const CateringSectionHeader(title: 'PACKAGES'),
+          const SizedBox(height: 10),
+          CateringForfaitList(forfaits: _forfaits),
+          const SizedBox(height: 14),
+        ],
+
+        // ── Gallery ──
+        if (_gallery.isNotEmpty) ...[
+          const CateringSectionHeader(title: 'GALLERY'),
+          const SizedBox(height: 10),
+          CateringGalleryRow(items: _gallery),
+          const SizedBox(height: 14),
+        ],
+
+        // ── Request Quote CTA ──
+        CateringRequestQuoteCTA(
+          onTap: () => showTraiteurSoumissionSheet(
+            context,
+            proId: widget.proId,
+          ),
+        ),
+      ],
     );
   }
 }

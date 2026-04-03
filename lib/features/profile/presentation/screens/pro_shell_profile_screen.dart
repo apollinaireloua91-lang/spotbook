@@ -21,6 +21,10 @@ import '../widgets/pro_profile_content_widgets.dart';
 import '../widgets/social_badge_widget.dart';
 import '../widgets/social_link_sheets.dart';
 import '../widgets/traiteur_soumission_sheet.dart';
+import '../../../catering/data/catering_repository.dart';
+import '../../../catering/domain/catering_models.dart';
+import '../../../catering/presentation/widgets/catering_section_widgets.dart';
+import '../../../catering/presentation/widgets/catering_add_sheets.dart';
 
 // ═════════════════════════════════════════════════════════════════════════════
 // PRO SHELL PROFILE — Premium centered self-view
@@ -105,7 +109,7 @@ class _ProSelfProfileBody extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isTraiteur = profile.category.toLowerCase().contains('traiteur');
+    final isTraiteur = isCateringCategory(profile.category);
 
     return Scaffold(
       backgroundColor: AppColors.fond,
@@ -155,15 +159,10 @@ class _ProSelfProfileBody extends ConsumerWidget {
               const SizedBox(height: 10),
               _ServicesList(ref: ref),
 
-              // ── Traiteur Section (conditional) ──
+              // ── Catering Section (conditional — Cuisine/Traiteur/Chef) ──
               if (isTraiteur) ...[
                 const SizedBox(height: 24),
-                _TraiteurSection(
-                  ref: ref,
-                  proId: profile.id,
-                  services:
-                      ref.watch(_proSelfServicesProvider).asData?.value ?? [],
-                ),
+                _CateringSection(proId: profile.id),
               ],
 
               const SizedBox(height: 24),
@@ -998,351 +997,82 @@ class _ProSelfEventCard extends StatelessWidget {
 }
 
 // ═════════════════════════════════════════════════════════════════════════════
-// TRAITEUR SECTION — conditional, only for category == 'traiteur'
+// CATERING SECTION — conditional, for Cuisine/Traiteur/Chef Pros
+// Uses catering_menu_items, catering_forfaits, catering_gallery tables
 // ═════════════════════════════════════════════════════════════════════════════
 
-class _TraiteurSection extends StatelessWidget {
-  const _TraiteurSection({
-    required this.ref,
-    required this.proId,
-    required this.services,
-  });
+class _CateringSection extends ConsumerWidget {
+  const _CateringSection({required this.proId});
 
-  final WidgetRef ref;
   final String proId;
-  final List<ServiceModel> services;
 
   @override
-  Widget build(BuildContext context) {
-    final allItems = <MenuItemModel>[];
-    for (final s in services) {
-      allItems.addAll(s.menuItems);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final menuAsync = ref.watch(cateringMenuProvider(proId));
+    final forfaitsAsync = ref.watch(cateringForfaitsProvider(proId));
+    final galleryAsync = ref.watch(cateringGalleryProvider(proId));
+
+    final menuItems = menuAsync.asData?.value ?? [];
+    final forfaits = forfaitsAsync.asData?.value ?? [];
+    final gallery = galleryAsync.asData?.value ?? [];
+
+    void refreshAll() {
+      ref.invalidate(cateringMenuProvider(proId));
+      ref.invalidate(cateringForfaitsProvider(proId));
+      ref.invalidate(cateringGalleryProvider(proId));
     }
-    final traiteurServices =
-        services.where((s) => s.isTraiteurService).toList();
+
+    final repo = ref.read(cateringRepositoryProvider);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _TraiteurBanner(),
+        const CateringBanner(
+          subtitle: 'Manage your menu, packages and quote requests',
+        ),
         const SizedBox(height: 14),
-        if (allItems.isNotEmpty) ...[
-          const _SectionHeader(title: 'My menu'),
+
+        // ── Menu Items ──
+        const CateringSectionHeader(title: 'MY MENU'),
+        const SizedBox(height: 10),
+        CateringMenuGrid(
+          items: menuItems,
+          onAddTap: () => showAddDishSheet(
+            context,
+            repo: repo,
+            proId: proId,
+            onDone: refreshAll,
+          ),
+        ),
+        const SizedBox(height: 14),
+
+        // ── Packages ──
+        const CateringSectionHeader(title: 'MY PACKAGES'),
+        const SizedBox(height: 10),
+        CateringForfaitList(
+          forfaits: forfaits,
+          onAddTap: () => showAddPackageSheet(
+            context,
+            repo: repo,
+            proId: proId,
+            onDone: refreshAll,
+          ),
+        ),
+        const SizedBox(height: 14),
+
+        // ── Gallery ──
+        if (gallery.isNotEmpty) ...[
+          const CateringSectionHeader(title: 'GALLERY'),
           const SizedBox(height: 10),
-          _MenuGrid(items: allItems.take(4).toList()),
+          CateringGalleryRow(items: gallery),
           const SizedBox(height: 14),
         ],
-        if (traiteurServices.isNotEmpty) ...[
-          const _SectionHeader(title: 'My packages'),
-          const SizedBox(height: 10),
-          for (final f in traiteurServices) _ForfaitCard(service: f),
-          const SizedBox(height: 14),
-        ],
-        _SoumissionCTA(proId: proId),
+
+        // ── Quote CTA ──
+        CateringRequestQuoteCTA(
+          onTap: () => showTraiteurSoumissionSheet(context, proId: proId),
+        ),
       ],
-    );
-  }
-}
-
-class _TraiteurBanner extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          begin: Alignment(-0.5, -0.5),
-          end: Alignment(0.5, 0.5),
-          colors: [AppColors.catering, AppColors.cateringDark],
-        ),
-        borderRadius: BorderRadius.circular(14),
-      ),
-      child: Stack(
-        children: [
-          Positioned(
-            top: -10,
-            right: -10,
-            child: Container(
-              width: 70,
-              height: 70,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: AppColors.blanc.withAlpha(26),
-              ),
-            ),
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Catering Section',
-                style: GoogleFonts.dmSans(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.blanc,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                'Manage your menu, packages and quote requests',
-                style: GoogleFonts.dmSans(
-                  fontSize: 10,
-                  color: AppColors.blanc.withAlpha(204),
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _MenuGrid extends StatelessWidget {
-  const _MenuGrid({required this.items});
-
-  final List<MenuItemModel> items;
-
-  @override
-  Widget build(BuildContext context) {
-    return GridView.count(
-      crossAxisCount: 2,
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      mainAxisSpacing: 6,
-      crossAxisSpacing: 6,
-      childAspectRatio: 1.1,
-      children: items.map((item) => _MenuItemCard(item: item)).toList(),
-    );
-  }
-}
-
-class _MenuItemCard extends StatelessWidget {
-  const _MenuItemCard({required this.item});
-
-  final MenuItemModel item;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: AppColors.surfaceAlt,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.border, width: 0.5),
-      ),
-      clipBehavior: Clip.antiAlias,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            height: 60,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  AppColors.violet.withAlpha(40),
-                  AppColors.rose.withAlpha(30),
-                ],
-              ),
-            ),
-            child: Center(
-              child: Text(
-                _getEmoji(item.name),
-                style: const TextStyle(fontSize: 24),
-              ),
-            ),
-          ),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(8, 6, 8, 6),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    item.name,
-                    style: GoogleFonts.dmSans(
-                      fontSize: 10,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.blanc,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  if (item.description != null)
-                    Text(
-                      item.description!,
-                      style: GoogleFonts.dmSans(
-                        fontSize: 8,
-                        color: AppColors.grisInactif,
-                      ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  const Spacer(),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  String _getEmoji(String name) {
-    final lower = name.toLowerCase();
-    if (lower.contains('poulet') || lower.contains('braise')) return '🍗';
-    if (lower.contains('mafe') || lower.contains('curry')) return '🍛';
-    if (lower.contains('thiebou') || lower.contains('riz')) return '🥘';
-    if (lower.contains('suya') || lower.contains('viande')) return '🥩';
-    if (lower.contains('poisson')) return '🐟';
-    if (lower.contains('salade') || lower.contains('vege')) return '🥬';
-    return '🍽️';
-  }
-}
-
-class _ForfaitCard extends StatelessWidget {
-  const _ForfaitCard({required this.service});
-
-  final ServiceModel service;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 8),
-      padding: const EdgeInsets.fromLTRB(10, 10, 12, 10),
-      decoration: BoxDecoration(
-        color: AppColors.surfaceAlt,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.border, width: 0.5),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  service.name,
-                  style: GoogleFonts.dmSans(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.blanc,
-                  ),
-                ),
-              ),
-              Text(
-                '\$${service.pricePerPerson?.toStringAsFixed(0) ?? service.price.toStringAsFixed(0)} /pers.',
-                style: GoogleFonts.dmSans(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.catering,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 6),
-          if (service.minPersons != null || service.maxPersons != null)
-            Text(
-              '${service.minPersons ?? 1} — ${service.maxPersons ?? '∞'} people',
-              style: GoogleFonts.dmSans(
-                fontSize: 8,
-                color: AppColors.grisInactif,
-              ),
-            ),
-          if (service.menuItems.isNotEmpty) ...[
-            const SizedBox(height: 8),
-            Wrap(
-              spacing: 4,
-              runSpacing: 4,
-              children: service.menuItems.take(4).map((item) {
-                return Container(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 6, vertical: 3),
-                  decoration: BoxDecoration(
-                    color: AppColors.catering.withAlpha(20),
-                    borderRadius: BorderRadius.circular(6),
-                    border: Border.all(
-                      color: AppColors.catering.withAlpha(38),
-                      width: 0.5,
-                    ),
-                  ),
-                  child: Text(
-                    item.name,
-                    style: GoogleFonts.dmSans(
-                      fontSize: 8,
-                      color: AppColors.cateringLight,
-                    ),
-                  ),
-                );
-              }).toList(),
-            ),
-          ],
-        ],
-      ),
-    );
-  }
-}
-
-class _SoumissionCTA extends StatelessWidget {
-  const _SoumissionCTA({required this.proId});
-
-  final String proId;
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () => showTraiteurSoumissionSheet(context, proId: proId),
-      child: Container(
-        padding: const EdgeInsets.all(14),
-        decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            begin: Alignment(-0.5, -0.5),
-            end: Alignment(0.5, 0.5),
-            colors: [AppColors.catering, AppColors.cateringDark],
-          ),
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Row(
-          children: [
-            Container(
-              width: 36,
-              height: 36,
-              decoration: BoxDecoration(
-                color: AppColors.blanc.withAlpha(51),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: const Center(
-                child: Icon(Icons.description_outlined,
-                    color: AppColors.blanc, size: 18),
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Quote requests',
-                    style: GoogleFonts.dmSans(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.blanc,
-                    ),
-                  ),
-                  Text(
-                    'Quotes in 24-48h · 30% deposit',
-                    style: GoogleFonts.dmSans(
-                      fontSize: 9,
-                      color: AppColors.blanc.withAlpha(204),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const Icon(Icons.arrow_forward_ios,
-                color: AppColors.blanc, size: 14),
-          ],
-        ),
-      ),
     );
   }
 }
