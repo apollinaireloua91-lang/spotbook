@@ -150,7 +150,7 @@ class ProProfile {
       id: json['id'] as String,
       businessName: json['business_name'] as String? ?? 'Pro',
       category: json['category'] as String? ?? '',
-      bio: json['bio'] as String?,
+      bio: json['description'] as String?,
       city: user['city'] as String?,
       avatarUrl: user['avatar_url'] as String?,
       coverUrl: user['cover_url'] as String?,

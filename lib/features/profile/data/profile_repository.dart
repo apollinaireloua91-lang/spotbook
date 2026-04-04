@@ -81,7 +81,7 @@ class ProfileRepository {
       if (role == 'pro') {
         await _supabase
             .from('profiles_pro')
-            .update({'bio': bio, 'updated_at': DateTime.now().toIso8601String()})
+            .update({'description': bio, 'updated_at': DateTime.now().toIso8601String()})
             .eq('id', uid);
       }
     }
