@@ -40,13 +40,12 @@ class SearchMapView extends StatefulWidget {
   State<SearchMapView> createState() => _SearchMapViewState();
 }
 
-class _SearchMapViewState extends State<SearchMapView>
-    with TickerProviderStateMixin {
+class _SearchMapViewState extends State<SearchMapView> {
   GoogleMapController? _mapController;
   final _cardScrollController = ScrollController();
   bool _cameraFitted = false;
 
-  /// Cached BitmapDescriptor per pro id.
+  /// Cached BitmapDescriptor per category name.
   final Map<String, BitmapDescriptor> _markerIcons = {};
 
   /// User location marker icon.
@@ -67,128 +66,93 @@ class _SearchMapViewState extends State<SearchMapView>
     super.dispose();
   }
 
-  // ── Marker icon generation via Canvas + PictureRecorder ──
+  // ── Tiny dot marker (Uber style) ───────────────────────────────────
 
-  /// Builds a 40×40 rounded-rect marker with category color + Material icon.
-  Future<BitmapDescriptor> _makeProMarkerIcon({
-    required String category,
-    bool isSelected = false,
-  }) async {
-    const int px = 80; // 2× for retina
-    final double size = px.toDouble();
-    const double r = 24.0; // corner radius (scaled)
-
+  Future<BitmapDescriptor> _createSmallDotMarker(Color color) async {
+    const double size = 36.0;
     final recorder = ui.PictureRecorder();
     final canvas = Canvas(recorder);
-    final catColor = categoryColor(category);
 
-    // Background rounded rect
-    final bgPaint = Paint()..color = catColor;
-    final bgRect = RRect.fromRectAndRadius(
-      Rect.fromLTWH(0, 0, size, size),
-      const Radius.circular(r),
+    // White outer ring
+    canvas.drawCircle(
+      const Offset(size / 2, size / 2),
+      size / 2,
+      Paint()..color = Colors.white,
     );
-    canvas.drawRRect(bgRect, bgPaint);
 
-    // Border
-    final borderPaint = Paint()
-      ..color = isSelected
-          ? AppColors.violet
-          : Colors.white.withAlpha(51) // ~0.2 opacity
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = isSelected ? 5.0 : 4.0;
-    canvas.drawRRect(bgRect, borderPaint);
+    // Colored inner dot
+    canvas.drawCircle(
+      const Offset(size / 2, size / 2),
+      size / 2 - 3,
+      Paint()..color = color,
+    );
 
-    // Selected glow shadow (bake into bitmap)
-    if (isSelected) {
-      final glowPaint = Paint()
-        ..color = AppColors.violet.withAlpha(102) // ~0.4
-        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 8);
-      canvas.drawRRect(bgRect, glowPaint);
-    }
+    // Tiny white center highlight for depth
+    canvas.drawCircle(
+      const Offset(size / 2, size / 2 - 2),
+      4,
+      Paint()..color = Colors.white.withAlpha(77),
+    );
 
-    // Category icon (Material Icons font)
-    final iconData = categoryIcon(category);
-    final paraBuilder = ui.ParagraphBuilder(
-      ui.ParagraphStyle(
-        textAlign: TextAlign.center,
-        fontSize: size * 0.45,
-        fontFamily: 'MaterialIcons',
-      ),
-    )
-      ..pushStyle(ui.TextStyle(
-        color: AppColors.blanc,
-        fontFamily: 'MaterialIcons',
-      ))
-      ..addText(String.fromCharCode(iconData.codePoint));
-    final para = paraBuilder.build();
-    para.layout(ui.ParagraphConstraints(width: size));
-    canvas.drawParagraph(para, Offset(0, (size - para.height) / 2));
+    final image = await recorder.endRecording().toImage(size.toInt(), size.toInt());
+    final bytes = await image.toByteData(format: ui.ImageByteFormat.png);
 
-    final img = await recorder.endRecording().toImage(px, px);
-    final bytes = await img.toByteData(format: ui.ImageByteFormat.png);
     return BitmapDescriptor.bytes(bytes!.buffer.asUint8List());
   }
 
-  /// Builds a 16px violet dot with white border for user location.
-  Future<void> _buildUserMarkerIcon() async {
-    const int px = 64;
-    const double half = px / 2;
+  // ── User location — tiny blue dot ──────────────────────────────────
 
+  Future<void> _buildUserMarkerIcon() async {
+    const double size = 28.0;
     final recorder = ui.PictureRecorder();
     final canvas = Canvas(recorder);
 
-    // Outer pulse ring (static in bitmap — larger faded circle)
+    // Blue glow ring
     canvas.drawCircle(
-      const Offset(half, half),
-      half - 2,
-      Paint()..color = AppColors.violet.withAlpha(40),
+      const Offset(size / 2, size / 2),
+      size / 2,
+      Paint()..color = AppColors.locationBlue.withAlpha(51),
     );
 
-    // Main dot
+    // White ring
     canvas.drawCircle(
-      const Offset(half, half),
-      12,
-      Paint()..color = AppColors.violet,
+      const Offset(size / 2, size / 2),
+      8,
+      Paint()..color = AppColors.blanc,
     );
 
-    // White border
+    // Blue center
     canvas.drawCircle(
-      const Offset(half, half),
-      12,
-      Paint()
-        ..color = AppColors.blanc
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 4,
+      const Offset(size / 2, size / 2),
+      6,
+      Paint()..color = AppColors.locationBlue,
     );
 
-    final img = await recorder.endRecording().toImage(px, px);
+    final img = await recorder.endRecording().toImage(size.toInt(), size.toInt());
     final bytes = await img.toByteData(format: ui.ImageByteFormat.png);
     if (mounted) {
       setState(() {
-        _userMarkerIcon =
-            BitmapDescriptor.bytes(bytes!.buffer.asUint8List());
+        _userMarkerIcon = BitmapDescriptor.bytes(bytes!.buffer.asUint8List());
       });
     }
   }
 
-  /// Build icons for all visible pros (async, cached).
-  void _buildProMarkerIcons(List<ProSearchResult> pros, String? selectedId) {
-    for (final p in pros.take(_kMaxMarkers)) {
-      final key = '${p.id}_${p.id == selectedId}';
-      if (_markerIcons.containsKey(key)) continue;
-      _makeProMarkerIcon(
-        category: p.category,
-        isSelected: p.id == selectedId,
-      ).then((icon) {
-        if (mounted) setState(() => _markerIcons[key] = icon);
+  // ── Build marker icons (cached by category) ────────────────────────
+
+  void _buildProMarkerIcons(List<ProSearchResult> pros) {
+    final categories = pros.take(_kMaxMarkers).map((p) => p.category).toSet();
+    for (final cat in categories) {
+      if (_markerIcons.containsKey(cat)) continue;
+      _createSmallDotMarker(categoryColor(cat)).then((icon) {
+        if (mounted) setState(() => _markerIcons[cat] = icon);
       });
     }
   }
 
   // ── Camera ──
 
-  void _fitCameraToPros(List<ProSearchResult> pros, double? uLat, double? uLng) {
+  void _fitCameraToPros(
+      List<ProSearchResult> pros, double? uLat, double? uLng) {
     final ctrl = _mapController;
     if (ctrl == null || pros.isEmpty) return;
 
@@ -230,46 +194,21 @@ class _SearchMapViewState extends State<SearchMapView>
     );
   }
 
-  void _animateToMarker(ProSearchResult pro) {
-    _mapController?.animateCamera(
-      CameraUpdate.newLatLngZoom(LatLng(pro.lat, pro.lng), 14),
-    );
-  }
-
-  void _scrollToCard(int index) {
-    final offset = index * 230.0; // card width 220 + gap 10
-    _cardScrollController.animateTo(
-      offset,
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.easeOut,
-    );
-  }
-
   // ── Build ──
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<ClientSearchCubit, ClientSearchState>(
-      listenWhen: (prev, curr) => prev.selectedProId != curr.selectedProId,
-      listener: (context, state) {
-        if (state.selectedPro != null) {
-          _animateToMarker(state.selectedPro!);
-          final idx = state.pros.indexWhere((p) => p.id == state.selectedPro!.id);
-          if (idx >= 0) _scrollToCard(idx);
-        }
-      },
+    return BlocBuilder<ClientSearchCubit, ClientSearchState>(
       builder: (context, state) {
-        // Build marker icons async
+        // Build marker icons async (cached by category)
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (mounted) {
-            _buildProMarkerIcons(state.pros, state.selectedProId);
-          }
+          if (mounted) _buildProMarkerIcons(state.pros);
         });
 
         // Assemble Google Maps markers
         final markers = <Marker>{};
 
-        // User location marker
+        // User location — premium blue dot
         if (state.userLat != null &&
             state.userLng != null &&
             _userMarkerIcon != null) {
@@ -282,18 +221,17 @@ class _SearchMapViewState extends State<SearchMapView>
           ));
         }
 
-        // Pro markers (max 20)
+        // Pro markers — tiny colored dots
         for (final pro in state.pros.take(_kMaxMarkers)) {
-          final key = '${pro.id}_${pro.id == state.selectedProId}';
           markers.add(Marker(
             markerId: MarkerId(pro.id),
             position: LatLng(pro.lat, pro.lng),
-            icon: _markerIcons[key] ?? BitmapDescriptor.defaultMarker,
-            zIndexInt: pro.id == state.selectedProId ? 100 : 1,
+            icon: _markerIcons[pro.category] ?? BitmapDescriptor.defaultMarker,
+            zIndexInt: 1,
             anchor: const Offset(0.5, 0.5),
             onTap: () {
               HapticFeedback.lightImpact();
-              context.read<ClientSearchCubit>().selectPro(pro.id);
+              context.push('/pro/${pro.id}');
             },
           ));
         }
@@ -331,15 +269,12 @@ class _SearchMapViewState extends State<SearchMapView>
                   });
                 }
               },
-              onTap: (_) {
-                context.read<ClientSearchCubit>().selectPro(null);
-              },
             ),
 
             // ── My location FAB ──
             Positioned(
               right: 14,
-              bottom: 190,
+              bottom: 160,
               child: GestureDetector(
                 onTap: () {
                   if (state.userLat != null && state.userLng != null) {
@@ -352,8 +287,8 @@ class _SearchMapViewState extends State<SearchMapView>
                   }
                 },
                 child: Container(
-                  width: 40,
-                  height: 40,
+                  width: 42,
+                  height: 42,
                   decoration: BoxDecoration(
                     color: AppColors.surface,
                     shape: BoxShape.circle,
@@ -382,7 +317,7 @@ class _SearchMapViewState extends State<SearchMapView>
                 right: 0,
                 bottom: 10,
                 child: SizedBox(
-                  height: 170,
+                  height: 130,
                   child: ListView.separated(
                     controller: _cardScrollController,
                     scrollDirection: Axis.horizontal,
@@ -393,18 +328,10 @@ class _SearchMapViewState extends State<SearchMapView>
                       final pro = state.pros[index];
                       return ProMapCard(
                         pro: pro,
-                        isSelected: state.selectedProId == pro.id,
                         onTap: () {
                           HapticFeedback.lightImpact();
-                          context
-                              .read<ClientSearchCubit>()
-                              .selectPro(pro.id);
+                          context.push('/pro/${pro.id}');
                         },
-                        onViewProfile: () =>
-                            context.push('/pro/${pro.id}'),
-                        onBook: () => context.push(
-                          '/client/booking-flow/${pro.id}',
-                        ),
                       );
                     },
                   ),

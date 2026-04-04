@@ -149,17 +149,20 @@ const kSearchCategoriesFallback = <SearchCategory>[
 
 Color categoryColor(String category) {
   final key = category.toLowerCase();
-  if (key.contains('barb') || key.contains('coiff')) return AppColors.catering;
-  if (key.contains('nail') || key.contains('maquill')) return AppColors.roseClair;
-  if (key.contains('coach') || key.contains('fitness')) return AppColors.success;
-  if (key.contains('photo') || key.contains('vidéa')) return AppColors.infoBlue;
-  if (key.contains('tattoo') || key.contains('tatou')) return AppColors.error;
-  if (key.contains('esth') || key.contains('beauté') || key.contains('bien')) return AppColors.violetClair;
-  if (key.contains('traiteur') || key.contains('cuisine')) return AppColors.warning;
-  if (key.contains('dj') || key.contains('musiq')) return AppColors.accent;
+  if (key.contains('barb') || key.contains('coiff')) return const Color(0xFFFF6B35);
+  if (key.contains('nail') || key.contains('manu')) return const Color(0xFFE91E90);
+  if (key.contains('mass')) return const Color(0xFFEC4899);
+  if (key.contains('esth') || key.contains('beauté') || key.contains('bien')) return AppColors.rose;
+  if (key.contains('coach') || key.contains('fit')) return const Color(0xFF22C55E);
+  if (key.contains('photo') || key.contains('vidéa')) return AppColors.violet;
+  if (key.contains('traiteur') || key.contains('cuisine') || key.contains('chef')) return const Color(0xFFFF8C42);
+  if (key.contains('tattoo') || key.contains('tatou')) return const Color(0xFFEF4444);
+  if (key.contains('dj') || key.contains('musiq')) return const Color(0xFF8B5CF6);
+  if (key.contains('plomb')) return const Color(0xFF3B82F6);
+  if (key.contains('electr')) return const Color(0xFFEAB308);
   if (key.contains('mode') || key.contains('design')) return AppColors.roseClair;
   if (key.contains('évén') || key.contains('wedding')) return AppColors.rose;
-  return AppColors.violet;
+  return AppColors.gris;
 }
 
 String categoryEmoji(String category) {
@@ -167,6 +170,23 @@ String categoryEmoji(String category) {
     if (c.key == category) return c.emoji;
   }
   return '';
+}
+
+/// Emoji for circular map markers (Apple Maps / Waze style).
+String categoryMarkerEmoji(String category) {
+  final key = category.toLowerCase();
+  if (key.contains('barb') || key.contains('coiff')) return '\u2702\uFE0F';
+  if (key.contains('nail') || key.contains('maquill')) return '\uD83D\uDC85';
+  if (key.contains('massage') || key.contains('bien')) return '\uD83D\uDC86';
+  if (key.contains('esth') || key.contains('beaut')) return '\u2728';
+  if (key.contains('coach') || key.contains('fitness')) return '\uD83C\uDFCB\uFE0F';
+  if (key.contains('photo') || key.contains('vid')) return '\uD83D\uDCF8';
+  if (key.contains('traiteur') || key.contains('cuisine')) return '\uD83C\uDF7D\uFE0F';
+  if (key.contains('tattoo') || key.contains('tatou')) return '\uD83C\uDFA8';
+  if (key.contains('dj') || key.contains('musiq')) return '\uD83C\uDFA7';
+  if (key.contains('mode') || key.contains('design')) return '\uD83D\uDC57';
+  if (key.contains('\u00e9v\u00e9n') || key.contains('wedding')) return '\uD83C\uDF89';
+  return '\uD83D\uDCCC';
 }
 
 /// Material icon for marker generation via Canvas + PictureRecorder.
