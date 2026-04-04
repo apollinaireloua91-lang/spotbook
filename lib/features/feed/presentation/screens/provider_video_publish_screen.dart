@@ -233,22 +233,27 @@ class _ProviderVideoPublishScreenState
                     ),
                     const SizedBox(height: 14),
                     // Category
-                    DropdownButtonFormField<String>(
-                      key: ValueKey('pub_cat_${s.selectedCategory}'),
-                      initialValue: s.selectedCategory,
-                      hint: const Text('Catégorie *',
-                          style: TextStyle(color: AppColors.gris)),
-                      dropdownColor: AppColors.surface,
-                      style: const TextStyle(color: AppColors.blanc),
-                      icon: const Icon(Icons.keyboard_arrow_down,
-                          color: AppColors.gris),
-                      decoration: _dropdownDecoration(),
-                      items: _allowedCategories.entries
-                          .map((e) => DropdownMenuItem(
-                              value: e.key, child: Text(e.value)))
-                          .toList(),
-                      onChanged: (v) => n.setCategory(v),
-                    ),
+                    Builder(builder: (context) {
+                      final validCat = _allowedCategories.containsKey(s.selectedCategory)
+                          ? s.selectedCategory
+                          : null;
+                      return DropdownButtonFormField<String>(
+                        key: ValueKey('pub_cat_$validCat'),
+                        initialValue: validCat,
+                        hint: const Text('Catégorie *',
+                            style: TextStyle(color: AppColors.gris)),
+                        dropdownColor: AppColors.surface,
+                        style: const TextStyle(color: AppColors.blanc),
+                        icon: const Icon(Icons.keyboard_arrow_down,
+                            color: AppColors.gris),
+                        decoration: _dropdownDecoration(),
+                        items: _allowedCategories.entries
+                            .map((e) => DropdownMenuItem(
+                                value: e.key, child: Text(e.value)))
+                            .toList(),
+                        onChanged: (v) => n.setCategory(v),
+                      );
+                    }),
                     const SizedBox(height: 14),
                     // Description
                     TextField(

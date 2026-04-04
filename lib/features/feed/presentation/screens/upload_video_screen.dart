@@ -102,20 +102,24 @@ class _UploadVideoScreenState extends ConsumerState<UploadVideoScreen> {
           ),
         ),
         const SizedBox(height: 16),
-        DropdownButtonFormField<String>(
-          initialValue: s.selectedCategory,
-          hint: const Text('Sélectionner une catégorie *', style: TextStyle(color: AppColors.gris)),
-          dropdownColor: AppColors.surface, style: const TextStyle(color: AppColors.blanc), icon: const Icon(Icons.keyboard_arrow_down, color: AppColors.gris),
-          decoration: InputDecoration(filled: true, fillColor: AppColors.surface,
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.border)),
-            enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.border))),
-          items: ref.watch(proCategoriesProvider).when(
+        Builder(builder: (context) {
+          final catItems = ref.watch(proCategoriesProvider).when(
             data: (cats) => cats.map((c) => DropdownMenuItem(value: c.label, child: Text(c.label))).toList(),
-            loading: () => _fallbackCategories.entries.map((e) => DropdownMenuItem(value: e.key, child: Text(e.value))).toList(),
-            error: (_, __) => _fallbackCategories.entries.map((e) => DropdownMenuItem(value: e.key, child: Text(e.value))).toList(),
-          ),
-          onChanged: (v) => n.setCategory(v),
-        ),
+            loading: () => _fallbackCategories.entries.map((e) => DropdownMenuItem<String>(value: e.key, child: Text(e.value))).toList(),
+            error: (_, __) => _fallbackCategories.entries.map((e) => DropdownMenuItem<String>(value: e.key, child: Text(e.value))).toList(),
+          );
+          final validCat = catItems.any((i) => i.value == s.selectedCategory) ? s.selectedCategory : null;
+          return DropdownButtonFormField<String>(
+            initialValue: validCat,
+            hint: const Text('Sélectionner une catégorie *', style: TextStyle(color: AppColors.gris)),
+            dropdownColor: AppColors.surface, style: const TextStyle(color: AppColors.blanc), icon: const Icon(Icons.keyboard_arrow_down, color: AppColors.gris),
+            decoration: InputDecoration(filled: true, fillColor: AppColors.surface,
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.border)),
+              enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.border))),
+            items: catItems,
+            onChanged: (v) => n.setCategory(v),
+          );
+        }),
         const SizedBox(height: 16),
         ValueListenableBuilder<TextEditingValue>(
           valueListenable: _descCtrl,

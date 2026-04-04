@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:video_compress/video_compress.dart';
@@ -9,41 +10,23 @@ import 'package:video_compress/video_compress.dart';
 import '../../../../core/services/cloudflare_stream_service.dart';
 import '../../../../core/widgets/spotbook_video_player.dart';
 import '../../../../shared/theme/app_colors.dart';
+import '../../../auth/data/category_repository.dart';
 import 'cubit/video_upload_cubit.dart';
-
-/// Fallback categories — matches pro_categories table labels.
-/// TODO: Replace with dynamic proCategoriesProvider when this screen is migrated to ConsumerStatefulWidget.
-const _allowedCategories = <String, String>{
-  'Coiffure': 'Coiffure',
-  'Barbier': 'Barber',
-  'Esthétique': 'Beauty',
-  'Massage': 'Massage',
-  'Fitness': 'Fitness',
-  'Photographie': 'Photo',
-  'Musique / DJ': 'DJ',
-  'Tatouage': 'Tattoo',
-  'Maquillage': 'Makeup',
-  'Cuisine': 'Catering',
-  'Mode': 'Fashion',
-  'Coaching': 'Coaching',
-  'Événementiel': 'Events',
-  'Nail Art': 'Nails',
-};
 
 /// Preview screen shown after recording or picking a video.
 ///
 /// Shows the video with audio controls, metadata form, and a publish button
 /// that triggers the full Cloudflare Stream upload pipeline.
-class VideoPreviewScreen extends StatefulWidget {
+class VideoPreviewScreen extends ConsumerStatefulWidget {
   const VideoPreviewScreen({super.key, required this.videoFile});
 
   final File videoFile;
 
   @override
-  State<VideoPreviewScreen> createState() => _VideoPreviewScreenState();
+  ConsumerState<VideoPreviewScreen> createState() => _VideoPreviewScreenState();
 }
 
-class _VideoPreviewScreenState extends State<VideoPreviewScreen> {
+class _VideoPreviewScreenState extends ConsumerState<VideoPreviewScreen> {
   final _titleCtrl = TextEditingController();
   final _descCtrl = TextEditingController();
   final _hashtagCtrl = TextEditingController();
@@ -114,10 +97,7 @@ class _VideoPreviewScreenState extends State<VideoPreviewScreen> {
       // Default category from pro profile
       final profile = results[2] as Map<String, dynamic>?;
       if (profile != null && _selectedCategory == null) {
-        final cat = profile['category'] as String?;
-        if (cat != null && _allowedCategories.containsKey(cat)) {
-          _selectedCategory = cat;
-        }
+        _selectedCategory = profile['category'] as String?;
       }
     });
   }
@@ -264,30 +244,35 @@ class _VideoPreviewScreenState extends State<VideoPreviewScreen> {
                     const SizedBox(height: 16),
 
                     // ── Category ──
-                    DropdownButtonFormField<String>(
-                      initialValue: _selectedCategory,
-                      hint: const Text(
-                        'Catégorie *',
-                        style: TextStyle(color: AppColors.gris),
-                      ),
-                      dropdownColor: AppColors.surface,
-                      style: const TextStyle(color: AppColors.blanc),
-                      icon: const Icon(
-                        Icons.keyboard_arrow_down,
-                        color: AppColors.gris,
-                      ),
-                      decoration: _fieldDecoration(),
-                      items: _allowedCategories.entries
-                          .map(
-                            (e) => DropdownMenuItem(
-                              value: e.key,
-                              child: Text(e.value),
-                            ),
-                          )
-                          .toList(),
-                      onChanged:
-                          isWorking ? null : (v) => setState(() => _selectedCategory = v),
-                    ),
+                    Builder(builder: (context) {
+                      final catItems = ref.watch(proCategoriesProvider).when(
+                        data: (cats) => cats
+                            .map((c) => DropdownMenuItem(value: c.label, child: Text(c.label)))
+                            .toList(),
+                        loading: () => const <DropdownMenuItem<String>>[],
+                        error: (_, __) => const <DropdownMenuItem<String>>[],
+                      );
+                      final validCat = catItems.any((i) => i.value == _selectedCategory)
+                          ? _selectedCategory
+                          : null;
+                      return DropdownButtonFormField<String>(
+                        initialValue: validCat,
+                        hint: const Text(
+                          'Catégorie *',
+                          style: TextStyle(color: AppColors.gris),
+                        ),
+                        dropdownColor: AppColors.surface,
+                        style: const TextStyle(color: AppColors.blanc),
+                        icon: const Icon(
+                          Icons.keyboard_arrow_down,
+                          color: AppColors.gris,
+                        ),
+                        decoration: _fieldDecoration(),
+                        items: catItems,
+                        onChanged:
+                            isWorking ? null : (v) => setState(() => _selectedCategory = v),
+                      );
+                    }),
                     const SizedBox(height: 16),
 
                     // ── Description ──

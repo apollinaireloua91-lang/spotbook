@@ -53,7 +53,7 @@ class _BizNotifier extends Notifier<_BizState> {
       throw Exception('Veuillez remplir les champs obligatoires');
     }
     if (place == null) {
-      throw Exception('Veuillez sélectionner une adresse');
+      throw Exception('Please select an address');
     }
     state = state.copyWith(isLoading: true);
     try {
@@ -163,7 +163,7 @@ class _ProBusinessDetailsScreenState
               ),
               const SizedBox(height: 16),
               const Text(
-                'Détails de l\'entreprise',
+                'Business details',
                 style: TextStyle(
                   color: AppColors.blanc,
                   fontSize: 28,
@@ -172,7 +172,7 @@ class _ProBusinessDetailsScreenState
               ),
               const SizedBox(height: 8),
               const Text(
-                'Étape 1 : Parlez-nous de vos services pour que les clients puissent vous découvrir facilement.',
+                'Step 1: Tell us about your services so clients can easily find you.',
                 style: TextStyle(color: AppColors.gris, fontSize: 14),
               ),
               const SizedBox(height: 32),
@@ -180,7 +180,7 @@ class _ProBusinessDetailsScreenState
               // Business name
               _field(
                 controller: _businessNameCtrl,
-                label: 'Nom de l\'entreprise',
+                label: 'Business name',
                 hint: 'ex. Luxe Hair Studio',
                 icon: Icons.business,
               ),
@@ -188,9 +188,11 @@ class _ProBusinessDetailsScreenState
 
               // Category dropdown
               DropdownButtonFormField<String>(
-                initialValue: s.selectedCategory,
+                initialValue: categoryLabels.contains(s.selectedCategory)
+                    ? s.selectedCategory
+                    : null,
                 hint: const Text(
-                  'Sélectionnez votre catégorie',
+                  'Select your category',
                   style: TextStyle(color: AppColors.gris),
                 ),
                 dropdownColor: AppColors.surfaceAuth,
@@ -200,7 +202,7 @@ class _ProBusinessDetailsScreenState
                   color: AppColors.gris,
                 ),
                 decoration: InputDecoration(
-                  labelText: 'Catégorie de service',
+                  labelText: 'Service category',
                   labelStyle: const TextStyle(color: AppColors.gris),
                   prefixIcon: const Icon(Icons.star_outline,
                       color: AppColors.gris, size: 20),
@@ -221,8 +223,8 @@ class _ProBusinessDetailsScreenState
               // Address autocomplete with lat/lng extraction
               AddressAutocompleteField(
                 controller: _addressCtrl,
-                label: 'Adresse de l\'entreprise',
-                hint: 'Commencez à taper votre adresse...',
+                label: 'Business address',
+                hint: 'Start typing your address...',
                 icon: Icons.pin_drop_outlined,
                 fillColor: AppColors.surfaceAuth,
                 onPlaceSelected: (place) {
@@ -255,9 +257,9 @@ class _ProBusinessDetailsScreenState
                 maxLines: 4,
                 maxLength: 300,
                 decoration: InputDecoration(
-                  labelText: 'Bio professionnelle',
+                  labelText: 'Professional bio',
                   hintText:
-                      'Décrivez brièvement votre expérience et ce qui rend vos services uniques...',
+                      'Briefly describe your experience and what makes your services unique...',
                   labelStyle: const TextStyle(color: AppColors.gris),
                   hintStyle: TextStyle(color: AppColors.gris.withAlpha(128)),
                   prefixIcon: const Icon(Icons.text_fields,
@@ -293,7 +295,7 @@ class _ProBusinessDetailsScreenState
                               strokeWidth: 2, color: AppColors.fond),
                         )
                       : const Text(
-                          'Continuer \u2192',
+                          'Continue \u2192',
                           style: TextStyle(
                               fontSize: 16, fontWeight: FontWeight.w600),
                         ),
