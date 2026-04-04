@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:better_player_plus/better_player_plus.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -69,7 +67,6 @@ class VideoFeedItem extends ConsumerStatefulWidget {
 class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
   BetterPlayerController? _controller;
   bool _viewCounted = false;
-  bool _descriptionExpanded = false;
 
   @override
   void initState() {
@@ -258,225 +255,51 @@ class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
             ),
           ),
 
-          // ─── Bottom overlay: Pro info + description + CTA ───
+          // ─── Bottom overlay: Pro name + Book ───
           Positioned(
             bottom: 90,
             left: 16,
             right: 76,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
+            child: Row(
               children: [
-                // Pro avatar + name row
                 GestureDetector(
                   onTap: () => context.push('/pro/${widget.video.proId}'),
-                  child: Row(
-                    children: [
-                      Container(
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: AppColors.blanc.withAlpha(80),
-                            width: 1.5,
-                          ),
-                        ),
-                        child: CircleAvatar(
-                          radius: 18,
-                          backgroundColor: AppColors.surfaceAlt,
-                          backgroundImage: widget.video.proAvatarUrl != null
-                              ? CachedNetworkImageProvider(
-                                  widget.video.proAvatarUrl!)
-                              : null,
-                          child: widget.video.proAvatarUrl == null
-                              ? const Icon(Icons.person,
-                                  size: 18, color: AppColors.gris)
-                              : null,
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: Text(
-                          widget.video.proName ?? 'Pro',
-                          style: AppTypography.feedCaption(emphasized: true),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                      if (!(widget.video.isFollowed))
-                        GestureDetector(
-                          onTap: () {
-                            HapticFeedback.lightImpact();
-                            if (widget.onToggleFollow != null &&
-                                widget.index != null) {
-                              widget.onToggleFollow!(widget.index!, true);
-                            }
-                          },
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 10, vertical: 4),
-                            decoration: BoxDecoration(
-                              border: Border.all(
-                                  color: AppColors.blanc.withAlpha(180)),
-                              borderRadius: BorderRadius.circular(6),
-                            ),
-                            child: const Text(
-                              'Follow',
-                              style: TextStyle(
-                                color: AppColors.blanc,
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
-                                shadows: [
-                                  Shadow(color: AppColors.shadowTextLight, blurRadius: 4),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                    ],
-                  ),
-                ),
-
-                const SizedBox(height: 10),
-
-                // Video title + description
-                GestureDetector(
-                  onTap: () => setState(
-                      () => _descriptionExpanded = !_descriptionExpanded),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        widget.video.title,
-                        style: AppTypography.feedCaption(emphasized: true),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      if (widget.video.description != null &&
-                          widget.video.description!.trim().isNotEmpty) ...[
-                        const SizedBox(height: 4),
-                        Text(
-                          widget.video.description!,
-                          style: AppTypography.feedCaption(),
-                          maxLines: _descriptionExpanded ? 6 : 2,
-                          overflow: TextOverflow.ellipsis,
+                  child: Text(
+                    widget.video.proName ?? 'Pro',
+                    style: const TextStyle(
+                      color: AppColors.blanc,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                      shadows: [
+                        Shadow(
+                          color: AppColors.overlayHeavy,
+                          blurRadius: 6,
+                          offset: Offset(0, 1),
                         ),
                       ],
-                    ],
+                    ),
                   ),
                 ),
-
-                // Spotify track
-                if (widget.video.spotifyTrackTitle != null) ...[
-                  const SizedBox(height: 8),
-                  Row(
-                    children: [
-                      const Icon(Icons.music_note,
-                          color: AppColors.blanc, size: 14),
-                      const SizedBox(width: 4),
-                      Expanded(
-                        child: Text(
-                          '${widget.video.spotifyTrackTitle} — ${widget.video.spotifyTrackArtist ?? ''}',
-                          style: const TextStyle(
-                            color: AppColors.blanc,
-                            fontSize: 12,
-                            shadows: [
-                              Shadow(color: AppColors.overlayHeavy, blurRadius: 4),
-                            ],
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-
-                const SizedBox(height: 12),
-
-                // CTA strip — glassmorphism
-                if (widget.video.serviceId != null)
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
-                    child: BackdropFilter(
-                      filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 14, vertical: 10),
-                        decoration: BoxDecoration(
-                          color: const Color(0xE61A1330), // rgba(26,19,48,0.9)
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: AppColors.violet
-                                .withAlpha(77), // rgba(108,62,244,0.3)
-                          ),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Flexible(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Text(
-                                    widget.video.serviceName ?? 'Service',
-                                    style: const TextStyle(
-                                      color: AppColors.blanc,
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                  if (widget.video.servicePrice != null)
-                                    Text(
-                                      '${widget.video.servicePrice!.toStringAsFixed(0)} \$',
-                                      style: TextStyle(
-                                        color: AppColors.blanc.withAlpha(180),
-                                        fontSize: 11,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            GestureDetector(
-                              onTap: () {
-                                HapticFeedback.lightImpact();
-                                context.push(
-                                  '/client/booking-flow/${widget.video.proId}?serviceId=${widget.video.serviceId}',
-                                );
-                              },
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 16, vertical: 8),
-                                decoration: BoxDecoration(
-                                  color: AppColors.violet,
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: const Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Icon(Icons.calendar_today,
-                                        color: AppColors.blanc, size: 13),
-                                    SizedBox(width: 5),
-                                    Text(
-                                      'Book',
-                                      style: TextStyle(
-                                        color: AppColors.blanc,
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w700,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
+                const SizedBox(width: 10),
+                GestureDetector(
+                  onTap: () => context.push('/pro/${widget.video.proId}'),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 14, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: AppColors.violet,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: const Text(
+                      'Book',
+                      style: TextStyle(
+                        color: AppColors.blanc,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
                       ),
                     ),
                   ),
+                ),
               ],
             ),
           ),
@@ -488,26 +311,64 @@ class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
             child: widget.rightColumnOverride ??
                 Column(
                   children: [
-                    // Pro avatar (tap → profile)
+                    // Pro avatar + follow badge
                     GestureDetector(
                       onTap: () => context.push('/pro/${widget.video.proId}'),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border:
-                              Border.all(color: AppColors.blanc, width: 2),
-                        ),
-                        child: CircleAvatar(
-                          radius: 20,
-                          backgroundColor: AppColors.surfaceAlt,
-                          backgroundImage: widget.video.proAvatarUrl != null
-                              ? CachedNetworkImageProvider(
-                                  widget.video.proAvatarUrl!)
-                              : null,
-                          child: widget.video.proAvatarUrl == null
-                              ? const Icon(Icons.person,
-                                  size: 20, color: AppColors.gris)
-                              : null,
+                      child: SizedBox(
+                        width: 48,
+                        height: 56,
+                        child: Stack(
+                          clipBehavior: Clip.none,
+                          children: [
+                            Container(
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                    color: AppColors.blanc, width: 2),
+                              ),
+                              child: CircleAvatar(
+                                radius: 20,
+                                backgroundColor: AppColors.surfaceAlt,
+                                backgroundImage:
+                                    widget.video.proAvatarUrl != null
+                                        ? CachedNetworkImageProvider(
+                                            widget.video.proAvatarUrl!)
+                                        : null,
+                                child: widget.video.proAvatarUrl == null
+                                    ? const Icon(Icons.person,
+                                        size: 20, color: AppColors.gris)
+                                    : null,
+                              ),
+                            ),
+                            if (!widget.video.isFollowed)
+                              Positioned(
+                                bottom: 0,
+                                left: 0,
+                                right: 0,
+                                child: Center(
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      HapticFeedback.lightImpact();
+                                      if (widget.onToggleFollow != null &&
+                                          widget.index != null) {
+                                        widget.onToggleFollow!(
+                                            widget.index!, true);
+                                      }
+                                    },
+                                    child: Container(
+                                      width: 20,
+                                      height: 20,
+                                      decoration: const BoxDecoration(
+                                        color: AppColors.rose,
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: const Icon(Icons.add,
+                                          color: AppColors.blanc, size: 14),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                          ],
                         ),
                       ),
                     ),
