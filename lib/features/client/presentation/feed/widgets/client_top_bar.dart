@@ -2,12 +2,12 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../../shared/theme/app_colors.dart';
 import '../../../../../shared/theme/app_typography.dart';
 import '../../../../feed/data/feed_notifier.dart';
 import '../cubit/client_feed_cubit.dart';
-import 'client_notif_sheet.dart';
 
 class ClientTopBar extends StatelessWidget {
   const ClientTopBar({super.key});
@@ -17,7 +17,9 @@ class ClientTopBar extends StatelessWidget {
     return BlocBuilder<ClientFeedCubit, ClientFeedState>(
       buildWhen: (p, c) =>
           p.activeTab != c.activeTab ||
-          p.unreadNotifications != c.unreadNotifications,
+          p.unreadBookings != c.unreadBookings ||
+          p.unreadTickets != c.unreadTickets ||
+          p.unreadMessages != c.unreadMessages,
       builder: (context, state) {
         final cubit = context.read<ClientFeedCubit>();
         return SafeArea(
@@ -33,16 +35,40 @@ class ClientTopBar extends StatelessWidget {
                       .copyWith(fontSize: 19),
                 ),
                 const Spacer(),
-                // CENTER — Tab pills in container
+                // CENTER — Tab pills
                 _FeedTabGroup(
                   activeTab: state.activeTab,
                   onTabChanged: cubit.switchTab,
                 ),
                 const Spacer(),
-                // RIGHT — Bell
-                _NotifBell(
-                  count: state.unreadNotifications,
-                  onTap: () => _showNotifSheet(context),
+                // RIGHT — 3 notification buttons
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // Calendar — my bookings
+                    _TopBarButton(
+                      icon: Icons.calendar_today_outlined,
+                      dotColor: AppColors.violet,
+                      hasUnread: state.unreadBookings > 0,
+                      onTap: () => context.push('/client/bookings'),
+                    ),
+                    const SizedBox(width: 6),
+                    // Ticket — my tickets
+                    _TopBarButton(
+                      icon: Icons.confirmation_number_outlined,
+                      dotColor: AppColors.rose,
+                      hasUnread: state.unreadTickets > 0,
+                      onTap: () => _showTicketsSheet(context),
+                    ),
+                    const SizedBox(width: 6),
+                    // Chat — my messages
+                    _TopBarButton(
+                      icon: Icons.chat_bubble_outline,
+                      dotColor: AppColors.success,
+                      hasUnread: state.unreadMessages > 0,
+                      onTap: () => context.push('/conversations'),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -52,12 +78,12 @@ class ClientTopBar extends StatelessWidget {
     );
   }
 
-  void _showNotifSheet(BuildContext context) {
+  void _showTicketsSheet(BuildContext context) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (_) => const ClientNotifSheet(),
+      builder: (_) => const _ClientTicketsSheet(),
     );
   }
 }
@@ -139,16 +165,68 @@ class _TabButton extends StatelessWidget {
   }
 }
 
-class _NotifBell extends StatelessWidget {
-  const _NotifBell({required this.count, required this.onTap});
+/// Shared top bar button with pulsing colored dot — used for Client feed.
+class _TopBarButton extends StatefulWidget {
+  const _TopBarButton({
+    required this.icon,
+    required this.dotColor,
+    required this.hasUnread,
+    required this.onTap,
+  });
 
-  final int count;
+  final IconData icon;
+  final Color dotColor;
+  final bool hasUnread;
   final VoidCallback onTap;
+
+  @override
+  State<_TopBarButton> createState() => _TopBarButtonState();
+}
+
+class _TopBarButtonState extends State<_TopBarButton>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _pulseCtrl;
+  late final Animation<double> _pulseScale;
+  late final Animation<double> _pulseOpacity;
+
+  @override
+  void initState() {
+    super.initState();
+    _pulseCtrl = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 2),
+    );
+    _pulseScale = Tween<double>(begin: 1.0, end: 1.3).animate(
+      CurvedAnimation(parent: _pulseCtrl, curve: Curves.easeInOut),
+    );
+    _pulseOpacity = TweenSequence<double>([
+      TweenSequenceItem(tween: Tween(begin: 0.7, end: 1.0), weight: 50),
+      TweenSequenceItem(tween: Tween(begin: 1.0, end: 0.7), weight: 50),
+    ]).animate(CurvedAnimation(parent: _pulseCtrl, curve: Curves.easeInOut));
+    if (widget.hasUnread) _pulseCtrl.repeat(reverse: true);
+  }
+
+  @override
+  void didUpdateWidget(covariant _TopBarButton oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.hasUnread && !_pulseCtrl.isAnimating) {
+      _pulseCtrl.repeat(reverse: true);
+    } else if (!widget.hasUnread && _pulseCtrl.isAnimating) {
+      _pulseCtrl.stop();
+      _pulseCtrl.reset();
+    }
+  }
+
+  @override
+  void dispose() {
+    _pulseCtrl.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onTap,
+      onTap: widget.onTap,
       child: ClipRRect(
         borderRadius: BorderRadius.circular(11),
         child: BackdropFilter(
@@ -163,18 +241,37 @@ class _NotifBell extends StatelessWidget {
             ),
             child: Stack(
               children: [
-                const Center(
+                Center(
                   child: Icon(
-                    Icons.notifications_outlined,
+                    widget.icon,
                     color: AppColors.blanc,
-                    size: 19,
+                    size: 17,
                   ),
                 ),
-                if (count > 0)
+                if (widget.hasUnread)
                   Positioned(
                     top: 4,
                     right: 4,
-                    child: _PulsingNotifDot(),
+                    child: AnimatedBuilder(
+                      animation: _pulseCtrl,
+                      builder: (context, child) {
+                        return Transform.scale(
+                          scale: _pulseScale.value,
+                          child: Opacity(
+                            opacity: _pulseOpacity.value,
+                            child: child,
+                          ),
+                        );
+                      },
+                      child: Container(
+                        width: 7,
+                        height: 7,
+                        decoration: BoxDecoration(
+                          color: widget.dotColor,
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                    ),
                   ),
               ],
             ),
@@ -185,49 +282,54 @@ class _NotifBell extends StatelessWidget {
   }
 }
 
-class _PulsingNotifDot extends StatefulWidget {
-  @override
-  State<_PulsingNotifDot> createState() => _PulsingNotifDotState();
-}
-
-class _PulsingNotifDotState extends State<_PulsingNotifDot>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _ctrl;
-  late final Animation<double> _scale;
-
-  @override
-  void initState() {
-    super.initState();
-    _ctrl = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 2),
-    )..repeat(reverse: true);
-    _scale = Tween<double>(begin: 1.0, end: 1.3).animate(
-      CurvedAnimation(parent: _ctrl, curve: Curves.easeInOut),
-    );
-  }
-
-  @override
-  void dispose() {
-    _ctrl.dispose();
-    super.dispose();
-  }
+/// Placeholder tickets bottom sheet for Client.
+class _ClientTicketsSheet extends StatelessWidget {
+  const _ClientTicketsSheet();
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: _scale,
-      builder: (context, child) {
-        return Transform.scale(scale: _scale.value, child: child);
-      },
-      child: Container(
-        width: 7,
-        height: 7,
-        decoration: BoxDecoration(
-          color: AppColors.rose,
-          shape: BoxShape.circle,
-          border: Border.all(color: AppColors.fond, width: 1),
-        ),
+    return Container(
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.of(context).size.height * 0.7,
+      ),
+      decoration: const BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const SizedBox(height: 12),
+          Container(
+            width: 40,
+            height: 4,
+            decoration: BoxDecoration(
+              color: AppColors.gris.withAlpha(77),
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+          const SizedBox(height: 20),
+          const Text(
+            'Mes billets',
+            style: TextStyle(
+              color: AppColors.blanc,
+              fontSize: 18,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          const SizedBox(height: 40),
+          const Icon(
+            Icons.confirmation_number_outlined,
+            color: AppColors.gris,
+            size: 48,
+          ),
+          const SizedBox(height: 12),
+          const Text(
+            'Aucun billet pour le moment',
+            style: TextStyle(color: AppColors.gris, fontSize: 14),
+          ),
+          const SizedBox(height: 40),
+        ],
       ),
     );
   }

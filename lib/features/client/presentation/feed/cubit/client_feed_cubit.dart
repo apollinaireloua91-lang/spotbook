@@ -15,6 +15,9 @@ class ClientFeedState extends Equatable {
     this.currentIndex = 0,
     this.activeTab = FeedTab.discover,
     this.unreadNotifications = 0,
+    this.unreadBookings = 0,
+    this.unreadTickets = 0,
+    this.unreadMessages = 0,
     this.error,
   });
 
@@ -24,6 +27,9 @@ class ClientFeedState extends Equatable {
   final int currentIndex;
   final FeedTab activeTab;
   final int unreadNotifications;
+  final int unreadBookings;
+  final int unreadTickets;
+  final int unreadMessages;
   final String? error;
 
   ClientFeedState copyWith({
@@ -33,6 +39,9 @@ class ClientFeedState extends Equatable {
     int? currentIndex,
     FeedTab? activeTab,
     int? unreadNotifications,
+    int? unreadBookings,
+    int? unreadTickets,
+    int? unreadMessages,
     String? error,
     bool clearError = false,
   }) {
@@ -43,6 +52,9 @@ class ClientFeedState extends Equatable {
       currentIndex: currentIndex ?? this.currentIndex,
       activeTab: activeTab ?? this.activeTab,
       unreadNotifications: unreadNotifications ?? this.unreadNotifications,
+      unreadBookings: unreadBookings ?? this.unreadBookings,
+      unreadTickets: unreadTickets ?? this.unreadTickets,
+      unreadMessages: unreadMessages ?? this.unreadMessages,
       error: clearError ? null : (error ?? this.error),
     );
   }
@@ -55,6 +67,9 @@ class ClientFeedState extends Equatable {
         currentIndex,
         activeTab,
         unreadNotifications,
+        unreadBookings,
+        unreadTickets,
+        unreadMessages,
         error,
       ];
 }
