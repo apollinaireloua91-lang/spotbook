@@ -139,11 +139,18 @@ class _NotificationTileState extends ConsumerState<_NotificationTile>
       case 'booking_update':
         return Icons.event_note;
       case 'chat':
+      case 'new_message':
         return Icons.chat_bubble_outline;
       case 'review_request':
         return Icons.star_border;
       case 'waitlist':
         return Icons.hourglass_top;
+      case 'follow':
+        return Icons.person_add_outlined;
+      case 'like':
+        return Icons.favorite_border;
+      case 'video_ready':
+        return Icons.videocam_outlined;
       default:
         return Icons.notifications_outlined;
     }
@@ -259,7 +266,8 @@ class _NotificationTileState extends ConsumerState<_NotificationTile>
         if (bookingId != null) context.push('/booking/$bookingId');
         break;
       case 'chat':
-        final convId = n.data['conversationId'] as String?;
+      case 'new_message':
+        final convId = (n.data['conversationId'] ?? n.data['conversation_id']) as String?;
         if (convId != null) context.push('/chat/$convId');
         break;
       case 'review_request':

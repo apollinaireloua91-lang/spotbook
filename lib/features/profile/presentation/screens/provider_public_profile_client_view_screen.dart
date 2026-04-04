@@ -129,7 +129,7 @@ class _ProviderPublicProfileClientViewScreenState
       return;
     }
     context.push(
-      '/client/messages/$convId',
+      '/chat/$convId',
       extra: <String, String>{
         'otherUserName': s.data.provider.fullName,
       },
@@ -422,29 +422,31 @@ class _ReadyBody extends StatelessWidget {
                     ),
                     const SizedBox(height: 12),
 
-                    // 2. ACTION BUTTONS
-                    // ── BOOK BUTTON ──
+                    // 2. ACTION BUTTONS — side-by-side (Marketplace style)
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 24),
-                      child: _ActionButton(
-                        label: 'Book',
-                        color: AppColors.violet,
-                        icon: Icons.calendar_today_rounded,
-                        onTap: onBook,
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-
-                    // ── MESSAGE BUTTON ──
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 24),
-                      child: _ActionButton(
-                        label: 'Message',
-                        color: Colors.transparent,
-                        textColor: AppColors.blanc,
-                        icon: Icons.chat_bubble_outline_rounded,
-                        borderColor: AppColors.border,
-                        onTap: onMessage,
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: _ActionButton(
+                              label: 'Message',
+                              color: AppColors.surface,
+                              textColor: AppColors.blanc,
+                              icon: Icons.chat_bubble_outline_rounded,
+                              borderColor: AppColors.border,
+                              onTap: onMessage,
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: _ActionButton(
+                              label: 'Book',
+                              color: AppColors.violet,
+                              icon: Icons.calendar_today_rounded,
+                              onTap: onBook,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                     const SizedBox(height: 8),

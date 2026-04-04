@@ -117,7 +117,7 @@ class PublicProviderProfileBloc
   RealtimeChannel? _channel;
   Timer? _debounce;
 
-  /// Dernier id chargé (ex. pour « Réessayer » depuis l’UI).
+  /// Last loaded provider ID (used by "Retry" in the UI).
   String? get providerId => _providerId;
 
   Future<void> _onStarted(
@@ -195,7 +195,7 @@ class PublicProviderProfileBloc
   Future<void> _loadAndEmit(Emitter<PublicProviderProfileState> emit) async {
     final id = _providerId;
     if (id == null || id.isEmpty) {
-      emit(const PublicProviderProfileFailure('Profil introuvable.'));
+      emit(const PublicProviderProfileFailure('Profile not found.'));
       return;
     }
 
@@ -274,14 +274,14 @@ class PublicProviderProfileBloc
           .select('full_name')
           .eq('id', followerId)
           .single();
-      final name = u['full_name'] as String? ?? 'Un client';
+      final name = u['full_name'] as String? ?? 'A client';
       await _supabase.functions.invoke(
         'send-push-notification',
         body: {
           'userId': proId,
           'actorId': followerId,
-          'title': 'Nouvel abonné',
-          'body': '$name suit votre profil sur Spotbook',
+          'title': 'New follower',
+          'body': '$name is now following you on Spotbook',
           'type': 'social',
           'data': {
             'route': '/pro/profile',
@@ -292,7 +292,7 @@ class PublicProviderProfileBloc
     } catch (_) {}
   }
 
-  /// Conversation client ↔ pro (créée si besoin).
+  /// Get or create the client ↔ pro conversation.
   Future<String?> ensureConversationAndGetId() async {
     final id = _providerId;
     final uid = _supabase.auth.currentUser?.id;

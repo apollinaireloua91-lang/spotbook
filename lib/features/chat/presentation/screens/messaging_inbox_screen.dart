@@ -37,9 +37,6 @@ class _MessagingInboxScreenState extends ConsumerState<MessagingInboxScreen> {
   final Map<String, Timer> _typingTimers = {};
   Set<String> _subscribedIds = {};
 
-  String get _base =>
-      widget.isProShell ? '/pro/messages' : '/client/messages';
-
   @override
   void dispose() {
     _searchCtrl.dispose();
@@ -154,7 +151,7 @@ class _MessagingInboxScreenState extends ConsumerState<MessagingInboxScreen> {
                   style:
                       const TextStyle(color: AppColors.blanc, fontSize: 15),
                   decoration: InputDecoration(
-                    hintText: 'Rechercher une conversation…',
+                    hintText: 'Search conversations…',
                     hintStyle:
                         const TextStyle(color: AppColors.gris, fontSize: 14),
                     prefixIcon: const Icon(Icons.search,
@@ -186,8 +183,8 @@ class _MessagingInboxScreenState extends ConsumerState<MessagingInboxScreen> {
                     ? Center(
                         child: Text(
                           _searchQuery.isNotEmpty
-                              ? 'Aucune conversation trouvée'
-                              : 'Aucun message',
+                              ? 'No conversations found'
+                              : 'No messages',
                           style: const TextStyle(
                               color: AppColors.gris, fontSize: 15),
                         ),
@@ -208,7 +205,7 @@ class _MessagingInboxScreenState extends ConsumerState<MessagingInboxScreen> {
                             final c = filtered[i];
                             final isTyping = _typingStates[c.id] == true;
                             return _ConversationTile(
-                              name: c.otherUserName ?? 'Utilisateur',
+                              name: c.otherUserName ?? 'User',
                               avatarUrl: c.otherUserAvatar,
                               preview: c.lastMessage ?? '',
                               time: c.lastMessageAt,
@@ -217,8 +214,8 @@ class _MessagingInboxScreenState extends ConsumerState<MessagingInboxScreen> {
                               onTap: () {
                                 HapticFeedback.selectionClick();
                                 context.push(
-                                  '$_base/${c.id}',
-                                  extra: {
+                                  '/chat/${c.id}',
+                                  extra: <String, String>{
                                     'otherUserName': c.otherUserName ?? '',
                                   },
                                 );
@@ -332,7 +329,7 @@ class _ConversationTile extends StatelessWidget {
                         Expanded(
                           child: isTyping
                               ? const Text(
-                                  'est en train d\'écrire…',
+                                  'typing…',
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                   style: TextStyle(

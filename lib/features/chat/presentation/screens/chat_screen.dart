@@ -81,7 +81,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       appBar: AppBar(
         backgroundColor: AppColors.fond,
         leading: Semantics(
-          label: 'Retour',
+          label: 'Back',
           child: IconButton(
             icon: const Icon(Icons.arrow_back_ios, color: AppColors.blanc, size: 20),
             onPressed: () {
@@ -102,7 +102,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
             ),
             if (state.isOtherTyping)
               const Text(
-                'écrit...',
+                'typing...',
                 style: TextStyle(color: AppColors.gris, fontSize: 12),
               ),
           ],
@@ -180,7 +180,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       child: Row(
         children: [
           Semantics(
-            label: 'Envoyer une image',
+            label: 'Send image',
             child: IconButton(
               icon: const Icon(Icons.image_outlined, color: AppColors.gris),
               onPressed: _pickImage,
@@ -208,7 +208,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
           ),
           const SizedBox(width: 4),
           Semantics(
-            label: 'Envoyer',
+            label: 'Send',
             child: IconButton(
               icon: const Icon(Icons.send, color: AppColors.blanc),
               onPressed: _sendMessage,

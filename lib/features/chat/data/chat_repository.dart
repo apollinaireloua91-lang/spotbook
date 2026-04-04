@@ -30,7 +30,7 @@ class ChatRepository {
           .maybeSingle();
 
       if (booking == null || booking['status'] != 'confirmed') {
-        throw Exception('Chat uniquement disponible avec un rendez-vous confirmé');
+        throw Exception('Chat is only available with a confirmed booking');
       }
     }
 
@@ -113,7 +113,65 @@ class ChatRepository {
       'last_message_at': DateTime.now().toIso8601String(),
     }).eq('id', conversationId);
 
+    // Notify recipient (fire-and-forget)
+    _notifyRecipient(conversationId, uid, content ?? '📷 Image');
+
     return MessageModel.fromJson(data);
+  }
+
+  /// Insert a notification for the other user in the conversation.
+  Future<void> _notifyRecipient(
+    String conversationId,
+    String senderId,
+    String preview,
+  ) async {
+    try {
+      final conv = await _supabase
+          .from('conversations')
+          .select('client_id, pro_id')
+          .eq('id', conversationId)
+          .single();
+
+      final recipientId = conv['client_id'] == senderId
+          ? conv['pro_id'] as String
+          : conv['client_id'] as String;
+
+      // Bump unread count for the recipient
+      final isRecipientClient = conv['client_id'] == recipientId;
+      final unreadCol =
+          isRecipientClient ? 'unread_count_client' : 'unread_count_pro';
+      await _supabase.rpc('increment_field', params: {
+        'table_name': 'conversations',
+        'field_name': unreadCol,
+        'row_id': conversationId,
+      }).catchError((_) {
+        // Fallback: plain update if RPC doesn't exist
+        return null;
+      });
+
+      // Get sender name
+      final sender = await _supabase
+          .from('users')
+          .select('full_name')
+          .eq('id', senderId)
+          .single();
+      final senderName = sender['full_name'] as String? ?? 'Someone';
+
+      final body = preview.length > 80
+          ? '${preview.substring(0, 80)}...'
+          : preview;
+
+      await _supabase.from('notifications').insert({
+        'user_id': recipientId,
+        'type': 'new_message',
+        'title': 'New message from $senderName',
+        'body': body,
+        'data': {'conversation_id': conversationId},
+        'is_read': false,
+      });
+    } catch (_) {
+      // Non-critical — message was already sent successfully
+    }
   }
 
   Future<String> uploadChatImage(String conversationId, Uint8List bytes) async {

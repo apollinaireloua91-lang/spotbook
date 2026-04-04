@@ -27,6 +27,11 @@ class ConversationModel {
         ? json['pro_user'] as Map<String, dynamic>?
         : json['client_user'] as Map<String, dynamic>?;
 
+    // Read the correct unread count field based on role
+    final unread = isClient
+        ? json['unread_count_client'] as int?
+        : json['unread_count_pro'] as int?;
+
     return ConversationModel(
       id: json['id'] as String,
       clientId: json['client_id'] as String,
@@ -36,7 +41,7 @@ class ConversationModel {
       lastMessageAt: json['last_message_at'] != null
           ? DateTime.parse(json['last_message_at'] as String)
           : null,
-      unreadCount: json['unread_count'] as int? ?? 0,
+      unreadCount: unread ?? 0,
       otherUserName: otherUser?['full_name'] as String?,
       otherUserAvatar: otherUser?['avatar_url'] as String?,
     );
