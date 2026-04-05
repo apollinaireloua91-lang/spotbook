@@ -247,7 +247,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
 
   void _navigateToHome() {
     if (_isClient) {
-      context.go('/client/feed');
+      context.go('/client/interests');
     } else {
       context.go('/pro/dashboard');
     }
@@ -420,6 +420,12 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
           nameCtrl: _nameCtrl,
           businessCtrl: _businessCtrl,
           phoneCtrl: _phoneCtrl,
+          addressCtrl: _addressCtrl,
+          onPlaceSelected: (details) {
+            _city = details.city;
+            _latitude = details.latitude;
+            _longitude = details.longitude;
+          },
           onNext: _nextStep,
         ),
         _Step3Categories(
@@ -704,6 +710,8 @@ class _Step2ProProfile extends StatelessWidget {
     required this.nameCtrl,
     required this.businessCtrl,
     required this.phoneCtrl,
+    required this.addressCtrl,
+    required this.onPlaceSelected,
     required this.onNext,
   });
 
@@ -711,6 +719,8 @@ class _Step2ProProfile extends StatelessWidget {
   final TextEditingController nameCtrl;
   final TextEditingController businessCtrl;
   final TextEditingController phoneCtrl;
+  final TextEditingController addressCtrl;
+  final ValueChanged<PlaceDetails> onPlaceSelected;
   final VoidCallback onNext;
 
   @override
@@ -762,6 +772,15 @@ class _Step2ProProfile extends StatelessWidget {
               keyboardType: TextInputType.phone,
               textInputAction: TextInputAction.done,
               validator: (v) => (v == null || v.isEmpty) ? 'Required' : null,
+            ),
+            const SizedBox(height: 16),
+            AddressAutocompleteField(
+              controller: addressCtrl,
+              label: 'Business address',
+              hint: 'Start typing your address…',
+              icon: Icons.location_on_outlined,
+              fillColor: AppColors.surfaceAuth,
+              onPlaceSelected: onPlaceSelected,
             ),
             const SizedBox(height: 28),
             _StepButton(label: 'Next', onPressed: onNext),

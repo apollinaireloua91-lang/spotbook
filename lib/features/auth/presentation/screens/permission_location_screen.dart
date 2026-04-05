@@ -29,7 +29,7 @@ class PermissionLocationScreen extends ConsumerWidget {
         backgroundColor: AppColors.fond,
         elevation: 0,
         leading: IconButton(
-          onPressed: () => context.pop(),
+          onPressed: () => context.go('/client/goals'),
           icon: const Icon(
             Icons.arrow_back_ios_rounded,
             color: AppColors.blanc,
@@ -55,7 +55,7 @@ class PermissionLocationScreen extends ConsumerWidget {
                       color: AppColors.violet.withAlpha(25),
                     ),
                     child: const Text(
-                      'ÉTAPE 3/3',
+                      'STEP 3/3',
                       style: TextStyle(
                         color: AppColors.violet,
                         fontSize: 11,
@@ -122,7 +122,7 @@ class PermissionLocationScreen extends ConsumerWidget {
 
               // Title
               const Text(
-                'Activez votre position',
+                'Enable your location',
                 style: TextStyle(
                   color: AppColors.blanc,
                   fontSize: 24,
@@ -132,7 +132,7 @@ class PermissionLocationScreen extends ConsumerWidget {
               ),
               const SizedBox(height: 12),
               const Text(
-                'Découvrez les meilleurs professionnels à proximité de chez vous en activant la géolocalisation.',
+                'Discover the best professionals near you by enabling location services.',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: AppColors.gris,
@@ -171,7 +171,7 @@ class PermissionLocationScreen extends ConsumerWidget {
                     ),
                     icon: const Icon(Icons.pin_drop, size: 20),
                     label: const Text(
-                      'Autoriser la localisation',
+                      'Allow location',
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
@@ -189,7 +189,7 @@ class PermissionLocationScreen extends ConsumerWidget {
                 child: TextButton(
                   onPressed: () => context.go('/client/feed'),
                   child: const Text(
-                    'Pas maintenant',
+                    'Not now',
                     style: TextStyle(color: AppColors.gris, fontSize: 15),
                   ),
                 ),
@@ -212,7 +212,7 @@ class PermissionLocationScreen extends ConsumerWidget {
                     Icon(Icons.lock, color: AppColors.violet, size: 16),
                     SizedBox(width: 8),
                     Text(
-                      'Vos données sont sécurisées et privées',
+                      'Your data is secure and private',
                       style: TextStyle(color: AppColors.gris, fontSize: 12),
                     ),
                   ],

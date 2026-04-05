@@ -28,7 +28,7 @@ class ClientInterestCategoriesScreen extends ConsumerWidget {
         backgroundColor: AppColors.fond,
         elevation: 0,
         leading: IconButton(
-          onPressed: () => context.pop(),
+          onPressed: () => context.go('/client/feed'),
           icon: const Icon(
             Icons.arrow_back_ios_rounded,
             color: AppColors.blanc,
@@ -52,7 +52,7 @@ class ClientInterestCategoriesScreen extends ConsumerWidget {
                     color: AppColors.violet.withAlpha(25),
                   ),
                   child: const Text(
-                    'ÉTAPE 1/3',
+                    'STEP 1/3',
                     style: TextStyle(
                       color: AppColors.violet,
                       fontSize: 11,
@@ -77,7 +77,7 @@ class ClientInterestCategoriesScreen extends ConsumerWidget {
 
             // Title
             const Text(
-              "Qu'est-ce qui vous intéresse ?",
+              'What are you interested in?',
               style: TextStyle(
                 color: AppColors.blanc,
                 fontSize: 24,
@@ -216,7 +216,7 @@ class ClientInterestCategoriesScreen extends ConsumerWidget {
                     ),
                   ),
                   child: const Text(
-                    'Continuer',
+                    'Continue',
                     style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
                   ),
                 ),
@@ -227,7 +227,7 @@ class ClientInterestCategoriesScreen extends ConsumerWidget {
               child: GestureDetector(
                 onTap: () => context.go('/client/goals'),
                 child: const Text(
-                  'Passer pour le moment',
+                  'Skip for now',
                   style: TextStyle(color: AppColors.gris, fontSize: 14),
                 ),
               ),

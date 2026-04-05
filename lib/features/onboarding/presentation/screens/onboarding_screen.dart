@@ -33,23 +33,23 @@ class _SlideData {
 const _slides = [
   _SlideData(
     icon: Icons.play_circle_fill_rounded,
-    title: 'Découvrez',
+    title: 'Discover',
     subtitle:
-        'Découvrez les meilleurs professionnels près de chez vous grâce à des vidéos immersives.',
+        'Discover the best professionals near you through immersive videos.',
     gradientColors: [AppColors.violet, AppColors.violetClair],
   ),
   _SlideData(
     icon: Icons.calendar_month_rounded,
-    title: 'Réservez',
+    title: 'Book',
     subtitle:
-        'Réservez un service en quelques taps.\nPaiement sécurisé par Stripe.',
+        'Book a service in just a few taps.\nSecure payments via Stripe.',
     gradientColors: [AppColors.rose, AppColors.roseClair],
   ),
   _SlideData(
     icon: Icons.confirmation_number_rounded,
-    title: 'Vivez',
+    title: 'Experience',
     subtitle:
-        'Participez aux meilleurs événements de votre ville avec vos billets QR.',
+        'Attend the best events in your city with your QR tickets.',
     gradientColors: [AppColors.violet, AppColors.rose],
   ),
 ];
@@ -95,24 +95,34 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       backgroundColor: AppColors.fond,
       body: Column(
         children: [
-          // Skip button
+          // Logo + Skip button
           SafeArea(
             bottom: false,
-            child: Align(
-              alignment: Alignment.topRight,
-              child: Padding(
-                padding: const EdgeInsets.only(top: 8, right: 20),
-                child: TextButton(
-                  onPressed: _complete,
-                  child: const Text(
-                    'Passer',
+            child: Padding(
+              padding: const EdgeInsets.only(top: 8, left: 20, right: 20),
+              child: Row(
+                children: [
+                  const Text(
+                    'Spotbook',
                     style: TextStyle(
-                      color: AppColors.gris,
-                      fontSize: 15,
-                      fontWeight: FontWeight.w500,
+                      color: AppColors.blanc,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w800,
                     ),
                   ),
-                ),
+                  const Spacer(),
+                  TextButton(
+                    onPressed: _complete,
+                    child: const Text(
+                      'Skip',
+                      style: TextStyle(
+                        color: AppColors.gris,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
@@ -176,7 +186,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                   child: AnimatedSwitcher(
                     duration: const Duration(milliseconds: 200),
                     child: Text(
-                      currentPage < 2 ? 'Suivant' : 'Commencer',
+                      currentPage < 2 ? 'Next' : 'Get Started',
                       key: ValueKey(currentPage < 2 ? 'next' : 'start'),
                       style: const TextStyle(
                         fontSize: 17,

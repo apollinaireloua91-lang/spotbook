@@ -131,7 +131,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     } on Exception catch (e) {
       if (!mounted) return;
       final msg = e.toString().replaceFirst('Exception: ', '');
-      if (!msg.contains('annulée')) _showError(msg);
+      if (!msg.contains('cancel')) _showError(msg);
     }
   }
 
@@ -150,8 +150,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   Widget build(BuildContext context) {
     final s = ref.watch(_loginProvider);
     final notifier = ref.read(_loginProvider.notifier);
-    final anyLoading = s.isLoading || s.isGoogleLoading;
-
     return Scaffold(
       backgroundColor: AppColors.fond,
       body: SafeArea(
@@ -160,36 +158,25 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(height: 48),
+              const SizedBox(height: 56),
 
               // Logo
-              Center(
-                child: Container(
-                  width: 56,
-                  height: 56,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(16),
-                    gradient: AppColors.gradientAccent,
-                  ),
-                  child: const Center(
-                    child: Text(
-                      'Sb',
-                      style: TextStyle(
-                        color: AppColors.blanc,
-                        fontSize: 24,
-                        fontWeight: FontWeight.w800,
-                        letterSpacing: -1,
-                        height: 1.0,
-                      ),
-                    ),
+              const Center(
+                child: Text(
+                  'Spotbook',
+                  style: TextStyle(
+                    color: AppColors.blanc,
+                    fontSize: 32,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: -0.5,
                   ),
                 ),
               ),
-              const SizedBox(height: 32),
+              const SizedBox(height: 40),
 
               // Title
               const Text(
-                'Bon retour !',
+                'Welcome back!',
                 style: TextStyle(
                   color: AppColors.blanc,
                   fontSize: 28,
@@ -199,7 +186,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               ),
               const SizedBox(height: 8),
               const Text(
-                'Connectez-vous pour continuer.',
+                'Sign in to continue.',
                 style: TextStyle(color: AppColors.gris, fontSize: 15),
               ),
               const SizedBox(height: 32),
@@ -207,7 +194,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               // Email
               _AuthField(
                 controller: _emailCtrl,
-                hint: 'Adresse email',
+                hint: 'Email address',
                 prefixIcon: Icons.mail_outline_rounded,
                 keyboardType: TextInputType.emailAddress,
                 textInputAction: TextInputAction.next,
@@ -256,7 +243,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               _GradientButton(
                 label: 'Sign in',
                 isLoading: s.isLoading,
-                onPressed: anyLoading ? null : _signIn,
+                onPressed: s.isLoading ? null : _signIn,
               ),
               const SizedBox(height: 28),
 
@@ -297,7 +284,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 backgroundColor: AppColors.blanc,
                 textColor: AppColors.fond,
                 isLoading: s.isGoogleLoading,
-                onPressed: anyLoading ? null : _signInWithGoogle,
+                onPressed: s.isGoogleLoading ? null : _signInWithGoogle,
               ),
               const SizedBox(height: 12),
 
@@ -322,7 +309,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               // Sign up link
               Center(
                 child: GestureDetector(
-                  onTap: anyLoading ? null : () => context.go('/select-account-type'),
+                  onTap: () => context.go('/select-account-type'),
                   child: RichText(
                     text: const TextSpan(
                       text: 'No account? ',

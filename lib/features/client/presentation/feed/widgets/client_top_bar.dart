@@ -66,7 +66,7 @@ class ClientTopBar extends StatelessWidget {
                       icon: Icons.chat_bubble_outline,
                       dotColor: AppColors.success,
                       hasUnread: state.unreadMessages > 0,
-                      onTap: () => context.push('/conversations'),
+                      onTap: () => context.push('/client/messages'),
                     ),
                   ],
                 ),
