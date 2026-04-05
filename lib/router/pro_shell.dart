@@ -23,7 +23,7 @@ class ProShell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bottomInset = MediaQuery.paddingOf(context).bottom;
-    final cameraActive = navigationShell.currentIndex == 2;
+    final currentIndex = navigationShell.currentIndex;
 
     return Scaffold(
       extendBody: true,
@@ -31,12 +31,15 @@ class ProShell extends StatelessWidget {
       body: navigationShell,
       bottomNavigationBar: ClipRRect(
         child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 24, sigmaY: 24),
+          filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
           child: Container(
-            decoration: const BoxDecoration(
-              color: AppColors.navBarBg,
+            decoration: BoxDecoration(
+              color: AppColors.fond.withAlpha(230),
               border: Border(
-                top: BorderSide(color: AppColors.surface, width: 1),
+                top: BorderSide(
+                  color: AppColors.violet.withAlpha(20),
+                  width: 0.5,
+                ),
               ),
             ),
             padding: EdgeInsets.only(bottom: bottomInset),
@@ -49,14 +52,14 @@ class ProShell extends StatelessWidget {
                     label: 'Feed',
                     icon: Icons.play_circle_outline,
                     activeIcon: Icons.play_circle_filled,
-                    selected: navigationShell.currentIndex == 0,
+                    selected: currentIndex == 0,
                     onTap: () => _goBranch(0),
                   ),
                   _ProNavItem(
                     label: 'Dashboard',
                     icon: Icons.space_dashboard_outlined,
                     activeIcon: Icons.space_dashboard,
-                    selected: navigationShell.currentIndex == 1,
+                    selected: currentIndex == 1,
                     onTap: () => _goBranch(1),
                   ),
                   // ── Center: Camera FAB ──
@@ -65,19 +68,22 @@ class ProShell extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         _CameraFab(
-                          isActive: cameraActive,
+                          isActive: currentIndex == 2,
                           onTap: () => _goBranch(2),
                         ),
-                        const SizedBox(height: 2),
-                        Text(
-                          'Camera',
+                        const SizedBox(height: 3),
+                        AnimatedDefaultTextStyle(
+                          duration: const Duration(milliseconds: 200),
                           style: TextStyle(
                             fontSize: 9,
-                            fontWeight:
-                                cameraActive ? FontWeight.w600 : FontWeight.w400,
-                            color:
-                                cameraActive ? AppColors.blanc : AppColors.gris,
+                            fontWeight: currentIndex == 2
+                                ? FontWeight.w600
+                                : FontWeight.w400,
+                            color: currentIndex == 2
+                                ? AppColors.blanc
+                                : AppColors.gris,
                           ),
+                          child: const Text('Camera'),
                         ),
                       ],
                     ),
@@ -87,21 +93,21 @@ class ProShell extends StatelessWidget {
                     label: 'Search',
                     icon: Icons.search_outlined,
                     activeIcon: Icons.search,
-                    selected: navigationShell.currentIndex == 3,
+                    selected: currentIndex == 3,
                     onTap: () => _goBranch(3),
                   ),
                   _ProNavItem(
                     label: 'RDV',
                     icon: Icons.calendar_today_outlined,
                     activeIcon: Icons.calendar_today,
-                    selected: navigationShell.currentIndex == 4,
+                    selected: currentIndex == 4,
                     onTap: () => _goBranch(4),
                   ),
                   _ProNavItem(
                     label: 'Profile',
                     icon: Icons.person_outline,
                     activeIcon: Icons.person,
-                    selected: navigationShell.currentIndex == 5,
+                    selected: currentIndex == 5,
                     onTap: () => _goBranch(5),
                   ),
                 ],
@@ -114,7 +120,7 @@ class ProShell extends StatelessWidget {
   }
 }
 
-/// Camera FAB — 44px white circle, surélevé -5px, spring scale + rotationZ.
+/// Camera FAB — gradient ring + elevated white circle with spring animation.
 class _CameraFab extends StatefulWidget {
   const _CameraFab({required this.isActive, required this.onTap});
 
@@ -126,37 +132,46 @@ class _CameraFab extends StatefulWidget {
 }
 
 class _CameraFabState extends State<_CameraFab>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _ctrl;
-  late final Animation<double> _scale;
-  late final Animation<double> _rotation;
+    with TickerProviderStateMixin {
+  late final AnimationController _tapCtrl;
+  late final Animation<double> _tapScale;
+  late final Animation<double> _tapRotation;
+  late final AnimationController _glowCtrl;
 
   @override
   void initState() {
     super.initState();
-    _ctrl = AnimationController(
+    _tapCtrl = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 200),
+      duration: const Duration(milliseconds: 250),
     );
-    _scale = TweenSequence<double>([
-      TweenSequenceItem(tween: Tween(begin: 1.0, end: 0.92), weight: 30),
-      TweenSequenceItem(tween: Tween(begin: 0.92, end: 1.05), weight: 40),
-      TweenSequenceItem(tween: Tween(begin: 1.05, end: 1.0), weight: 30),
-    ]).animate(CurvedAnimation(parent: _ctrl, curve: Curves.easeOut));
-    _rotation = TweenSequence<double>([
-      TweenSequenceItem(tween: Tween(begin: 0.0, end: -5.0), weight: 50),
-      TweenSequenceItem(tween: Tween(begin: -5.0, end: 0.0), weight: 50),
-    ]).animate(CurvedAnimation(parent: _ctrl, curve: Curves.easeOut));
+    _tapScale = TweenSequence<double>([
+      TweenSequenceItem(tween: Tween(begin: 1.0, end: 0.88), weight: 25),
+      TweenSequenceItem(tween: Tween(begin: 0.88, end: 1.08), weight: 45),
+      TweenSequenceItem(tween: Tween(begin: 1.08, end: 1.0), weight: 30),
+    ]).animate(CurvedAnimation(parent: _tapCtrl, curve: Curves.easeOut));
+    _tapRotation = TweenSequence<double>([
+      TweenSequenceItem(tween: Tween(begin: 0.0, end: -6.0), weight: 50),
+      TweenSequenceItem(tween: Tween(begin: -6.0, end: 0.0), weight: 50),
+    ]).animate(CurvedAnimation(parent: _tapCtrl, curve: Curves.easeOut));
+
+    // Subtle breathing glow for the gradient ring
+    _glowCtrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 2000),
+    )..repeat(reverse: true);
   }
 
   @override
   void dispose() {
-    _ctrl.dispose();
+    _tapCtrl.dispose();
+    _glowCtrl.dispose();
     super.dispose();
   }
 
   void _handleTap() {
-    _ctrl.forward(from: 0);
+    HapticFeedback.mediumImpact();
+    _tapCtrl.forward(from: 0);
     widget.onTap();
   }
 
@@ -165,45 +180,54 @@ class _CameraFabState extends State<_CameraFab>
     return GestureDetector(
       onTap: _handleTap,
       child: Transform.translate(
-        offset: const Offset(0, -5),
+        offset: const Offset(0, -6),
         child: AnimatedBuilder(
-          animation: _ctrl,
+          animation: Listenable.merge([_tapCtrl, _glowCtrl]),
           builder: (context, child) {
+            final glowT = Curves.easeInOut.transform(_glowCtrl.value);
             return Transform.scale(
-              scale: _scale.value,
+              scale: _tapScale.value,
               child: Transform.rotate(
-                angle: _rotation.value * (pi / 180),
-                child: child,
+                angle: _tapRotation.value * (pi / 180),
+                child: Container(
+                  width: 50,
+                  height: 50,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: AppColors.gradientAccent,
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColors.violet.withAlpha(
+                          widget.isActive ? (50 + (glowT * 40).round()) : 30,
+                        ),
+                        blurRadius: 16 + glowT * 8,
+                        spreadRadius: widget.isActive ? glowT * 3 : 0,
+                      ),
+                    ],
+                  ),
+                  padding: const EdgeInsets.all(2.5),
+                  child: Container(
+                    decoration: const BoxDecoration(
+                      color: AppColors.fond,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      widget.isActive ? Icons.videocam : Icons.videocam_outlined,
+                      color: widget.isActive ? AppColors.blanc : AppColors.gris,
+                      size: 22,
+                    ),
+                  ),
+                ),
               ),
             );
           },
-          child: Container(
-            width: 44,
-            height: 44,
-            decoration: BoxDecoration(
-              color: AppColors.blanc,
-              shape: BoxShape.circle,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withAlpha(77), // 0.3 opacity
-                  blurRadius: 12,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: Icon(
-              widget.isActive ? Icons.videocam : Icons.videocam_outlined,
-              color: AppColors.fond,
-              size: 24,
-            ),
-          ),
         ),
       ),
     );
   }
 }
 
-/// Nav item with micro-bounce animation on tap.
+/// Nav item with micro-bounce + gradient active dot indicator.
 class _ProNavItem extends StatefulWidget {
   const _ProNavItem({
     required this.label,
@@ -236,9 +260,9 @@ class _ProNavItemState extends State<_ProNavItem>
       duration: const Duration(milliseconds: 200),
     );
     _bounceScale = TweenSequence<double>([
-      TweenSequenceItem(tween: Tween(begin: 1.0, end: 0.85), weight: 40),
-      TweenSequenceItem(tween: Tween(begin: 0.85, end: 1.1), weight: 35),
-      TweenSequenceItem(tween: Tween(begin: 1.1, end: 1.0), weight: 25),
+      TweenSequenceItem(tween: Tween(begin: 1.0, end: 0.82), weight: 35),
+      TweenSequenceItem(tween: Tween(begin: 0.82, end: 1.12), weight: 40),
+      TweenSequenceItem(tween: Tween(begin: 1.12, end: 1.0), weight: 25),
     ]).animate(CurvedAnimation(parent: _bounceCtrl, curve: Curves.easeOut));
   }
 
@@ -255,7 +279,6 @@ class _ProNavItemState extends State<_ProNavItem>
 
   @override
   Widget build(BuildContext context) {
-    final color = widget.selected ? AppColors.blanc : AppColors.gris;
     return Expanded(
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
@@ -271,21 +294,41 @@ class _ProNavItemState extends State<_ProNavItem>
                   child: child,
                 );
               },
-              child: Icon(
-                widget.selected ? widget.activeIcon : widget.icon,
-                color: color,
-                size: 22,
+              child: AnimatedSwitcher(
+                duration: const Duration(milliseconds: 200),
+                child: Icon(
+                  widget.selected ? widget.activeIcon : widget.icon,
+                  key: ValueKey(widget.selected),
+                  color: widget.selected ? AppColors.blanc : AppColors.gris,
+                  size: 23,
+                ),
               ),
             ),
-            const SizedBox(height: 2),
-            Text(
-              widget.label,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
+            const SizedBox(height: 3),
+            AnimatedDefaultTextStyle(
+              duration: const Duration(milliseconds: 200),
               style: TextStyle(
-                color: color,
-                fontSize: 9,
+                color: widget.selected ? AppColors.blanc : AppColors.gris,
+                fontSize: 10,
                 fontWeight: widget.selected ? FontWeight.w600 : FontWeight.w400,
+                letterSpacing: widget.selected ? 0.2 : 0,
+              ),
+              child: Text(
+                widget.label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            const SizedBox(height: 4),
+            // Gradient dot indicator
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeOutCubic,
+              width: widget.selected ? 16 : 0,
+              height: 3,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(2),
+                gradient: widget.selected ? AppColors.gradientAccent : null,
               ),
             ),
           ],

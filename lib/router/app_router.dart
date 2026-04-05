@@ -2,7 +2,8 @@ import 'dart:io';
 
 import 'package:go_router/go_router.dart';
 
-import '../core/animations/page_transitions.dart';
+import '../core/animations/premium_transitions.dart';
+
 import '../features/pro/presentation/camera/video_preview_screen.dart';
 import '../features/auth/presentation/screens/account_type_selection_screen.dart';
 import '../features/auth/presentation/screens/client_interest_categories_screen.dart';
@@ -248,67 +249,99 @@ final appRouter = GoRouter(
       ],
     ),
 
-    // ─── Routes Pro (sub-screens) ───
+    // ─── Routes Pro (sub-screens) — premium transitions ───
     GoRoute(
       path: '/pro/services',
-      builder: (context, state) => const ProServicesManageScreen(),
+      pageBuilder: (context, state) => premiumPage(
+        state: state,
+        child: const ProServicesManageScreen(),
+      ),
     ),
     GoRoute(
       path: '/pro/availability',
-      builder: (context, state) => const ProviderAvailabilitySetupScreen(),
+      pageBuilder: (context, state) => premiumPage(
+        state: state,
+        child: const ProviderAvailabilitySetupScreen(),
+      ),
     ),
     GoRoute(
       path: '/pro/revenue',
-      builder: (context, state) => const ProRevenueScreen(),
+      pageBuilder: (context, state) => premiumPage(
+        state: state,
+        child: const ProRevenueScreen(),
+      ),
     ),
     GoRoute(
       path: '/pro/events',
-      builder: (context, state) => const ProMyEventsScreen(),
+      pageBuilder: (context, state) => premiumPage(
+        state: state,
+        child: const ProMyEventsScreen(),
+      ),
     ),
     GoRoute(
       path: '/pro/qr-code',
-      builder: (context, state) => const ProQrCodeScreen(),
+      pageBuilder: (context, state) => premiumFadePage(
+        state: state,
+        child: const ProQrCodeScreen(),
+      ),
     ),
     GoRoute(
       path: '/pro/scanner-picker',
-      builder: (context, state) => const ProScannerEventPickerScreen(),
+      pageBuilder: (context, state) => premiumPage(
+        state: state,
+        child: const ProScannerEventPickerScreen(),
+      ),
     ),
     GoRoute(
       path: '/pro/publish',
-      builder: (context, state) =>
-          VideoPreviewScreen(videoFile: state.extra! as File),
+      pageBuilder: (context, state) => premiumSlideUpPage(
+        state: state,
+        child: VideoPreviewScreen(videoFile: state.extra! as File),
+      ),
     ),
 
-    // ─── Routes partagées (avec transitions 3D) ───
+    // ─── Routes partagées — premium transitions ───
     GoRoute(
       path: '/settings',
-      pageBuilder: (context, state) => FadeSlideTransitionPage(
-        key: state.pageKey,
+      pageBuilder: (context, state) => premiumPage(
+        state: state,
         child: const SettingsScreen(),
       ),
     ),
     GoRoute(
       path: '/change-password',
-      builder: (context, state) => const ChangePasswordScreen(),
+      pageBuilder: (context, state) => premiumPage(
+        state: state,
+        child: const ChangePasswordScreen(),
+      ),
     ),
     GoRoute(
       path: '/delete-account',
-      builder: (context, state) => const DeleteAccountScreen(),
+      pageBuilder: (context, state) => premiumPage(
+        state: state,
+        child: const DeleteAccountScreen(),
+      ),
     ),
     GoRoute(
       path: '/my-videos',
-      builder: (context, state) => const MyVideosScreen(),
+      pageBuilder: (context, state) => premiumPage(
+        state: state,
+        child: const MyVideosScreen(),
+      ),
     ),
     GoRoute(
       path: '/upload-video',
-      builder: (context, state) => const UploadVideoScreen(),
+      pageBuilder: (context, state) => premiumSlideUpPage(
+        state: state,
+        child: const UploadVideoScreen(),
+      ),
     ),
     GoRoute(
       path: '/chat/:conversationId',
       pageBuilder: (context, state) {
         final extra = state.extra as Map<String, String>?;
-        return FadeSlideTransitionPage(
-          key: state.pageKey,
+        return premiumPage(
+          state: state,
           child: ChatScreen(
             conversationId: state.pathParameters['conversationId'] ?? '',
             otherUserName: extra?['otherUserName'],
@@ -318,23 +351,29 @@ final appRouter = GoRouter(
     ),
     GoRoute(
       path: '/notifications',
-      builder: (context, state) => const NotificationHistoryScreen(),
+      pageBuilder: (context, state) => premiumPage(
+        state: state,
+        child: const NotificationHistoryScreen(),
+      ),
     ),
     GoRoute(
       path: '/notification-settings',
-      builder: (context, state) => const NotificationSettingsScreen(),
+      pageBuilder: (context, state) => premiumPage(
+        state: state,
+        child: const NotificationSettingsScreen(),
+      ),
     ),
     GoRoute(
       path: '/edit-profile',
-      pageBuilder: (context, state) => FadeSlideTransitionPage(
-        key: state.pageKey,
+      pageBuilder: (context, state) => premiumPage(
+        state: state,
         child: const EditProfileScreen(),
       ),
     ),
     GoRoute(
       path: '/pro/:proId',
-      pageBuilder: (context, state) => FadeSlideTransitionPage(
-        key: state.pageKey,
+      pageBuilder: (context, state) => premiumPage(
+        state: state,
         child: ProProfileScreen(
           proId: state.pathParameters['proId'] ?? '',
         ),
@@ -342,8 +381,8 @@ final appRouter = GoRouter(
     ),
     GoRoute(
       path: '/event/:eventId',
-      pageBuilder: (context, state) => DepthTransitionPage(
-        key: state.pageKey,
+      pageBuilder: (context, state) => premiumSlideUpPage(
+        state: state,
         child: EventDetailScreen(
           eventId: state.pathParameters['eventId'] ?? '',
         ),
@@ -351,35 +390,44 @@ final appRouter = GoRouter(
     ),
     GoRoute(
       path: '/create-event',
-      builder: (context, state) => const CreateEventScreen(),
+      pageBuilder: (context, state) => premiumSlideUpPage(
+        state: state,
+        child: const CreateEventScreen(),
+      ),
     ),
     GoRoute(
       path: '/ticket-detail',
-      pageBuilder: (context, state) => ScaleRotateTransitionPage(
-        key: state.pageKey,
+      pageBuilder: (context, state) => premiumFadePage(
+        state: state,
         child: TicketDetailScreen(ticket: state.extra! as TicketModel),
       ),
     ),
     GoRoute(
       path: '/scanner/:eventId',
-      builder: (context, state) => ScannerScreen(
-        eventId: state.pathParameters['eventId'] ?? '',
+      pageBuilder: (context, state) => premiumFadePage(
+        state: state,
+        child: ScannerScreen(
+          eventId: state.pathParameters['eventId'] ?? '',
+        ),
       ),
     ),
     GoRoute(
       path: '/waitlist',
-      builder: (context, state) {
+      pageBuilder: (context, state) {
         final args = state.extra! as Map<String, String>;
-        return WaitlistScreen(
-          ticketTypeId: args['ticketTypeId']!,
-          eventTitle: args['eventTitle']!,
+        return premiumPage(
+          state: state,
+          child: WaitlistScreen(
+            ticketTypeId: args['ticketTypeId']!,
+            eventTitle: args['eventTitle']!,
+          ),
         );
       },
     ),
     GoRoute(
       path: '/booking/:bookingId',
-      pageBuilder: (context, state) => FadeSlideTransitionPage(
-        key: state.pageKey,
+      pageBuilder: (context, state) => premiumPage(
+        state: state,
         child: BookingDetailScreen(
           bookingId: state.pathParameters['bookingId'] ?? '',
         ),
@@ -387,61 +435,89 @@ final appRouter = GoRouter(
     ),
     GoRoute(
       path: '/cancel-booking/:bookingId',
-      builder: (context, state) => BookingCancellationScreen(
-        bookingId: state.pathParameters['bookingId'] ?? '',
+      pageBuilder: (context, state) => premiumPage(
+        state: state,
+        child: BookingCancellationScreen(
+          bookingId: state.pathParameters['bookingId'] ?? '',
+        ),
       ),
     ),
     GoRoute(
       path: '/pro-subscription',
-      builder: (context, state) => const ProSubscriptionScreen(),
+      pageBuilder: (context, state) => premiumSlideUpPage(
+        state: state,
+        child: const ProSubscriptionScreen(),
+      ),
     ),
     GoRoute(
       path: '/subscription-checkout',
-      builder: (context, state) =>
-          StripeCheckoutWebview(url: state.extra as String? ?? ''),
+      pageBuilder: (context, state) => premiumPage(
+        state: state,
+        child: StripeCheckoutWebview(url: state.extra as String? ?? ''),
+      ),
     ),
     GoRoute(
       path: '/review',
-      builder: (context, state) {
+      pageBuilder: (context, state) {
         final args = state.extra! as Map<String, String>;
-        return ReviewScreen(
-          bookingId: args['bookingId']!,
-          proId: args['proId']!,
-          serviceName: args['serviceName'],
+        return premiumSlideUpPage(
+          state: state,
+          child: ReviewScreen(
+            bookingId: args['bookingId']!,
+            proId: args['proId']!,
+            serviceName: args['serviceName'],
+          ),
         );
       },
     ),
     GoRoute(
       path: '/favorites',
-      builder: (context, state) => const FavoritesScreen(),
+      pageBuilder: (context, state) => premiumPage(
+        state: state,
+        child: const FavoritesScreen(),
+      ),
     ),
     GoRoute(
       path: '/promo-codes',
-      builder: (context, state) => const CreatePromoCodeScreen(),
+      pageBuilder: (context, state) => premiumPage(
+        state: state,
+        child: const CreatePromoCodeScreen(),
+      ),
     ),
     GoRoute(
       path: '/referral',
-      builder: (context, state) => const ReferralScreen(),
+      pageBuilder: (context, state) => premiumPage(
+        state: state,
+        child: const ReferralScreen(),
+      ),
     ),
     GoRoute(
       path: '/blocked-users',
-      builder: (context, state) => const BlockedUsersScreen(),
+      pageBuilder: (context, state) => premiumPage(
+        state: state,
+        child: const BlockedUsersScreen(),
+      ),
     ),
     GoRoute(
       path: '/pro-insights',
-      builder: (context, state) => const ProInsightsScreen(),
+      pageBuilder: (context, state) => premiumPage(
+        state: state,
+        child: const ProInsightsScreen(),
+      ),
     ),
 
     // ─── Routes Client (sub-screens) ───
     GoRoute(
       path: '/client/messages',
-      builder: (context, state) =>
-          const MessagingInboxScreen(isProShell: false),
+      pageBuilder: (context, state) => premiumPage(
+        state: state,
+        child: const MessagingInboxScreen(isProShell: false),
+      ),
     ),
     GoRoute(
       path: '/client/booking-flow/:proId',
-      pageBuilder: (context, state) => FadeSlideTransitionPage(
-        key: state.pageKey,
+      pageBuilder: (context, state) => premiumSlideUpPage(
+        state: state,
         child: BookingFlowScreen(
           providerId: state.pathParameters['proId'] ?? '',
           initialServiceId: state.uri.queryParameters['serviceId'],
@@ -450,42 +526,59 @@ final appRouter = GoRouter(
     ),
     GoRoute(
       path: '/client/events',
-      pageBuilder: (context, state) => FadeSlideTransitionPage(
-        key: state.pageKey,
+      pageBuilder: (context, state) => premiumPage(
+        state: state,
         child: const ClientEventsDiscoveryScreen(),
       ),
     ),
     GoRoute(
       path: '/client/tickets',
-      builder: (context, state) => const MyTicketsScreen(),
+      pageBuilder: (context, state) => premiumPage(
+        state: state,
+        child: const MyTicketsScreen(),
+      ),
     ),
 
     // ─── Route Pro messages ───
     GoRoute(
       path: '/pro/messages',
-      builder: (context, state) =>
-          const MessagingInboxScreen(isProShell: true),
+      pageBuilder: (context, state) => premiumPage(
+        state: state,
+        child: const MessagingInboxScreen(isProShell: true),
+      ),
     ),
 
     // ─── Routes partagées supplémentaires ───
     GoRoute(
       path: '/refund/:bookingId',
-      builder: (context, state) => RefundRequestScreen(
-        bookingId: state.pathParameters['bookingId'] ?? '',
+      pageBuilder: (context, state) => premiumPage(
+        state: state,
+        child: RefundRequestScreen(
+          bookingId: state.pathParameters['bookingId'] ?? '',
+        ),
       ),
     ),
     GoRoute(
       path: '/saved-posts',
-      builder: (context, state) => const SavedPostsScreen(),
+      pageBuilder: (context, state) => premiumPage(
+        state: state,
+        child: const SavedPostsScreen(),
+      ),
     ),
     GoRoute(
       path: '/language-settings',
-      builder: (context, state) => const LanguageSettingsScreen(),
+      pageBuilder: (context, state) => premiumPage(
+        state: state,
+        child: const LanguageSettingsScreen(),
+      ),
     ),
     GoRoute(
       path: '/payment-receipt/:bookingId',
-      builder: (context, state) => PaymentReceiptScreen(
-        bookingId: state.pathParameters['bookingId'] ?? '',
+      pageBuilder: (context, state) => premiumFadePage(
+        state: state,
+        child: PaymentReceiptScreen(
+          bookingId: state.pathParameters['bookingId'] ?? '',
+        ),
       ),
     ),
   ],

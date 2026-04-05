@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -35,31 +36,31 @@ class ProDashboardScreen extends ConsumerWidget {
         child: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
           padding: EdgeInsets.only(
-            top: MediaQuery.paddingOf(context).top + 16,
+            top: MediaQuery.paddingOf(context).top + 12,
             bottom: MediaQuery.paddingOf(context).bottom + 100,
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _GreetingHeader(
+              _PremiumGreetingHeader(
                 name: state.proName,
                 avatarUrl: state.proAvatarUrl,
               ),
-              const SizedBox(height: 20),
-              _StatsCardsRow(
+              const SizedBox(height: 24),
+              _PremiumStatsRow(
                 stats: state.stats,
                 ticketsSold: state.ticketsSold,
                 revenueChange: state.revenueChange,
               ),
-              const SizedBox(height: 24),
-              const _QuickActions(),
-              const SizedBox(height: 24),
+              const SizedBox(height: 28),
+              const _PremiumQuickActions(),
+              const SizedBox(height: 28),
               _UpcomingBookingsSection(
                 bookings: state.upcomingBookings,
               ),
               if (state.nextEvent != null) ...[
-                const SizedBox(height: 24),
-                _NextEventCard(event: state.nextEvent!),
+                const SizedBox(height: 28),
+                _PremiumNextEventCard(event: state.nextEvent!),
               ],
             ],
           ),
@@ -69,10 +70,10 @@ class ProDashboardScreen extends ConsumerWidget {
   }
 }
 
-// ─── Greeting Header ─────────────────────────────────────────
+// ─── Premium Greeting Header ─────────────────────────────────
 
-class _GreetingHeader extends StatelessWidget {
-  const _GreetingHeader({this.name, this.avatarUrl});
+class _PremiumGreetingHeader extends StatelessWidget {
+  const _PremiumGreetingHeader({this.name, this.avatarUrl});
 
   final String? name;
   final String? avatarUrl;
@@ -90,15 +91,23 @@ class _GreetingHeader extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Row(
         children: [
-          CircleAvatar(
-            radius: 24,
-            backgroundColor: AppColors.surfaceAlt,
-            backgroundImage: avatarUrl != null
-                ? CachedNetworkImageProvider(avatarUrl!)
-                : null,
-            child: avatarUrl == null
-                ? const Icon(Icons.person, color: AppColors.gris, size: 24)
-                : null,
+          // Avatar with gradient ring
+          Container(
+            padding: const EdgeInsets.all(2),
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: AppColors.gradientAccent,
+            ),
+            child: CircleAvatar(
+              radius: 24,
+              backgroundColor: AppColors.fond,
+              backgroundImage: avatarUrl != null
+                  ? CachedNetworkImageProvider(avatarUrl!)
+                  : null,
+              child: avatarUrl == null
+                  ? const Icon(Icons.person, color: AppColors.gris, size: 24)
+                  : null,
+            ),
           ),
           const SizedBox(width: 14),
           Expanded(
@@ -106,13 +115,14 @@ class _GreetingHeader extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  '$_greeting,',
+                  _greeting,
                   style: GoogleFonts.dmSans(
                     fontSize: 14,
                     fontWeight: FontWeight.w400,
                     color: AppColors.gris,
                   ),
                 ),
+                const SizedBox(height: 2),
                 Text(
                   name ?? 'Pro',
                   style: GoogleFonts.dmSans(
@@ -127,10 +137,9 @@ class _GreetingHeader extends StatelessWidget {
               ],
             ),
           ),
-          IconButton(
-            onPressed: () => context.push('/notifications'),
-            icon: const Icon(Icons.notifications_outlined,
-                color: AppColors.blanc, size: 24),
+          _HeaderActionButton(
+            icon: Icons.notifications_outlined,
+            onTap: () => context.push('/notifications'),
           ),
         ],
       ),
@@ -138,10 +147,37 @@ class _GreetingHeader extends StatelessWidget {
   }
 }
 
-// ─── Stats Cards Row ─────────────────────────────────────────
+class _HeaderActionButton extends StatelessWidget {
+  const _HeaderActionButton({required this.icon, required this.onTap});
 
-class _StatsCardsRow extends StatelessWidget {
-  const _StatsCardsRow({
+  final IconData icon;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        HapticFeedback.selectionClick();
+        onTap();
+      },
+      child: Container(
+        width: 42,
+        height: 42,
+        decoration: BoxDecoration(
+          color: AppColors.surface,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: AppColors.border),
+        ),
+        child: Icon(icon, color: AppColors.blanc, size: 20),
+      ),
+    );
+  }
+}
+
+// ─── Premium Stats Row ─────────────────────────────────────────
+
+class _PremiumStatsRow extends StatelessWidget {
+  const _PremiumStatsRow({
     required this.stats,
     required this.ticketsSold,
     this.revenueChange,
@@ -161,16 +197,15 @@ class _StatsCardsRow extends StatelessWidget {
     final reviewCount = stats['review_count'] ?? 0;
 
     return SizedBox(
-      height: 120,
+      height: 130,
       child: ListView(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 20),
         children: [
-          _StatCard(
+          _PremiumStatCard(
             icon: Icons.attach_money_rounded,
-            iconColor: AppColors.success,
+            gradientColors: const [AppColors.success, Color(0xFF34D399)],
             label: 'Revenus',
-            value: '$revenue CA\$',
             numericValue: int.tryParse(revenue),
             valueSuffix: ' CA\$',
             subtitle: revenueChange != null
@@ -180,27 +215,25 @@ class _StatsCardsRow extends StatelessWidget {
                 (revenueChange ?? 0) >= 0 ? AppColors.success : AppColors.error,
           ),
           const SizedBox(width: 12),
-          _StatCard(
+          _PremiumStatCard(
             icon: Icons.calendar_today_rounded,
-            iconColor: AppColors.violet,
+            gradientColors: const [AppColors.violet, AppColors.violetClair],
             label: 'Réservations',
-            value: '$bookings',
             numericValue: bookings as int?,
           ),
           const SizedBox(width: 12),
-          _StatCard(
+          _PremiumStatCard(
             icon: Icons.star_rounded,
-            iconColor: AppColors.warning,
+            gradientColors: const [AppColors.warning, Color(0xFFFFD700)],
             label: 'Note moyenne',
-            value: rating,
+            displayValue: rating,
             subtitle: '$reviewCount avis',
           ),
           const SizedBox(width: 12),
-          _StatCard(
+          _PremiumStatCard(
             icon: Icons.confirmation_number_outlined,
-            iconColor: AppColors.roseClair,
+            gradientColors: const [AppColors.rose, AppColors.roseClair],
             label: 'Billets vendus',
-            value: '$ticketsSold',
             numericValue: ticketsSold,
           ),
         ],
@@ -209,23 +242,23 @@ class _StatsCardsRow extends StatelessWidget {
   }
 }
 
-class _StatCard extends StatelessWidget {
-  const _StatCard({
+class _PremiumStatCard extends StatelessWidget {
+  const _PremiumStatCard({
     required this.icon,
-    required this.iconColor,
+    required this.gradientColors,
     required this.label,
-    required this.value,
     this.numericValue,
+    this.displayValue,
     this.valueSuffix = '',
     this.subtitle,
     this.subtitleColor,
   });
 
   final IconData icon;
-  final Color iconColor;
+  final List<Color> gradientColors;
   final String label;
-  final String value;
   final int? numericValue;
+  final String? displayValue;
   final String valueSuffix;
   final String? subtitle;
   final Color? subtitleColor;
@@ -233,31 +266,54 @@ class _StatCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final valueStyle = GoogleFonts.dmSans(
-      fontSize: 20,
+      fontSize: 22,
       fontWeight: FontWeight.w700,
       color: AppColors.blanc,
     );
 
     return Container(
-      width: 150,
-      padding: const EdgeInsets.all(14),
+      width: 155,
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.border),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: gradientColors[0].withAlpha(30),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: gradientColors[0].withAlpha(10),
+            blurRadius: 20,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Gradient icon container
           Container(
-            padding: const EdgeInsets.all(6),
+            padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: iconColor.withAlpha(30),
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(10),
+              gradient: LinearGradient(
+                colors: [
+                  gradientColors[0].withAlpha(30),
+                  gradientColors[1].withAlpha(15),
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
             ),
-            child: Icon(icon, color: iconColor, size: 18),
+            child: ShaderMask(
+              shaderCallback: (rect) => LinearGradient(
+                colors: gradientColors,
+              ).createShader(rect),
+              child: Icon(icon, color: AppColors.blanc, size: 18),
+            ),
           ),
           const Spacer(),
+          // Value
           if (numericValue != null)
             AnimatedCounter(
               value: numericValue!,
@@ -265,36 +321,27 @@ class _StatCard extends StatelessWidget {
               style: valueStyle,
             )
           else
-            Text(value, style: valueStyle),
+            Text(displayValue ?? '', style: valueStyle),
           const SizedBox(height: 2),
-          if (subtitle != null)
-            Text(
-              subtitle!,
-              style: GoogleFonts.dmSans(
-                fontSize: 11,
-                fontWeight: FontWeight.w500,
-                color: subtitleColor ?? AppColors.gris,
-              ),
-            )
-          else
-            Text(
-              label,
-              style: GoogleFonts.dmSans(
-                fontSize: 11,
-                fontWeight: FontWeight.w500,
-                color: AppColors.gris,
-              ),
+          // Subtitle or label
+          Text(
+            subtitle ?? label,
+            style: GoogleFonts.dmSans(
+              fontSize: 11,
+              fontWeight: FontWeight.w500,
+              color: subtitleColor ?? AppColors.gris,
             ),
+          ),
         ],
       ),
     );
   }
 }
 
-// ─── Quick Actions ───────────────────────────────────────────
+// ─── Premium Quick Actions ───────────────────────────────────────────
 
-class _QuickActions extends StatelessWidget {
-  const _QuickActions();
+class _PremiumQuickActions extends StatelessWidget {
+  const _PremiumQuickActions();
 
   @override
   Widget build(BuildContext context) {
@@ -303,36 +350,49 @@ class _QuickActions extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'ACTIONS RAPIDES',
-            style: GoogleFonts.dmSans(
-              fontSize: 11,
-              fontWeight: FontWeight.w600,
-              letterSpacing: 2,
-              color: AppColors.gris,
-            ),
-          ),
-          const SizedBox(height: 12),
           Row(
             children: [
-              _QuickActionButton(
+              Container(
+                width: 3,
+                height: 14,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(2),
+                  gradient: AppColors.gradientAccent,
+                ),
+              ),
+              const SizedBox(width: 8),
+              Text(
+                'ACTIONS RAPIDES',
+                style: GoogleFonts.dmSans(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: 2,
+                  color: AppColors.gris,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 14),
+          Row(
+            children: [
+              _PremiumActionButton(
                 icon: Icons.event,
                 label: 'Créer\névénement',
-                color: AppColors.violet,
+                gradientColors: const [AppColors.violet, AppColors.violetClair],
                 onTap: () => context.push('/create-event'),
               ),
               const SizedBox(width: 10),
-              _QuickActionButton(
+              _PremiumActionButton(
                 icon: Icons.qr_code_scanner,
                 label: 'Scanner\nbillet',
-                color: AppColors.rose,
+                gradientColors: const [AppColors.rose, AppColors.roseClair],
                 onTap: () => context.push('/pro/scanner-picker'),
               ),
               const SizedBox(width: 10),
-              _QuickActionButton(
+              _PremiumActionButton(
                 icon: Icons.calendar_month,
                 label: 'Voir\ncalendrier',
-                color: AppColors.accent,
+                gradientColors: const [AppColors.accent, Color(0xFF00A3CC)],
                 onTap: () => context.push('/pro/rdv'),
               ),
             ],
@@ -340,24 +400,24 @@ class _QuickActions extends StatelessWidget {
           const SizedBox(height: 10),
           Row(
             children: [
-              _QuickActionButton(
+              _PremiumActionButton(
                 icon: Icons.build_outlined,
                 label: 'Gérer\nservices',
-                color: AppColors.violetClair,
+                gradientColors: const [AppColors.violetClair, Color(0xFFB794F4)],
                 onTap: () => context.push('/pro/services'),
               ),
               const SizedBox(width: 10),
-              _QuickActionButton(
+              _PremiumActionButton(
                 icon: Icons.bar_chart_rounded,
                 label: 'Revenus\n& Stats',
-                color: AppColors.success,
+                gradientColors: const [AppColors.success, Color(0xFF34D399)],
                 onTap: () => context.push('/pro/revenue'),
               ),
               const SizedBox(width: 10),
-              _QuickActionButton(
+              _PremiumActionButton(
                 icon: Icons.celebration,
                 label: 'Mes\névénements',
-                color: AppColors.warning,
+                gradientColors: const [AppColors.warning, Color(0xFFFFD700)],
                 onTap: () => context.push('/pro/events'),
               ),
             ],
@@ -368,46 +428,96 @@ class _QuickActions extends StatelessWidget {
   }
 }
 
-class _QuickActionButton extends StatelessWidget {
-  const _QuickActionButton({
+class _PremiumActionButton extends StatefulWidget {
+  const _PremiumActionButton({
     required this.icon,
     required this.label,
-    required this.color,
+    required this.gradientColors,
     required this.onTap,
   });
 
   final IconData icon;
   final String label;
-  final Color color;
+  final List<Color> gradientColors;
   final VoidCallback onTap;
+
+  @override
+  State<_PremiumActionButton> createState() => _PremiumActionButtonState();
+}
+
+class _PremiumActionButtonState extends State<_PremiumActionButton>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _ctrl;
+  late final Animation<double> _scale;
+
+  @override
+  void initState() {
+    super.initState();
+    _ctrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 150),
+    );
+    _scale = Tween<double>(begin: 1.0, end: 0.95).animate(
+      CurvedAnimation(parent: _ctrl, curve: Curves.easeInOut),
+    );
+  }
+
+  @override
+  void dispose() {
+    _ctrl.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Expanded(
       child: GestureDetector(
-        onTap: onTap,
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 14),
-          decoration: BoxDecoration(
-            color: color.withAlpha(18),
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: color.withAlpha(40)),
+        onTapDown: (_) => _ctrl.forward(),
+        onTapUp: (_) {
+          _ctrl.reverse();
+          HapticFeedback.selectionClick();
+          widget.onTap();
+        },
+        onTapCancel: () => _ctrl.reverse(),
+        child: AnimatedBuilder(
+          animation: _scale,
+          builder: (context, child) => Transform.scale(
+            scale: _scale.value,
+            child: child,
           ),
-          child: Column(
-            children: [
-              Icon(icon, color: color, size: 22),
-              const SizedBox(height: 6),
-              Text(
-                label,
-                textAlign: TextAlign.center,
-                style: GoogleFonts.dmSans(
-                  fontSize: 11,
-                  fontWeight: FontWeight.w500,
-                  height: 1.3,
-                  color: AppColors.blanc,
-                ),
+          child: Container(
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            decoration: BoxDecoration(
+              color: AppColors.surface,
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(
+                color: widget.gradientColors[0].withAlpha(25),
               ),
-            ],
+            ),
+            child: Column(
+              children: [
+                // Gradient icon
+                ShaderMask(
+                  shaderCallback: (rect) => LinearGradient(
+                    colors: widget.gradientColors,
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ).createShader(rect),
+                  child: Icon(widget.icon, color: AppColors.blanc, size: 24),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  widget.label,
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.dmSans(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w500,
+                    height: 1.3,
+                    color: AppColors.grisClair,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -431,13 +541,23 @@ class _UpcomingBookingsSection extends StatelessWidget {
         children: [
           Row(
             children: [
+              Container(
+                width: 3,
+                height: 14,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(2),
+                  gradient: AppColors.gradientAccent,
+                ),
+              ),
+              const SizedBox(width: 8),
               Expanded(
                 child: Text(
-                  'Prochains RDV',
+                  'PROCHAINS RDV',
                   style: GoogleFonts.dmSans(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.blanc,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: 2,
+                    color: AppColors.gris,
                   ),
                 ),
               ),
@@ -455,26 +575,42 @@ class _UpcomingBookingsSection extends StatelessWidget {
                 ),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 14),
           if (bookings.isEmpty)
             Container(
-              padding: const EdgeInsets.all(24),
+              padding: const EdgeInsets.all(28),
               decoration: BoxDecoration(
                 color: AppColors.surface,
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(16),
                 border: Border.all(color: AppColors.border),
               ),
               child: Center(
                 child: Column(
                   children: [
-                    const Icon(Icons.calendar_today_outlined,
-                        color: AppColors.grisInactif, size: 32),
-                    const SizedBox(height: 8),
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: AppColors.violet.withAlpha(15),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Icon(Icons.calendar_today_outlined,
+                          color: AppColors.gris, size: 28),
+                    ),
+                    const SizedBox(height: 12),
                     Text(
                       'Aucun RDV à venir',
                       style: GoogleFonts.dmSans(
                         fontSize: 14,
+                        fontWeight: FontWeight.w500,
                         color: AppColors.gris,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Vos prochaines réservations apparaîtront ici',
+                      style: GoogleFonts.dmSans(
+                        fontSize: 12,
+                        color: AppColors.grisInactif,
                       ),
                     ),
                   ],
@@ -488,7 +624,7 @@ class _UpcomingBookingsSection extends StatelessWidget {
               itemCount: bookings.length,
               separatorBuilder: (_, __) => const SizedBox(height: 10),
               itemBuilder: (_, index) =>
-                  _BookingTile(booking: bookings[index]),
+                  _PremiumBookingTile(booking: bookings[index]),
             ),
         ],
       ),
@@ -496,8 +632,8 @@ class _UpcomingBookingsSection extends StatelessWidget {
   }
 }
 
-class _BookingTile extends StatelessWidget {
-  const _BookingTile({required this.booking});
+class _PremiumBookingTile extends StatelessWidget {
+  const _PremiumBookingTile({required this.booking});
 
   final BookingModel booking;
 
@@ -538,39 +674,50 @@ class _BookingTile extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           color: AppColors.surface,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(14),
           border: Border.all(color: AppColors.border),
         ),
         child: IntrinsicHeight(
           child: Row(
             children: [
+              // Status strip
               Container(
                 width: 4,
                 decoration: BoxDecoration(
                   color: _statusColor,
                   borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(12),
-                    bottomLeft: Radius.circular(12),
+                    topLeft: Radius.circular(14),
+                    bottomLeft: Radius.circular(14),
                   ),
                 ),
               ),
               Expanded(
                 child: Padding(
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+                      const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
                   child: Row(
                     children: [
-                      CircleAvatar(
-                        radius: 20,
-                        backgroundColor: AppColors.surfaceAlt,
-                        backgroundImage: booking.clientAvatarUrl != null
-                            ? CachedNetworkImageProvider(
-                                booking.clientAvatarUrl!)
-                            : null,
-                        child: booking.clientAvatarUrl == null
-                            ? const Icon(Icons.person,
-                                color: AppColors.gris, size: 20)
-                            : null,
+                      // Client avatar
+                      Container(
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: _statusColor.withAlpha(40),
+                            width: 1.5,
+                          ),
+                        ),
+                        child: CircleAvatar(
+                          radius: 20,
+                          backgroundColor: AppColors.surfaceAlt,
+                          backgroundImage: booking.clientAvatarUrl != null
+                              ? CachedNetworkImageProvider(
+                                  booking.clientAvatarUrl!)
+                              : null,
+                          child: booking.clientAvatarUrl == null
+                              ? const Icon(Icons.person,
+                                  color: AppColors.gris, size: 20)
+                              : null,
+                        ),
                       ),
                       const SizedBox(width: 12),
                       Expanded(
@@ -585,7 +732,7 @@ class _BookingTile extends StatelessWidget {
                                 color: AppColors.blanc,
                               ),
                             ),
-                            const SizedBox(height: 2),
+                            const SizedBox(height: 3),
                             Text(
                               booking.serviceName ?? 'Service',
                               style: GoogleFonts.dmSans(
@@ -616,13 +763,17 @@ class _BookingTile extends StatelessWidget {
                               color: AppColors.gris,
                             ),
                           ),
-                          const SizedBox(height: 4),
+                          const SizedBox(height: 5),
                           Container(
                             padding: const EdgeInsets.symmetric(
-                                horizontal: 8, vertical: 2),
+                                horizontal: 8, vertical: 3),
                             decoration: BoxDecoration(
-                              color: _statusColor.withAlpha(25),
+                              color: _statusColor.withAlpha(18),
                               borderRadius: BorderRadius.circular(6),
+                              border: Border.all(
+                                color: _statusColor.withAlpha(30),
+                                width: 0.5,
+                              ),
                             ),
                             child: Text(
                               _statusLabel,
@@ -647,10 +798,10 @@ class _BookingTile extends StatelessWidget {
   }
 }
 
-// ─── Next Event Card ─────────────────────────────────────────
+// ─── Premium Next Event Card ─────────────────────────────────────
 
-class _NextEventCard extends StatelessWidget {
-  const _NextEventCard({required this.event});
+class _PremiumNextEventCard extends StatelessWidget {
+  const _PremiumNextEventCard({required this.event});
 
   final Map<String, dynamic> event;
 
@@ -672,102 +823,170 @@ class _NextEventCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'Prochain événement',
-            style: GoogleFonts.dmSans(
-              fontSize: 16,
-              fontWeight: FontWeight.w700,
-              color: AppColors.blanc,
-            ),
+          Row(
+            children: [
+              Container(
+                width: 3,
+                height: 14,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(2),
+                  gradient: AppColors.gradientAccent,
+                ),
+              ),
+              const SizedBox(width: 8),
+              Text(
+                'PROCHAIN ÉVÉNEMENT',
+                style: GoogleFonts.dmSans(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: 2,
+                  color: AppColors.gris,
+                ),
+              ),
+            ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 14),
           GestureDetector(
             onTap: () => context.push('/event/$eventId'),
             child: Container(
               decoration: BoxDecoration(
                 color: AppColors.surface,
-                borderRadius: BorderRadius.circular(14),
+                borderRadius: BorderRadius.circular(16),
                 border: Border.all(color: AppColors.border),
               ),
               clipBehavior: Clip.antiAlias,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // Cover with gradient overlay
                   if (coverUrl != null)
-                    CachedNetworkImage(
-                      imageUrl: coverUrl,
-                      height: 140,
-                      width: double.infinity,
-                      fit: BoxFit.cover,
-                      placeholder: (_, __) => Container(
-                        height: 140,
-                        color: AppColors.surfaceAlt,
-                        child: const Center(
-                          child: Icon(Icons.image,
-                              color: AppColors.grisInactif, size: 32),
+                    Stack(
+                      children: [
+                        CachedNetworkImage(
+                          imageUrl: coverUrl,
+                          height: 150,
+                          width: double.infinity,
+                          fit: BoxFit.cover,
+                          placeholder: (_, __) => Container(
+                            height: 150,
+                            color: AppColors.surfaceAlt,
+                            child: const Center(
+                              child: Icon(Icons.image,
+                                  color: AppColors.grisInactif, size: 32),
+                            ),
+                          ),
+                          errorWidget: (_, __, ___) => Container(
+                            height: 150,
+                            color: AppColors.surfaceAlt,
+                            child: const Center(
+                              child: Icon(Icons.broken_image,
+                                  color: AppColors.grisInactif, size: 32),
+                            ),
+                          ),
                         ),
-                      ),
-                      errorWidget: (_, __, ___) => Container(
-                        height: 140,
-                        color: AppColors.surfaceAlt,
-                        child: const Center(
-                          child: Icon(Icons.broken_image,
-                              color: AppColors.grisInactif, size: 32),
+                        // Bottom gradient
+                        Positioned(
+                          bottom: 0,
+                          left: 0,
+                          right: 0,
+                          child: Container(
+                            height: 60,
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                begin: Alignment.topCenter,
+                                end: Alignment.bottomCenter,
+                                colors: [
+                                  Colors.transparent,
+                                  AppColors.surface.withAlpha(200),
+                                ],
+                              ),
+                            ),
+                          ),
                         ),
-                      ),
+                      ],
                     )
                   else
                     Container(
-                      height: 140,
-                      color: AppColors.surfaceAlt,
+                      height: 150,
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            AppColors.violet.withAlpha(20),
+                            AppColors.rose.withAlpha(15),
+                          ],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                      ),
                       child: const Center(
                         child: Icon(Icons.event,
                             color: AppColors.grisInactif, size: 40),
                       ),
                     ),
                   Padding(
-                    padding: const EdgeInsets.all(14),
+                    padding: const EdgeInsets.all(16),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           title,
                           style: GoogleFonts.dmSans(
-                            fontSize: 16,
+                            fontSize: 17,
                             fontWeight: FontWeight.w700,
                             color: AppColors.blanc,
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
-                        const SizedBox(height: 6),
+                        const SizedBox(height: 10),
                         Row(
                           children: [
-                            const Icon(Icons.calendar_today,
-                                color: AppColors.gris, size: 14),
-                            const SizedBox(width: 6),
-                            Text(
-                              parsedDate != null
-                                  ? '${parsedDate.day}/${parsedDate.month}/${parsedDate.year}'
-                                  : date,
-                              style: GoogleFonts.dmSans(
-                                fontSize: 13,
-                                color: AppColors.gris,
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 8, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: AppColors.violet.withAlpha(15),
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Icon(Icons.calendar_today,
+                                      color: AppColors.violet, size: 12),
+                                  const SizedBox(width: 5),
+                                  Text(
+                                    parsedDate != null
+                                        ? '${parsedDate.day}/${parsedDate.month}/${parsedDate.year}'
+                                        : date,
+                                    style: GoogleFonts.dmSans(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w500,
+                                      color: AppColors.violet,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                            const SizedBox(width: 16),
-                            const Icon(Icons.location_on_outlined,
-                                color: AppColors.gris, size: 14),
-                            const SizedBox(width: 4),
+                            const SizedBox(width: 8),
                             Expanded(
-                              child: Text(
-                                location,
-                                style: GoogleFonts.dmSans(
-                                  fontSize: 13,
-                                  color: AppColors.gris,
-                                ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Icon(Icons.location_on_outlined,
+                                      color: AppColors.gris, size: 14),
+                                  const SizedBox(width: 4),
+                                  Flexible(
+                                    child: Text(
+                                      location,
+                                      style: GoogleFonts.dmSans(
+                                        fontSize: 12,
+                                        color: AppColors.gris,
+                                      ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                           ],
@@ -799,7 +1018,7 @@ class _DashboardShimmer extends StatelessWidget {
         highlightColor: AppColors.surfaceAlt,
         child: SingleChildScrollView(
           padding: EdgeInsets.only(
-            top: MediaQuery.paddingOf(context).top + 16,
+            top: MediaQuery.paddingOf(context).top + 12,
             left: 20,
             right: 20,
           ),
@@ -809,7 +1028,8 @@ class _DashboardShimmer extends StatelessWidget {
               // Greeting
               Row(
                 children: [
-                  const CircleAvatar(radius: 24, backgroundColor: AppColors.surface),
+                  const CircleAvatar(
+                      radius: 26, backgroundColor: AppColors.surface),
                   const SizedBox(width: 14),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -838,7 +1058,7 @@ class _DashboardShimmer extends StatelessWidget {
               const SizedBox(height: 24),
               // Stats
               SizedBox(
-                height: 110,
+                height: 130,
                 child: Row(
                   children: List.generate(
                     3,
@@ -847,14 +1067,14 @@ class _DashboardShimmer extends StatelessWidget {
                         margin: EdgeInsets.only(right: i < 2 ? 12 : 0),
                         decoration: BoxDecoration(
                           color: AppColors.surface,
-                          borderRadius: BorderRadius.circular(14),
+                          borderRadius: BorderRadius.circular(16),
                         ),
                       ),
                     ),
                   ),
                 ),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 28),
               // Quick actions
               Container(
                 height: 14,
@@ -864,17 +1084,17 @@ class _DashboardShimmer extends StatelessWidget {
                   borderRadius: BorderRadius.circular(4),
                 ),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 14),
               Row(
                 children: List.generate(
                   3,
                   (i) => Expanded(
                     child: Container(
-                      height: 80,
+                      height: 90,
                       margin: EdgeInsets.only(right: i < 2 ? 10 : 0),
                       decoration: BoxDecoration(
                         color: AppColors.surface,
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(14),
                       ),
                     ),
                   ),
@@ -886,26 +1106,26 @@ class _DashboardShimmer extends StatelessWidget {
                   3,
                   (i) => Expanded(
                     child: Container(
-                      height: 80,
+                      height: 90,
                       margin: EdgeInsets.only(right: i < 2 ? 10 : 0),
                       decoration: BoxDecoration(
                         color: AppColors.surface,
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(14),
                       ),
                     ),
                   ),
                 ),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 28),
               // Booking tiles
               ...List.generate(
                 3,
                 (_) => Container(
-                  height: 72,
+                  height: 76,
                   margin: const EdgeInsets.only(bottom: 10),
                   decoration: BoxDecoration(
                     color: AppColors.surface,
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(14),
                   ),
                 ),
               ),
@@ -935,8 +1155,16 @@ class _ErrorView extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.cloud_off, color: AppColors.gris, size: 48),
-              const SizedBox(height: 16),
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: AppColors.error.withAlpha(15),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: const Icon(Icons.cloud_off,
+                    color: AppColors.error, size: 36),
+              ),
+              const SizedBox(height: 20),
               Text(
                 'Impossible de charger le dashboard',
                 textAlign: TextAlign.center,
@@ -956,18 +1184,30 @@ class _ErrorView extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 24),
-              ElevatedButton.icon(
-                onPressed: onRetry,
-                icon: const Icon(Icons.refresh, size: 18),
-                label: const Text('Réessayer'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.violet,
-                  foregroundColor: AppColors.blanc,
-                  shape: RoundedRectangleBorder(
+              SizedBox(
+                height: 48,
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(12),
+                    gradient: AppColors.gradientAccent,
                   ),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                  child: ElevatedButton.icon(
+                    onPressed: () {
+                      HapticFeedback.mediumImpact();
+                      onRetry();
+                    },
+                    icon: const Icon(Icons.refresh, size: 18),
+                    label: const Text('Réessayer'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.transparent,
+                      shadowColor: Colors.transparent,
+                      foregroundColor: AppColors.blanc,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 24),
+                    ),
+                  ),
                 ),
               ),
             ],

@@ -11,8 +11,8 @@ export 'theme/spotbook_text_styles.dart';
 export 'theme/spotbook_theme.dart';
 
 // Animations
+export 'animations/premium_transitions.dart';
 export 'animations/spotbook_animations.dart';
-export 'animations/page_transitions.dart';
 export 'animations/three_d_effects.dart';
 
 // Supabase
