@@ -119,7 +119,7 @@ class _MyBookingsScreenState extends ConsumerState<MyBookingsScreen>
                   ),
                   const SizedBox(width: 4),
                   Text(
-                    'Filtrer',
+                    'Filter',
                     style: TextStyle(
                       color: _filter.isActive
                           ? AppColors.violet
@@ -154,7 +154,7 @@ class _MyBookingsScreenState extends ConsumerState<MyBookingsScreen>
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Text('À venir'),
+                  const Text('Upcoming'),
                   if (bookingsState.upcoming.isNotEmpty) ...[
                     const SizedBox(width: 6),
                     Container(
@@ -179,12 +179,12 @@ class _MyBookingsScreenState extends ConsumerState<MyBookingsScreen>
                 ],
               ),
             ),
-            const Tab(text: 'Passés'),
+            const Tab(text: 'Past'),
             Tab(
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Text('Billets'),
+                  const Text('Tickets'),
                   if (ticketsState.tickets.isNotEmpty) ...[
                     const SizedBox(width: 6),
                     Container(
@@ -215,21 +215,21 @@ class _MyBookingsScreenState extends ConsumerState<MyBookingsScreen>
       body: TabBarView(
         controller: _tabController,
         children: [
-          // ─── À venir ───
+          // ─── Upcoming ───
           _UpcomingTab(
             bookings: _applyFilter(bookingsState.upcoming),
             isLoading: bookingsState.isLoading,
             onRefresh: () =>
                 ref.read(clientBookingsProvider.notifier).refresh(),
           ),
-          // ─── Passés ───
+          // ─── Past ───
           _PastTab(
             bookings: _applyFilter(bookingsState.past),
             isLoading: bookingsState.isLoading,
             onRefresh: () =>
                 ref.read(clientBookingsProvider.notifier).refresh(),
           ),
-          // ─── Billets ───
+          // ─── Tickets ───
           _TicketsTab(
             tickets: ticketsState.tickets,
             isLoading: ticketsState.isLoading,
