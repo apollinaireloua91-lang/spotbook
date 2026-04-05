@@ -158,7 +158,7 @@ serve(async (req) => {
           meta: {
             uploaded_by: user.id,
             source: "spotbook",
-            moderation: "pending",
+            moderation: "none",
           },
         }),
       },

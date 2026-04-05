@@ -57,7 +57,7 @@ class _UploadVideoScreenState extends ConsumerState<UploadVideoScreen> {
       );
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Video submitted for review. You will be notified when published.'), backgroundColor: AppColors.success),
+        const SnackBar(content: Text('Vidéo publiée !'), backgroundColor: AppColors.success),
       );
       context.pop();
     } catch (e) {

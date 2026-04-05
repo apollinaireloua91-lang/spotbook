@@ -197,8 +197,8 @@ serve(async (req) => {
         description,
         category,
         hashtags: hashtags || [],
-        status: "processing",
-        visibility: "private",
+        status: "approved",
+        visibility: "public",
         duration_seconds: durationSeconds ?? null,
         ...(serviceId ? { service_id: serviceId } : {}),
       })
@@ -216,7 +216,7 @@ serve(async (req) => {
         visibility: video.visibility,
         stripeOnboarded,
         nextStep:
-          "Video is processing on Cloudflare; moderation pipeline can move status to pending_review then approved",
+          "Video published immediately — visible in feed",
       },
       200,
       undefined,

@@ -94,7 +94,7 @@ class VideoModel {
               ?.map((e) => e.toString())
               .toList() ??
           [],
-      status: json['status'] as String? ?? 'pending_review',
+      status: json['status'] as String? ?? 'approved',
       rejectionReason: json['rejection_reason'] as String?,
       likesCount: json['likes_count'] as int? ?? 0,
       commentsCount: json['comments_count'] as int? ?? 0,

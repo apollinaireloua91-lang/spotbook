@@ -31,7 +31,7 @@ class UploadSession {
 /// Service that handles the complete Cloudflare Stream upload pipeline:
 /// 1. Request a direct upload URL via Supabase Edge Function
 /// 2. Upload video bytes directly to Cloudflare via TUS protocol
-/// 3. Submit metadata to Supabase for moderation
+/// 3. Submit metadata to Supabase (published immediately, no moderation)
 class CloudflareStreamService {
   CloudflareStreamService(this._supabase);
 
@@ -129,7 +129,7 @@ class CloudflareStreamService {
 
   /// Step 3: Submit video metadata to Supabase via the moderate-video Edge Function.
   ///
-  /// This creates the video row in the `videos` table with status `processing`.
+  /// This creates the video row in the `videos` table with status `approved`.
   Future<String> submitMetadata({
     required String cloudflareId,
     required String title,

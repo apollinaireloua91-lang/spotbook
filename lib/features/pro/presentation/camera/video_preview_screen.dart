@@ -155,9 +155,7 @@ class _VideoPreviewScreenState extends ConsumerState<VideoPreviewScreen> {
           if (state.step == UploadStep.done) {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
-                content: Text(
-                  'Vidéo en cours de traitement. Elle sera visible dans quelques minutes.',
-                ),
+                content: Text('Vidéo publiée !'),
                 backgroundColor: AppColors.success,
               ),
             );

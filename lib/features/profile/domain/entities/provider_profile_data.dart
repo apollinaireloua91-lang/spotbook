@@ -234,7 +234,7 @@ class VideoEntity {
   final String? title;
   final int viewsCount;
 
-  /// `processing`, `pending_review`, `approved`, `rejected`, `flagged` — hub pro.
+  /// `approved`, `rejected`, `flagged` — hub pro. Videos publish immediately as approved.
   final String? status;
 
   factory VideoEntity.fromJson(Map<String, dynamic> json) => VideoEntity(

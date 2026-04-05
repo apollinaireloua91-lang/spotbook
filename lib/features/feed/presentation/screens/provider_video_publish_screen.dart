@@ -107,9 +107,7 @@ class _ProviderVideoPublishScreenState
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text(
-            'Vidéo envoyée. Elle sera visible après modération.',
-          ),
+          content: Text('Vidéo publiée !'),
           backgroundColor: AppColors.success,
         ),
       );
