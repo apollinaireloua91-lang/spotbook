@@ -140,6 +140,7 @@ dependencies:
   http_parser: ^4.1.0
 
   image_cropper: ^9.1.0
+  video_player: ^2.11.1
 
 
 dev_dependencies:
@@ -156,8 +157,6 @@ dev_dependencies:
 
   flutter_launcher_icons: ^0.14.4
 
-  flutter_native_splash: ^2.4.0
-
 
 flutter_launcher_icons:
   android: true
@@ -168,15 +167,6 @@ flutter_launcher_icons:
   adaptive_icon_foreground: "assets/images/logo.png"
   web:
     generate: false
-
-flutter_native_splash:
-  color: "#FFFFFF"
-  image: assets/images/logo.png
-  android_12:
-    color: "#FFFFFF"
-    image: assets/images/logo.png
-    icon_background_color: "#FFFFFF"
-  ios: true
 
 flutter:
 
@@ -191,5 +181,7 @@ flutter:
     - assets/social/
 
     - assets/animations/
+
+    - assets/video/
 
 dependency_overrides: {}
