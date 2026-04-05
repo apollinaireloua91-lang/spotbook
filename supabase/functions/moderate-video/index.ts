@@ -199,6 +199,7 @@ serve(async (req) => {
         hashtags: hashtags || [],
         status: "approved",
         visibility: "public",
+        upload_status: "ready",
         duration_seconds: durationSeconds ?? null,
         ...(serviceId ? { service_id: serviceId } : {}),
       })
