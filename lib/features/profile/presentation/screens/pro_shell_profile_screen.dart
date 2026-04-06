@@ -1201,7 +1201,7 @@ class _LogOutButton extends ConsumerWidget {
         HapticFeedback.mediumImpact();
         final confirmed = await showDialog<bool>(
           context: context,
-          builder: (_) => AlertDialog(
+          builder: (ctx) => AlertDialog(
             backgroundColor: AppColors.surface,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16),
@@ -1222,14 +1222,14 @@ class _LogOutButton extends ConsumerWidget {
             ),
             actions: [
               TextButton(
-                onPressed: () => Navigator.of(context).pop(false),
+                onPressed: () => Navigator.of(ctx).pop(false),
                 child: Text(
                   'Cancel',
                   style: GoogleFonts.dmSans(color: AppColors.gris),
                 ),
               ),
               TextButton(
-                onPressed: () => Navigator.of(context).pop(true),
+                onPressed: () => Navigator.of(ctx).pop(true),
                 child: Text(
                   'Log out',
                   style: GoogleFonts.dmSans(
@@ -1243,7 +1243,11 @@ class _LogOutButton extends ConsumerWidget {
         );
 
         if (confirmed == true && context.mounted) {
-          await ref.read(authRepositoryProvider).signOut();
+          try {
+            await ref.read(authRepositoryProvider).signOut();
+          } catch (e) {
+            debugPrint('[pro_profile] signOut error ignored: $e');
+          }
           if (context.mounted) context.go('/login');
         }
       },

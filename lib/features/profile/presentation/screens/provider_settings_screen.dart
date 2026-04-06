@@ -360,30 +360,33 @@ class _SettingsBody extends ConsumerWidget {
           child: Column(
             children: [
               _Tile(
-                label: l10n.proSettingsFaq,
-                value: '',
-                showChevron: true,
-                onTap: () async {
-                  final uri = Uri.parse('https://spotbook.app/faq');
-                  if (await canLaunchUrl(uri)) {
-                    await launchUrl(uri, mode: LaunchMode.externalApplication);
-                  }
-                },
-              ),
-              const Divider(color: AppColors.border, height: 1),
-              _Tile(
                 label: l10n.proSettingsContactSupport,
                 value: '',
                 showChevron: true,
-                onTap: () async {
-                  final uri = Uri(
-                    scheme: 'mailto',
-                    path: 'support@spotbook.app',
-                  );
-                  if (await canLaunchUrl(uri)) {
-                    await launchUrl(uri);
-                  }
-                },
+                onTap: () => launchUrl(
+                  Uri.parse('https://getspotbook.app/support#contact'),
+                  mode: LaunchMode.externalApplication,
+                ),
+              ),
+              const Divider(color: AppColors.border, height: 1),
+              _Tile(
+                label: 'Terms of service',
+                value: '',
+                showChevron: true,
+                onTap: () => launchUrl(
+                  Uri.parse('https://getspotbook.app/terms'),
+                  mode: LaunchMode.externalApplication,
+                ),
+              ),
+              const Divider(color: AppColors.border, height: 1),
+              _Tile(
+                label: 'Privacy policy',
+                value: '',
+                showChevron: true,
+                onTap: () => launchUrl(
+                  Uri.parse('https://getspotbook.app/privacy'),
+                  mode: LaunchMode.externalApplication,
+                ),
               ),
             ],
           ),

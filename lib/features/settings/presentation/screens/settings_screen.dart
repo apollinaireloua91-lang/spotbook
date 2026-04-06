@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../../auth/data/auth_repository.dart';
 
@@ -180,9 +181,10 @@ class SettingsScreen extends ConsumerWidget {
               _SettingsItem(
                 icon: Icons.email_outlined,
                 label: 'Contact us',
-                onTap: () {
-                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('support@spotbook.app'), backgroundColor: AppColors.surface));
-                },
+                onTap: () => launchUrl(
+                  Uri.parse('https://getspotbook.app/support#contact'),
+                  mode: LaunchMode.externalApplication,
+                ),
               ),
             ],
           ),
@@ -194,16 +196,18 @@ class SettingsScreen extends ConsumerWidget {
               _SettingsItem(
                 icon: Icons.description_outlined,
                 label: 'Terms of service',
-                onTap: () {
-                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Terms of service coming soon'), backgroundColor: AppColors.surface));
-                },
+                onTap: () => launchUrl(
+                  Uri.parse('https://getspotbook.app/terms'),
+                  mode: LaunchMode.externalApplication,
+                ),
               ),
               _SettingsItem(
                 icon: Icons.privacy_tip_outlined,
                 label: 'Privacy policy',
-                onTap: () {
-                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Privacy policy coming soon'), backgroundColor: AppColors.surface));
-                },
+                onTap: () => launchUrl(
+                  Uri.parse('https://getspotbook.app/privacy'),
+                  mode: LaunchMode.externalApplication,
+                ),
               ),
             ],
           ),
@@ -218,7 +222,7 @@ class SettingsScreen extends ConsumerWidget {
                 HapticFeedback.mediumImpact();
                 final confirmed = await showDialog<bool>(
                   context: context,
-                  builder: (_) => AlertDialog(
+                  builder: (ctx) => AlertDialog(
                     backgroundColor: AppColors.surface,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
@@ -239,7 +243,7 @@ class SettingsScreen extends ConsumerWidget {
                     ),
                     actions: [
                       TextButton(
-                        onPressed: () => context.pop(false),
+                        onPressed: () => Navigator.of(ctx).pop(false),
                         child: Text(
                           'Cancel',
                           style: GoogleFonts.dmSans(
@@ -248,7 +252,7 @@ class SettingsScreen extends ConsumerWidget {
                         ),
                       ),
                       TextButton(
-                        onPressed: () => context.pop(true),
+                        onPressed: () => Navigator.of(ctx).pop(true),
                         child: Text(
                           'Log out',
                           style: GoogleFonts.dmSans(
@@ -262,7 +266,11 @@ class SettingsScreen extends ConsumerWidget {
                 );
 
                 if (confirmed == true && context.mounted) {
-                  await ref.read(authRepositoryProvider).signOut();
+                  try {
+                    await ref.read(authRepositoryProvider).signOut();
+                  } catch (e) {
+                    debugPrint('[settings] signOut error ignored: $e');
+                  }
                   if (context.mounted) context.go('/login');
                 }
               },
