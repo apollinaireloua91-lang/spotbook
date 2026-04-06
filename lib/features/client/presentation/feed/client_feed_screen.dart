@@ -234,7 +234,7 @@ class _FeedEmptyStateState extends State<_FeedEmptyState>
                   widget.onDiscoverTap();
                 } else {
                   // Navigate to search
-                  context.go('/client/search');
+                  context.go('/client/discover');
                 }
               },
               child: Container(

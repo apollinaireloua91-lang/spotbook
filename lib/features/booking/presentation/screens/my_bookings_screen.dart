@@ -271,7 +271,7 @@ class _UpcomingTab extends StatelessWidget {
         title: 'No upcoming bookings',
         subtitle: 'Book a service to see\nyour appointments here',
         actionLabel: 'Discover Pros',
-        onAction: () => GoRouter.of(context).go('/client/search'),
+        onAction: () => GoRouter.of(context).go('/client/discover'),
       );
     }
 
@@ -392,7 +392,7 @@ class _TicketsTab extends StatelessWidget {
         subtitle: 'Discover events and buy tickets\nto find them here',
         accentColor: AppColors.rose,
         actionLabel: 'Browse events',
-        onAction: () => GoRouter.of(context).go('/client/search'),
+        onAction: () => GoRouter.of(context).go('/client/discover'),
       );
     }
 
