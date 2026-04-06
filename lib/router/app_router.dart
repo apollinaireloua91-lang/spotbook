@@ -4,7 +4,9 @@ import 'package:go_router/go_router.dart';
 
 import '../core/animations/premium_transitions.dart';
 
+import '../features/pro/presentation/camera/video_capture_screen.dart';
 import '../features/pro/presentation/camera/video_preview_screen.dart';
+import '../features/feed/presentation/screens/provider_video_publish_screen.dart';
 import '../features/auth/presentation/screens/account_type_selection_screen.dart';
 import '../features/auth/presentation/screens/client_interest_categories_screen.dart';
 import '../features/auth/presentation/screens/client_interest_goals_screen.dart';
@@ -298,6 +300,22 @@ final appRouter = GoRouter(
         child: VideoPreviewScreen(videoFile: state.extra! as File),
       ),
     ),
+    GoRoute(
+      path: '/pro/camera',
+      pageBuilder: (context, state) => premiumSlideUpPage(
+        state: state,
+        child: const VideoCaptureScreen(),
+      ),
+    ),
+    GoRoute(
+      path: '/pro/video/publish',
+      pageBuilder: (context, state) => premiumSlideUpPage(
+        state: state,
+        child: ProviderVideoPublishScreen(
+          editData: state.extra as Map<String, dynamic>?,
+        ),
+      ),
+    ),
 
     // ─── Routes partagées — premium transitions ───
     GoRoute(
@@ -367,6 +385,13 @@ final appRouter = GoRouter(
       pageBuilder: (context, state) => premiumPage(
         state: state,
         child: const EditProfileScreen(),
+      ),
+    ),
+    GoRoute(
+      path: '/pro/messages',
+      pageBuilder: (context, state) => premiumPage(
+        state: state,
+        child: const MessagingInboxScreen(isProShell: true),
       ),
     ),
     GoRoute(
@@ -535,15 +560,6 @@ final appRouter = GoRouter(
       pageBuilder: (context, state) => premiumPage(
         state: state,
         child: const MyTicketsScreen(),
-      ),
-    ),
-
-    // ─── Route Pro messages ───
-    GoRoute(
-      path: '/pro/messages',
-      pageBuilder: (context, state) => premiumPage(
-        state: state,
-        child: const MessagingInboxScreen(isProShell: true),
       ),
     ),
 
