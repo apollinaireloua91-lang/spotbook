@@ -206,7 +206,7 @@ class _PremiumProfileScaffoldState
                 contentPadding: EdgeInsets.zero,
                 leading:
                     const Icon(Icons.flag_outlined, color: AppColors.blanc),
-                title: const Text('Signaler',
+                title: const Text('Report',
                     style: TextStyle(color: AppColors.blanc)),
                 onTap: () {
                   Navigator.of(ctx).pop();
@@ -217,7 +217,7 @@ class _PremiumProfileScaffoldState
               ListTile(
                 contentPadding: EdgeInsets.zero,
                 leading: const Icon(Icons.block, color: AppColors.error),
-                title: const Text('Bloquer',
+                title: const Text('Block',
                     style: TextStyle(color: AppColors.error)),
                 onTap: () {
                   Navigator.of(ctx).pop();
@@ -279,10 +279,10 @@ class _PremiumProfileScaffoldState
                           fontSize: 13,
                         ),
                         tabs: [
-                          const Tab(text: 'Vidéos'),
+                          const Tab(text: 'Videos'),
                           const Tab(text: 'Services'),
                           if (isTraiteur) const Tab(text: 'Menu'),
-                          const Tab(text: 'Avis'),
+                          const Tab(text: 'Reviews'),
                           const Tab(text: 'Events'),
                         ],
                       ),
@@ -589,7 +589,7 @@ class _PremiumProfileScaffoldState
                     // Follow
                     Expanded(
                       child: _ActionButton(
-                        label: _isFollowed ? 'Suivi' : 'Suivre',
+                        label: _isFollowed ? 'Following' : 'Follow',
                         icon: _isFollowed
                             ? Icons.check_rounded
                             : Icons.person_add_outlined,
@@ -755,11 +755,11 @@ class _StatsRow extends ConsumerWidget {
       ),
       child: Row(
         children: [
-          _StatItem(value: '$videosCount', label: 'Vidéos'),
+          _StatItem(value: '$videosCount', label: 'Videos'),
           _statDivider(),
-          _StatItem(value: '$reviewsCount', label: 'Avis'),
+          _StatItem(value: '$reviewsCount', label: 'Reviews'),
           _statDivider(),
-          const _StatItem(value: '—', label: 'RDV'),
+          const _StatItem(value: '—', label: 'Bookings'),
         ],
       ),
     );
@@ -891,7 +891,7 @@ class _BookButton extends StatelessWidget {
                 color: AppColors.blanc, size: 16),
             SizedBox(width: 8),
             Text(
-              'Réserver',
+              'Book',
               style: TextStyle(
                 color: AppColors.blanc,
                 fontSize: 14,
@@ -950,7 +950,7 @@ class _PersistentBookingBar extends StatelessWidget {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      'Services disponibles',
+                      'Available services',
                       style: TextStyle(
                         color: AppColors.gris.withAlpha(180),
                         fontSize: 12,
@@ -977,7 +977,7 @@ class _PersistentBookingBar extends StatelessWidget {
                     ],
                   ),
                   child: const Text(
-                    'Réserver',
+                    'Book',
                     style: TextStyle(
                       color: AppColors.blanc,
                       fontSize: 15,
@@ -1035,7 +1035,7 @@ class _ProVideosGrid extends ConsumerWidget {
       data: (videos) {
         if (videos.isEmpty) {
           return const _EmptyState(
-              icon: Icons.videocam_outlined, text: 'Aucune vidéo');
+              icon: Icons.videocam_outlined, text: 'No videos');
         }
         return GridView.builder(
           padding: const EdgeInsets.all(12),
@@ -1075,7 +1075,7 @@ class _PremiumServicesList extends ConsumerWidget {
       data: (services) {
         if (services.isEmpty) {
           return const _EmptyState(
-              icon: Icons.design_services_outlined, text: 'Aucun service');
+              icon: Icons.design_services_outlined, text: 'No services');
         }
         return ListView.builder(
           padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
@@ -1185,7 +1185,7 @@ class _PremiumServiceCard extends StatelessWidget {
                 borderRadius: BorderRadius.circular(10),
               ),
               child: const Text(
-                'Réserver',
+                'Book',
                 style: TextStyle(
                   color: AppColors.blanc,
                   fontSize: 12,
@@ -1221,7 +1221,7 @@ class _PremiumReviewsList extends ConsumerWidget {
       data: (reviews) {
         if (reviews.isEmpty) {
           return const _EmptyState(
-              icon: Icons.rate_review_outlined, text: 'Aucun avis');
+              icon: Icons.rate_review_outlined, text: 'No reviews');
         }
         return ListView.builder(
           padding: const EdgeInsets.fromLTRB(16, 0, 16, 100),
@@ -1454,7 +1454,7 @@ class _TraiteurMenuWrapper extends ConsumerWidget {
           const Center(child: CircularProgressIndicator(color: AppColors.violet)),
       error: (_, __) => const Center(
         child:
-            Text('Erreur de chargement', style: TextStyle(color: AppColors.gris)),
+            Text('Loading error', style: TextStyle(color: AppColors.gris)),
       ),
     );
   }
@@ -1475,7 +1475,7 @@ class _ProEventsList extends ConsumerWidget {
       data: (events) {
         if (events.isEmpty) {
           return const _EmptyState(
-              icon: Icons.event_outlined, text: 'Aucun événement');
+              icon: Icons.event_outlined, text: 'No events');
         }
         return ListView.builder(
           padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
@@ -1535,13 +1535,13 @@ class _ErrorState extends StatelessWidget {
         children: [
           const Icon(Icons.error_outline, color: AppColors.error, size: 36),
           const SizedBox(height: 12),
-          const Text('Erreur de chargement',
+          const Text('Loading error',
               style: TextStyle(color: AppColors.gris, fontSize: 14)),
           const SizedBox(height: 12),
           GestureDetector(
             onTap: onRetry,
             child: const Text(
-              'Réessayer',
+              'Retry',
               style: TextStyle(
                 color: AppColors.violet,
                 fontSize: 14,

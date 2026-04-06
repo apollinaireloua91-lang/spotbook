@@ -43,13 +43,13 @@ class EventRepository {
         .toList();
   }
 
-  Future<EventModel> getEvent(String eventId) async {
+  Future<EventModel?> getEvent(String eventId) async {
     final data = await _supabase
         .from('events')
         .select(_eventSelect)
         .eq('id', eventId)
-        .single();
-
+        .maybeSingle();
+    if (data == null) return null;
     return EventModel.fromJson(data);
   }
 

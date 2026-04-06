@@ -17,6 +17,9 @@ class ProviderProfileRemoteDatasource {
     bool isOwnerView = false,
   }) async {
     final providerJson = await _fetchProvider(providerId);
+    if (providerJson == null) {
+      throw StateError('Provider profile not found for $providerId');
+    }
 
     final servicesJson = await _safeList(() => _fetchServices(providerId));
     final videosJson = await _safeList(
@@ -111,12 +114,13 @@ class ProviderProfileRemoteDatasource {
 
   // ─── Requêtes privées ──────────────────────────────────────────────────────
 
-  Future<Map<String, dynamic>> _fetchProvider(String providerId) async {
+  Future<Map<String, dynamic>?> _fetchProvider(String providerId) async {
     final data = await _client
         .from('profiles_pro')
         .select('*, users(*)')
         .eq('id', providerId)
-        .single();
+        .maybeSingle();
+    if (data == null) return null;
 
     // Social links queried separately — no FK from profiles_pro
     final socialLinks = await _client

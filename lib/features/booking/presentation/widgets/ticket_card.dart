@@ -327,7 +327,7 @@ class _TicketCardState extends State<TicketCard>
             ),
           const SizedBox(height: 12),
           Text(
-            'Tapez pour retourner',
+            'Tap to flip',
             style: TextStyle(
               color: AppColors.gris.withAlpha(150),
               fontSize: 11,

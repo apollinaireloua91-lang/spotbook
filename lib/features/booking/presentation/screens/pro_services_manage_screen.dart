@@ -17,7 +17,7 @@ import '../notifiers/pro_scheduling_notifiers.dart';
 class ProServicesManageScreen extends ConsumerWidget {
   const ProServicesManageScreen({super.key});
 
-  static final _money = NumberFormat.currency(locale: 'fr_CA', symbol: r'$');
+  static final _money = NumberFormat.currency(locale: 'en_CA', symbol: r'$');
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -26,7 +26,7 @@ class ProServicesManageScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: AppColors.fond,
-      appBar: const SpotbookAppBar(title: 'Services & tarifs'),
+      appBar: const SpotbookAppBar(title: 'Services & pricing'),
       floatingActionButton: FloatingActionButton(
         backgroundColor: AppColors.blanc,
         foregroundColor: AppColors.fond,
@@ -67,19 +67,19 @@ class ProServicesManageScreen extends ConsumerWidget {
                             color: AppColors.gris, size: 48),
                         const SizedBox(height: 16),
                         const Text(
-                          'Aucun service pour l\'instant.',
+                          'No services yet.',
                           textAlign: TextAlign.center,
                           style: TextStyle(color: AppColors.gris, fontSize: 16),
                         ),
                         const SizedBox(height: 8),
                         const Text(
-                          'Ajoute une prestation, sa durée et ton tarif — les clients les verront dans le flux de réservation.',
+                          'Add a service, its duration and your rate — clients will see them in the booking flow.',
                           textAlign: TextAlign.center,
                           style: TextStyle(color: AppColors.gris, fontSize: 13),
                         ),
                         const SizedBox(height: 24),
                         SpotbookButton.primary(
-                          label: 'Ajouter un service',
+                          label: 'Add a service',
                           onPressed: () => _openServiceSheet(context, ref, null),
                         ),
                       ],
@@ -184,7 +184,7 @@ class ProServicesManageScreen extends ConsumerWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      existing == null ? 'Nouveau service' : 'Modifier le service',
+                      existing == null ? 'New service' : 'Edit service',
                       style: const TextStyle(
                         color: AppColors.blanc,
                         fontSize: 18,
@@ -194,14 +194,14 @@ class ProServicesManageScreen extends ConsumerWidget {
                     const SizedBox(height: 20),
                     SpotbookTextField(
                       controller: nameCtrl,
-                      label: 'Nom',
-                      hint: 'Ex. Massage suédois 60 min',
+                      label: 'Name',
+                      hint: 'E.g. Swedish massage 60 min',
                     ),
                     const SizedBox(height: 12),
                     SpotbookTextField(
                       controller: descCtrl,
-                      label: 'Description (optionnel)',
-                      hint: 'Détails pour le client',
+                      label: 'Description (optional)',
+                      hint: 'Details for the client',
                       maxLines: 3,
                     ),
                     const SizedBox(height: 12),
@@ -210,7 +210,7 @@ class ProServicesManageScreen extends ConsumerWidget {
                         Expanded(
                           child: SpotbookTextField(
                             controller: priceCtrl,
-                            label: 'Tarif (CAD)',
+                            label: 'Rate (CAD)',
                             hint: '80.00',
                             keyboardType: const TextInputType.numberWithOptions(
                                 decimal: true),
@@ -223,7 +223,7 @@ class ProServicesManageScreen extends ConsumerWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               const Text(
-                                'Durée',
+                                'Duration',
                                 style: TextStyle(
                                   color: AppColors.gris,
                                   fontSize: 12,
@@ -268,7 +268,7 @@ class ProServicesManageScreen extends ConsumerWidget {
                     // ─── Payment mode: full vs deposit ──────────────────
                     const SizedBox(height: 20),
                     const Text(
-                      'Mode de paiement',
+                      'Payment mode',
                       style: TextStyle(
                         color: AppColors.gris,
                         fontSize: 12,
@@ -277,15 +277,15 @@ class ProServicesManageScreen extends ConsumerWidget {
                     ),
                     const SizedBox(height: 8),
                     _PaymentModeRadio(
-                      label: 'Paiement complet',
-                      subtitle: 'Le client paie la totalité en ligne',
+                      label: 'Full payment',
+                      subtitle: 'Client pays the full amount online',
                       selected: paymentMode == 'full',
                       onTap: () => setModal(() => paymentMode = 'full'),
                     ),
                     const SizedBox(height: 8),
                     _PaymentModeRadio(
-                      label: 'Acompte + reste sur place',
-                      subtitle: 'Le client paie un acompte en ligne, le reste au RDV',
+                      label: 'Deposit + remainder on site',
+                      subtitle: 'Client pays a deposit online, the rest at the appointment',
                       selected: paymentMode == 'deposit',
                       onTap: () => setModal(() => paymentMode = 'deposit'),
                     ),
@@ -313,7 +313,7 @@ class ProServicesManageScreen extends ConsumerWidget {
                                 ),
                                 alignment: Alignment.center,
                                 child: Text(
-                                  'Pourcentage',
+                                  'Percentage',
                                   style: TextStyle(
                                     color: depositType == 'percentage'
                                         ? AppColors.blanc
@@ -344,7 +344,7 @@ class ProServicesManageScreen extends ConsumerWidget {
                                 ),
                                 alignment: Alignment.center,
                                 child: Text(
-                                  'Montant fixe',
+                                  'Fixed amount',
                                   style: TextStyle(
                                     color: depositType == 'fixed'
                                         ? AppColors.blanc
@@ -388,7 +388,7 @@ class ProServicesManageScreen extends ConsumerWidget {
                       ] else ...[
                         SpotbookTextField(
                           controller: fixedAmountCtrl,
-                          label: 'Montant de l\'acompte (CAD)',
+                          label: 'Deposit amount (CAD)',
                           hint: '100.00',
                           keyboardType: const TextInputType.numberWithOptions(
                               decimal: true),
@@ -405,7 +405,7 @@ class ProServicesManageScreen extends ConsumerWidget {
                             border: Border.all(color: AppColors.border),
                           ),
                           child: Text(
-                            'Le client paiera $depositPreview \$ en ligne et $remainingPreview \$ sur place',
+                            'Client will pay \$$depositPreview online and \$$remainingPreview on site',
                             style: const TextStyle(
                               color: AppColors.gris,
                               fontSize: 13,
@@ -421,11 +421,11 @@ class ProServicesManageScreen extends ConsumerWidget {
                       SwitchListTile(
                         contentPadding: EdgeInsets.zero,
                         title: const Text(
-                          'Service actif',
+                          'Active service',
                           style: TextStyle(color: AppColors.blanc, fontSize: 15),
                         ),
                         subtitle: const Text(
-                          'Désactive pour le masquer des nouvelles réservations.',
+                          'Disable to hide from new bookings.',
                           style: TextStyle(color: AppColors.gris, fontSize: 12),
                         ),
                         value: active,
@@ -436,7 +436,7 @@ class ProServicesManageScreen extends ConsumerWidget {
                     ],
                     const SizedBox(height: 24),
                     SpotbookButton.primary(
-                      label: existing == null ? 'Enregistrer' : 'Mettre à jour',
+                      label: existing == null ? 'Save' : 'Update',
                       isLoading: ref.read(proServicesNotifierProvider).saving,
                       onPressed: () async {
                         final name = nameCtrl.text.trim();
@@ -499,7 +499,7 @@ class ProServicesManageScreen extends ConsumerWidget {
                     ),
                     const SizedBox(height: 8),
                     SpotbookButton.outlined(
-                      label: 'Annuler',
+                      label: 'Cancel',
                       onPressed: () => context.pop(),
                     ),
                   ],
@@ -589,11 +589,11 @@ class _ServiceTile extends StatelessWidget {
   final VoidCallback onToggle;
 
   String get _depositLabel {
-    if (!service.isDepositMode) return 'Paiement complet';
+    if (!service.isDepositMode) return 'Full payment';
     if (service.depositType == 'fixed') {
-      return 'Acompte ${service.depositValue?.toStringAsFixed(0) ?? '—'} \$';
+      return 'Deposit ${service.depositValue?.toStringAsFixed(0) ?? '—'} \$';
     }
-    return 'Acompte ${service.depositValue?.toInt() ?? 30} %';
+    return 'Deposit ${service.depositValue?.toInt() ?? 30} %';
   }
 
   @override
@@ -633,7 +633,7 @@ class _ServiceTile extends StatelessWidget {
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: const Text(
-                      'Inactif',
+                      'Inactive',
                       style: TextStyle(color: AppColors.gris, fontSize: 11),
                     ),
                   ),
@@ -654,7 +654,7 @@ class _ServiceTile extends StatelessWidget {
               children: [
                 Expanded(
                   child: SpotbookButton.secondary(
-                    label: 'Modifier',
+                    label: 'Edit',
                     onPressed: onEdit,
                   ),
                 ),

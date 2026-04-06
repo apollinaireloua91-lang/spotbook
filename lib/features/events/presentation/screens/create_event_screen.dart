@@ -146,7 +146,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
     if (_titleCtrl.text.trim().isEmpty || _locationCtrl.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Titre et lieu requis'),
+          content: Text('Title and location required'),
           backgroundColor: AppColors.error,
         ),
       );
@@ -179,7 +179,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
       appBar: AppBar(
         backgroundColor: AppColors.fond,
         leading: Semantics(
-          label: 'Retour',
+          label: 'Back',
           child: IconButton(
             icon: const Icon(Icons.arrow_back_ios, color: AppColors.blanc, size: 20),
             onPressed: () {
@@ -188,7 +188,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
             },
           ),
         ),
-        title: const Text('Créer un événement',
+        title: const Text('Create event',
             style: TextStyle(color: AppColors.blanc, fontWeight: FontWeight.bold)),
         centerTitle: true,
       ),
@@ -213,13 +213,13 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                   children: [
                     Icon(Icons.add_photo_alternate_outlined, color: AppColors.gris, size: 40),
                     SizedBox(height: 8),
-                    Text('Ajouter une couverture', style: TextStyle(color: AppColors.gris, fontSize: 14)),
+                    Text('Add a cover image', style: TextStyle(color: AppColors.gris, fontSize: 14)),
                   ],
                 ),
               ),
             ),
             const SizedBox(height: 20),
-            _buildField(_titleCtrl, 'Titre de l\'événement', Icons.event),
+            _buildField(_titleCtrl, 'Event title', Icons.event),
             const SizedBox(height: 14),
             _buildField(_descCtrl, 'Description', Icons.description, maxLines: 3),
             const SizedBox(height: 14),
@@ -237,7 +237,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                     const Icon(Icons.calendar_today, color: AppColors.gris, size: 20),
                     const SizedBox(width: 12),
                     Text(
-                      DateFormat('dd MMMM yyyy', 'fr_FR').format(_selectedDate),
+                      DateFormat('MMMM d, yyyy', 'en_US').format(_selectedDate),
                       style: const TextStyle(color: AppColors.blanc, fontSize: 15),
                     ),
                   ],
@@ -245,18 +245,18 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
               ),
             ),
             const SizedBox(height: 14),
-            _buildField(_locationCtrl, 'Lieu', Icons.location_on_outlined),
+            _buildField(_locationCtrl, 'Location', Icons.location_on_outlined),
             const SizedBox(height: 14),
-            _buildField(_addressCtrl, 'Adresse (optionnel)', Icons.pin_drop_outlined),
+            _buildField(_addressCtrl, 'Address (optional)', Icons.pin_drop_outlined),
             const SizedBox(height: 24),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text('Types de billets',
+                const Text('Ticket types',
                     style: TextStyle(color: AppColors.blanc, fontSize: 16, fontWeight: FontWeight.w600)),
                 if (s.ticketTypes.length < 5)
                   Semantics(
-                    label: 'Ajouter type billet',
+                    label: 'Add ticket type',
                     child: IconButton(
                       icon: const Icon(Icons.add_circle_outline, color: AppColors.blanc),
                       onPressed: () => ref.read(_createProvider.notifier).addTicketType(),
@@ -294,7 +294,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                 ),
                 child: s.isCreating
                     ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: AppColors.gris, strokeWidth: 2))
-                    : const Text('Publier l\'événement', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                    : const Text('Publish event', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
               ),
             ),
             const SizedBox(height: 32),
@@ -342,7 +342,7 @@ class _TicketTypeRow extends StatelessWidget {
             flex: 3,
             child: TextField(
               style: const TextStyle(color: AppColors.blanc, fontSize: 14),
-              decoration: const InputDecoration(hintText: 'Nom', hintStyle: TextStyle(color: AppColors.gris, fontSize: 13), isDense: true, border: InputBorder.none),
+              decoration: const InputDecoration(hintText: 'Name', hintStyle: TextStyle(color: AppColors.gris, fontSize: 13), isDense: true, border: InputBorder.none),
               onChanged: (v) => onUpdate(v, null, null),
             ),
           ),
@@ -352,7 +352,7 @@ class _TicketTypeRow extends StatelessWidget {
             child: TextField(
               style: const TextStyle(color: AppColors.blanc, fontSize: 14),
               keyboardType: TextInputType.number,
-              decoration: const InputDecoration(hintText: 'Prix', hintStyle: TextStyle(color: AppColors.gris, fontSize: 13), isDense: true, border: InputBorder.none),
+              decoration: const InputDecoration(hintText: 'Price', hintStyle: TextStyle(color: AppColors.gris, fontSize: 13), isDense: true, border: InputBorder.none),
               onChanged: (v) => onUpdate(null, double.tryParse(v), null),
             ),
           ),
@@ -362,12 +362,12 @@ class _TicketTypeRow extends StatelessWidget {
             child: TextField(
               style: const TextStyle(color: AppColors.blanc, fontSize: 14),
               keyboardType: TextInputType.number,
-              decoration: const InputDecoration(hintText: 'Qté', hintStyle: TextStyle(color: AppColors.gris, fontSize: 13), isDense: true, border: InputBorder.none),
+              decoration: const InputDecoration(hintText: 'Qty', hintStyle: TextStyle(color: AppColors.gris, fontSize: 13), isDense: true, border: InputBorder.none),
               onChanged: (v) => onUpdate(null, null, int.tryParse(v)),
             ),
           ),
           Semantics(
-            label: 'Supprimer type billet',
+            label: 'Remove ticket type',
             child: IconButton(
               icon: const Icon(Icons.close, color: AppColors.gris, size: 18),
               onPressed: onRemove,

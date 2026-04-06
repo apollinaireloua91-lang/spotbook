@@ -296,7 +296,7 @@ class _ProRdvScreenState extends ConsumerState<ProRdvScreen>
   }
 
   String _shortDay(int weekday) {
-    const days = ['L', 'M', 'M', 'J', 'V', 'S', 'D'];
+    const days = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
     return days[weekday - 1];
   }
 
@@ -309,7 +309,7 @@ class _ProRdvScreenState extends ConsumerState<ProRdvScreen>
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             backgroundColor: AppColors.surface,
-            content: Text('Réservation confirmée',
+            content: Text('Booking confirmed',
                 style: TextStyle(color: AppColors.blanc)),
           ),
         );
@@ -338,7 +338,7 @@ class _ProRdvScreenState extends ConsumerState<ProRdvScreen>
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             backgroundColor: AppColors.surface,
-            content: Text('Rendez-vous marqué terminé',
+            content: Text('Appointment marked complete',
                 style: TextStyle(color: AppColors.blanc)),
           ),
         );
@@ -415,24 +415,24 @@ class _StatsRow extends StatelessWidget {
       _StatData(
         value: todayCount,
         color: AppColors.violet,
-        label: "RDV aujourd'hui",
+        label: "Today's appts",
       ),
       _StatData(
         value: confirmedCount,
         color: AppColors.success,
-        label: 'Confirmés',
+        label: 'Confirmed',
         meta: '/ $todayCount total',
       ),
       _StatData(
         value: pendingCount,
         color: AppColors.catering,
-        label: 'En attente',
-        meta: 'à confirmer',
+        label: 'Pending',
+        meta: 'to confirm',
       ),
       _StatData(
         value: monthCount,
         color: AppColors.rose,
-        label: 'Ce mois',
+        label: 'This month',
       ),
     ];
 
@@ -584,7 +584,7 @@ class _CalendarWeekStripState extends State<_CalendarWeekStrip> {
   Widget build(BuildContext context) {
     final now = DateTime.now();
     final days = List.generate(7, (i) => _weekStart.add(Duration(days: i)));
-    final monthName = DateFormat('MMMM yyyy', 'fr_FR').format(_weekStart);
+    final monthName = DateFormat('MMMM yyyy', 'en_US').format(_weekStart);
 
     return Column(
       children: [
@@ -713,7 +713,7 @@ class _CalendarWeekStripState extends State<_CalendarWeekStrip> {
   }
 
   String _dayName(int weekday) {
-    const names = ['LUN', 'MAR', 'MER', 'JEU', 'VEN', 'SAM', 'DIM'];
+    const names = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];
     return names[weekday - 1];
   }
 }
@@ -770,10 +770,10 @@ class _TimeSlotCard extends StatelessWidget {
       };
 
   String get _statusLabel => switch (booking.status) {
-        'confirmed' => '✓ Confirmé',
-        'pending_payment' || 'pending' => '⏳ En attente',
-        'completed' => '✓ Terminé',
-        _ => 'Annulé',
+        'confirmed' => '✓ Confirmed',
+        'pending_payment' || 'pending' => '⏳ Pending',
+        'completed' => '✓ Completed',
+        _ => 'Cancelled',
       };
 
   Color get _badgeBg => switch (booking.status) {
@@ -949,7 +949,7 @@ class _TimeSlotCard extends StatelessWidget {
                                 children: [
                                   if (onConfirm != null)
                                     _SlotAction(
-                                      label: 'Confirmer',
+                                      label: 'Confirm',
                                       color: AppColors.success,
                                       onTap: onConfirm!,
                                     ),
@@ -957,14 +957,14 @@ class _TimeSlotCard extends StatelessWidget {
                                     const SizedBox(width: 6),
                                   if (onDecline != null)
                                     _SlotAction(
-                                      label: 'Refuser',
+                                      label: 'Decline',
                                       color: AppColors.error,
                                       outlined: true,
                                       onTap: onDecline!,
                                     ),
                                   if (onComplete != null)
                                     _SlotAction(
-                                      label: 'Terminer',
+                                      label: 'Complete',
                                       color: AppColors.violet,
                                       onTap: onComplete!,
                                     ),
@@ -1065,7 +1065,7 @@ class _EmptySlotCard extends StatelessWidget {
               ),
               child: Center(
                 child: Text(
-                  '+ Disponible',
+                  '+ Available',
                   style: GoogleFonts.dmSans(
                     fontSize: 10,
                     color: AppColors.grisInactif,
@@ -1092,7 +1092,7 @@ class _EmptyDayState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final label = DateFormat('EEEE d MMMM', 'fr_FR').format(date);
+    final label = DateFormat('EEEE, MMMM d', 'en_US').format(date);
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
@@ -1109,7 +1109,7 @@ class _EmptyDayState extends StatelessWidget {
               color: AppColors.grisInactif, size: 32),
           const SizedBox(height: 10),
           Text(
-            'Aucun RDV le $label',
+            'No bookings on $label',
             textAlign: TextAlign.center,
             style: GoogleFonts.dmSans(
               fontSize: 13,
@@ -1120,7 +1120,7 @@ class _EmptyDayState extends StatelessWidget {
           GestureDetector(
             onTap: onAddTap,
             child: Text(
-              '+ Gérer les disponibilités',
+              '+ Manage availability',
               style: GoogleFonts.dmSans(
                 fontSize: 12,
                 fontWeight: FontWeight.w600,
@@ -1185,7 +1185,7 @@ class _RevenueSectionState extends State<_RevenueSection>
         Row(
           children: [
             Text(
-              '💰 Revenus',
+              '💰 Revenue',
               style: GoogleFonts.dmSans(
                 fontSize: 13,
                 fontWeight: FontWeight.w700,
@@ -1201,7 +1201,7 @@ class _RevenueSectionState extends State<_RevenueSection>
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Text(
-                'Cette semaine',
+                'This week',
                 style: GoogleFonts.dmSans(
                   fontSize: 10,
                   color: AppColors.gris,

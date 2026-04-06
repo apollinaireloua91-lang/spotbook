@@ -120,11 +120,11 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
         backgroundColor: AppColors.surface,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: const Text(
-          'Marquer comme terminé ?',
+          'Mark as completed?',
           style: TextStyle(color: AppColors.blanc),
         ),
         content: const Text(
-          'Le client pourra laisser un avis. Cette action confirme que la prestation a eu lieu.',
+          'The client will be able to leave a review. This action confirms the service took place.',
           style: TextStyle(color: AppColors.gris, height: 1.4),
         ),
         actions: [
@@ -152,7 +152,7 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
           SnackBar(
             backgroundColor: AppColors.surface,
             content: const Text(
-              'Rendez-vous marqué terminé',
+              'Appointment marked as completed',
               style: TextStyle(color: AppColors.blanc),
             ),
           ),
@@ -187,7 +187,7 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
           style: TextStyle(color: AppColors.blanc),
         ),
         content: Text(
-          'Vous confirmez avoir reçu ${(booking.remainingAmount ?? 0).toStringAsFixed(2)} ${booking.currency} sur place.',
+          'You confirm receiving ${(booking.remainingAmount ?? 0).toStringAsFixed(2)} ${booking.currency} on site.',
           style: const TextStyle(color: AppColors.gris, height: 1.4),
         ),
         actions: [
@@ -214,7 +214,7 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
           const SnackBar(
             backgroundColor: AppColors.surface,
             content: Text(
-              'Solde marqué comme payé',
+              'Balance marked as paid',
               style: TextStyle(color: AppColors.blanc),
             ),
           ),
@@ -302,7 +302,7 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
           final isClientViewer = uid == booking.clientId;
           if (!isProViewer && !isClientViewer) {
             return _ErrorScaffold(
-              message: 'Accès non autorisé',
+              message: 'Access denied',
               onBack: () => context.pop(),
             );
           }
@@ -401,7 +401,7 @@ class _DetailBody extends StatelessWidget {
     final banner = _StatusBanner(status: booking.status);
     final name = isProViewer
         ? (booking.clientName ?? 'Client')
-        : (booking.proName ?? 'Prestataire');
+        : (booking.proName ?? 'Provider');
     final avatarUrl =
         isProViewer ? booking.clientAvatarUrl : booking.proAvatarUrl;
 
@@ -418,7 +418,7 @@ class _DetailBody extends StatelessWidget {
             },
           ),
           title: const Text(
-            'Détail du RDV',
+            'Booking details',
             style: TextStyle(
               color: AppColors.blanc,
               fontWeight: FontWeight.w700,
@@ -440,7 +440,7 @@ class _DetailBody extends StatelessWidget {
                 const PopupMenuItem<String>(
                   value: 'report',
                   child: Text(
-                    'Signaler ce RDV',
+                    'Report this booking',
                     style: TextStyle(color: AppColors.blanc),
                   ),
                 ),
@@ -489,27 +489,27 @@ class _StatusBanner extends StatelessWidget {
       'confirmed' => (
           AppColors.success.withValues(alpha: 0.12),
           AppColors.success,
-          'Confirmé',
+          'Confirmed',
         ),
       'pending_payment' => (
           AppColors.warning.withValues(alpha: 0.12),
           AppColors.warning,
-          'En attente de paiement',
+          'Pending payment',
         ),
       'completed' => (
           AppColors.gris.withValues(alpha: 0.15),
           AppColors.grisClair,
-          'Terminé',
+          'Completed',
         ),
       'cancelled_full_refund' => (
           AppColors.error.withValues(alpha: 0.12),
           AppColors.error,
-          'Annulé — remboursé',
+          'Cancelled — refunded',
         ),
       'cancelled_no_refund' => (
           AppColors.error.withValues(alpha: 0.12),
           AppColors.error,
-          'Annulé',
+          'Cancelled',
         ),
       _ => (
           AppColors.surfaceAlt,
@@ -621,9 +621,9 @@ class _InfoSection extends StatelessWidget {
     final netEst = booking.depositAmount - commission;
 
     final remainingStatusLabel = switch (booking.remainingPaymentStatus) {
-      'paid_on_site' => 'Payé',
-      'waived' => 'Annulé',
-      _ => 'En attente',
+      'paid_on_site' => 'Paid',
+      'waived' => 'Waived',
+      _ => 'Pending',
     };
     final remainingStatusColor = switch (booking.remainingPaymentStatus) {
       'paid_on_site' => AppColors.success,
@@ -634,15 +634,15 @@ class _InfoSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _row(Icons.spa_outlined, 'Prestation', booking.serviceName ?? '—'),
+        _row(Icons.spa_outlined, 'Service', booking.serviceName ?? '—'),
         if (booking.serviceDurationMinutes != null)
           _row(
             Icons.timer_outlined,
-            'Durée',
+            'Duration',
             '${booking.serviceDurationMinutes} min',
           ),
         _row(Icons.calendar_today_outlined, 'Date', booking.slotDate ?? '—'),
-        _row(Icons.schedule, 'Horaire', timeLine),
+        _row(Icons.schedule, 'Time', timeLine),
 
         // ─── Payment breakdown ───────────────────────────────
         _row(
@@ -654,17 +654,17 @@ class _InfoSection extends StatelessWidget {
           _rowWithBadge(
             Icons.account_balance_wallet_outlined,
             isProViewer
-                ? 'Acompte reçu en ligne'
-                : 'Acompte payé en ligne',
+                ? 'Deposit received online'
+                : 'Deposit paid online',
             '${booking.depositAmount.toStringAsFixed(2)} ${booking.currency}',
-            badgeLabel: 'Payé',
+            badgeLabel: 'Paid',
             badgeColor: AppColors.success,
           ),
           _rowWithBadge(
             Icons.storefront_outlined,
             isProViewer
-                ? 'Reste à recevoir sur place'
-                : 'Reste à payer sur place',
+                ? 'Remaining to collect on site'
+                : 'Remaining to pay on site',
             '${(booking.remainingAmount ?? 0).toStringAsFixed(2)} ${booking.currency}',
             badgeLabel: remainingStatusLabel,
             badgeColor: remainingStatusColor,
@@ -672,7 +672,7 @@ class _InfoSection extends StatelessWidget {
           if (isProViewer && (booking.status == 'confirmed' || booking.status == 'completed')) ...[
             const SizedBox(height: 8),
             Text(
-              'Est. commission 12 % sur l\'acompte : ${commission.toStringAsFixed(2)} ${booking.currency} · Net approx. : ${netEst.toStringAsFixed(2)} ${booking.currency}',
+              'Est. commission 12% on deposit: ${commission.toStringAsFixed(2)} ${booking.currency} · Net approx.: ${netEst.toStringAsFixed(2)} ${booking.currency}',
               style: const TextStyle(
                 color: AppColors.gris,
                 fontSize: 12,
@@ -680,7 +680,7 @@ class _InfoSection extends StatelessWidget {
               ),
             ),
             Text(
-              'Reste sur place : ${(booking.remainingAmount ?? 0).toStringAsFixed(2)} ${booking.currency} (pas de commission)',
+              'On-site balance: ${(booking.remainingAmount ?? 0).toStringAsFixed(2)} ${booking.currency} (no commission)',
               style: const TextStyle(
                 color: AppColors.gris,
                 fontSize: 12,
@@ -691,15 +691,15 @@ class _InfoSection extends StatelessWidget {
         ] else ...[
           _rowWithBadge(
             Icons.account_balance_wallet_outlined,
-            'Paiement en ligne',
+            'Online payment',
             '${booking.depositAmount.toStringAsFixed(2)} ${booking.currency}',
-            badgeLabel: 'Payé',
+            badgeLabel: 'Paid',
             badgeColor: AppColors.success,
           ),
           if (isProViewer && (booking.status == 'confirmed' || booking.status == 'completed')) ...[
             const SizedBox(height: 8),
             Text(
-              'Est. commission 12 % : ${commission.toStringAsFixed(2)} ${booking.currency} · Net approx. : ${netEst.toStringAsFixed(2)} ${booking.currency}',
+              'Est. commission 12%: ${commission.toStringAsFixed(2)} ${booking.currency} · Net approx.: ${netEst.toStringAsFixed(2)} ${booking.currency}',
               style: const TextStyle(
                 color: AppColors.gris,
                 fontSize: 12,
@@ -712,7 +712,7 @@ class _InfoSection extends StatelessWidget {
         if (booking.bookingCode != null) ...[
           const SizedBox(height: 16),
           const Text(
-            'Code réservation',
+            'Booking code',
             style: TextStyle(
               color: AppColors.gris,
               fontSize: 12,
@@ -864,13 +864,13 @@ class _Actions extends StatelessWidget {
               onProAccept != null &&
               onProDecline != null) ...[
             SpotbookButton.primary(
-              label: 'Accepter le RDV',
+              label: 'Accept booking',
               isLoading: busy,
               onPressed: busy ? null : onProAccept,
             ),
             const SizedBox(height: 12),
             SpotbookButton.outlined(
-              label: 'Refuser',
+              label: 'Decline',
               isLoading: busy,
               onPressed: busy ? null : onProDecline,
             ),
@@ -878,7 +878,7 @@ class _Actions extends StatelessWidget {
           ],
           if (booking.status == 'confirmed') ...[
             SpotbookButton.primary(
-              label: 'Marquer terminé',
+              label: 'Mark completed',
               isLoading: busy,
               onPressed: busy ? null : onMarkCompleted,
             ),
@@ -886,7 +886,7 @@ class _Actions extends StatelessWidget {
           ],
           if (onMarkRemainingPaid != null) ...[
             SpotbookButton.primary(
-              label: 'Marquer le reste comme payé',
+              label: 'Mark balance as paid',
               isLoading: busy,
               onPressed: busy ? null : onMarkRemainingPaid,
             ),
@@ -920,14 +920,14 @@ class _Actions extends StatelessWidget {
       children: [
         if (canChat)
           SpotbookButton.outlined(
-            label: 'Contacter',
+            label: 'Contact',
             isLoading: busy,
             onPressed: busy ? null : onChat,
           ),
         if (onReschedule != null) ...[
           const SizedBox(height: 12),
           SpotbookButton.secondary(
-            label: 'Reprogrammer',
+            label: 'Reschedule',
             onPressed: busy ? null : onReschedule,
           ),
         ],
@@ -946,7 +946,7 @@ class _Actions extends StatelessWidget {
         if (booking.status == 'completed') ...[
           const SizedBox(height: 12),
           SpotbookButton.primary(
-            label: 'Laisser un avis',
+            label: 'Leave a review',
             onPressed: busy
                 ? null
                 : () {
@@ -963,7 +963,7 @@ class _Actions extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           SpotbookButton.secondary(
-            label: 'Réserver à nouveau',
+            label: 'Book again',
             onPressed: busy
                 ? null
                 : () {
@@ -986,10 +986,10 @@ class _StatusTimeline extends StatelessWidget {
   final BookingModel booking;
 
   static const _steps = [
-    ('pending_payment', 'Créé', Icons.receipt_long_outlined),
-    ('pending', 'Payé', Icons.payments_outlined),
-    ('confirmed', 'Confirmé', Icons.check_circle_outline),
-    ('completed', 'Terminé', Icons.done_all),
+    ('pending_payment', 'Created', Icons.receipt_long_outlined),
+    ('pending', 'Paid', Icons.payments_outlined),
+    ('confirmed', 'Confirmed', Icons.check_circle_outline),
+    ('completed', 'Completed', Icons.done_all),
   ];
 
   int _currentIndex() {
@@ -1019,7 +1019,7 @@ class _StatusTimeline extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
-            'Suivi',
+            'Timeline',
             style: TextStyle(
               color: AppColors.blanc,
               fontSize: 14,
@@ -1078,7 +1078,7 @@ class _StatusTimeline extends StatelessWidget {
                           borderRadius: BorderRadius.circular(6),
                         ),
                         child: const Text(
-                          'Actuel',
+                          'Current',
                           style: TextStyle(
                             color: AppColors.success,
                             fontSize: 11,
@@ -1120,8 +1120,8 @@ class _StatusTimeline extends StatelessWidget {
                 const SizedBox(width: 12),
                 Text(
                   booking.status == 'cancelled_full_refund'
-                      ? 'Annulé — remboursé'
-                      : 'Annulé',
+                      ? 'Cancelled — refunded'
+                      : 'Cancelled',
                   style: const TextStyle(
                     color: AppColors.error,
                     fontSize: 14,

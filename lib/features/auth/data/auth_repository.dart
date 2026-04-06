@@ -1,8 +1,8 @@
+import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 final authRepositoryProvider = Provider<AuthRepository>((ref) {
@@ -84,7 +84,7 @@ class AuthRepository {
       if (limiter.status == 429) {
         final message =
             (limiter.data as Map<String, dynamic>?)?['message'] as String? ??
-                'Trop de tentatives. Réessaie plus tard.';
+                'Too many attempts. Try again later.';
         throw AuthException(message);
       }
 
@@ -94,12 +94,16 @@ class AuthRepository {
       );
       final uid = response.user?.id;
       if (uid != null) {
-        await _supabase.from('audit_logs').insert({
-          'user_id': uid,
-          'action': 'user_login',
-          'resource_type': 'auth',
-          'metadata': {'provider': 'email'},
-        });
+        try {
+          await _supabase.from('audit_logs').insert({
+            'user_id': uid,
+            'action': 'user_login',
+            'resource_type': 'auth',
+            'metadata': {'provider': 'email'},
+          });
+        } catch (_) {
+          // Audit log is non-critical — don't block login
+        }
       }
       return response;
     } on AuthException catch (e) {
@@ -109,43 +113,56 @@ class AuthRepository {
       if (e.message.toLowerCase().contains('token') &&
           e.message.toLowerCase().contains('expired')) {
         await _supabase.auth.refreshSession();
-        throw AuthException('Session expirée. Reconnecte-toi.');
+        throw AuthException('Session expired. Please sign in again.');
       }
       rethrow;
     }
   }
 
-  Future<AuthResponse> signInWithGoogle() async {
-    const webClientId = String.fromEnvironment('GOOGLE_WEB_CLIENT_ID');
-    const iosClientId = String.fromEnvironment('GOOGLE_IOS_CLIENT_ID');
-    final googleSignIn = GoogleSignIn(
-      clientId: iosClientId.isNotEmpty ? iosClientId : null,
-      serverClientId: webClientId,
+  /// Initiates Google OAuth sign-in via browser redirect.
+  /// Completes when the deep link callback sets the session.
+  Future<void> signInWithGoogle() async {
+    final completer = Completer<void>();
+
+    late final StreamSubscription<AuthState> sub;
+    sub = _supabase.auth.onAuthStateChange.listen((state) {
+      if (state.event == AuthChangeEvent.signedIn && !completer.isCompleted) {
+        sub.cancel();
+        completer.complete();
+      }
+    });
+
+    final launched = await _supabase.auth.signInWithOAuth(
+      OAuthProvider.google,
+      redirectTo: 'app.spotbook://login-callback',
+      authScreenLaunchMode: LaunchMode.externalApplication,
     );
-    final googleUser = await googleSignIn.signIn();
-    if (googleUser == null) {
-      throw AuthException('Connexion Google annulée.');
+
+    if (!launched) {
+      sub.cancel();
+      throw AuthException('Could not launch Google sign-in.');
     }
-    final googleAuth = await googleUser.authentication;
-    final idToken = googleAuth.idToken;
-    if (idToken == null) {
-      throw AuthException('Impossible de récupérer le token Google.');
+
+    try {
+      await completer.future.timeout(const Duration(minutes: 5));
+    } on TimeoutException {
+      sub.cancel();
+      throw AuthException('Google sign-in timed out.');
     }
-    final response = await _supabase.auth.signInWithIdToken(
-      provider: OAuthProvider.google,
-      idToken: idToken,
-      accessToken: googleAuth.accessToken,
-    );
-    final uid = response.user?.id;
+
+    final uid = currentUserId;
     if (uid != null) {
-      await _supabase.from('audit_logs').insert({
-        'user_id': uid,
-        'action': 'user_login',
-        'resource_type': 'auth',
-        'metadata': {'provider': 'google'},
-      });
+      try {
+        await _supabase.from('audit_logs').insert({
+          'user_id': uid,
+          'action': 'user_login',
+          'resource_type': 'auth',
+          'metadata': {'provider': 'google'},
+        });
+      } catch (_) {
+        // Audit log is non-critical — don't block login
+      }
     }
-    return response;
   }
 
   Future<void> resetPassword(String email) async {
@@ -156,20 +173,27 @@ class AuthRepository {
     if (limiter.status == 429) {
       final message = (limiter.data as Map<String, dynamic>?)?['message']
               as String? ??
-          'Trop de tentatives. Réessaie plus tard.';
+          'Too many attempts. Try again later.';
       throw AuthException(message);
     }
-    await _supabase.auth.resetPasswordForEmail(email);
+    await _supabase.auth.resetPasswordForEmail(
+      email,
+      redirectTo: 'app.spotbook://reset-callback',
+    );
   }
 
   Future<void> signOut() async {
     final uid = currentUserId;
     if (uid != null) {
-      await _supabase.from('audit_logs').insert({
-        'user_id': uid,
-        'action': 'user_logout',
-        'resource_type': 'auth',
-      });
+      try {
+        await _supabase.from('audit_logs').insert({
+          'user_id': uid,
+          'action': 'user_logout',
+          'resource_type': 'auth',
+        });
+      } catch (_) {
+        // Audit log is non-critical — don't block logout
+      }
     }
     await _supabase.removeAllChannels();
     await _supabase.auth.signOut();
@@ -230,12 +254,16 @@ class AuthRepository {
     await _supabase
         .from('users')
         .update({'deleted_at': DateTime.now().toIso8601String()}).eq('id', uid);
-    await _supabase.from('audit_logs').insert({
-      'user_id': uid,
-      'action': 'user_deleted',
-      'resource_type': 'users',
-      'resource_id': uid,
-    });
+    try {
+      await _supabase.from('audit_logs').insert({
+        'user_id': uid,
+        'action': 'user_deleted',
+        'resource_type': 'users',
+        'resource_id': uid,
+      });
+    } catch (_) {
+      // Audit log is non-critical — don't block account deletion
+    }
     await signOut();
   }
 
@@ -271,6 +299,37 @@ class AuthRepository {
   Future<void> updateEmail(String newEmail) async {
     await _supabase.auth.updateUser(
       UserAttributes(email: newEmail),
+    );
+  }
+
+  Future<void> signInWithMagicLink(String email) async {
+    final limiter = await _supabase.functions.invoke(
+      'rate-limiter',
+      body: {'scope': 'otp', 'identifier': email.toLowerCase()},
+    );
+    if (limiter.status == 429) {
+      final message = (limiter.data as Map<String, dynamic>?)?['message']
+              as String? ??
+          'Too many attempts. Try again later.';
+      throw AuthException(message);
+    }
+    await _supabase.auth.signInWithOtp(
+      email: email,
+      emailRedirectTo: 'app.spotbook://login-callback',
+      shouldCreateUser: false,
+    );
+  }
+
+  Future<void> resendConfirmationEmail(String email) async {
+    await _supabase.auth.resend(
+      type: OtpType.signup,
+      email: email,
+    );
+  }
+
+  Future<void> updatePassword(String newPassword) async {
+    await _supabase.auth.updateUser(
+      UserAttributes(password: newPassword),
     );
   }
 }

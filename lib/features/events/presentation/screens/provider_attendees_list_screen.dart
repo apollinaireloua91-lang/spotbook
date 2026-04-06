@@ -194,7 +194,7 @@ class _ProviderAttendeesListScreenState
                   style: const TextStyle(
                       color: AppColors.blanc, fontSize: 14),
                   decoration: InputDecoration(
-                    hintText: 'Rechercher un participant…',
+                    hintText: 'Search attendee...',
                     hintStyle: TextStyle(
                         color: AppColors.gris.withAlpha(128)),
                     prefixIcon: const Icon(Icons.search,
@@ -213,7 +213,7 @@ class _ProviderAttendeesListScreenState
               Expanded(
                 child: filtered.isEmpty
                     ? const Center(
-                        child: Text('Aucun participant',
+                        child: Text('No attendees',
                             style: TextStyle(
                                 color: AppColors.gris, fontSize: 15)),
                       )

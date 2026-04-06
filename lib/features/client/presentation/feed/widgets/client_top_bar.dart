@@ -303,7 +303,7 @@ class _ClientNotificationsSheet extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           const Text(
-            'Aucune notification',
+            'No notifications',
             style: TextStyle(color: AppColors.gris, fontSize: 14),
           ),
           const SizedBox(height: 40),

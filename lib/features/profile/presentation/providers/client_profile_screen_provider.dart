@@ -50,6 +50,7 @@ final clientProfileScreenDataProvider = FutureProvider.autoDispose
 
   final profileUserId = profileKey.isEmpty ? sessionUid : profileKey;
   final profile = await profileRepo.getClientProfile(profileUserId);
+  if (profile == null) throw StateError('Profile not found');
 
   int reviewsCount = 0;
   try {

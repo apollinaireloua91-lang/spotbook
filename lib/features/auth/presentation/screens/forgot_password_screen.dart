@@ -42,15 +42,15 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
           .resetPassword(_emailCtrl.text.trim());
 
       if (!mounted) return;
-      context.go('/forgot-password-confirmation');
+      context.go('/forgot-password-confirmation', extra: _emailCtrl.text.trim());
     } catch (e) {
       if (!mounted) return;
       final msg = e.toString();
       setState(() {
         _isLoading = false;
         _errorMessage = msg.contains('rate')
-            ? 'Trop de tentatives. Réessayez dans quelques minutes.'
-            : 'Une erreur est survenue. Vérifiez votre email.';
+            ? 'Too many attempts. Please try again in a few minutes.'
+            : 'An error occurred. Please check your email.';
       });
     }
   }
@@ -93,7 +93,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                 ),
                 const SizedBox(height: 8),
                 const Text(
-                  'Entrez votre adresse email et nous vous enverrons un lien pour réinitialiser votre mot de passe.',
+                  'Enter your email address and we\'ll send you a link to reset your password.',
                   style: TextStyle(
                     color: AppColors.gris,
                     fontSize: 15,
@@ -113,9 +113,9 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                       const TextStyle(color: AppColors.blanc, fontSize: 15),
                   validator: (value) {
                     final v = value?.trim() ?? '';
-                    if (v.isEmpty) return 'Email requis';
+                    if (v.isEmpty) return 'Email required';
                     if (!v.contains('@') || !v.contains('.')) {
-                      return 'Email invalide';
+                      return 'Invalid email';
                     }
                     return null;
                   },
@@ -168,7 +168,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
 
                 // Submit button
                 SpotbookButton(
-                  label: 'Réinitialiser le mot de passe',
+                  label: 'Reset password',
                   variant: SpotbookButtonVariant.primary,
                   isLoading: _isLoading,
                   onPressed: _isLoading ? null : _submit,

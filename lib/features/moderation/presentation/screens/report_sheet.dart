@@ -109,7 +109,7 @@ class _ReportSheet extends ConsumerWidget {
           const Text('Report',
               style: TextStyle(color: AppColors.blanc, fontSize: 20, fontWeight: FontWeight.bold)),
           const SizedBox(height: 4),
-          const Text('Pourquoi signalez-vous ce contenu ?',
+          const Text('Why are you reporting this content?',
               style: TextStyle(color: AppColors.gris, fontSize: 14)),
           const SizedBox(height: 16),
           ...List.generate(_reasons.length, (i) {
@@ -160,7 +160,7 @@ class _ReportSheet extends ConsumerWidget {
                           Navigator.of(context).pop();
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
-                              content: Text('Signalement envoyé'),
+                              content: Text('Report submitted'),
                               backgroundColor: AppColors.success,
                             ),
                           );

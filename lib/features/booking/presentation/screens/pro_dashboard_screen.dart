@@ -80,9 +80,9 @@ class _PremiumGreetingHeader extends StatelessWidget {
 
   String get _greeting {
     final hour = DateTime.now().hour;
-    if (hour < 12) return 'Bonjour';
-    if (hour < 18) return 'Bon après-midi';
-    return 'Bonsoir';
+    if (hour < 12) return 'Good morning';
+    if (hour < 18) return 'Good afternoon';
+    return 'Good evening';
   }
 
   @override
@@ -205,11 +205,11 @@ class _PremiumStatsRow extends StatelessWidget {
           _PremiumStatCard(
             icon: Icons.attach_money_rounded,
             gradientColors: const [AppColors.success, Color(0xFF34D399)],
-            label: 'Revenus',
+            label: 'Revenue',
             numericValue: int.tryParse(revenue),
             valueSuffix: ' CA\$',
             subtitle: revenueChange != null
-                ? '${revenueChange! >= 0 ? '+' : ''}${revenueChange!.toStringAsFixed(0)}% ce mois'
+                ? '${revenueChange! >= 0 ? '+' : ''}${revenueChange!.toStringAsFixed(0)}% this month'
                 : null,
             subtitleColor:
                 (revenueChange ?? 0) >= 0 ? AppColors.success : AppColors.error,
@@ -218,22 +218,22 @@ class _PremiumStatsRow extends StatelessWidget {
           _PremiumStatCard(
             icon: Icons.calendar_today_rounded,
             gradientColors: const [AppColors.violet, AppColors.violetClair],
-            label: 'Réservations',
+            label: 'Bookings',
             numericValue: bookings as int?,
           ),
           const SizedBox(width: 12),
           _PremiumStatCard(
             icon: Icons.star_rounded,
             gradientColors: const [AppColors.warning, Color(0xFFFFD700)],
-            label: 'Note moyenne',
+            label: 'Avg rating',
             displayValue: rating,
-            subtitle: '$reviewCount avis',
+            subtitle: '$reviewCount reviews',
           ),
           const SizedBox(width: 12),
           _PremiumStatCard(
             icon: Icons.confirmation_number_outlined,
             gradientColors: const [AppColors.rose, AppColors.roseClair],
-            label: 'Billets vendus',
+            label: 'Tickets sold',
             numericValue: ticketsSold,
           ),
         ],
@@ -362,7 +362,7 @@ class _PremiumQuickActions extends StatelessWidget {
               ),
               const SizedBox(width: 8),
               Text(
-                'ACTIONS RAPIDES',
+                'QUICK ACTIONS',
                 style: GoogleFonts.dmSans(
                   fontSize: 11,
                   fontWeight: FontWeight.w600,
@@ -377,21 +377,21 @@ class _PremiumQuickActions extends StatelessWidget {
             children: [
               _PremiumActionButton(
                 icon: Icons.event,
-                label: 'Créer\névénement',
+                label: 'Create\nevent',
                 gradientColors: const [AppColors.violet, AppColors.violetClair],
                 onTap: () => context.push('/create-event'),
               ),
               const SizedBox(width: 10),
               _PremiumActionButton(
                 icon: Icons.qr_code_scanner,
-                label: 'Scanner\nbillet',
+                label: 'Scan\nticket',
                 gradientColors: const [AppColors.rose, AppColors.roseClair],
                 onTap: () => context.push('/pro/scanner-picker'),
               ),
               const SizedBox(width: 10),
               _PremiumActionButton(
                 icon: Icons.calendar_month,
-                label: 'Voir\ncalendrier',
+                label: 'View\ncalendar',
                 gradientColors: const [AppColors.accent, Color(0xFF00A3CC)],
                 onTap: () => context.push('/pro/rdv'),
               ),
@@ -402,21 +402,21 @@ class _PremiumQuickActions extends StatelessWidget {
             children: [
               _PremiumActionButton(
                 icon: Icons.build_outlined,
-                label: 'Gérer\nservices',
+                label: 'Manage\nservices',
                 gradientColors: const [AppColors.violetClair, Color(0xFFB794F4)],
                 onTap: () => context.push('/pro/services'),
               ),
               const SizedBox(width: 10),
               _PremiumActionButton(
                 icon: Icons.bar_chart_rounded,
-                label: 'Revenus\n& Stats',
+                label: 'Revenue\n& Stats',
                 gradientColors: const [AppColors.success, Color(0xFF34D399)],
                 onTap: () => context.push('/pro/revenue'),
               ),
               const SizedBox(width: 10),
               _PremiumActionButton(
                 icon: Icons.celebration,
-                label: 'Mes\névénements',
+                label: 'My\nevents',
                 gradientColors: const [AppColors.warning, Color(0xFFFFD700)],
                 onTap: () => context.push('/pro/events'),
               ),
@@ -552,7 +552,7 @@ class _UpcomingBookingsSection extends StatelessWidget {
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
-                  'PROCHAINS RDV',
+                  'UPCOMING BOOKINGS',
                   style: GoogleFonts.dmSans(
                     fontSize: 11,
                     fontWeight: FontWeight.w600,
@@ -565,7 +565,7 @@ class _UpcomingBookingsSection extends StatelessWidget {
                 GestureDetector(
                   onTap: () => context.push('/pro/rdv'),
                   child: Text(
-                    'Voir tout',
+                    'View all',
                     style: GoogleFonts.dmSans(
                       fontSize: 13,
                       fontWeight: FontWeight.w500,
@@ -598,7 +598,7 @@ class _UpcomingBookingsSection extends StatelessWidget {
                     ),
                     const SizedBox(height: 12),
                     Text(
-                      'Aucun RDV à venir',
+                      'No upcoming bookings',
                       style: GoogleFonts.dmSans(
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
@@ -607,7 +607,7 @@ class _UpcomingBookingsSection extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'Vos prochaines réservations apparaîtront ici',
+                      'Your upcoming bookings will appear here',
                       style: GoogleFonts.dmSans(
                         fontSize: 12,
                         color: AppColors.grisInactif,
@@ -655,13 +655,13 @@ class _PremiumBookingTile extends StatelessWidget {
   String get _statusLabel {
     switch (booking.status) {
       case 'confirmed':
-        return 'Confirmé';
+        return 'Confirmed';
       case 'pending':
-        return 'En attente';
+        return 'Pending';
       case 'completed':
-        return 'Terminé';
+        return 'Completed';
       case 'cancelled':
-        return 'Annulé';
+        return 'Cancelled';
       default:
         return booking.status;
     }
@@ -835,7 +835,7 @@ class _PremiumNextEventCard extends StatelessWidget {
               ),
               const SizedBox(width: 8),
               Text(
-                'PROCHAIN ÉVÉNEMENT',
+                'NEXT EVENT',
                 style: GoogleFonts.dmSans(
                   fontSize: 11,
                   fontWeight: FontWeight.w600,
@@ -1166,7 +1166,7 @@ class _ErrorView extends StatelessWidget {
               ),
               const SizedBox(height: 20),
               Text(
-                'Impossible de charger le dashboard',
+                'Unable to load dashboard',
                 textAlign: TextAlign.center,
                 style: GoogleFonts.dmSans(
                   fontSize: 16,
@@ -1197,7 +1197,7 @@ class _ErrorView extends StatelessWidget {
                       onRetry();
                     },
                     icon: const Icon(Icons.refresh, size: 18),
-                    label: const Text('Réessayer'),
+                    label: const Text('Retry'),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.transparent,
                       shadowColor: Colors.transparent,

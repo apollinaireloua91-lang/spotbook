@@ -59,7 +59,7 @@ class _SearchListViewState extends State<SearchListView>
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'Essaie une autre recherche ou catégorie',
+                  'Try another search or category',
                   style: GoogleFonts.dmSans(
                     fontSize: 12,
                     color: AppColors.grisInactif,
@@ -76,7 +76,7 @@ class _SearchListViewState extends State<SearchListView>
             // ── Section: Près de toi ──
             if (state.pros.isNotEmpty) ...[
               _SectionTitle(
-                title: 'Près de toi \uD83D\uDCCD',
+                title: 'Near you \uD83D\uDCCD',
               ),
               const SizedBox(height: 8),
               ...List.generate(state.pros.length, (index) {
@@ -106,7 +106,7 @@ class _SearchListViewState extends State<SearchListView>
             if (state.events.isNotEmpty) ...[
               const SizedBox(height: 20),
               _SectionTitle(
-                title: 'Événements à venir \uD83C\uDF89',
+                title: 'Upcoming events \uD83C\uDF89',
               ),
               const SizedBox(height: 8),
               SizedBox(

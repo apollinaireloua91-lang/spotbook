@@ -67,9 +67,9 @@ class PromoRepository {
         .from('users')
         .select('referral_code')
         .eq('id', uid)
-        .single();
+        .maybeSingle();
 
-    String? code = user['referral_code'] as String?;
+    String? code = user?['referral_code'] as String?;
     if (code == null || code.isEmpty) {
       code = 'SPT-${uid.substring(0, 6).toUpperCase()}';
       await _supabase

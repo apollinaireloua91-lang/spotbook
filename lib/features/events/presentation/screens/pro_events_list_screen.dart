@@ -50,7 +50,7 @@ class _ProEventsListScreenState extends ConsumerState<ProEventsListScreen> {
                 children: [
                   const Expanded(
                     child: Text(
-                      'Mes Événements',
+                      'My Events',
                       style: TextStyle(
                         color: AppColors.blanc,
                         fontSize: 26,
@@ -74,7 +74,7 @@ class _ProEventsListScreenState extends ConsumerState<ProEventsListScreen> {
                               const SizedBox(height: 12),
                               Container(width: 40, height: 4, decoration: BoxDecoration(color: AppColors.gris, borderRadius: BorderRadius.circular(2))),
                               const SizedBox(height: 16),
-                              const Text('Filtrer par statut', style: TextStyle(color: AppColors.blanc, fontSize: 16, fontWeight: FontWeight.w600)),
+                              const Text('Filter by status', style: TextStyle(color: AppColors.blanc, fontSize: 16, fontWeight: FontWeight.w600)),
                               const SizedBox(height: 12),
                               ..._Filter.values.map((f) => ListTile(
                                 leading: Icon(
@@ -122,7 +122,7 @@ class _ProEventsListScreenState extends ConsumerState<ProEventsListScreen> {
                               controller: _searchCtrl,
                               style: const TextStyle(color: AppColors.blanc, fontSize: 14),
                               decoration: const InputDecoration(
-                                hintText: 'Rechercher un événement…',
+                                hintText: 'Search event...',
                                 hintStyle: TextStyle(color: AppColors.gris, fontSize: 14),
                                 border: InputBorder.none,
                                 isDense: true,
@@ -210,7 +210,7 @@ class _EventCard extends StatelessWidget {
   const _EventCard({required this.event});
   final EventModel event;
 
-  String _statusLabel() => event.isActive ? 'Publié' : 'Brouillon';
+  String _statusLabel() => event.isActive ? 'Published' : 'Draft';
 
   Color _statusColor() =>
       event.isActive ? AppColors.success : AppColors.gris;
@@ -306,7 +306,7 @@ class _EventCard extends StatelessWidget {
                   children: [
                     _ActionBtn(
                       icon: Icons.edit_outlined,
-                      label: 'Modifier',
+                      label: 'Edit',
                       onTap: () => context.push('/event/${event.id}'),
                     ),
                     const SizedBox(width: 8),
@@ -379,7 +379,7 @@ class _StatsRow extends StatelessWidget {
                     ),
                   ),
                   const Text(
-                    'Billets vendus',
+                    'Tickets sold',
                     style: TextStyle(color: AppColors.gris, fontSize: 10),
                   ),
                   const SizedBox(height: 4),
@@ -527,8 +527,8 @@ class _EmptyState extends StatelessWidget {
             const SizedBox(height: 16),
             Text(
               filter == _Filter.all
-                  ? 'Aucun événement créé'
-                  : 'Aucun événement ${filter.label.toLowerCase()}',
+                  ? 'No events created'
+                  : 'No ${filter.label.toLowerCase()} events',
               style: const TextStyle(
                 color: AppColors.blanc,
                 fontSize: 16,
@@ -545,7 +545,7 @@ class _EmptyState extends StatelessWidget {
             TextButton(
               onPressed: () => context.go('/create-event'),
               child: const Text(
-                'Créer un événement',
+                'Create an event',
                 style: TextStyle(color: AppColors.blanc, fontSize: 14),
               ),
             ),
@@ -560,10 +560,10 @@ enum _Filter { all, published, draft, past }
 
 extension on _Filter {
   String get label => switch (this) {
-        _Filter.all => 'Tous',
-        _Filter.published => 'Publiés',
-        _Filter.draft => 'Brouillons',
-        _Filter.past => 'Passés',
+        _Filter.all => 'All',
+        _Filter.published => 'Published',
+        _Filter.draft => 'Drafts',
+        _Filter.past => 'Past',
       };
 }
 

@@ -57,7 +57,7 @@ class _UploadVideoScreenState extends ConsumerState<UploadVideoScreen> {
       );
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Vidéo publiée !'), backgroundColor: AppColors.success),
+        const SnackBar(content: Text('Video published!'), backgroundColor: AppColors.success),
       );
       context.pop();
     } catch (e) {
@@ -84,18 +84,18 @@ class _UploadVideoScreenState extends ConsumerState<UploadVideoScreen> {
             child: s.videoFile != null
                 ? Center(child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
                     const Icon(Icons.videocam, color: AppColors.success, size: 40), const SizedBox(height: 8),
-                    Text('Vidéo sélectionnée (${s.videoDuration?.toStringAsFixed(0)}s)', style: const TextStyle(color: AppColors.blanc, fontSize: 14)),
-                    const SizedBox(height: 4), const Text('Appuyez pour changer', style: TextStyle(color: AppColors.gris, fontSize: 12))]))
+                    Text('Video selected (${s.videoDuration?.toStringAsFixed(0)}s)', style: const TextStyle(color: AppColors.blanc, fontSize: 14)),
+                    const SizedBox(height: 4), const Text('Tap to change', style: TextStyle(color: AppColors.gris, fontSize: 12))]))
                 : const Center(child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
                     Icon(Icons.videocam_outlined, color: AppColors.gris, size: 40), SizedBox(height: 8),
-                    Text('Sélectionner une vidéo (max 60s)', style: TextStyle(color: AppColors.gris, fontSize: 14))]))),
+                    Text('Select a video (max 60s)', style: TextStyle(color: AppColors.gris, fontSize: 14))]))),
         ),
         const SizedBox(height: 24),
         ValueListenableBuilder<TextEditingValue>(
           valueListenable: _titleCtrl,
           builder: (context, value, _) => TextField(
             controller: _titleCtrl, maxLength: 80, style: const TextStyle(color: AppColors.blanc),
-            decoration: InputDecoration(labelText: 'Titre *', hintText: 'Ex : Coupe femme + brushing', labelStyle: const TextStyle(color: AppColors.gris), hintStyle: TextStyle(color: AppColors.gris.withAlpha(128)), counterStyle: const TextStyle(color: AppColors.gris), filled: true, fillColor: AppColors.surface,
+            decoration: InputDecoration(labelText: 'Title *', hintText: 'E.g.: Women\'s cut + blow-dry', labelStyle: const TextStyle(color: AppColors.gris), hintStyle: TextStyle(color: AppColors.gris.withAlpha(128)), counterStyle: const TextStyle(color: AppColors.gris), filled: true, fillColor: AppColors.surface,
               border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.border)),
               enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.border)),
               focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.blanc))),
@@ -111,7 +111,7 @@ class _UploadVideoScreenState extends ConsumerState<UploadVideoScreen> {
           final validCat = catItems.any((i) => i.value == s.selectedCategory) ? s.selectedCategory : null;
           return DropdownButtonFormField<String>(
             initialValue: validCat,
-            hint: const Text('Sélectionner une catégorie *', style: TextStyle(color: AppColors.gris)),
+            hint: const Text('Select a category *', style: TextStyle(color: AppColors.gris)),
             dropdownColor: AppColors.surface, style: const TextStyle(color: AppColors.blanc), icon: const Icon(Icons.keyboard_arrow_down, color: AppColors.gris),
             decoration: InputDecoration(filled: true, fillColor: AppColors.surface,
               border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.border)),
@@ -125,7 +125,7 @@ class _UploadVideoScreenState extends ConsumerState<UploadVideoScreen> {
           valueListenable: _descCtrl,
           builder: (context, value, _) => TextField(
             controller: _descCtrl, maxLines: 4, maxLength: 300, style: const TextStyle(color: AppColors.blanc),
-            decoration: InputDecoration(labelText: 'Description *', hintText: 'Décrivez votre service en détail...', labelStyle: const TextStyle(color: AppColors.gris), hintStyle: TextStyle(color: AppColors.gris.withAlpha(128)), counterStyle: const TextStyle(color: AppColors.gris), filled: true, fillColor: AppColors.surface,
+            decoration: InputDecoration(labelText: 'Description *', hintText: 'Describe your service in detail...', labelStyle: const TextStyle(color: AppColors.gris), hintStyle: TextStyle(color: AppColors.gris.withAlpha(128)), counterStyle: const TextStyle(color: AppColors.gris), filled: true, fillColor: AppColors.surface,
               border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.border)),
               enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.border)),
               focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.blanc))),
@@ -133,7 +133,7 @@ class _UploadVideoScreenState extends ConsumerState<UploadVideoScreen> {
         ),
         const SizedBox(height: 16),
         TextField(controller: _hashtagCtrl, style: const TextStyle(color: AppColors.blanc),
-          decoration: InputDecoration(labelText: 'Hashtags (optionnel, max 5)', hintText: 'coiffure, tendance, paris', labelStyle: const TextStyle(color: AppColors.gris), hintStyle: TextStyle(color: AppColors.gris.withAlpha(128)), filled: true, fillColor: AppColors.surface,
+          decoration: InputDecoration(labelText: 'Hashtags (optional, max 5)', hintText: 'haircut, trending, paris', labelStyle: const TextStyle(color: AppColors.gris), hintStyle: TextStyle(color: AppColors.gris.withAlpha(128)), filled: true, fillColor: AppColors.surface,
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.border)),
             enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.border)),
             focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.blanc)))),
@@ -141,7 +141,7 @@ class _UploadVideoScreenState extends ConsumerState<UploadVideoScreen> {
         if (s.isUploading) ...[
           ClipRRect(borderRadius: BorderRadius.circular(4), child: LinearProgressIndicator(value: s.uploadProgress, backgroundColor: AppColors.surface, valueColor: const AlwaysStoppedAnimation<Color>(AppColors.blanc), minHeight: 6)),
           const SizedBox(height: 8),
-          Center(child: Text('${(s.uploadProgress * 100).toInt()}% — Publication en cours...', style: const TextStyle(color: AppColors.gris, fontSize: 13))),
+          Center(child: Text('${(s.uploadProgress * 100).toInt()}% — Publishing...', style: const TextStyle(color: AppColors.gris, fontSize: 13))),
           const SizedBox(height: 16),
         ],
         ListenableBuilder(
@@ -151,7 +151,7 @@ class _UploadVideoScreenState extends ConsumerState<UploadVideoScreen> {
             return SizedBox(width: double.infinity, height: 52, child: ElevatedButton(
               onPressed: valid && !s.isUploading ? _publish : null,
               style: ElevatedButton.styleFrom(backgroundColor: AppColors.blanc, foregroundColor: AppColors.fond, disabledBackgroundColor: AppColors.surfaceAlt, disabledForegroundColor: AppColors.gris, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
-              child: const Text('Publier ma prestation', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+              child: const Text('Publish my service', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
             ));
           },
         ),

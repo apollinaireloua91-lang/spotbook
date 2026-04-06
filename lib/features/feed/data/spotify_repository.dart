@@ -35,8 +35,8 @@ class SpotifyRepository {
     if (res.status != 200) {
       final err = res.data is Map
           ? (res.data as Map)['error']?.toString()
-          : 'Échec liaison Spotify';
-      throw Exception(err ?? 'Échec liaison Spotify');
+          : 'Spotify link failed';
+      throw Exception(err ?? 'Spotify link failed');
     }
   }
 
@@ -45,8 +45,8 @@ class SpotifyRepository {
     if (res.status != 200) {
       final err = res.data is Map
           ? (res.data as Map)['error']?.toString()
-          : 'Déconnexion impossible';
-      throw Exception(err ?? 'Déconnexion impossible');
+          : 'Disconnection failed';
+      throw Exception(err ?? 'Disconnection failed');
     }
   }
 

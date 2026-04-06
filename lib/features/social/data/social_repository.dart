@@ -121,8 +121,8 @@ class SocialRepository {
         .from('users')
         .select('referral_code')
         .eq('id', uid)
-        .single();
-    final existing = user['referral_code'] as String?;
+        .maybeSingle();
+    final existing = user?['referral_code'] as String?;
     if (existing != null && existing.isNotEmpty) return existing;
     final generated = 'SPT-${uid.substring(0, 6).toUpperCase()}';
     await _supabase.from('users').update({'referral_code': generated}).eq('id', uid);

@@ -106,7 +106,7 @@ class ProviderPayoutHistoryScreen extends ConsumerWidget {
     return Scaffold(
       backgroundColor: AppColors.fond,
       appBar: SpotbookAppBar(
-        title: 'Historique des versements',
+        title: 'Payout history',
         actions: [
           IconButton(
             icon: const Icon(Icons.settings_outlined,
@@ -134,7 +134,7 @@ class ProviderPayoutHistoryScreen extends ConsumerWidget {
                   Icon(Icons.account_balance_wallet_outlined,
                       color: AppColors.gris, size: 48),
                   SizedBox(height: 12),
-                  Text('Aucun versement',
+                  Text('No payouts',
                       style: TextStyle(
                           color: AppColors.gris, fontSize: 15)),
                   SizedBox(height: 4),
@@ -183,15 +183,15 @@ class _PayoutCard extends StatelessWidget {
     switch (payout.status) {
       case 'completed':
         statusColor = AppColors.success;
-        statusLabel = 'Complété';
+        statusLabel = 'Completed';
         statusIcon = Icons.check_circle;
       case 'failed':
         statusColor = AppColors.error;
-        statusLabel = 'Échoué';
+        statusLabel = 'Failed';
         statusIcon = Icons.cancel;
       default:
         statusColor = AppColors.warning;
-        statusLabel = 'En cours';
+        statusLabel = 'Pending';
         statusIcon = Icons.access_time;
     }
 

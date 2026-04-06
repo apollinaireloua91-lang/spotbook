@@ -31,7 +31,7 @@ class ShareBottomSheet extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             const Text(
-              'Partager',
+              'Share',
               style: TextStyle(
                 color: AppColors.blanc,
                 fontSize: 16,
@@ -67,13 +67,13 @@ class ShareBottomSheet extends StatelessWidget {
                   ),
                   _ShareOption(
                     icon: Icons.link,
-                    label: 'Copier',
+                    label: 'Copy',
                     color: AppColors.blanc,
                     bgColor: AppColors.surfaceAlt,
                     onTap: () {
                       HapticFeedback.mediumImpact();
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Lien copié')),
+                        const SnackBar(content: Text('Link copied')),
                       );
                       Navigator.of(context).pop();
                     },

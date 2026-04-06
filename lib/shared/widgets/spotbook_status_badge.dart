@@ -77,13 +77,13 @@ class SpotbookStatusBadge extends StatelessWidget {
   String get _defaultLabel {
     switch (status) {
       case BookingStatus.confirmed:
-        return 'Confirmé';
+        return 'Confirmed';
       case BookingStatus.pending:
-        return 'En attente';
+        return 'Pending';
       case BookingStatus.cancelled:
-        return 'Annulé';
+        return 'Cancelled';
       case BookingStatus.completed:
-        return 'Terminé';
+        return 'Completed';
     }
   }
 }

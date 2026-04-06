@@ -75,7 +75,7 @@ class ClientNotifSheet extends ConsumerWidget {
             child: Row(
               children: [
                 const Text(
-                  'Mes notifications',
+                  'My notifications',
                   style: TextStyle(
                     color: AppColors.blanc,
                     fontSize: 17,
@@ -105,7 +105,7 @@ class ClientNotifSheet extends ConsumerWidget {
             const Padding(
               padding: EdgeInsets.all(40),
               child: Text(
-                'Aucune notification',
+                'No notifications',
                 style: TextStyle(color: AppColors.gris, fontSize: 14),
               ),
             )

@@ -191,7 +191,7 @@ class _Body extends StatelessWidget {
                 const SizedBox(width: 12),
                 Expanded(
                   child: _StatCard(
-                    label: 'Billets vendus',
+                    label: 'Tickets sold',
                     value: '${data.totalSold} / ${data.totalCapacity}',
                     icon: Icons.confirmation_number_outlined,
                   ),
@@ -208,7 +208,7 @@ class _Body extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text('Progression des ventes',
+                      const Text('Sales progress',
                           style: TextStyle(
                               color: AppColors.blanc,
                               fontSize: 13,
@@ -234,7 +234,7 @@ class _Body extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    '${data.totalCapacity - data.totalSold} places restantes',
+                    '${data.totalCapacity - data.totalSold} spots remaining',
                     style: const TextStyle(
                         color: AppColors.gris, fontSize: 12),
                   ),
@@ -251,7 +251,7 @@ class _Body extends StatelessWidget {
                       color: AppColors.gris, size: 20),
                   const SizedBox(width: 12),
                   const Expanded(
-                    child: Text('Billets scannés',
+                    child: Text('Tickets scanned',
                         style: TextStyle(
                             color: AppColors.blanc, fontSize: 14)),
                   ),
@@ -270,7 +270,7 @@ class _Body extends StatelessWidget {
               Align(
                 alignment: Alignment.centerLeft,
                 child: const Text(
-                  'Types de billets',
+                  'Ticket types',
                   style: TextStyle(
                       color: AppColors.blanc,
                       fontSize: 15,
@@ -322,13 +322,13 @@ class _Body extends StatelessWidget {
 
             // Action buttons
             SpotbookButton.primary(
-              label: 'Scanner les billets',
+              label: 'Scan tickets',
               icon: Icons.qr_code_scanner,
               onPressed: () => context.push('/scanner/$eventId'),
             ),
             const SizedBox(height: 10),
             SpotbookButton.secondary(
-              label: 'Gérer l\'événement',
+              label: 'Manage event',
               icon: Icons.settings_outlined,
               onPressed: () => context.push('/pro/events'),
             ),

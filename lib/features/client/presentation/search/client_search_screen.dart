@@ -53,7 +53,7 @@ class _ClientSearchBody extends StatelessWidget {
                   TextButton.icon(
                     onPressed: () => context.read<ClientSearchCubit>().refresh(),
                     icon: const Icon(Icons.refresh, color: AppColors.violet),
-                    label: const Text('Réessayer', style: TextStyle(color: AppColors.violet)),
+                    label: const Text('Retry', style: TextStyle(color: AppColors.violet)),
                   ),
                 ],
               ),

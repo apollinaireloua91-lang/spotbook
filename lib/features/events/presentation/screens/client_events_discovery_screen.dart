@@ -95,7 +95,7 @@ class _ClientEventsDiscoveryScreenState
               padding: const EdgeInsets.symmetric(horizontal: 16),
               children: [
                 _FilterChip(
-                  label: 'Tous',
+                  label: 'All',
                   selected: _dateFilter == _DateFilter.all,
                   onTap: () =>
                       setState(() => _dateFilter = _DateFilter.all),
@@ -403,7 +403,7 @@ class _EventCard extends StatelessWidget {
                         color: AppColors.error.withAlpha(30),
                         borderRadius: BorderRadius.circular(6),
                       ),
-                      child: const Text('Complet',
+                      child: const Text('Sold out',
                           style: TextStyle(
                               color: AppColors.error,
                               fontWeight: FontWeight.w600,

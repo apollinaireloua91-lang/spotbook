@@ -36,17 +36,17 @@ class TicketDetailScreen extends ConsumerWidget {
             },
           ),
         ),
-        title: const Text('Mon billet', style: TextStyle(color: AppColors.blanc, fontWeight: FontWeight.bold)),
+        title: const Text('My ticket', style: TextStyle(color: AppColors.blanc, fontWeight: FontWeight.bold)),
         centerTitle: true,
         actions: [
           Semantics(
-            label: 'Partager billet',
+            label: 'Share ticket',
             child: IconButton(
               icon: const Icon(Icons.share_outlined, color: AppColors.blanc),
               onPressed: () {
                 HapticFeedback.mediumImpact();
                 SharePlus.instance.share(
-                  ShareParams(text: 'Mon billet pour ${ticket.eventTitle ?? 'l\'événement'} — Spotbook'),
+                  ShareParams(text: 'My ticket for ${ticket.eventTitle ?? 'the event'} — Spotbook'),
                 );
               },
             ),
@@ -146,11 +146,11 @@ class TicketDetailScreen extends ConsumerWidget {
                   ),
                   _InfoRow(
                     icon: Icons.confirmation_number_outlined,
-                    text: 'Acheté le ${DateFormat('dd/MM/yyyy HH:mm').format(ticket.purchasedAt)}',
+                    text: 'Purchased on ${DateFormat('dd/MM/yyyy HH:mm').format(ticket.purchasedAt)}',
                   ),
                   if (ticket.scannedAt != null) _InfoRow(
                     icon: Icons.check_circle_outline,
-                    text: 'Scanné le ${DateFormat('dd/MM/yyyy HH:mm').format(ticket.scannedAt!)}',
+                    text: 'Scanned on ${DateFormat('dd/MM/yyyy HH:mm').format(ticket.scannedAt!)}',
                   ),
                 ],
               ),

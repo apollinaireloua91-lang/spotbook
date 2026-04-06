@@ -95,7 +95,7 @@ class _CreatePromoCodeScreenState extends ConsumerState<CreatePromoCodeScreen> {
       appBar: AppBar(
         backgroundColor: AppColors.fond,
         leading: Semantics(
-          label: 'Retour',
+          label: 'Back',
           child: IconButton(
             icon: const Icon(Icons.arrow_back_ios, color: AppColors.blanc, size: 20),
             onPressed: () {
@@ -104,7 +104,7 @@ class _CreatePromoCodeScreenState extends ConsumerState<CreatePromoCodeScreen> {
             },
           ),
         ),
-        title: const Text('Codes promo',
+        title: const Text('Promo codes',
             style: TextStyle(color: AppColors.blanc, fontWeight: FontWeight.bold)),
         centerTitle: true,
       ),
@@ -122,22 +122,22 @@ class _CreatePromoCodeScreenState extends ConsumerState<CreatePromoCodeScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('Nouveau code',
+                const Text('New code',
                     style: TextStyle(color: AppColors.blanc, fontSize: 16, fontWeight: FontWeight.w600)),
                 const SizedBox(height: 12),
-                _buildField(_codeCtrl, 'Code (ex: BIENVENUE20)', TextInputType.text),
+                _buildField(_codeCtrl, 'Code (e.g. WELCOME20)', TextInputType.text),
                 const SizedBox(height: 10),
                 Row(
                   children: [
-                    Expanded(child: _buildField(_discountCtrl, 'Réduction %', TextInputType.number)),
+                    Expanded(child: _buildField(_discountCtrl, 'Discount %', TextInputType.number)),
                     const SizedBox(width: 10),
-                    Expanded(child: _buildField(_maxUsesCtrl, 'Utilisations max', TextInputType.number)),
+                    Expanded(child: _buildField(_maxUsesCtrl, 'Max uses', TextInputType.number)),
                   ],
                 ),
                 const SizedBox(height: 10),
                 _buildField(
                   _expiresCtrl,
-                  'Expiration YYYY-MM-DD (optionnel)',
+                  'Expiry YYYY-MM-DD (optional)',
                   TextInputType.datetime,
                 ),
                 const SizedBox(height: 14),
@@ -154,7 +154,7 @@ class _CreatePromoCodeScreenState extends ConsumerState<CreatePromoCodeScreen> {
                             if (code.isEmpty || discount == null || discount <= 0 || discount > 100) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
-                                  content: Text('Code et réduction (1-100%) requis'),
+                                  content: Text('Code and discount (1-100%) required'),
                                   backgroundColor: AppColors.error,
                                 ),
                               );
@@ -190,7 +190,7 @@ class _CreatePromoCodeScreenState extends ConsumerState<CreatePromoCodeScreen> {
                               ),
                             ),
                           )
-                        : const Text('Créer', style: TextStyle(fontWeight: FontWeight.bold)),
+                        : const Text('Create', style: TextStyle(fontWeight: FontWeight.bold)),
                   ),
                 ),
               ],
@@ -217,7 +217,7 @@ class _CreatePromoCodeScreenState extends ConsumerState<CreatePromoCodeScreen> {
                   )
                 : state.codes.isEmpty
                     ? const Center(
-                        child: Text('Aucun code promo', style: TextStyle(color: AppColors.gris, fontSize: 15)),
+                        child: Text('No promo codes', style: TextStyle(color: AppColors.gris, fontSize: 15)),
                       )
                     : ListView.builder(
                         padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -246,7 +246,7 @@ class _CreatePromoCodeScreenState extends ConsumerState<CreatePromoCodeScreen> {
                                           )),
                                       const SizedBox(height: 2),
                                       Text(
-                                        '-${code.discountPercent}% · ${code.currentUses}${code.maxUses != null ? '/${code.maxUses}' : ''} utilisations',
+                                        '-${code.discountPercent}% · ${code.currentUses}${code.maxUses != null ? '/${code.maxUses}' : ''} uses',
                                         style: const TextStyle(color: AppColors.gris, fontSize: 13),
                                       ),
                                     ],
@@ -254,7 +254,7 @@ class _CreatePromoCodeScreenState extends ConsumerState<CreatePromoCodeScreen> {
                                 ),
                                 if (code.isActive)
                                   Semantics(
-                                    label: 'Désactiver code promo',
+                                    label: 'Deactivate promo code',
                                     child: IconButton(
                                       icon: const Icon(Icons.close, color: AppColors.gris, size: 18),
                                       onPressed: () {
@@ -270,7 +270,7 @@ class _CreatePromoCodeScreenState extends ConsumerState<CreatePromoCodeScreen> {
                                       color: AppColors.surfaceAlt,
                                       borderRadius: BorderRadius.circular(8),
                                     ),
-                                    child: const Text('Inactif',
+                                    child: const Text('Inactive',
                                         style: TextStyle(color: AppColors.gris, fontSize: 11)),
                                   ),
                               ],

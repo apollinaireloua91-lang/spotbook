@@ -197,7 +197,7 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen>
               ),
               const SizedBox(height: 16),
               const Text(
-                'Compte créé !',
+                'Account created!',
                 style: TextStyle(
                   color: AppColors.violet,
                   fontSize: 18,
@@ -208,7 +208,7 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen>
 
               // Title
               const Text(
-                'Complétez votre profil',
+                'Complete your profile',
                 style: TextStyle(
                   color: AppColors.blanc,
                   fontSize: 26,
@@ -218,7 +218,7 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen>
               ),
               const SizedBox(height: 8),
               const Text(
-                'Ajoutez une photo et une bio pour que les pros sachent à qui ils ont affaire.',
+                'Add a photo and bio so pros know who they\'re working with.',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: AppColors.gris,
@@ -320,7 +320,7 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen>
                 style: const TextStyle(color: AppColors.blanc, fontSize: 15),
                 maxLines: 3,
                 decoration: InputDecoration(
-                  hintText: 'Bio — parlez un peu de vous…',
+                  hintText: 'Bio — tell us a bit about yourself...',
                   hintStyle: TextStyle(
                     color: AppColors.gris.withAlpha(128),
                     fontSize: 15,
@@ -410,7 +410,7 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen>
                 child: const Padding(
                   padding: EdgeInsets.symmetric(vertical: 8),
                   child: Text(
-                    'Passer pour le moment',
+                    'Skip for now',
                     style: TextStyle(color: AppColors.gris, fontSize: 14),
                   ),
                 ),

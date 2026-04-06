@@ -1,221 +1,67 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../../shared/theme/app_colors.dart';
 import '../../../../feed/domain/video_model.dart';
 
-/// Bottom overlay for ClientFeedScreen.
-/// Shows: Pro name + category badge, expandable caption with hashtags.
-/// Matches Pro feed's PostLeftColumnPro design.
-class ClientBottomInfo extends StatefulWidget {
+/// Bottom overlay: Pro name + Book button. Nothing else.
+class ClientBottomInfo extends StatelessWidget {
   const ClientBottomInfo({super.key, required this.video});
 
   final VideoModel video;
 
   @override
-  State<ClientBottomInfo> createState() => _ClientBottomInfoState();
-}
-
-class _ClientBottomInfoState extends State<ClientBottomInfo> {
-  bool _captionExpanded = false;
-
-  @override
   Widget build(BuildContext context) {
-    final v = widget.video;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
+    return Row(
       children: [
-        // ── Pro name + category badge ──
-        GestureDetector(
-          onTap: () => context.push('/pro/${v.proId}'),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Flexible(
-                child: Text(
-                  v.proName ?? 'Pro',
-                  style: const TextStyle(
-                    color: AppColors.blanc,
-                    fontSize: 13,
-                    fontWeight: FontWeight.w700,
-                    shadows: [
-                      Shadow(
-                        color: AppColors.overlayHeavy,
-                        blurRadius: 6,
-                        offset: Offset(0, 1),
-                      ),
-                    ],
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+        Flexible(
+          child: Text(
+            video.proName ?? 'Pro',
+            style: const TextStyle(
+              color: AppColors.blanc,
+              fontSize: 15,
+              fontWeight: FontWeight.w700,
+              shadows: [
+                Shadow(
+                  color: AppColors.overlayHeavy,
+                  blurRadius: 4,
                 ),
-              ),
-              if (v.proCategory != null) ...[
-                const SizedBox(width: 8),
-                _CategoryBadge(category: v.proCategory!),
               ],
-            ],
+            ),
+            overflow: TextOverflow.ellipsis,
           ),
         ),
-
-        // ── Caption ──
-        if (v.description != null && v.description!.isNotEmpty) ...[
-          const SizedBox(height: 6),
-          GestureDetector(
-            onTap: () => setState(() => _captionExpanded = !_captionExpanded),
-            child: _CaptionText(
-              text: v.description!,
-              expanded: _captionExpanded,
+        const SizedBox(width: 10),
+        GestureDetector(
+          onTap: () {
+            HapticFeedback.lightImpact();
+            context.push('/pro/${video.proId}');
+          },
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            decoration: BoxDecoration(
+              color: AppColors.violet,
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.violet.withAlpha(102),
+                  blurRadius: 12,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: const Text(
+              'Book',
+              style: TextStyle(
+                color: AppColors.blanc,
+                fontSize: 13,
+                fontWeight: FontWeight.w700,
+              ),
             ),
           ),
-        ],
+        ),
       ],
     );
   }
-}
-
-/// Category badge pill with semi-transparent colored background.
-class _CategoryBadge extends StatelessWidget {
-  const _CategoryBadge({required this.category});
-
-  final String category;
-
-  @override
-  Widget build(BuildContext context) {
-    final color = _colorForCategory(category);
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-      decoration: BoxDecoration(
-        color: color.withAlpha(51),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Text(
-        category,
-        style: TextStyle(
-          color: color,
-          fontSize: 9,
-          fontWeight: FontWeight.w600,
-        ),
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-      ),
-    );
-  }
-
-  Color _colorForCategory(String cat) {
-    final lower = cat.toLowerCase();
-    if (lower.contains('coiffure') || lower.contains('barb')) {
-      return AppColors.violet;
-    }
-    if (lower.contains('traiteur') || lower.contains('cater')) {
-      return AppColors.catering;
-    }
-    if (lower.contains('événement') || lower.contains('event')) {
-      return AppColors.rose;
-    }
-    if (lower.contains('beauté') || lower.contains('beauty') ||
-        lower.contains('makeup')) {
-      return AppColors.roseClair;
-    }
-    if (lower.contains('fitness') || lower.contains('sport') ||
-        lower.contains('coach')) {
-      return AppColors.success;
-    }
-    if (lower.contains('photo') || lower.contains('vidéo') ||
-        lower.contains('video')) {
-      return AppColors.infoBlue;
-    }
-    if (lower.contains('musique') || lower.contains('music') ||
-        lower.contains('dj')) {
-      return AppColors.spotifyGreen;
-    }
-    return AppColors.violetClair;
-  }
-}
-
-/// Caption text with max 2 lines (collapsed) and hashtag coloring.
-class _CaptionText extends StatelessWidget {
-  const _CaptionText({required this.text, required this.expanded});
-
-  final String text;
-  final bool expanded;
-
-  static final _hashtagPattern = RegExp(r'#\w+');
-
-  @override
-  Widget build(BuildContext context) {
-    return RichText(
-      maxLines: expanded ? 20 : 2,
-      overflow: TextOverflow.ellipsis,
-      text: _buildSpan(text),
-    );
-  }
-
-  TextSpan _buildSpan(String text) {
-    final children = <InlineSpan>[];
-    int lastEnd = 0;
-
-    for (final match in _hashtagPattern.allMatches(text)) {
-      if (match.start > lastEnd) {
-        children.add(TextSpan(
-          text: text.substring(lastEnd, match.start),
-          style: _baseStyle,
-        ));
-      }
-      children.add(TextSpan(
-        text: match.group(0),
-        style: _hashtagStyle,
-      ));
-      lastEnd = match.end;
-    }
-
-    if (lastEnd < text.length) {
-      children.add(TextSpan(
-        text: text.substring(lastEnd),
-        style: _baseStyle,
-      ));
-    }
-
-    if (!expanded) {
-      children.add(const TextSpan(
-        text: ' voir plus',
-        style: TextStyle(
-          color: AppColors.gris,
-          fontSize: 12,
-          fontWeight: FontWeight.w500,
-        ),
-      ));
-    }
-
-    return TextSpan(children: children);
-  }
-
-  static const _baseStyle = TextStyle(
-    color: Color(0xFFDDDDDD),
-    fontSize: 12,
-    height: 1.4,
-    shadows: [
-      Shadow(
-        color: AppColors.overlayHeavy,
-        blurRadius: 4,
-        offset: Offset(0, 1),
-      ),
-    ],
-  );
-
-  static const _hashtagStyle = TextStyle(
-    color: AppColors.violet,
-    fontSize: 12,
-    height: 1.4,
-    fontWeight: FontWeight.w600,
-    shadows: [
-      Shadow(
-        color: AppColors.overlayHeavy,
-        blurRadius: 4,
-        offset: Offset(0, 1),
-      ),
-    ],
-  );
 }

@@ -45,6 +45,7 @@ class VideoFeedItem extends ConsumerStatefulWidget {
     this.onToggleFollow,
     this.useLocalHeartAnimation = false,
     this.rightColumnOverride,
+    this.bottomOverlayOverride,
   });
 
   final VideoModel video;
@@ -60,6 +61,10 @@ class VideoFeedItem extends ConsumerStatefulWidget {
   /// Used by ProFeedScreen to show Pro-specific buttons (no Comment, enhanced Spotify).
   final Widget? rightColumnOverride;
 
+  /// When provided, replaces the default bottom-left overlay (pro name + Book).
+  /// Used by ProFeedScreen to show PostLeftColumnPro (name + badge + caption + CTA).
+  final Widget? bottomOverlayOverride;
+
   @override
   ConsumerState<VideoFeedItem> createState() => _VideoFeedItemState();
 }
@@ -67,6 +72,9 @@ class VideoFeedItem extends ConsumerStatefulWidget {
 class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
   BetterPlayerController? _controller;
   bool _viewCounted = false;
+
+  bool _isPlaying = false;
+  bool _showPlayPauseIcon = false;
 
   @override
   void initState() {
@@ -84,17 +92,22 @@ class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
     );
 
     _controller = BetterPlayerController(
-      const BetterPlayerConfiguration(
-        autoPlay: false,
+      BetterPlayerConfiguration(
+        autoPlay: widget.isActive,
         looping: true,
         fit: BoxFit.cover,
-        controlsConfiguration: BetterPlayerControlsConfiguration(
+        controlsConfiguration: const BetterPlayerControlsConfiguration(
           showControls: false,
         ),
         aspectRatio: 9 / 16,
       ),
       betterPlayerDataSource: dataSource,
     );
+
+    if (widget.isActive) {
+      _isPlaying = true;
+      _countView();
+    }
   }
 
   @override
@@ -102,10 +115,29 @@ class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
     super.didUpdateWidget(oldWidget);
     if (widget.isActive && !oldWidget.isActive) {
       _controller?.play();
+      _isPlaying = true;
       _countView();
     } else if (!widget.isActive && oldWidget.isActive) {
       _controller?.pause();
+      _isPlaying = false;
     }
+  }
+
+  void _togglePlayPause() {
+    if (_controller == null) return;
+    setState(() {
+      if (_isPlaying) {
+        _controller!.pause();
+        _isPlaying = false;
+      } else {
+        _controller!.play();
+        _isPlaying = true;
+      }
+      _showPlayPauseIcon = true;
+    });
+    Future.delayed(const Duration(milliseconds: 800), () {
+      if (mounted) setState(() => _showPlayPauseIcon = false);
+    });
   }
 
   void _countView() {
@@ -222,6 +254,7 @@ class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
     final showLikeAnim = ref.watch(_showLikeAnimProvider);
 
     return GestureDetector(
+      onTap: _togglePlayPause,
       onDoubleTap: _onDoubleTap,
       child: Stack(
         fit: StackFit.expand,
@@ -255,54 +288,62 @@ class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
             ),
           ),
 
-          // ─── Bottom overlay: Pro name + Book ───
-          Positioned(
-            bottom: 90,
-            left: 16,
-            right: 76,
-            child: Row(
-              children: [
-                GestureDetector(
-                  onTap: () => context.push('/pro/${widget.video.proId}'),
-                  child: Text(
-                    widget.video.proName ?? 'Pro',
-                    style: const TextStyle(
-                      color: AppColors.blanc,
-                      fontSize: 15,
-                      fontWeight: FontWeight.w700,
-                      shadows: [
-                        Shadow(
-                          color: AppColors.overlayHeavy,
-                          blurRadius: 6,
-                          offset: Offset(0, 1),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 10),
-                GestureDetector(
-                  onTap: () => context.push('/pro/${widget.video.proId}'),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 14, vertical: 6),
-                    decoration: BoxDecoration(
-                      color: AppColors.violet,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: const Text(
-                      'Book',
-                      style: TextStyle(
+          // ─── Bottom overlay: Pro name + Book (or custom override) ───
+          if (widget.bottomOverlayOverride != null)
+            Positioned(
+              bottom: 80,
+              left: 16,
+              right: 76,
+              child: widget.bottomOverlayOverride!,
+            )
+          else
+            Positioned(
+              bottom: 90,
+              left: 16,
+              right: 76,
+              child: Row(
+                children: [
+                  GestureDetector(
+                    onTap: () => context.push('/pro/${widget.video.proId}'),
+                    child: Text(
+                      widget.video.proName ?? 'Pro',
+                      style: const TextStyle(
                         color: AppColors.blanc,
-                        fontSize: 12,
+                        fontSize: 15,
                         fontWeight: FontWeight.w700,
+                        shadows: [
+                          Shadow(
+                            color: AppColors.overlayHeavy,
+                            blurRadius: 6,
+                            offset: Offset(0, 1),
+                          ),
+                        ],
                       ),
                     ),
                   ),
-                ),
-              ],
+                  const SizedBox(width: 10),
+                  GestureDetector(
+                    onTap: () => context.push('/pro/${widget.video.proId}'),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 14, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: AppColors.violet,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: const Text(
+                        'Book',
+                        style: TextStyle(
+                          color: AppColors.blanc,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
 
           // ─── Right side action buttons ───
           Positioned(
@@ -396,7 +437,7 @@ class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
                         icon: widget.video.isSaved
                             ? Icons.bookmark
                             : Icons.bookmark_border,
-                        label: widget.video.isSaved ? 'Saved' : 'Save',
+                        label: '',
                         color: widget.video.isSaved
                             ? AppColors.violet
                             : AppColors.blanc,
@@ -406,7 +447,7 @@ class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
                     const SizedBox(height: 18),
                     _ActionButton(
                       icon: Icons.reply,
-                      label: 'Share',
+                      label: '',
                       onTap: () {
                         showModalBottomSheet(
                           context: context,
@@ -426,6 +467,43 @@ class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
                   ],
                 ),
           ),
+
+          // ─── Play/Pause overlay icon ───
+          if (_showPlayPauseIcon)
+            Center(
+              child: Container(
+                width: 64,
+                height: 64,
+                decoration: BoxDecoration(
+                  color: Colors.black.withAlpha(100),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  _isPlaying
+                      ? Icons.play_arrow_rounded
+                      : Icons.pause_rounded,
+                  color: AppColors.blanc,
+                  size: 36,
+                ),
+              ),
+            ),
+          // Permanent pause icon when paused
+          if (!_isPlaying && !_showPlayPauseIcon && widget.isActive)
+            Center(
+              child: Container(
+                width: 56,
+                height: 56,
+                decoration: BoxDecoration(
+                  color: Colors.black.withAlpha(77),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.play_arrow_rounded,
+                  color: AppColors.blanc,
+                  size: 32,
+                ),
+              ),
+            ),
 
           // ─── Double-tap like animation ───
           if (showLikeAnim) const Center(child: LikeAnimation()),

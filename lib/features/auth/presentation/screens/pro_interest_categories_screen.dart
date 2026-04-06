@@ -62,7 +62,7 @@ class ProInterestCategoriesScreen extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              'Quel est votre métier ?',
+              'What do you do?',
               style: TextStyle(
                 color: AppColors.blanc,
                 fontSize: 24,
@@ -72,7 +72,7 @@ class ProInterestCategoriesScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 8),
             const Text(
-              'Sélectionnez vos domaines d\'expertise pour que les clients vous trouvent facilement.',
+              'Select your areas of expertise so clients can easily find you.',
               style: TextStyle(
                 color: AppColors.gris,
                 fontSize: 14,
@@ -192,7 +192,7 @@ class ProInterestCategoriesScreen extends ConsumerWidget {
                     ),
                   ),
                   child: const Text(
-                    'Continuer',
+                    'Continue',
                     style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
                   ),
                 ),

@@ -57,7 +57,7 @@ class _ProSearchScreenState extends ConsumerState<ProSearchScreen> {
       setState(() => _isSearching = false);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Erreur de recherche'), backgroundColor: AppColors.error),
+          const SnackBar(content: Text('Search error'), backgroundColor: AppColors.error),
         );
       }
     }
@@ -104,7 +104,7 @@ class _ProSearchScreenState extends ConsumerState<ProSearchScreen> {
                         style: const TextStyle(
                             color: AppColors.blanc, fontSize: 14),
                         decoration: InputDecoration(
-                          hintText: 'Rechercher des pros, hashtags...',
+                          hintText: 'Search pros, hashtags...',
                           hintStyle: TextStyle(
                               color: AppColors.gris.withAlpha(153)),
                           prefixIcon: const Icon(Icons.search,
@@ -148,7 +148,7 @@ class _ProSearchScreenState extends ConsumerState<ProSearchScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Text(
-                        'Tendances',
+                        'Trending',
                         style: TextStyle(
                           color: AppColors.blanc,
                           fontSize: 16,
@@ -167,7 +167,7 @@ class _ProSearchScreenState extends ConsumerState<ProSearchScreen> {
                 child: Padding(
                   padding: EdgeInsets.fromLTRB(20, 28, 20, 0),
                   child: Text(
-                    'Pros populaires près de toi',
+                    'Popular pros near you',
                     style: TextStyle(
                       color: AppColors.blanc,
                       fontSize: 16,
@@ -185,7 +185,7 @@ class _ProSearchScreenState extends ConsumerState<ProSearchScreen> {
                 child: Padding(
                   padding: EdgeInsets.fromLTRB(20, 28, 20, 0),
                   child: Text(
-                    'Événements tendance',
+                    'Trending events',
                     style: TextStyle(
                       color: AppColors.blanc,
                       fontSize: 16,
@@ -295,7 +295,7 @@ class _PopularProsSection extends StatelessWidget {
             height: 80,
             child: Center(
               child: Text(
-                'Aucun pro à proximité',
+                'No pros nearby',
                 style: TextStyle(color: AppColors.gris, fontSize: 13),
               ),
             ),
@@ -452,7 +452,7 @@ class _TrendingEventsSection extends ConsumerWidget {
                 ),
                 child: const Center(
                   child: Text(
-                    'Aucun événement à venir',
+                    'No upcoming events',
                     style: TextStyle(color: AppColors.gris, fontSize: 13),
                   ),
                 ),
@@ -541,7 +541,7 @@ class _InspirationGrid extends ConsumerWidget {
         error: (_, __) => const Center(
           child: Padding(
             padding: EdgeInsets.all(24),
-            child: Text('Impossible de charger les inspirations', style: TextStyle(color: AppColors.gris, fontSize: 13)),
+            child: Text('Unable to load inspirations', style: TextStyle(color: AppColors.gris, fontSize: 13)),
           ),
         ),
         data: (list) {
@@ -549,7 +549,7 @@ class _InspirationGrid extends ConsumerWidget {
             return const Center(
               child: Padding(
                 padding: EdgeInsets.all(24),
-                child: Text('Aucune inspiration pour le moment', style: TextStyle(color: AppColors.gris, fontSize: 13)),
+                child: Text('No inspirations yet', style: TextStyle(color: AppColors.gris, fontSize: 13)),
               ),
             );
           }

@@ -155,7 +155,7 @@ class _VideoPreviewScreenState extends ConsumerState<VideoPreviewScreen> {
           if (state.step == UploadStep.done) {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
-                content: Text('Vidéo publiée !'),
+                content: Text('Video published!'),
                 backgroundColor: AppColors.success,
               ),
             );
@@ -164,10 +164,10 @@ class _VideoPreviewScreenState extends ConsumerState<VideoPreviewScreen> {
           } else if (state.step == UploadStep.error) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text(state.errorMessage ?? 'Erreur inconnue'),
+                content: Text(state.errorMessage ?? 'Unknown error'),
                 backgroundColor: AppColors.error,
                 action: SnackBarAction(
-                  label: 'Réessayer',
+                  label: 'Retry',
                   textColor: AppColors.blanc,
                   onPressed: _publish,
                 ),
@@ -187,7 +187,7 @@ class _VideoPreviewScreenState extends ConsumerState<VideoPreviewScreen> {
                 onPressed: isWorking ? null : () => context.pop(),
               ),
               title: const Text(
-                'Aperçu',
+                'Preview',
                 style: TextStyle(
                   color: AppColors.blanc,
                   fontSize: 17,
@@ -222,7 +222,7 @@ class _VideoPreviewScreenState extends ConsumerState<VideoPreviewScreen> {
                     if (_videoDuration != null) ...[
                       const SizedBox(height: 8),
                       Text(
-                        'Durée : ${_videoDuration!.toStringAsFixed(1)}s',
+                        'Duration: ${_videoDuration!.toStringAsFixed(1)}s',
                         style: const TextStyle(
                           color: AppColors.gris,
                           fontSize: 13,
@@ -235,8 +235,8 @@ class _VideoPreviewScreenState extends ConsumerState<VideoPreviewScreen> {
                     // ── Title ──
                     _buildTextField(
                       controller: _titleCtrl,
-                      label: 'Titre *',
-                      hint: 'Ex : Coupe femme + brushing',
+                      label: 'Title *',
+                      hint: 'E.g.: Women\'s cut + blowout',
                       maxLength: 80,
                     ),
                     const SizedBox(height: 16),
@@ -256,7 +256,7 @@ class _VideoPreviewScreenState extends ConsumerState<VideoPreviewScreen> {
                       return DropdownButtonFormField<String>(
                         initialValue: validCat,
                         hint: const Text(
-                          'Catégorie *',
+                          'Category *',
                           style: TextStyle(color: AppColors.gris),
                         ),
                         dropdownColor: AppColors.surface,
@@ -277,7 +277,7 @@ class _VideoPreviewScreenState extends ConsumerState<VideoPreviewScreen> {
                     _buildTextField(
                       controller: _descCtrl,
                       label: 'Description *',
-                      hint: 'Décrivez votre prestation en détail...',
+                      hint: 'Describe your service in detail...',
                       maxLength: 500,
                       maxLines: 4,
                     ),
@@ -287,7 +287,7 @@ class _VideoPreviewScreenState extends ConsumerState<VideoPreviewScreen> {
                     _buildTextField(
                       controller: _hashtagCtrl,
                       label: 'Hashtags (max 5)',
-                      hint: 'Tapez un hashtag et appuyez sur Entrée',
+                      hint: 'Type a hashtag and press Enter',
                       onSubmitted: _addHashtag,
                     ),
                     if (_hashtags.isNotEmpty) ...[
@@ -318,7 +318,7 @@ class _VideoPreviewScreenState extends ConsumerState<VideoPreviewScreen> {
                     // ── Link to service ──
                     if (_services.isNotEmpty) ...[
                       const Text(
-                        'Lier à un service',
+                        'Link to a service',
                         style: TextStyle(
                           color: AppColors.gris,
                           fontSize: 13,
@@ -329,7 +329,7 @@ class _VideoPreviewScreenState extends ConsumerState<VideoPreviewScreen> {
                       DropdownButtonFormField<String>(
                         initialValue: _linkedServiceId,
                         hint: const Text(
-                          'Aucun (optionnel)',
+                          'None (optional)',
                           style: TextStyle(color: AppColors.gris, fontSize: 14),
                         ),
                         dropdownColor: AppColors.surface,
@@ -341,7 +341,7 @@ class _VideoPreviewScreenState extends ConsumerState<VideoPreviewScreen> {
                         items: [
                           const DropdownMenuItem(
                             value: null,
-                            child: Text('Aucun'),
+                            child: Text('None'),
                           ),
                           ..._services.map(
                             (s) => DropdownMenuItem(
@@ -362,7 +362,7 @@ class _VideoPreviewScreenState extends ConsumerState<VideoPreviewScreen> {
                     // ── Link to event ──
                     if (_events.isNotEmpty) ...[
                       const Text(
-                        'Lier à un événement',
+                        'Link to an event',
                         style: TextStyle(
                           color: AppColors.gris,
                           fontSize: 13,
@@ -373,7 +373,7 @@ class _VideoPreviewScreenState extends ConsumerState<VideoPreviewScreen> {
                       DropdownButtonFormField<String>(
                         initialValue: _linkedEventId,
                         hint: const Text(
-                          'Aucun (optionnel)',
+                          'None (optional)',
                           style: TextStyle(color: AppColors.gris, fontSize: 14),
                         ),
                         dropdownColor: AppColors.surface,
@@ -385,7 +385,7 @@ class _VideoPreviewScreenState extends ConsumerState<VideoPreviewScreen> {
                         items: [
                           const DropdownMenuItem(
                             value: null,
-                            child: Text('Aucun'),
+                            child: Text('None'),
                           ),
                           ..._events.map(
                             (e) => DropdownMenuItem(
@@ -468,7 +468,7 @@ class _VideoPreviewScreenState extends ConsumerState<VideoPreviewScreen> {
                                       ),
                                     )
                                   : const Text(
-                                      'Publier',
+                                      'Publish',
                                       style: TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.w700,
@@ -493,11 +493,11 @@ class _VideoPreviewScreenState extends ConsumerState<VideoPreviewScreen> {
   String _progressLabel(VideoUploadState state) {
     switch (state.step) {
       case UploadStep.compressing:
-        return 'Compression en cours...';
+        return 'Compressing...';
       case UploadStep.uploading:
-        return 'Upload en cours... ${(state.uploadProgress * 100).toInt()}%';
+        return 'Uploading... ${(state.uploadProgress * 100).toInt()}%';
       case UploadStep.processing:
-        return 'Traitement par Cloudflare...';
+        return 'Processing on Cloudflare...';
       default:
         return '';
     }

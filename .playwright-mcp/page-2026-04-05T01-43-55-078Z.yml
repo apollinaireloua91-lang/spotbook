@@ -1,0 +1,28 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - img "linear gradient"
+    - img "linear gradient"
+    - generic:
+      - img "spotlight external gradient shape"
+    - generic [ref=e4]:
+      - navigation [ref=e9]:
+        - link "Fresha" [ref=e11] [cursor=pointer]:
+          - /url: /fr
+          - img "Fresha"
+        - generic [ref=e14]:
+          - combobox [ref=e18]
+          - combobox "Adresse" [ref=e22]
+          - combobox "Heure" [ref=e26]
+          - button "Rechercher" [ref=e27] [cursor=pointer]:
+            - img [ref=e29]
+            - paragraph [ref=e31]: Rechercher
+      - generic [ref=e39]:
+        - button "Filtres" [ref=e40] [cursor=pointer]:
+          - generic [ref=e41]:
+            - img [ref=e44]
+            - generic [ref=e47]: Filtres
+        - button "Masquer la carte" [ref=e48] [cursor=pointer]:
+          - generic [ref=e49]:
+            - img [ref=e52]
+            - generic [ref=e55]: Masquer la carte
+  - alert [ref=e138]

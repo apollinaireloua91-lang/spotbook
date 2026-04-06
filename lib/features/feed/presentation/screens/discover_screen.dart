@@ -14,9 +14,9 @@ import '../../domain/video_model.dart';
 
 /// Fallback categories when Supabase data hasn't loaded yet.
 const _fallbackCategories = [
-  'All', 'Coiffure', 'Barbier', 'Esthétique', 'Massage',
-  'Fitness', 'Photographie', 'Musique / DJ', 'Tatouage',
-  'Mode', 'Cuisine', 'Coaching',
+  'All', 'Hairdressing', 'Barber', 'Aesthetics', 'Massage',
+  'Fitness', 'Photography', 'Music / DJ', 'Tattoo',
+  'Fashion', 'Cooking', 'Coaching',
 ];
 
 class DiscoverScreen extends ConsumerStatefulWidget {
@@ -187,7 +187,7 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
                           GestureDetector(
                             onTap: n.clearHistory,
                             child: const Text(
-                              'Effacer',
+                              'Clear',
                               style: TextStyle(
                                 color: AppColors.violet,
                                 fontSize: 12,
@@ -495,7 +495,7 @@ class _ProviderCard extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      'dès ${provider.minPrice!.toStringAsFixed(0)} \$',
+                      'from \$${provider.minPrice!.toStringAsFixed(0)}',
                       style: const TextStyle(
                         color: AppColors.gris,
                         fontSize: 11,
@@ -674,8 +674,8 @@ class _EmptyState extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               hasQuery
-                  ? 'Essayez avec d\'autres mots-clés\nou modifiez vos filtres'
-                  : 'Découvrez bientôt les meilleurs\nprofessionnels près de chez vous',
+                  ? 'Try different keywords\nor adjust your filters'
+                  : 'Discover the best\nprofessionals near you soon',
               textAlign: TextAlign.center,
               style: const TextStyle(
                 color: AppColors.gris,
@@ -728,7 +728,7 @@ class _ErrorState extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             const Text(
-              'Vérifiez votre connexion\net réessayez',
+              'Check your connection\nand try again',
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: AppColors.gris,
@@ -749,7 +749,7 @@ class _ErrorState extends StatelessWidget {
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: const Text(
-                  'Réessayer',
+                  'Retry',
                   style: TextStyle(
                     color: AppColors.blanc,
                     fontSize: 14,
@@ -910,7 +910,7 @@ class _FiltersSheet extends ConsumerWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 const Text(
-                  'Note minimum',
+                  'Minimum rating',
                   style: TextStyle(color: AppColors.blanc, fontSize: 15),
                 ),
                 Row(
@@ -955,7 +955,7 @@ class _FiltersSheet extends ConsumerWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 const Text(
-                  'Prix max',
+                  'Max price',
                   style: TextStyle(color: AppColors.blanc, fontSize: 15),
                 ),
                 Text(
@@ -987,7 +987,7 @@ class _FiltersSheet extends ConsumerWidget {
             // Available today
             SwitchListTile(
               title: const Text(
-                'Disponible aujourd\'hui',
+                'Available today',
                 style: TextStyle(color: AppColors.blanc, fontSize: 15),
               ),
               value: s.availableToday,
@@ -1017,7 +1017,7 @@ class _FiltersSheet extends ConsumerWidget {
                   elevation: 0,
                 ),
                 child: const Text(
-                  'Appliquer les filtres',
+                  'Apply filters',
                   style: TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w600,

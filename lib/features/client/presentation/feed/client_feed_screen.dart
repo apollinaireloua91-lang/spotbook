@@ -37,9 +37,9 @@ class _ClientFeedScreenState extends State<ClientFeedScreen> {
           SnackBar(
             content: Text(
               msg == 'like_failed'
-                  ? 'Impossible de mettre à jour le like'
+                  ? 'Failed to update like'
                   : msg == 'save_failed'
-                      ? 'Impossible de mettre à jour le favori'
+                      ? 'Failed to update save'
                       : msg,
             ),
             backgroundColor: AppColors.surface,

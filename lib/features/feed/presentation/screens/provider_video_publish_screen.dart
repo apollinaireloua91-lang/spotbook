@@ -131,7 +131,7 @@ class _ProviderVideoPublishScreenState
 
     return Scaffold(
       backgroundColor: AppColors.fond,
-      appBar: const SpotbookAppBar(title: 'Publier'),
+      appBar: const SpotbookAppBar(title: 'Publish'),
       body: SafeArea(
         child: Column(
           children: [
@@ -180,7 +180,7 @@ class _ProviderVideoPublishScreenState
                                               .pickVideo();
                                         },
                                         child: const Text(
-                                          'Changer la vidéo',
+                                          'Change video',
                                           style: TextStyle(
                                               color: AppColors.violet,
                                               fontSize: 12),
@@ -212,7 +212,7 @@ class _ProviderVideoPublishScreenState
                                   Icon(Icons.videocam_outlined,
                                       color: AppColors.gris, size: 36),
                                   SizedBox(height: 6),
-                                  Text('Choisir une vidéo (max 60s)',
+                                  Text('Choose a video (max 60s)',
                                       style: TextStyle(
                                           color: AppColors.gris,
                                           fontSize: 13)),
@@ -291,7 +291,7 @@ class _ProviderVideoPublishScreenState
                         items: [
                           const DropdownMenuItem<String?>(
                             value: null,
-                            child: Text('Aucune — réservation générale'),
+                            child: Text('None — general booking'),
                           ),
                           ...svcState.services.map(
                             (sv) => DropdownMenuItem<String?>(
@@ -308,14 +308,14 @@ class _ProviderVideoPublishScreenState
                     ],
                     // Allow comments toggle
                     _SettingRow(
-                      label: 'Autoriser les commentaires',
+                      label: 'Allow comments',
                       value: _allowComments,
                       onChanged: (v) =>
                           setState(() => _allowComments = v),
                     ),
                     const SizedBox(height: 8),
                     // Visibility
-                    const Text('Visibilité',
+                    const Text('Visibility',
                         style: TextStyle(
                             color: AppColors.blanc,
                             fontSize: 14,
@@ -331,7 +331,7 @@ class _ProviderVideoPublishScreenState
                         ),
                         const SizedBox(width: 10),
                         _VisibilityChip(
-                          label: 'Abonnés',
+                          label: 'Followers',
                           selected: _visibility == 'followers',
                           onTap: () => setState(
                               () => _visibility = 'followers'),
@@ -371,8 +371,8 @@ class _ProviderVideoPublishScreenState
               padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
               child: SpotbookButton.gradient(
                 label: s.isUploading
-                    ? 'Envoi en cours…'
-                    : 'Publier ma prestation',
+                    ? 'Uploading...'
+                    : 'Publish my service',
                 isLoading: s.isUploading,
                 onPressed: s.isUploading ? null : () => _tryPublish(s),
               ),

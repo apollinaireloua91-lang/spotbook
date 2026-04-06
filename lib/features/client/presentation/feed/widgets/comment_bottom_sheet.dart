@@ -122,7 +122,7 @@ class _CommentBottomSheetState extends ConsumerState<CommentBottomSheet> {
                                 ),
                                 const SizedBox(height: 10),
                                 Text(
-                                  'Soyez le premier à commenter',
+                                  'Be the first to comment',
                                   style: TextStyle(
                                     color: AppColors.gris,
                                     fontSize: 13,

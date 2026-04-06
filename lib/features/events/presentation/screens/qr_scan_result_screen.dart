@@ -118,7 +118,7 @@ class QrScanResultScreen extends StatelessWidget {
                     context.pop();
                   },
                   icon: const Icon(Icons.qr_code_scanner, size: 20),
-                  label: const Text('Scanner un autre billet',
+                  label: const Text('Scan another ticket',
                       style: TextStyle(
                           fontWeight: FontWeight.bold, fontSize: 16)),
                   style: ElevatedButton.styleFrom(

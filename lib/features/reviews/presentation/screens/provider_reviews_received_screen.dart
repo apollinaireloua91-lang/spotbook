@@ -106,7 +106,7 @@ class _ProviderReviewsReceivedScreenState
 
     return Scaffold(
       backgroundColor: AppColors.fond,
-      appBar: const SpotbookAppBar(title: 'Avis reçus'),
+      appBar: const SpotbookAppBar(title: 'Reviews received'),
       body: dataAsync.when(
         loading: () => const Center(
             child: CircularProgressIndicator(color: AppColors.violet)),
@@ -160,7 +160,7 @@ class _ProviderReviewsReceivedScreenState
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          '${data.reviews.length} avis',
+                          '${data.reviews.length} reviews',
                           style: const TextStyle(
                               color: AppColors.gris, fontSize: 12),
                         ),
@@ -232,7 +232,7 @@ class _ProviderReviewsReceivedScreenState
                   scrollDirection: Axis.horizontal,
                   children: [
                     _RatingFilterChip(
-                      label: 'Tous',
+                      label: 'All',
                       selected: _filterRating == null,
                       onTap: () =>
                           setState(() => _filterRating = null),
@@ -258,7 +258,7 @@ class _ProviderReviewsReceivedScreenState
                 const Padding(
                   padding: EdgeInsets.only(top: 40),
                   child: Center(
-                    child: Text('Aucun avis',
+                    child: Text('No reviews',
                         style: TextStyle(
                             color: AppColors.gris, fontSize: 15)),
                   ),
@@ -352,7 +352,7 @@ class _ReviewCard extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      DateFormat('dd MMM yyyy', 'fr_FR')
+                      DateFormat('dd MMM yyyy', 'en_US')
                           .format(review.createdAt),
                       style: const TextStyle(
                           color: AppColors.gris, fontSize: 12),

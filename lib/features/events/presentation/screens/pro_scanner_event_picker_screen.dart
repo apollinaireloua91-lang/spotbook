@@ -51,7 +51,7 @@ class _ProScannerEventPickerScreenState
           },
         ),
         title: const Text(
-          'Scanner un billet',
+          'Scan a ticket',
           style: TextStyle(
             color: AppColors.blanc,
             fontWeight: FontWeight.w700,
@@ -92,7 +92,7 @@ class _ProScannerEventPickerScreenState
                   CircularProgressIndicator(color: AppColors.blanc),
                   SizedBox(height: 16),
                   Text(
-                    'Ouverture de la caméra…',
+                    'Opening camera...',
                     style: TextStyle(color: AppColors.gris, fontSize: 14),
                   ),
                 ],

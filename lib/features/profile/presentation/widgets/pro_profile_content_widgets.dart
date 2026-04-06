@@ -147,7 +147,7 @@ class ProServiceCard extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           SpotbookButton.primary(
-            label: 'Réserver',
+            label: 'Book',
             onPressed: () {
               HapticFeedback.mediumImpact();
               showBookingSheet(
@@ -174,11 +174,11 @@ class ProEventProfileCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final dateStr = event.eventDate != null
-        ? DateFormat.yMMMd('fr_FR').format(event.eventDate!)
+        ? DateFormat.yMMMd('en_US').format(event.eventDate!)
         : '—';
     final priceStr = event.minPrice > 0
         ? '${event.minPrice.toStringAsFixed(0)} €'
-        : 'Gratuit';
+        : 'Free';
 
     return Material(
       color: AppColors.surface,
@@ -240,7 +240,7 @@ class ProEventProfileCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'Billet · $priceStr',
+                      'Ticket · $priceStr',
                       style: const TextStyle(
                         color: AppColors.gris,
                         fontSize: 13,

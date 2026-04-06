@@ -62,7 +62,7 @@ class _PaymentReceiptScreenState extends ConsumerState<PaymentReceiptScreen>
       appBar: AppBar(
         backgroundColor: AppColors.fond,
         leading: Semantics(
-          label: 'Fermer',
+          label: 'Close',
           child: IconButton(
             icon:
                 const Icon(Icons.close, color: AppColors.blanc, size: 22),
@@ -72,7 +72,7 @@ class _PaymentReceiptScreenState extends ConsumerState<PaymentReceiptScreen>
             },
           ),
         ),
-        title: const Text('Reçu de paiement',
+        title: const Text('Payment receipt',
             style:
                 TextStyle(color: AppColors.blanc, fontWeight: FontWeight.bold)),
         centerTitle: true,
@@ -83,7 +83,7 @@ class _PaymentReceiptScreenState extends ConsumerState<PaymentReceiptScreen>
                   CircularProgressIndicator(color: AppColors.violet))
           : _booking == null
               ? const Center(
-                  child: Text('Réservation introuvable',
+                  child: Text('Booking not found',
                       style: TextStyle(color: AppColors.gris)))
               : FadeTransition(
                   opacity: _fadeAnim,
@@ -94,11 +94,11 @@ class _PaymentReceiptScreenState extends ConsumerState<PaymentReceiptScreen>
 
   Widget _buildReceipt(BookingModel booking) {
     final currencyFormat = NumberFormat.currency(
-      locale: 'fr_CA',
+      locale: 'en_CA',
       symbol: booking.currency == 'EUR' ? '€' : '\$',
       decimalDigits: 2,
     );
-    final dateFormat = DateFormat('d MMMM yyyy', 'fr_CA');
+    final dateFormat = DateFormat('MMMM d, yyyy', 'en_US');
     final isPaid = booking.status != 'payment_failed';
 
     return SingleChildScrollView(
@@ -123,7 +123,7 @@ class _PaymentReceiptScreenState extends ConsumerState<PaymentReceiptScreen>
           ),
           const SizedBox(height: 16),
           Text(
-            isPaid ? 'Paiement confirmé' : 'Paiement échoué',
+            isPaid ? 'Payment confirmed' : 'Payment failed',
             style: TextStyle(
               color: isPaid ? AppColors.success : AppColors.error,
               fontSize: 18,
@@ -152,35 +152,35 @@ class _PaymentReceiptScreenState extends ConsumerState<PaymentReceiptScreen>
             child: Column(
               children: [
                 _receiptRow('Service', booking.serviceName ?? '—'),
-                _receiptRow('Prestataire', booking.proName ?? '—'),
+                _receiptRow('Provider', booking.proName ?? '—'),
                 if (booking.slotDate != null)
                   _receiptRow('Date', booking.slotDate!),
                 if (booking.slotStartTime != null)
                   _receiptRow(
-                    'Heure',
+                    'Time',
                     booking.slotEndTime != null
                         ? '${booking.slotStartTime} — ${booking.slotEndTime}'
                         : booking.slotStartTime!,
                   ),
                 if (booking.serviceDurationMinutes != null)
                   _receiptRow(
-                      'Durée', '${booking.serviceDurationMinutes} min'),
+                      'Duration', '${booking.serviceDurationMinutes} min'),
                 const Padding(
                   padding: EdgeInsets.symmetric(vertical: 12),
                   child: Divider(color: AppColors.border, height: 1),
                 ),
                 _receiptRow(
-                  'Acompte',
+                  'Deposit',
                   currencyFormat.format(booking.depositAmount),
                   isBold: true,
                 ),
-                _receiptRow('Devise', booking.currency.toUpperCase()),
+                _receiptRow('Currency', booking.currency.toUpperCase()),
                 _receiptRow(
-                  'Date de paiement',
+                  'Payment date',
                   dateFormat.format(booking.createdAt.toLocal()),
                 ),
                 if (booking.bookingCode != null)
-                  _receiptRow('Code réservation', booking.bookingCode!),
+                  _receiptRow('Booking code', booking.bookingCode!),
               ],
             ),
           ),
@@ -197,7 +197,7 @@ class _PaymentReceiptScreenState extends ConsumerState<PaymentReceiptScreen>
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
                     backgroundColor: AppColors.surface,
-                    content: Text('Code copié',
+                    content: Text('Code copied',
                         style: TextStyle(color: AppColors.blanc)),
                     duration: Duration(seconds: 1),
                   ),
@@ -233,7 +233,7 @@ class _PaymentReceiptScreenState extends ConsumerState<PaymentReceiptScreen>
             ),
             const SizedBox(height: 8),
             const Text(
-              'Présentez ce code lors de votre rendez-vous',
+              'Show this code at your appointment',
               style: TextStyle(color: AppColors.gris, fontSize: 12),
               textAlign: TextAlign.center,
             ),

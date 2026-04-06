@@ -97,7 +97,7 @@ class _AvailabilityScreenBody extends ConsumerWidget {
             const _SectionHeader(
                 title: 'Dates bloquées', icon: Icons.block_outlined),
             _BlockedDatesSection(state: state, notifier: notifier),
-            const _SectionHeader(title: 'Paramètres', icon: Icons.tune_outlined),
+            const _SectionHeader(title: 'Settings', icon: Icons.tune_outlined),
             _SettingsSection(state: state, notifier: notifier),
           ],
         ),
@@ -179,7 +179,7 @@ class _MasterToggleCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text(
-                    'Accepter les réservations',
+                    'Accept bookings',
                     style: TextStyle(
                         color: AppColors.blanc,
                         fontWeight: FontWeight.w600,
@@ -187,8 +187,8 @@ class _MasterToggleCard extends StatelessWidget {
                   ),
                   Text(
                     state.settings.acceptsBookings
-                        ? 'Clients peuvent réserver'
-                        : 'Réservations désactivées',
+                        ? 'Clients can book'
+                        : 'Bookings disabled',
                     style: const TextStyle(color: AppColors.gris, fontSize: 12),
                   ),
                 ],
@@ -303,7 +303,7 @@ class _DayCard extends StatelessWidget {
                 children: [
                   const Icon(Icons.bedtime_outlined, color: AppColors.gris, size: 14),
                   const SizedBox(width: 6),
-                  const Text('Jour de repos',
+                  const Text('Day off',
                       style: TextStyle(color: AppColors.gris, fontSize: 13)),
                 ],
               ),
@@ -420,7 +420,7 @@ class _SlotsSectionState extends ConsumerState<_SlotsSection> {
                 children: [
                   Icon(Icons.add, color: AppColors.gris, size: 16),
                   SizedBox(width: 6),
-                  Text('Ajouter un créneau',
+                  Text('Add a slot',
                       style: TextStyle(
                           color: AppColors.gris,
                           fontSize: 13,
@@ -758,18 +758,18 @@ class _MonthCalendar extends StatelessWidget {
   static String _monthName(int m) {
     const names = [
       '',
-      'Janvier',
-      'Février',
-      'Mars',
-      'Avril',
-      'Mai',
-      'Juin',
-      'Juillet',
-      'Août',
-      'Septembre',
-      'Octobre',
-      'Novembre',
-      'Décembre'
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December'
     ];
     return names[m];
   }
@@ -865,7 +865,7 @@ class _SettingsSection extends StatelessWidget {
                         .map((m) => DropdownMenuItem<int>(
                               value: m,
                               child:
-                                  Text(m == 0 ? 'Aucune' : '${m}min'),
+                                  Text(m == 0 ? 'None' : '${m}min'),
                             ))
                         .toList(),
                   ),
@@ -1029,7 +1029,7 @@ class _SaveBar extends StatelessWidget {
               child: SpotbookButton.primary(
                 label: state.isSaving
                     ? 'Enregistrement...'
-                    : 'Enregistrer les modifications',
+                    : 'Save changes',
                 isLoading: state.isSaving,
                 onPressed: state.isSaving
                     ? null

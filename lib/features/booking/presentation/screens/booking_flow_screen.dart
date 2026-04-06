@@ -10,7 +10,7 @@ import 'booking_bottom_sheet.dart';
 
 /// Provider that fetches the pro profile for the booking flow entry.
 final _bookingProProvider =
-    FutureProvider.autoDispose.family<ProProfile, String>((ref, proId) async {
+    FutureProvider.autoDispose.family<ProProfile?, String>((ref, proId) async {
   final repo = ref.read(profileRepositoryProvider);
   return repo.getProProfile(proId);
 });
@@ -76,7 +76,7 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
                     color: AppColors.gris, size: 48),
                 const SizedBox(height: 16),
                 Text(
-                  'Impossible de charger le profil',
+                  'Unable to load profile',
                   style: const TextStyle(
                     color: AppColors.blanc,
                     fontSize: 16,
@@ -106,7 +106,7 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
                       border: Border.all(color: AppColors.border),
                     ),
                     child: const Text(
-                      'Réessayer',
+                      'Retry',
                       style: TextStyle(
                         color: AppColors.blanc,
                         fontWeight: FontWeight.w600,
@@ -120,6 +120,12 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
         ),
       ),
       data: (pro) {
+        if (pro == null) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) context.pop();
+          });
+          return const Scaffold(backgroundColor: AppColors.fond);
+        }
         _openSheet(pro);
         return const Scaffold(
           backgroundColor: AppColors.fond,

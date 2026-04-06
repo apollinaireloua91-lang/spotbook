@@ -158,7 +158,7 @@ class _RefundRequestScreenState extends ConsumerState<RefundRequestScreen> {
             },
           ),
         ),
-        title: const Text('Demande de remboursement',
+        title: const Text('Refund request',
             style:
                 TextStyle(color: AppColors.blanc, fontWeight: FontWeight.bold)),
         centerTitle: true,
@@ -242,7 +242,7 @@ class _RefundRequestScreenState extends ConsumerState<RefundRequestScreen> {
 
           // Refund policy
           const Text(
-            'Politique de remboursement',
+            'Refund policy',
             style: TextStyle(
               color: AppColors.blanc,
               fontSize: 16,
@@ -253,13 +253,13 @@ class _RefundRequestScreenState extends ConsumerState<RefundRequestScreen> {
           _policyRow(
             icon: Icons.check_circle_outline,
             iconColor: AppColors.success,
-            text: 'Plus de 48h avant le RDV → remboursement complet',
+            text: 'More than 48h before appointment → full refund',
           ),
           const SizedBox(height: 8),
           _policyRow(
             icon: Icons.warning_amber_rounded,
             iconColor: AppColors.warning,
-            text: 'Moins de 48h → aucun remboursement (le pro garde l\'acompte)',
+            text: 'Less than 48h → no refund (pro keeps the deposit)',
           ),
 
           const SizedBox(height: 24),

@@ -218,7 +218,7 @@ class _TicketTypeCard extends StatelessWidget {
                 Text(type.name, style: const TextStyle(color: AppColors.blanc, fontSize: 15, fontWeight: FontWeight.w600)),
                 const SizedBox(height: 4),
                 Text(
-                  type.isSoldOut ? 'Complet' : '${type.remaining} restant${type.remaining > 1 ? 's' : ''}',
+                  type.isSoldOut ? 'Sold out' : '${type.remaining} remaining',
                   style: TextStyle(color: type.isSoldOut ? AppColors.error : AppColors.gris, fontSize: 13),
                 ),
               ],
@@ -242,7 +242,7 @@ class _TicketTypeCard extends StatelessWidget {
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                 padding: const EdgeInsets.symmetric(horizontal: 16),
               ),
-              child: Text(type.isSoldOut ? 'Complet' : 'Acheter', style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
+              child: Text(type.isSoldOut ? 'Sold out' : 'Buy', style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
             ),
           ),
         ],

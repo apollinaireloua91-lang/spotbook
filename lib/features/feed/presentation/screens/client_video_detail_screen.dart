@@ -106,7 +106,7 @@ class _ClientVideoDetailScreenState
           ),
         ),
         body: Center(
-          child: Text('Erreur : $e',
+          child: Text('Error: $e',
               style: const TextStyle(color: AppColors.gris)),
         ),
       ),
@@ -123,7 +123,7 @@ class _ClientVideoDetailScreenState
               ),
             ),
             body: const Center(
-              child: Text('Vidéo introuvable',
+              child: Text('Video not found',
                   style: TextStyle(color: AppColors.gris)),
             ),
           );
@@ -277,7 +277,7 @@ class _ClientVideoDetailScreenState
                             borderRadius: BorderRadius.circular(24),
                           ),
                           child: const Text(
-                            'Réserver',
+                            'Book',
                             style: TextStyle(
                               color: AppColors.blanc,
                               fontWeight: FontWeight.bold,
@@ -362,7 +362,7 @@ class _CommentsSheetState extends ConsumerState<_CommentsSheet> {
     } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Impossible d\'envoyer le commentaire'), backgroundColor: AppColors.error),
+          const SnackBar(content: Text('Unable to send comment'), backgroundColor: AppColors.error),
         );
       }
     }
@@ -440,7 +440,7 @@ class _CommentsSheetState extends ConsumerState<_CommentsSheet> {
                                 CrossAxisAlignment.start,
                             children: [
                               Text(
-                                c.userName ?? 'Utilisateur',
+                                c.userName ?? 'User',
                                 style: const TextStyle(
                                   color: AppColors.blanc,
                                   fontWeight: FontWeight.w600,

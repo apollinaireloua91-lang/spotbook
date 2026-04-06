@@ -1,0 +1,1135 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - img "linear gradient"
+    - img "linear gradient"
+    - generic:
+      - img "spotlight external gradient shape"
+    - generic [ref=e4]:
+      - navigation [ref=e9]:
+        - link "Fresha" [ref=e11] [cursor=pointer]:
+          - /url: /fr
+          - img "Fresha"
+        - generic [ref=e14]:
+          - combobox "Tous les soins" [ref=e139]
+          - combobox "Adresse" [ref=e22]
+          - combobox "Heure" [ref=e26]
+          - button "Rechercher" [ref=e27] [cursor=pointer]:
+            - img [ref=e29]
+            - paragraph [ref=e31]: Rechercher
+        - button "Menu" [ref=e142] [cursor=pointer]:
+          - generic [ref=e143]:
+            - generic [ref=e145]: Menu
+            - img [ref=e148]
+      - generic [ref=e36]:
+        - generic [ref=e37]:
+          - generic "Type de résultat de recherche" [ref=e151]:
+            - button "Établissements" [ref=e152] [cursor=pointer]:
+              - paragraph [ref=e153]: Établissements
+            - button "Professionnels" [ref=e154] [cursor=pointer]:
+              - paragraph [ref=e155]: Professionnels
+          - generic [ref=e39]:
+            - paragraph [ref=e156]: 637 établissements dans la zone ciblée
+            - button "Filtres" [ref=e40] [cursor=pointer]:
+              - generic [ref=e41]:
+                - img [ref=e44]
+                - generic [ref=e47]: Filtres
+            - button "Masquer la carte" [ref=e48] [cursor=pointer]:
+              - generic [ref=e49]:
+                - img [ref=e52]
+                - generic [ref=e55]: Masquer la carte
+        - list [ref=e157]:
+          - generic [ref=e159]:
+            - generic [ref=e160]:
+              - generic [ref=e346]:
+                - listitem [ref=e347]:
+                  - generic [ref=e349]:
+                    - link "Harshi’s Esthétique-3025 chemin de chambly" [ref=e350] [cursor=pointer]:
+                      - /url: /fr/a/harshis-esthetique-3025-chemin-de-chambly-longueuil-3025-chemin-de-chambly-u95wsv75
+                    - region "carousel-wrapper" [ref=e352]:
+                      - generic [ref=e353]:
+                        - link [ref=e356] [cursor=pointer]:
+                          - /url: /fr/a/harshis-esthetique-3025-chemin-de-chambly-longueuil-3025-chemin-de-chambly-u95wsv75
+                        - link [ref=e359] [cursor=pointer]:
+                          - /url: /fr/a/harshis-esthetique-3025-chemin-de-chambly-longueuil-3025-chemin-de-chambly-u95wsv75
+                        - link [ref=e362] [cursor=pointer]:
+                          - /url: /fr/a/harshis-esthetique-3025-chemin-de-chambly-longueuil-3025-chemin-de-chambly-u95wsv75
+                        - link [ref=e365] [cursor=pointer]:
+                          - /url: /fr/a/harshis-esthetique-3025-chemin-de-chambly-longueuil-3025-chemin-de-chambly-u95wsv75
+                      - region "Indicator Group" [ref=e366]:
+                        - generic [ref=e368]:
+                          - button "Image 1 of 4 images" [ref=e369] [cursor=pointer]
+                          - button "Image 2 of 4 images" [ref=e371] [cursor=pointer]
+                          - button "Image 3 of 4 images" [ref=e373] [cursor=pointer]
+                          - button "Image 4 of 4 images" [ref=e375] [cursor=pointer]
+                    - generic [ref=e377]:
+                      - generic [ref=e378]:
+                        - paragraph [ref=e379]: Harshi’s Esthétique-3025 chemin de chambly
+                        - generic [ref=e381]:
+                          - paragraph [ref=e382]: Note de 5 pour 115 votes
+                          - generic [ref=e383]:
+                            - img [ref=e386]
+                            - generic [ref=e388]: 4,9
+                            - generic [ref=e389]: (115)
+                      - paragraph [ref=e390]: 1,9 km • 3025 Chemin de chambly, Longueuil
+                    - generic [ref=e391]:
+                      - generic [ref=e392]:
+                        - generic [ref=e393]:
+                          - link [ref=e394] [cursor=pointer]:
+                            - /url: /fr/a/harshis-esthetique-3025-chemin-de-chambly-longueuil-3025-chemin-de-chambly-u95wsv75/booking?offerItemId=s%3A8722651&via=search&entryPoint=search_see_more
+                          - generic [ref=e395]:
+                            - generic [ref=e396]:
+                              - paragraph [ref=e397]: Sourcils(repousse 3 semaines ou moins)/ Eyebrows threading
+                              - paragraph [ref=e398]: 10 min
+                            - paragraph [ref=e400]: 12 $CA
+                        - generic [ref=e401]:
+                          - link [ref=e402] [cursor=pointer]:
+                            - /url: /fr/a/harshis-esthetique-3025-chemin-de-chambly-longueuil-3025-chemin-de-chambly-u95wsv75/booking?offerItemId=s%3A8724081&via=search&entryPoint=search_see_more
+                          - generic [ref=e403]:
+                            - generic [ref=e404]:
+                              - paragraph [ref=e405]: Bikini complet/Brazilian
+                              - paragraph [ref=e406]: 25 min
+                            - paragraph [ref=e408]: 30 $CA
+                        - generic [ref=e409]:
+                          - link [ref=e410] [cursor=pointer]:
+                            - /url: /fr/a/harshis-esthetique-3025-chemin-de-chambly-longueuil-3025-chemin-de-chambly-u95wsv75/booking?offerItemId=s%3A8992401&via=search&entryPoint=search_see_more
+                          - generic [ref=e411]:
+                            - generic [ref=e412]:
+                              - paragraph [ref=e413]: Aisselles / Underarms
+                              - paragraph [ref=e414]: 10 min
+                            - paragraph [ref=e416]: 15 $CA
+                      - link "Voir les 76 prestations" [ref=e417] [cursor=pointer]:
+                        - /url: /fr/a/harshis-esthetique-3025-chemin-de-chambly-longueuil-3025-chemin-de-chambly-u95wsv75/booking?via=search&entryPoint=search_time_selected
+                - listitem [ref=e418]:
+                  - generic [ref=e420]:
+                    - link "IamStooda" [ref=e421] [cursor=pointer]:
+                      - /url: /fr/a/iamstooda-longueuil-2000-rue-sainte-helene-dfhd05tq
+                    - region "carousel-wrapper" [ref=e423]:
+                      - generic [ref=e424]:
+                        - link "IamStooda treatment room with sleek bed and modern lighting in Longueuil, Québec, CA." [ref=e427] [cursor=pointer]:
+                          - /url: /fr/a/iamstooda-longueuil-2000-rue-sainte-helene-dfhd05tq
+                          - img "IamStooda treatment room with sleek bed and modern lighting in Longueuil, Québec, CA." [ref=e428]
+                        - link "Elegant beauty workspace with modern lighting at IamStooda, Longueuil, Québec, CA." [ref=e431] [cursor=pointer]:
+                          - /url: /fr/a/iamstooda-longueuil-2000-rue-sainte-helene-dfhd05tq
+                          - img "Elegant beauty workspace with modern lighting at IamStooda, Longueuil, Québec, CA." [ref=e432]
+                        - link "Peaceful treatment area at IamStooda, Longueuil, Québec, CA, featuring a modern lamp and comfy bed." [ref=e435] [cursor=pointer]:
+                          - /url: /fr/a/iamstooda-longueuil-2000-rue-sainte-helene-dfhd05tq
+                          - img "Peaceful treatment area at IamStooda, Longueuil, Québec, CA, featuring a modern lamp and comfy bed." [ref=e436]
+                        - link "Modern salon chair and sink at IamStooda, Longueuil, Québec, CA, creating a sleek and inviting space." [ref=e439] [cursor=pointer]:
+                          - /url: /fr/a/iamstooda-longueuil-2000-rue-sainte-helene-dfhd05tq
+                          - img "Modern salon chair and sink at IamStooda, Longueuil, Québec, CA, creating a sleek and inviting space." [ref=e440]
+                        - link "Cozy spa room with natural light at IamStooda, Longueuil, Québec, CA." [ref=e443] [cursor=pointer]:
+                          - /url: /fr/a/iamstooda-longueuil-2000-rue-sainte-helene-dfhd05tq
+                          - img "Cozy spa room with natural light at IamStooda, Longueuil, Québec, CA." [ref=e444]
+                        - link "Close-up of enhanced eyelashes at IamStooda, Longueuil, Québec, CA, showcasing natural beauty." [ref=e447] [cursor=pointer]:
+                          - /url: /fr/a/iamstooda-longueuil-2000-rue-sainte-helene-dfhd05tq
+                          - img "Close-up of enhanced eyelashes at IamStooda, Longueuil, Québec, CA, showcasing natural beauty." [ref=e448]
+                        - link "Close-up of perfectly groomed eyebrows and lashes at IamStooda, Longueuil, Québec, CA highlighting beauty expertise." [ref=e451] [cursor=pointer]:
+                          - /url: /fr/a/iamstooda-longueuil-2000-rue-sainte-helene-dfhd05tq
+                          - img "Close-up of perfectly groomed eyebrows and lashes at IamStooda, Longueuil, Québec, CA highlighting beauty expertise." [ref=e452]
+                        - link "Close-up of elegant eyelash extensions at IamStooda, Longueuil, Québec, CA." [ref=e455] [cursor=pointer]:
+                          - /url: /fr/a/iamstooda-longueuil-2000-rue-sainte-helene-dfhd05tq
+                          - img "Close-up of elegant eyelash extensions at IamStooda, Longueuil, Québec, CA." [ref=e456]
+                        - link "Close-up of a perfectly groomed eyebrow at IamStooda in Longueuil, Québec, CA, highlighting beauty care." [ref=e459] [cursor=pointer]:
+                          - /url: /fr/a/iamstooda-longueuil-2000-rue-sainte-helene-dfhd05tq
+                          - img "Close-up of a perfectly groomed eyebrow at IamStooda in Longueuil, Québec, CA, highlighting beauty care." [ref=e460]
+                        - link "Intricate henna designs on hands at IamStooda, Longueuil, Québec, CA. Beautiful artistry and detail." [ref=e463] [cursor=pointer]:
+                          - /url: /fr/a/iamstooda-longueuil-2000-rue-sainte-helene-dfhd05tq
+                          - img "Intricate henna designs on hands at IamStooda, Longueuil, Québec, CA. Beautiful artistry and detail." [ref=e464]
+                      - region "Indicator Group" [ref=e465]:
+                        - generic "Image 1 of 10 images" [ref=e466]
+                    - generic [ref=e488]:
+                      - generic [ref=e489]:
+                        - paragraph [ref=e490]: IamStooda
+                        - generic [ref=e492]:
+                          - paragraph [ref=e493]: Note de 5 pour 106 votes
+                          - generic [ref=e494]:
+                            - img [ref=e497]
+                            - generic [ref=e499]: 4,9
+                            - generic [ref=e500]: (106)
+                      - paragraph [ref=e501]: 1,3 km • Le Vieux-longueuil, Longueuil
+                    - generic [ref=e502]:
+                      - generic [ref=e503]:
+                        - generic [ref=e504]:
+                          - link [ref=e505] [cursor=pointer]:
+                            - /url: /fr/a/iamstooda-longueuil-2000-rue-sainte-helene-dfhd05tq/booking?offerItemId=s%3A2208592&via=search&entryPoint=search_see_more
+                          - generic [ref=e506]:
+                            - generic [ref=e507]:
+                              - paragraph [ref=e508]: Threading
+                              - paragraph [ref=e509]: 5 min - 15 min
+                            - paragraph [ref=e511]: 5 $CA
+                        - generic [ref=e512]:
+                          - link [ref=e513] [cursor=pointer]:
+                            - /url: /fr/a/iamstooda-longueuil-2000-rue-sainte-helene-dfhd05tq/booking?offerItemId=s%3A2208681&via=search&entryPoint=search_see_more
+                          - generic [ref=e514]:
+                            - generic [ref=e515]:
+                              - paragraph [ref=e516]: Laser hair removal
+                              - paragraph [ref=e517]: 5 min - 2 h
+                            - paragraph [ref=e519]: 20 $CA
+                        - generic [ref=e520]:
+                          - link [ref=e521] [cursor=pointer]:
+                            - /url: /fr/a/iamstooda-longueuil-2000-rue-sainte-helene-dfhd05tq/booking?offerItemId=s%3A2208601&via=search&entryPoint=search_see_more
+                          - generic [ref=e522]:
+                            - generic [ref=e523]:
+                              - paragraph [ref=e524]: Classic Lashes
+                              - paragraph [ref=e525]: 1 h - 2 h
+                            - paragraph [ref=e527]: 55 $CA
+                      - link "Voir les 15 prestations" [ref=e528] [cursor=pointer]:
+                        - /url: /fr/a/iamstooda-longueuil-2000-rue-sainte-helene-dfhd05tq/booking?via=search&entryPoint=search_time_selected
+              - generic [ref=e530]:
+                - listitem [ref=e531]:
+                  - generic [ref=e533]:
+                    - link "Brossard__lash_extensions" [ref=e534] [cursor=pointer]:
+                      - /url: /fr/a/brossard-lash-extensions-longueuil-quebec-1144-rue-saint-laurent-ouest-t9aup22z
+                    - link [ref=e536] [cursor=pointer]:
+                      - /url: /fr/a/brossard-lash-extensions-longueuil-quebec-1144-rue-saint-laurent-ouest-t9aup22z
+                    - generic [ref=e537]:
+                      - generic [ref=e538]:
+                        - paragraph [ref=e539]: Brossard__lash_extensions
+                        - generic [ref=e541]:
+                          - paragraph [ref=e542]: Note de 5 pour 56 votes
+                          - generic [ref=e543]:
+                            - img [ref=e546]
+                            - generic [ref=e548]: 5,0
+                            - generic [ref=e549]: (56)
+                      - paragraph [ref=e550]: 812 m • Le Vieux-longueuil, Longueuil
+                    - generic [ref=e551]:
+                      - generic [ref=e552]:
+                        - generic [ref=e553]:
+                          - link [ref=e554] [cursor=pointer]:
+                            - /url: /fr/a/brossard-lash-extensions-longueuil-quebec-1144-rue-saint-laurent-ouest-t9aup22z/booking?offerItemId=s%3A16539465&via=search&entryPoint=search_see_more
+                          - generic [ref=e555]:
+                            - generic [ref=e556]:
+                              - paragraph [ref=e557]: POSE VOLUME
+                              - paragraph [ref=e558]: 5 min - 2 h
+                            - paragraph [ref=e560]: 10 $CA
+                        - generic [ref=e561]:
+                          - link [ref=e562] [cursor=pointer]:
+                            - /url: /fr/a/brossard-lash-extensions-longueuil-quebec-1144-rue-saint-laurent-ouest-t9aup22z/booking?offerItemId=s%3A16539298&via=search&entryPoint=search_see_more
+                          - generic [ref=e563]:
+                            - generic [ref=e564]:
+                              - paragraph [ref=e565]: 2 SEMAINES - VOLUME
+                              - paragraph [ref=e566]: 1 h
+                            - paragraph [ref=e568]: 65 $CA
+                        - generic [ref=e569]:
+                          - link [ref=e570] [cursor=pointer]:
+                            - /url: /fr/a/brossard-lash-extensions-longueuil-quebec-1144-rue-saint-laurent-ouest-t9aup22z/booking?offerItemId=s%3A16539334&via=search&entryPoint=search_see_more
+                          - generic [ref=e571]:
+                            - generic [ref=e572]:
+                              - paragraph [ref=e573]: 3 SEMAINES - VOLUME
+                              - paragraph [ref=e574]: 1 h et 30 min
+                            - paragraph [ref=e576]: 75 $CA
+                      - link "Voir les 39 prestations" [ref=e577] [cursor=pointer]:
+                        - /url: /fr/a/brossard-lash-extensions-longueuil-quebec-1144-rue-saint-laurent-ouest-t9aup22z/booking?via=search&entryPoint=search_time_selected
+                - listitem [ref=e578]:
+                  - generic [ref=e580]:
+                    - link "Studio Florez Esthétique" [ref=e581] [cursor=pointer]:
+                      - /url: /fr/a/studio-florez-esthetique-longueuil-1940-boulevard-taschereau-ohroouy0
+                    - region "carousel-wrapper" [ref=e583]:
+                      - generic [ref=e584]:
+                        - link [ref=e587] [cursor=pointer]:
+                          - /url: /fr/a/studio-florez-esthetique-longueuil-1940-boulevard-taschereau-ohroouy0
+                        - link [ref=e590] [cursor=pointer]:
+                          - /url: /fr/a/studio-florez-esthetique-longueuil-1940-boulevard-taschereau-ohroouy0
+                        - link [ref=e593] [cursor=pointer]:
+                          - /url: /fr/a/studio-florez-esthetique-longueuil-1940-boulevard-taschereau-ohroouy0
+                      - region "Indicator Group" [ref=e594]:
+                        - generic [ref=e596]:
+                          - button "Image 1 of 3 images" [ref=e597] [cursor=pointer]
+                          - button "Image 2 of 3 images" [ref=e599] [cursor=pointer]
+                          - button "Image 3 of 3 images" [ref=e601] [cursor=pointer]
+                    - generic [ref=e603]:
+                      - generic [ref=e604]:
+                        - paragraph [ref=e605]: Studio Florez Esthétique
+                        - generic [ref=e607]:
+                          - paragraph [ref=e608]: Note de 5 pour 20 votes
+                          - generic [ref=e609]:
+                            - img [ref=e612]
+                            - generic [ref=e614]: 5,0
+                            - generic [ref=e615]: (20)
+                      - paragraph [ref=e616]: 1,6 km • Le Vieux-longueuil, Longueuil
+                    - generic [ref=e617]:
+                      - generic [ref=e618]:
+                        - generic [ref=e619]:
+                          - link [ref=e620] [cursor=pointer]:
+                            - /url: /fr/a/studio-florez-esthetique-longueuil-1940-boulevard-taschereau-ohroouy0/booking?offerItemId=s%3A16226622&via=search&entryPoint=search_see_more
+                          - generic [ref=e621]:
+                            - generic [ref=e622]:
+                              - paragraph [ref=e623]: Sourcils signature ~ lamination + teinture +épilation
+                              - paragraph [ref=e624]: 1 h et 45 min
+                            - paragraph [ref=e626]: 110 $CA
+                        - generic [ref=e627]:
+                          - link [ref=e628] [cursor=pointer]:
+                            - /url: /fr/a/studio-florez-esthetique-longueuil-1940-boulevard-taschereau-ohroouy0/booking?offerItemId=s%3A16226620&via=search&entryPoint=search_see_more
+                          - generic [ref=e629]:
+                            - generic [ref=e630]:
+                              - paragraph [ref=e631]: Lamination des sourcils + restructuration + épilation
+                              - paragraph [ref=e632]: 1 h et 5 min
+                            - paragraph [ref=e634]: 100 $CA
+                        - generic [ref=e635]:
+                          - link [ref=e636] [cursor=pointer]:
+                            - /url: /fr/a/studio-florez-esthetique-longueuil-1940-boulevard-taschereau-ohroouy0/booking?offerItemId=s%3A16226619&via=search&entryPoint=search_see_more
+                          - generic [ref=e637]:
+                            - generic [ref=e638]:
+                              - paragraph [ref=e639]: Teinture + restructuration + épilation
+                              - paragraph [ref=e640]: 45 min
+                            - paragraph [ref=e642]: 45 $CA
+                      - link "Voir les 23 prestations" [ref=e643] [cursor=pointer]:
+                        - /url: /fr/a/studio-florez-esthetique-longueuil-1940-boulevard-taschereau-ohroouy0/booking?via=search&entryPoint=search_time_selected
+              - generic [ref=e1722]:
+                - listitem [ref=e1723]:
+                  - generic [ref=e1725]:
+                    - link "Lothéra Spa" [ref=e1726] [cursor=pointer]:
+                      - /url: /fr/a/lothera-spa-longueuil-98-chemin-du-coteau-rouge-koh9lruj
+                    - region "carousel-wrapper" [ref=e1728]:
+                      - generic [ref=e1729]:
+                        - link "Cozy seating area with water dispenser at Lothéra Spa, Longueuil, Québec, CA." [ref=e1732] [cursor=pointer]:
+                          - /url: /fr/a/lothera-spa-longueuil-98-chemin-du-coteau-rouge-koh9lruj
+                          - img "Cozy seating area with water dispenser at Lothéra Spa, Longueuil, Québec, CA." [ref=e1733]
+                        - link "Bright hallway in Lothéra Spa, Longueuil, Québec, CA with plush seating and decor." [ref=e1736] [cursor=pointer]:
+                          - /url: /fr/a/lothera-spa-longueuil-98-chemin-du-coteau-rouge-koh9lruj
+                          - img "Bright hallway in Lothéra Spa, Longueuil, Québec, CA with plush seating and decor." [ref=e1737]
+                        - link "Elegant lounge area at Lothéra Spa, Longueuil, Québec, CA, with plush sofa, modern decor, and natural lighting." [ref=e1740] [cursor=pointer]:
+                          - /url: /fr/a/lothera-spa-longueuil-98-chemin-du-coteau-rouge-koh9lruj
+                          - img "Elegant lounge area at Lothéra Spa, Longueuil, Québec, CA, with plush sofa, modern decor, and natural lighting." [ref=e1741]
+                      - region "Indicator Group" [ref=e1742]:
+                        - generic [ref=e1744]:
+                          - button "Image 1 of 3 images" [ref=e1745] [cursor=pointer]
+                          - button "Image 2 of 3 images" [ref=e1747] [cursor=pointer]
+                          - button "Image 3 of 3 images" [ref=e1749] [cursor=pointer]
+                    - generic [ref=e1751]:
+                      - generic [ref=e1752]:
+                        - paragraph [ref=e1753]: Lothéra Spa
+                        - generic [ref=e1755]:
+                          - paragraph [ref=e1756]: Note de 5 pour 11 votes
+                          - generic [ref=e1757]:
+                            - img [ref=e1760]
+                            - generic [ref=e1762]: 5,0
+                            - generic [ref=e1763]: (11)
+                      - paragraph [ref=e1764]: 1,9 km • Le Vieux-longueuil, Longueuil
+                    - generic [ref=e1765]:
+                      - generic [ref=e1766]:
+                        - generic [ref=e1767]:
+                          - link [ref=e1768] [cursor=pointer]:
+                            - /url: /fr/a/lothera-spa-longueuil-98-chemin-du-coteau-rouge-koh9lruj/booking?offerItemId=s%3A21213891&via=search&entryPoint=search_see_more
+                          - generic [ref=e1769]:
+                            - generic [ref=e1770]:
+                              - paragraph [ref=e1771]: Lothéra x Vivier Glowing Facial （Promotion）
+                              - paragraph [ref=e1772]: 45 min
+                            - paragraph [ref=e1774]: 85 $CA
+                        - generic [ref=e1775]:
+                          - link [ref=e1776] [cursor=pointer]:
+                            - /url: /fr/a/lothera-spa-longueuil-98-chemin-du-coteau-rouge-koh9lruj/booking?offerItemId=s%3A22860994&via=search&entryPoint=search_see_more
+                          - generic [ref=e1777]:
+                            - generic [ref=e1778]:
+                              - paragraph [ref=e1779]: Lothéra x Vivier Tightening Anti-Aging Facial
+                              - paragraph [ref=e1780]: 1 h
+                            - paragraph [ref=e1782]: 129 $CA
+                        - generic [ref=e1783]:
+                          - link [ref=e1784] [cursor=pointer]:
+                            - /url: /fr/a/lothera-spa-longueuil-98-chemin-du-coteau-rouge-koh9lruj/booking?offerItemId=s%3A22040684&via=search&entryPoint=search_see_more
+                          - generic [ref=e1785]:
+                            - generic [ref=e1786]:
+                              - paragraph [ref=e1787]: Lumecca IPL (Photorajeunissement)
+                              - paragraph [ref=e1788]: 1 h
+                            - paragraph [ref=e1790]: à partir de 199 $CA
+                      - link "Voir les 23 prestations" [ref=e1791] [cursor=pointer]:
+                        - /url: /fr/a/lothera-spa-longueuil-98-chemin-du-coteau-rouge-koh9lruj/booking?via=search&entryPoint=search_time_selected
+                - listitem [ref=e1792]:
+                  - generic [ref=e1794]:
+                    - link "Studio Wow (Longueuil)" [ref=e1795] [cursor=pointer]:
+                      - /url: /fr/a/studio-wow-longueuil-longueuil-365-rue-saint-jean-cpd5sq3n
+                    - region "carousel-wrapper" [ref=e1797]:
+                      - generic [ref=e1798]:
+                        - link "Table de soin avec serviettes griffées Studio Wow à Longueuil, Québec, CA, pour une expérience spa relaxante." [ref=e1801] [cursor=pointer]:
+                          - /url: /fr/a/studio-wow-longueuil-longueuil-365-rue-saint-jean-cpd5sq3n
+                          - img "Table de soin avec serviettes griffées Studio Wow à Longueuil, Québec, CA, pour une expérience spa relaxante." [ref=e1802]
+                        - link "Corner élégante de Studio Wow (Longueuil) avec fauteuil noir et étagère produits, Longueuil, Québec, CA." [ref=e1805] [cursor=pointer]:
+                          - /url: /fr/a/studio-wow-longueuil-longueuil-365-rue-saint-jean-cpd5sq3n
+                          - img "Corner élégante de Studio Wow (Longueuil) avec fauteuil noir et étagère produits, Longueuil, Québec, CA." [ref=e1806]
+                        - link "Studio Wow (Longueuil) accueille avec un canapé élégant et décor floral, offrant une ambiance chaleureuse à Longueuil, Québec, CA." [ref=e1809] [cursor=pointer]:
+                          - /url: /fr/a/studio-wow-longueuil-longueuil-365-rue-saint-jean-cpd5sq3n
+                          - img "Studio Wow (Longueuil) accueille avec un canapé élégant et décor floral, offrant une ambiance chaleureuse à Longueuil, Québec, CA." [ref=e1810]
+                        - link "Sérum Incellderm chez Studio Wow (Longueuil), Longueuil, Québec, CA. Produits de soin de la peau haut de gamme." [ref=e1813] [cursor=pointer]:
+                          - /url: /fr/a/studio-wow-longueuil-longueuil-365-rue-saint-jean-cpd5sq3n
+                          - img "Sérum Incellderm chez Studio Wow (Longueuil), Longueuil, Québec, CA. Produits de soin de la peau haut de gamme." [ref=e1814]
+                        - link "Produits Vitamine C chez Studio Wow (Longueuil), Longueuil, Québec, CA." [ref=e1817] [cursor=pointer]:
+                          - /url: /fr/a/studio-wow-longueuil-longueuil-365-rue-saint-jean-cpd5sq3n
+                          - img "Produits Vitamine C chez Studio Wow (Longueuil), Longueuil, Québec, CA." [ref=e1818]
+                        - link "Kit de soins présenté à Studio Wow (Longueuil), Longueuil, Québec, CA. Cinq produits de beauté pour une peau éclatante." [ref=e1821] [cursor=pointer]:
+                          - /url: /fr/a/studio-wow-longueuil-longueuil-365-rue-saint-jean-cpd5sq3n
+                          - img "Kit de soins présenté à Studio Wow (Longueuil), Longueuil, Québec, CA. Cinq produits de beauté pour une peau éclatante." [ref=e1822]
+                        - link "Produits de beauté sur étagère à Studio Wow (Longueuil), Longueuil, Québec, CA." [ref=e1825] [cursor=pointer]:
+                          - /url: /fr/a/studio-wow-longueuil-longueuil-365-rue-saint-jean-cpd5sq3n
+                          - img "Produits de beauté sur étagère à Studio Wow (Longueuil), Longueuil, Québec, CA." [ref=e1826]
+                      - region "Indicator Group" [ref=e1827]:
+                        - generic "Image 1 of 7 images" [ref=e1828]
+                    - generic [ref=e1844]:
+                      - generic [ref=e1845]:
+                        - paragraph [ref=e1846]: Studio Wow (Longueuil)
+                        - generic [ref=e1848]:
+                          - paragraph [ref=e1849]: Note de 5 pour 9 votes
+                          - generic [ref=e1850]:
+                            - img [ref=e1853]
+                            - generic [ref=e1855]: 4,9
+                            - generic [ref=e1856]: (9)
+                      - paragraph [ref=e1857]: 812 m • Centre Véronneau, Longueuil
+                    - generic [ref=e1858]:
+                      - generic [ref=e1859]:
+                        - generic [ref=e1860]:
+                          - link [ref=e1861] [cursor=pointer]:
+                            - /url: /fr/a/studio-wow-longueuil-longueuil-365-rue-saint-jean-cpd5sq3n/booking?offerItemId=s%3A17278726&via=search&entryPoint=search_see_more
+                          - generic [ref=e1862]:
+                            - generic [ref=e1863]:
+                              - paragraph [ref=e1864]: ENDOLIFTING LASER
+                              - paragraph [ref=e1865]: 2 h
+                            - paragraph [ref=e1867]: à partir de 1 200 $CA
+                        - generic [ref=e1868]:
+                          - link [ref=e1869] [cursor=pointer]:
+                            - /url: /fr/a/studio-wow-longueuil-longueuil-365-rue-saint-jean-cpd5sq3n/booking?offerItemId=s%3A17278616&via=search&entryPoint=search_see_more
+                          - generic [ref=e1870]:
+                            - generic [ref=e1871]:
+                              - paragraph [ref=e1872]: Traitement Plasmapen verrues et acrochordons cicatrices taches solaires
+                              - paragraph [ref=e1873]: 1 h
+                            - paragraph [ref=e1875]: à partir de 150 $CA
+                        - generic [ref=e1876]:
+                          - link [ref=e1877] [cursor=pointer]:
+                            - /url: /fr/a/studio-wow-longueuil-longueuil-365-rue-saint-jean-cpd5sq3n/booking?offerItemId=s%3A17207803&via=search&entryPoint=search_see_more
+                          - generic [ref=e1878]:
+                            - generic [ref=e1879]:
+                              - paragraph [ref=e1880]: Facial de Luxe Casmara
+                              - paragraph [ref=e1881]: 1 h et 30 min
+                            - paragraph [ref=e1883]: à partir de 180 $CA
+                      - link "Voir les 27 prestations" [ref=e1884] [cursor=pointer]:
+                        - /url: /fr/a/studio-wow-longueuil-longueuil-365-rue-saint-jean-cpd5sq3n/booking?via=search&entryPoint=search_time_selected
+              - generic [ref=e1886]:
+                - listitem [ref=e1887]:
+                  - generic [ref=e1889]:
+                    - link "Aura Atelier Haïr & Head Spa" [ref=e1890] [cursor=pointer]:
+                      - /url: /fr/a/aura-atelier-hair-head-spa-longueuil-600b-boulevard-cure-poirier-ouest-eff5fjl5
+                    - region "carousel-wrapper" [ref=e1892]:
+                      - generic [ref=e1893]:
+                        - link "Client détendue au Aura Atelier Haïr & Head Spa, Longueuil, Québec, CA, sous lumière apaisante." [ref=e1896] [cursor=pointer]:
+                          - /url: /fr/a/aura-atelier-hair-head-spa-longueuil-600b-boulevard-cure-poirier-ouest-eff5fjl5
+                          - img "Client détendue au Aura Atelier Haïr & Head Spa, Longueuil, Québec, CA, sous lumière apaisante." [ref=e1897]
+                        - link "Logo de l'Aura Atelier Haïr & Head Spa situé à Longueuil, Québec, CA, affichant un design moderne et épuré." [ref=e1900] [cursor=pointer]:
+                          - /url: /fr/a/aura-atelier-hair-head-spa-longueuil-600b-boulevard-cure-poirier-ouest-eff5fjl5
+                          - img "Logo de l'Aura Atelier Haïr & Head Spa situé à Longueuil, Québec, CA, affichant un design moderne et épuré." [ref=e1901]
+                        - link "Deux coiffures lisses chez Aura Atelier Haïr & Head Spa à Longueuil, Québec, CA, illustrant des soins capillaires." [ref=e1904] [cursor=pointer]:
+                          - /url: /fr/a/aura-atelier-hair-head-spa-longueuil-600b-boulevard-cure-poirier-ouest-eff5fjl5
+                          - img "Deux coiffures lisses chez Aura Atelier Haïr & Head Spa à Longueuil, Québec, CA, illustrant des soins capillaires." [ref=e1905]
+                      - region "Indicator Group" [ref=e1906]:
+                        - generic [ref=e1908]:
+                          - button "Image 1 of 3 images" [ref=e1909] [cursor=pointer]
+                          - button "Image 2 of 3 images" [ref=e1911] [cursor=pointer]
+                          - button "Image 3 of 3 images" [ref=e1913] [cursor=pointer]
+                    - generic [ref=e1915]:
+                      - generic [ref=e1916]:
+                        - paragraph [ref=e1917]: Aura Atelier Haïr & Head Spa
+                        - generic [ref=e1919]:
+                          - paragraph [ref=e1920]: Note de 5 pour 2 votes
+                          - generic [ref=e1921]:
+                            - img [ref=e1924]
+                            - generic [ref=e1926]: 5,0
+                            - generic [ref=e1927]: (2)
+                      - paragraph [ref=e1928]: 1,5 km • Le Vieux-longueuil, Longueuil
+                    - generic [ref=e1929]:
+                      - generic [ref=e1930]:
+                        - generic [ref=e1931]:
+                          - link [ref=e1932] [cursor=pointer]:
+                            - /url: /fr/a/aura-atelier-hair-head-spa-longueuil-600b-boulevard-cure-poirier-ouest-eff5fjl5/booking?offerItemId=s%3A23276910&via=search&entryPoint=search_see_more
+                          - generic [ref=e1933]:
+                            - generic [ref=e1934]:
+                              - paragraph [ref=e1935]: Coupe & mise en plis
+                              - paragraph [ref=e1936]: 1 h
+                            - paragraph [ref=e1938]: à partir de 80 $CA
+                        - generic [ref=e1939]:
+                          - link [ref=e1940] [cursor=pointer]:
+                            - /url: /fr/a/aura-atelier-hair-head-spa-longueuil-600b-boulevard-cure-poirier-ouest-eff5fjl5/booking?offerItemId=s%3A23276880&via=search&entryPoint=search_see_more
+                          - generic [ref=e1941]:
+                            - generic [ref=e1942]:
+                              - paragraph [ref=e1943]: Coloration racines
+                              - paragraph [ref=e1944]: 3 h
+                            - paragraph [ref=e1946]: à partir de 50 $CA
+                        - generic [ref=e1947]:
+                          - link [ref=e1948] [cursor=pointer]:
+                            - /url: /fr/a/aura-atelier-hair-head-spa-longueuil-600b-boulevard-cure-poirier-ouest-eff5fjl5/booking?offerItemId=s%3A23163835&via=search&entryPoint=search_see_more
+                          - generic [ref=e1949]:
+                            - generic [ref=e1950]:
+                              - paragraph [ref=e1951]: Head Spa - Régulier
+                              - paragraph [ref=e1952]: 1 h
+                            - paragraph [ref=e1954]: 92 $CA
+                      - link "Voir les 23 prestations" [ref=e1955] [cursor=pointer]:
+                        - /url: /fr/a/aura-atelier-hair-head-spa-longueuil-600b-boulevard-cure-poirier-ouest-eff5fjl5/booking?via=search&entryPoint=search_time_selected
+                - listitem [ref=e1956]:
+                  - generic [ref=e1958]:
+                    - link "Succursale 2 - 188 Rue Gentilly Ouest Longueuil" [ref=e1959] [cursor=pointer]:
+                      - /url: /fr/a/succursale-2-188-rue-gentilly-ouest-longueuil-longueuil-188-a-rue-de-gentilly-ouest-p3772usd
+                    - region "carousel-wrapper" [ref=e1961]:
+                      - generic [ref=e1962]:
+                        - link [ref=e1965] [cursor=pointer]:
+                          - /url: /fr/a/succursale-2-188-rue-gentilly-ouest-longueuil-longueuil-188-a-rue-de-gentilly-ouest-p3772usd
+                        - link [ref=e1968] [cursor=pointer]:
+                          - /url: /fr/a/succursale-2-188-rue-gentilly-ouest-longueuil-longueuil-188-a-rue-de-gentilly-ouest-p3772usd
+                        - link [ref=e1971] [cursor=pointer]:
+                          - /url: /fr/a/succursale-2-188-rue-gentilly-ouest-longueuil-longueuil-188-a-rue-de-gentilly-ouest-p3772usd
+                      - region "Indicator Group" [ref=e1972]:
+                        - generic [ref=e1974]:
+                          - button "Image 1 of 3 images" [ref=e1975] [cursor=pointer]
+                          - button "Image 2 of 3 images" [ref=e1977] [cursor=pointer]
+                          - button "Image 3 of 3 images" [ref=e1979] [cursor=pointer]
+                    - generic [ref=e1981]:
+                      - paragraph [ref=e1983]: Succursale 2 - 188 Rue Gentilly Ouest Longueuil
+                      - paragraph [ref=e1984]: 1,8 km • Le Vieux-longueuil, Longueuil
+                    - generic [ref=e1985]:
+                      - generic [ref=e1986]:
+                        - generic [ref=e1987]:
+                          - link [ref=e1988] [cursor=pointer]:
+                            - /url: /fr/a/succursale-2-188-rue-gentilly-ouest-longueuil-longueuil-188-a-rue-de-gentilly-ouest-p3772usd/booking?offerItemId=s%3A19462963&via=search&entryPoint=search_see_more
+                          - generic [ref=e1989]:
+                            - generic [ref=e1990]:
+                              - paragraph [ref=e1991]: Sourcils & lèvre supérieur
+                              - paragraph [ref=e1992]: 15 min
+                            - paragraph [ref=e1994]: 16 $CA
+                        - generic [ref=e1995]:
+                          - link [ref=e1996] [cursor=pointer]:
+                            - /url: /fr/a/succursale-2-188-rue-gentilly-ouest-longueuil-longueuil-188-a-rue-de-gentilly-ouest-p3772usd/booking?offerItemId=s%3A9041362&via=search&entryPoint=search_see_more
+                          - generic [ref=e1997]:
+                            - generic [ref=e1998]:
+                              - paragraph [ref=e1999]: Mini-brézilien / Mini-Brazilian
+                              - paragraph [ref=e2000]: 20 min
+                            - paragraph [ref=e2002]: 25 $CA
+                        - generic [ref=e2003]:
+                          - link [ref=e2004] [cursor=pointer]:
+                            - /url: /fr/a/succursale-2-188-rue-gentilly-ouest-longueuil-longueuil-188-a-rue-de-gentilly-ouest-p3772usd/booking?offerItemId=s%3A15918256&via=search&entryPoint=search_see_more
+                          - generic [ref=e2005]:
+                            - generic [ref=e2006]:
+                              - paragraph [ref=e2007]: Sourcils (repousse de 2 mois et plus)
+                              - paragraph [ref=e2008]: 15 min
+                            - paragraph [ref=e2010]: 15 $CA
+                      - link "Voir les 63 prestations" [ref=e2011] [cursor=pointer]:
+                        - /url: /fr/a/succursale-2-188-rue-gentilly-ouest-longueuil-longueuil-188-a-rue-de-gentilly-ouest-p3772usd/booking?via=search&entryPoint=search_time_selected
+            - button "Voir plus" [ref=e646] [cursor=pointer]:
+              - generic [ref=e649]: Voir plus
+      - generic [ref=e136]:
+        - generic [ref=e650]:
+          - region "Map" [ref=e651]
+          - img "Map marker" [ref=e652]:
+            - button "5" [ref=e653] [cursor=pointer]:
+              - generic [ref=e656]: "5"
+          - img "Map marker" [ref=e657]:
+            - button "4.9" [ref=e658] [cursor=pointer]:
+              - generic [ref=e661]: "4.9"
+          - img "Map marker" [ref=e662]:
+            - button "5" [ref=e663] [cursor=pointer]:
+              - generic [ref=e666]: "5"
+          - img "Map marker" [ref=e667]:
+            - button "4.9" [ref=e668] [cursor=pointer]:
+              - generic [ref=e671]: "4.9"
+          - img "Map marker" [ref=e672]:
+            - button "5" [ref=e673] [cursor=pointer]:
+              - generic [ref=e676]: "5"
+          - img "Map marker" [ref=e677]:
+            - button "5" [ref=e678] [cursor=pointer]:
+              - generic [ref=e681]: "5"
+          - img "Map marker" [ref=e682]:
+            - button "4.9" [ref=e683] [cursor=pointer]:
+              - generic [ref=e686]: "4.9"
+          - img "Map marker" [ref=e687]:
+            - button "5" [ref=e688] [cursor=pointer]:
+              - generic [ref=e691]: "5"
+          - img "Map marker" [ref=e692]:
+            - button "4.9" [ref=e693] [cursor=pointer]:
+              - generic [ref=e696]: "4.9"
+          - img "Map marker" [ref=e697]:
+            - button "4.9" [ref=e698] [cursor=pointer]:
+              - generic [ref=e701]: "4.9"
+          - img "Map marker" [ref=e702]:
+            - button "5" [ref=e703] [cursor=pointer]:
+              - generic [ref=e706]: "5"
+          - img "Map marker" [ref=e707]:
+            - button "5" [ref=e708] [cursor=pointer]:
+              - generic [ref=e711]: "5"
+          - img "Map marker" [ref=e712]:
+            - button "5" [ref=e713] [cursor=pointer]:
+              - generic [ref=e716]: "5"
+          - img "Map marker" [ref=e717]:
+            - button "4.9" [ref=e718] [cursor=pointer]:
+              - generic [ref=e721]: "4.9"
+          - img "Map marker" [ref=e722]:
+            - button "5" [ref=e723] [cursor=pointer]:
+              - generic [ref=e726]: "5"
+          - img "Map marker" [ref=e727]:
+            - button "5" [ref=e728] [cursor=pointer]:
+              - generic [ref=e731]: "5"
+          - img "Map marker" [ref=e732]:
+            - button "5" [ref=e733] [cursor=pointer]:
+              - generic [ref=e736]: "5"
+          - img "Map marker" [ref=e737]:
+            - button "5" [ref=e738] [cursor=pointer]:
+              - generic [ref=e741]: "5"
+          - img "Map marker" [ref=e742]:
+            - button "5" [ref=e743] [cursor=pointer]:
+              - generic [ref=e747]: "5"
+          - img "Map marker" [ref=e748]:
+            - button "5" [ref=e749] [cursor=pointer]:
+              - generic [ref=e752]: "5"
+          - img "Map marker" [ref=e753]:
+            - button "5" [ref=e754] [cursor=pointer]:
+              - generic [ref=e758]: "5"
+          - img "Map marker" [ref=e759]:
+            - button "4.9" [ref=e760] [cursor=pointer]:
+              - generic [ref=e763]: "4.9"
+          - img "Map marker" [ref=e764]:
+            - button "4.9" [ref=e765] [cursor=pointer]:
+              - generic [ref=e768]: "4.9"
+          - img "Map marker" [ref=e769]:
+            - button "5" [ref=e770] [cursor=pointer]:
+              - generic [ref=e773]: "5"
+          - img "Map marker" [ref=e774]:
+            - button "5" [ref=e775] [cursor=pointer]:
+              - generic [ref=e778]: "5"
+          - img "Map marker" [ref=e779]:
+            - button "5" [ref=e780] [cursor=pointer]:
+              - generic [ref=e783]: "5"
+          - img "Map marker" [ref=e784]:
+            - button "5" [ref=e785] [cursor=pointer]:
+              - generic [ref=e788]: "5"
+          - img "Map marker" [ref=e789]:
+            - button "5" [ref=e790] [cursor=pointer]:
+              - generic [ref=e794]: "5"
+          - img "Map marker" [ref=e795]:
+            - button "5" [ref=e796] [cursor=pointer]:
+              - generic [ref=e799]: "5"
+          - img "Map marker" [ref=e800]:
+            - button "5" [ref=e801] [cursor=pointer]:
+              - generic [ref=e804]: "5"
+          - img "Map marker" [ref=e805]:
+            - button "5" [ref=e806] [cursor=pointer]:
+              - generic [ref=e809]: "5"
+          - img "Map marker" [ref=e810]:
+            - button "5" [ref=e811] [cursor=pointer]:
+              - generic [ref=e814]: "5"
+          - img "Map marker" [ref=e815]:
+            - button "5" [ref=e816] [cursor=pointer]:
+              - generic [ref=e819]: "5"
+          - img "Map marker" [ref=e820]:
+            - button "5" [ref=e821] [cursor=pointer]:
+              - generic [ref=e824]: "5"
+          - img "Map marker" [ref=e825]:
+            - button "5" [ref=e826] [cursor=pointer]:
+              - generic [ref=e829]: "5"
+          - img "Map marker" [ref=e830]:
+            - button "4.9" [ref=e831] [cursor=pointer]:
+              - generic [ref=e834]: "4.9"
+          - img "Map marker" [ref=e835]:
+            - button "5" [ref=e836] [cursor=pointer]:
+              - generic [ref=e839]: "5"
+          - img "Map marker" [ref=e840]:
+            - button "4.9" [ref=e841] [cursor=pointer]:
+              - generic [ref=e844]: "4.9"
+          - img "Map marker" [ref=e845]:
+            - button "5" [ref=e846] [cursor=pointer]:
+              - generic [ref=e849]: "5"
+          - img "Map marker" [ref=e850]:
+            - button "5" [ref=e851] [cursor=pointer]:
+              - generic [ref=e854]: "5"
+          - img "Map marker" [ref=e855]:
+            - button "5" [ref=e856] [cursor=pointer]:
+              - generic [ref=e859]: "5"
+          - img "Map marker" [ref=e860]:
+            - button "5" [ref=e861] [cursor=pointer]:
+              - generic [ref=e864]: "5"
+          - img "Map marker" [ref=e865]:
+            - button "4.9" [ref=e866] [cursor=pointer]:
+              - generic [ref=e869]: "4.9"
+          - img "Map marker" [ref=e870]:
+            - button "4.9" [ref=e871] [cursor=pointer]:
+              - generic [ref=e875]: "4.9"
+          - img "Map marker" [ref=e876]:
+            - button "5" [ref=e877] [cursor=pointer]:
+              - generic [ref=e881]: "5"
+          - img "Map marker" [ref=e882]:
+            - button "5" [ref=e883] [cursor=pointer]:
+              - generic [ref=e886]: "5"
+          - img "Map marker" [ref=e887]:
+            - button "5" [ref=e888] [cursor=pointer]:
+              - generic [ref=e891]: "5"
+          - img "Map marker" [ref=e892]:
+            - button "5" [ref=e893] [cursor=pointer]:
+              - generic [ref=e897]: "5"
+          - img "Map marker" [ref=e898]:
+            - button "5" [ref=e899] [cursor=pointer]:
+              - generic [ref=e903]: "5"
+          - img "Map marker" [ref=e904]:
+            - button "4.9" [ref=e905] [cursor=pointer]:
+              - generic [ref=e908]: "4.9"
+          - img "Map marker" [ref=e909]:
+            - button "5" [ref=e910] [cursor=pointer]:
+              - generic [ref=e913]: "5"
+          - img "Map marker" [ref=e914]:
+            - button "5" [ref=e915] [cursor=pointer]:
+              - generic [ref=e919]: "5"
+          - img "Map marker" [ref=e920]:
+            - button "5" [ref=e921] [cursor=pointer]:
+              - generic [ref=e924]: "5"
+          - img "Map marker" [ref=e925]:
+            - button "4.9" [ref=e926] [cursor=pointer]:
+              - generic [ref=e929]: "4.9"
+          - img "Map marker" [ref=e930]:
+            - button "5" [ref=e931] [cursor=pointer]:
+              - generic [ref=e934]: "5"
+          - img "Map marker" [ref=e935]:
+            - button "5" [ref=e936] [cursor=pointer]:
+              - generic [ref=e939]: "5"
+          - img "Map marker" [ref=e940]:
+            - button "5" [ref=e941] [cursor=pointer]:
+              - generic [ref=e944]: "5"
+          - img "Map marker" [ref=e945]:
+            - button "4.9" [ref=e946] [cursor=pointer]:
+              - generic [ref=e949]: "4.9"
+          - img "Map marker" [ref=e950]:
+            - button "5" [ref=e951] [cursor=pointer]:
+              - generic [ref=e954]: "5"
+          - img "Map marker" [ref=e955]:
+            - button "4.9" [ref=e956] [cursor=pointer]:
+              - generic [ref=e959]: "4.9"
+          - img "Map marker" [ref=e960]:
+            - button "4.9" [ref=e961] [cursor=pointer]:
+              - generic [ref=e965]: "4.9"
+          - img "Map marker" [ref=e966]:
+            - button "4.9" [ref=e967] [cursor=pointer]:
+              - generic [ref=e970]: "4.9"
+          - img "Map marker" [ref=e971]:
+            - button "5" [ref=e972] [cursor=pointer]:
+              - generic [ref=e975]: "5"
+          - img "Map marker" [ref=e976]:
+            - button "5" [ref=e977] [cursor=pointer]:
+              - generic [ref=e980]: "5"
+          - img "Map marker" [ref=e981]:
+            - button "5" [ref=e982] [cursor=pointer]:
+              - generic [ref=e985]: "5"
+          - img "Map marker" [ref=e986]:
+            - button "5" [ref=e987] [cursor=pointer]:
+              - generic [ref=e990]: "5"
+          - img "Map marker" [ref=e991]:
+            - button "5" [ref=e992] [cursor=pointer]:
+              - generic [ref=e995]: "5"
+          - img "Map marker" [ref=e996]:
+            - button "5" [ref=e997] [cursor=pointer]:
+              - generic [ref=e1000]: "5"
+          - img "Map marker" [ref=e1001]:
+            - button "5" [ref=e1002] [cursor=pointer]:
+              - generic [ref=e1005]: "5"
+          - img "Map marker" [ref=e1006]:
+            - button "5" [ref=e1007] [cursor=pointer]:
+              - generic [ref=e1010]: "5"
+          - img "Map marker" [ref=e1011]:
+            - button "4.9" [ref=e1012] [cursor=pointer]:
+              - generic [ref=e1015]: "4.9"
+          - img "Map marker" [ref=e1016]:
+            - button "5" [ref=e1017] [cursor=pointer]:
+              - generic [ref=e1020]: "5"
+          - img "Map marker" [ref=e1021]:
+            - button "5" [ref=e1022] [cursor=pointer]:
+              - generic [ref=e1025]: "5"
+          - img "Map marker" [ref=e1026]:
+            - button "4.9" [ref=e1027] [cursor=pointer]:
+              - generic [ref=e1030]: "4.9"
+          - img "Map marker" [ref=e1031]:
+            - button "5" [ref=e1032] [cursor=pointer]:
+              - generic [ref=e1035]: "5"
+          - img "Map marker" [ref=e1036]:
+            - button "5" [ref=e1037] [cursor=pointer]:
+              - generic [ref=e1040]: "5"
+          - img "Map marker" [ref=e1041]:
+            - button "5" [ref=e1042] [cursor=pointer]:
+              - generic [ref=e1046]: "5"
+          - img "Map marker" [ref=e1047]:
+            - button "5" [ref=e1048] [cursor=pointer]:
+              - generic [ref=e1051]: "5"
+          - img "Map marker" [ref=e1052]:
+            - button "4.9" [ref=e1053] [cursor=pointer]:
+              - generic [ref=e1056]: "4.9"
+          - img "Map marker" [ref=e1057]:
+            - button "5" [ref=e1058] [cursor=pointer]:
+              - generic [ref=e1061]: "5"
+          - img "Map marker" [ref=e1062]:
+            - button "4.9" [ref=e1063] [cursor=pointer]:
+              - generic [ref=e1066]: "4.9"
+          - img "Map marker" [ref=e1067]:
+            - button "4.9" [ref=e1068] [cursor=pointer]:
+              - generic [ref=e1071]: "4.9"
+          - img "Map marker" [ref=e1072]:
+            - button "4.9" [ref=e1073] [cursor=pointer]:
+              - generic [ref=e1076]: "4.9"
+          - img "Map marker" [ref=e1077]:
+            - button "4.9" [ref=e1078] [cursor=pointer]:
+              - generic [ref=e1081]: "4.9"
+          - img "Map marker" [ref=e1082]:
+            - button "5" [ref=e1083] [cursor=pointer]:
+              - generic [ref=e1086]: "5"
+          - img "Map marker" [ref=e1087]:
+            - button "5" [ref=e1088] [cursor=pointer]:
+              - generic [ref=e1092]: "5"
+          - img "Map marker" [ref=e1093]:
+            - button "5" [ref=e1094] [cursor=pointer]:
+              - generic [ref=e1097]: "5"
+          - img "Map marker" [ref=e1098]:
+            - button "5" [ref=e1099] [cursor=pointer]:
+              - generic [ref=e1103]: "5"
+          - img "Map marker" [ref=e1104]:
+            - button "5" [ref=e1105] [cursor=pointer]:
+              - generic [ref=e1108]: "5"
+          - img "Map marker" [ref=e1109]:
+            - button "5" [ref=e1110] [cursor=pointer]:
+              - generic [ref=e1114]: "5"
+          - img "Map marker" [ref=e1115]:
+            - button "5" [ref=e1116] [cursor=pointer]:
+              - generic [ref=e1119]: "5"
+          - img "Map marker" [ref=e1120]:
+            - button "5" [ref=e1121] [cursor=pointer]:
+              - generic [ref=e1124]: "5"
+          - img "Map marker" [ref=e1125]:
+            - button "5" [ref=e1126] [cursor=pointer]:
+              - generic [ref=e1130]: "5"
+          - img "Map marker" [ref=e1131]:
+            - button "4.9" [ref=e1132] [cursor=pointer]:
+              - generic [ref=e1136]: "4.9"
+          - img "Map marker" [ref=e1137]:
+            - button "5" [ref=e1138] [cursor=pointer]:
+              - generic [ref=e1141]: "5"
+          - img "Map marker" [ref=e1142]:
+            - button "4.9" [ref=e1143] [cursor=pointer]:
+              - generic [ref=e1146]: "4.9"
+          - img "Map marker" [ref=e1147]:
+            - button "4.9" [ref=e1148] [cursor=pointer]:
+              - generic [ref=e1151]: "4.9"
+          - img "Map marker" [ref=e1152]:
+            - button "4.9" [ref=e1153] [cursor=pointer]:
+              - generic [ref=e1157]: "4.9"
+          - img "Map marker" [ref=e1158]:
+            - button "4.9" [ref=e1159] [cursor=pointer]:
+              - generic [ref=e1162]: "4.9"
+          - img "Map marker" [ref=e1163]:
+            - button "5" [ref=e1164] [cursor=pointer]:
+              - generic [ref=e1167]: "5"
+          - img "Map marker" [ref=e1168]:
+            - button "5" [ref=e1169] [cursor=pointer]:
+              - generic [ref=e1172]: "5"
+          - img "Map marker" [ref=e1173]:
+            - button "5" [ref=e1174] [cursor=pointer]:
+              - generic [ref=e1178]: "5"
+          - img "Map marker" [ref=e1179]:
+            - button "5" [ref=e1180] [cursor=pointer]:
+              - generic [ref=e1183]: "5"
+          - img "Map marker" [ref=e1184]:
+            - button "5" [ref=e1185] [cursor=pointer]:
+              - generic [ref=e1188]: "5"
+          - img "Map marker" [ref=e1189]:
+            - button "5" [ref=e1190] [cursor=pointer]:
+              - generic [ref=e1193]: "5"
+          - img "Map marker" [ref=e1194]:
+            - button "5" [ref=e1195] [cursor=pointer]:
+              - generic [ref=e1198]: "5"
+          - img "Map marker" [ref=e1199]:
+            - button "5" [ref=e1200] [cursor=pointer]:
+              - generic [ref=e1203]: "5"
+          - img "Map marker" [ref=e1204]:
+            - button "5" [ref=e1205] [cursor=pointer]:
+              - generic [ref=e1208]: "5"
+          - img "Map marker" [ref=e1209]:
+            - button "5" [ref=e1210] [cursor=pointer]:
+              - generic [ref=e1213]: "5"
+          - img "Map marker" [ref=e1214]:
+            - button "5" [ref=e1215] [cursor=pointer]:
+              - generic [ref=e1218]: "5"
+          - img "Map marker" [ref=e1219]:
+            - button "5" [ref=e1220] [cursor=pointer]:
+              - generic [ref=e1223]: "5"
+          - img "Map marker" [ref=e1224]:
+            - button "5" [ref=e1225] [cursor=pointer]:
+              - generic [ref=e1228]: "5"
+          - img "Map marker" [ref=e1229]:
+            - button "5" [ref=e1230] [cursor=pointer]:
+              - generic [ref=e1233]: "5"
+          - img "Map marker" [ref=e1234]:
+            - button "4.9" [ref=e1235] [cursor=pointer]:
+              - generic [ref=e1238]: "4.9"
+          - img "Map marker" [ref=e1239]:
+            - button "5" [ref=e1240] [cursor=pointer]:
+              - generic [ref=e1243]: "5"
+          - img "Map marker" [ref=e1244]:
+            - button "5" [ref=e1245] [cursor=pointer]:
+              - generic [ref=e1248]: "5"
+          - img "Map marker" [ref=e1249]:
+            - button "5" [ref=e1250] [cursor=pointer]:
+              - generic [ref=e1254]: "5"
+          - img "Map marker" [ref=e1255]:
+            - button "5" [ref=e1256] [cursor=pointer]:
+              - generic [ref=e1260]: "5"
+          - img "Map marker" [ref=e1261]:
+            - button "5" [ref=e1262] [cursor=pointer]:
+              - generic [ref=e1265]: "5"
+          - img "Map marker" [ref=e1266]:
+            - button "5" [ref=e1267] [cursor=pointer]:
+              - generic [ref=e1271]: "5"
+          - img "Map marker" [ref=e1272]:
+            - button "5" [ref=e1273] [cursor=pointer]:
+              - generic [ref=e1276]: "5"
+          - img "Map marker" [ref=e1277]:
+            - button "5" [ref=e1278] [cursor=pointer]:
+              - generic [ref=e1281]: "5"
+          - img "Map marker" [ref=e1282]:
+            - button "5" [ref=e1283] [cursor=pointer]:
+              - generic [ref=e1286]: "5"
+          - img "Map marker" [ref=e1287]:
+            - button "5" [ref=e1288] [cursor=pointer]:
+              - generic [ref=e1291]: "5"
+          - img "Map marker" [ref=e1292]:
+            - button "5" [ref=e1293] [cursor=pointer]:
+              - generic [ref=e1296]: "5"
+          - img "Map marker" [ref=e1297]:
+            - button "5" [ref=e1298] [cursor=pointer]:
+              - generic [ref=e1301]: "5"
+          - img "Map marker" [ref=e1302]:
+            - button "5" [ref=e1303] [cursor=pointer]:
+              - generic [ref=e1307]: "5"
+          - img "Map marker" [ref=e1308]:
+            - button "5" [ref=e1309] [cursor=pointer]:
+              - generic [ref=e1312]: "5"
+          - img "Map marker" [ref=e1313]:
+            - button "5" [ref=e1314] [cursor=pointer]:
+              - generic [ref=e1318]: "5"
+          - img "Map marker" [ref=e1319]:
+            - button "5" [ref=e1320] [cursor=pointer]:
+              - generic [ref=e1323]: "5"
+          - img "Map marker" [ref=e1324]:
+            - button "5" [ref=e1325] [cursor=pointer]:
+              - generic [ref=e1328]: "5"
+          - img "Map marker" [ref=e1329]:
+            - button "5" [ref=e1330] [cursor=pointer]:
+              - generic [ref=e1333]: "5"
+          - img "Map marker" [ref=e1334]:
+            - button "5" [ref=e1335] [cursor=pointer]:
+              - generic [ref=e1338]: "5"
+          - img "Map marker" [ref=e1339]:
+            - button "5" [ref=e1340] [cursor=pointer]:
+              - generic [ref=e1343]: "5"
+          - img "Map marker" [ref=e1344]:
+            - button "5" [ref=e1345] [cursor=pointer]:
+              - generic [ref=e1348]: "5"
+          - img "Map marker" [ref=e1349]:
+            - button "5" [ref=e1350] [cursor=pointer]:
+              - generic [ref=e1353]: "5"
+          - img "Map marker" [ref=e1354]:
+            - button "5" [ref=e1355] [cursor=pointer]:
+              - generic [ref=e1358]: "5"
+          - img "Map marker" [ref=e1359]:
+            - button "5" [ref=e1360] [cursor=pointer]:
+              - generic [ref=e1364]: "5"
+          - img "Map marker" [ref=e1365]:
+            - button "5" [ref=e1366] [cursor=pointer]:
+              - generic [ref=e1369]: "5"
+          - img "Map marker" [ref=e1370]:
+            - button "5" [ref=e1371] [cursor=pointer]:
+              - generic [ref=e1374]: "5"
+          - img "Map marker" [ref=e1375]:
+            - button "5" [ref=e1376] [cursor=pointer]:
+              - generic [ref=e1380]: "5"
+          - img "Map marker" [ref=e1381]:
+            - button "5" [ref=e1382] [cursor=pointer]:
+              - generic [ref=e1385]: "5"
+          - img "Map marker" [ref=e1386]:
+            - button "4.8" [ref=e1387] [cursor=pointer]:
+              - generic [ref=e1390]: "4.8"
+          - img "Map marker" [ref=e1391]:
+            - button "5" [ref=e1392] [cursor=pointer]:
+              - generic [ref=e1395]: "5"
+          - img "Map marker" [ref=e1396]:
+            - button "5" [ref=e1397] [cursor=pointer]:
+              - generic [ref=e1400]: "5"
+          - img "Map marker" [ref=e1401]:
+            - button "5" [ref=e1402] [cursor=pointer]:
+              - generic [ref=e1406]: "5"
+          - img "Map marker" [ref=e1407]:
+            - button "5" [ref=e1408] [cursor=pointer]:
+              - generic [ref=e1412]: "5"
+          - img "Map marker" [ref=e1413]:
+            - button "5" [ref=e1414] [cursor=pointer]:
+              - generic [ref=e1417]: "5"
+          - img "Map marker" [ref=e1418]:
+            - button "4.8" [ref=e1419] [cursor=pointer]:
+              - generic [ref=e1423]: "4.8"
+          - img "Map marker" [ref=e1424]:
+            - button "5" [ref=e1425] [cursor=pointer]:
+              - generic [ref=e1428]: "5"
+          - img "Map marker" [ref=e1429]:
+            - button "5" [ref=e1430] [cursor=pointer]:
+              - generic [ref=e1434]: "5"
+          - img "Map marker" [ref=e1435]:
+            - button "4.9" [ref=e1436] [cursor=pointer]:
+              - generic [ref=e1440]: "4.9"
+          - img "Map marker" [ref=e1441]:
+            - button "5" [ref=e1442] [cursor=pointer]:
+              - generic [ref=e1445]: "5"
+          - img "Map marker" [ref=e1446]:
+            - button "5" [ref=e1447] [cursor=pointer]:
+              - generic [ref=e1450]: "5"
+          - img "Map marker" [ref=e1451]:
+            - button "5" [ref=e1452] [cursor=pointer]:
+              - generic [ref=e1455]: "5"
+          - img "Map marker" [ref=e1456]:
+            - button "5" [ref=e1457] [cursor=pointer]:
+              - generic [ref=e1460]: "5"
+          - img "Map marker" [ref=e1461]:
+            - button "5" [ref=e1462] [cursor=pointer]:
+              - generic [ref=e1466]: "5"
+          - img "Map marker" [ref=e1467]:
+            - button "5" [ref=e1468] [cursor=pointer]:
+              - generic [ref=e1471]: "5"
+          - img "Map marker" [ref=e1472]:
+            - button "5" [ref=e1473] [cursor=pointer]:
+              - generic [ref=e1477]: "5"
+          - img "Map marker" [ref=e1478]:
+            - button "5" [ref=e1479] [cursor=pointer]:
+              - generic [ref=e1483]: "5"
+          - img "Map marker" [ref=e1484]:
+            - button "5" [ref=e1485] [cursor=pointer]:
+              - generic [ref=e1488]: "5"
+          - img "Map marker" [ref=e1489]:
+            - button "4.9" [ref=e1490] [cursor=pointer]:
+              - generic [ref=e1493]: "4.9"
+          - img "Map marker" [ref=e1494]:
+            - button "4.9" [ref=e1495] [cursor=pointer]:
+              - generic [ref=e1498]: "4.9"
+          - img "Map marker" [ref=e1499]:
+            - button "5" [ref=e1500] [cursor=pointer]:
+              - generic [ref=e1503]: "5"
+          - img "Map marker" [ref=e1504]:
+            - button "5" [ref=e1505] [cursor=pointer]:
+              - generic [ref=e1508]: "5"
+          - img "Map marker" [ref=e1509]:
+            - button "5" [ref=e1510] [cursor=pointer]:
+              - generic [ref=e1513]: "5"
+          - img "Map marker" [ref=e1514]:
+            - button "5" [ref=e1515] [cursor=pointer]:
+              - generic [ref=e1519]: "5"
+          - img "Map marker" [ref=e1520]:
+            - button "5" [ref=e1521] [cursor=pointer]:
+              - generic [ref=e1524]: "5"
+          - img "Map marker" [ref=e1525]:
+            - button "5" [ref=e1526] [cursor=pointer]:
+              - generic [ref=e1529]: "5"
+          - img "Map marker" [ref=e1530]:
+            - button "5" [ref=e1531] [cursor=pointer]:
+              - generic [ref=e1535]: "5"
+          - img "Map marker" [ref=e1536]:
+            - button "5" [ref=e1537] [cursor=pointer]:
+              - generic [ref=e1540]: "5"
+          - img "Map marker" [ref=e1541]:
+            - button "5" [ref=e1542] [cursor=pointer]:
+              - generic [ref=e1545]: "5"
+          - img "Map marker" [ref=e1546]:
+            - button "5" [ref=e1547] [cursor=pointer]:
+              - generic [ref=e1551]: "5"
+          - img "Map marker" [ref=e1552]:
+            - button "5" [ref=e1553] [cursor=pointer]:
+              - generic [ref=e1556]: "5"
+          - img "Map marker" [ref=e1557]:
+            - button "5" [ref=e1558] [cursor=pointer]:
+              - generic [ref=e1561]: "5"
+          - img "Map marker" [ref=e1562]:
+            - button "4.9" [ref=e1563] [cursor=pointer]:
+              - generic [ref=e1566]: "4.9"
+          - img "Map marker" [ref=e1567]:
+            - button "5" [ref=e1568] [cursor=pointer]:
+              - generic [ref=e1571]: "5"
+          - img "Map marker" [ref=e1572]:
+            - button "5" [ref=e1573] [cursor=pointer]:
+              - generic [ref=e1576]: "5"
+          - img "Map marker" [ref=e1577]:
+            - button "5" [ref=e1578] [cursor=pointer]:
+              - generic [ref=e1581]: "5"
+          - img "Map marker" [ref=e1582]:
+            - button "4.8" [ref=e1583] [cursor=pointer]:
+              - generic [ref=e1587]: "4.8"
+          - img "Map marker" [ref=e1588]:
+            - button "5" [ref=e1589] [cursor=pointer]:
+              - generic [ref=e1592]: "5"
+          - img "Map marker" [ref=e1593]:
+            - button "4.9" [ref=e1594] [cursor=pointer]:
+              - generic [ref=e1597]: "4.9"
+          - img "Map marker" [ref=e1598]:
+            - button "5" [ref=e1599] [cursor=pointer]:
+              - generic [ref=e1602]: "5"
+          - img "Map marker" [ref=e1603]:
+            - button "5" [ref=e1604] [cursor=pointer]:
+              - generic [ref=e1607]: "5"
+          - img "Map marker" [ref=e1608]:
+            - button "5" [ref=e1609] [cursor=pointer]:
+              - generic [ref=e1612]: "5"
+          - img "Map marker" [ref=e1613]:
+            - button "5" [ref=e1614] [cursor=pointer]:
+              - generic [ref=e1617]: "5"
+          - img "Map marker" [ref=e1618]:
+            - button "5" [ref=e1619] [cursor=pointer]:
+              - generic [ref=e1622]: "5"
+          - img "Map marker" [ref=e1623]:
+            - button "5" [ref=e1624] [cursor=pointer]:
+              - generic [ref=e1627]: "5"
+          - img "Map marker" [ref=e1628]:
+            - button "5" [ref=e1629] [cursor=pointer]:
+              - generic [ref=e1632]: "5"
+          - img "Map marker" [ref=e1633]:
+            - button "5" [ref=e1634] [cursor=pointer]:
+              - generic [ref=e1637]: "5"
+          - img "Map marker" [ref=e1638]:
+            - button "5" [ref=e1639] [cursor=pointer]:
+              - generic [ref=e1642]: "5"
+          - img "Map marker" [ref=e1643]:
+            - button "4.9" [ref=e1644] [cursor=pointer]:
+              - generic [ref=e1647]: "4.9"
+          - img "Map marker" [ref=e1648]:
+            - button "4.9" [ref=e1649] [cursor=pointer]:
+              - generic [ref=e1652]: "4.9"
+          - img "Map marker" [ref=e1653]:
+            - button "5" [ref=e1654] [cursor=pointer]:
+              - generic [ref=e1658]: "5"
+          - img "Map marker" [ref=e1659]:
+            - button "5" [ref=e1660] [cursor=pointer]:
+              - generic [ref=e1663]: "5"
+          - img "Map marker" [ref=e1664]:
+            - button "5" [ref=e1665] [cursor=pointer]:
+              - generic [ref=e1669]: "5"
+          - img "Map marker" [ref=e1670]:
+            - button "4.9" [ref=e1671] [cursor=pointer]:
+              - generic [ref=e1675]: "4.9"
+          - img "Map marker" [ref=e1676]:
+            - button "5" [ref=e1677] [cursor=pointer]:
+              - generic [ref=e1680]: "5"
+          - img "Map marker" [ref=e1681]:
+            - button "–" [ref=e1682] [cursor=pointer]:
+              - generic [ref=e1686]: –
+          - img "Map marker" [ref=e1687]:
+            - button "–" [ref=e1688] [cursor=pointer]:
+              - generic [ref=e1692]: –
+        - generic:
+          - generic:
+            - generic:
+              - link "Mapbox logo":
+                - /url: https://www.mapbox.com/
+        - generic [ref=e1693]:
+          - button "Développer la carte" [ref=e1695] [cursor=pointer]:
+            - generic [ref=e1696]:
+              - generic [ref=e1698]: Développer la carte
+              - img [ref=e1701]
+          - generic [ref=e1704]:
+            - button "Faire un zoom avant" [ref=e1705] [cursor=pointer]:
+              - generic [ref=e1706]:
+                - generic [ref=e1708]: Faire un zoom avant
+                - img [ref=e1711]
+            - button "Faire un zoom arrière" [ref=e1713] [cursor=pointer]:
+              - generic [ref=e1714]:
+                - generic [ref=e1716]: Faire un zoom arrière
+                - img [ref=e1719]
+  - alert [ref=e138]

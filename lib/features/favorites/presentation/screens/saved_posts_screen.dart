@@ -46,16 +46,16 @@ class _SavedPostsScreenState extends ConsumerState<SavedPostsScreen> {
       builder: (ctx) => AlertDialog(
         backgroundColor: AppColors.surface,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Text('Retirer des favoris ?',
+        title: const Text('Remove from favorites?',
             style: TextStyle(color: AppColors.blanc)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Non', style: TextStyle(color: AppColors.gris)),
+            child: const Text('No', style: TextStyle(color: AppColors.gris)),
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Oui', style: TextStyle(color: AppColors.error)),
+            child: const Text('Yes', style: TextStyle(color: AppColors.error)),
           ),
         ],
       ),
@@ -85,7 +85,7 @@ class _SavedPostsScreenState extends ConsumerState<SavedPostsScreen> {
             },
           ),
         ),
-        title: const Text('Posts sauvegardés',
+        title: const Text('Saved posts',
             style:
                 TextStyle(color: AppColors.blanc, fontWeight: FontWeight.bold)),
         centerTitle: true,

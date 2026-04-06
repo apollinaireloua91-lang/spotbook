@@ -41,7 +41,7 @@ class BookingCancellationScreen extends ConsumerWidget {
                 color: AppColors.warning, size: 48),
             const SizedBox(height: 16),
             const Text(
-              'Politique d\'annulation',
+              'Cancellation policy',
               style: TextStyle(
                 color: AppColors.blanc,
                 fontSize: 20,
@@ -53,7 +53,7 @@ class BookingCancellationScreen extends ConsumerWidget {
               icon: Icons.check_circle_outline,
               color: AppColors.success,
               text:
-                  'Plus de 48h avant le RDV : remboursement intégral de l\'acompte.',
+                  'More than 48h before appointment: full deposit refund.',
             ),
             const SizedBox(height: 12),
             const _PolicyRow(
@@ -72,7 +72,7 @@ class BookingCancellationScreen extends ConsumerWidget {
                 border: Border.all(color: AppColors.error.withAlpha(50)),
               ),
               child: const Text(
-                'Cette action est irréversible. Confirmez-vous l\'annulation ?',
+                'This action is irreversible. Do you confirm the cancellation?',
                 style: TextStyle(color: AppColors.error, fontSize: 14),
                 textAlign: TextAlign.center,
               ),

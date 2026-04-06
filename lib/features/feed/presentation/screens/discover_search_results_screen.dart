@@ -113,7 +113,7 @@ class _DiscoverSearchResultsScreenState
                   const SizedBox(width: 8),
                   _HeaderIconBtn(
                     icon: Icons.map_outlined,
-                    tooltip: 'Carte',
+                    tooltip: 'Map',
                     onTap: () {
                       HapticFeedback.selectionClick();
                       context.push('$_basePath/map');
@@ -174,7 +174,7 @@ class _DiscoverSearchResultsScreenState
                     const EdgeInsets.only(left: 20, right: 20, bottom: 6),
                 child: Text(
                   '${s.nearbyProviders.length} '
-                  'professionnel${s.nearbyProviders.length > 1 ? 's' : ''}',
+                  'professional${s.nearbyProviders.length > 1 ? 's' : ''}',
                   style: const TextStyle(
                       color: AppColors.gris, fontSize: 13),
                 ),
@@ -297,7 +297,7 @@ class _EmptyState extends StatelessWidget {
                 hasError
                     ? 'Connection error.\nPull to retry.'
                     : (query != null && query!.isNotEmpty
-                        ? 'Aucun résultat pour\n« $query »'
+                        ? 'No results for\n"$query"'
                         : 'No professionals available.\nPull to refresh.'),
                 textAlign: TextAlign.center,
                 style: const TextStyle(
@@ -309,7 +309,7 @@ class _EmptyState extends StatelessWidget {
               if (hasError) ...[
                 const SizedBox(height: 24),
                 SpotbookButton.secondary(
-                  label: 'Réessayer',
+                  label: 'Retry',
                   onPressed: onRetry,
                   width: 140,
                 ),
@@ -424,7 +424,7 @@ class _ProviderCard extends StatelessWidget {
                     if (pro.minPrice != null) ...[
                       const SizedBox(height: 4),
                       Text(
-                        'À partir de ${pro.minPrice!.toStringAsFixed(0)}\$',
+                        'From ${pro.minPrice!.toStringAsFixed(0)}\$',
                         style: const TextStyle(
                           color: AppColors.grisClair,
                           fontSize: 12,
@@ -439,7 +439,7 @@ class _ProviderCard extends StatelessWidget {
 
               // Book button
               SpotbookButton.outlined(
-                label: 'Réserver',
+                label: 'Book',
                 onPressed: () {
                   HapticFeedback.lightImpact();
                   context.push('/client/provider/${pro.id}');

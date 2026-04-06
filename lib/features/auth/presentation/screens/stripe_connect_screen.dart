@@ -1,10 +1,48 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 
+import '../../../../features/payment/data/payment_repository.dart';
 import '../../../../shared/theme/app_colors.dart';
 
-class StripeConnectScreen extends StatelessWidget {
+class StripeConnectScreen extends ConsumerStatefulWidget {
   const StripeConnectScreen({super.key});
+
+  @override
+  ConsumerState<StripeConnectScreen> createState() =>
+      _StripeConnectScreenState();
+}
+
+class _StripeConnectScreenState extends ConsumerState<StripeConnectScreen> {
+  bool _isLoading = false;
+
+  Future<void> _connectStripe() async {
+    setState(() => _isLoading = true);
+
+    try {
+      final url =
+          await ref.read(paymentRepositoryProvider).createStripeConnectLink();
+
+      final uri = Uri.parse(url);
+      if (await canLaunchUrl(uri)) {
+        await launchUrl(uri, mode: LaunchMode.externalApplication);
+      } else {
+        throw Exception('Could not open Stripe onboarding');
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error: $e'),
+            backgroundColor: AppColors.error,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +55,7 @@ class StripeConnectScreen extends StatelessWidget {
           icon: const Icon(Icons.arrow_back_ios, size: 20),
         ),
         title: const Text(
-          'Configurer vos reversements',
+          'Set up your payouts',
           style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
         ),
         centerTitle: true,
@@ -28,7 +66,6 @@ class StripeConnectScreen extends StatelessWidget {
           child: Column(
             children: [
               const Spacer(flex: 2),
-              // Wallet icon
               Container(
                 width: 80,
                 height: 80,
@@ -56,7 +93,7 @@ class StripeConnectScreen extends StatelessWidget {
               ),
               const SizedBox(height: 12),
               const Text(
-                'Spotbook utilise Stripe pour garantir des paiements rapides et sécurisés directement sur votre compte bancaire.',
+                'Spotbook uses Stripe to ensure fast and secure payments directly to your bank account.',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: AppColors.gris,
@@ -69,52 +106,57 @@ class StripeConnectScreen extends StatelessWidget {
                 width: double.infinity,
                 height: 52,
                 child: ElevatedButton(
-                  onPressed: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text(
-                          'Stripe Connect coming soon! You will be notified when payments are enabled.',
-                        ),
-                        backgroundColor: AppColors.violet,
-                      ),
-                    );
-                  },
+                  onPressed: _isLoading ? null : _connectStripe,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.blanc,
                     foregroundColor: AppColors.fond,
+                    disabledBackgroundColor: AppColors.blanc.withAlpha(128),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  child: const Text(
-                    'Connecter avec Stripe',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
+                  child: _isLoading
+                      ? const SizedBox(
+                          width: 24,
+                          height: 24,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: AppColors.fond,
+                          ),
+                        )
+                      : const Text(
+                          'Connect with Stripe',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
                 ),
               ),
               const Spacer(),
-              // Trust badges
               _trustBadge(
                 Icons.lock,
-                'Transactions sécurisées SSL',
-                'Cryptage de bout en bout conforme PCI',
+                'Secure SSL transactions',
+                'End-to-end PCI-compliant encryption',
               ),
               const SizedBox(height: 12),
               _trustBadge(
                 Icons.verified_user,
-                'Vérification Spotbook Pro',
-                'Identité confirmée et protégée',
+                'Spotbook Pro verification',
+                'Identity confirmed and protected',
               ),
               const SizedBox(height: 32),
               GestureDetector(
                 onTap: () {
-                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('support@spotbook.app'), backgroundColor: AppColors.surface));
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('support@spotbook.app'),
+                      backgroundColor: AppColors.surface,
+                    ),
+                  );
                 },
                 child: const Text(
-                  'Besoin d\'aide ? Contactez le support',
+                  'Need help? Contact support',
                   style: TextStyle(color: AppColors.accent, fontSize: 13),
                 ),
               ),

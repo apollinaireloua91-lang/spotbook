@@ -95,10 +95,10 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
               children: [
                 const Icon(Icons.check_circle, color: AppColors.success, size: 64),
                 const SizedBox(height: 20),
-                const Text('Merci pour votre avis !',
+                const Text('Thank you for your review!',
                     style: TextStyle(color: AppColors.blanc, fontSize: 22, fontWeight: FontWeight.bold)),
                 const SizedBox(height: 8),
-                const Text('Votre retour aide les autres utilisateurs.',
+                const Text('Your feedback helps other users.',
                     style: TextStyle(color: AppColors.gris, fontSize: 15), textAlign: TextAlign.center),
                 const SizedBox(height: 32),
                 SizedBox(
@@ -114,7 +114,7 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
                       foregroundColor: AppColors.fond,
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     ),
-                    child: const Text('Terminé', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                    child: const Text('Done', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                   ),
                 ),
               ],
@@ -129,7 +129,7 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
       appBar: AppBar(
         backgroundColor: AppColors.fond,
         leading: Semantics(
-          label: 'Retour',
+          label: 'Back',
           child: IconButton(
             icon: const Icon(Icons.arrow_back_ios, color: AppColors.blanc, size: 20),
             onPressed: () {
@@ -138,7 +138,7 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
             },
           ),
         ),
-        title: const Text('Laisser un avis',
+        title: const Text('Leave a review',
             style: TextStyle(color: AppColors.blanc, fontWeight: FontWeight.bold)),
         centerTitle: true,
       ),
@@ -152,7 +152,7 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
                   style: const TextStyle(color: AppColors.gris, fontSize: 15)),
               const SizedBox(height: 8),
             ],
-            const Text('Comment s\'est passé votre rendez-vous ?',
+            const Text('How was your appointment?',
                 style: TextStyle(color: AppColors.blanc, fontSize: 20, fontWeight: FontWeight.bold),
                 textAlign: TextAlign.center),
             const SizedBox(height: 32),
@@ -201,7 +201,7 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
                       maxLength: 300,
                       style: const TextStyle(color: AppColors.blanc, fontSize: 15),
                       decoration: InputDecoration(
-                        hintText: 'Partagez votre expérience (optionnel)',
+                        hintText: 'Share your experience (optional)',
                         hintStyle: const TextStyle(color: AppColors.gris),
                         filled: true,
                         fillColor: AppColors.surface,
@@ -258,7 +258,7 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
                           ),
                         ),
                       )
-                    : const Text('Publier', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                    : const Text('Submit', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
               ),
             ),
             const SizedBox(height: 32),
@@ -271,17 +271,17 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
   String _ratingLabel(int rating) {
     switch (rating) {
       case 1:
-        return 'Décevant';
+        return 'Disappointing';
       case 2:
-        return 'Moyen';
+        return 'Average';
       case 3:
-        return 'Bien';
+        return 'Good';
       case 4:
-        return 'Très bien';
+        return 'Very good';
       case 5:
         return 'Excellent';
       default:
-        return 'Touchez pour noter';
+        return 'Tap to rate';
     }
   }
 }

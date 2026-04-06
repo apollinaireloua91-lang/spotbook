@@ -163,15 +163,15 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> {
     if (result != null) {
       if (result.valid) {
         overlayColor = AppColors.success.withValues(alpha: 0.3);
-        overlayText = 'Billet validé !';
+        overlayText = 'Ticket validated!';
         overlayIcon = Icons.check_circle;
       } else if (result.reason == 'already_used') {
         overlayColor = AppColors.warning.withValues(alpha: 0.3);
-        overlayText = 'Déjà scanné${result.scannedAt != null ? ' à ${result.scannedAt}' : ''}';
+        overlayText = 'Already scanned${result.scannedAt != null ? ' at ${result.scannedAt}' : ''}';
         overlayIcon = Icons.warning_amber;
       } else {
         overlayColor = AppColors.error.withValues(alpha: 0.3);
-        overlayText = 'Billet invalide';
+        overlayText = 'Invalid ticket';
         overlayIcon = Icons.cancel;
       }
     }
@@ -181,7 +181,7 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> {
       appBar: AppBar(
         backgroundColor: AppColors.fond,
         leading: Semantics(
-          label: 'Retour',
+          label: 'Back',
           child: IconButton(
             icon: const Icon(Icons.arrow_back_ios, color: AppColors.blanc, size: 20),
             onPressed: () {
@@ -207,7 +207,7 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> {
                 const Icon(Icons.confirmation_number, color: AppColors.blanc, size: 18),
                 const SizedBox(width: 8),
                 Text(
-                  '${state.scannedCount} / ${state.totalSold} scannés',
+                  '${state.scannedCount} / ${state.totalSold} scanned',
                   style: const TextStyle(color: AppColors.blanc, fontSize: 16, fontWeight: FontWeight.w600),
                 ),
               ],

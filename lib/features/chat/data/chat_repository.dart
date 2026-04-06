@@ -130,7 +130,8 @@ class ChatRepository {
           .from('conversations')
           .select('client_id, pro_id')
           .eq('id', conversationId)
-          .single();
+          .maybeSingle();
+      if (conv == null) return;
 
       final recipientId = conv['client_id'] == senderId
           ? conv['pro_id'] as String
@@ -154,8 +155,8 @@ class ChatRepository {
           .from('users')
           .select('full_name')
           .eq('id', senderId)
-          .single();
-      final senderName = sender['full_name'] as String? ?? 'Someone';
+          .maybeSingle();
+      final senderName = sender?['full_name'] as String? ?? 'Someone';
 
       final body = preview.length > 80
           ? '${preview.substring(0, 80)}...'

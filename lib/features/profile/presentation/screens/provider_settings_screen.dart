@@ -282,7 +282,7 @@ class _SettingsBody extends ConsumerWidget {
               ),
               const Divider(color: AppColors.border, height: 1),
               _Tile(
-                label: 'Mon QR Code',
+                label: 'My QR Code',
                 value: '',
                 showChevron: true,
                 onTap: () => context.push('/pro/profile/qr-code'),

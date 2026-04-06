@@ -78,7 +78,7 @@ class ProInsightsScreen extends ConsumerWidget {
       appBar: AppBar(
         backgroundColor: AppColors.fond,
         leading: Semantics(
-          label: 'Retour',
+          label: 'Back',
           child: IconButton(
             onPressed: () {
               HapticFeedback.mediumImpact();
@@ -105,19 +105,19 @@ class ProInsightsScreen extends ConsumerWidget {
                   Row(
                     children: [
                       _PeriodChip(
-                        label: '7j',
+                        label: '7d',
                         selected: state.period == 7,
                         onTap: () => ref.read(proInsightsProvider.notifier).setPeriod(7),
                       ),
                       const SizedBox(width: 8),
                       _PeriodChip(
-                        label: '30j',
+                        label: '30d',
                         selected: state.period == 30,
                         onTap: () => ref.read(proInsightsProvider.notifier).setPeriod(30),
                       ),
                       const SizedBox(width: 8),
                       _PeriodChip(
-                        label: '90j',
+                        label: '90d',
                         selected: state.period == 90,
                         onTap: () => ref.read(proInsightsProvider.notifier).setPeriod(90),
                       ),
@@ -129,7 +129,7 @@ class ProInsightsScreen extends ConsumerWidget {
                     const Icon(Icons.bar_chart, color: AppColors.gris, size: 48),
                     const SizedBox(height: 12),
                     const Text(
-                      'Aucune donnée pour cette période',
+                      'No data for this period',
                       textAlign: TextAlign.center,
                       style: TextStyle(color: AppColors.gris, fontSize: 15),
                     ),
@@ -282,7 +282,7 @@ class _PeriodChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Semantics(
-      label: 'Période $label',
+      label: 'Period $label',
       child: GestureDetector(
         onTap: () {
           HapticFeedback.mediumImpact();
@@ -334,7 +334,7 @@ class _MetricTile extends StatelessWidget {
             ),
           ),
           Text(
-            metric.value.toStringAsFixed(metric.label == 'Revenus' ? 2 : 0),
+            metric.value.toStringAsFixed(metric.label == 'Revenue' ? 2 : 0),
             style: const TextStyle(
               color: AppColors.blanc,
               fontSize: 18,

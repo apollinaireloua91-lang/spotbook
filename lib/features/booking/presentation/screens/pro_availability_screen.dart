@@ -67,8 +67,8 @@ class ProAvailabilityScreen extends ConsumerWidget {
                     const SizedBox(height: 16),
                     SpotbookButton.primary(
                       label: state.syncing
-                          ? 'Synchronisation…'
-                          : 'Générer les créneaux (14 jours)',
+                          ? 'Syncing...'
+                          : 'Generate slots (14 days)',
                       isLoading: state.syncing,
                       onPressed: state.syncing
                           ? null
@@ -130,7 +130,7 @@ class ProAvailabilityScreen extends ConsumerWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: SpotbookCard(
                     child: const Text(
-                      'Aucune plage horaire. Ajoute au moins une règle (ex. Lun 9h–17h, créneaux de 60 min).',
+                      'No time slots. Add at least one rule (e.g. Mon 9am–5pm, 60 min slots).',
                       style: TextStyle(color: AppColors.gris, fontSize: 14),
                     ),
                   ),
@@ -230,7 +230,7 @@ class ProAvailabilityScreen extends ConsumerWidget {
                             },
                       icon: const Icon(Icons.calendar_month, size: 18),
                       label: Text(
-                        dateLabel.isEmpty ? 'Choisir' : dateLabel,
+                        dateLabel.isEmpty ? 'Choose' : dateLabel,
                         style: const TextStyle(fontSize: 13),
                       ),
                     ),
@@ -243,7 +243,7 @@ class ProAvailabilityScreen extends ConsumerWidget {
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: Text(
-                    'Pas de créneau ce jour-là. Lance « Générer les créneaux » ou choisis une autre date.',
+                    'No slots for this day. Run "Generate slots" or choose another date.',
                     style: TextStyle(
                       color: AppColors.gris.withValues(alpha: 0.9),
                       fontSize: 13,
@@ -438,7 +438,7 @@ class ProAvailabilityScreen extends ConsumerWidget {
                     ),
                     const SizedBox(height: 24),
                     SpotbookButton.primary(
-                      label: 'Ajouter la règle',
+                      label: 'Add rule',
                       onPressed: () async {
                         final startM = start.hour * 60 + start.minute;
                         final endM = end.hour * 60 + end.minute;
@@ -457,7 +457,7 @@ class ProAvailabilityScreen extends ConsumerWidget {
                     ),
                     const SizedBox(height: 8),
                     SpotbookButton.outlined(
-                      label: 'Annuler',
+                      label: 'Cancel',
                       onPressed: () => context.pop(),
                     ),
                   ],

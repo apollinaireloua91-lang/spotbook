@@ -86,7 +86,7 @@ class ProCalendarHubScreen extends ConsumerWidget {
                     ),
                     const SizedBox(height: 12),
                     SpotbookButton.outlined(
-                      label: 'Créer un événement',
+                      label: 'Create an event',
                       icon: Icons.event_outlined,
                       onPressed: () {
                         HapticFeedback.lightImpact();
@@ -130,7 +130,7 @@ class ProCalendarHubScreen extends ConsumerWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const Text(
-                            'Aucun RDV à venir',
+                            'No upcoming appointments',
                             style: TextStyle(
                               color: AppColors.blanc,
                               fontWeight: FontWeight.w600,
@@ -166,7 +166,7 @@ class ProCalendarHubScreen extends ConsumerWidget {
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(20, 20, 20, 40),
                   child: SpotbookButton.secondary(
-                    label: 'Tous mes RDV',
+                    label: 'All my bookings',
                     onPressed: () {
                       HapticFeedback.mediumImpact();
                       context.push('/pro/calendar/bookings');

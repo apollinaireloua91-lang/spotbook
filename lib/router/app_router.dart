@@ -20,6 +20,7 @@ import '../features/auth/presentation/screens/sign_up_screen.dart';
 import '../features/auth/presentation/screens/splash_screen.dart';
 import '../features/auth/presentation/screens/stripe_connect_screen.dart';
 import '../features/auth/presentation/screens/change_password_screen.dart';
+import '../features/auth/presentation/screens/reset_password_screen.dart';
 import '../features/booking/presentation/screens/booking_cancellation_screen.dart';
 import '../features/booking/presentation/screens/booking_detail_screen.dart';
 import '../features/booking/presentation/screens/my_bookings_screen.dart';
@@ -39,7 +40,6 @@ import '../features/client/presentation/search/client_search_screen.dart';
 import '../features/feed/presentation/screens/feed_screen.dart';
 import '../features/feed/presentation/screens/my_videos_screen.dart';
 import '../features/feed/presentation/screens/upload_video_screen.dart';
-import '../features/pro/presentation/camera/video_capture_screen.dart';
 import '../features/feed/presentation/screens/pro_search_screen.dart';
 import '../features/pro/presentation/feed/pro_feed_screen.dart';
 import '../features/profile/presentation/screens/pro_qr_code_screen.dart';
@@ -108,7 +108,13 @@ final appRouter = GoRouter(
     ),
     GoRoute(
       path: '/forgot-password-confirmation',
-      builder: (context, state) => const ForgotPasswordConfirmationScreen(),
+      builder: (context, state) => ForgotPasswordConfirmationScreen(
+        email: state.extra as String?,
+      ),
+    ),
+    GoRoute(
+      path: '/reset-password',
+      builder: (context, state) => const ResetPasswordScreen(),
     ),
 
     // ─── Post-inscription ───
@@ -189,12 +195,12 @@ final appRouter = GoRouter(
       ],
     ),
 
-    // ─── Pro shell (Feed + Dashboard + FAB Camera + Search + RDV + Profile) ───
+    // ─── Pro shell (Feed + Dashboard + Search + RDV + Profile) ───
     StatefulShellRoute.indexedStack(
       builder: (context, state, navigationShell) =>
           ProShell(navigationShell: navigationShell),
       branches: [
-        // 0 — Feed (TikTok-style, Pro-specific top bar + right column)
+        // 0 — Feed
         StatefulShellBranch(
           routes: [
             GoRoute(
@@ -212,15 +218,7 @@ final appRouter = GoRouter(
             ),
           ],
         ),
-        StatefulShellBranch(
-          routes: [
-            GoRoute(
-              path: '/pro/camera',
-              builder: (context, state) => const VideoCaptureScreen(),
-            ),
-          ],
-        ),
-        // 3 — Search
+        // 2 — Search
         StatefulShellBranch(
           routes: [
             GoRoute(
@@ -229,7 +227,7 @@ final appRouter = GoRouter(
             ),
           ],
         ),
-        // 4 — RDV
+        // 3 — RDV
         StatefulShellBranch(
           routes: [
             GoRoute(
@@ -238,6 +236,7 @@ final appRouter = GoRouter(
             ),
           ],
         ),
+        // 4 — Profile
         StatefulShellBranch(
           routes: [
             GoRoute(

@@ -1,24 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/widgets/spotbook_button.dart';
+import '../../data/auth_repository.dart';
 
-class ForgotPasswordConfirmationScreen extends StatefulWidget {
-  const ForgotPasswordConfirmationScreen({super.key});
+class ForgotPasswordConfirmationScreen extends ConsumerStatefulWidget {
+  const ForgotPasswordConfirmationScreen({super.key, this.email});
+
+  final String? email;
 
   @override
-  State<ForgotPasswordConfirmationScreen> createState() =>
+  ConsumerState<ForgotPasswordConfirmationScreen> createState() =>
       _ForgotPasswordConfirmationScreenState();
 }
 
 class _ForgotPasswordConfirmationScreenState
-    extends State<ForgotPasswordConfirmationScreen>
+    extends ConsumerState<ForgotPasswordConfirmationScreen>
     with SingleTickerProviderStateMixin {
   late final AnimationController _animCtrl;
   late final Animation<double> _scaleAnim;
   late final Animation<double> _fadeAnim;
+  bool _isResending = false;
 
   @override
   void initState() {
@@ -42,6 +47,33 @@ class _ForgotPasswordConfirmationScreenState
   void dispose() {
     _animCtrl.dispose();
     super.dispose();
+  }
+
+  Future<void> _resend() async {
+    final email = widget.email;
+    if (email == null || email.isEmpty) return;
+
+    setState(() => _isResending = true);
+    try {
+      await ref.read(authRepositoryProvider).resetPassword(email);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Reset link resent!'),
+          backgroundColor: AppColors.violet,
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString().replaceFirst('Exception: ', '')),
+          backgroundColor: AppColors.error,
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _isResending = false);
+    }
   }
 
   @override
@@ -78,19 +110,19 @@ class _ForgotPasswordConfirmationScreenState
               // Title
               FadeTransition(
                 opacity: _fadeAnim,
-                child: const Column(
+                child: Column(
                   children: [
-                    Text(
-                      'Email envoyé !',
+                    const Text(
+                      'Email sent!',
                       style: TextStyle(
                         color: AppColors.blanc,
                         fontSize: 24,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
-                    SizedBox(height: 12),
-                    Text(
-                      'Vérifiez votre boîte de réception.\nCliquez sur le lien dans l\'email pour réinitialiser votre mot de passe.',
+                    const SizedBox(height: 12),
+                    const Text(
+                      'Check your inbox.\nClick the link in the email to reset your password.',
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         color: AppColors.gris,
@@ -98,15 +130,33 @@ class _ForgotPasswordConfirmationScreenState
                         height: 1.5,
                       ),
                     ),
-                    SizedBox(height: 8),
-                    Text(
-                      'Si vous ne recevez rien, vérifiez vos spams.',
+                    const SizedBox(height: 8),
+                    const Text(
+                      'If you don\'t receive anything, check your spam folder.',
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         color: AppColors.grisInactif,
                         fontSize: 13,
                       ),
                     ),
+                    if (widget.email != null) ...[
+                      const SizedBox(height: 20),
+                      GestureDetector(
+                        onTap: _isResending ? null : _resend,
+                        child: Text(
+                          _isResending
+                              ? 'Sending…'
+                              : "Didn't receive it? Send again",
+                          style: TextStyle(
+                            color: _isResending
+                                ? AppColors.grisInactif
+                                : AppColors.violetClair,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ],
                   ],
                 ),
               ),

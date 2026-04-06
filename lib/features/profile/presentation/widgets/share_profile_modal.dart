@@ -16,7 +16,7 @@ Future<void> showShareProfileModal({
 }) {
   return showSpotbookBottomSheet<void>(
     context: context,
-    title: 'Partager le profil',
+    title: 'Share profile',
     child: ShareProfileModal(
       profileUrl: profileUrl,
       displayName: displayName,
@@ -44,7 +44,7 @@ class ShareProfileModal extends StatelessWidget {
         const SnackBar(
           backgroundColor: AppColors.surface,
           content: Text(
-            'Lien copié',
+            'Link copied',
             style: TextStyle(color: AppColors.blanc),
           ),
         ),
@@ -54,7 +54,7 @@ class ShareProfileModal extends StatelessWidget {
 
   Future<void> _sms() async {
     final uri = Uri.parse(
-      'sms:?body=${Uri.encodeComponent('$displayName sur Spotbook : $profileUrl')}',
+      'sms:?body=${Uri.encodeComponent('$displayName on Spotbook : $profileUrl')}',
     );
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri);
@@ -63,7 +63,7 @@ class ShareProfileModal extends StatelessWidget {
 
   Future<void> _whatsapp() async {
     final uri = Uri.parse(
-      'https://wa.me/?text=${Uri.encodeComponent('$displayName sur Spotbook : $profileUrl')}',
+      'https://wa.me/?text=${Uri.encodeComponent('$displayName on Spotbook : $profileUrl')}',
     );
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
@@ -79,7 +79,7 @@ class ShareProfileModal extends StatelessWidget {
 
   Future<void> _shareNative() async {
     await SharePlus.instance.share(
-      ShareParams(text: '$displayName sur Spotbook\n$profileUrl'),
+      ShareParams(text: '$displayName on Spotbook\n$profileUrl'),
     );
   }
 
@@ -112,7 +112,7 @@ class ShareProfileModal extends StatelessWidget {
           const SizedBox(height: 20),
           _SheetTile(
             icon: Icons.link,
-            label: 'Copier le lien',
+            label: 'Copy link',
             onTap: () => _copy(context),
           ),
           _SheetTile(
@@ -132,7 +132,7 @@ class ShareProfileModal extends StatelessWidget {
           ),
           _SheetTile(
             icon: Icons.ios_share,
-            label: 'Plus…',
+            label: 'More…',
             onTap: _shareNative,
           ),
         ],

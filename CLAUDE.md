@@ -21,7 +21,7 @@ Langues     : Français (défaut) + Anglais
 
 Framework  : Flutter 3.x + Dart null safety
 
-State      : Bloc / Cubit + Equatable
+State      : Riverpod (flutter_riverpod + riverpod_annotation) — anciennement Bloc/Cubit, migration effectuée
 
 Navigation : go_router
 
@@ -133,7 +133,7 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   await Hive.initFlutter();                  // 4e
-  runApp(const SpotbookApp()); // DERNIER — wrapped in MultiBlocProvider
+  runApp(const ProviderScope(child: SpotbookApp())); // DERNIER — wrapped in ProviderScope (Riverpod)
 }
 
 // !! Si cet ordre n'est pas respecté → crash au démarrage.
@@ -165,7 +165,7 @@ SplashScreen
 ## RÈGLES ABSOLUES — VIOLATIONS = PHASE REFUSÉE
 
 // !! JAMAIS Supabase dans un Widget → Repository uniquement
-// !! JAMAIS setState dans un écran → Bloc / Cubit uniquement
+// !! JAMAIS setState dans un écran → Riverpod (ConsumerWidget / ConsumerStatefulWidget) uniquement
 // !! JAMAIS Image.network() → CachedNetworkImage
 // !! JAMAIS Navigator.push() → context.go() go_router
 // !! JAMAIS couleur hex dans Widget → AppColors.xxx
@@ -291,7 +291,7 @@ AppColors doit refléter la palette Spotbook définie ci-dessus.
 
 ## ROUTING — SÉPARATION PRO / CLIENT
 
-AuthCubit vérifie AccountType au démarrage :
+Auth provider vérifie AccountType au démarrage :
 - AccountType.client → GoRouter redirige /client/feed
 - AccountType.pro → GoRouter redirige /pro/feed
 - Non authentifié → /auth/login

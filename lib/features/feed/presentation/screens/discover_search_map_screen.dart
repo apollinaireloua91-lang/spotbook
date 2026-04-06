@@ -344,7 +344,7 @@ class _DiscoverSearchMapScreenState
                       const Spacer(),
                       _MapCircleBtn(
                         icon: Icons.view_list,
-                        tooltip: 'Liste',
+                        tooltip: 'List',
                         onTap: () {
                           HapticFeedback.selectionClick();
                           context.push('$basePath/results');
@@ -452,7 +452,7 @@ class _DiscoverSearchMapScreenState
                 child: const Padding(
                   padding: EdgeInsets.all(14),
                   child: Text(
-                    'Certains pros n’ont pas de GPS : leur épingle est placée approximativement près de ta zone (ou Montréal). La liste indique la vraie ville.',
+                    'Some pros don\'t have GPS: their pin is placed approximately near your area (or Montreal). The list shows the actual city.',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                         color: AppColors.gris, fontSize: 12, height: 1.35),
@@ -686,7 +686,7 @@ class _ProBottomCard extends StatelessWidget {
                 children: [
                   Expanded(
                     child: SpotbookButton.secondary(
-                      label: 'Voir le profil',
+                      label: 'View profile',
                       onPressed: () =>
                           context.push('/client/provider/${pro.id}'),
                     ),
@@ -694,7 +694,7 @@ class _ProBottomCard extends StatelessWidget {
                   const SizedBox(width: 12),
                   Expanded(
                     child: SpotbookButton.primary(
-                      label: 'Réserver',
+                      label: 'Book',
                       onPressed: () =>
                           context.push('/client/booking-flow/${pro.id}'),
                     ),

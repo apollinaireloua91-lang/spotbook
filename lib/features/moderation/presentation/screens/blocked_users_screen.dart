@@ -70,7 +70,7 @@ class BlockedUsersScreen extends ConsumerWidget {
             },
           ),
         ),
-        title: const Text('Utilisateurs bloqués',
+        title: const Text('Blocked users',
             style: TextStyle(color: AppColors.blanc, fontWeight: FontWeight.bold)),
         centerTitle: true,
       ),
@@ -135,7 +135,7 @@ class BlockedUsersScreen extends ConsumerWidget {
                           const SizedBox(width: 12),
                           Expanded(
                             child: Text(
-                              block.blockedName ?? 'Utilisateur',
+                              block.blockedName ?? 'User',
                               style: const TextStyle(
                                 color: AppColors.blanc,
                                 fontSize: 15,

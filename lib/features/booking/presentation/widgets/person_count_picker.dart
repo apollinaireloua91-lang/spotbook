@@ -40,7 +40,7 @@ class PersonCountPicker extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Nombre de personnes',
+          'Number of people',
           style: GoogleFonts.dmSans(
             color: AppColors.blanc,
             fontSize: 16,
@@ -49,7 +49,7 @@ class PersonCountPicker extends StatelessWidget {
         ),
         const SizedBox(height: 4),
         Text(
-          '$min–$max personnes',
+          '$min–$max people',
           style: GoogleFonts.dmSans(
             color: AppColors.gris,
             fontSize: 13,
@@ -112,13 +112,13 @@ class PersonCountPicker extends StatelessWidget {
           child: Column(
             children: [
               _PriceRow(
-                label: 'Prix par personne',
+                label: 'Price per person',
                 value: '${pricePerPerson.toStringAsFixed(0)} \$',
               ),
               if (extrasPerPerson > 0) ...[
                 const SizedBox(height: 8),
                 _PriceRow(
-                  label: 'Options par personne',
+                  label: 'Options per person',
                   value: '+${extrasPerPerson.toStringAsFixed(0)} \$',
                 ),
               ],

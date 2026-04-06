@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'core/realtime/realtime_bootstrap.dart';
 import 'l10n/app_localizations.dart';
@@ -17,6 +20,23 @@ class SpotbookApp extends ConsumerStatefulWidget {
 
 class _SpotbookAppState extends ConsumerState<SpotbookApp> {
   bool _bootstrapped = false;
+  StreamSubscription<AuthState>? _authSub;
+
+  @override
+  void initState() {
+    super.initState();
+    _authSub = Supabase.instance.client.auth.onAuthStateChange.listen((data) {
+      if (data.event == AuthChangeEvent.passwordRecovery) {
+        appRouter.go('/reset-password');
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _authSub?.cancel();
+    super.dispose();
+  }
 
   @override
   void didChangeDependencies() {

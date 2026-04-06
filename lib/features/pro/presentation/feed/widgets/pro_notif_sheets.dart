@@ -153,10 +153,10 @@ class ProActivitySheet extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final s = ref.watch(_activityNotifProvider);
     return _SheetChrome(
-      title: 'Activité sur mes posts',
+      title: 'Activity on my posts',
       icon: Icons.notifications_outlined,
       iconColor: AppColors.rose,
-      child: _NotifList(items: s.items, isLoading: s.isLoading, emptyText: 'Aucune activité récente'),
+      child: _NotifList(items: s.items, isLoading: s.isLoading, emptyText: 'No recent activity'),
     );
   }
 }
@@ -172,10 +172,10 @@ class ProRdvSheet extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final s = ref.watch(_rdvNotifProvider);
     return _SheetChrome(
-      title: 'Réservations & RDV',
+      title: 'Bookings & Appointments',
       icon: Icons.calendar_today_outlined,
       iconColor: AppColors.violet,
-      child: _NotifList(items: s.items, isLoading: s.isLoading, emptyText: 'Aucune réservation récente'),
+      child: _NotifList(items: s.items, isLoading: s.isLoading, emptyText: 'No recent bookings'),
     );
   }
 }
@@ -191,10 +191,10 @@ class ProTicketsSheet extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final s = ref.watch(_ticketsNotifProvider);
     return _SheetChrome(
-      title: 'Billets vendus',
+      title: 'Tickets sold',
       icon: Icons.confirmation_number_outlined,
       iconColor: AppColors.rose,
-      child: _NotifList(items: s.items, isLoading: s.isLoading, emptyText: 'Aucun billet vendu récemment'),
+      child: _NotifList(items: s.items, isLoading: s.isLoading, emptyText: 'No tickets sold recently'),
     );
   }
 }
@@ -210,10 +210,10 @@ class ProMessagesSheet extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final s = ref.watch(_messagesNotifProvider);
     return _SheetChrome(
-      title: 'Messages clients',
+      title: 'Client messages',
       icon: Icons.chat_bubble_outline,
       iconColor: AppColors.success,
-      child: _NotifList(items: s.items, isLoading: s.isLoading, emptyText: 'Aucun message récent'),
+      child: _NotifList(items: s.items, isLoading: s.isLoading, emptyText: 'No recent messages'),
     );
   }
 }
@@ -432,10 +432,10 @@ class _StaggeredNotifItemState extends State<_StaggeredNotifItem>
 
   String _formatTimeAgo(DateTime date) {
     final diff = DateTime.now().difference(date);
-    if (diff.inMinutes < 1) return 'à l\'instant';
+    if (diff.inMinutes < 1) return 'just now';
     if (diff.inMinutes < 60) return '${diff.inMinutes}m';
     if (diff.inHours < 24) return '${diff.inHours}h';
-    if (diff.inDays < 7) return '${diff.inDays}j';
-    return '${(diff.inDays / 7).floor()}sem';
+    if (diff.inDays < 7) return '${diff.inDays}d';
+    return '${(diff.inDays / 7).floor()}w';
   }
 }

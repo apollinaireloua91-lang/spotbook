@@ -59,7 +59,7 @@ class _MyTicketsScreenState extends ConsumerState<MyTicketsScreen>
     return Scaffold(
       backgroundColor: AppColors.fond,
       appBar: SpotbookAppBar(
-        title: 'Mes billets',
+        title: 'My tickets',
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(48),
           child: TabBar(
@@ -71,8 +71,8 @@ class _MyTicketsScreenState extends ConsumerState<MyTicketsScreen>
             labelStyle: const TextStyle(
                 fontWeight: FontWeight.w600, fontSize: 14),
             tabs: [
-              Tab(text: 'À venir (${upcoming.length})'),
-              Tab(text: 'Passés (${past.length})'),
+              Tab(text: 'Upcoming (${upcoming.length})'),
+              Tab(text: 'Past (${past.length})'),
             ],
           ),
         ),

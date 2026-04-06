@@ -19,7 +19,7 @@ class StripeCheckoutWebview extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: AppColors.fond,
         leading: Semantics(
-          label: 'Fermer',
+          label: 'Close',
           child: IconButton(
             icon: const Icon(Icons.close, color: AppColors.blanc),
             onPressed: () {
@@ -42,7 +42,7 @@ class StripeCheckoutWebview extends StatelessWidget {
             const Icon(Icons.payment, color: AppColors.gris, size: 64),
             const SizedBox(height: 24),
             const Text(
-              'Redirection vers Stripe...',
+              'Redirecting to Stripe...',
               style: TextStyle(
                 color: AppColors.blanc,
                 fontSize: 18,
@@ -59,7 +59,7 @@ class StripeCheckoutWebview extends StatelessWidget {
             ),
             const SizedBox(height: 32),
             const Text(
-              'En production, cette page affichera le formulaire de paiement Stripe via WebView.',
+              'In production, this page will display the Stripe payment form via WebView.',
               style: TextStyle(color: AppColors.gris, fontSize: 13),
               textAlign: TextAlign.center,
             ),
@@ -75,7 +75,7 @@ class StripeCheckoutWebview extends StatelessWidget {
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12)),
                 ),
-                child: const Text('Terminé',
+                child: const Text('Done',
                     style: TextStyle(fontWeight: FontWeight.bold)),
               ),
             ),

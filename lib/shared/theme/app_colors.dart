@@ -77,6 +77,9 @@ abstract final class AppColors {
   // Search / info
   static const Color infoBlue = Color(0xFF42A5F5);
 
+  // User location (Apple Maps blue)
+  static const Color locationBlue = Color(0xFF007AFF);
+
   static const LinearGradient gradientAccent = LinearGradient(
     colors: [violet, rose],
     begin: Alignment.topLeft,

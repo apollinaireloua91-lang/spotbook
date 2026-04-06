@@ -1,0 +1,183 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - img "linear gradient"
+    - img "linear gradient"
+    - generic:
+      - img "spotlight external gradient shape"
+    - generic [ref=e4]:
+      - navigation [ref=e7]:
+        - link "Fresha" [ref=e9] [cursor=pointer]:
+          - /url: /fr
+          - img "Fresha"
+        - generic [ref=e12]:
+          - combobox "Tous les soins" [ref=e16]
+          - combobox "Adresse" [ref=e20]
+          - combobox "Heure" [ref=e24]
+          - button "Rechercher" [ref=e25] [cursor=pointer]:
+            - img [ref=e27]
+            - paragraph [ref=e29]: Rechercher
+        - button "Menu" [ref=e33] [cursor=pointer]:
+          - generic [ref=e34]:
+            - generic [ref=e36]: Menu
+            - img [ref=e39]
+      - main [ref=e41]:
+        - generic [ref=e44]:
+          - paragraph [ref=e45]: ERREUR 404
+          - paragraph [ref=e46]: Cette page a besoin d'une remise en beauté
+          - paragraph [ref=e47]: "Cela vous aura au moins permis de rencontrer ces boules de poils toutes pomponnées 👉 Maintenant, sélectionnez une catégorie : c'est à votre tour de vous faire bichonner."
+          - generic [ref=e48]:
+            - link "Salon de coiffure" [ref=e49] [cursor=pointer]:
+              - /url: /fr/search?business-type-id=1
+              - generic [ref=e52]: Salon de coiffure
+            - link "Salon de manucure" [ref=e53] [cursor=pointer]:
+              - /url: /fr/search?business-type-id=2
+              - generic [ref=e56]: Salon de manucure
+            - link "Centre d'épilation" [ref=e57] [cursor=pointer]:
+              - /url: /fr/search?business-type-id=3
+              - generic [ref=e60]: Centre d'épilation
+            - link "Institut de beauté" [ref=e61] [cursor=pointer]:
+              - /url: /fr/search?business-type-id=4
+              - generic [ref=e64]: Institut de beauté
+            - link "Barbier" [ref=e65] [cursor=pointer]:
+              - /url: /fr/search?business-type-id=5
+              - generic [ref=e68]: Barbier
+            - link "Sourcils et cils" [ref=e69] [cursor=pointer]:
+              - /url: /fr/search?business-type-id=6
+              - generic [ref=e72]: Sourcils et cils
+            - link "Massages" [ref=e73] [cursor=pointer]:
+              - /url: /fr/search?business-type-id=7
+              - generic [ref=e76]: Massages
+            - link "Spa" [ref=e77] [cursor=pointer]:
+              - /url: /fr/search?business-type-id=8
+              - generic [ref=e80]: Spa
+            - link "Sport et fitness" [ref=e81] [cursor=pointer]:
+              - /url: /fr/search?business-type-id=9
+              - generic [ref=e84]: Sport et fitness
+            - link "Coach sportif personnel" [ref=e85] [cursor=pointer]:
+              - /url: /fr/search?business-type-id=10
+              - generic [ref=e88]: Coach sportif personnel
+            - link "Centre de thérapie" [ref=e89] [cursor=pointer]:
+              - /url: /fr/search?business-type-id=11
+              - generic [ref=e92]: Centre de thérapie
+            - link "Tatouage et piercing" [ref=e93] [cursor=pointer]:
+              - /url: /fr/search?business-type-id=12
+              - generic [ref=e96]: Tatouage et piercing
+            - link "Centre de bronzage" [ref=e97] [cursor=pointer]:
+              - /url: /fr/search?business-type-id=13
+              - generic [ref=e100]: Centre de bronzage
+            - link "Autres" [ref=e101] [cursor=pointer]:
+              - /url: /fr/search?business-type-id=14
+              - generic [ref=e104]: Autres
+            - link "Esthétique" [ref=e105] [cursor=pointer]:
+              - /url: /fr/search?business-type-id=15
+              - generic [ref=e108]: Esthétique
+            - link "Perte de poids" [ref=e109] [cursor=pointer]:
+              - /url: /fr/search?business-type-id=16
+              - generic [ref=e112]: Perte de poids
+      - generic [ref=e114]:
+        - contentinfo [ref=e115]:
+          - generic [ref=e116]:
+            - list [ref=e117]:
+              - listitem [ref=e118]:
+                - link "Fresha" [ref=e119] [cursor=pointer]:
+                  - /url: /fr
+                  - img "Fresha"
+              - listitem [ref=e120]:
+                - link "Télécharger l'app" [ref=e121] [cursor=pointer]:
+                  - /url: /fr/app-store-redirect
+                  - generic [ref=e122]:
+                    - generic [ref=e124]: Télécharger l'app
+                    - generic [ref=e125]:
+                      - img [ref=e127]
+                      - img [ref=e130]
+            - list [ref=e132]:
+              - listitem [ref=e133]:
+                - paragraph [ref=e134]: À propos de Fresha
+              - listitem [ref=e135]:
+                - paragraph [ref=e136]:
+                  - link "Carrières" [ref=e137] [cursor=pointer]:
+                    - /url: https://www.fresha.com/fr/careers
+              - listitem [ref=e138]:
+                - paragraph [ref=e139]:
+                  - link "Aide et assistance" [ref=e140] [cursor=pointer]:
+                    - /url: https://www.fresha.com/fr/help-center/get-support
+              - listitem [ref=e141]:
+                - paragraph [ref=e142]:
+                  - link "Blog" [ref=e143] [cursor=pointer]:
+                    - /url: https://www.fresha.com/fr/blog
+              - listitem [ref=e144]:
+                - paragraph [ref=e145]:
+                  - link "Plan du site" [ref=e146] [cursor=pointer]:
+                    - /url: /fr/sitemap
+            - list [ref=e147]:
+              - listitem [ref=e148]:
+                - paragraph [ref=e149]: Pour les professionnels
+              - listitem [ref=e150]:
+                - paragraph [ref=e151]:
+                  - link "Pour les partenaires" [ref=e152] [cursor=pointer]:
+                    - /url: https://www.fresha.com/fr/for-business
+              - listitem [ref=e153]:
+                - paragraph [ref=e154]:
+                  - link "Tarifs" [ref=e155] [cursor=pointer]:
+                    - /url: https://www.fresha.com/fr/pricing
+              - listitem [ref=e156]:
+                - paragraph [ref=e157]:
+                  - link "Paiements" [ref=e158] [cursor=pointer]:
+                    - /url: https://www.fresha.com/fr/payments
+              - listitem [ref=e159]:
+                - paragraph [ref=e160]:
+                  - link "Aide" [ref=e161] [cursor=pointer]:
+                    - /url: https://www.fresha.com/fr/help-center
+              - listitem [ref=e162]:
+                - paragraph [ref=e163]:
+                  - link "Statut" [ref=e164] [cursor=pointer]:
+                    - /url: https://www.freshastatus.com/
+            - list [ref=e165]:
+              - listitem [ref=e166]:
+                - paragraph [ref=e167]: Mentions légales
+              - listitem [ref=e168]:
+                - paragraph [ref=e169]:
+                  - link "Politique de confidentialité" [ref=e170] [cursor=pointer]:
+                    - /url: https://terms.fresha.com/privacy-policy
+              - listitem [ref=e171]:
+                - paragraph [ref=e172]:
+                  - link "Conditions d'utilisation" [ref=e173] [cursor=pointer]:
+                    - /url: https://terms.fresha.com/terms-service
+              - listitem [ref=e174]:
+                - paragraph [ref=e175]:
+                  - link "Conditions d'utilisation" [ref=e176] [cursor=pointer]:
+                    - /url: https://terms.fresha.com/terms-use
+            - list [ref=e177]:
+              - listitem [ref=e178]:
+                - paragraph [ref=e179]: Retrouvez-nous sur les réseaux sociaux
+              - listitem [ref=e180]:
+                - paragraph [ref=e181]:
+                  - link "Facebook" [ref=e182] [cursor=pointer]:
+                    - /url: https://www.facebook.com/Fresha-1504479806470099/
+                    - img [ref=e185]
+                    - text: Facebook
+              - listitem [ref=e187]:
+                - paragraph [ref=e188]:
+                  - link "Twitter" [ref=e189] [cursor=pointer]:
+                    - /url: https://twitter.com/heyfresha?lang=fr
+                    - img [ref=e192]
+                    - text: Twitter
+              - listitem [ref=e194]:
+                - paragraph [ref=e195]:
+                  - link "Linkedin" [ref=e196] [cursor=pointer]:
+                    - /url: https://www.linkedin.com/company/shedul/
+                    - img [ref=e199]
+                    - text: Linkedin
+              - listitem [ref=e201]:
+                - paragraph [ref=e202]:
+                  - link "Instagram" [ref=e203] [cursor=pointer]:
+                    - /url: https://www.instagram.com/fresha
+                    - img [ref=e206]
+                    - text: Instagram
+        - contentinfo [ref=e208]:
+          - generic [ref=e209]:
+            - button "français (FR)" [ref=e210] [cursor=pointer]:
+              - generic [ref=e211]: français (FR)
+              - img [ref=e213]
+            - paragraph [ref=e216]: © 2026 Fresha.com SV Ltd
+  - alert [ref=e217]

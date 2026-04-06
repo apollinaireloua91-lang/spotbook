@@ -51,7 +51,9 @@ final proEventsProvider = FutureProvider.autoDispose<List<EventModel>>((ref) asy
 
 final eventDetailProvider =
     FutureProvider.family<EventModel, String>((ref, eventId) async {
-  return ref.read(eventRepositoryProvider).getEvent(eventId);
+  final event = await ref.read(eventRepositoryProvider).getEvent(eventId);
+  if (event == null) throw StateError('Event $eventId not found');
+  return event;
 });
 
 // ─── User tickets ───────────────────────────────────────────

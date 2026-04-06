@@ -38,6 +38,10 @@ class ClientPostPage extends StatefulWidget {
 class _ClientPostPageState extends State<ClientPostPage> {
   bool _showHeart = false;
   bool _viewCounted = false;
+  bool _isPaused = false;
+  bool _showPlayPauseIcon = false;
+
+  final _mediaKey = GlobalKey<PostMediaBackgroundState>();
 
   @override
   void didUpdateWidget(covariant ClientPostPage oldWidget) {
@@ -45,6 +49,10 @@ class _ClientPostPageState extends State<ClientPostPage> {
     if (widget.isActive && !oldWidget.isActive && !_viewCounted) {
       _viewCounted = true;
       widget.onViewCounted();
+    }
+    // Reset pause state when becoming active
+    if (widget.isActive && !oldWidget.isActive) {
+      setState(() => _isPaused = false);
     }
   }
 
@@ -54,6 +62,22 @@ class _ClientPostPageState extends State<ClientPostPage> {
       widget.onToggleLike();
     }
     setState(() => _showHeart = true);
+  }
+
+  void _onSingleTap() {
+    HapticFeedback.lightImpact();
+    final mediaState = _mediaKey.currentState;
+    if (mediaState == null) return;
+
+    final nowPlaying = mediaState.togglePlayPause();
+    setState(() {
+      _isPaused = !nowPlaying;
+      _showPlayPauseIcon = true;
+    });
+
+    Future.delayed(const Duration(milliseconds: 800), () {
+      if (mounted) setState(() => _showPlayPauseIcon = false);
+    });
   }
 
   void _openComments() {
@@ -83,16 +107,42 @@ class _ClientPostPageState extends State<ClientPostPage> {
         v.proCategory?.toLowerCase() == 'traiteur' && !hasService && !hasEvent;
 
     return GestureDetector(
+      onTap: _onSingleTap,
       onDoubleTap: _onDoubleTap,
       child: Stack(
         fit: StackFit.expand,
         children: [
           // ─── Video / Photo background ───
           PostMediaBackground(
+            key: _mediaKey,
             streamUrl: v.streamUrl,
             thumbnailUrl: v.thumbnailUrl,
             isActive: widget.isActive,
           ),
+
+          // ─── Play/Pause overlay icon ───
+          if (_showPlayPauseIcon || _isPaused)
+            Center(
+              child: AnimatedOpacity(
+                opacity: _showPlayPauseIcon ? 1.0 : (_isPaused ? 0.6 : 0.0),
+                duration: const Duration(milliseconds: 200),
+                child: Container(
+                  width: 64,
+                  height: 64,
+                  decoration: BoxDecoration(
+                    color: Colors.black.withAlpha(115),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    _isPaused
+                        ? Icons.play_arrow_rounded
+                        : Icons.pause_rounded,
+                    color: Colors.white,
+                    size: 36,
+                  ),
+                ),
+              ),
+            ),
 
           // ─── Right column (actions) ───
           Positioned(
@@ -108,7 +158,7 @@ class _ClientPostPageState extends State<ClientPostPage> {
             ),
           ),
 
-          // ─── Bottom info (pro name, category, caption) ───
+          // ─── Bottom info (pro name, category, caption, Book button) ───
           Positioned(
             bottom: _infoBottomOffset(hasService, hasEvent, isCatering, hasMusic),
             left: 12,
@@ -131,7 +181,7 @@ class _ClientPostPageState extends State<ClientPostPage> {
           // ─── CTA Strip ───
           if (hasService)
             Positioned(
-              bottom: 90,
+              bottom: 95,
               left: 12,
               right: 12,
               child: BookingStrip(
@@ -143,7 +193,7 @@ class _ClientPostPageState extends State<ClientPostPage> {
             ),
           if (hasEvent && !hasService)
             Positioned(
-              bottom: 90,
+              bottom: 95,
               left: 12,
               right: 12,
               child: EventStrip(
@@ -154,7 +204,7 @@ class _ClientPostPageState extends State<ClientPostPage> {
             ),
           if (isCatering)
             Positioned(
-              bottom: 90,
+              bottom: 95,
               left: 12,
               right: 12,
               child: CateringStrip(proId: v.proId),
@@ -174,13 +224,13 @@ class _ClientPostPageState extends State<ClientPostPage> {
 
   // Layout helpers — push content up when CTA strip is present
   double _stripBottomBase(bool hasService, bool hasEvent, bool isCatering) {
-    if (hasService || hasEvent || isCatering) return 90;
-    return 40;
+    if (hasService || hasEvent || isCatering) return 95;
+    return 45;
   }
 
   double _ctaBottomOffset(
       bool hasService, bool hasEvent, bool isCatering, bool hasMusic) {
-    var base = 140.0;
+    var base = 145.0; // Above nav bar safe area
     if (hasService || hasEvent || isCatering) base += 50;
     if (hasMusic) base += 30;
     return base;
@@ -188,7 +238,7 @@ class _ClientPostPageState extends State<ClientPostPage> {
 
   double _infoBottomOffset(
       bool hasService, bool hasEvent, bool isCatering, bool hasMusic) {
-    var base = 95.0;
+    var base = 100.0; // Above nav bar safe area
     if (hasService || hasEvent || isCatering) base += 56;
     if (hasMusic) base += 30;
     return base;

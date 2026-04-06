@@ -273,8 +273,8 @@ class PublicProviderProfileBloc
           .from('users')
           .select('full_name')
           .eq('id', followerId)
-          .single();
-      final name = u['full_name'] as String? ?? 'A client';
+          .maybeSingle();
+      final name = u?['full_name'] as String? ?? 'A client';
       await _supabase.functions.invoke(
         'send-push-notification',
         body: {

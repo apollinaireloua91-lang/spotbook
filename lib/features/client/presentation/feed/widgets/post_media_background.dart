@@ -22,11 +22,19 @@ class PostMediaBackground extends StatefulWidget {
 
 class PostMediaBackgroundState extends State<PostMediaBackground> {
   BetterPlayerController? _controller;
+  bool _isPlaying = false;
+
+  bool get isPlaying => _isPlaying;
 
   @override
   void initState() {
     super.initState();
     _initPlayer();
+    // Auto-play if this page is already active on first build
+    if (widget.isActive && _controller != null) {
+      _controller!.play();
+      _isPlaying = true;
+    }
   }
 
   void _initPlayer() {
@@ -51,13 +59,29 @@ class PostMediaBackgroundState extends State<PostMediaBackground> {
     );
   }
 
+  /// Toggle play/pause and return whether video is now playing.
+  bool togglePlayPause() {
+    if (_controller == null) return false;
+    if (_isPlaying) {
+      _controller!.pause();
+      setState(() => _isPlaying = false);
+      return false;
+    } else {
+      _controller!.play();
+      setState(() => _isPlaying = true);
+      return true;
+    }
+  }
+
   @override
   void didUpdateWidget(covariant PostMediaBackground oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.isActive && !oldWidget.isActive) {
       _controller?.play();
+      setState(() => _isPlaying = true);
     } else if (!widget.isActive && oldWidget.isActive) {
       _controller?.pause();
+      setState(() => _isPlaying = false);
     }
   }
 

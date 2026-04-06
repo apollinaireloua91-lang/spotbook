@@ -46,7 +46,7 @@ class _AccountTypeSelectionScreenState
               ),
               const SizedBox(height: 8),
               const Text(
-                'Comment allez-vous utiliser l\'application ?',
+                'How would you like to use the app?',
                 style: TextStyle(color: AppColors.gris, fontSize: 15),
               ),
               const SizedBox(height: 40),
@@ -55,8 +55,8 @@ class _AccountTypeSelectionScreenState
               _RoleCard(
                 icon: Icons.explore_outlined,
                 title: 'Client',
-                subtitle: 'Je cherche des professionnels',
-                description: 'Découvrez, réservez, participez',
+                subtitle: 'I\'m looking for professionals',
+                description: 'Discover, book, attend',
                 isSelected: _selectedRole == 'client',
                 gradientColors: const [AppColors.violet, AppColors.violetClair],
                 onTap: () {
@@ -70,8 +70,8 @@ class _AccountTypeSelectionScreenState
               _RoleCard(
                 icon: Icons.workspace_premium_outlined,
                 title: 'Professional',
-                subtitle: 'Je propose mes services',
-                description: 'Publiez, gérez, gagnez',
+                subtitle: 'I offer my services',
+                description: 'Publish, manage, earn',
                 isSelected: _selectedRole == 'pro',
                 gradientColors: const [AppColors.rose, AppColors.roseClair],
                 onTap: () {
@@ -109,7 +109,7 @@ class _AccountTypeSelectionScreenState
                       ),
                     ),
                     child: const Text(
-                      'Continuer',
+                      'Continue',
                       style: TextStyle(
                         fontSize: 17,
                         fontWeight: FontWeight.w600,

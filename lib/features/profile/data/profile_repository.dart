@@ -16,24 +16,26 @@ class ProfileRepository {
 
   String? get currentUserId => _supabase.auth.currentUser?.id;
 
-  Future<ClientProfile> getClientProfile(String userId) async {
+  Future<ClientProfile?> getClientProfile(String userId) async {
     final data = await _supabase
         .from('users')
         .select()
         .eq('id', userId)
-        .single();
+        .maybeSingle();
+    if (data == null) return null;
     return ClientProfile.fromJson(data);
   }
 
-  Future<ProProfile> getProProfile(String proId) async {
+  Future<ProProfile?> getProProfile(String proId) async {
     final uid = currentUserId;
-    
+
     // Fetch pro profile with user data (social_links queried separately — no FK from profiles_pro)
     final data = await _supabase
         .from('profiles_pro')
         .select('*, users(*)')
         .eq('id', proId)
-        .single();
+        .maybeSingle();
+    if (data == null) return null;
 
     // Social links live in a separate table keyed by user_id
     final socialLinksData = await _supabase

@@ -15,20 +15,24 @@ class _LoginState {
   const _LoginState({
     this.isLoading = false,
     this.isGoogleLoading = false,
+    this.isMagicLinkLoading = false,
     this.obscurePassword = true,
   });
   final bool isLoading;
   final bool isGoogleLoading;
+  final bool isMagicLinkLoading;
   final bool obscurePassword;
 
   _LoginState copyWith({
     bool? isLoading,
     bool? isGoogleLoading,
+    bool? isMagicLinkLoading,
     bool? obscurePassword,
   }) =>
       _LoginState(
         isLoading: isLoading ?? this.isLoading,
         isGoogleLoading: isGoogleLoading ?? this.isGoogleLoading,
+        isMagicLinkLoading: isMagicLinkLoading ?? this.isMagicLinkLoading,
         obscurePassword: obscurePassword ?? this.obscurePassword,
       );
 }
@@ -51,6 +55,15 @@ class _LoginNotifier extends Notifier<_LoginState> {
     } catch (e) {
       state = state.copyWith(isLoading: false);
       rethrow;
+    }
+  }
+
+  Future<void> sendMagicLink(String email) async {
+    state = state.copyWith(isMagicLinkLoading: true);
+    try {
+      await ref.read(authRepositoryProvider).signInWithMagicLink(email);
+    } finally {
+      state = state.copyWith(isMagicLinkLoading: false);
     }
   }
 
@@ -118,6 +131,28 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     try {
       final role = await ref.read(_loginProvider.notifier).signIn(email, password);
       _navigateByRole(role);
+    } on Exception catch (e) {
+      if (!mounted) return;
+      _showError(e.toString().replaceFirst('Exception: ', ''));
+    }
+  }
+
+  Future<void> _sendMagicLink() async {
+    final email = _emailCtrl.text.trim();
+    if (email.isEmpty) {
+      _showError('Please enter your email first.');
+      return;
+    }
+    try {
+      await ref.read(_loginProvider.notifier).sendMagicLink(email);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Magic link sent! Check your email.'),
+          backgroundColor: AppColors.violet,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
     } on Exception catch (e) {
       if (!mounted) return;
       _showError(e.toString().replaceFirst('Exception: ', ''));
@@ -222,20 +257,37 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               ),
               const SizedBox(height: 12),
 
-              // Forgot password
-              Align(
-                alignment: Alignment.centerRight,
-                child: GestureDetector(
-                  onTap: () => context.push('/forgot-password'),
-                  child: const Text(
-                    'Forgot password?',
-                    style: TextStyle(
-                      color: AppColors.violetClair,
-                      fontSize: 13,
-                      fontWeight: FontWeight.w500,
+              // Forgot password + Magic link row
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  GestureDetector(
+                    onTap: s.isMagicLinkLoading ? null : _sendMagicLink,
+                    child: Text(
+                      s.isMagicLinkLoading
+                          ? 'Sending link…'
+                          : 'Magic link',
+                      style: TextStyle(
+                        color: s.isMagicLinkLoading
+                            ? AppColors.grisInactif
+                            : AppColors.violetClair,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                   ),
-                ),
+                  GestureDetector(
+                    onTap: () => context.push('/forgot-password'),
+                    child: const Text(
+                      'Forgot password?',
+                      style: TextStyle(
+                        color: AppColors.violetClair,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(height: 24),
 

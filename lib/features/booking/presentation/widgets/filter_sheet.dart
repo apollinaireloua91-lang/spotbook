@@ -78,11 +78,11 @@ class _FilterSheetState extends State<FilterSheet> {
   late final TextEditingController _proNameController;
 
   static const _statusOptions = [
-    ('confirmed', 'Confirmé', AppColors.success),
-    ('pending_payment', 'En attente', AppColors.violetClair),
-    ('completed', 'Terminé', AppColors.gris),
-    ('cancelled_full_refund', 'Remboursé', AppColors.error),
-    ('cancelled_no_refund', 'Annulé', AppColors.error),
+    ('confirmed', 'Confirmed', AppColors.success),
+    ('pending_payment', 'Pending', AppColors.violetClair),
+    ('completed', 'Completed', AppColors.gris),
+    ('cancelled_full_refund', 'Refunded', AppColors.error),
+    ('cancelled_no_refund', 'Cancelled', AppColors.error),
   ];
 
   @override
@@ -359,7 +359,7 @@ class _FilterSheetState extends State<FilterSheet> {
               ),
               child: const Center(
                 child: Text(
-                  'Appliquer les filtres',
+                  'Apply filters',
                   style: TextStyle(
                     color: AppColors.blanc,
                     fontSize: 15,

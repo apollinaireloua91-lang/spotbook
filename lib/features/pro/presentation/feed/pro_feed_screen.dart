@@ -8,6 +8,7 @@ import '../../../feed/data/video_repository.dart';
 import '../../../feed/presentation/widgets/video_feed_item.dart';
 import '../../../notifications/data/notification_repository.dart';
 import 'cubit/pro_feed_cubit.dart';
+import 'widgets/post_left_column_pro.dart';
 import 'widgets/post_right_column_pro.dart';
 import 'widgets/pro_top_bar.dart';
 
@@ -61,9 +62,9 @@ class _ProFeedBody extends StatelessWidget {
           SnackBar(
             content: Text(
               msg == 'like_failed'
-                  ? 'Impossible de mettre à jour le like'
+                  ? 'Failed to update like'
                   : msg == 'save_failed'
-                      ? 'Impossible de mettre à jour le favori'
+                      ? 'Failed to update save'
                       : msg,
             ),
           ),
@@ -105,6 +106,9 @@ class _ProFeedBody extends StatelessWidget {
                           onToggleLike: cubit.toggleLike,
                           onToggleSave: cubit.toggleSave,
                           onToggleFollow: cubit.toggleFollow,
+                          // Pro feed: full left column (name + badge + caption + CTA + music)
+                          bottomOverlayOverride:
+                              PostLeftColumnPro(video: video),
                           // Pro feed: custom right column without Comment button
                           rightColumnOverride: PostRightColumnPro(
                             video: video,
@@ -112,6 +116,9 @@ class _ProFeedBody extends StatelessWidget {
                                 cubit.toggleLike(index, !video.isLiked),
                             onToggleSave: () =>
                                 cubit.toggleSave(index, !video.isSaved),
+                            onToggleFollow: () =>
+                                cubit.toggleFollow(
+                                    index, !video.isFollowed),
                           ),
                         );
                       },
@@ -162,7 +169,7 @@ class _ProFeedEmptyState extends StatelessWidget {
             ),
             const SizedBox(height: 24),
             const Text(
-              'Aucune vidéo pour le moment',
+              'No videos yet',
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: AppColors.blanc,
@@ -172,7 +179,7 @@ class _ProFeedEmptyState extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             const Text(
-              'Les vidéos des professionnels\napparaîtront ici',
+              'Videos from professionals\nwill appear here',
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: AppColors.gris,
@@ -195,7 +202,7 @@ class _ProFeedEmptyState extends StatelessWidget {
                   elevation: 0,
                 ),
                 child: const Text(
-                  'Actualiser',
+                  'Refresh',
                   style: TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w600,

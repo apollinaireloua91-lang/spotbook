@@ -33,28 +33,28 @@ Future<void> showBookingSheet(
 const _stepLabels = [
   'Service',
   'Date',
-  'Heure',
-  'Résumé',
-  'Paiement',
-  'Confirmé',
+  'Time',
+  'Summary',
+  'Payment',
+  'Confirmed',
 ];
 
-const _frenchMonths = [
-  'Janvier',
-  'Février',
-  'Mars',
-  'Avril',
-  'Mai',
-  'Juin',
-  'Juillet',
-  'Août',
-  'Septembre',
-  'Octobre',
-  'Novembre',
-  'Décembre',
+const _months = [
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December',
 ];
 
-const _frenchDaysShort = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
+const _daysShort = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
 // ─── Main sheet ──────────────────────────────────────────
 
@@ -421,7 +421,7 @@ class _Step1Services extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const _StepHeader(
-          title: 'Choisir un service',
+          title: 'Choose a service',
           subtitle: 'Select the desired service',
         ),
         if (state.isLoading)
@@ -501,7 +501,7 @@ class _Step1Services extends ConsumerWidget {
                       style: const TextStyle(color: AppColors.blanc),
                       textCapitalization: TextCapitalization.characters,
                       decoration: InputDecoration(
-                        hintText: 'Entrer un code',
+                        hintText: 'Enter a code',
                         hintStyle: const TextStyle(color: AppColors.gris),
                         filled: true,
                         fillColor: AppColors.surfaceAlt,
@@ -538,7 +538,7 @@ class _Step1Services extends ConsumerWidget {
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Text(
-                        state.promoApplied ? 'Appliqué ✓' : 'Valider',
+                        state.promoApplied ? 'Applied ✓' : 'Apply',
                         style: TextStyle(
                           color: state.promoApplied
                               ? AppColors.success
@@ -778,8 +778,8 @@ class _Step2CalendarState extends ConsumerState<_Step2Calendar> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _StepHeader(
-          title: 'Choisir une date',
-          subtitle: 'Les jours disponibles sont en surbrillance',
+          title: 'Choose a date',
+          subtitle: 'Available days are highlighted',
           onBack: () =>
               ref.read(bookingFlowProvider.notifier).previousStep(),
         ),
@@ -805,7 +805,7 @@ class _Step2CalendarState extends ConsumerState<_Step2Calendar> {
                   onPressed: canGoPrev ? _previousMonth : null,
                 ),
                 Text(
-                  '${_frenchMonths[_month - 1]} $_year',
+                  '${_months[_month - 1]} $_year',
                   style: const TextStyle(
                     color: AppColors.blanc,
                     fontSize: 16,
@@ -823,7 +823,7 @@ class _Step2CalendarState extends ConsumerState<_Step2Calendar> {
 
           // Day of week labels
           Row(
-            children: _frenchDaysShort
+            children: _daysShort
                 .map(
                   (d) => Expanded(
                     child: Center(
@@ -941,7 +941,7 @@ class _Step3Slots extends ConsumerWidget {
           int.parse(parts[2]),
         );
         final day = d.day;
-        final month = _frenchMonths[d.month - 1];
+        final month = _months[d.month - 1];
         dateLabel = '$day $month';
       } catch (_) {}
     }
@@ -950,7 +950,7 @@ class _Step3Slots extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _StepHeader(
-          title: 'Choisir un créneau',
+          title: 'Choose a time slot',
           subtitle: dateLabel,
           onBack: () =>
               ref.read(bookingFlowProvider.notifier).previousStep(),
@@ -1077,7 +1077,7 @@ class _Step4Summary extends ConsumerWidget {
           int.parse(parts[1]),
           int.parse(parts[2]),
         );
-        dateDisplay = '${d.day} ${_frenchMonths[d.month - 1]} ${d.year}';
+        dateDisplay = '${d.day} ${_months[d.month - 1]} ${d.year}';
       } catch (_) {}
     }
 
@@ -1085,8 +1085,8 @@ class _Step4Summary extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _StepHeader(
-          title: 'Récapitulatif',
-          subtitle: 'Vérifiez les détails de votre réservation',
+          title: 'Summary',
+          subtitle: 'Review your booking details',
           onBack: () =>
               ref.read(bookingFlowProvider.notifier).previousStep(),
         ),
@@ -1207,7 +1207,7 @@ class _Step4Summary extends ConsumerWidget {
           child: Column(
             children: [
               _PriceRow(
-                label: 'Prix du service',
+                label: 'Service price',
                 value:
                     '${state.selectedService?.price.toStringAsFixed(2) ?? '0'} €',
               ),
@@ -1242,7 +1242,7 @@ class _Step4Summary extends ConsumerWidget {
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
-                        'Acompte de 30% à payer maintenant : ${state.depositPrice.toStringAsFixed(2)} €',
+                        '30% deposit to pay now: ${state.depositPrice.toStringAsFixed(2)} €',
                         style: const TextStyle(
                           color: AppColors.violetClair,
                           fontSize: 13,
@@ -1348,8 +1348,8 @@ class _Step5Payment extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _StepHeader(
-          title: 'Paiement',
-          subtitle: 'Acompte de ${state.depositPrice.toStringAsFixed(2)} €',
+          title: 'Payment',
+          subtitle: 'Deposit: ${state.depositPrice.toStringAsFixed(2)} €',
           onBack: () =>
               ref.read(bookingFlowProvider.notifier).previousStep(),
         ),
@@ -1423,18 +1423,18 @@ class _Step5Payment extends ConsumerWidget {
           child: Column(
             children: [
               _PriceRow(
-                label: 'Total du service',
+                label: 'Service total',
                 value: '${state.totalPrice.toStringAsFixed(2)} €',
               ),
               const SizedBox(height: 6),
               _PriceRow(
-                label: 'Acompte (30%)',
+                label: 'Deposit (30%)',
                 value: '${state.depositPrice.toStringAsFixed(2)} €',
                 valueColor: AppColors.violetClair,
               ),
               const SizedBox(height: 6),
               _PriceRow(
-                label: 'Reste à payer sur place',
+                label: 'Remaining balance (on-site)',
                 value:
                     '${(state.totalPrice - state.depositPrice).toStringAsFixed(2)} €',
               ),
@@ -1568,7 +1568,7 @@ class _Step6Confirmation extends StatelessWidget {
           int.parse(parts[1]),
           int.parse(parts[2]),
         );
-        dateDisplay = '${d.day} ${_frenchMonths[d.month - 1]} ${d.year}';
+        dateDisplay = '${d.day} ${_months[d.month - 1]} ${d.year}';
       } catch (_) {
         dateDisplay = state.selectedDate!;
       }
@@ -1630,7 +1630,7 @@ class _Step6Confirmation extends StatelessWidget {
           child: Column(
             children: [
               Text(
-                'Code de réservation',
+                'Booking code',
                 style: TextStyle(
                   color: AppColors.blanc.withAlpha(200),
                   fontSize: 12,

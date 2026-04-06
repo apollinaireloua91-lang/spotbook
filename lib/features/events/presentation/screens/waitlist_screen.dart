@@ -55,7 +55,7 @@ class WaitlistScreen extends ConsumerWidget {
       appBar: AppBar(
         backgroundColor: AppColors.fond,
         leading: Semantics(
-          label: 'Retour',
+          label: 'Back',
           child: IconButton(
             icon: const Icon(Icons.arrow_back_ios, color: AppColors.blanc, size: 20),
             onPressed: () {
@@ -80,15 +80,15 @@ class WaitlistScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 24),
             Text(
-              state.joined ? 'Vous êtes inscrit !' : 'Billets épuisés',
+              state.joined ? 'You are registered!' : 'Tickets sold out',
               style: const TextStyle(color: AppColors.blanc, fontSize: 22, fontWeight: FontWeight.bold),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 12),
             Text(
               state.joined
-                  ? 'Vous serez notifié si un billet se libère pour « $eventTitle ». Vous aurez 30 minutes pour confirmer.'
-                  : 'Rejoignez la liste d\'attente pour être notifié si un billet se libère.',
+                  ? 'You will be notified if a ticket becomes available for "$eventTitle". You will have 30 minutes to confirm.'
+                  : 'Join the waitlist to get notified if a ticket becomes available.',
               style: const TextStyle(color: AppColors.gris, fontSize: 15, height: 1.5),
               textAlign: TextAlign.center,
             ),
@@ -116,7 +116,7 @@ class WaitlistScreen extends ConsumerWidget {
                   ),
                   child: state.isJoining
                       ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: AppColors.gris, strokeWidth: 2))
-                      : const Text('Rejoindre la liste d\'attente',
+                      : const Text('Join the waitlist',
                           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                 ),
               ),
@@ -133,7 +133,7 @@ class WaitlistScreen extends ConsumerWidget {
                     side: const BorderSide(color: AppColors.border),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
-                  child: const Text('Retour',
+                  child: const Text('Back',
                       style: TextStyle(color: AppColors.blanc, fontWeight: FontWeight.w600, fontSize: 16)),
                 ),
               ),

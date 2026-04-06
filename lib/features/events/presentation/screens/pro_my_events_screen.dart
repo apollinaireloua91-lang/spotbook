@@ -24,7 +24,7 @@ class ProMyEventsScreen extends ConsumerWidget {
       return const Scaffold(
         backgroundColor: AppColors.fond,
         body: Center(
-          child: Text('Non connecté', style: TextStyle(color: AppColors.gris)),
+          child: Text('Not signed in', style: TextStyle(color: AppColors.gris)),
         ),
       );
     }
@@ -38,7 +38,7 @@ class ProMyEventsScreen extends ConsumerWidget {
         elevation: 0,
         scrolledUnderElevation: 0,
         title: const Text(
-          'Mes événements',
+          'My events',
           style: TextStyle(
             color: AppColors.blanc,
             fontWeight: FontWeight.w600,
@@ -60,14 +60,14 @@ class ProMyEventsScreen extends ConsumerWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const Text(
-                    'Aucun événement',
+                    'No events',
                     style: TextStyle(color: AppColors.gris, fontSize: 15),
                   ),
                   const SizedBox(height: 16),
                   TextButton(
                     onPressed: () => context.push('/create-event'),
                     child: const Text(
-                      'Créer un événement',
+                      'Create an event',
                       style: TextStyle(color: AppColors.blanc),
                     ),
                   ),
@@ -93,7 +93,7 @@ class ProMyEventsScreen extends ConsumerWidget {
         ),
         error: (err, _) => Center(
           child: Text(
-            'Erreur : $err',
+            'Error: $err',
             style: const TextStyle(color: AppColors.error),
           ),
         ),
@@ -111,7 +111,7 @@ class _ProEventRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final dateStr = event.eventDate != null
-        ? DateFormat.yMMMd('fr_FR').format(event.eventDate!)
+        ? DateFormat.yMMMd('en_US').format(event.eventDate!)
         : '—';
     return Material(
       color: AppColors.surface,

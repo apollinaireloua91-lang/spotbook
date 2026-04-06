@@ -49,7 +49,7 @@ class ProSubscriptionScreen extends ConsumerWidget {
       appBar: AppBar(
         backgroundColor: AppColors.fond,
         leading: Semantics(
-          label: 'Retour',
+          label: 'Back',
           child: IconButton(
             icon:
                 const Icon(Icons.arrow_back_ios, color: AppColors.blanc, size: 20),
@@ -83,7 +83,7 @@ class ProSubscriptionScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 20),
             const Text(
-              'Passez au Premium',
+              'Go Premium',
               style: TextStyle(
                 color: AppColors.blanc,
                 fontSize: 24,
@@ -92,33 +92,33 @@ class ProSubscriptionScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 8),
             const Text(
-              'Boostez votre activité avec des avantages exclusifs.',
+              'Boost your business with exclusive benefits.',
               style: TextStyle(color: AppColors.gris, fontSize: 15),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 32),
             _FeatureTile(
               icon: Icons.percent,
-              title: 'Commission réduite à 8%',
-              subtitle: 'Au lieu de 12% sur chaque réservation.',
+              title: 'Reduced commission to 8%',
+              subtitle: 'Instead of 12% on each booking.',
             ),
             const SizedBox(height: 12),
             _FeatureTile(
               icon: Icons.verified,
-              title: 'Badge Premium',
-              subtitle: 'Affiché sur votre profil et vos vidéos.',
+              title: 'Premium Badge',
+              subtitle: 'Displayed on your profile and videos.',
             ),
             const SizedBox(height: 12),
             _FeatureTile(
               icon: Icons.trending_up,
-              title: 'Visibilité prioritaire',
-              subtitle: 'Apparaissez en premier dans les recherches.',
+              title: 'Priority visibility',
+              subtitle: 'Appear first in search results.',
             ),
             const SizedBox(height: 12),
             _FeatureTile(
               icon: Icons.auto_awesome,
-              title: 'Auto-approbation vidéos',
-              subtitle: 'Vos vidéos sont publiées instantanément.',
+              title: 'Auto-approved videos',
+              subtitle: 'Your videos are published instantly.',
             ),
             const SizedBox(height: 32),
             if (state.error != null) ...[
@@ -153,7 +153,7 @@ class ProSubscriptionScreen extends ConsumerWidget {
                       Padding(
                         padding: EdgeInsets.only(bottom: 6),
                         child: Text(
-                          ' CA\$/mois',
+                          ' CA\$/month',
                           style: TextStyle(color: AppColors.gris, fontSize: 16),
                         ),
                       ),
@@ -191,7 +191,7 @@ class ProSubscriptionScreen extends ConsumerWidget {
                                   color: AppColors.gris, strokeWidth: 2),
                             )
                           : const Text(
-                              'S\'abonner',
+                              'Subscribe',
                               style: TextStyle(
                                   fontWeight: FontWeight.bold, fontSize: 16),
                             ),
@@ -202,7 +202,7 @@ class ProSubscriptionScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 12),
             const Text(
-              'Annulable à tout moment. Sans engagement.',
+              'Cancel anytime. No commitment.',
               style: TextStyle(color: AppColors.gris, fontSize: 12),
             ),
             const SizedBox(height: 32),

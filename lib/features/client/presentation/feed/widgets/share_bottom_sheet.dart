@@ -55,7 +55,7 @@ class _ClientShareBottomSheetState extends State<ClientShareBottomSheet>
             ),
             const SizedBox(height: 18),
             const Text(
-              'Partager',
+              'Share',
               style: TextStyle(
                 color: AppColors.blanc,
                 fontSize: 15,
@@ -93,7 +93,7 @@ class _ClientShareBottomSheetState extends State<ClientShareBottomSheet>
                       _buildOption(
                         index: 3,
                         icon: Icons.link_rounded,
-                        label: 'Copier',
+                        label: 'Copy',
                         bgColor: AppColors.surface,
                       ),
                     ],
@@ -123,13 +123,13 @@ class _ClientShareBottomSheetState extends State<ClientShareBottomSheet>
     return GestureDetector(
       onTap: () {
         HapticFeedback.mediumImpact();
-        if (label == 'Copier') {
+        if (label == 'Copy') {
           Clipboard.setData(
             ClipboardData(text: 'https://spotbook.app/v/${widget.videoId}'),
           );
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('Lien copié !'),
+              content: Text('Link copied!'),
               duration: Duration(seconds: 1),
             ),
           );

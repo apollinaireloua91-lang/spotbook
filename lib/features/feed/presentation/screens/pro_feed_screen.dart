@@ -193,7 +193,7 @@ class _ProFeedScreenState extends ConsumerState<ProFeedScreen> {
   void _showNotificationsSheet(BuildContext context) {
     showSpotbookBottomSheet(
       context: context,
-      title: 'Activité sur mes posts',
+      title: 'Activity on my posts',
       child: const _NotificationsSheetContent(),
     );
   }
@@ -201,7 +201,7 @@ class _ProFeedScreenState extends ConsumerState<ProFeedScreen> {
   void _showBookingsSheet(BuildContext context) {
     showSpotbookBottomSheet(
       context: context,
-      title: 'Réservations & RDV',
+      title: 'Bookings & Appointments',
       child: const _BookingsSheetContent(),
     );
   }
@@ -209,7 +209,7 @@ class _ProFeedScreenState extends ConsumerState<ProFeedScreen> {
   void _showTicketSalesSheet(BuildContext context) {
     showSpotbookBottomSheet(
       context: context,
-      title: 'Billets vendus',
+      title: 'Tickets sold',
       child: const _TicketSalesSheetContent(),
     );
   }
@@ -217,7 +217,7 @@ class _ProFeedScreenState extends ConsumerState<ProFeedScreen> {
   void _showMessagesSheet(BuildContext context) {
     showSpotbookBottomSheet(
       context: context,
-      title: 'Messages clients',
+      title: 'Client messages',
       child: const _MessagesSheetContent(),
     );
   }
@@ -225,7 +225,7 @@ class _ProFeedScreenState extends ConsumerState<ProFeedScreen> {
   void _showShareSheet(BuildContext context, VideoModel video) {
     showSpotbookBottomSheet(
       context: context,
-      title: 'Partager',
+      title: 'Share',
       child: _ShareSheetContent(video: video),
     );
   }
@@ -241,7 +241,7 @@ class _ProFeedScreenState extends ConsumerState<ProFeedScreen> {
         const SnackBar(
           backgroundColor: AppColors.surfaceAlt,
           content: Text(
-            'Ces boutons seront actifs dès qu’une vidéo est publiée.',
+            'These buttons will be active once a video is published.',
             style: TextStyle(color: AppColors.blanc, fontSize: 13),
           ),
         ),
@@ -308,7 +308,7 @@ class _ProFeedScreenState extends ConsumerState<ProFeedScreen> {
               ),
               const SizedBox(height: 8),
               Text(
-                'Seules tes vidéos publiées (validées) défilent ici — comme pour les clients sur ton profil. En haut : notifications, RDV, billets, messages ; à droite : interactions.',
+                'Only your published (approved) videos scroll here — just like for clients on your profile. Top: notifications, appointments, tickets, messages; right: interactions.',
                 style: TextStyle(
                   color: AppColors.gris.withValues(alpha: 0.95),
                   fontSize: 13,
@@ -334,7 +334,7 @@ class _ProFeedScreenState extends ConsumerState<ProFeedScreen> {
                             color: AppColors.fond, size: 22),
                         SizedBox(width: 10),
                         Text(
-                          'Créer une vidéo',
+                          'Create a video',
                           style: TextStyle(
                             color: AppColors.fond,
                             fontWeight: FontWeight.w700,
@@ -544,7 +544,7 @@ class _EmptyFeedSideActions extends StatelessWidget {
           onTap: onDemoInteractionTap,
           child: _RightColButton(
             icon: Icons.ios_share,
-            label: 'Partager',
+            label: 'Share',
             iconSize: 30,
           ),
         ),
@@ -706,7 +706,7 @@ class _BadgeButton extends StatelessWidget {
 // RIGHT COLUMN (avatar, like, save, share, spotify)
 // ═════════════════════════════════════════════════════════════════════
 
-/// Animation scale 1 → 1.4 → 1.0 (~200ms) au tap (spec J’aime / Favoris).
+/// Animation scale 1 → 1.4 → 1.0 (~200ms) au tap (spec J'aime / Favoris).
 class _ScalePulse extends StatefulWidget {
   const _ScalePulse({required this.child, required this.onTap});
 
@@ -849,7 +849,7 @@ class _RightColumn extends StatelessWidget {
           onTap: onShare,
           child: _RightColButton(
             icon: Icons.ios_share,
-            label: 'Partager',
+            label: 'Share',
             iconSize: 30,
           ),
         ),
@@ -1048,7 +1048,7 @@ class _LeftColumnState extends State<_LeftColumn> {
               child: Padding(
                 padding: const EdgeInsets.only(top: 2),
                 child: Text(
-                  _captionExpanded ? 'voir moins' : 'voir plus',
+                  _captionExpanded ? 'show less' : 'show more',
                   style: const TextStyle(
                     color: AppColors.violet,
                     fontSize: 11,
@@ -1172,7 +1172,7 @@ class _ServiceCtaStrip extends StatelessWidget {
                 Text(
                   [
                     if (_priceLine.isNotEmpty) _priceLine,
-                    video.serviceNextSlot ?? 'Dispo sur demande',
+                    video.serviceNextSlot ?? 'Available on request',
                   ].join(' · '),
                   style: const TextStyle(color: AppColors.gris, fontSize: 10),
                   maxLines: 1,
@@ -1192,7 +1192,7 @@ class _ServiceCtaStrip extends StatelessWidget {
               child: const Padding(
                 padding: EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                 child: Text(
-                  'Réserver',
+                  'Book',
                   style: TextStyle(
                     color: AppColors.blanc,
                     fontSize: 12,
@@ -1215,7 +1215,7 @@ class _EventCtaStrip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final title = video.eventName ?? 'Événement';
+    final title = video.eventName ?? 'Event';
     String dateStr = '';
     if (video.eventDate != null) {
       try {
@@ -1306,7 +1306,7 @@ class _ShareSheetContent extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text(
-          'Envoyer à',
+          'Send to',
           style: TextStyle(
             color: AppColors.gris,
             fontSize: 11,
@@ -1351,7 +1351,7 @@ class _ShareSheetContent extends StatelessWidget {
         ),
         const SizedBox(height: 20),
         const Text(
-          'Partager sur',
+          'Share on',
           style: TextStyle(
             color: AppColors.gris,
             fontSize: 11,
@@ -1410,7 +1410,7 @@ class _ShareSheetContent extends StatelessWidget {
                       const SnackBar(
                         backgroundColor: AppColors.surfaceAlt,
                         content: Text(
-                          'Lien copié',
+                          'Link copied',
                           style: TextStyle(color: AppColors.blanc),
                         ),
                       ),
@@ -1492,7 +1492,7 @@ class _NotificationsSheetContent extends ConsumerWidget {
         }
         final items = snapshot.data ?? [];
         if (items.isEmpty) {
-          return const _SheetEmpty(message: 'Aucune notification');
+          return const _SheetEmpty(message: 'No notifications');
         }
         return _SheetList(
           itemCount: items.length,
@@ -1543,7 +1543,7 @@ class _BookingsSheetContent extends ConsumerWidget {
         }
         final items = snapshot.data ?? [];
         if (items.isEmpty) {
-          return const _SheetEmpty(message: 'Aucune réservation');
+          return const _SheetEmpty(message: 'No bookings');
         }
         return _SheetList(
           itemCount: items.length,
@@ -1557,7 +1557,7 @@ class _BookingsSheetContent extends ConsumerWidget {
             return _NotifItem(
               icon: _bookingIcon(status),
               iconColor: _bookingColor(status),
-              title: serviceTitle ?? 'Réservation',
+              title: serviceTitle ?? 'Booking',
               subtitle: _bookingLabel(status),
               timestamp: timeAgo(
                   DateTime.parse(item['created_at'] as String)),
@@ -1591,11 +1591,11 @@ class _BookingsSheetContent extends ConsumerWidget {
 
   String _bookingLabel(String status) {
     return switch (status) {
-      'confirmed' => 'Confirmée',
-      'pending' => 'En attente',
-      'pending_payment' => 'En attente',
-      'cancelled' => 'Annulée',
-      'rescheduled' => 'Reportée',
+      'confirmed' => 'Confirmed',
+      'pending' => 'Pending',
+      'pending_payment' => 'Pending',
+      'cancelled' => 'Cancelled',
+      'rescheduled' => 'Rescheduled',
       _ => status,
     };
   }
@@ -1619,7 +1619,7 @@ class _TicketSalesSheetContent extends ConsumerWidget {
         }
         final items = snapshot.data ?? [];
         if (items.isEmpty) {
-          return const _SheetEmpty(message: 'Aucun billet vendu');
+          return const _SheetEmpty(message: 'No tickets sold');
         }
         return _SheetList(
           itemCount: items.length,
@@ -1630,8 +1630,8 @@ class _TicketSalesSheetContent extends ConsumerWidget {
             return _NotifItem(
               icon: Icons.confirmation_number,
               title: event?['title'] as String? ??
-                  'Billet vendu',
-              subtitle: 'Billet acheté',
+                  'Ticket sold',
+              subtitle: 'Ticket purchased',
               timestamp: timeAgo(DateTime.parse(
                   item['purchased_at'] as String)),
             );
@@ -1659,7 +1659,7 @@ class _MessagesSheetContent extends ConsumerWidget {
         }
         final items = snapshot.data ?? [];
         if (items.isEmpty) {
-          return const _SheetEmpty(message: 'Aucun message');
+          return const _SheetEmpty(message: 'No messages');
         }
         return _SheetList(
           itemCount: items.length,

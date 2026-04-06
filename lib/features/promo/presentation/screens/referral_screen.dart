@@ -84,7 +84,7 @@ class ReferralScreen extends ConsumerWidget {
       appBar: AppBar(
         backgroundColor: AppColors.fond,
         leading: Semantics(
-          label: 'Retour',
+          label: 'Back',
           child: IconButton(
             icon: const Icon(Icons.arrow_back_ios, color: AppColors.blanc, size: 20),
             onPressed: () {
@@ -94,7 +94,7 @@ class ReferralScreen extends ConsumerWidget {
           ),
         ),
         title: const Text(
-          'Parrainage',
+          'Referrals',
           style: TextStyle(color: AppColors.blanc, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
@@ -112,7 +112,7 @@ class ReferralScreen extends ConsumerWidget {
                   const Icon(Icons.card_giftcard, color: AppColors.blanc, size: 56),
                   const SizedBox(height: 16),
                   const Text(
-                    'Parrainez, gagnez !',
+                    'Refer & earn!',
                     style: TextStyle(
                       color: AppColors.blanc,
                       fontSize: 24,
@@ -121,7 +121,7 @@ class ReferralScreen extends ConsumerWidget {
                   ),
                   const SizedBox(height: 8),
                   const Text(
-                    'Invitez vos amis et recevez 10 CA\$ de crédit pour chaque inscription validée.',
+                    'Invite your friends and earn CA\$10 credit for each verified sign-up.',
                     style: TextStyle(color: AppColors.gris, fontSize: 15, height: 1.5),
                     textAlign: TextAlign.center,
                   ),
@@ -136,7 +136,7 @@ class ReferralScreen extends ConsumerWidget {
                     ),
                     child: Column(
                       children: [
-                        const Text('Votre code', style: TextStyle(color: AppColors.gris, fontSize: 13)),
+                        const Text('Your code', style: TextStyle(color: AppColors.gris, fontSize: 13)),
                         const SizedBox(height: 8),
                         Text(
                           state.code ?? '---',
@@ -160,7 +160,7 @@ class ReferralScreen extends ConsumerWidget {
                                       Clipboard.setData(ClipboardData(text: state.code!));
                                       ScaffoldMessenger.of(context).showSnackBar(
                                         const SnackBar(
-                                          content: Text('Code copié !'),
+                                          content: Text('Code copied!'),
                                           backgroundColor: AppColors.success,
                                         ),
                                       );
@@ -168,7 +168,7 @@ class ReferralScreen extends ConsumerWidget {
                                   },
                                   icon: const Icon(Icons.copy, color: AppColors.blanc, size: 18),
                                   label: const Text(
-                                    'Copier',
+                                    'Copy',
                                     style: TextStyle(color: AppColors.blanc, fontWeight: FontWeight.w500),
                                   ),
                                   style: OutlinedButton.styleFrom(
@@ -187,12 +187,12 @@ class ReferralScreen extends ConsumerWidget {
                                     HapticFeedback.mediumImpact();
                                     SharePlus.instance.share(
                                       ShareParams(
-                                        text: 'Rejoins Spotbook avec mon code ${state.code} et gagne 10 CA\$ de crédit !',
+                                        text: 'Join Spotbook with my code ${state.code} and earn CA\$10 credit!',
                                       ),
                                     );
                                   },
                                   icon: const Icon(Icons.share, size: 18),
-                                  label: const Text('Partager', style: TextStyle(fontWeight: FontWeight.w600)),
+                                  label: const Text('Share', style: TextStyle(fontWeight: FontWeight.w600)),
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: AppColors.blanc,
                                     foregroundColor: AppColors.fond,
@@ -211,7 +211,7 @@ class ReferralScreen extends ConsumerWidget {
                     children: [
                       Expanded(
                         child: _StatCard(
-                          label: 'Parrainages',
+                          label: 'Referrals',
                           value: '${state.referralCount}',
                           icon: Icons.people_outline,
                         ),
@@ -219,7 +219,7 @@ class ReferralScreen extends ConsumerWidget {
                       const SizedBox(width: 12),
                       Expanded(
                         child: _StatCard(
-                          label: 'Crédits gagnés',
+                          label: 'Credits earned',
                           value: '${state.totalCredits.toStringAsFixed(0)} CA\$',
                           icon: Icons.monetization_on_outlined,
                         ),
@@ -228,7 +228,7 @@ class ReferralScreen extends ConsumerWidget {
                   ),
                   const SizedBox(height: 24),
                   const Text(
-                    'Historique',
+                    'History',
                     style: TextStyle(color: AppColors.blanc, fontSize: 16, fontWeight: FontWeight.w600),
                   ),
                   const SizedBox(height: 8),
@@ -236,7 +236,7 @@ class ReferralScreen extends ConsumerWidget {
                     const Padding(
                       padding: EdgeInsets.symmetric(vertical: 16),
                       child: Text(
-                        'Aucun parrainage pour le moment',
+                        'No referrals yet',
                         style: TextStyle(color: AppColors.gris, fontSize: 14),
                       ),
                     )
@@ -257,8 +257,8 @@ class ReferralScreen extends ConsumerWidget {
                             Expanded(
                               child: Text(
                                 item.referredId.isEmpty
-                                    ? 'Inscription en attente'
-                                    : 'Ami inscrit (${item.referredId.substring(0, 6)})',
+                                    ? 'Sign-up pending'
+                                    : 'Friend signed up (${item.referredId.substring(0, 6)})',
                                 style: const TextStyle(color: AppColors.blanc, fontSize: 14),
                               ),
                             ),

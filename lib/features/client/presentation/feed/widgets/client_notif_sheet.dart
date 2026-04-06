@@ -81,7 +81,7 @@ class _ClientNotifSheetState extends ConsumerState<ClientNotifSheet>
                 child: Row(
                   children: [
                     Text(
-                      '🔔 Mes notifications',
+                      '🔔 My notifications',
                       style: TextStyle(
                         color: AppColors.blanc,
                         fontSize: 16,

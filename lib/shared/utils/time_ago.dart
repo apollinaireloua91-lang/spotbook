@@ -1,14 +1,14 @@
-/// Formats a [DateTime] as a relative French time string.
+/// Formats a [DateTime] as a relative English time string.
 ///
-/// Examples: "à l'instant", "Il y a 5min", "Il y a 2h", "Il y a 3j",
-///           "Il y a 1sem", "Il y a 2 mois", "Il y a 1 an(s)"
+/// Examples: "just now", "5m ago", "2h ago", "3d ago",
+///           "1w ago", "2mo ago", "1y ago"
 String timeAgo(DateTime date) {
   final diff = DateTime.now().difference(date);
-  if (diff.inMinutes < 1) return 'à l\'instant';
-  if (diff.inMinutes < 60) return 'Il y a ${diff.inMinutes}min';
-  if (diff.inHours < 24) return 'Il y a ${diff.inHours}h';
-  if (diff.inDays < 7) return 'Il y a ${diff.inDays}j';
-  if (diff.inDays < 30) return 'Il y a ${(diff.inDays / 7).floor()}sem';
-  if (diff.inDays < 365) return 'Il y a ${diff.inDays ~/ 30} mois';
-  return 'Il y a ${diff.inDays ~/ 365} an(s)';
+  if (diff.inMinutes < 1) return 'just now';
+  if (diff.inMinutes < 60) return '${diff.inMinutes}m ago';
+  if (diff.inHours < 24) return '${diff.inHours}h ago';
+  if (diff.inDays < 7) return '${diff.inDays}d ago';
+  if (diff.inDays < 30) return '${(diff.inDays / 7).floor()}w ago';
+  if (diff.inDays < 365) return '${diff.inDays ~/ 30}mo ago';
+  return '${diff.inDays ~/ 365}y ago';
 }

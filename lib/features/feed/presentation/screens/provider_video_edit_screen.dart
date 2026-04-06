@@ -120,14 +120,14 @@ class _ProviderVideoEditScreenState extends State<ProviderVideoEditScreen> {
         backgroundColor: AppColors.surface,
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20)),
-        title: const Text('Ajouter du texte',
+        title: const Text('Add text',
             style: TextStyle(color: AppColors.blanc)),
         content: TextField(
           controller: _textCtrl,
           style: const TextStyle(color: AppColors.blanc),
           maxLength: 50,
           decoration: InputDecoration(
-            hintText: 'Votre texte…',
+            hintText: 'Your text...',
             hintStyle: TextStyle(color: AppColors.gris.withAlpha(128)),
             counterStyle: const TextStyle(color: AppColors.gris),
             filled: true,
@@ -144,7 +144,7 @@ class _ProviderVideoEditScreenState extends State<ProviderVideoEditScreen> {
               setState(() => _overlayText = null);
               Navigator.pop(ctx);
             },
-            child: const Text('Supprimer',
+            child: const Text('Delete',
                 style: TextStyle(color: AppColors.gris)),
           ),
           TextButton(
@@ -181,11 +181,11 @@ class _ProviderVideoEditScreenState extends State<ProviderVideoEditScreen> {
     return Scaffold(
       backgroundColor: AppColors.fond,
       appBar: SpotbookAppBar(
-        title: 'Éditer la vidéo',
+        title: 'Edit video',
         actions: [
           TextButton(
             onPressed: _onNext,
-            child: const Text('Suivant',
+            child: const Text('Next',
                 style: TextStyle(
                     color: AppColors.violet,
                     fontWeight: FontWeight.w700,
@@ -266,7 +266,7 @@ class _ProviderVideoEditScreenState extends State<ProviderVideoEditScreen> {
                         style: const TextStyle(
                             color: AppColors.gris, fontSize: 12),
                       ),
-                      const Text('Rogner',
+                      const Text('Trim',
                           style: TextStyle(
                               color: AppColors.blanc,
                               fontSize: 13,
@@ -308,13 +308,13 @@ class _ProviderVideoEditScreenState extends State<ProviderVideoEditScreen> {
               children: [
                 _ToolButton(
                   icon: Icons.text_fields,
-                  label: 'Texte',
+                  label: 'Text',
                   isActive: _overlayText != null,
                   onTap: _showTextOverlayDialog,
                 ),
                 _ToolButton(
                   icon: Icons.tune,
-                  label: 'Filtres',
+                  label: 'Filters',
                   isActive: _selectedFilter > 0,
                   onTap: () {
                     HapticFeedback.selectionClick();
