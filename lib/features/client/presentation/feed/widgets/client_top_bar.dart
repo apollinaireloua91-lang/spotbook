@@ -2,8 +2,6 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
-
 import '../../../../../shared/theme/app_colors.dart';
 import '../../../../../shared/theme/app_typography.dart';
 import '../../../../feed/data/feed_notifier.dart';
@@ -41,34 +39,14 @@ class ClientTopBar extends StatelessWidget {
                   onTabChanged: cubit.switchTab,
                 ),
                 const Spacer(),
-                // RIGHT — 3 notification buttons
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    // Calendar — my bookings
-                    _TopBarButton(
-                      icon: Icons.calendar_today_outlined,
-                      dotColor: AppColors.violet,
-                      hasUnread: state.unreadBookings > 0,
-                      onTap: () => context.push('/client/bookings'),
-                    ),
-                    const SizedBox(width: 6),
-                    // Ticket — my tickets
-                    _TopBarButton(
-                      icon: Icons.confirmation_number_outlined,
-                      dotColor: AppColors.rose,
-                      hasUnread: state.unreadTickets > 0,
-                      onTap: () => _showTicketsSheet(context),
-                    ),
-                    const SizedBox(width: 6),
-                    // Chat — my messages
-                    _TopBarButton(
-                      icon: Icons.chat_bubble_outline,
-                      dotColor: AppColors.success,
-                      hasUnread: state.unreadMessages > 0,
-                      onTap: () => context.push('/client/messages'),
-                    ),
-                  ],
+                // RIGHT — Bell only
+                _TopBarButton(
+                  icon: Icons.notifications_outlined,
+                  dotColor: AppColors.rose,
+                  hasUnread: state.unreadBookings > 0 ||
+                      state.unreadTickets > 0 ||
+                      state.unreadMessages > 0,
+                  onTap: () => _showNotificationsSheet(context),
                 ),
               ],
             ),
@@ -78,12 +56,12 @@ class ClientTopBar extends StatelessWidget {
     );
   }
 
-  void _showTicketsSheet(BuildContext context) {
+  void _showNotificationsSheet(BuildContext context) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (_) => const _ClientTicketsSheet(),
+      builder: (_) => const _ClientNotificationsSheet(),
     );
   }
 }
@@ -282,9 +260,9 @@ class _TopBarButtonState extends State<_TopBarButton>
   }
 }
 
-/// Placeholder tickets bottom sheet for Client.
-class _ClientTicketsSheet extends StatelessWidget {
-  const _ClientTicketsSheet();
+/// Placeholder notifications bottom sheet for Client.
+class _ClientNotificationsSheet extends StatelessWidget {
+  const _ClientNotificationsSheet();
 
   @override
   Widget build(BuildContext context) {
@@ -310,7 +288,7 @@ class _ClientTicketsSheet extends StatelessWidget {
           ),
           const SizedBox(height: 20),
           const Text(
-            'Mes billets',
+            'Notifications',
             style: TextStyle(
               color: AppColors.blanc,
               fontSize: 18,
@@ -319,13 +297,13 @@ class _ClientTicketsSheet extends StatelessWidget {
           ),
           const SizedBox(height: 40),
           const Icon(
-            Icons.confirmation_number_outlined,
+            Icons.notifications_outlined,
             color: AppColors.gris,
             size: 48,
           ),
           const SizedBox(height: 12),
           const Text(
-            'Aucun billet pour le moment',
+            'Aucune notification',
             style: TextStyle(color: AppColors.gris, fontSize: 14),
           ),
           const SizedBox(height: 40),

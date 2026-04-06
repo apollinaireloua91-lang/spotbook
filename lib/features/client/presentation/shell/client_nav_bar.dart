@@ -6,10 +6,8 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../shared/theme/app_colors.dart';
 
-/// Barre de navigation basse du shell client (4 onglets, pas de caméra).
-///
-/// Chaque icône scale up quand sélectionnée + un point lumineux glisse
-/// sous l'onglet actif (indicateur animé).
+/// Premium glassmorphism nav bar — 4 tabs, no camera.
+/// Active: white icon + 4px gradient dot. Inactive: muted grey icon.
 class ClientNavBar extends StatelessWidget {
   const ClientNavBar({super.key, required this.navigationShell});
 
@@ -28,13 +26,13 @@ class ClientNavBar extends StatelessWidget {
     final bottomInset = MediaQuery.paddingOf(context).bottom;
     final idx = navigationShell.currentIndex;
 
-    return ClipRect(
+    return ClipRRect(
       child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
+        filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
         child: Container(
-          height: 68 + bottomInset,
+          height: 70 + bottomInset,
           decoration: BoxDecoration(
-            color: AppColors.fond.withAlpha(230),
+            color: AppColors.fond.withAlpha(235),
             border: const Border(
               top: BorderSide(color: AppColors.border, width: 0.5),
             ),
@@ -42,34 +40,24 @@ class ClientNavBar extends StatelessWidget {
           child: SafeArea(
             top: false,
             child: SizedBox(
-              height: 68,
-              child: Stack(
-                children: [
-                  // Sliding indicator dot
-                  _SlidingIndicator(
-                    currentIndex: idx,
-                    itemCount: _items.length,
-                  ),
-                  // Nav items row
-                  Row(
-                    children: List.generate(_items.length, (i) {
-                      return Expanded(
-                        child: _AnimatedNavItem(
-                          data: _items[i],
-                          selected: idx == i,
-                          onTap: () {
-                            HapticFeedback.selectionClick();
-                            navigationShell.goBranch(
-                              i,
-                              initialLocation:
-                                  i == navigationShell.currentIndex,
-                            );
-                          },
-                        ),
-                      );
-                    }),
-                  ),
-                ],
+              height: 70,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: List.generate(_items.length, (i) {
+                  return Expanded(
+                    child: _NavItem(
+                      data: _items[i],
+                      selected: idx == i,
+                      onTap: () {
+                        HapticFeedback.selectionClick();
+                        navigationShell.goBranch(
+                          i,
+                          initialLocation: i == navigationShell.currentIndex,
+                        );
+                      },
+                    ),
+                  );
+                }),
               ),
             ),
           ),
@@ -88,60 +76,10 @@ class _NavItemData {
   final String label;
 }
 
-// ── Sliding indicator ────────────────────────────────────────────────────────
+// ── Nav item with dot indicator ─────────────────────────────────────────────
 
-class _SlidingIndicator extends StatelessWidget {
-  const _SlidingIndicator({
-    required this.currentIndex,
-    required this.itemCount,
-  });
-
-  final int currentIndex;
-  final int itemCount;
-
-  static const _kPillWidth = 32.0;
-
-  @override
-  Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final itemWidth = constraints.maxWidth / itemCount;
-        final left = itemWidth * currentIndex + (itemWidth - _kPillWidth) / 2;
-
-        return AnimatedPositioned(
-          duration: const Duration(milliseconds: 350),
-          curve: Curves.easeOutCubic,
-          top: 0,
-          left: left,
-          child: Container(
-            width: _kPillWidth,
-            height: 3,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(2),
-              gradient: AppColors.gradientAccent,
-              boxShadow: [
-                BoxShadow(
-                  color: AppColors.violet.withAlpha(160),
-                  blurRadius: 10,
-                  spreadRadius: 1,
-                ),
-                BoxShadow(
-                  color: AppColors.rose.withAlpha(60),
-                  blurRadius: 16,
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-}
-
-// ── Animated nav item ────────────────────────────────────────────────────────
-
-class _AnimatedNavItem extends StatefulWidget {
-  const _AnimatedNavItem({
+class _NavItem extends StatefulWidget {
+  const _NavItem({
     required this.data,
     required this.selected,
     required this.onTap,
@@ -152,10 +90,10 @@ class _AnimatedNavItem extends StatefulWidget {
   final VoidCallback onTap;
 
   @override
-  State<_AnimatedNavItem> createState() => _AnimatedNavItemState();
+  State<_NavItem> createState() => _NavItemState();
 }
 
-class _AnimatedNavItemState extends State<_AnimatedNavItem>
+class _NavItemState extends State<_NavItem>
     with SingleTickerProviderStateMixin {
   late final AnimationController _scaleCtrl;
 
@@ -194,6 +132,7 @@ class _AnimatedNavItemState extends State<_AnimatedNavItem>
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            // Icon
             AnimatedSwitcher(
               duration: const Duration(milliseconds: 250),
               switchInCurve: Curves.easeOutBack,
@@ -205,16 +144,17 @@ class _AnimatedNavItemState extends State<_AnimatedNavItem>
               child: Icon(
                 widget.selected ? widget.data.activeIcon : widget.data.icon,
                 key: ValueKey(widget.selected),
-                color: widget.selected ? AppColors.violet : AppColors.grisInactif,
+                color: widget.selected ? AppColors.blanc : AppColors.grisInactif,
                 size: widget.selected ? 24 : 22,
               ),
             ),
             const SizedBox(height: 4),
+            // Subtle label
             AnimatedDefaultTextStyle(
               duration: const Duration(milliseconds: 200),
               style: TextStyle(
                 color: widget.selected
-                    ? AppColors.violet
+                    ? AppColors.blanc.withAlpha(179)
                     : AppColors.grisInactif,
                 fontSize: 10,
                 fontWeight:
@@ -222,6 +162,27 @@ class _AnimatedNavItemState extends State<_AnimatedNavItem>
                 letterSpacing: widget.selected ? 0.2 : 0,
               ),
               child: Text(widget.data.label, maxLines: 1),
+            ),
+            const SizedBox(height: 4),
+            // Dot indicator
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeOutCubic,
+              width: widget.selected ? 4 : 0,
+              height: widget.selected ? 4 : 0,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: widget.selected ? AppColors.blanc : Colors.transparent,
+                boxShadow: widget.selected
+                    ? [
+                        BoxShadow(
+                          color: AppColors.blanc.withAlpha(100),
+                          blurRadius: 6,
+                          spreadRadius: 1,
+                        ),
+                      ]
+                    : null,
+              ),
             ),
           ],
         ),

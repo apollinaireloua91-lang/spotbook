@@ -29,48 +29,45 @@ class BookingStrip extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
         decoration: BoxDecoration(
           color: AppColors.ctaBookingStripBg,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: AppColors.violet.withAlpha(77)),
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(
+            color: AppColors.violet.withAlpha(64),
+          ),
         ),
         child: Row(
           children: [
             Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    serviceName ?? 'Service',
-                    style: const TextStyle(
-                      color: AppColors.blanc,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w700,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    servicePrice != null
-                        ? 'À partir de ${servicePrice!.toStringAsFixed(0)} \$'
-                        : 'Voir les tarifs',
-                    style: TextStyle(
-                      color: AppColors.blanc.withAlpha(136),
-                      fontSize: 9,
-                    ),
-                  ),
-                ],
+              child: Text(
+                serviceName ?? 'Service',
+                style: const TextStyle(
+                  color: AppColors.blanc,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
             ),
+            if (servicePrice != null) ...[
+              const SizedBox(width: 8),
+              Text(
+                '${servicePrice!.toStringAsFixed(0)}\$',
+                style: const TextStyle(
+                  color: AppColors.blanc,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+            ],
             const SizedBox(width: 10),
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               decoration: BoxDecoration(
                 color: AppColors.violet,
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(12),
               ),
               child: const Text(
-                '📅 Réserver',
+                'Book',
                 style: TextStyle(
                   color: AppColors.blanc,
                   fontSize: 12,
