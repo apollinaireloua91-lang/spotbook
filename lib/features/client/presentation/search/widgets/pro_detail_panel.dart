@@ -39,6 +39,7 @@ class _PanelContentState extends State<_PanelContent>
   late final AnimationController _ctrl;
   late final Animation<Offset> _slideAnim;
   late final Animation<double> _scaleAnim;
+  bool _isNavigating = false;
 
   @override
   void initState() {
@@ -61,6 +62,44 @@ class _PanelContentState extends State<_PanelContent>
   void dispose() {
     _ctrl.dispose();
     super.dispose();
+  }
+
+  void _navigateToProfile() {
+    context.read<ClientSearchCubit>().closeDetailPanel();
+    context.push('/pro/${widget.pro.id}');
+  }
+
+  Future<void> _openMessage() async {
+    if (_isNavigating) return;
+    setState(() => _isNavigating = true);
+
+    try {
+      final supabase = Supabase.instance.client;
+      final currentUser = supabase.auth.currentUser;
+      if (currentUser == null) return;
+
+      final chatRepo = ChatRepository(supabase: supabase);
+      final conv = await chatRepo.getOrCreateConversation(
+        clientId: currentUser.id,
+        proId: widget.pro.id,
+      );
+      if (!mounted) return;
+      context.read<ClientSearchCubit>().closeDetailPanel();
+      context.push(
+        '/chat/${conv.id}',
+        extra: {'otherUserName': widget.pro.name},
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('$e'),
+          backgroundColor: AppColors.error,
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _isNavigating = false);
+    }
   }
 
   @override
@@ -105,108 +144,136 @@ class _PanelContentState extends State<_PanelContent>
                 padding: EdgeInsets.only(bottom: bottomInset + 16),
                 children: [
                   const SizedBox(height: 8),
-                  // ── Handle ──
-                  Center(
-                    child: Container(
-                      width: 36,
-                      height: 4,
-                      decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.2),
-                        borderRadius: BorderRadius.circular(2),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-
-                  // ── Close button ──
-                  Align(
-                    alignment: Alignment.topRight,
-                    child: Padding(
-                      padding: const EdgeInsets.only(right: 16),
-                      child: GestureDetector(
-                        onTap: () => context
-                            .read<ClientSearchCubit>()
-                            .closeDetailPanel(),
-                        child: Container(
-                          width: 28,
-                          height: 28,
+                  // ── Handle + close ──
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Row(
+                      children: [
+                        const Spacer(),
+                        Container(
+                          width: 36,
+                          height: 4,
                           decoration: BoxDecoration(
-                            color: Colors.white.withValues(alpha: 0.06),
-                            shape: BoxShape.circle,
-                          ),
-                          child: const Icon(
-                            Icons.close,
-                            size: 14,
-                            color: AppColors.gris,
+                            color: AppColors.blanc.withAlpha(51),
+                            borderRadius: BorderRadius.circular(2),
                           ),
                         ),
-                      ),
+                        const Spacer(),
+                        GestureDetector(
+                          onTap: () => context
+                              .read<ClientSearchCubit>()
+                              .closeDetailPanel(),
+                          child: Container(
+                            width: 28,
+                            height: 28,
+                            decoration: const BoxDecoration(
+                              color: AppColors.surface,
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(
+                              Icons.close,
+                              size: 14,
+                              color: AppColors.gris,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 12),
 
-                  // ── Hero section ──
+                  // ── Hero section — tappable avatar + name ──
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: Row(
                       children: [
-                        Container(
-                          width: 64,
-                          height: 64,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(18),
-                            gradient: LinearGradient(
-                              colors: [catColor, catColor.withValues(alpha: 0.6)],
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
+                        // Circular avatar — tappable
+                        GestureDetector(
+                          onTap: _navigateToProfile,
+                          child: Container(
+                            width: 56,
+                            height: 56,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              gradient: LinearGradient(
+                                colors: [
+                                  catColor,
+                                  catColor.withValues(alpha: 0.6),
+                                ],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                              ),
                             ),
-                          ),
-                          child: pro.avatarUrl != null
-                              ? ClipRRect(
-                                  borderRadius: BorderRadius.circular(18),
-                                  child: CachedNetworkImage(
-                                    imageUrl: pro.avatarUrl!,
-                                    fit: BoxFit.cover,
-                                  ),
-                                )
-                              : Center(
-                                  child: Text(
-                                    pro.name.isNotEmpty
-                                        ? pro.name[0].toUpperCase()
-                                        : '?',
-                                    style: GoogleFonts.dmSans(
-                                      fontSize: 24,
-                                      fontWeight: FontWeight.w700,
-                                      color: AppColors.blanc,
+                            child: pro.avatarUrl != null
+                                ? ClipOval(
+                                    child: CachedNetworkImage(
+                                      imageUrl: pro.avatarUrl!,
+                                      fit: BoxFit.cover,
+                                      width: 56,
+                                      height: 56,
+                                    ),
+                                  )
+                                : Center(
+                                    child: Text(
+                                      pro.name.isNotEmpty
+                                          ? pro.name[0].toUpperCase()
+                                          : '?',
+                                      style: GoogleFonts.dmSans(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.w700,
+                                        color: AppColors.blanc,
+                                      ),
                                     ),
                                   ),
-                                ),
+                          ),
                         ),
                         const SizedBox(width: 14),
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
-                                pro.name,
-                                style: GoogleFonts.dmSans(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w700,
-                                  color: AppColors.blanc,
-                                ),
-                              ),
-                              const SizedBox(height: 2),
-                              Text(
-                                '${categoryEmoji(pro.category)} ${pro.category}',
-                                style: GoogleFonts.dmSans(
-                                  fontSize: 12,
-                                  color: AppColors.gris,
+                              // Name — tappable
+                              GestureDetector(
+                                onTap: _navigateToProfile,
+                                child: Text(
+                                  pro.name,
+                                  style: GoogleFonts.dmSans(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w700,
+                                    color: AppColors.blanc,
+                                  ),
                                 ),
                               ),
                               const SizedBox(height: 4),
+                              // Category + city
                               Row(
                                 children: [
-                                  if (pro.online) ...[
+                                  Container(
+                                    width: 7,
+                                    height: 7,
+                                    decoration: BoxDecoration(
+                                      color: catColor,
+                                      shape: BoxShape.circle,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 5),
+                                  Flexible(
+                                    child: Text(
+                                      '${pro.category} \u00b7 ${pro.location}',
+                                      style: GoogleFonts.dmSans(
+                                        fontSize: 13,
+                                        color: AppColors.gris,
+                                      ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              if (pro.online) ...[
+                                const SizedBox(height: 4),
+                                Row(
+                                  children: [
                                     Container(
                                       width: 7,
                                       height: 7,
@@ -217,30 +284,16 @@ class _PanelContentState extends State<_PanelContent>
                                     ),
                                     const SizedBox(width: 4),
                                     Text(
-                                      'En ligne',
+                                      'Online',
                                       style: GoogleFonts.dmSans(
                                         fontSize: 11,
                                         fontWeight: FontWeight.w600,
                                         color: AppColors.success,
                                       ),
                                     ),
-                                    const SizedBox(width: 10),
                                   ],
-                                  const Icon(
-                                    Icons.location_on_outlined,
-                                    size: 12,
-                                    color: AppColors.gris,
-                                  ),
-                                  const SizedBox(width: 2),
-                                  Text(
-                                    pro.location,
-                                    style: GoogleFonts.dmSans(
-                                      fontSize: 11,
-                                      color: AppColors.gris,
-                                    ),
-                                  ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ],
                           ),
                         ),
@@ -258,24 +311,42 @@ class _PanelContentState extends State<_PanelContent>
                         vertical: 12,
                       ),
                       decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.03),
+                        color: AppColors.surfaceAlt,
                         borderRadius: BorderRadius.circular(14),
+                        border: Border.all(
+                          color: AppColors.blanc.withAlpha(13),
+                        ),
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
                           _StatItem(
-                            label: 'Note',
-                            value: '\u2B50 ${pro.rating}',
+                            icon: Icons.star_rounded,
+                            label: 'Rating',
+                            value: pro.rating > 0
+                                ? pro.rating.toStringAsFixed(1)
+                                : 'New',
                             color: AppColors.ratingAmber,
                           ),
+                          Container(
+                            width: 1,
+                            height: 28,
+                            color: AppColors.blanc.withAlpha(20),
+                          ),
                           _StatItem(
+                            icon: Icons.location_on_outlined,
                             label: 'Distance',
                             value: '${pro.distKm} km',
                             color: AppColors.violet,
                           ),
+                          Container(
+                            width: 1,
+                            height: 28,
+                            color: AppColors.blanc.withAlpha(20),
+                          ),
                           _StatItem(
-                            label: 'Prix',
+                            icon: Icons.attach_money,
+                            label: 'From',
                             value: '${pro.priceRange}\$',
                             color: AppColors.success,
                           ),
@@ -305,7 +376,10 @@ class _PanelContentState extends State<_PanelContent>
                           horizontal: 20,
                           vertical: 4,
                         ),
-                        child: _ServiceRow(service: s),
+                        child: _ServiceRow(
+                          service: s,
+                          proCategory: pro.category,
+                        ),
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -316,56 +390,63 @@ class _PanelContentState extends State<_PanelContent>
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: Row(
                       children: [
-                        // Message
+                        // Message — outline style with debounce
                         Expanded(
                           child: GestureDetector(
-                            onTap: () async {
-                              final supabase = Supabase.instance.client;
-                              final currentUser = supabase.auth.currentUser;
-                              if (currentUser == null) return;
-                              try {
-                                final chatRepo = ChatRepository(supabase: supabase);
-                                final conv = await chatRepo.getOrCreateConversation(
-                                  clientId: currentUser.id,
-                                  proId: widget.pro.id,
-                                );
-                                if (!context.mounted) return;
-                                context.push(
-                                  '/chat/${conv.id}',
-                                  extra: {'otherUserName': widget.pro.name},
-                                );
-                              } catch (e) {
-                                if (!context.mounted) return;
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text('$e'),
-                                    backgroundColor: AppColors.error,
-                                  ),
-                                );
-                              }
-                            },
+                            onTap: _isNavigating ? null : _openMessage,
                             child: Container(
-                              height: 44,
+                              height: 48,
                               decoration: BoxDecoration(
-                                color: Colors.white.withValues(alpha: 0.06),
                                 borderRadius: BorderRadius.circular(12),
-                              ),
-                              alignment: Alignment.center,
-                              child: Text(
-                                '\uD83D\uDCAC Message',
-                                style: GoogleFonts.dmSans(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w600,
-                                  color: AppColors.blanc,
+                                border: Border.all(
+                                  color: AppColors.border,
                                 ),
                               ),
+                              alignment: Alignment.center,
+                              child: _isNavigating
+                                  ? const SizedBox(
+                                      width: 18,
+                                      height: 18,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        color: AppColors.blanc,
+                                      ),
+                                    )
+                                  : Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        const Icon(
+                                          Icons.chat_bubble_outline,
+                                          size: 16,
+                                          color: AppColors.blanc,
+                                        ),
+                                        const SizedBox(width: 6),
+                                        Text(
+                                          'Message',
+                                          style: GoogleFonts.dmSans(
+                                            fontSize: 13,
+                                            fontWeight: FontWeight.w600,
+                                            color: AppColors.blanc,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                             ),
                           ),
                         ),
                         const SizedBox(width: 10),
-                        // Book — with glow pulse
+                        // Book — filled violet with glow
                         Expanded(
-                          child: _GlowBookButton(proId: pro.id),
+                          child: _GlowBookButton(
+                            proId: pro.id,
+                            onTap: () {
+                              context
+                                  .read<ClientSearchCubit>()
+                                  .closeDetailPanel();
+                              context.push('/pro/${pro.id}');
+                            },
+                          ),
                         ),
                       ],
                     ),
@@ -384,11 +465,13 @@ class _PanelContentState extends State<_PanelContent>
 
 class _StatItem extends StatelessWidget {
   const _StatItem({
+    required this.icon,
     required this.label,
     required this.value,
     required this.color,
   });
 
+  final IconData icon;
   final String label;
   final String value;
   final Color color;
@@ -397,13 +480,20 @@ class _StatItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Text(
-          value,
-          style: GoogleFonts.dmSans(
-            fontSize: 14,
-            fontWeight: FontWeight.w700,
-            color: color,
-          ),
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 14, color: color),
+            const SizedBox(width: 3),
+            Text(
+              value,
+              style: GoogleFonts.dmSans(
+                fontSize: 14,
+                fontWeight: FontWeight.w700,
+                color: color,
+              ),
+            ),
+          ],
         ),
         const SizedBox(height: 2),
         Text(
@@ -421,30 +511,36 @@ class _StatItem extends StatelessWidget {
 // ─── Service Row ─────────────────────────────────────────────────────
 
 class _ServiceRow extends StatelessWidget {
-  const _ServiceRow({required this.service});
+  const _ServiceRow({
+    required this.service,
+    required this.proCategory,
+  });
 
   final ProService service;
+  final String proCategory;
 
   @override
   Widget build(BuildContext context) {
+    final icon = categoryIcon(proCategory);
+
     return Container(
-      padding: const EdgeInsets.all(10),
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.03),
+        color: AppColors.blanc.withAlpha(8),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.04)),
+        border: Border.all(color: AppColors.blanc.withAlpha(10)),
       ),
       child: Row(
         children: [
           Container(
-            width: 34,
-            height: 34,
+            width: 36,
+            height: 36,
             decoration: BoxDecoration(
               color: AppColors.violetDarkGradientEnd,
               borderRadius: BorderRadius.circular(10),
             ),
-            child: const Icon(
-              Icons.spa_outlined,
+            child: Icon(
+              icon,
               size: 16,
               color: AppColors.violetClair,
             ),
@@ -457,15 +553,16 @@ class _ServiceRow extends StatelessWidget {
                 Text(
                   service.name,
                   style: GoogleFonts.dmSans(
-                    fontSize: 12,
+                    fontSize: 13,
                     fontWeight: FontWeight.w600,
                     color: AppColors.blanc,
                   ),
                 ),
+                const SizedBox(height: 1),
                 Text(
                   service.duration,
                   style: GoogleFonts.dmSans(
-                    fontSize: 10,
+                    fontSize: 11,
                     color: AppColors.gris,
                   ),
                 ),
@@ -473,9 +570,9 @@ class _ServiceRow extends StatelessWidget {
             ),
           ),
           Text(
-            service.price > 0 ? '${service.price.toInt()}\$' : 'Gratuit',
+            service.price > 0 ? '${service.price.toInt()}\$' : 'Free',
             style: GoogleFonts.dmSans(
-              fontSize: 13,
+              fontSize: 14,
               fontWeight: FontWeight.w700,
               color: AppColors.violet,
             ),
@@ -489,9 +586,13 @@ class _ServiceRow extends StatelessWidget {
 // ─── Glow Pulse Book Button ──────────────────────────────────────────
 
 class _GlowBookButton extends StatefulWidget {
-  const _GlowBookButton({required this.proId});
+  const _GlowBookButton({
+    required this.proId,
+    required this.onTap,
+  });
 
   final String proId;
+  final VoidCallback onTap;
 
   @override
   State<_GlowBookButton> createState() => _GlowBookButtonState();
@@ -540,22 +641,32 @@ class _GlowBookButtonState extends State<_GlowBookButton>
         );
       },
       child: GestureDetector(
-        onTap: () =>
-            context.push('/client/booking-flow/${widget.proId}'),
+        onTap: widget.onTap,
         child: Container(
-          height: 44,
+          height: 48,
           decoration: BoxDecoration(
             color: AppColors.violet,
             borderRadius: BorderRadius.circular(12),
           ),
           alignment: Alignment.center,
-          child: Text(
-            '\uD83D\uDCC5 Réserver',
-            style: GoogleFonts.dmSans(
-              fontSize: 13,
-              fontWeight: FontWeight.w600,
-              color: AppColors.blanc,
-            ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(
+                Icons.calendar_today,
+                size: 16,
+                color: AppColors.blanc,
+              ),
+              const SizedBox(width: 6),
+              Text(
+                'Book',
+                style: GoogleFonts.dmSans(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.blanc,
+                ),
+              ),
+            ],
           ),
         ),
       ),
