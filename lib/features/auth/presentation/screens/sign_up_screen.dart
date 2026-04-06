@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'dart:io';
+
 import 'package:image_picker/image_picker.dart';
 
 import '../../../../shared/theme/app_colors.dart';
@@ -1008,7 +1010,7 @@ class _Step4ProPhotoState extends State<_Step4ProPhoto> {
                       ),
                       image: _pickedImage != null
                           ? DecorationImage(
-                              image: AssetImage(_pickedImage!.path),
+                              image: FileImage(File(_pickedImage!.path)),
                               fit: BoxFit.cover,
                             )
                           : null,
@@ -1061,7 +1063,7 @@ class _Step4ProPhotoState extends State<_Step4ProPhoto> {
           const SizedBox(height: 12),
           Center(
             child: GestureDetector(
-              onTap: widget.isLoading ? null : widget.onSkip,
+              onTap: widget.onSkip,
               child: const Text(
                 'Skip for now',
                 style: TextStyle(color: AppColors.gris, fontSize: 14),
