@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../shared/theme/app_colors.dart';
 
@@ -49,11 +48,10 @@ class _BecomeProSheetState extends State<BecomeProSheet>
     super.dispose();
   }
 
-  void _onBecomePro() async {
+  void _onBecomePro() {
     HapticFeedback.heavyImpact();
     Navigator.of(context).pop();
-    await Supabase.instance.client.auth.signOut();
-    if (mounted) context.go('/signup/pro');
+    if (mounted) context.push('/become-pro');
   }
 
   @override

@@ -8,6 +8,7 @@ import '../features/pro/presentation/camera/video_capture_screen.dart';
 import '../features/pro/presentation/camera/video_preview_screen.dart';
 import '../features/feed/presentation/screens/provider_video_publish_screen.dart';
 import '../features/auth/presentation/screens/account_type_selection_screen.dart';
+import '../features/auth/presentation/screens/become_pro_setup_screen.dart';
 import '../features/auth/presentation/screens/client_interest_categories_screen.dart';
 import '../features/auth/presentation/screens/client_interest_goals_screen.dart';
 import '../features/auth/presentation/screens/complete_profile_screen.dart';
@@ -123,6 +124,15 @@ final appRouter = GoRouter(
     GoRoute(
       path: '/complete-profile',
       builder: (context, state) => const CompleteProfileScreen(),
+    ),
+
+    // ─── Become Pro (client → pro upgrade) ───
+    GoRoute(
+      path: '/become-pro',
+      pageBuilder: (context, state) => premiumSlideUpPage(
+        state: state,
+        child: const BecomeProSetupScreen(),
+      ),
     ),
 
     // ─── Onboarding Client ───
