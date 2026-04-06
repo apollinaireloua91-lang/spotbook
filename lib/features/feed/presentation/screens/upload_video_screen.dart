@@ -75,7 +75,15 @@ class _UploadVideoScreenState extends ConsumerState<UploadVideoScreen> {
 
     return Scaffold(
       backgroundColor: AppColors.fond,
-      appBar: AppBar(backgroundColor: AppColors.fond, title: const Text('Publish a Service'), centerTitle: true),
+      appBar: AppBar(
+        backgroundColor: AppColors.fond,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: AppColors.blanc),
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: const Text('Publish a Service'),
+        centerTitle: true,
+      ),
       body: SafeArea(child: SingleChildScrollView(padding: const EdgeInsets.symmetric(horizontal: 20), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         const SizedBox(height: 16),
         GestureDetector(

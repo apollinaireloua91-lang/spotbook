@@ -86,7 +86,7 @@ class _VideoCaptureScreenState extends State<VideoCaptureScreen> {
                   ),
                   child: const Icon(
                     Icons.video_library_rounded,
-                    color: AppColors.blanc,
+                    color: AppColors.textOnPrimary,
                     size: 36,
                   ),
                 ),
@@ -124,7 +124,7 @@ class _VideoCaptureScreenState extends State<VideoCaptureScreen> {
                             width: 20,
                             height: 20,
                             child: CircularProgressIndicator(
-                              color: AppColors.blanc,
+                              color: AppColors.textOnPrimary,
                               strokeWidth: 2,
                             ),
                           )
@@ -138,7 +138,7 @@ class _VideoCaptureScreenState extends State<VideoCaptureScreen> {
                     ),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.violet,
-                      foregroundColor: AppColors.blanc,
+                      foregroundColor: AppColors.textOnPrimary,
                       disabledBackgroundColor: AppColors.violet.withAlpha(128),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(14),

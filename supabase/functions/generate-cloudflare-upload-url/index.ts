@@ -50,11 +50,12 @@ serve(async (req) => {
       return jsonResponse({ error: "Not authenticated" }, 401, undefined, req);
     }
 
-    const supabaseAuth = createClient(supabaseUrl, supabaseAnon, {
-      global: { headers: { Authorization: `Bearer ${token}` } },
-    });
+    // Use service role key for server-side checks — RLS on `users`
+    // can block the user's own JWT from reading their row.
+    const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const supabaseAdmin = createClient(supabaseUrl, serviceRoleKey);
 
-    const { data: userRow, error: userErr } = await supabaseAuth
+    const { data: userRow, error: userErr } = await supabaseAdmin
       .from("users")
       .select("id, role")
       .eq("id", user.id)
@@ -69,7 +70,7 @@ serve(async (req) => {
       );
     }
 
-    const { data: profile } = await supabaseAuth
+    const { data: profile } = await supabaseAdmin
       .from("profiles_pro")
       .select("id")
       .eq("id", user.id)

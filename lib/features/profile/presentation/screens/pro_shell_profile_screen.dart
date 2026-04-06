@@ -34,9 +34,30 @@ import '../../../catering/presentation/widgets/catering_add_sheets.dart';
 
 final _proSelfProfileProvider =
     FutureProvider.autoDispose<ProProfile?>((ref) async {
-  final uid = ref.read(profileRepositoryProvider).currentUserId;
+  final repo = ref.read(profileRepositoryProvider);
+  final uid = repo.currentUserId;
   if (uid == null) return null;
-  return ref.read(profileRepositoryProvider).getProProfile(uid);
+
+  // Try fetching the full pro profile
+  final profile = await repo.getProProfile(uid);
+  if (profile != null) return profile;
+
+  // No profiles_pro row — build a minimal profile from the users table
+  // so the screen can still render (newly converted Pro accounts).
+  final userData = await repo.getClientProfile(uid);
+  if (userData == null) return null;
+
+  return ProProfile(
+    id: uid,
+    businessName: userData.fullName,
+    category: '',
+    username: userData.username,
+    avatarUrl: userData.avatarUrl,
+    bio: '',
+    city: userData.city,
+    socialConnections: const [],
+    isFollowedByMe: false,
+  );
 });
 
 final _proSelfVideosProvider =

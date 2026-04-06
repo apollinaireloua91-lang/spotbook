@@ -308,7 +308,7 @@ class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
                     child: Text(
                       widget.video.proName ?? 'Pro',
                       style: const TextStyle(
-                        color: AppColors.blanc,
+                        color: AppColors.textOnVideo,
                         fontSize: 15,
                         fontWeight: FontWeight.w700,
                         shadows: [
@@ -334,7 +334,7 @@ class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
                       child: const Text(
                         'Book',
                         style: TextStyle(
-                          color: AppColors.blanc,
+                          color: AppColors.textOnPrimary,
                           fontSize: 12,
                           fontWeight: FontWeight.w700,
                         ),
@@ -365,7 +365,7 @@ class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
                                 border: Border.all(
-                                    color: AppColors.blanc, width: 2),
+                                    color: AppColors.textOnVideo, width: 2),
                               ),
                               child: CircleAvatar(
                                 radius: 20,
@@ -404,7 +404,7 @@ class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
                                         shape: BoxShape.circle,
                                       ),
                                       child: const Icon(Icons.add,
-                                          color: AppColors.blanc, size: 14),
+                                          color: AppColors.textOnPrimary, size: 14),
                                     ),
                                   ),
                                 ),
@@ -421,7 +421,7 @@ class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
                       label: _formatCount(widget.video.likesCount),
                       color: widget.video.isLiked
                           ? AppColors.rose
-                          : AppColors.blanc,
+                          : AppColors.textOnVideo,
                       onTap: _toggleLike,
                     ),
                     const SizedBox(height: 18),
@@ -440,7 +440,7 @@ class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
                         label: '',
                         color: widget.video.isSaved
                             ? AppColors.violet
-                            : AppColors.blanc,
+                            : AppColors.textOnVideo,
                         onTap: _toggleSave,
                       ),
                     ),
@@ -482,7 +482,7 @@ class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
                   _isPlaying
                       ? Icons.play_arrow_rounded
                       : Icons.pause_rounded,
-                  color: AppColors.blanc,
+                  color: AppColors.textOnVideo,
                   size: 36,
                 ),
               ),
@@ -499,7 +499,7 @@ class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
                 ),
                 child: const Icon(
                   Icons.play_arrow_rounded,
-                  color: AppColors.blanc,
+                  color: AppColors.textOnVideo,
                   size: 32,
                 ),
               ),
@@ -524,7 +524,7 @@ class _ActionButton extends StatelessWidget {
     required this.icon,
     required this.label,
     required this.onTap,
-    this.color = AppColors.blanc,
+    this.color = AppColors.textOnVideo,
     this.mirrorIcon = false,
   });
 
@@ -544,7 +544,7 @@ class _ActionButton extends StatelessWidget {
             width: 44,
             height: 44,
             decoration: BoxDecoration(
-              color: AppColors.blanc.withAlpha(20),
+              color: AppColors.textOnVideo.withAlpha(20),
               shape: BoxShape.circle,
             ),
             child: Center(

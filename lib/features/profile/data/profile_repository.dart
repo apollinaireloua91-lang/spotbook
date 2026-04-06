@@ -38,21 +38,29 @@ class ProfileRepository {
     if (data == null) return null;
 
     // Social links live in a separate table keyed by user_id
-    final socialLinksData = await _supabase
-        .from('social_links')
-        .select('*')
-        .eq('user_id', proId);
-    data['social_links'] = socialLinksData;
+    try {
+      final socialLinksData = await _supabase
+          .from('social_links')
+          .select('*')
+          .eq('user_id', proId);
+      data['social_links'] = socialLinksData;
+    } catch (_) {
+      data['social_links'] = <Map<String, dynamic>>[];
+    }
 
     bool isFollowed = false;
     if (uid != null) {
-      final followData = await _supabase
-          .from('follows')
-          .select('follower_id')
-          .eq('follower_id', uid)
-          .eq('following_id', proId)
-          .maybeSingle();
-      isFollowed = followData != null;
+      try {
+        final followData = await _supabase
+            .from('follows')
+            .select('follower_id')
+            .eq('follower_id', uid)
+            .eq('following_id', proId)
+            .maybeSingle();
+        isFollowed = followData != null;
+      } catch (_) {
+        // follows query is non-critical for profile display
+      }
     }
 
     return ProProfile.fromJson(data, isFollowedByMe: isFollowed);
