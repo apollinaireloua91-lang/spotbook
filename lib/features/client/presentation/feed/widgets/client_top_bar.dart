@@ -80,7 +80,7 @@ class _FeedTabGroup extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(3),
       decoration: BoxDecoration(
-        color: AppColors.textOnVideo.withAlpha(15),
+        color: Colors.black.withAlpha(77),
         borderRadius: BorderRadius.circular(10),
       ),
       child: Row(
@@ -123,7 +123,7 @@ class _TabButton extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
         decoration: BoxDecoration(
           color: isActive
-              ? AppColors.violet.withAlpha(128) // rgba(108,62,244,0.5)
+              ? Colors.white.withAlpha(51)
               : Colors.transparent,
           borderRadius: BorderRadius.circular(8),
         ),
@@ -213,9 +213,9 @@ class _TopBarButtonState extends State<_TopBarButton>
             width: 34,
             height: 34,
             decoration: BoxDecoration(
-              color: AppColors.surfaceAlt.withAlpha(217), // rgba(22,22,31,0.85)
+              color: Colors.black.withAlpha(77),
               borderRadius: BorderRadius.circular(11),
-              border: Border.all(color: AppColors.textOnVideo.withAlpha(26)),
+              border: Border.all(color: Colors.white.withAlpha(26)),
             ),
             child: Stack(
               children: [

@@ -185,30 +185,26 @@ class _ProfileBody extends ConsumerWidget {
 
             // ─── Edit Profile Button ───
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: GestureDetector(
-                onTap: () {
-                  HapticFeedback.lightImpact();
-                  context.push('/edit-profile');
-                },
-                child: Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.symmetric(vertical: 13),
-                  decoration: BoxDecoration(
-                    color: AppColors.surface,
-                    borderRadius: BorderRadius.circular(14),
-                    border: Border.all(
-                      color: AppColors.blanc.withAlpha(26),
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: SizedBox(
+                width: double.infinity,
+                child: OutlinedButton(
+                  onPressed: () {
+                    HapticFeedback.lightImpact();
+                    context.push('/edit-profile');
+                  },
+                  style: OutlinedButton.styleFrom(
+                    side: const BorderSide(color: Color(0xFFE8E0D0)),
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
                     ),
                   ),
-                  child: Center(
-                    child: Text(
-                      'Edit Profile',
-                      style: GoogleFonts.dmSans(
-                        color: AppColors.blanc,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                      ),
+                  child: Text(
+                    'Edit Profile',
+                    style: GoogleFonts.dmSans(
+                      color: const Color(0xFF1A1A1A),
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ),
@@ -572,22 +568,22 @@ class _SpecialActionsSection extends ConsumerWidget {
               width: double.infinity,
               padding: const EdgeInsets.symmetric(vertical: 16),
               decoration: BoxDecoration(
-                color: AppColors.violet.withAlpha(15),
+                color: const Color(0xFFFFF3DA),
                 borderRadius: BorderRadius.circular(14),
               ),
               child: Center(
                 child: Text(
                   'Become Pro',
                   style: GoogleFonts.dmSans(
-                    color: AppColors.violetClair,
-                    fontSize: 14,
+                    color: const Color(0xFF043603),
+                    fontSize: 15,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
               ),
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 10),
           // Log out
           GestureDetector(
             onTap: () => _showLogoutDialog(context),
@@ -595,15 +591,15 @@ class _SpecialActionsSection extends ConsumerWidget {
               width: double.infinity,
               padding: const EdgeInsets.symmetric(vertical: 16),
               decoration: BoxDecoration(
-                color: AppColors.rose.withAlpha(15),
+                color: const Color(0xFFFFF3DA),
                 borderRadius: BorderRadius.circular(14),
               ),
               child: Center(
                 child: Text(
                   'Log out',
                   style: GoogleFonts.dmSans(
-                    color: AppColors.roseClair,
-                    fontSize: 14,
+                    color: const Color(0xFFD32F2F),
+                    fontSize: 15,
                     fontWeight: FontWeight.w600,
                   ),
                 ),

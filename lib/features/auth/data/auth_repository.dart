@@ -37,6 +37,9 @@ class AuthRepository {
 
   Stream<AuthState> get authStateStream => _supabase.auth.onAuthStateChange;
 
+  // TODO(security): Add rate limiting on signUp to prevent brute-force
+  // registration attacks. Consider Supabase Edge Function middleware or
+  // per-IP throttling before v1.1 launch.
   Future<AuthResponse> signUpWithEmail({
     required String email,
     required String password,

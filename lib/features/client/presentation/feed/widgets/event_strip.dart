@@ -72,7 +72,7 @@ class EventStrip extends StatelessWidget {
               child: const Text(
                 'Tickets',
                 style: TextStyle(
-                  color: AppColors.blanc,
+                  color: AppColors.textOnPrimary,
                   fontSize: 12,
                   fontWeight: FontWeight.w700,
                 ),

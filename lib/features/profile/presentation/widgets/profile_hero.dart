@@ -103,9 +103,9 @@ class _ProfileHeroState extends State<ProfileHero>
                                 ? p.fullName[0].toUpperCase()
                                 : '?',
                             style: GoogleFonts.dmSans(
-                              fontSize: 32,
+                              fontSize: 28,
                               fontWeight: FontWeight.w800,
-                              color: AppColors.blanc,
+                              color: const Color(0xFFFFFFFF),
                             ),
                           ),
                         ),

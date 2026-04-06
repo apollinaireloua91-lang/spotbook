@@ -69,7 +69,7 @@ class BookingStrip extends StatelessWidget {
               child: const Text(
                 'Book',
                 style: TextStyle(
-                  color: AppColors.blanc,
+                  color: AppColors.textOnPrimary,
                   fontSize: 12,
                   fontWeight: FontWeight.w700,
                 ),

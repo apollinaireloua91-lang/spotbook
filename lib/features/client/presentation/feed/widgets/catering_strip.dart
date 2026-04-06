@@ -50,7 +50,7 @@ class CateringStrip extends StatelessWidget {
               child: const Text(
                 '📋 Soumission',
                 style: TextStyle(
-                  color: AppColors.blanc,
+                  color: AppColors.textOnPrimary,
                   fontSize: 12,
                   fontWeight: FontWeight.w700,
                 ),

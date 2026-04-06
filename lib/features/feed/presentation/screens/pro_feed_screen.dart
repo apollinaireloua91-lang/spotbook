@@ -53,6 +53,9 @@ class ProFeedScreen extends ConsumerStatefulWidget {
 
 class _ProFeedScreenState extends ConsumerState<ProFeedScreen> {
   final _pageController = PageController();
+  final _bgKey = GlobalKey<_PostBackgroundState>();
+  bool _isPaused = false;
+  bool _showPlayPauseIcon = false;
 
   @override
   void dispose() {
@@ -62,6 +65,7 @@ class _ProFeedScreenState extends ConsumerState<ProFeedScreen> {
 
   void _onPageChanged(int index) {
     ref.read(proOwnFeedProvider.notifier).setCurrentIndex(index);
+    setState(() => _isPaused = false);
   }
 
   void _toggleLike(VideoModel video, int index) {
@@ -124,6 +128,19 @@ class _ProFeedScreenState extends ConsumerState<ProFeedScreen> {
             itemBuilder: (context, index) {
               final video = feed.videos[index];
               return GestureDetector(
+                onTap: () {
+                  HapticFeedback.lightImpact();
+                  final bgState = _bgKey.currentState;
+                  if (bgState == null) return;
+                  final nowPlaying = bgState.togglePlayPause();
+                  setState(() {
+                    _isPaused = !nowPlaying;
+                    _showPlayPauseIcon = true;
+                  });
+                  Future.delayed(const Duration(milliseconds: 800), () {
+                    if (mounted) setState(() => _showPlayPauseIcon = false);
+                  });
+                },
                 onDoubleTap: () => _onDoubleTap(video, index),
                 onHorizontalDragEnd: (details) {
                   if ((details.primaryVelocity ?? 0) < -300) {
@@ -131,6 +148,7 @@ class _ProFeedScreenState extends ConsumerState<ProFeedScreen> {
                   }
                 },
                 child: _PostBackground(
+                  key: index == currentIndex ? _bgKey : null,
                   video: video,
                   isActive: index == currentIndex,
                 ),
@@ -180,6 +198,30 @@ class _ProFeedScreenState extends ConsumerState<ProFeedScreen> {
             bottom: 88,
             child: _LeftColumn(video: currentVideo),
           ),
+
+          // ── Play/Pause overlay ──────────────────────────────
+          if (_showPlayPauseIcon || _isPaused)
+            Center(
+              child: AnimatedOpacity(
+                opacity: _showPlayPauseIcon ? 1.0 : (_isPaused ? 0.6 : 0.0),
+                duration: const Duration(milliseconds: 200),
+                child: Container(
+                  width: 64,
+                  height: 64,
+                  decoration: BoxDecoration(
+                    color: Colors.black.withAlpha(115),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    _isPaused
+                        ? Icons.play_arrow_rounded
+                        : Icons.pause_rounded,
+                    color: Colors.white,
+                    size: 36,
+                  ),
+                ),
+              ),
+            ),
 
           // ── Double-tap heart animation ────────────────────────
           if (showHeart) const Center(child: LikeAnimation()),
@@ -359,7 +401,7 @@ class _ProFeedScreenState extends ConsumerState<ProFeedScreen> {
 // ═════════════════════════════════════════════════════════════════════
 
 class _PostBackground extends ConsumerStatefulWidget {
-  const _PostBackground({required this.video, required this.isActive});
+  const _PostBackground({super.key, required this.video, required this.isActive});
 
   final VideoModel video;
   final bool isActive;
@@ -371,6 +413,23 @@ class _PostBackground extends ConsumerStatefulWidget {
 class _PostBackgroundState extends ConsumerState<_PostBackground> {
   BetterPlayerController? _controller;
   bool _viewCounted = false;
+  bool _isPlaying = false;
+
+  bool get isPlaying => _isPlaying;
+
+  /// Toggle play/pause and return whether video is now playing.
+  bool togglePlayPause() {
+    if (_controller == null) return false;
+    if (_isPlaying) {
+      _controller!.pause();
+      setState(() => _isPlaying = false);
+      return false;
+    } else {
+      _controller!.play();
+      setState(() => _isPlaying = true);
+      return true;
+    }
+  }
 
   @override
   void initState() {
@@ -403,9 +462,11 @@ class _PostBackgroundState extends ConsumerState<_PostBackground> {
     super.didUpdateWidget(oldWidget);
     if (widget.isActive && !oldWidget.isActive) {
       _controller?.play();
+      setState(() => _isPlaying = true);
       _countView();
     } else if (!widget.isActive && oldWidget.isActive) {
       _controller?.pause();
+      setState(() => _isPlaying = false);
     }
   }
 
@@ -433,12 +494,12 @@ class _PostBackgroundState extends ConsumerState<_PostBackground> {
           CachedNetworkImage(
             imageUrl: widget.video.thumbnailUrl!,
             fit: BoxFit.cover,
-            errorWidget: (_, __, ___) => Container(color: AppColors.fond),
+            errorWidget: (_, __, ___) => Container(color: Colors.black),
           )
         else
-          Container(color: AppColors.fond),
+          Container(color: Colors.black),
 
-        // Dégradé bas : #0D0D14 depuis ~45 % de la hauteur du bandeau
+        // Bottom gradient — dark for white text readability
         Positioned(
           bottom: 0,
           left: 0,
@@ -450,8 +511,8 @@ class _PostBackgroundState extends ConsumerState<_PostBackground> {
                 begin: Alignment.bottomCenter,
                 end: Alignment.topCenter,
                 colors: [
-                  AppColors.fond,
-                  AppColors.fond.withValues(alpha: 0.65),
+                  Colors.black.withAlpha(180),
+                  Colors.black.withAlpha(100),
                   Colors.transparent,
                 ],
                 stops: const [0, 0.45, 1],
@@ -490,7 +551,7 @@ class _EmptyFeedSideActions extends StatelessWidget {
               Container(
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  border: Border.all(color: AppColors.blanc, width: 2),
+                  border: Border.all(color: Colors.white, width: 2),
                 ),
                 child: SpotbookAvatar(
                   imageUrl: null,
@@ -509,10 +570,10 @@ class _EmptyFeedSideActions extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: AppColors.violet,
                       shape: BoxShape.circle,
-                      border: Border.all(color: AppColors.fond, width: 1.5),
+                      border: Border.all(color: Colors.white, width: 1.5),
                     ),
                     child: const Icon(Icons.add,
-                        size: 14, color: AppColors.blanc),
+                        size: 14, color: Colors.white),
                   ),
                 ),
               ),
@@ -524,7 +585,7 @@ class _EmptyFeedSideActions extends StatelessWidget {
           onTap: onDemoInteractionTap,
           child: _RightColButton(
             icon: Icons.favorite_border,
-            color: AppColors.blanc,
+            color: Colors.white,
             label: '0',
             iconSize: 34,
           ),
@@ -534,7 +595,7 @@ class _EmptyFeedSideActions extends StatelessWidget {
           onTap: onDemoInteractionTap,
           child: _RightColButton(
             icon: Icons.bookmark_border,
-            color: AppColors.blanc,
+            color: Colors.white,
             label: '0',
             iconSize: 32,
           ),
@@ -586,7 +647,7 @@ class _ProTopBar extends StatelessWidget {
               Icon(
                 Icons.bolt_rounded,
                 size: 22,
-                color: AppColors.blanc.withAlpha(235),
+                color: Colors.white.withAlpha(235),
                 shadows: const [
                   Shadow(color: AppColors.shadowDark, blurRadius: 8),
                 ],
@@ -662,18 +723,11 @@ class _BadgeButton extends StatelessWidget {
                   width: 44,
                   height: 44,
                   decoration: BoxDecoration(
-                    color: AppColors.surfaceAlt.withAlpha(224),
-                    border: Border.all(color: AppColors.blanc.withAlpha(45)),
+                    color: Colors.black.withAlpha(77),
+                    border: Border.all(color: Colors.white.withAlpha(26)),
                     borderRadius: BorderRadius.circular(14),
-                    boxShadow: [
-                      BoxShadow(
-                        color: AppColors.overlayMedium,
-                        blurRadius: 10,
-                        offset: const Offset(0, 3),
-                      ),
-                    ],
                   ),
-                  child: Icon(icon, color: AppColors.blanc, size: 20,
+                  child: Icon(icon, color: Colors.white, size: 20,
                       shadows: const [
                         Shadow(color: AppColors.shadowDark, blurRadius: 6),
                       ]),
@@ -788,7 +842,7 @@ class _RightColumn extends StatelessWidget {
               Container(
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  border: Border.all(color: AppColors.blanc, width: 2),
+                  border: Border.all(color: Colors.white, width: 2),
                 ),
                 child: SpotbookAvatar(
                   imageUrl: video.proAvatarUrl,
@@ -808,10 +862,10 @@ class _RightColumn extends StatelessWidget {
                       color: AppColors.violet,
                       shape: BoxShape.circle,
                       border:
-                          Border.all(color: AppColors.fond, width: 1.5),
+                          Border.all(color: Colors.white, width: 1.5),
                     ),
                     child: const Icon(Icons.add,
-                        size: 14, color: AppColors.blanc),
+                        size: 14, color: Colors.white),
                   ),
                 ),
               ),
@@ -824,7 +878,7 @@ class _RightColumn extends StatelessWidget {
           onTap: onLike,
           child: _RightColButton(
             icon: video.isLiked ? Icons.favorite : Icons.favorite_border,
-            color: video.isLiked ? AppColors.rose : AppColors.blanc,
+            color: video.isLiked ? Colors.red : Colors.white,
             label: _formatCount(video.likesCount),
             iconSize: 34,
           ),
@@ -838,7 +892,7 @@ class _RightColumn extends StatelessWidget {
           },
           child: _RightColButton(
             icon: video.isSaved ? Icons.bookmark : Icons.bookmark_border,
-            color: video.isSaved ? AppColors.violet : AppColors.blanc,
+            color: video.isSaved ? AppColors.violet : Colors.white,
             label: _formatCount(video.savesCount),
             iconSize: 32,
           ),
@@ -865,7 +919,7 @@ class _RightColButton extends StatelessWidget {
   const _RightColButton({
     required this.icon,
     required this.label,
-    this.color = AppColors.blanc,
+    this.color = Colors.white,
     this.iconSize = 32,
   });
 
@@ -888,7 +942,7 @@ class _RightColButton extends StatelessWidget {
               decoration: BoxDecoration(
                 color: AppColors.overlayMedium,
                 shape: BoxShape.circle,
-                border: Border.all(color: AppColors.blanc.withAlpha(50)),
+                border: Border.all(color: Colors.white.withAlpha(50)),
                 boxShadow: [
                   BoxShadow(
                     color: AppColors.overlayMedium,
@@ -908,7 +962,7 @@ class _RightColButton extends StatelessWidget {
         Text(
           label,
           style: const TextStyle(
-            color: AppColors.blanc,
+            color: Colors.white,
             fontSize: 11,
             fontWeight: FontWeight.w600,
             shadows: [Shadow(color: AppColors.shadowDark, blurRadius: 6)],
@@ -1009,7 +1063,7 @@ class _LeftColumnState extends State<_LeftColumn> {
               child: Text(
                 video.proName ?? 'Pro',
                 style: const TextStyle(
-                  color: AppColors.blanc,
+                  color: Colors.white,
                   fontSize: 13,
                   fontWeight: FontWeight.w700,
                   letterSpacing: 0.2,
@@ -1030,11 +1084,11 @@ class _LeftColumnState extends State<_LeftColumn> {
         if (caption.isNotEmpty) ...[
           Text(
             caption,
-            style: const TextStyle(
-              color: AppColors.grisClair,
+            style: TextStyle(
+              color: Colors.white.withAlpha(200),
               fontSize: 12,
               height: 1.45,
-              shadows: [Shadow(color: AppColors.shadowDark, blurRadius: 4)],
+              shadows: const [Shadow(color: AppColors.shadowDark, blurRadius: 4)],
             ),
             maxLines: _captionExpanded ? 8 : 2,
             overflow: _captionExpanded
@@ -1049,8 +1103,8 @@ class _LeftColumnState extends State<_LeftColumn> {
                 padding: const EdgeInsets.only(top: 2),
                 child: Text(
                   _captionExpanded ? 'show less' : 'show more',
-                  style: const TextStyle(
-                    color: AppColors.violet,
+                  style: TextStyle(
+                    color: Colors.white.withAlpha(180),
                     fontSize: 11,
                     fontWeight: FontWeight.w600,
                   ),
@@ -1067,11 +1121,11 @@ class _LeftColumnState extends State<_LeftColumn> {
                 for (final h in video.hashtags)
                   TextSpan(
                     text: '#$h ',
-                    style: const TextStyle(
-                      color: AppColors.violet,
+                    style: TextStyle(
+                      color: Colors.white.withAlpha(180),
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
-                      shadows: [Shadow(color: AppColors.shadowDark, blurRadius: 4)],
+                      shadows: const [Shadow(color: AppColors.shadowDark, blurRadius: 4)],
                     ),
                   ),
               ],
@@ -1194,7 +1248,7 @@ class _ServiceCtaStrip extends StatelessWidget {
                 child: Text(
                   'Book',
                   style: TextStyle(
-                    color: AppColors.blanc,
+                    color: AppColors.textOnPrimary,
                     fontSize: 12,
                     fontWeight: FontWeight.w700,
                   ),
@@ -1272,7 +1326,7 @@ class _EventCtaStrip extends StatelessWidget {
                 child: Text(
                   'Acheter',
                   style: TextStyle(
-                    color: AppColors.blanc,
+                    color: AppColors.textOnPrimary,
                     fontSize: 12,
                     fontWeight: FontWeight.w700,
                   ),

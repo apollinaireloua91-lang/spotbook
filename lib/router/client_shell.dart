@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
@@ -27,61 +25,61 @@ class ClientShell extends StatelessWidget {
       extendBody: true,
       backgroundColor: AppColors.fond,
       body: navigationShell,
-      bottomNavigationBar: ClipRRect(
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
-          child: Container(
-            decoration: BoxDecoration(
-              color: AppColors.fond.withAlpha(242), // ~0.95 opacity
-              border: const Border(
-                top: BorderSide(color: AppColors.surface, width: 1),
-              ),
-            ),
-            padding: EdgeInsets.only(bottom: bottomInset),
-            child: SizedBox(
-              height: 62,
-              child: Row(
-                children: [
-                  _ClientNavItem(
-                    label: 'Feed',
-                    icon: Icons.grid_view_outlined,
-                    activeIcon: Icons.grid_view,
-                    selected: navigationShell.currentIndex == 0,
-                    onTap: () => _goBranch(0),
-                  ),
-                  _ClientNavItem(
-                    label: 'Search',
-                    icon: Icons.search_outlined,
-                    activeIcon: Icons.search,
-                    selected: navigationShell.currentIndex == 1,
-                    onTap: () => _goBranch(1),
-                  ),
-                  _ClientNavItem(
-                    label: 'Bookings',
-                    icon: Icons.calendar_today_outlined,
-                    activeIcon: Icons.calendar_today,
-                    selected: navigationShell.currentIndex == 2,
-                    onTap: () => _goBranch(2),
-                  ),
-                  _ClientNavItem(
-                    label: 'Profile',
-                    icon: Icons.person_outline,
-                    activeIcon: Icons.person,
-                    selected: navigationShell.currentIndex == 3,
-                    onTap: () => _goBranch(3),
-                  ),
-                ],
-              ),
-            ),
+      bottomNavigationBar: Container(
+        height: 65 + bottomInset,
+        padding: EdgeInsets.only(bottom: bottomInset),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          border: const Border(
+            top: BorderSide(color: AppColors.border, width: 0.5),
           ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withAlpha(10),
+              blurRadius: 12,
+              offset: const Offset(0, -4),
+            ),
+          ],
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            _ClientNavItem(
+              label: 'Feed',
+              icon: Icons.play_circle_outline,
+              activeIcon: Icons.play_circle_filled,
+              selected: navigationShell.currentIndex == 0,
+              onTap: () => _goBranch(0),
+            ),
+            _ClientNavItem(
+              label: 'Search',
+              icon: Icons.search_outlined,
+              activeIcon: Icons.search,
+              selected: navigationShell.currentIndex == 1,
+              onTap: () => _goBranch(1),
+            ),
+            _ClientNavItem(
+              label: 'Bookings',
+              icon: Icons.calendar_today_outlined,
+              activeIcon: Icons.calendar_today,
+              selected: navigationShell.currentIndex == 2,
+              onTap: () => _goBranch(2),
+            ),
+            _ClientNavItem(
+              label: 'Profile',
+              icon: Icons.person_outline,
+              activeIcon: Icons.person,
+              selected: navigationShell.currentIndex == 3,
+              onTap: () => _goBranch(3),
+            ),
+          ],
         ),
       ),
     );
   }
 }
 
-/// Nav item avec animation micro-bounce 1→1.15→1 au tap.
-class _ClientNavItem extends StatefulWidget {
+class _ClientNavItem extends StatelessWidget {
   const _ClientNavItem({
     required this.label,
     required this.icon,
@@ -97,71 +95,44 @@ class _ClientNavItem extends StatefulWidget {
   final VoidCallback onTap;
 
   @override
-  State<_ClientNavItem> createState() => _ClientNavItemState();
-}
-
-class _ClientNavItemState extends State<_ClientNavItem>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _bounceController;
-  late final Animation<double> _bounceAnimation;
-
-  @override
-  void initState() {
-    super.initState();
-    _bounceController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 100),
-    );
-    _bounceAnimation = TweenSequence<double>([
-      TweenSequenceItem(tween: Tween(begin: 1.0, end: 1.15), weight: 50),
-      TweenSequenceItem(tween: Tween(begin: 1.15, end: 1.0), weight: 50),
-    ]).animate(CurvedAnimation(
-      parent: _bounceController,
-      curve: Curves.easeInOut,
-    ));
-  }
-
-  @override
-  void dispose() {
-    _bounceController.dispose();
-    super.dispose();
-  }
-
-  void _handleTap() {
-    _bounceController.forward(from: 0);
-    widget.onTap();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: GestureDetector(
-        behavior: HitTestBehavior.opaque,
-        onTap: _handleTap,
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: () {
+        HapticFeedback.selectionClick();
+        onTap();
+      },
+      child: SizedBox(
+        width: 70,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            AnimatedBuilder(
-              animation: _bounceAnimation,
-              builder: (context, child) => Transform.scale(
-                scale: _bounceAnimation.value,
-                child: child,
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: selected
+                    ? const Color(0xFF043603).withAlpha(20)
+                    : Colors.transparent,
+                borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(
-                widget.selected ? widget.activeIcon : widget.icon,
-                color:
-                    widget.selected ? AppColors.violet : AppColors.grisInactif,
-                size: 24,
+                selected ? activeIcon : icon,
+                color: selected
+                    ? const Color(0xFF043603)
+                    : AppColors.grisInactif,
+                size: 22,
               ),
             ),
-            const SizedBox(height: 3),
+            const SizedBox(height: 2),
             Text(
-              widget.label,
+              label,
               style: TextStyle(
-                color:
-                    widget.selected ? AppColors.violet : AppColors.grisInactif,
-                fontSize: 9,
-                fontWeight: widget.selected ? FontWeight.w600 : FontWeight.w500,
+                color: selected
+                    ? const Color(0xFF043603)
+                    : AppColors.grisInactif,
+                fontSize: 10,
+                fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
               ),
             ),
           ],

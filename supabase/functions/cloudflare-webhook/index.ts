@@ -27,12 +27,14 @@ serve(async (req) => {
     // ── Verify webhook signature ──
     // Cloudflare sends a signing secret in the webhook-secret header.
     const webhookSecret = Deno.env.get("CLOUDFLARE_WEBHOOK_SECRET")?.trim();
-    if (webhookSecret) {
-      const receivedSecret = req.headers.get("webhook-secret")?.trim();
-      if (receivedSecret !== webhookSecret) {
-        console.error("[cloudflare-webhook] Invalid webhook secret");
-        return jsonResponse({ error: "Forbidden" }, 403, undefined, req);
-      }
+    if (!webhookSecret) {
+      console.error("[cloudflare-webhook] CLOUDFLARE_WEBHOOK_SECRET not configured");
+      throw new Error("Webhook secret not configured");
+    }
+    const receivedSecret = req.headers.get("webhook-secret")?.trim();
+    if (receivedSecret !== webhookSecret) {
+      console.error("[cloudflare-webhook] Invalid webhook secret");
+      return jsonResponse({ error: "Forbidden" }, 403, undefined, req);
     }
 
     const body = await req.json();

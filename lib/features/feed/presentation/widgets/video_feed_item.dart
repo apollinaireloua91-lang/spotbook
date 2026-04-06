@@ -6,7 +6,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../shared/theme/app_colors.dart';
-import '../../../../shared/theme/app_typography.dart';
 import '../../../../shared/utils/analytics_service.dart';
 import '../../../../shared/widgets/bookmark_bounce.dart';
 import '../../../moderation/presentation/screens/report_sheet.dart';
@@ -266,10 +265,10 @@ class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
             CachedNetworkImage(
               imageUrl: widget.video.thumbnailUrl!,
               fit: BoxFit.cover,
-              errorWidget: (_, __, ___) => Container(color: AppColors.fond),
+              errorWidget: (_, __, ___) => Container(color: Colors.black),
             )
           else
-            Container(color: AppColors.fond),
+            Container(color: Colors.black),
 
           // ─── Bottom gradient ───
           const Positioned(
@@ -326,17 +325,25 @@ class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
                     onTap: () => context.push('/pro/${widget.video.proId}'),
                     child: Container(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 14, vertical: 6),
+                          horizontal: 18, vertical: 9),
                       decoration: BoxDecoration(
-                        color: AppColors.violet,
-                        borderRadius: BorderRadius.circular(20),
+                        color: const Color(0xFF043603),
+                        borderRadius: BorderRadius.circular(22),
+                        boxShadow: [
+                          BoxShadow(
+                            color: const Color(0xFF043603).withAlpha(128),
+                            blurRadius: 12,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
                       ),
                       child: const Text(
                         'Book',
                         style: TextStyle(
-                          color: AppColors.textOnPrimary,
-                          fontSize: 12,
+                          color: Colors.white,
+                          fontSize: 13,
                           fontWeight: FontWeight.w700,
+                          letterSpacing: 0.3,
                         ),
                       ),
                     ),
@@ -362,10 +369,15 @@ class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
                           clipBehavior: Clip.none,
                           children: [
                             Container(
+                              padding: const EdgeInsets.all(2),
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
                                 border: Border.all(
-                                    color: AppColors.textOnVideo, width: 2),
+                                    color: Colors.white, width: 2),
+                                boxShadow: const [
+                                  BoxShadow(
+                                      color: Colors.black26, blurRadius: 8),
+                                ],
                               ),
                               child: CircleAvatar(
                                 radius: 20,
@@ -376,36 +388,42 @@ class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
                                             widget.video.proAvatarUrl!)
                                         : null,
                                 child: widget.video.proAvatarUrl == null
-                                    ? const Icon(Icons.person,
-                                        size: 20, color: AppColors.gris)
+                                    ? Text(
+                                        (widget.video.proName ?? 'P')
+                                            .substring(0, 1)
+                                            .toUpperCase(),
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      )
                                     : null,
                               ),
                             ),
                             if (!widget.video.isFollowed)
                               Positioned(
-                                bottom: 0,
-                                left: 0,
-                                right: 0,
-                                child: Center(
-                                  child: GestureDetector(
-                                    onTap: () {
-                                      HapticFeedback.lightImpact();
-                                      if (widget.onToggleFollow != null &&
-                                          widget.index != null) {
-                                        widget.onToggleFollow!(
-                                            widget.index!, true);
-                                      }
-                                    },
-                                    child: Container(
-                                      width: 20,
-                                      height: 20,
-                                      decoration: const BoxDecoration(
-                                        color: AppColors.rose,
-                                        shape: BoxShape.circle,
-                                      ),
-                                      child: const Icon(Icons.add,
-                                          color: AppColors.textOnPrimary, size: 14),
+                                bottom: -2,
+                                right: -2,
+                                child: GestureDetector(
+                                  onTap: () {
+                                    HapticFeedback.lightImpact();
+                                    if (widget.onToggleFollow != null &&
+                                        widget.index != null) {
+                                      widget.onToggleFollow!(
+                                          widget.index!, true);
+                                    }
+                                  },
+                                  child: Container(
+                                    width: 18,
+                                    height: 18,
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xFF043603),
+                                      shape: BoxShape.circle,
+                                      border: Border.all(
+                                          color: Colors.white, width: 2),
                                     ),
+                                    child: const Icon(Icons.add,
+                                        color: Colors.white, size: 10),
                                   ),
                                 ),
                               ),
@@ -413,15 +431,15 @@ class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 22),
                     _ActionButton(
                       icon: widget.video.isLiked
                           ? Icons.favorite
-                          : Icons.favorite_border,
+                          : Icons.favorite_outline,
                       label: _formatCount(widget.video.likesCount),
                       color: widget.video.isLiked
-                          ? AppColors.rose
-                          : AppColors.textOnVideo,
+                          ? Colors.red
+                          : Colors.white,
                       onTap: _toggleLike,
                     ),
                     const SizedBox(height: 18),
@@ -436,17 +454,17 @@ class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
                       child: _ActionButton(
                         icon: widget.video.isSaved
                             ? Icons.bookmark
-                            : Icons.bookmark_border,
+                            : Icons.bookmark_outline,
                         label: '',
                         color: widget.video.isSaved
-                            ? AppColors.violet
-                            : AppColors.textOnVideo,
+                            ? const Color(0xFF043603)
+                            : Colors.white,
                         onTap: _toggleSave,
                       ),
                     ),
                     const SizedBox(height: 18),
                     _ActionButton(
-                      icon: Icons.reply,
+                      icon: Icons.share_outlined,
                       label: '',
                       onTap: () {
                         showModalBottomSheet(
@@ -456,7 +474,6 @@ class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
                               ShareBottomSheet(videoId: widget.video.id),
                         );
                       },
-                      mirrorIcon: true,
                     ),
                     const SizedBox(height: 18),
                     _ActionButton(
@@ -524,41 +541,40 @@ class _ActionButton extends StatelessWidget {
     required this.icon,
     required this.label,
     required this.onTap,
-    this.color = AppColors.textOnVideo,
-    this.mirrorIcon = false,
+    this.color = Colors.white,
   });
 
   final IconData icon;
   final String label;
   final VoidCallback onTap;
   final Color color;
-  final bool mirrorIcon;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Container(
-            width: 44,
-            height: 44,
-            decoration: BoxDecoration(
-              color: AppColors.textOnVideo.withAlpha(20),
-              shape: BoxShape.circle,
-            ),
-            child: Center(
-              child: mirrorIcon
-                  ? Transform.flip(
-                      flipX: true,
-                      child: Icon(icon, color: color, size: 24),
-                    )
-                  : Icon(icon, color: color, size: 24),
-            ),
+          Icon(
+            icon,
+            color: color,
+            size: 28,
+            shadows: const [
+              Shadow(color: Colors.black38, blurRadius: 6),
+            ],
           ),
           if (label.isNotEmpty) ...[
-            const SizedBox(height: 4),
-            Text(label, style: AppTypography.feedActionCount),
+            const SizedBox(height: 2),
+            Text(
+              label,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 11,
+                fontWeight: FontWeight.w600,
+                shadows: [Shadow(color: Colors.black38, blurRadius: 4)],
+              ),
+            ),
           ],
         ],
       ),

@@ -155,7 +155,7 @@ serve(async (req) => {
         },
         body: JSON.stringify({
           maxDurationSeconds: MAX_DURATION_SECONDS,
-          requireSignedURLs: false,
+          requireSignedURLs: true,
           meta: {
             uploaded_by: user.id,
             source: "spotbook",

@@ -2,7 +2,6 @@ import 'package:better_player_plus/better_player_plus.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
-import '../../../../../shared/theme/app_colors.dart';
 
 class PostMediaBackground extends StatefulWidget {
   const PostMediaBackground({
@@ -103,13 +102,13 @@ class PostMediaBackgroundState extends State<PostMediaBackground> {
           CachedNetworkImage(
             imageUrl: widget.thumbnailUrl!,
             fit: BoxFit.cover,
-            errorWidget: (_, __, ___) => const ColoredBox(color: AppColors.fond),
+            errorWidget: (_, __, ___) => const ColoredBox(color: Colors.black),
           )
         else
-          const ColoredBox(color: AppColors.fond),
+          const ColoredBox(color: Colors.black),
 
-        // Bottom gradient overlay
-        const Positioned(
+        // Bottom gradient overlay — dark for white text readability on video
+        Positioned(
           bottom: 0,
           left: 0,
           right: 0,
@@ -119,8 +118,11 @@ class PostMediaBackgroundState extends State<PostMediaBackground> {
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
-                colors: [Colors.transparent, AppColors.fond],
-                stops: [0.42, 1.0],
+                colors: [
+                  Colors.transparent,
+                  Colors.black.withAlpha(180),
+                ],
+                stops: const [0.3, 1.0],
               ),
             ),
           ),

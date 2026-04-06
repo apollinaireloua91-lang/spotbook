@@ -25,32 +25,31 @@ class ProfileStatsRow extends StatelessWidget {
       margin: const EdgeInsets.symmetric(horizontal: 16),
       padding: const EdgeInsets.symmetric(vertical: 16),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: const Color(0xFFFFF3DA),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.blanc.withAlpha(13)),
       ),
       child: IntrinsicHeight(
         child: Row(
           children: [
             _StatItem(
                 value: totalRdv,
-                label: 'Appointments',
-                color: AppColors.violet),
+                label: 'Bookings',
+                color: const Color(0xFF043603)),
             _Divider(),
             _StatItem(
                 value: totalFollowing,
                 label: 'Following',
-                color: AppColors.violetClair),
+                color: const Color(0xFF2D8C2A)),
             _Divider(),
             _StatItem(
                 value: totalEvents,
                 label: 'Events',
-                color: AppColors.rose),
+                color: const Color(0xFF043603)),
             _Divider(),
             _StatItem(
                 value: totalReviews,
                 label: 'Reviews',
-                color: AppColors.warning),
+                color: const Color(0xFF2D8C2A)),
           ],
         ),
       ),
@@ -105,8 +104,8 @@ class _Divider extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: 1,
-      margin: const EdgeInsets.symmetric(vertical: 4),
-      color: AppColors.blanc.withAlpha(15),
+      height: 28,
+      color: const Color(0xFFE8E0D0),
     );
   }
 }
