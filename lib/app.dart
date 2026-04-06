@@ -59,7 +59,7 @@ class _SpotbookAppState extends ConsumerState<SpotbookApp> {
     return MaterialApp.router(
       title: 'Spotbook',
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.dark,
+      theme: AppTheme.light,
       routerConfig: appRouter,
       locale: locale,
       supportedLocales: AppLocalizations.supportedLocales,

@@ -41,7 +41,7 @@ class ClientRightColumn extends StatelessWidget {
         // Like — heart icon only
         _AnimatedActionIcon(
           icon: video.isLiked ? Icons.favorite : Icons.favorite_border,
-          color: video.isLiked ? AppColors.rose : AppColors.blanc,
+          color: video.isLiked ? AppColors.rose : AppColors.textOnVideo,
           count: video.likesCount,
           onTap: () {
             HapticFeedback.mediumImpact();
@@ -53,7 +53,7 @@ class ClientRightColumn extends StatelessWidget {
         // Comment — CLIENT EXCLUSIVE
         _ActionIcon(
           icon: Icons.chat_bubble_outline,
-          color: AppColors.blanc,
+          color: AppColors.textOnVideo,
           count: video.commentsCount,
           onTap: onCommentTap,
         ),
@@ -61,7 +61,7 @@ class ClientRightColumn extends StatelessWidget {
         // Save/Bookmark — NO label
         _AnimatedActionIcon(
           icon: video.isSaved ? Icons.bookmark : Icons.bookmark_border,
-          color: video.isSaved ? AppColors.violet : AppColors.blanc,
+          color: video.isSaved ? AppColors.violet : AppColors.textOnVideo,
           count: null,
           onTap: () {
             HapticFeedback.lightImpact();
@@ -73,7 +73,7 @@ class ClientRightColumn extends StatelessWidget {
         // Share — flipped reply icon, NO label
         _ActionIcon(
           icon: Icons.reply,
-          color: AppColors.blanc,
+          color: AppColors.textOnVideo,
           onTap: onShareTap,
           flipHorizontal: true,
         ),
@@ -133,7 +133,7 @@ class _ActionIcon extends StatelessWidget {
             Text(
               _formatCount(count!),
               style: const TextStyle(
-                color: AppColors.blanc,
+                color: AppColors.textOnVideo,
                 fontSize: 11,
                 fontWeight: FontWeight.w600,
                 shadows: [
@@ -237,7 +237,7 @@ class _AnimatedActionIconState extends State<_AnimatedActionIcon>
             Text(
               _formatCount(widget.count!),
               style: const TextStyle(
-                color: AppColors.blanc,
+                color: AppColors.textOnVideo,
                 fontSize: 11,
                 fontWeight: FontWeight.w600,
                 shadows: [
@@ -332,7 +332,7 @@ class _ProAvatarWithFollowState extends State<_ProAvatarWithFollow>
               margin: const EdgeInsets.only(left: 4),
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                border: Border.all(color: AppColors.blanc, width: 2),
+                border: Border.all(color: AppColors.textOnVideo, width: 2),
                 gradient: AppColors.gradientAccent,
               ),
               child: widget.avatarUrl != null
@@ -346,7 +346,7 @@ class _ProAvatarWithFollowState extends State<_ProAvatarWithFollow>
                           child: Text(
                             initial,
                             style: const TextStyle(
-                              color: AppColors.blanc,
+                              color: AppColors.textOnVideo,
                               fontWeight: FontWeight.w700,
                               fontSize: 16,
                             ),
@@ -358,7 +358,7 @@ class _ProAvatarWithFollowState extends State<_ProAvatarWithFollow>
                       child: Text(
                         initial,
                         style: const TextStyle(
-                          color: AppColors.blanc,
+                          color: AppColors.textOnVideo,
                           fontWeight: FontWeight.w700,
                           fontSize: 16,
                         ),
@@ -394,7 +394,7 @@ class _ProAvatarWithFollowState extends State<_ProAvatarWithFollow>
                     ),
                     child: Icon(
                       widget.isFollowed ? Icons.check : Icons.add,
-                      color: AppColors.blanc,
+                      color: AppColors.textOnVideo,
                       size: 11,
                     ),
                   ),
@@ -444,10 +444,10 @@ class _SpinningMusicDiscState extends State<_SpinningMusicDisc>
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           gradient: AppColors.gradientAccent,
-          border: Border.all(color: AppColors.blanc.withAlpha(51), width: 2),
+          border: Border.all(color: AppColors.textOnVideo.withAlpha(51), width: 2),
         ),
         child: const Center(
-          child: Icon(Icons.music_note, color: AppColors.blanc, size: 16),
+          child: Icon(Icons.music_note, color: AppColors.textOnVideo, size: 16),
         ),
       ),
     );

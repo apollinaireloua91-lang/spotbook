@@ -4,16 +4,17 @@ import 'package:google_fonts/google_fonts.dart';
 import 'app_colors.dart';
 
 /// Typographie Spotbook — DM Sans (corps, labels, boutons).
-/// Hiérarchie : logo marque → titres d’écran → sections (overline) → corps.
+/// Hiérarchie : logo marque → titres d'écran → sections (overline) → corps.
 abstract final class AppTypography {
-  /// Marque « Spotbook » — DM Sans bold, 20px, blanc uniquement (spec).
+  /// Marque « Spotbook » — DM Sans bold, 20px.
+  /// On light bg: dark text. On video: white + shadow.
   static TextStyle spotbookLogo({bool onVideoBackground = false}) {
     return GoogleFonts.dmSans(
       fontSize: 20,
       fontWeight: FontWeight.bold,
       letterSpacing: -0.5,
       height: 1.05,
-      color: AppColors.blanc,
+      color: onVideoBackground ? AppColors.textOnVideo : AppColors.blanc,
       shadows: onVideoBackground
           ? const [
               Shadow(
@@ -26,15 +27,15 @@ abstract final class AppTypography {
     );
   }
 
-  /// Onglets « Découvrir / Abonnements » (style pilule feed client).
+  /// Onglets « Découvrir / Abonnements » (style pilule feed client — on video).
   static TextStyle feedTab({required bool active}) {
     return GoogleFonts.dmSans(
       fontSize: 13,
       fontWeight: active ? FontWeight.w600 : FontWeight.w500,
       height: 1.2,
       color: active
-          ? AppColors.blanc
-          : AppColors.blanc.withAlpha(153),
+          ? AppColors.textOnVideo
+          : AppColors.textOnVideo.withAlpha(153),
     );
   }
 
@@ -56,7 +57,7 @@ abstract final class AppTypography {
         height: 1.2,
       );
 
-  /// Sous-titre AppBar (ex. nombre d’avis).
+  /// Sous-titre AppBar (ex. nombre d'avis).
   static TextStyle get appBarMetaLine => GoogleFonts.dmSans(
         fontSize: 13,
         fontWeight: FontWeight.w400,
@@ -115,37 +116,37 @@ abstract final class AppTypography {
         color: AppColors.gris,
       );
 
-  /// Légendes feed (nom pro, légende courte).
+  /// Légendes feed (nom pro, légende courte) — on video, keep white + shadow.
   static TextStyle feedCaption({bool emphasized = false}) {
     return GoogleFonts.dmSans(
       fontSize: 13,
       fontWeight: emphasized ? FontWeight.w700 : FontWeight.w500,
       height: 1.35,
-      color: AppColors.blanc,
+      color: AppColors.textOnVideo,
       shadows: const [
         Shadow(color: AppColors.overlayHeavy, blurRadius: 6, offset: Offset(0, 1)),
       ],
     );
   }
 
-  /// Texte très petit sous les actions (compteurs like, etc.).
+  /// Texte très petit sous les actions (compteurs like, etc.) — on video.
   static TextStyle get feedActionCount => GoogleFonts.dmSans(
         fontSize: 10,
         fontWeight: FontWeight.w600,
         height: 1.1,
-        color: AppColors.blanc,
+        color: AppColors.textOnVideo,
         shadows: const [
           Shadow(color: AppColors.overlayHeavy, blurRadius: 4, offset: Offset(0, 1)),
         ],
       );
 
-  /// Barre de navigation basse (client : actif en violet ; pro : géré séparément).
+  /// Barre de navigation basse (client : actif en vert ; pro : géré séparément).
   static TextStyle navLabel({
     required bool selected,
     required bool isClientShell,
   }) {
     final color = selected
-        ? (isClientShell ? AppColors.violet : AppColors.blanc)
+        ? AppColors.violet
         : AppColors.grisInactif;
     return GoogleFonts.dmSans(
       fontSize: 9,
@@ -156,8 +157,8 @@ abstract final class AppTypography {
     );
   }
 
-  /// [ThemeData.textTheme] sombre basé sur Plus Jakarta Sans + couleurs Spotbook.
-  static TextTheme darkTextTheme(TextTheme base) {
+  /// [ThemeData.textTheme] light basé sur DM Sans + couleurs Spotbook.
+  static TextTheme lightTextTheme(TextTheme base) {
     final jakarta = GoogleFonts.dmSansTextTheme(base);
     return jakarta.copyWith(
       displayLarge: jakarta.displayLarge?.copyWith(

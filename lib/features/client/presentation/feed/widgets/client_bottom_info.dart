@@ -19,7 +19,7 @@ class ClientBottomInfo extends StatelessWidget {
           child: Text(
             video.proName ?? 'Pro',
             style: const TextStyle(
-              color: AppColors.blanc,
+              color: AppColors.textOnVideo,
               fontSize: 15,
               fontWeight: FontWeight.w700,
               shadows: [
@@ -54,7 +54,7 @@ class ClientBottomInfo extends StatelessWidget {
             child: const Text(
               'Book',
               style: TextStyle(
-                color: AppColors.blanc,
+                color: AppColors.textOnPrimary,
                 fontSize: 13,
                 fontWeight: FontWeight.w700,
               ),

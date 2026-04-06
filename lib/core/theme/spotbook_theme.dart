@@ -4,26 +4,26 @@ import 'package:flutter/services.dart';
 import 'spotbook_colors.dart';
 import 'spotbook_text_styles.dart';
 
-/// ThemeData Spotbook dark mode complet.
+/// ThemeData Spotbook light mode complet.
 ///
-/// Utilisation dans MaterialApp : `theme: SpotbookTheme.dark`.
+/// Utilisation dans MaterialApp : `theme: SpotbookTheme.light`.
 abstract final class SpotbookTheme {
-  static ThemeData get dark {
-    final base = ThemeData.dark();
+  static ThemeData get light {
+    final base = ThemeData.light();
     return base.copyWith(
       scaffoldBackgroundColor: SpotbookColors.background,
       cardColor: SpotbookColors.surface,
       canvasColor: SpotbookColors.surface,
       dividerColor: SpotbookColors.border,
       textTheme: SpotbookTextStyles.textTheme(base.textTheme),
-      colorScheme: const ColorScheme.dark(
+      colorScheme: const ColorScheme.light(
         primary: SpotbookColors.violet,
         secondary: SpotbookColors.rose,
         surface: SpotbookColors.surface,
         error: SpotbookColors.error,
         onPrimary: SpotbookColors.white,
         onSecondary: SpotbookColors.white,
-        onSurface: SpotbookColors.white,
+        onSurface: SpotbookColors.textPrimary,
         onError: SpotbookColors.white,
         outline: SpotbookColors.border,
       ),
@@ -33,21 +33,21 @@ abstract final class SpotbookTheme {
         backgroundColor: Colors.transparent,
         elevation: 0,
         scrolledUnderElevation: 0,
-        systemOverlayStyle: SystemUiOverlayStyle.light,
-        iconTheme: IconThemeData(color: SpotbookColors.white),
+        systemOverlayStyle: SystemUiOverlayStyle.dark,
+        iconTheme: IconThemeData(color: SpotbookColors.textPrimary),
         centerTitle: true,
       ),
 
       // ─── Bottom Navigation ───
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(
         backgroundColor: SpotbookColors.background,
-        selectedItemColor: SpotbookColors.white,
+        selectedItemColor: SpotbookColors.violet,
         unselectedItemColor: SpotbookColors.textDisabled,
         type: BottomNavigationBarType.fixed,
         elevation: 0,
       ),
 
-      // ─── Bouton primaire (fond violet, texte blanc, radius 12) ───
+      // ─── Bouton primaire (fond vert, texte blanc, radius 12) ───
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: SpotbookColors.violet,
@@ -64,9 +64,9 @@ abstract final class SpotbookTheme {
       // ─── Bouton secondaire (fond surface, bordure subtile, radius 12) ───
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
-          foregroundColor: SpotbookColors.white,
+          foregroundColor: SpotbookColors.textPrimary,
           backgroundColor: SpotbookColors.surface,
-          side: BorderSide(color: SpotbookColors.white.withAlpha(25)),
+          side: const BorderSide(color: SpotbookColors.border),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
@@ -85,7 +85,7 @@ abstract final class SpotbookTheme {
       // ─── Champs de saisie ───
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: SpotbookColors.surface,
+        fillColor: SpotbookColors.surfaceAlt,
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 16,
           vertical: 14,
@@ -126,7 +126,7 @@ abstract final class SpotbookTheme {
 
       // ─── Bottom Sheet ───
       bottomSheetTheme: const BottomSheetThemeData(
-        backgroundColor: SpotbookColors.surfaceAlt,
+        backgroundColor: SpotbookColors.background,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
             topLeft: Radius.circular(24),
@@ -138,7 +138,7 @@ abstract final class SpotbookTheme {
 
       // ─── Dialog ───
       dialogTheme: DialogThemeData(
-        backgroundColor: SpotbookColors.surface,
+        backgroundColor: SpotbookColors.background,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
         ),
@@ -149,7 +149,7 @@ abstract final class SpotbookTheme {
       snackBarTheme: SnackBarThemeData(
         backgroundColor: SpotbookColors.surface,
         contentTextStyle: SpotbookTextStyles.bodySmall.copyWith(
-          color: SpotbookColors.white,
+          color: SpotbookColors.textPrimary,
         ),
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(

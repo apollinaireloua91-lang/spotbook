@@ -150,7 +150,7 @@ class _ClientNavItemState extends State<_ClientNavItem>
               child: Icon(
                 widget.selected ? widget.activeIcon : widget.icon,
                 color:
-                    widget.selected ? AppColors.blanc : AppColors.grisInactif,
+                    widget.selected ? AppColors.violet : AppColors.grisInactif,
                 size: 24,
               ),
             ),
@@ -159,7 +159,7 @@ class _ClientNavItemState extends State<_ClientNavItem>
               widget.label,
               style: TextStyle(
                 color:
-                    widget.selected ? AppColors.blanc : AppColors.grisInactif,
+                    widget.selected ? AppColors.violet : AppColors.grisInactif,
                 fontSize: 9,
                 fontWeight: widget.selected ? FontWeight.w600 : FontWeight.w500,
               ),

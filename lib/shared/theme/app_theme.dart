@@ -3,17 +3,17 @@ import 'package:flutter/material.dart';
 import 'app_colors.dart';
 
 abstract final class AppTheme {
-  static ThemeData get dark => ThemeData.dark().copyWith(
+  static ThemeData get light => ThemeData.light().copyWith(
         scaffoldBackgroundColor: AppColors.fond,
         cardColor: AppColors.surface,
         dividerColor: AppColors.border,
-        colorScheme: const ColorScheme.dark(
+        colorScheme: const ColorScheme.light(
           surface: AppColors.surface,
-          primary: AppColors.blanc,
+          primary: AppColors.violet,
           error: AppColors.error,
-          onPrimary: AppColors.fond,
+          onPrimary: AppColors.textOnPrimary,
           onSurface: AppColors.blanc,
-          onError: AppColors.blanc,
+          onError: AppColors.textOnPrimary,
         ),
         appBarTheme: const AppBarTheme(
           backgroundColor: AppColors.fond,
@@ -23,15 +23,15 @@ abstract final class AppTheme {
         ),
         bottomNavigationBarTheme: const BottomNavigationBarThemeData(
           backgroundColor: AppColors.fond,
-          selectedItemColor: AppColors.blanc,
-          unselectedItemColor: AppColors.gris,
+          selectedItemColor: AppColors.violet,
+          unselectedItemColor: AppColors.grisInactif,
           type: BottomNavigationBarType.fixed,
           elevation: 0,
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.blanc,
-            foregroundColor: AppColors.fond,
+            backgroundColor: AppColors.violet,
+            foregroundColor: AppColors.textOnPrimary,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
             ),
@@ -58,7 +58,7 @@ abstract final class AppTheme {
         ),
         inputDecorationTheme: InputDecorationTheme(
           filled: true,
-          fillColor: AppColors.surface,
+          fillColor: AppColors.surfaceAlt,
           hintStyle: const TextStyle(color: AppColors.gris),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
@@ -70,7 +70,7 @@ abstract final class AppTheme {
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
-            borderSide: const BorderSide(color: AppColors.blanc),
+            borderSide: const BorderSide(color: AppColors.violet),
           ),
           contentPadding:
               const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
@@ -84,7 +84,7 @@ abstract final class AppTheme {
           behavior: SnackBarBehavior.floating,
         ),
         dialogTheme: DialogThemeData(
-          backgroundColor: AppColors.surface,
+          backgroundColor: AppColors.fond,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
           ),

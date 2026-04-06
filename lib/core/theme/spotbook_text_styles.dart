@@ -15,7 +15,7 @@ abstract final class SpotbookTextStyles {
         fontWeight: FontWeight.w700,
         letterSpacing: -0.5,
         height: 1.15,
-        color: SpotbookColors.white,
+        color: SpotbookColors.textPrimary,
       );
 
   static TextStyle get headline2 => GoogleFonts.dmSans(
@@ -23,7 +23,7 @@ abstract final class SpotbookTextStyles {
         fontWeight: FontWeight.w700,
         letterSpacing: -0.3,
         height: 1.2,
-        color: SpotbookColors.white,
+        color: SpotbookColors.textPrimary,
       );
 
   // ─── Titles (sections, cards) ───
@@ -31,14 +31,14 @@ abstract final class SpotbookTextStyles {
         fontSize: 18,
         fontWeight: FontWeight.w600,
         height: 1.25,
-        color: SpotbookColors.white,
+        color: SpotbookColors.textPrimary,
       );
 
   static TextStyle get titleSmall => GoogleFonts.dmSans(
         fontSize: 15,
         fontWeight: FontWeight.w600,
         height: 1.3,
-        color: SpotbookColors.white,
+        color: SpotbookColors.textPrimary,
       );
 
   // ─── Body ───
@@ -46,7 +46,7 @@ abstract final class SpotbookTextStyles {
         fontSize: 15,
         fontWeight: FontWeight.w400,
         height: 1.5,
-        color: SpotbookColors.white,
+        color: SpotbookColors.textPrimary,
       );
 
   static TextStyle get bodySecondary => GoogleFonts.dmSans(
@@ -95,11 +95,11 @@ abstract final class SpotbookTextStyles {
         color: SpotbookColors.white,
       );
 
-  // ─── Logo Spotbook — TOUJOURS blanc, DM Sans bold 20, JAMAIS coloré ───
+  // ─── Logo Spotbook — DM Sans bold 20, textPrimary on light bg ───
   static TextStyle get logo => GoogleFonts.dmSans(
         fontSize: 20,
         fontWeight: FontWeight.w700,
-        color: SpotbookColors.white,
+        color: SpotbookColors.textPrimary,
       );
 
   // ─── Navigation ───
@@ -107,10 +107,10 @@ abstract final class SpotbookTextStyles {
         fontSize: 9,
         fontWeight: active ? FontWeight.w600 : FontWeight.w500,
         height: 1.1,
-        color: active ? SpotbookColors.white : SpotbookColors.textDisabled,
+        color: active ? SpotbookColors.violet : SpotbookColors.textDisabled,
       );
 
-  // ─── Feed ───
+  // ─── Feed (text on video — keep white + shadow) ───
   static TextStyle feedCaption({bool bold = false}) => GoogleFonts.dmSans(
         fontSize: 13,
         fontWeight: bold ? FontWeight.w700 : FontWeight.w500,
@@ -144,45 +144,45 @@ abstract final class SpotbookTextStyles {
     final dmSans = GoogleFonts.dmSansTextTheme(base);
     return dmSans.copyWith(
       displayLarge: dmSans.displayLarge?.copyWith(
-        color: SpotbookColors.white,
+        color: SpotbookColors.textPrimary,
         fontWeight: FontWeight.w700,
       ),
       displayMedium: dmSans.displayMedium?.copyWith(
-        color: SpotbookColors.white,
+        color: SpotbookColors.textPrimary,
         fontWeight: FontWeight.w700,
       ),
       headlineLarge: dmSans.headlineLarge?.copyWith(
-        color: SpotbookColors.white,
+        color: SpotbookColors.textPrimary,
         fontWeight: FontWeight.w700,
         height: 1.2,
       ),
       headlineMedium: dmSans.headlineMedium?.copyWith(
-        color: SpotbookColors.white,
+        color: SpotbookColors.textPrimary,
         fontWeight: FontWeight.w700,
         height: 1.25,
       ),
       headlineSmall: dmSans.headlineSmall?.copyWith(
-        color: SpotbookColors.white,
+        color: SpotbookColors.textPrimary,
         fontWeight: FontWeight.w600,
         height: 1.25,
       ),
       titleLarge: dmSans.titleLarge?.copyWith(
-        color: SpotbookColors.white,
+        color: SpotbookColors.textPrimary,
         fontWeight: FontWeight.w600,
         height: 1.3,
       ),
       titleMedium: dmSans.titleMedium?.copyWith(
-        color: SpotbookColors.white,
+        color: SpotbookColors.textPrimary,
         fontWeight: FontWeight.w600,
         height: 1.35,
       ),
       titleSmall: dmSans.titleSmall?.copyWith(
-        color: SpotbookColors.white,
+        color: SpotbookColors.textPrimary,
         fontWeight: FontWeight.w600,
         height: 1.35,
       ),
       bodyLarge: dmSans.bodyLarge?.copyWith(
-        color: SpotbookColors.white,
+        color: SpotbookColors.textPrimary,
         height: 1.5,
       ),
       bodyMedium: dmSans.bodyMedium?.copyWith(

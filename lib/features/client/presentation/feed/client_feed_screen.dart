@@ -256,12 +256,12 @@ class _FeedEmptyStateState extends State<_FeedEmptyState>
                 child: const Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.search, color: AppColors.blanc, size: 18),
+                    Icon(Icons.search, color: AppColors.textOnPrimary, size: 18),
                     SizedBox(width: 8),
                     Text(
                       'Discover Pros',
                       style: TextStyle(
-                        color: AppColors.blanc,
+                        color: AppColors.textOnPrimary,
                         fontSize: 15,
                         fontWeight: FontWeight.w600,
                       ),

@@ -249,12 +249,12 @@ class _ProfileBody extends ConsumerWidget {
                 ),
               ),
             ),
-            _SettingsSection(context: context),
+            const _SettingsSection(),
 
             const SizedBox(height: 16),
 
             // ─── Become Pro + Logout ───
-            _SpecialActionsSection(context: context),
+            const _SpecialActionsSection(),
           ],
         ),
       ),
@@ -524,12 +524,10 @@ class _RecentHistory extends StatelessWidget {
 // ─── Settings section ───────────────────────────────────────────────────────
 
 class _SettingsSection extends StatelessWidget {
-  const _SettingsSection({required this.context});
-
-  final BuildContext context;
+  const _SettingsSection();
 
   @override
-  Widget build(BuildContext _) {
+  Widget build(BuildContext context) {
     return SettingsList(
       items: [
         SettingsItemData(
@@ -555,12 +553,10 @@ class _SettingsSection extends StatelessWidget {
 // ─── Become Pro + Logout ────────────────────────────────────────────────────
 
 class _SpecialActionsSection extends ConsumerWidget {
-  const _SpecialActionsSection({required this.context});
-
-  final BuildContext context;
+  const _SpecialActionsSection();
 
   @override
-  Widget build(BuildContext _, WidgetRef ref) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
@@ -576,7 +572,7 @@ class _SpecialActionsSection extends ConsumerWidget {
               width: double.infinity,
               padding: const EdgeInsets.symmetric(vertical: 16),
               decoration: BoxDecoration(
-                color: AppColors.violet.withAlpha(15), // rgba(108,62,244,0.06)
+                color: AppColors.violet.withAlpha(15),
                 borderRadius: BorderRadius.circular(14),
               ),
               child: Center(
@@ -599,7 +595,7 @@ class _SpecialActionsSection extends ConsumerWidget {
               width: double.infinity,
               padding: const EdgeInsets.symmetric(vertical: 16),
               decoration: BoxDecoration(
-                color: AppColors.rose.withAlpha(15), // rgba(244,62,143,0.06)
+                color: AppColors.rose.withAlpha(15),
                 borderRadius: BorderRadius.circular(14),
               ),
               child: Center(
@@ -621,6 +617,9 @@ class _SpecialActionsSection extends ConsumerWidget {
   }
 
   void _showLogoutDialog(BuildContext context) {
+    // Capture the router before any async gap
+    final router = GoRouter.of(context);
+
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -661,7 +660,7 @@ class _SpecialActionsSection extends ConsumerWidget {
                 }
               }
               await Supabase.instance.client.auth.signOut();
-              if (context.mounted) context.go('/login');
+              router.go('/login');
             },
             child: Text(
               'Log out',

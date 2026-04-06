@@ -107,7 +107,7 @@ class _MusicTickerState extends State<MusicTicker>
                           child: Text(
                             '$text    $text',
                             style: TextStyle(
-                              color: AppColors.blanc.withAlpha(153),
+                              color: AppColors.textOnVideo.withAlpha(153),
                               fontSize: 10,
                               fontWeight: FontWeight.w500,
                             ),

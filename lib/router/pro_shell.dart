@@ -163,7 +163,7 @@ class _ProNavItemState extends State<_ProNavItem>
                 child: Icon(
                   widget.selected ? widget.activeIcon : widget.icon,
                   key: ValueKey(widget.selected),
-                  color: widget.selected ? AppColors.blanc : AppColors.gris,
+                  color: widget.selected ? AppColors.violet : AppColors.gris,
                   size: 23,
                 ),
               ),
@@ -172,7 +172,7 @@ class _ProNavItemState extends State<_ProNavItem>
             AnimatedDefaultTextStyle(
               duration: const Duration(milliseconds: 200),
               style: TextStyle(
-                color: widget.selected ? AppColors.blanc : AppColors.gris,
+                color: widget.selected ? AppColors.violet : AppColors.gris,
                 fontSize: 10,
                 fontWeight: widget.selected ? FontWeight.w600 : FontWeight.w400,
                 letterSpacing: widget.selected ? 0.2 : 0,
