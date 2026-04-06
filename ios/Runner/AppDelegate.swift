@@ -9,7 +9,7 @@ import GoogleMaps
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
-    GMSServices.provideAPIKey("AIzaSyAYODOZxl4UAQDRw-F1x5hxUFYpv6zR8Ow")
+    GMSServices.provideAPIKey("AIzaSyC2dCh1egkwgqDx-o5mnPlAbYWOtNPd_v8")
     // Maintenir la session audio active pour le feed vidéo ET les previews Spotify.
     // mixWithOthers : vidéo + preview peuvent coexister sans se couper mutuellement.
     try? AVAudioSession.sharedInstance().setCategory(
