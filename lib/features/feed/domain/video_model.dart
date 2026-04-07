@@ -1,3 +1,6 @@
+/// Returns null for null or empty strings.
+String? _nonEmpty(String? s) => (s == null || s.isEmpty) ? null : s;
+
 class VideoModel {
   const VideoModel({
     required this.id,
@@ -84,9 +87,9 @@ class VideoModel {
     return VideoModel(
       id: json['id'] as String,
       proId: json['pro_id'] as String,
-      cloudflareId: json['cloudflare_id'] as String?,
-      streamUrl: json['stream_url'] as String?,
-      thumbnailUrl: json['thumbnail_url'] as String?,
+      cloudflareId: _nonEmpty(json['cloudflare_id'] as String?),
+      streamUrl: _nonEmpty(json['stream_url'] as String?),
+      thumbnailUrl: _nonEmpty(json['thumbnail_url'] as String?),
       title: json['title'] as String? ?? '',
       description: json['description'] as String?,
       category: json['category'] as String?,
@@ -103,8 +106,8 @@ class VideoModel {
       createdAt: DateTime.parse(json['created_at'] as String),
       proName: user?['full_name'] as String? ??
           pro?['business_name'] as String?,
-      proAvatarUrl: user?['avatar_url'] as String?,
-      proCity: user?['city'] as String?,
+      proAvatarUrl: _nonEmpty(user?['avatar_url'] as String?),
+      proCity: _nonEmpty(user?['city'] as String?),
       isLiked: isLiked,
       isSaved: isSaved,
       savesCount: json['saves_count'] as int? ?? 0,
