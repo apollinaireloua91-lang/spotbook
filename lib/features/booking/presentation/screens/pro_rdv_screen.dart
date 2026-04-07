@@ -8,6 +8,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../core/services/app_config_provider.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/theme/app_typography.dart';
 import '../../../../shared/widgets/animated_counter.dart';
@@ -50,6 +51,9 @@ class _ProRdvScreenState extends ConsumerState<ProRdvScreen>
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(proBookingsProvider);
+    final appConfig =
+        ref.watch(appConfigProvider).value ?? AppConfig.fallback;
+    final commissionRate = appConfig.commissionBookings;
 
     // Filter bookings for the selected day
     final dateStr = DateFormat('yyyy-MM-dd').format(_selectedDate);
@@ -89,7 +93,7 @@ class _ProRdvScreenState extends ConsumerState<ProRdvScreen>
     }).toList();
 
     final weekRevenue = weekBookings.fold<double>(
-        0, (sum, b) => sum + b.totalAmount * 0.88);
+        0, (sum, b) => sum + b.totalAmount * (1 - commissionRate));
 
     // Weekly revenue by day for chart
     final weekData = List.generate(7, (i) {
@@ -99,7 +103,7 @@ class _ProRdvScreenState extends ConsumerState<ProRdvScreen>
           .where((b) =>
               b.slotDate == dayStr &&
               (b.status == 'confirmed' || b.status == 'completed'))
-          .fold<double>(0, (sum, b) => sum + b.totalAmount * 0.88);
+          .fold<double>(0, (sum, b) => sum + b.totalAmount * (1 - commissionRate));
       return _DailyRevenue(
         dayLabel: _shortDay(day.weekday),
         amount: dayRev,
@@ -940,6 +944,55 @@ class _TimeSlotCard extends StatelessWidget {
                                 ),
                               ],
                             ),
+                            // Deposit / remaining status
+                            if (booking.isDepositMode &&
+                                (booking.status == 'confirmed' ||
+                                    booking.status == 'completed')) ...[
+                              const SizedBox(height: 6),
+                              Row(
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 5, vertical: 2),
+                                    decoration: BoxDecoration(
+                                      color: AppColors.success.withAlpha(25),
+                                      borderRadius: BorderRadius.circular(4),
+                                    ),
+                                    child: Text(
+                                      'Deposit \$${booking.depositAmount.toStringAsFixed(0)}',
+                                      style: GoogleFonts.dmSans(
+                                        fontSize: 8,
+                                        fontWeight: FontWeight.w600,
+                                        color: AppColors.success,
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 5, vertical: 2),
+                                    decoration: BoxDecoration(
+                                      color: booking.isRemainingPaid
+                                          ? AppColors.success.withAlpha(25)
+                                          : AppColors.warning.withAlpha(25),
+                                      borderRadius: BorderRadius.circular(4),
+                                    ),
+                                    child: Text(
+                                      booking.isRemainingPaid
+                                          ? 'Balance paid'
+                                          : 'Due \$${(booking.remainingAmount ?? 0).toStringAsFixed(0)}',
+                                      style: GoogleFonts.dmSans(
+                                        fontSize: 8,
+                                        fontWeight: FontWeight.w600,
+                                        color: booking.isRemainingPaid
+                                            ? AppColors.success
+                                            : AppColors.warning,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
                             // Action buttons
                             if (onConfirm != null ||
                                 onDecline != null ||

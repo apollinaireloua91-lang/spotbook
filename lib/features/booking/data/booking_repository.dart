@@ -266,10 +266,11 @@ class BookingRepository {
   }
 
   Future<void> markRemainingPaid(String bookingId) async {
-    await _supabase
-        .from('bookings')
-        .update({'remaining_payment_status': 'paid'})
-        .eq('id', bookingId);
+    await _supabase.from('bookings').update({
+      'remaining_payment_status': 'paid_on_site',
+      'remaining_paid_at': DateTime.now().toUtc().toIso8601String(),
+      'payment_status': 'fully_paid',
+    }).eq('id', bookingId);
   }
 
   // ─── Reviews ─────────────────────────────────────────────

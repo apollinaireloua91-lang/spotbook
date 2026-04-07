@@ -1197,73 +1197,120 @@ class _Step4Summary extends ConsumerWidget {
         ),
         const SizedBox(height: 16),
 
-        // Pricing card
-        Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: AppColors.surface,
-            borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: AppColors.border),
-          ),
-          child: Column(
-            children: [
-              _PriceRow(
-                label: 'Prix du service',
-                value:
-                    '${state.selectedService?.price.toStringAsFixed(2) ?? '0'} CA\$',
-              ),
-              if (state.promoApplied && state.promoCode != null) ...[
+        // Payment breakdown card
+        Builder(builder: (context) {
+          final appConfig =
+              ref.watch(appConfigProvider).value ?? AppConfig.fallback;
+          final serviceFee = appConfig.serviceFeeClient;
+          final depositAmount = state.depositPrice;
+          final clientPaysNow = depositAmount + serviceFee;
+          final remainingAmount = state.totalPrice - depositAmount;
+
+          return Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: AppColors.surface,
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: AppColors.border),
+            ),
+            child: Column(
+              children: [
+                _PriceRow(
+                  label: state.selectedService?.name ?? 'Service',
+                  value:
+                      '${state.selectedService?.price.toStringAsFixed(2) ?? '0'} CA\$',
+                ),
+                if (state.promoApplied && state.promoCode != null) ...[
+                  const SizedBox(height: 8),
+                  _PriceRow(
+                    label: 'Promo (${state.promoCode!.code})',
+                    value: state.promoCode!.discountType == 'percentage'
+                        ? '-${state.promoCode!.discountValue.toStringAsFixed(0)}%'
+                        : '-${state.promoCode!.discountValue.toStringAsFixed(2)} CA\$',
+                    valueColor: AppColors.success,
+                  ),
+                  const SizedBox(height: 4),
+                  _PriceRow(
+                    label: 'Sous-total',
+                    value: '${state.totalPrice.toStringAsFixed(2)} CA\$',
+                  ),
+                ],
+                const Divider(color: AppColors.border, height: 20),
+                _PriceRow(
+                  label: 'Acompte (30%)',
+                  value: '${depositAmount.toStringAsFixed(2)} CA\$',
+                ),
                 const SizedBox(height: 8),
                 _PriceRow(
-                  label: 'Promo (${state.promoCode!.code})',
-                  value: state.promoCode!.discountType == 'percentage'
-                      ? '-${state.promoCode!.discountValue.toStringAsFixed(0)}%'
-                      : '-${state.promoCode!.discountValue.toStringAsFixed(2)} CA\$',
-                  valueColor: AppColors.success,
+                  label: 'Frais de service',
+                  value: '${serviceFee.toStringAsFixed(2)} CA\$',
                 ),
-              ],
-              const Divider(color: AppColors.border, height: 20),
-              _PriceRow(
-                label: 'Total',
-                value: '${state.totalPrice.toStringAsFixed(2)} CA\$',
-              ),
-              const SizedBox(height: 8),
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: AppColors.violet.withAlpha(15),
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: AppColors.violet.withAlpha(40)),
-                ),
-                child: Row(
+                const Divider(color: AppColors.border, height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Icon(Icons.info_outline,
-                        color: AppColors.violetClair, size: 16),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        'Acompte de 30% à payer maintenant : ${state.depositPrice.toStringAsFixed(2)} CA\$',
-                        style: GoogleFonts.dmSans(
-                          color: AppColors.violetClair,
-                          fontSize: 13,
-                          fontWeight: FontWeight.w500,
-                        ),
+                    Text(
+                      'À payer maintenant',
+                      style: GoogleFonts.dmSans(
+                        color: AppColors.blanc,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    Text(
+                      '${clientPaysNow.toStringAsFixed(2)} CA\$',
+                      style: GoogleFonts.dmSans(
+                        color: AppColors.blanc,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
                       ),
                     ),
                   ],
                 ),
-              ),
-            ],
-          ),
-        ),
+                const SizedBox(height: 12),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: AppColors.violet.withAlpha(15),
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: AppColors.violet.withAlpha(40)),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.event_outlined,
+                          color: AppColors.violetClair, size: 16),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          'Solde le jour du RDV : ${remainingAmount.toStringAsFixed(2)} CA\$',
+                          style: GoogleFonts.dmSans(
+                            color: AppColors.violetClair,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          );
+        }),
 
         const SizedBox(height: 28),
-        _CtaButton(
-          label: 'Payer ${state.depositPrice.toStringAsFixed(2)} CA\$',
-          onPressed: () =>
-              ref.read(bookingFlowProvider.notifier).nextStep(),
-        ),
+        Builder(builder: (context) {
+          final appConfig =
+              ref.watch(appConfigProvider).value ?? AppConfig.fallback;
+          final clientPaysNow =
+              state.depositPrice + appConfig.serviceFeeClient;
+          return _CtaButton(
+            label: 'Payer ${clientPaysNow.toStringAsFixed(2)} CA\$',
+            onPressed: () =>
+                ref.read(bookingFlowProvider.notifier).nextStep(),
+          );
+        }),
       ],
     );
   }
@@ -1350,7 +1397,10 @@ class _Step5Payment extends ConsumerWidget {
       children: [
         _StepHeader(
           title: 'Payment',
-          subtitle: 'Deposit: ${state.depositPrice.toStringAsFixed(2)} CA\$',
+          subtitle: (() {
+            final fee = (ref.read(appConfigProvider).value ?? AppConfig.fallback).serviceFeeClient;
+            return 'Pay now: ${(state.depositPrice + fee).toStringAsFixed(2)} CA\$';
+          })(),
           onBack: () =>
               ref.read(bookingFlowProvider.notifier).previousStep(),
         ),
@@ -1481,7 +1531,10 @@ class _Step5Payment extends ConsumerWidget {
 
         const SizedBox(height: 28),
         _CtaButton(
-          label: 'Payer ${state.depositPrice.toStringAsFixed(2)} CA\$',
+          label: (() {
+            final fee = (ref.read(appConfigProvider).value ?? AppConfig.fallback).serviceFeeClient;
+            return 'Payer ${(state.depositPrice + fee).toStringAsFixed(2)} CA\$';
+          })(),
           isLoading: state.isCreating || state.isPaying,
           onPressed: (state.isCreating || state.isPaying)
               ? null

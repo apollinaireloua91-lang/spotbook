@@ -16,7 +16,7 @@ class PaymentRepository {
     await _supabase.auth.refreshSession();
     final res = await _supabase.functions.invoke(
       'stripe-create-intent',
-      body: {'bookingId': bookingId},
+      body: {'bookingId': bookingId, 'payment_type': 'deposit'},
     );
     if (res.status != 200) {
       final err = res.data is Map ? res.data['error'] : 'Payment failed';
