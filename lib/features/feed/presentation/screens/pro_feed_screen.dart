@@ -435,6 +435,11 @@ class _PostBackgroundState extends ConsumerState<_PostBackground> {
   void initState() {
     super.initState();
     _initPlayer();
+    // Auto-play if this page is already active on first build
+    if (widget.isActive && _controller != null) {
+      _controller!.play();
+      _isPlaying = true;
+    }
   }
 
   void _initPlayer() {
@@ -487,9 +492,10 @@ class _PostBackgroundState extends ConsumerState<_PostBackground> {
     return Stack(
       fit: StackFit.expand,
       children: [
-        // Video or thumbnail
+        // Video or thumbnail — IgnorePointer prevents BetterPlayer's
+        // internal GestureDetector from stealing taps meant for play/pause.
         if (_controller != null)
-          BetterPlayer(controller: _controller!)
+          IgnorePointer(child: BetterPlayer(controller: _controller!))
         else if (widget.video.thumbnailUrl != null)
           CachedNetworkImage(
             imageUrl: widget.video.thumbnailUrl!,

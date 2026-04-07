@@ -95,9 +95,10 @@ class PostMediaBackgroundState extends State<PostMediaBackground> {
     return Stack(
       fit: StackFit.expand,
       children: [
-        // Video or thumbnail fallback
+        // Video or thumbnail fallback — IgnorePointer prevents BetterPlayer's
+        // internal GestureDetector from stealing taps meant for play/pause.
         if (_controller != null)
-          BetterPlayer(controller: _controller!)
+          IgnorePointer(child: BetterPlayer(controller: _controller!))
         else if (widget.thumbnailUrl != null)
           CachedNetworkImage(
             imageUrl: widget.thumbnailUrl!,
@@ -107,12 +108,8 @@ class PostMediaBackgroundState extends State<PostMediaBackground> {
         else
           const ColoredBox(color: Colors.black),
 
-        // Bottom gradient overlay — dark for white text readability on video
-        Positioned(
-          bottom: 0,
-          left: 0,
-          right: 0,
-          height: 350,
+        // Bottom gradient — tall enough to cover right column icons
+        Positioned.fill(
           child: DecoratedBox(
             decoration: BoxDecoration(
               gradient: LinearGradient(
@@ -120,9 +117,31 @@ class PostMediaBackgroundState extends State<PostMediaBackground> {
                 end: Alignment.bottomCenter,
                 colors: [
                   Colors.transparent,
-                  Colors.black.withAlpha(180),
+                  Colors.transparent,
+                  Colors.black.withAlpha(40),
+                  Colors.black.withAlpha(140),
+                  Colors.black.withAlpha(200),
                 ],
-                stops: const [0.3, 1.0],
+                stops: const [0.0, 0.35, 0.55, 0.75, 1.0],
+              ),
+            ),
+          ),
+        ),
+        // Right-side gradient — ensures icon readability
+        Positioned(
+          top: 0,
+          bottom: 0,
+          right: 0,
+          width: 90,
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
+                colors: [
+                  Colors.transparent,
+                  Colors.black.withAlpha(60),
+                ],
               ),
             ),
           ),

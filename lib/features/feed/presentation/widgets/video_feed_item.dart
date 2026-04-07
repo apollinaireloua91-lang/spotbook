@@ -260,7 +260,7 @@ class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
         children: [
           // ─── Video / Thumbnail ───
           if (_controller != null)
-            BetterPlayer(controller: _controller!)
+            IgnorePointer(child: BetterPlayer(controller: _controller!))
           else if (widget.video.thumbnailUrl != null)
             CachedNetworkImage(
               imageUrl: widget.video.thumbnailUrl!,
