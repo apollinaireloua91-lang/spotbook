@@ -41,41 +41,46 @@ serve(async (req) => {
       return jsonResponse({ error: "unauthorized" }, 401);
     }
 
-    const { bookingId } = await req.json();
-    if (!bookingId || !isValidUuid(String(bookingId))) {
-      return jsonResponse({ error: "bookingId must be a valid UUID" }, 400);
+    const { submissionId } = await req.json();
+    if (!submissionId || !isValidUuid(String(submissionId))) {
+      return jsonResponse(
+        { error: "submissionId must be a valid UUID" },
+        400
+      );
     }
 
-    // Fetch booking
-    const { data: booking, error: bErr } = await supabase
-      .from("bookings")
+    // Fetch submission with pro's Stripe account
+    const { data: submission, error: sErr } = await supabase
+      .from("catering_submissions")
       .select("*, profiles_pro(stripe_account_id, commission_rate)")
-      .eq("id", bookingId)
+      .eq("id", submissionId)
       .single();
 
-    if (bErr || !booking) {
-      return jsonResponse({ error: "booking_not_found" }, 404);
+    if (sErr || !submission) {
+      return jsonResponse({ error: "submission_not_found" }, 404);
     }
 
-    // Verify ownership
-    if (booking.client_id !== user.id) {
+    // Verify client ownership
+    if (submission.client_id !== user.id) {
       return jsonResponse({ error: "unauthorized" }, 401);
     }
 
-    // Verify status
-    if (booking.status !== "pending_payment") {
-      return jsonResponse({ error: "booking_not_pending" }, 400);
+    // Only approved submissions can be paid
+    if (submission.status !== "approved") {
+      return jsonResponse({ error: "submission_not_approved" }, 400);
     }
 
-    if (!isValidAmount(Number(booking.deposit_amount))) {
+    // Validate deposit amount
+    const depositAmount = Number(submission.deposit_amount);
+    if (!isValidAmount(depositAmount)) {
       return jsonResponse(
         { error: "deposit_amount must be > 0 and < 99999" },
         400
       );
     }
 
-    // Rate limit payment attempts by card/user fingerprint
-    const fingerprint = `${user.id}:${booking.id}:${getClientIp(req)}`;
+    // Rate limit
+    const fingerprint = `${user.id}:${submission.id}:${getClientIp(req)}`;
     const rateLimitResp = await fetch(
       `${Deno.env.get("SUPABASE_URL")}/functions/v1/rate-limiter`,
       {
@@ -95,18 +100,28 @@ serve(async (req) => {
       return jsonResponse({ error: data.error }, 429);
     }
 
-    // Already has a PaymentIntent — return existing clientSecret
-    if (booking.stripe_payment_intent_id) {
+    // Check for existing deposit record with a PaymentIntent
+    const { data: existingDeposit } = await supabase
+      .from("catering_deposits")
+      .select("stripe_payment_id")
+      .eq("submission_id", submissionId)
+      .eq("status", "pending")
+      .maybeSingle();
+
+    if (existingDeposit?.stripe_payment_id) {
       const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") ?? "", {
         apiVersion: "2023-10-16",
       });
       const existing = await stripe.paymentIntents.retrieve(
-        booking.stripe_payment_intent_id
+        existingDeposit.stripe_payment_id
       );
       return new Response(
         JSON.stringify({ clientSecret: existing.client_secret }),
         {
-          headers: { ...securityHeaders, "Content-Type": "application/json" },
+          headers: {
+            ...securityHeaders,
+            "Content-Type": "application/json",
+          },
         }
       );
     }
@@ -115,20 +130,20 @@ serve(async (req) => {
       apiVersion: "2023-10-16",
     });
 
-    const depositCents = Math.round(booking.deposit_amount * 100);
-    const pro = booking.profiles_pro;
+    const depositCents = Math.round(depositAmount * 100);
+    const pro = submission.profiles_pro;
     const commissionRate = pro?.commission_rate ?? 0.18;
     const applicationFee = Math.round(depositCents * commissionRate);
 
     const params: Record<string, unknown> = {
       amount: depositCents,
-      currency: (booking.currency || "cad").toLowerCase(),
+      currency: "cad",
       automatic_payment_methods: { enabled: true },
       metadata: {
-        bookingId: booking.id,
+        submissionId: submission.id,
         clientId: user.id,
-        proId: booking.pro_id,
-        type: "deposit",
+        proId: submission.pro_id,
+        type: "catering_deposit",
       },
     };
 
@@ -139,23 +154,28 @@ serve(async (req) => {
 
     const paymentIntent = await stripe.paymentIntents.create(
       params as Stripe.PaymentIntentCreateParams,
-      { idempotencyKey: `${bookingId}-deposit-${user.id}` }
+      { idempotencyKey: `catering-${submissionId}-deposit-${user.id}` }
     );
 
-    // Store PaymentIntent ID on booking
-    await supabase
-      .from("bookings")
-      .update({ stripe_payment_intent_id: paymentIntent.id })
-      .eq("id", bookingId);
+    // Insert catering_deposits row
+    await supabase.from("catering_deposits").insert({
+      submission_id: submissionId,
+      amount: depositAmount,
+      stripe_payment_id: paymentIntent.id,
+      status: "pending",
+    });
 
     return new Response(
       JSON.stringify({ clientSecret: paymentIntent.client_secret }),
       {
-        headers: { ...securityHeaders, "Content-Type": "application/json" },
+        headers: {
+          ...securityHeaders,
+          "Content-Type": "application/json",
+        },
       }
     );
   } catch (error) {
-    console.error("stripe-create-intent error:", error);
+    console.error("stripe-create-catering-intent error:", error);
     return jsonResponse({ error: "internal_error" }, 500);
   }
 });

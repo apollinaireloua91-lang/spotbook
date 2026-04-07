@@ -617,7 +617,7 @@ class _InfoSection extends StatelessWidget {
         : null;
     final timeLine = end != null ? '$start — $end' : start;
 
-    final commission = booking.depositAmount * 0.12;
+    final commission = booking.depositAmount * 0.18;
     final netEst = booking.depositAmount - commission;
 
     final remainingStatusLabel = switch (booking.remainingPaymentStatus) {
@@ -672,7 +672,7 @@ class _InfoSection extends StatelessWidget {
           if (isProViewer && (booking.status == 'confirmed' || booking.status == 'completed')) ...[
             const SizedBox(height: 8),
             Text(
-              'Est. commission 12% on deposit: ${commission.toStringAsFixed(2)} ${booking.currency} · Net approx.: ${netEst.toStringAsFixed(2)} ${booking.currency}',
+              'Est. commission 18% on deposit: ${commission.toStringAsFixed(2)} ${booking.currency} · Net approx.: ${netEst.toStringAsFixed(2)} ${booking.currency}',
               style: const TextStyle(
                 color: AppColors.gris,
                 fontSize: 12,
@@ -699,7 +699,7 @@ class _InfoSection extends StatelessWidget {
           if (isProViewer && (booking.status == 'confirmed' || booking.status == 'completed')) ...[
             const SizedBox(height: 8),
             Text(
-              'Est. commission 12%: ${commission.toStringAsFixed(2)} ${booking.currency} · Net approx.: ${netEst.toStringAsFixed(2)} ${booking.currency}',
+              'Est. commission 18%: ${commission.toStringAsFixed(2)} ${booking.currency} · Net approx.: ${netEst.toStringAsFixed(2)} ${booking.currency}',
               style: const TextStyle(
                 color: AppColors.gris,
                 fontSize: 12,

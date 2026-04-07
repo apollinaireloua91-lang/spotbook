@@ -387,46 +387,6 @@ serve(async (req) => {
         break;
       }
 
-      case "customer.subscription.created": {
-        const sub = event.data.object as Stripe.Subscription;
-        const proId = sub.metadata.proId;
-        if (!proId || !isValidUuid(proId)) break;
-
-        await supabase.from("pro_subscriptions").upsert({
-          pro_id: proId,
-          stripe_subscription_id: sub.id,
-          status: sub.status,
-          current_period_end: new Date(
-            sub.current_period_end * 1000
-          ).toISOString(),
-        });
-
-        // Premium commission rate
-        await supabase
-          .from("profiles_pro")
-          .update({ commission_rate: 0.08 })
-          .eq("id", proId);
-        break;
-      }
-
-      case "customer.subscription.deleted": {
-        const sub = event.data.object as Stripe.Subscription;
-        const proId = sub.metadata.proId;
-        if (!proId || !isValidUuid(proId)) break;
-
-        await supabase
-          .from("pro_subscriptions")
-          .update({ status: "cancelled" })
-          .eq("stripe_subscription_id", sub.id);
-
-        // Revert to standard commission
-        await supabase
-          .from("profiles_pro")
-          .update({ commission_rate: 0.12 })
-          .eq("id", proId);
-        break;
-      }
-
       /** Connect Express : garde `profiles_pro.stripe_onboarded` aligné sur Stripe. */
       case "account.updated": {
         const account = event.data.object as Stripe.Account;

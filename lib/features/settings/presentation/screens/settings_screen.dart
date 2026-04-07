@@ -107,12 +107,12 @@ class SettingsScreen extends ConsumerWidget {
                 _SettingsItem(
                   icon: Icons.percent_outlined,
                   label: 'Commissions',
-                  subtitle: '12% standard • 8% premium',
+                  subtitle: 'Bookings 18% · Events 12% · Fee \$2.50',
                   onTap: () {
                     showDialog(context: context, builder: (_) => AlertDialog(
                       backgroundColor: AppColors.surface,
                       title: const Text('Spotbook Commissions', style: TextStyle(color: AppColors.blanc)),
-                      content: const Text('Bookings: 12% (8% for premium pros)\nEvents: 7%', style: TextStyle(color: AppColors.gris)),
+                      content: const Text('Service bookings: 18%\nEvent tickets: 12%\nCatering deposits: 18%\nClient service fee: \$2.50/booking', style: TextStyle(color: AppColors.gris)),
                       actions: [TextButton(onPressed: () => context.pop(), child: const Text('OK'))],
                     ));
                   },

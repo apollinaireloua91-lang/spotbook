@@ -52,19 +52,23 @@ class PaymentRepository {
     return url;
   }
 
-  /// Creates a Stripe Checkout session for Pro Premium subscription.
-  Future<String> createProSubscription() async {
+  /// Calls stripe-create-catering-intent edge function to get a clientSecret
+  /// for the catering deposit PaymentIntent (30% of total estimate).
+  Future<String> createCateringPaymentIntent(String submissionId) async {
     await _supabase.auth.refreshSession();
-    final res = await _supabase.functions.invoke('create-pro-subscription');
+    final res = await _supabase.functions.invoke(
+      'stripe-create-catering-intent',
+      body: {'submissionId': submissionId},
+    );
     if (res.status != 200) {
-      final err = res.data is Map ? res.data['error'] : 'Subscription failed';
-      throw Exception(err ?? 'Subscription failed');
+      final err = res.data is Map ? res.data['error'] : 'Payment failed';
+      throw Exception(err ?? 'Payment failed');
     }
     final data = res.data as Map<String, dynamic>;
-    final url = data['url'] as String?;
-    if (url == null || url.isEmpty) {
-      throw Exception('No checkout URL returned');
+    final clientSecret = data['clientSecret'] as String?;
+    if (clientSecret == null || clientSecret.isEmpty) {
+      throw Exception('No client secret returned');
     }
-    return url;
+    return clientSecret;
   }
 }

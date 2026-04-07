@@ -48,8 +48,6 @@ import '../features/pro/presentation/feed/pro_feed_screen.dart';
 import '../features/profile/presentation/screens/pro_qr_code_screen.dart';
 import '../features/events/presentation/screens/pro_scanner_event_picker_screen.dart';
 import '../features/onboarding/presentation/screens/onboarding_screen.dart';
-import '../features/payment/presentation/screens/pro_subscription_screen.dart';
-import '../features/payment/presentation/screens/stripe_checkout_webview.dart';
 import '../features/profile/presentation/screens/client_profile_screen.dart';
 import '../features/profile/presentation/screens/edit_profile_screen.dart';
 import '../features/profile/presentation/screens/pro_profile_screen.dart';
@@ -474,20 +472,6 @@ final appRouter = GoRouter(
         child: BookingCancellationScreen(
           bookingId: state.pathParameters['bookingId'] ?? '',
         ),
-      ),
-    ),
-    GoRoute(
-      path: '/pro-subscription',
-      pageBuilder: (context, state) => premiumSlideUpPage(
-        state: state,
-        child: const ProSubscriptionScreen(),
-      ),
-    ),
-    GoRoute(
-      path: '/subscription-checkout',
-      pageBuilder: (context, state) => premiumPage(
-        state: state,
-        child: StripeCheckoutWebview(url: state.extra as String? ?? ''),
       ),
     ),
     GoRoute(

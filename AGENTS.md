@@ -193,9 +193,16 @@ Remboursement > 48h : stripe.refunds.create() + createReversal()
 
 Remboursement < 48h : pro garde l'acompte
 
-Commission réservation : 12% (8% si pro premium)
+Commission réservation : 18%
 
-Commission événement   : 7%
+Commission événement   : 12%
+
+Commission traiteur    : 18%
+
+Frais de service client : 2.50 $/réservation
+
+// Pas de tiers premium — même taux pour tous les Pros.
+// Taux configurables via table app_config (commission_bookings, commission_events, commission_catering, service_fee_client).
 
 
 ## BASE DE DONNÉES
@@ -206,7 +213,7 @@ availability_rules, time_slots, bookings,
 events, ticket_types, tickets, waitlist,
 conversations, messages,
 notifications, notification_preferences,
-blocks, promo_codes, pro_subscriptions, referrals, reports
+blocks, promo_codes, referrals, reports, app_config
 
 ### Tables Client (nouvelles)
 posts              — publications Pro (video/photo/event) avec caption, media, spotify track

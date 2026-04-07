@@ -80,7 +80,7 @@ serve(async (req) => {
     if (!isValidAmount(Number(unitPrice))) {
       return jsonResponse({ error: "ticket amount invalide" }, 400);
     }
-    const commission = Math.round(totalCents * 0.07); // 7% event commission
+    const commission = Math.round(totalCents * 0.12); // 12% event commission
 
     const rateLimitResp = await fetch(
       `${Deno.env.get("SUPABASE_URL")}/functions/v1/rate-limiter`,

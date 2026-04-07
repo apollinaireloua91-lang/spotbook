@@ -534,11 +534,7 @@ SplashScreen (logo + fade animation, 2s)
 
 | Element | Spec |
 |---------|------|
-| Features list | 4 premium features |
-| Price | 29 CAD/month |
-| Subscribe button | → `/subscription-checkout` with Stripe checkout URL |
-
-**Premium benefits:** Commission reduced from 12% to 8%
+*Screen removed — no premium subscription tier.*
 
 ### 5.24 ProInsightsScreen
 
@@ -823,7 +819,8 @@ targetType: String (pro | event)
 
 ### 8.2 Booking Rules
 - Deposit is required at booking time via Stripe
-- Commission: 12% standard, 8% for Pro Premium subscribers
+- Commission: 18% on all bookings (same rate for all Pros)
+- Client service fee: $2.50 per booking
 - Cancellation > 48h before: full refund
 - Cancellation < 48h before: pro keeps the deposit
 - If refund occurs after payout: Transfer Reversal is required
@@ -831,7 +828,7 @@ targetType: String (pro | event)
 - Each PaymentIntent must have an idempotency_key
 
 ### 8.3 Event & Ticket Rules
-- Commission on ticket sales: 7%
+- Commission on ticket sales: 12%
 - QR hash is generated server-side only (never in Flutter)
 - QR validation goes through `validate-qr-ticket` Edge Function
 - Ticket statuses: `valid` → `used` (after scan) or `cancelled`
@@ -1045,7 +1042,7 @@ All images use `CachedNetworkImage` with:
 | 21 | `blocks` | blocker_id, blocked_id (composite PK) | Yes |
 | 22 | `reviews` | id, booking_id (unique), client_id, pro_id, rating (1–5), comment | Yes |
 | 23 | `promo_codes` | id, pro_id, code (unique), discount_type, discount_value, max_uses, uses_count, expires_at, is_active | Yes |
-| 24 | `pro_subscriptions` | id, pro_id, stripe_subscription_id (unique), status, current_period_end | Yes |
+| 24 | `app_config` | key (PK), value, description | Yes |
 | 25 | `referrals` | id, referrer_id, referred_id, referral_code, reward_given | Yes |
 | 26 | `reports` | id, reporter_id, target_id, target_type, reason | Yes |
 

@@ -24,7 +24,7 @@ class ProRevenueScreen extends ConsumerStatefulWidget {
 class _ProRevenueScreenState extends ConsumerState<ProRevenueScreen> {
   int _periodDays = 30;
 
-  static const _commissionRate = 0.12;
+  static const _commissionRate = 0.18;
 
   @override
   Widget build(BuildContext context) {

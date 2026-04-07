@@ -113,7 +113,7 @@ class BuyTicketState {
 
   double get total =>
       (selectedType?.price ?? 0) * quantity;
-  double get commission => total * 0.07;
+  double get commission => total * 0.12;
   double get grandTotal => total + commission;
   int get totalCents => (grandTotal * 100).round();
 
