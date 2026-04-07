@@ -302,55 +302,51 @@ class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
               bottom: 90,
               left: 16,
               right: 76,
-              child: Row(
-                children: [
-                  GestureDetector(
-                    onTap: () => context.push('/pro/${widget.video.proId}'),
-                    child: Text(
-                      widget.video.proName ?? 'Pro',
-                      style: const TextStyle(
-                        color: AppColors.textOnVideo,
-                        fontSize: 15,
-                        fontWeight: FontWeight.w700,
-                        shadows: [
-                          Shadow(
-                            color: AppColors.overlayHeavy,
-                            blurRadius: 6,
-                            offset: Offset(0, 1),
-                          ),
-                        ],
+              child: GestureDetector(
+                onTap: () => context.push('/pro/${widget.video.proId}'),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Flexible(
+                      child: Text(
+                        widget.video.proName ?? 'Pro',
+                        style: const TextStyle(
+                          color: AppColors.textOnVideo,
+                          fontSize: 15,
+                          fontWeight: FontWeight.w700,
+                          shadows: [
+                            Shadow(
+                              color: AppColors.overlayHeavy,
+                              blurRadius: 6,
+                              offset: Offset(0, 1),
+                            ),
+                          ],
+                        ),
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
-                  ),
-                  const SizedBox(width: 10),
-                  GestureDetector(
-                    onTap: () => context.push('/pro/${widget.video.proId}'),
-                    child: Container(
+                    const SizedBox(width: 8),
+                    Container(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 18, vertical: 9),
+                          horizontal: 6, vertical: 2),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF043603),
-                        borderRadius: BorderRadius.circular(22),
-                        boxShadow: [
-                          BoxShadow(
-                            color: const Color(0xFF043603).withAlpha(128),
-                            blurRadius: 12,
-                            offset: const Offset(0, 4),
-                          ),
-                        ],
+                        color: Colors.white.withAlpha(25),
+                        borderRadius: BorderRadius.circular(4),
+                        border: Border.all(
+                            color: Colors.white.withAlpha(40)),
                       ),
                       child: const Text(
-                        'Book',
+                        'PRO',
                         style: TextStyle(
                           color: Colors.white,
-                          fontSize: 13,
-                          fontWeight: FontWeight.w700,
-                          letterSpacing: 0.3,
+                          fontSize: 9,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: 1,
                         ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
 

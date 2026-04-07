@@ -8,8 +8,8 @@ import {
   securityHeadersFor,
 } from "../_shared/security.ts";
 
-/** Durée max alignée avec le picker Flutter (60 s). */
-const MAX_DURATION_SECONDS = 60;
+/** Durée max alignée avec le picker Flutter (120 s = 2 min). */
+const MAX_DURATION_SECONDS = 120;
 /** Taille max fichier (bytes) — marge sous la limite Stream habituelle. */
 const MAX_FILE_BYTES = 500 * 1024 * 1024;
 
@@ -179,7 +179,7 @@ serve(async (req) => {
         },
         body: JSON.stringify({
           maxDurationSeconds: MAX_DURATION_SECONDS,
-          requireSignedURLs: true,
+          requireSignedURLs: false,
           meta: {
             uploaded_by: user.id,
             source: "spotbook",

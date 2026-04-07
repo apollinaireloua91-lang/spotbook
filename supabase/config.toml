@@ -383,8 +383,6 @@ verify_jwt = false
 [functions.generate-cloudflare-upload-url]
 verify_jwt = true
 
-[functions.moderate-video]
-verify_jwt = true
 
 [analytics]
 enabled = true
