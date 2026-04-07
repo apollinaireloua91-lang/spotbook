@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../shared/theme/app_colors.dart';
 
@@ -34,9 +35,9 @@ class _AccountTypeSelectionScreenState
             children: [
               const SizedBox(height: 48),
 
-              const Text(
+              Text(
                 'Welcome to\nSpotbook',
-                style: TextStyle(
+                style: GoogleFonts.sora(
                   color: AppColors.blanc,
                   fontSize: 28,
                   fontWeight: FontWeight.w800,
@@ -45,9 +46,9 @@ class _AccountTypeSelectionScreenState
                 ),
               ),
               const SizedBox(height: 8),
-              const Text(
+              Text(
                 'How would you like to use the app?',
-                style: TextStyle(color: AppColors.gris, fontSize: 15),
+                style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 15),
               ),
               const SizedBox(height: 40),
 
@@ -108,9 +109,9 @@ class _AccountTypeSelectionScreenState
                         borderRadius: BorderRadius.circular(14),
                       ),
                     ),
-                    child: const Text(
+                    child: Text(
                       'Continue',
-                      style: TextStyle(
+                      style: GoogleFonts.dmSans(
                         fontSize: 17,
                         fontWeight: FontWeight.w600,
                       ),
@@ -125,13 +126,13 @@ class _AccountTypeSelectionScreenState
                 child: GestureDetector(
                   onTap: () => context.go('/login'),
                   child: RichText(
-                    text: const TextSpan(
+                    text: TextSpan(
                       text: 'Already have an account? ',
-                      style: TextStyle(color: AppColors.gris, fontSize: 14),
+                      style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 14),
                       children: [
                         TextSpan(
                           text: 'Sign in',
-                          style: TextStyle(
+                          style: GoogleFonts.dmSans(
                             color: AppColors.violetClair,
                             fontWeight: FontWeight.w600,
                           ),
@@ -221,7 +222,7 @@ class _RoleCard extends StatelessWidget {
                 children: [
                   Text(
                     title,
-                    style: TextStyle(
+                    style: GoogleFonts.sora(
                       color:
                           isSelected ? AppColors.blanc : AppColors.grisClair,
                       fontSize: 18,
@@ -231,7 +232,7 @@ class _RoleCard extends StatelessWidget {
                   const SizedBox(height: 4),
                   Text(
                     subtitle,
-                    style: TextStyle(
+                    style: GoogleFonts.dmSans(
                       color: isSelected
                           ? AppColors.gris
                           : AppColors.grisInactif,
@@ -242,7 +243,7 @@ class _RoleCard extends StatelessWidget {
                   const SizedBox(height: 2),
                   Text(
                     description,
-                    style: TextStyle(
+                    style: GoogleFonts.dmSans(
                       color: isSelected
                           ? AppColors.gris.withAlpha(180)
                           : AppColors.grisInactif.withAlpha(150),

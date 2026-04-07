@@ -207,14 +207,26 @@ class _BecomeProSetupScreenState extends ConsumerState<BecomeProSetupScreen> {
       backgroundColor: AppColors.fond,
       appBar: AppBar(
         backgroundColor: AppColors.fond,
+        surfaceTintColor: Colors.transparent,
         elevation: 0,
-        leading: IconButton(
-          onPressed: _prevStep,
-          icon: const Icon(Icons.arrow_back_ios_rounded, size: 20),
+        leading: Semantics(
+          label: 'Back',
+          child: IconButton(
+            onPressed: _prevStep,
+            icon: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: AppColors.surface,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: AppColors.border, width: 0.5),
+              ),
+              child: const Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
+            ),
+          ),
         ),
         title: Text(
           'Become Pro',
-          style: GoogleFonts.dmSans(
+          style: GoogleFonts.sora(
             fontSize: 16,
             fontWeight: FontWeight.w600,
           ),
@@ -307,7 +319,7 @@ class _StepBusinessInfo extends ConsumerWidget {
           const SizedBox(height: 16),
           Text(
             'Your business',
-            style: GoogleFonts.dmSans(
+            style: GoogleFonts.sora(
               color: AppColors.blanc,
               fontSize: 24,
               fontWeight: FontWeight.w800,
@@ -430,7 +442,7 @@ class _StepAddress extends ConsumerWidget {
           const SizedBox(height: 16),
           Text(
             'Business address',
-            style: GoogleFonts.dmSans(
+            style: GoogleFonts.sora(
               color: AppColors.blanc,
               fontSize: 24,
               fontWeight: FontWeight.w800,
@@ -476,7 +488,7 @@ class _StepAddress extends ConsumerWidget {
                       child: Text(
                         '${s.placeDetails!.city}'
                         '${s.placeDetails!.province != null ? ', ${s.placeDetails!.province}' : ''}',
-                        style: const TextStyle(
+                        style: GoogleFonts.dmSans(
                           color: AppColors.success,
                           fontSize: 13,
                           fontWeight: FontWeight.w500,
@@ -542,7 +554,7 @@ class _StepBioConfirm extends ConsumerWidget {
           const SizedBox(height: 16),
           Text(
             'Almost there!',
-            style: GoogleFonts.dmSans(
+            style: GoogleFonts.sora(
               color: AppColors.blanc,
               fontSize: 24,
               fontWeight: FontWeight.w800,
@@ -600,7 +612,7 @@ class _StepBioConfirm extends ConsumerWidget {
               children: [
                 Text(
                   'Your Pro profile',
-                  style: GoogleFonts.dmSans(
+                  style: GoogleFonts.sora(
                     color: AppColors.blanc,
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
@@ -634,7 +646,7 @@ class _StepBioConfirm extends ConsumerWidget {
                 Expanded(
                   child: Text(
                     'Your existing bookings and favorites will be preserved. You can set up services and availability from your Pro dashboard.',
-                    style: TextStyle(
+                    style: GoogleFonts.dmSans(
                       color: AppColors.gris.withAlpha(204),
                       fontSize: 12,
                       height: 1.4,
@@ -710,7 +722,7 @@ class _StepBioConfirm extends ConsumerWidget {
           Expanded(
             child: Text(
               text,
-              style: const TextStyle(
+              style: GoogleFonts.dmSans(
                 color: AppColors.blanc,
                 fontSize: 13,
               ),

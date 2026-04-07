@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../shared/theme/app_colors.dart';
 
@@ -62,13 +63,21 @@ class ClientInterestGoalsScreen extends ConsumerWidget {
       backgroundColor: AppColors.fond,
       appBar: AppBar(
         backgroundColor: AppColors.fond,
+        surfaceTintColor: Colors.transparent,
         elevation: 0,
-        leading: IconButton(
-          onPressed: () => context.go('/client/interests'),
-          icon: const Icon(
-            Icons.arrow_back_ios_rounded,
-            color: AppColors.blanc,
-            size: 20,
+        leading: Semantics(
+          label: 'Back',
+          child: IconButton(
+            onPressed: () => context.go('/client/interests'),
+            icon: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: AppColors.surface,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: AppColors.border, width: 0.5),
+              ),
+              child: const Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
+            ),
           ),
         ),
       ),
@@ -89,9 +98,9 @@ class ClientInterestGoalsScreen extends ConsumerWidget {
                     borderRadius: BorderRadius.circular(8),
                     color: AppColors.violet.withAlpha(25),
                   ),
-                  child: const Text(
+                  child: Text(
                     'STEP 2/3',
-                    style: TextStyle(
+                    style: GoogleFonts.dmSans(
                       color: AppColors.violet,
                       fontSize: 11,
                       fontWeight: FontWeight.w600,
@@ -114,9 +123,9 @@ class ClientInterestGoalsScreen extends ConsumerWidget {
             const SizedBox(height: 24),
 
             // Title
-            const Text(
+            Text(
               'What is your goal?',
-              style: TextStyle(
+              style: GoogleFonts.sora(
                 color: AppColors.blanc,
                 fontSize: 24,
                 fontWeight: FontWeight.w800,
@@ -124,9 +133,9 @@ class ClientInterestGoalsScreen extends ConsumerWidget {
               ),
             ),
             const SizedBox(height: 8),
-            const Text(
+            Text(
               'Tell us what you\'re looking for to personalize your experience.',
-              style: TextStyle(
+              style: GoogleFonts.dmSans(
                 color: AppColors.gris,
                 fontSize: 14,
                 height: 1.4,
@@ -188,7 +197,7 @@ class ClientInterestGoalsScreen extends ConsumerWidget {
                               children: [
                                 Text(
                                   goal.title,
-                                  style: TextStyle(
+                                  style: GoogleFonts.sora(
                                     color: isSelected
                                         ? AppColors.blanc
                                         : AppColors.grisClair,
@@ -199,7 +208,7 @@ class ClientInterestGoalsScreen extends ConsumerWidget {
                                 const SizedBox(height: 4),
                                 Text(
                                   goal.description,
-                                  style: TextStyle(
+                                  style: GoogleFonts.dmSans(
                                     color: isSelected
                                         ? AppColors.gris
                                         : AppColors.grisInactif,
@@ -256,9 +265,9 @@ class ClientInterestGoalsScreen extends ConsumerWidget {
                       borderRadius: BorderRadius.circular(14),
                     ),
                   ),
-                  child: const Text(
+                  child: Text(
                     'Continue',
-                    style: TextStyle(
+                    style: GoogleFonts.dmSans(
                       fontSize: 17,
                       fontWeight: FontWeight.w600,
                     ),
@@ -270,9 +279,9 @@ class ClientInterestGoalsScreen extends ConsumerWidget {
             Center(
               child: GestureDetector(
                 onTap: () => context.go('/client/location'),
-                child: const Text(
+                child: Text(
                   'Skip for now',
-                  style: TextStyle(color: AppColors.gris, fontSize: 14),
+                  style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 14),
                 ),
               ),
             ),

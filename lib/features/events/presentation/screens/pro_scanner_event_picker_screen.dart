@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../shared/theme/app_colors.dart';
@@ -11,7 +12,7 @@ import '../../../../shared/widgets/spotbook_loading_shimmer.dart';
 import '../../data/event_notifier.dart';
 import '../../domain/event_models.dart';
 
-/// Choisir un événement avant d’ouvrir le scanner QR, ou accès direct caméra s’il n’y en a qu’un.
+/// Choisir un événement avant d'ouvrir le scanner QR, ou accès direct caméra s'il n'y en a qu'un.
 class ProScannerEventPickerScreen extends ConsumerStatefulWidget {
   const ProScannerEventPickerScreen({super.key});
 
@@ -43,16 +44,28 @@ class _ProScannerEventPickerScreenState
       appBar: AppBar(
         backgroundColor: AppColors.fond,
         surfaceTintColor: Colors.transparent,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: AppColors.blanc, size: 20),
-          onPressed: () {
-            HapticFeedback.lightImpact();
-            context.pop();
-          },
+        elevation: 0,
+        leading: Semantics(
+          label: 'Back',
+          child: IconButton(
+            icon: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: AppColors.surface,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: AppColors.border, width: 0.5),
+              ),
+              child: const Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
+            ),
+            onPressed: () {
+              HapticFeedback.lightImpact();
+              context.pop();
+            },
+          ),
         ),
-        title: const Text(
+        title: Text(
           'Scan a ticket',
-          style: TextStyle(
+          style: GoogleFonts.sora(
             color: AppColors.blanc,
             fontWeight: FontWeight.w700,
             fontSize: 18,
@@ -71,7 +84,7 @@ class _ProScannerEventPickerScreenState
             child: Text(
               e.toString(),
               textAlign: TextAlign.center,
-              style: const TextStyle(color: AppColors.gris),
+              style: GoogleFonts.dmSans(color: AppColors.gris),
             ),
           ),
         ),
@@ -85,15 +98,15 @@ class _ProScannerEventPickerScreenState
           }
 
           if (events.length == 1) {
-            return const Center(
+            return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  CircularProgressIndicator(color: AppColors.blanc),
-                  SizedBox(height: 16),
+                  const CircularProgressIndicator(color: AppColors.blanc),
+                  const SizedBox(height: 16),
                   Text(
                     'Opening camera...',
-                    style: TextStyle(color: AppColors.gris, fontSize: 14),
+                    style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 14),
                   ),
                 ],
               ),
@@ -109,8 +122,8 @@ class _ProScannerEventPickerScreenState
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 4),
                   child: Text(
-                    'Choisis l’événement concerné, puis scanne les QR des billets avec la caméra.',
-                    style: TextStyle(
+                    "Choisis l\u2019événement concerné, puis scanne les QR des billets avec la caméra.",
+                    style: GoogleFonts.dmSans(
                       color: AppColors.gris.withValues(alpha: 0.95),
                       fontSize: 13,
                       height: 1.4,
@@ -172,7 +185,7 @@ class _ProScannerEventPickerScreenState
                                 e.title,
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(
+                                style: GoogleFonts.sora(
                                   color: AppColors.blanc,
                                   fontWeight: FontWeight.w600,
                                   fontSize: 16,
@@ -181,7 +194,7 @@ class _ProScannerEventPickerScreenState
                               const SizedBox(height: 4),
                               Text(
                                 dateStr,
-                                style: const TextStyle(
+                                style: GoogleFonts.dmSans(
                                   color: AppColors.gris,
                                   fontSize: 13,
                                 ),

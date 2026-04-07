@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../shared/theme/app_colors.dart';
@@ -159,15 +160,15 @@ class _ClientEventsDiscoveryScreenState
                     final filtered =
                         _applyFilters(eventsState.events);
                     if (filtered.isEmpty) {
-                      return const Center(
+                      return Center(
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(Icons.event_busy,
+                            const Icon(Icons.event_busy,
                                 color: AppColors.gris, size: 48),
-                            SizedBox(height: 12),
+                            const SizedBox(height: 12),
                             Text('No events found',
-                                style: TextStyle(
+                                style: GoogleFonts.dmSans(
                                     color: AppColors.gris,
                                     fontSize: 15)),
                           ],
@@ -229,7 +230,7 @@ class _FilterChip extends StatelessWidget {
         ),
         child: Text(
           label,
-          style: TextStyle(
+          style: GoogleFonts.dmSans(
             color: selected ? AppColors.fond : AppColors.blanc,
             fontWeight: FontWeight.w600,
             fontSize: 13,
@@ -307,7 +308,7 @@ class _EventCard extends StatelessWidget {
                         event.minPrice > 0
                             ? 'Dès ${event.minPrice.toStringAsFixed(0)} \$'
                             : 'Gratuit',
-                        style: const TextStyle(
+                        style: GoogleFonts.dmSans(
                           color: AppColors.blanc,
                           fontWeight: FontWeight.bold,
                           fontSize: 13,
@@ -327,14 +328,14 @@ class _EventCard extends StatelessWidget {
                           color: AppColors.rose.withAlpha(200),
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        child: const Row(
+                        child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(Icons.local_fire_department,
+                            const Icon(Icons.local_fire_department,
                                 color: AppColors.blanc, size: 14),
-                            SizedBox(width: 4),
+                            const SizedBox(width: 4),
                             Text('Se vend vite',
-                                style: TextStyle(
+                                style: GoogleFonts.dmSans(
                                     color: AppColors.blanc,
                                     fontWeight: FontWeight.bold,
                                     fontSize: 11)),
@@ -352,7 +353,7 @@ class _EventCard extends StatelessWidget {
                 children: [
                   Text(
                     event.title,
-                    style: const TextStyle(
+                    style: GoogleFonts.sora(
                       color: AppColors.blanc,
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
@@ -368,7 +369,7 @@ class _EventCard extends StatelessWidget {
                             color: AppColors.gris, size: 14),
                         const SizedBox(width: 6),
                         Text(dateFmt,
-                            style: const TextStyle(
+                            style: GoogleFonts.dmSans(
                                 color: AppColors.gris,
                                 fontSize: 13)),
                       ],
@@ -384,7 +385,7 @@ class _EventCard extends StatelessWidget {
                         Expanded(
                           child: Text(
                             event.location!,
-                            style: const TextStyle(
+                            style: GoogleFonts.dmSans(
                                 color: AppColors.gris,
                                 fontSize: 13),
                             maxLines: 1,
@@ -403,8 +404,8 @@ class _EventCard extends StatelessWidget {
                         color: AppColors.error.withAlpha(30),
                         borderRadius: BorderRadius.circular(6),
                       ),
-                      child: const Text('Sold out',
-                          style: TextStyle(
+                      child: Text('Sold out',
+                          style: GoogleFonts.dmSans(
                               color: AppColors.error,
                               fontWeight: FontWeight.w600,
                               fontSize: 12)),

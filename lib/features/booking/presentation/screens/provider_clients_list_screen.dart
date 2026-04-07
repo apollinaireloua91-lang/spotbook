@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -162,7 +163,7 @@ class _ProviderClientsListScreenState
             child: CircularProgressIndicator(color: AppColors.violet)),
         error: (e, _) => Center(
           child: Text('$e',
-              style: const TextStyle(color: AppColors.gris)),
+              style: GoogleFonts.dmSans(color: AppColors.gris)),
         ),
         data: (clients) {
           final filtered = _sortAndFilter(clients);
@@ -175,7 +176,7 @@ class _ProviderClientsListScreenState
                 child: TextField(
                   controller: _searchCtrl,
                   onChanged: (v) => setState(() => _query = v),
-                  style: const TextStyle(
+                  style: GoogleFonts.dmSans(
                       color: AppColors.blanc, fontSize: 14),
                   decoration: InputDecoration(
                     hintText: 'Search client...',
@@ -227,15 +228,15 @@ class _ProviderClientsListScreenState
               // List
               Expanded(
                 child: filtered.isEmpty
-                    ? const Center(
+                    ? Center(
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(Icons.people_outline,
+                            const Icon(Icons.people_outline,
                                 color: AppColors.gris, size: 48),
-                            SizedBox(height: 12),
+                            const SizedBox(height: 12),
                             Text('No clients',
-                                style: TextStyle(
+                                style: GoogleFonts.dmSans(
                                     color: AppColors.gris,
                                     fontSize: 15)),
                           ],
@@ -295,7 +296,7 @@ class _SortChip extends StatelessWidget {
         ),
         child: Text(
           label,
-          style: TextStyle(
+          style: GoogleFonts.dmSans(
             color: selected ? AppColors.fond : AppColors.blanc,
             fontWeight: FontWeight.w600,
             fontSize: 13,
@@ -333,7 +334,7 @@ class _ClientCard extends StatelessWidget {
               children: [
                 Text(
                   client.clientName,
-                  style: const TextStyle(
+                  style: GoogleFonts.sora(
                     color: AppColors.blanc,
                     fontWeight: FontWeight.w600,
                     fontSize: 15,
@@ -359,7 +360,7 @@ class _ClientCard extends StatelessWidget {
                 const SizedBox(height: 2),
                 Text(
                   'Dernier : ${DateFormat('dd/MM/yy').format(client.lastBookingDate)}',
-                  style: const TextStyle(
+                  style: GoogleFonts.dmSans(
                       color: AppColors.grisInactif, fontSize: 11),
                 ),
               ],
@@ -393,7 +394,7 @@ class _MiniStat extends StatelessWidget {
         const SizedBox(width: 4),
         Flexible(
           child: Text(value,
-              style: const TextStyle(
+              style: GoogleFonts.dmSans(
                   color: AppColors.gris, fontSize: 12),
               overflow: TextOverflow.ellipsis),
         ),

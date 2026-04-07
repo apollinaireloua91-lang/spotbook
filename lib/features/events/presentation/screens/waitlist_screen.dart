@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../shared/theme/app_colors.dart';
 import '../../data/event_repository.dart';
@@ -54,18 +55,28 @@ class WaitlistScreen extends ConsumerWidget {
       backgroundColor: AppColors.fond,
       appBar: AppBar(
         backgroundColor: AppColors.fond,
+        elevation: 0,
+        surfaceTintColor: Colors.transparent,
         leading: Semantics(
           label: 'Back',
           child: IconButton(
-            icon: const Icon(Icons.arrow_back_ios, color: AppColors.blanc, size: 20),
+            icon: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: AppColors.surface,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: AppColors.border, width: 0.5),
+              ),
+              child: const Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
+            ),
             onPressed: () {
               HapticFeedback.mediumImpact();
               context.pop();
             },
           ),
         ),
-        title: const Text('Liste d\'attente',
-            style: TextStyle(color: AppColors.blanc, fontWeight: FontWeight.bold)),
+        title: Text('Liste d\'attente',
+            style: GoogleFonts.sora(color: AppColors.blanc, fontWeight: FontWeight.bold)),
         centerTitle: true,
       ),
       body: Padding(
@@ -81,7 +92,7 @@ class WaitlistScreen extends ConsumerWidget {
             const SizedBox(height: 24),
             Text(
               state.joined ? 'You are registered!' : 'Tickets sold out',
-              style: const TextStyle(color: AppColors.blanc, fontSize: 22, fontWeight: FontWeight.bold),
+              style: GoogleFonts.sora(color: AppColors.blanc, fontSize: 22, fontWeight: FontWeight.bold),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 12),
@@ -89,12 +100,12 @@ class WaitlistScreen extends ConsumerWidget {
               state.joined
                   ? 'You will be notified if a ticket becomes available for "$eventTitle". You will have 30 minutes to confirm.'
                   : 'Join the waitlist to get notified if a ticket becomes available.',
-              style: const TextStyle(color: AppColors.gris, fontSize: 15, height: 1.5),
+              style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 15, height: 1.5),
               textAlign: TextAlign.center,
             ),
             if (state.error != null) ...[
               const SizedBox(height: 12),
-              Text(state.error!, style: const TextStyle(color: AppColors.error, fontSize: 13)),
+              Text(state.error!, style: GoogleFonts.dmSans(color: AppColors.error, fontSize: 13)),
             ],
             const SizedBox(height: 32),
             if (!state.joined)
@@ -116,8 +127,8 @@ class WaitlistScreen extends ConsumerWidget {
                   ),
                   child: state.isJoining
                       ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: AppColors.gris, strokeWidth: 2))
-                      : const Text('Join the waitlist',
-                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                      : Text('Join the waitlist',
+                          style: GoogleFonts.dmSans(fontWeight: FontWeight.bold, fontSize: 16)),
                 ),
               ),
             if (state.joined)
@@ -133,8 +144,8 @@ class WaitlistScreen extends ConsumerWidget {
                     side: const BorderSide(color: AppColors.border),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
-                  child: const Text('Back',
-                      style: TextStyle(color: AppColors.blanc, fontWeight: FontWeight.w600, fontSize: 16)),
+                  child: Text('Back',
+                      style: GoogleFonts.dmSans(color: AppColors.blanc, fontWeight: FontWeight.w600, fontSize: 16)),
                 ),
               ),
           ],

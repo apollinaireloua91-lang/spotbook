@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/utils/cloudflare_stream_urls.dart';
@@ -99,15 +100,27 @@ class _ClientVideoDetailScreenState
         backgroundColor: AppColors.fond,
         appBar: AppBar(
           backgroundColor: Colors.transparent,
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back_ios,
-                color: AppColors.blanc, size: 20),
-            onPressed: () => context.pop(),
+          surfaceTintColor: Colors.transparent,
+          elevation: 0,
+          leading: Semantics(
+            label: 'Back',
+            child: IconButton(
+              icon: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: AppColors.surface,
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: AppColors.border, width: 0.5),
+                ),
+                child: const Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
+              ),
+              onPressed: () => context.pop(),
+            ),
           ),
         ),
         body: Center(
           child: Text('Error: $e',
-              style: const TextStyle(color: AppColors.gris)),
+              style: GoogleFonts.dmSans(color: AppColors.gris)),
         ),
       ),
       data: (video) {
@@ -116,15 +129,27 @@ class _ClientVideoDetailScreenState
             backgroundColor: AppColors.fond,
             appBar: AppBar(
               backgroundColor: Colors.transparent,
-              leading: IconButton(
-                icon: const Icon(Icons.arrow_back_ios,
-                    color: AppColors.blanc, size: 20),
-                onPressed: () => context.pop(),
+              surfaceTintColor: Colors.transparent,
+              elevation: 0,
+              leading: Semantics(
+                label: 'Back',
+                child: IconButton(
+                  icon: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: AppColors.surface,
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: AppColors.border, width: 0.5),
+                    ),
+                    child: const Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
+                  ),
+                  onPressed: () => context.pop(),
+                ),
               ),
             ),
-            body: const Center(
+            body: Center(
               child: Text('Video not found',
-                  style: TextStyle(color: AppColors.gris)),
+                  style: GoogleFonts.dmSans(color: AppColors.gris)),
             ),
           );
         }
@@ -163,10 +188,20 @@ class _ClientVideoDetailScreenState
               Positioned(
                 top: MediaQuery.of(context).padding.top + 8,
                 left: 12,
-                child: IconButton(
-                  icon: const Icon(Icons.arrow_back_ios,
-                      color: AppColors.blanc, size: 20),
-                  onPressed: () => context.pop(),
+                child: Semantics(
+                  label: 'Back',
+                  child: IconButton(
+                    icon: Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: AppColors.surface,
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(color: AppColors.border, width: 0.5),
+                      ),
+                      child: const Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
+                    ),
+                    onPressed: () => context.pop(),
+                  ),
                 ),
               ),
               // Right action bar
@@ -227,7 +262,7 @@ class _ClientVideoDetailScreenState
                           Expanded(
                             child: Text(
                               video.proName ?? 'Pro',
-                              style: const TextStyle(
+                              style: GoogleFonts.dmSans(
                                 color: AppColors.blanc,
                                 fontWeight: FontWeight.bold,
                                 fontSize: 15,
@@ -242,7 +277,7 @@ class _ClientVideoDetailScreenState
                     const SizedBox(height: 8),
                     Text(
                       video.title,
-                      style: const TextStyle(
+                      style: GoogleFonts.sora(
                         color: AppColors.blanc,
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
@@ -255,7 +290,7 @@ class _ClientVideoDetailScreenState
                       const SizedBox(height: 4),
                       Text(
                         video.description!,
-                        style: const TextStyle(
+                        style: GoogleFonts.dmSans(
                             color: AppColors.gris, fontSize: 13),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
@@ -276,9 +311,9 @@ class _ClientVideoDetailScreenState
                             gradient: AppColors.gradientAccent,
                             borderRadius: BorderRadius.circular(24),
                           ),
-                          child: const Text(
+                          child: Text(
                             'Book',
-                            style: TextStyle(
+                            style: GoogleFonts.dmSans(
                               color: AppColors.blanc,
                               fontWeight: FontWeight.bold,
                               fontSize: 14,
@@ -321,7 +356,7 @@ class _ActionButton extends StatelessWidget {
           const SizedBox(height: 4),
           Text(
             count > 0 ? '$count' : '',
-            style: const TextStyle(color: AppColors.blanc, fontSize: 12),
+            style: GoogleFonts.dmSans(color: AppColors.blanc, fontSize: 12),
           ),
         ],
       ),
@@ -390,11 +425,11 @@ class _CommentsSheetState extends ConsumerState<_CommentsSheet> {
               borderRadius: BorderRadius.circular(2),
             ),
           ),
-          const Padding(
-            padding: EdgeInsets.all(16),
+          Padding(
+            padding: const EdgeInsets.all(16),
             child: Text(
               'Comments',
-              style: TextStyle(
+              style: GoogleFonts.sora(
                 color: AppColors.blanc,
                 fontWeight: FontWeight.bold,
                 fontSize: 16,
@@ -409,13 +444,13 @@ class _CommentsSheetState extends ConsumerState<_CommentsSheet> {
                       color: AppColors.violet)),
               error: (e, _) => Center(
                 child: Text('$e',
-                    style: const TextStyle(color: AppColors.gris)),
+                    style: GoogleFonts.dmSans(color: AppColors.gris)),
               ),
               data: (comments) {
                 if (comments.isEmpty) {
-                  return const Center(
+                  return Center(
                     child: Text('No comments',
-                        style: TextStyle(color: AppColors.gris)),
+                        style: GoogleFonts.dmSans(color: AppColors.gris)),
                   );
                 }
                 return ListView.separated(
@@ -441,7 +476,7 @@ class _CommentsSheetState extends ConsumerState<_CommentsSheet> {
                             children: [
                               Text(
                                 c.userName ?? 'User',
-                                style: const TextStyle(
+                                style: GoogleFonts.dmSans(
                                   color: AppColors.blanc,
                                   fontWeight: FontWeight.w600,
                                   fontSize: 13,
@@ -450,7 +485,7 @@ class _CommentsSheetState extends ConsumerState<_CommentsSheet> {
                               const SizedBox(height: 2),
                               Text(
                                 c.content,
-                                style: const TextStyle(
+                                style: GoogleFonts.dmSans(
                                     color: AppColors.gris,
                                     fontSize: 13),
                               ),
@@ -479,11 +514,11 @@ class _CommentsSheetState extends ConsumerState<_CommentsSheet> {
                   Expanded(
                     child: TextField(
                       controller: _ctrl,
-                      style: const TextStyle(
+                      style: GoogleFonts.dmSans(
                           color: AppColors.blanc, fontSize: 14),
                       decoration: InputDecoration(
                         hintText: 'Add a comment...',
-                        hintStyle: TextStyle(
+                        hintStyle: GoogleFonts.dmSans(
                             color: AppColors.gris.withAlpha(128)),
                         border: InputBorder.none,
                         isDense: true,

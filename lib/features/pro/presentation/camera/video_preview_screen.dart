@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:video_compress/video_compress.dart';
 import 'package:video_player/video_player.dart';
@@ -194,13 +195,26 @@ class _VideoPreviewScreenState extends ConsumerState<VideoPreviewScreen> {
             backgroundColor: AppColors.fond,
             appBar: AppBar(
               backgroundColor: AppColors.fond,
-              leading: IconButton(
-                icon: const Icon(Icons.arrow_back, color: AppColors.blanc),
-                onPressed: isWorking ? null : () => context.pop(),
+              surfaceTintColor: Colors.transparent,
+              elevation: 0,
+              leading: Semantics(
+                label: 'Back',
+                child: IconButton(
+                  icon: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: AppColors.surface,
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: AppColors.border, width: 0.5),
+                    ),
+                    child: const Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
+                  ),
+                  onPressed: isWorking ? null : () => context.pop(),
+                ),
               ),
-              title: const Text(
+              title: Text(
                 'Preview',
-                style: TextStyle(
+                style: GoogleFonts.sora(
                   color: AppColors.blanc,
                   fontSize: 17,
                   fontWeight: FontWeight.w600,
@@ -358,9 +372,9 @@ class _VideoPreviewScreenState extends ConsumerState<VideoPreviewScreen> {
 
                     // ── Link to service ──
                     if (_services.isNotEmpty) ...[
-                      const Text(
+                      Text(
                         'Link to a service',
-                        style: TextStyle(
+                        style: GoogleFonts.dmSans(
                           color: AppColors.gris,
                           fontSize: 13,
                           fontWeight: FontWeight.w500,
@@ -402,9 +416,9 @@ class _VideoPreviewScreenState extends ConsumerState<VideoPreviewScreen> {
 
                     // ── Link to event ──
                     if (_events.isNotEmpty) ...[
-                      const Text(
+                      Text(
                         'Link to an event',
-                        style: TextStyle(
+                        style: GoogleFonts.dmSans(
                           color: AppColors.gris,
                           fontSize: 13,
                           fontWeight: FontWeight.w500,
@@ -508,9 +522,9 @@ class _VideoPreviewScreenState extends ConsumerState<VideoPreviewScreen> {
                                         strokeWidth: 2.5,
                                       ),
                                     )
-                                  : const Text(
+                                  : Text(
                                       'Publish',
-                                      style: TextStyle(
+                                      style: GoogleFonts.dmSans(
                                         fontSize: 16,
                                         fontWeight: FontWeight.w700,
                                       ),

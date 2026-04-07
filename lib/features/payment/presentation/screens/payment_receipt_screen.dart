@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../shared/theme/app_colors.dart';
@@ -61,6 +62,8 @@ class _PaymentReceiptScreenState extends ConsumerState<PaymentReceiptScreen>
       backgroundColor: AppColors.fond,
       appBar: AppBar(
         backgroundColor: AppColors.fond,
+        surfaceTintColor: Colors.transparent,
+        elevation: 0,
         leading: Semantics(
           label: 'Close',
           child: IconButton(
@@ -72,9 +75,9 @@ class _PaymentReceiptScreenState extends ConsumerState<PaymentReceiptScreen>
             },
           ),
         ),
-        title: const Text('Payment receipt',
+        title: Text('Payment receipt',
             style:
-                TextStyle(color: AppColors.blanc, fontWeight: FontWeight.bold)),
+                GoogleFonts.sora(color: AppColors.blanc, fontWeight: FontWeight.bold)),
         centerTitle: true,
       ),
       body: _isLoading
@@ -124,7 +127,7 @@ class _PaymentReceiptScreenState extends ConsumerState<PaymentReceiptScreen>
           const SizedBox(height: 16),
           Text(
             isPaid ? 'Payment confirmed' : 'Payment failed',
-            style: TextStyle(
+            style: GoogleFonts.sora(
               color: isPaid ? AppColors.success : AppColors.error,
               fontSize: 18,
               fontWeight: FontWeight.w600,
@@ -132,7 +135,7 @@ class _PaymentReceiptScreenState extends ConsumerState<PaymentReceiptScreen>
           ),
           Text(
             currencyFormat.format(booking.depositAmount),
-            style: const TextStyle(
+            style: GoogleFonts.sora(
               color: AppColors.blanc,
               fontSize: 32,
               fontWeight: FontWeight.w700,
@@ -220,7 +223,7 @@ class _PaymentReceiptScreenState extends ConsumerState<PaymentReceiptScreen>
                     const SizedBox(width: 8),
                     Text(
                       booking.bookingCode!,
-                      style: const TextStyle(
+                      style: GoogleFonts.dmSans(
                         color: AppColors.violetClair,
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
@@ -232,9 +235,9 @@ class _PaymentReceiptScreenState extends ConsumerState<PaymentReceiptScreen>
               ),
             ),
             const SizedBox(height: 8),
-            const Text(
+            Text(
               'Show this code at your appointment',
-              style: TextStyle(color: AppColors.gris, fontSize: 12),
+              style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 12),
               textAlign: TextAlign.center,
             ),
           ],
@@ -252,11 +255,11 @@ class _PaymentReceiptScreenState extends ConsumerState<PaymentReceiptScreen>
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(label,
-              style: const TextStyle(color: AppColors.gris, fontSize: 14)),
+              style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 14)),
           Flexible(
             child: Text(
               value,
-              style: TextStyle(
+              style: GoogleFonts.dmSans(
                 color: AppColors.blanc,
                 fontSize: 14,
                 fontWeight: isBold ? FontWeight.w600 : FontWeight.w400,

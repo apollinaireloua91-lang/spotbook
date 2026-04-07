@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../../../shared/theme/app_colors.dart';
@@ -71,10 +72,22 @@ class _VideoCaptureScreenState extends State<VideoCaptureScreen> {
       backgroundColor: AppColors.fond,
       appBar: AppBar(
         backgroundColor: AppColors.fond,
+        surfaceTintColor: Colors.transparent,
         elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppColors.blanc),
-          onPressed: () => context.pop(),
+        leading: Semantics(
+          label: 'Back',
+          child: IconButton(
+            icon: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: AppColors.surface,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: AppColors.border, width: 0.5),
+              ),
+              child: const Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
+            ),
+            onPressed: () => context.pop(),
+          ),
         ),
       ),
       body: SafeArea(
@@ -100,9 +113,9 @@ class _VideoCaptureScreenState extends State<VideoCaptureScreen> {
                 ),
                 const SizedBox(height: 24),
 
-                const Text(
+                Text(
                   'Upload a video',
-                  style: TextStyle(
+                  style: GoogleFonts.sora(
                     color: AppColors.blanc,
                     fontSize: 20,
                     fontWeight: FontWeight.w700,
@@ -110,9 +123,9 @@ class _VideoCaptureScreenState extends State<VideoCaptureScreen> {
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 10),
-                const Text(
+                Text(
                   'Pick a video from your gallery to showcase your service. Max 5 minutes.',
-                  style: TextStyle(
+                  style: GoogleFonts.dmSans(
                     color: AppColors.gris,
                     fontSize: 14,
                     height: 1.5,
@@ -139,7 +152,7 @@ class _VideoCaptureScreenState extends State<VideoCaptureScreen> {
                         : const Icon(Icons.photo_library_rounded),
                     label: Text(
                       _isPicking ? 'Opening...' : 'Choose from Gallery',
-                      style: const TextStyle(
+                      style: GoogleFonts.dmSans(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
                       ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../shared/theme/app_colors.dart';
 import '../../data/pro_verification_notifier.dart';
@@ -61,8 +62,24 @@ class _ProVerificationScreenState extends ConsumerState<ProVerificationScreen> {
       backgroundColor: AppColors.fond,
       appBar: AppBar(
         backgroundColor: AppColors.fond,
-        leading: IconButton(onPressed: () => context.pop(), icon: const Icon(Icons.arrow_back_ios, size: 20)),
-        title: const Text('STEP 2 OF 2', style: TextStyle(fontSize: 14, letterSpacing: 0.5)),
+        surfaceTintColor: Colors.transparent,
+        elevation: 0,
+        leading: Semantics(
+          label: 'Back',
+          child: IconButton(
+            onPressed: () => context.pop(),
+            icon: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: AppColors.surface,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: AppColors.border, width: 0.5),
+              ),
+              child: const Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
+            ),
+          ),
+        ),
+        title: Text('STEP 2 OF 2', style: GoogleFonts.dmSans(fontSize: 14, letterSpacing: 0.5)),
         centerTitle: true,
         actions: [IconButton(onPressed: () {
           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Help coming soon'), backgroundColor: AppColors.surface));
@@ -70,18 +87,18 @@ class _ProVerificationScreenState extends ConsumerState<ProVerificationScreen> {
       ),
       body: SafeArea(child: SingleChildScrollView(padding: const EdgeInsets.symmetric(horizontal: 24), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         const SizedBox(height: 8),
-        const Text('Configuration Pro', style: TextStyle(color: AppColors.blanc, fontSize: 28, fontWeight: FontWeight.bold)),
+        Text('Configuration Pro', style: GoogleFonts.sora(color: AppColors.blanc, fontSize: 28, fontWeight: FontWeight.bold)),
         const SizedBox(height: 8),
         Row(children: [
           Container(padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4), decoration: BoxDecoration(borderRadius: BorderRadius.circular(12), color: AppColors.warning.withAlpha(26)),
-            child: const Text('● Verification in progress', style: TextStyle(color: AppColors.warning, fontSize: 11, fontWeight: FontWeight.w600))),
+            child: Text('● Verification in progress', style: GoogleFonts.dmSans(color: AppColors.warning, fontSize: 11, fontWeight: FontWeight.w600))),
           const SizedBox(width: 8),
-          const Text('Action required', style: TextStyle(color: AppColors.gris, fontSize: 12)),
+          Text('Action required', style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 12)),
         ]),
         const SizedBox(height: 32),
-        const Text('Phone number (required)', style: TextStyle(color: AppColors.blanc, fontSize: 16, fontWeight: FontWeight.w600)),
+        Text('Phone number (required)', style: GoogleFonts.sora(color: AppColors.blanc, fontSize: 16, fontWeight: FontWeight.w600)),
         const SizedBox(height: 8),
-        const Text('Mobile number', style: TextStyle(color: AppColors.gris, fontSize: 13)),
+        Text('Mobile number', style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 13)),
         const SizedBox(height: 8),
         Row(children: [
           Container(padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14), decoration: BoxDecoration(color: AppColors.surfaceAuth, borderRadius: BorderRadius.circular(12)),
@@ -91,16 +108,16 @@ class _ProVerificationScreenState extends ConsumerState<ProVerificationScreen> {
             decoration: InputDecoration(hintText: 'Phone number', hintStyle: TextStyle(color: AppColors.gris.withAlpha(128)), filled: true, fillColor: AppColors.surfaceAuth, border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none)))),
         ]),
         const SizedBox(height: 8),
-        const Text('We will send a 6-digit code to verify this number.', style: TextStyle(color: AppColors.gris, fontSize: 12)),
+        Text('We will send a 6-digit code to verify this number.', style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 12)),
         const SizedBox(height: 12),
         SizedBox(width: double.infinity, height: 44, child: OutlinedButton.icon(onPressed: () {
           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('SMS verification coming soon'), backgroundColor: AppColors.surface));
         }, icon: const Icon(Icons.sms, size: 18), label: const Text('Send code'),
           style: OutlinedButton.styleFrom(foregroundColor: AppColors.blanc, side: const BorderSide(color: AppColors.border), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))))),
         const SizedBox(height: 24), const Divider(color: AppColors.border), const SizedBox(height: 24),
-        const Text('ID document (required)', style: TextStyle(color: AppColors.blanc, fontSize: 16, fontWeight: FontWeight.w600)),
+        Text('ID document (required)', style: GoogleFonts.sora(color: AppColors.blanc, fontSize: 16, fontWeight: FontWeight.w600)),
         const SizedBox(height: 8),
-        const Text('Please upload a clear photo of your official ID (driver\'s license, passport, or national ID card) to activate your Pro account.', style: TextStyle(color: AppColors.gris, fontSize: 13)),
+        Text('Please upload a clear photo of your official ID (driver\'s license, passport, or national ID card) to activate your Pro account.', style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 13)),
         const SizedBox(height: 16),
         GestureDetector(
           onTap: s.isUploading ? null : _pickDocument,
@@ -114,9 +131,9 @@ class _ProVerificationScreenState extends ConsumerState<ProVerificationScreen> {
               ] else ...[
                 const Icon(Icons.cloud_upload_outlined, color: AppColors.accent, size: 36),
                 const SizedBox(height: 8),
-                const Text('Tap to upload front and back', style: TextStyle(color: AppColors.blanc, fontSize: 14, fontWeight: FontWeight.w500)),
+                Text('Tap to upload front and back', style: GoogleFonts.dmSans(color: AppColors.blanc, fontSize: 14, fontWeight: FontWeight.w500)),
                 const SizedBox(height: 4),
-                const Text('SVG, PNG, JPG ou PDF (MAX. 5 Mo)', style: TextStyle(color: AppColors.gris, fontSize: 12)),
+                Text('SVG, PNG, JPG ou PDF (MAX. 5 Mo)', style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 12)),
               ],
             ])),
         ),
@@ -125,13 +142,13 @@ class _ProVerificationScreenState extends ConsumerState<ProVerificationScreen> {
           child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
             const Icon(Icons.lock, color: AppColors.accent, size: 18),
             const SizedBox(width: 10),
-            Expanded(child: Text('Your ID is encrypted and stored securely. We only use this information to verify your identity. It will never be shared publicly.', style: TextStyle(color: AppColors.gris.withAlpha(204), fontSize: 12, height: 1.4))),
+            Expanded(child: Text('Your ID is encrypted and stored securely. We only use this information to verify your identity. It will never be shared publicly.', style: GoogleFonts.dmSans(color: AppColors.gris.withAlpha(204), fontSize: 12, height: 1.4))),
           ])),
         const SizedBox(height: 32),
         SizedBox(width: double.infinity, height: 52, child: ElevatedButton(
           onPressed: s.isSubmitting ? null : _submit,
           style: ElevatedButton.styleFrom(backgroundColor: AppColors.accent, foregroundColor: AppColors.fond, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
-          child: s.isSubmitting ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.fond)) : const Text('Submit documents', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+          child: s.isSubmitting ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.fond)) : Text('Submit documents', style: GoogleFonts.dmSans(fontSize: 16, fontWeight: FontWeight.w600)),
         )),
         const SizedBox(height: 32),
       ]))),

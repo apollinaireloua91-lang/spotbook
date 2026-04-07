@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/utils/time_ago.dart';
@@ -71,12 +72,13 @@ class ProProfileScreen extends ConsumerWidget {
             backgroundColor: AppColors.fond,
             appBar: AppBar(
               backgroundColor: AppColors.fond,
+              surfaceTintColor: Colors.transparent,
               elevation: 0,
               leading: _BackButton(),
             ),
-            body: const Center(
+            body: Center(
               child:
-                  Text('Profile not found', style: TextStyle(color: AppColors.gris)),
+                  Text('Profile not found', style: GoogleFonts.dmSans(color: AppColors.gris)),
             ),
           );
         }
@@ -90,12 +92,13 @@ class ProProfileScreen extends ConsumerWidget {
         backgroundColor: AppColors.fond,
         appBar: AppBar(
           backgroundColor: AppColors.fond,
+          surfaceTintColor: Colors.transparent,
           elevation: 0,
           leading: _BackButton(),
         ),
         body: Center(
           child: Text('Erreur : $err',
-              style: const TextStyle(color: AppColors.error)),
+              style: GoogleFonts.dmSans(color: AppColors.error)),
         ),
       ),
     );
@@ -105,9 +108,20 @@ class ProProfileScreen extends ConsumerWidget {
 class _BackButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return IconButton(
-      icon: const Icon(Icons.arrow_back_ios, color: AppColors.blanc, size: 20),
-      onPressed: () => context.pop(),
+    return Semantics(
+      label: 'Back',
+      child: IconButton(
+        icon: Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: AppColors.surface,
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: AppColors.border, width: 0.5),
+          ),
+          child: const Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
+        ),
+        onPressed: () => context.pop(),
+      ),
     );
   }
 }
@@ -206,8 +220,8 @@ class _PremiumProfileScaffoldState
                 contentPadding: EdgeInsets.zero,
                 leading:
                     const Icon(Icons.flag_outlined, color: AppColors.blanc),
-                title: const Text('Report',
-                    style: TextStyle(color: AppColors.blanc)),
+                title: Text('Report',
+                    style: GoogleFonts.dmSans(color: AppColors.blanc)),
                 onTap: () {
                   Navigator.of(ctx).pop();
                   showReportSheet(context,
@@ -217,8 +231,8 @@ class _PremiumProfileScaffoldState
               ListTile(
                 contentPadding: EdgeInsets.zero,
                 leading: const Icon(Icons.block, color: AppColors.error),
-                title: const Text('Block',
-                    style: TextStyle(color: AppColors.error)),
+                title: Text('Block',
+                    style: GoogleFonts.dmSans(color: AppColors.error)),
                 onTap: () {
                   Navigator.of(ctx).pop();
                   showBlockConfirmDialog(context,
@@ -269,12 +283,12 @@ class _PremiumProfileScaffoldState
                         labelColor: AppColors.blanc,
                         unselectedLabelColor: AppColors.gris,
                         dividerColor: AppColors.border.withAlpha(80),
-                        labelStyle: const TextStyle(
+                        labelStyle: GoogleFonts.dmSans(
                           fontWeight: FontWeight.w700,
                           fontSize: 13,
                           letterSpacing: 0.2,
                         ),
-                        unselectedLabelStyle: const TextStyle(
+                        unselectedLabelStyle: GoogleFonts.dmSans(
                           fontWeight: FontWeight.w400,
                           fontSize: 13,
                         ),
@@ -487,7 +501,7 @@ class _PremiumProfileScaffoldState
                       child: Text(
                         p.businessName,
                         textAlign: TextAlign.center,
-                        style: const TextStyle(
+                        style: GoogleFonts.sora(
                           color: AppColors.blanc,
                           fontSize: 22,
                           fontWeight: FontWeight.w800,
@@ -519,9 +533,9 @@ class _PremiumProfileScaffoldState
                           gradient: AppColors.gradientAccent,
                           borderRadius: BorderRadius.circular(6),
                         ),
-                        child: const Text(
+                        child: Text(
                           'TOP PRO',
-                          style: TextStyle(
+                          style: GoogleFonts.dmSans(
                             color: AppColors.blanc,
                             fontSize: 9,
                             fontWeight: FontWeight.w800,
@@ -540,7 +554,7 @@ class _PremiumProfileScaffoldState
                 Text(
                   categoryCity,
                   textAlign: TextAlign.center,
-                  style: const TextStyle(color: AppColors.gris, fontSize: 13),
+                  style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 13),
                 ),
               ],
 
@@ -570,7 +584,7 @@ class _PremiumProfileScaffoldState
                     textAlign: TextAlign.center,
                     maxLines: 3,
                     overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
+                    style: GoogleFonts.dmSans(
                       color: AppColors.blanc.withAlpha(200),
                       fontSize: 13,
                       height: 1.45,
@@ -681,7 +695,7 @@ class _GoldRating extends StatelessWidget {
         const SizedBox(width: 8),
         Text(
           rating.toStringAsFixed(1),
-          style: const TextStyle(
+          style: GoogleFonts.sora(
             color: AppColors.blanc,
             fontSize: 16,
             fontWeight: FontWeight.w800,
@@ -690,7 +704,7 @@ class _GoldRating extends StatelessWidget {
         const SizedBox(width: 4),
         Text(
           '($reviewsCount)',
-          style: TextStyle(
+          style: GoogleFonts.dmSans(
             color: AppColors.gris.withAlpha(180),
             fontSize: 13,
           ),
@@ -787,7 +801,7 @@ class _StatItem extends StatelessWidget {
         children: [
           Text(
             value,
-            style: const TextStyle(
+            style: GoogleFonts.sora(
               color: AppColors.blanc,
               fontSize: 18,
               fontWeight: FontWeight.w800,
@@ -796,7 +810,7 @@ class _StatItem extends StatelessWidget {
           const SizedBox(height: 2),
           Text(
             label,
-            style: TextStyle(
+            style: GoogleFonts.dmSans(
               color: AppColors.gris.withAlpha(180),
               fontSize: 11,
               fontWeight: FontWeight.w500,
@@ -849,7 +863,7 @@ class _ActionButton extends StatelessWidget {
             const SizedBox(width: 6),
             Text(
               label,
-              style: TextStyle(
+              style: GoogleFonts.dmSans(
                 color: isActive ? AppColors.violet : AppColors.blanc,
                 fontSize: 12,
                 fontWeight: FontWeight.w600,
@@ -884,15 +898,15 @@ class _BookButton extends StatelessWidget {
             ),
           ],
         ),
-        child: const Row(
+        child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.calendar_today_outlined,
+            const Icon(Icons.calendar_today_outlined,
                 color: AppColors.blanc, size: 16),
-            SizedBox(width: 8),
+            const SizedBox(width: 8),
             Text(
               'Book',
-              style: TextStyle(
+              style: GoogleFonts.dmSans(
                 color: AppColors.blanc,
                 fontSize: 14,
                 fontWeight: FontWeight.w700,
@@ -940,7 +954,7 @@ class _PersistentBookingBar extends StatelessWidget {
                   children: [
                     Text(
                       proName,
-                      style: const TextStyle(
+                      style: GoogleFonts.sora(
                         color: AppColors.blanc,
                         fontSize: 14,
                         fontWeight: FontWeight.w700,
@@ -951,7 +965,7 @@ class _PersistentBookingBar extends StatelessWidget {
                     const SizedBox(height: 2),
                     Text(
                       'Available services',
-                      style: TextStyle(
+                      style: GoogleFonts.dmSans(
                         color: AppColors.gris.withAlpha(180),
                         fontSize: 12,
                       ),
@@ -976,9 +990,9 @@ class _PersistentBookingBar extends StatelessWidget {
                       ),
                     ],
                   ),
-                  child: const Text(
+                  child: Text(
                     'Book',
-                    style: TextStyle(
+                    style: GoogleFonts.dmSans(
                       color: AppColors.blanc,
                       fontSize: 15,
                       fontWeight: FontWeight.w700,
@@ -1121,7 +1135,7 @@ class _PremiumServiceCard extends StatelessWidget {
               children: [
                 Text(
                   service.name,
-                  style: const TextStyle(
+                  style: GoogleFonts.dmSans(
                     color: AppColors.blanc,
                     fontSize: 15,
                     fontWeight: FontWeight.w600,
@@ -1135,7 +1149,7 @@ class _PremiumServiceCard extends StatelessWidget {
                     const SizedBox(width: 4),
                     Text(
                       '${service.durationMinutes} min',
-                      style: TextStyle(
+                      style: GoogleFonts.dmSans(
                         color: AppColors.gris.withAlpha(180),
                         fontSize: 12,
                       ),
@@ -1151,7 +1165,7 @@ class _PremiumServiceCard extends StatelessWidget {
             children: [
               Text(
                 '${service.price.toStringAsFixed(0)} \$',
-                style: const TextStyle(
+                style: GoogleFonts.sora(
                   color: AppColors.blanc,
                   fontSize: 16,
                   fontWeight: FontWeight.w800,
@@ -1184,9 +1198,9 @@ class _PremiumServiceCard extends StatelessWidget {
                 color: AppColors.violet,
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: const Text(
+              child: Text(
                 'Book',
-                style: TextStyle(
+                style: GoogleFonts.dmSans(
                   color: AppColors.blanc,
                   fontSize: 12,
                   fontWeight: FontWeight.w700,
@@ -1268,7 +1282,7 @@ class _ReviewSummary extends StatelessWidget {
             children: [
               Text(
                 rating.toStringAsFixed(1),
-                style: const TextStyle(
+                style: GoogleFonts.sora(
                   color: AppColors.blanc,
                   fontSize: 40,
                   fontWeight: FontWeight.w800,
@@ -1291,7 +1305,7 @@ class _ReviewSummary extends StatelessWidget {
               const SizedBox(height: 6),
               Text(
                 '$count avis',
-                style: TextStyle(
+                style: GoogleFonts.dmSans(
                   color: AppColors.gris.withAlpha(180),
                   fontSize: 12,
                 ),
@@ -1309,7 +1323,7 @@ class _ReviewSummary extends StatelessWidget {
                     child: Row(
                       children: [
                         Text('$stars',
-                            style: const TextStyle(
+                            style: GoogleFonts.dmSans(
                                 color: AppColors.gris, fontSize: 11)),
                         const SizedBox(width: 6),
                         const Icon(Icons.star_rounded,
@@ -1371,7 +1385,7 @@ class _ReviewCard extends StatelessWidget {
                   children: [
                     Text(
                       review.clientName ?? 'Client',
-                      style: const TextStyle(
+                      style: GoogleFonts.dmSans(
                         color: AppColors.blanc,
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
@@ -1379,7 +1393,7 @@ class _ReviewCard extends StatelessWidget {
                     ),
                     Text(
                       timeAgo(review.createdAt),
-                      style: TextStyle(
+                      style: GoogleFonts.dmSans(
                         color: AppColors.gris.withAlpha(150),
                         fontSize: 11,
                       ),
@@ -1405,7 +1419,7 @@ class _ReviewCard extends StatelessWidget {
             const SizedBox(height: 10),
             Text(
               review.comment!,
-              style: TextStyle(
+              style: GoogleFonts.dmSans(
                 color: AppColors.blanc.withAlpha(220),
                 fontSize: 13,
                 height: 1.45,
@@ -1424,7 +1438,7 @@ class _ReviewCard extends StatelessWidget {
               ),
               child: Text(
                 review.serviceName!,
-                style: const TextStyle(
+                style: GoogleFonts.dmSans(
                   color: AppColors.violetClair,
                   fontSize: 11,
                   fontWeight: FontWeight.w500,
@@ -1452,9 +1466,9 @@ class _TraiteurMenuWrapper extends ConsumerWidget {
       data: (services) => TraiteurMenuTab(services: services),
       loading: () =>
           const Center(child: CircularProgressIndicator(color: AppColors.violet)),
-      error: (_, __) => const Center(
+      error: (_, __) => Center(
         child:
-            Text('Loading error', style: TextStyle(color: AppColors.gris)),
+            Text('Loading error', style: GoogleFonts.dmSans(color: AppColors.gris)),
       ),
     );
   }
@@ -1516,7 +1530,7 @@ class _EmptyState extends StatelessWidget {
             child: Icon(icon, size: 28, color: AppColors.violet),
           ),
           const SizedBox(height: 12),
-          Text(text, style: const TextStyle(color: AppColors.gris, fontSize: 14)),
+          Text(text, style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 14)),
         ],
       ),
     );
@@ -1535,14 +1549,14 @@ class _ErrorState extends StatelessWidget {
         children: [
           const Icon(Icons.error_outline, color: AppColors.error, size: 36),
           const SizedBox(height: 12),
-          const Text('Loading error',
-              style: TextStyle(color: AppColors.gris, fontSize: 14)),
+          Text('Loading error',
+              style: GoogleFonts.sora(color: AppColors.gris, fontSize: 14)),
           const SizedBox(height: 12),
           GestureDetector(
             onTap: onRetry,
-            child: const Text(
+            child: Text(
               'Retry',
-              style: TextStyle(
+              style: GoogleFonts.dmSans(
                 color: AppColors.violet,
                 fontSize: 14,
                 fontWeight: FontWeight.w600,

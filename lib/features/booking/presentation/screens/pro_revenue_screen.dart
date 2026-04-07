@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../core/services/app_config_provider.dart';
@@ -36,17 +37,25 @@ class _ProRevenueScreenState extends ConsumerState<ProRevenueScreen> {
       appBar: AppBar(
         backgroundColor: AppColors.fond,
         surfaceTintColor: Colors.transparent,
+        elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios,
-              color: AppColors.blanc, size: 20),
+          icon: Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: AppColors.surface,
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: AppColors.border, width: 0.5),
+            ),
+            child: const Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
+          ),
           onPressed: () {
             HapticFeedback.lightImpact();
             context.pop();
           },
         ),
-        title: const Text(
+        title: Text(
           'Revenus',
-          style: TextStyle(
+          style: GoogleFonts.sora(
             color: AppColors.blanc,
             fontWeight: FontWeight.w700,
             fontSize: 17,
@@ -75,7 +84,7 @@ class _ProRevenueScreenState extends ConsumerState<ProRevenueScreen> {
             child: Text(
               e.toString(),
               textAlign: TextAlign.center,
-              style: const TextStyle(color: AppColors.gris),
+              style: GoogleFonts.dmSans(color: AppColors.gris),
             ),
           ),
         ),
@@ -96,9 +105,9 @@ class _ProRevenueScreenState extends ConsumerState<ProRevenueScreen> {
             child: ListView(
               padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
               children: [
-                const Text(
+                Text(
                   'Acomptes encaissés (confirmés + terminés), hors frais Stripe.',
-                  style: TextStyle(
+                  style: GoogleFonts.dmSans(
                       color: AppColors.gris,
                       fontSize: 13,
                       height: 1.4),
@@ -146,15 +155,15 @@ class _ProRevenueScreenState extends ConsumerState<ProRevenueScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
+                      Text(
                         'Total for period',
-                        style: TextStyle(
+                        style: GoogleFonts.dmSans(
                             color: AppColors.gris, fontSize: 13),
                       ),
                       const SizedBox(height: 4),
                       Text(
                         '${total.toStringAsFixed(2)} CAD',
-                        style: const TextStyle(
+                        style: GoogleFonts.sora(
                           color: AppColors.blanc,
                           fontSize: 28,
                           fontWeight: FontWeight.w800,
@@ -172,8 +181,8 @@ class _ProRevenueScreenState extends ConsumerState<ProRevenueScreen> {
                           icon: const Icon(
                               Icons.account_balance_outlined,
                               size: 18),
-                          label: const Text('Retirer',
-                              style: TextStyle(
+                          label: Text('Retirer',
+                              style: GoogleFonts.dmSans(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 15)),
                           style: ElevatedButton.styleFrom(
@@ -190,9 +199,9 @@ class _ProRevenueScreenState extends ConsumerState<ProRevenueScreen> {
                 ),
                 const SizedBox(height: 24),
                 // Chart
-                const Text(
+                Text(
                   'Par jour',
-                  style: TextStyle(
+                  style: GoogleFonts.sora(
                     color: AppColors.blanc,
                     fontSize: 16,
                     fontWeight: FontWeight.w700,
@@ -229,7 +238,7 @@ class _ProRevenueScreenState extends ConsumerState<ProRevenueScreen> {
                               v >= 1000
                                   ? '${(v / 1000).toStringAsFixed(1)}k'
                                   : v.toInt().toString(),
-                              style: const TextStyle(
+                              style: GoogleFonts.dmSans(
                                 color: AppColors.gris,
                                 fontSize: 10,
                               ),
@@ -257,7 +266,7 @@ class _ProRevenueScreenState extends ConsumerState<ProRevenueScreen> {
                                 child: Text(
                                   DateFormat('d/M')
                                       .format(series[i].day),
-                                  style: const TextStyle(
+                                  style: GoogleFonts.dmSans(
                                     color: AppColors.gris,
                                     fontSize: 9,
                                   ),
@@ -309,7 +318,7 @@ class _ProRevenueScreenState extends ConsumerState<ProRevenueScreen> {
                             final d = series[i].day;
                             return BarTooltipItem(
                               '${DateFormat.yMMMd().format(d)}\n',
-                              const TextStyle(
+                              GoogleFonts.dmSans(
                                 color: AppColors.blanc,
                                 fontWeight: FontWeight.w600,
                                 fontSize: 12,
@@ -318,7 +327,7 @@ class _ProRevenueScreenState extends ConsumerState<ProRevenueScreen> {
                                 TextSpan(
                                   text:
                                       '${series[i].amount.toStringAsFixed(2)} CAD',
-                                  style: const TextStyle(
+                                  style: GoogleFonts.dmSans(
                                     color: AppColors.grisClair,
                                     fontSize: 12,
                                   ),
@@ -333,9 +342,9 @@ class _ProRevenueScreenState extends ConsumerState<ProRevenueScreen> {
                 ),
                 const SizedBox(height: 28),
                 // Transaction list header
-                const Text(
+                Text(
                   'Transactions',
-                  style: TextStyle(
+                  style: GoogleFonts.sora(
                     color: AppColors.blanc,
                     fontSize: 16,
                     fontWeight: FontWeight.w700,
@@ -352,15 +361,15 @@ class _ProRevenueScreenState extends ConsumerState<ProRevenueScreen> {
                   ),
                   error: (e, _) => Text(e.toString(),
                       style:
-                          const TextStyle(color: AppColors.gris)),
+                          GoogleFonts.dmSans(color: AppColors.gris)),
                   data: (transactions) {
                     if (transactions.isEmpty) {
-                      return const Padding(
-                        padding: EdgeInsets.symmetric(vertical: 24),
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 24),
                         child: Center(
                           child: Text(
                               'No transactions for this period',
-                              style: TextStyle(
+                              style: GoogleFonts.dmSans(
                                   color: AppColors.gris,
                                   fontSize: 14)),
                         ),
@@ -420,7 +429,7 @@ class _TransactionRow extends StatelessWidget {
               Expanded(
                 child: Text(
                   booking.clientName ?? 'Client',
-                  style: const TextStyle(
+                  style: GoogleFonts.dmSans(
                     color: AppColors.blanc,
                     fontWeight: FontWeight.w600,
                     fontSize: 14,
@@ -429,7 +438,7 @@ class _TransactionRow extends StatelessWidget {
               ),
               Text(
                 dateFmt,
-                style: const TextStyle(
+                style: GoogleFonts.dmSans(
                     color: AppColors.gris, fontSize: 12),
               ),
             ],
@@ -437,7 +446,7 @@ class _TransactionRow extends StatelessWidget {
           const SizedBox(height: 4),
           Text(
             booking.serviceName ?? 'Service',
-            style: const TextStyle(
+            style: GoogleFonts.dmSans(
                 color: AppColors.gris, fontSize: 12),
           ),
           const SizedBox(height: 8),
@@ -481,11 +490,11 @@ class _AmountLabel extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(label,
-            style: const TextStyle(
+            style: GoogleFonts.dmSans(
                 color: AppColors.grisInactif, fontSize: 10)),
         const SizedBox(height: 2),
         Text(value,
-            style: TextStyle(
+            style: GoogleFonts.dmSans(
               color: color ?? AppColors.blanc,
               fontWeight: FontWeight.w600,
               fontSize: 13,
@@ -519,7 +528,7 @@ class _PeriodChip extends StatelessWidget {
               horizontal: 16, vertical: 10),
           child: Text(
             label,
-            style: TextStyle(
+            style: GoogleFonts.dmSans(
               color: selected ? AppColors.fond : AppColors.blanc,
               fontWeight: FontWeight.w600,
               fontSize: 13,

@@ -471,7 +471,7 @@ class _DetailBody extends StatelessWidget {
                 }
               },
               itemBuilder: (context) => [
-                const PopupMenuItem<String>(
+                PopupMenuItem<String>(
                   value: 'report',
                   child: Text(
                     'Report this booking',

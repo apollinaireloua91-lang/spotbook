@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/widgets/address_autocomplete_field.dart';
@@ -130,7 +131,26 @@ class _ProBusinessDetailsScreenState
 
     return Scaffold(
       backgroundColor: AppColors.fond,
-      appBar: AppBar(backgroundColor: AppColors.fond, elevation: 0),
+      appBar: AppBar(
+        backgroundColor: AppColors.fond,
+        surfaceTintColor: Colors.transparent,
+        elevation: 0,
+        leading: Semantics(
+          label: 'Back',
+          child: IconButton(
+            onPressed: () => context.pop(),
+            icon: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: AppColors.surface,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: AppColors.border, width: 0.5),
+              ),
+              child: const Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
+            ),
+          ),
+        ),
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -152,9 +172,9 @@ class _ProBusinessDetailsScreenState
                   borderRadius: BorderRadius.circular(12),
                   color: AppColors.accent.withAlpha(26),
                 ),
-                child: const Text(
+                child: Text(
                   '● CONFIGURATION EN COURS',
-                  style: TextStyle(
+                  style: GoogleFonts.dmSans(
                     color: AppColors.accent,
                     fontSize: 11,
                     fontWeight: FontWeight.w600,
@@ -162,18 +182,18 @@ class _ProBusinessDetailsScreenState
                 ),
               ),
               const SizedBox(height: 16),
-              const Text(
+              Text(
                 'Business details',
-                style: TextStyle(
+                style: GoogleFonts.sora(
                   color: AppColors.blanc,
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
                 ),
               ),
               const SizedBox(height: 8),
-              const Text(
+              Text(
                 'Step 1: Tell us about your services so clients can easily find you.',
-                style: TextStyle(color: AppColors.gris, fontSize: 14),
+                style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 14),
               ),
               const SizedBox(height: 32),
 
@@ -294,9 +314,9 @@ class _ProBusinessDetailsScreenState
                           child: CircularProgressIndicator(
                               strokeWidth: 2, color: AppColors.fond),
                         )
-                      : const Text(
+                      : Text(
                           'Continue \u2192',
-                          style: TextStyle(
+                          style: GoogleFonts.dmSans(
                               fontSize: 16, fontWeight: FontWeight.w600),
                         ),
                 ),

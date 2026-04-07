@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/widgets/spotbook_loading_shimmer.dart';
@@ -46,14 +47,14 @@ class _ClientSearchBody extends StatelessWidget {
                   const SizedBox(height: 16),
                   Text(
                     state.error!,
-                    style: const TextStyle(color: AppColors.gris, fontSize: 15),
+                    style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 15),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 16),
                   TextButton.icon(
                     onPressed: () => context.read<ClientSearchCubit>().refresh(),
                     icon: const Icon(Icons.refresh, color: AppColors.violet),
-                    label: const Text('Retry', style: TextStyle(color: AppColors.violet)),
+                    label: Text('Retry', style: GoogleFonts.dmSans(color: AppColors.violet)),
                   ),
                 ],
               ),

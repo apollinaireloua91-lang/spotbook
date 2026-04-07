@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
 import '../../../../shared/theme/app_colors.dart';
@@ -180,18 +181,28 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> {
       backgroundColor: AppColors.fond,
       appBar: AppBar(
         backgroundColor: AppColors.fond,
+        elevation: 0,
+        surfaceTintColor: Colors.transparent,
         leading: Semantics(
           label: 'Back',
           child: IconButton(
-            icon: const Icon(Icons.arrow_back_ios, color: AppColors.blanc, size: 20),
+            icon: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: AppColors.surface,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: AppColors.border, width: 0.5),
+              ),
+              child: const Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
+            ),
             onPressed: () {
               HapticFeedback.mediumImpact();
               context.pop();
             },
           ),
         ),
-        title: const Text('Scanner QR',
-            style: TextStyle(color: AppColors.blanc, fontWeight: FontWeight.bold)),
+        title: Text('Scanner QR',
+            style: GoogleFonts.sora(color: AppColors.blanc, fontWeight: FontWeight.bold)),
         centerTitle: true,
       ),
       body: Column(
@@ -208,7 +219,7 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> {
                 const SizedBox(width: 8),
                 Text(
                   '${state.scannedCount} / ${state.totalSold} scanned',
-                  style: const TextStyle(color: AppColors.blanc, fontSize: 16, fontWeight: FontWeight.w600),
+                  style: GoogleFonts.dmSans(color: AppColors.blanc, fontSize: 16, fontWeight: FontWeight.w600),
                 ),
               ],
             ),
@@ -240,7 +251,7 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> {
                           const SizedBox(height: 12),
                           Text(
                             overlayText,
-                            style: const TextStyle(color: AppColors.blanc, fontSize: 20, fontWeight: FontWeight.bold),
+                            style: GoogleFonts.sora(color: AppColors.blanc, fontSize: 20, fontWeight: FontWeight.bold),
                             textAlign: TextAlign.center,
                           ),
                         ],

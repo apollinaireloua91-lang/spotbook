@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../shared/theme/app_colors.dart';
@@ -21,10 +22,10 @@ class ProMyEventsScreen extends ConsumerWidget {
     final uid = ref.watch(profileRepositoryProvider).currentUserId;
 
     if (uid == null) {
-      return const Scaffold(
+      return Scaffold(
         backgroundColor: AppColors.fond,
         body: Center(
-          child: Text('Not signed in', style: TextStyle(color: AppColors.gris)),
+          child: Text('Not signed in', style: GoogleFonts.dmSans(color: AppColors.gris)),
         ),
       );
     }
@@ -36,10 +37,11 @@ class ProMyEventsScreen extends ConsumerWidget {
       appBar: AppBar(
         backgroundColor: AppColors.fond,
         elevation: 0,
+        surfaceTintColor: Colors.transparent,
         scrolledUnderElevation: 0,
-        title: const Text(
+        title: Text(
           'My events',
-          style: TextStyle(
+          style: GoogleFonts.sora(
             color: AppColors.blanc,
             fontWeight: FontWeight.w600,
           ),
@@ -59,16 +61,16 @@ class ProMyEventsScreen extends ConsumerWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text(
+                  Text(
                     'No events',
-                    style: TextStyle(color: AppColors.gris, fontSize: 15),
+                    style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 15),
                   ),
                   const SizedBox(height: 16),
                   TextButton(
                     onPressed: () => context.push('/create-event'),
-                    child: const Text(
+                    child: Text(
                       'Create an event',
-                      style: TextStyle(color: AppColors.blanc),
+                      style: GoogleFonts.dmSans(color: AppColors.blanc),
                     ),
                   ),
                 ],
@@ -94,7 +96,7 @@ class ProMyEventsScreen extends ConsumerWidget {
         error: (err, _) => Center(
           child: Text(
             'Error: $err',
-            style: const TextStyle(color: AppColors.error),
+            style: GoogleFonts.dmSans(color: AppColors.error),
           ),
         ),
       ),
@@ -129,7 +131,7 @@ class _ProEventRow extends StatelessWidget {
                   children: [
                     Text(
                       event.title,
-                      style: const TextStyle(
+                      style: GoogleFonts.sora(
                         color: AppColors.blanc,
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
@@ -138,7 +140,7 @@ class _ProEventRow extends StatelessWidget {
                     const SizedBox(height: 4),
                     Text(
                       dateStr,
-                      style: const TextStyle(
+                      style: GoogleFonts.dmSans(
                         color: AppColors.gris,
                         fontSize: 13,
                       ),

@@ -504,7 +504,7 @@ class _StatCard extends StatelessWidget {
         children: [
           AnimatedCounter(
             value: data.value,
-            style: GoogleFonts.dmSans(
+            style: GoogleFonts.sora(
               fontSize: 20,
               fontWeight: FontWeight.w800,
               color: data.color,
@@ -596,7 +596,7 @@ class _CalendarWeekStripState extends State<_CalendarWeekStrip> {
             const SizedBox(width: 12),
             Text(
               monthName[0].toUpperCase() + monthName.substring(1),
-              style: GoogleFonts.dmSans(
+              style: GoogleFonts.sora(
                 fontSize: 13,
                 fontWeight: FontWeight.w700,
                 color: AppColors.blanc,
@@ -659,7 +659,7 @@ class _CalendarWeekStripState extends State<_CalendarWeekStrip> {
                       const SizedBox(height: 4),
                       Text(
                         '${day.day}',
-                        style: GoogleFonts.dmSans(
+                        style: GoogleFonts.sora(
                           fontSize: 16,
                           fontWeight: FontWeight.w700,
                           color: isSelected
@@ -1186,7 +1186,7 @@ class _RevenueSectionState extends State<_RevenueSection>
           children: [
             Text(
               '💰 Revenue',
-              style: GoogleFonts.dmSans(
+              style: GoogleFonts.sora(
                 fontSize: 13,
                 fontWeight: FontWeight.w700,
                 color: AppColors.blanc,
@@ -1225,7 +1225,7 @@ class _RevenueSectionState extends State<_RevenueSection>
               // Revenue amount
               Text(
                 '\$${widget.weekRevenue.toStringAsFixed(0)}',
-                style: GoogleFonts.dmSans(
+                style: GoogleFonts.sora(
                   fontSize: 24,
                   fontWeight: FontWeight.w800,
                   color: AppColors.success,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/widgets/spotbook_button.dart';
@@ -61,11 +62,20 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
       backgroundColor: AppColors.fond,
       appBar: AppBar(
         backgroundColor: AppColors.fond,
+        surfaceTintColor: Colors.transparent,
+        elevation: 0,
         leading: Semantics(
           label: 'Back',
           child: IconButton(
-            icon: const Icon(Icons.arrow_back_ios,
-                color: AppColors.blanc, size: 20),
+            icon: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: AppColors.surface,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: AppColors.border, width: 0.5),
+              ),
+              child: const Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
+            ),
             onPressed: () {
               HapticFeedback.mediumImpact();
               context.pop();
@@ -83,18 +93,18 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(height: 24),
-                const Text(
+                Text(
                   'Forgot password',
-                  style: TextStyle(
+                  style: GoogleFonts.sora(
                     color: AppColors.blanc,
                     fontSize: 28,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
                 const SizedBox(height: 8),
-                const Text(
+                Text(
                   'Enter your email address and we\'ll send you a link to reset your password.',
-                  style: TextStyle(
+                  style: GoogleFonts.dmSans(
                     color: AppColors.gris,
                     fontSize: 15,
                     height: 1.4,
@@ -109,8 +119,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                   autocorrect: false,
                   textInputAction: TextInputAction.done,
                   onFieldSubmitted: (_) => _submit(),
-                  style:
-                      const TextStyle(color: AppColors.blanc, fontSize: 15),
+                  style: GoogleFonts.dmSans(color: AppColors.blanc, fontSize: 15),
                   validator: (value) {
                     final v = value?.trim() ?? '';
                     if (v.isEmpty) return 'Email required';
@@ -121,7 +130,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                   },
                   decoration: InputDecoration(
                     hintText: 'Email',
-                    hintStyle: const TextStyle(
+                    hintStyle: GoogleFonts.dmSans(
                         color: AppColors.gris, fontSize: 15),
                     prefixIcon: const Icon(Icons.email_outlined,
                         color: AppColors.gris, size: 20),
@@ -159,7 +168,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                   const SizedBox(height: 12),
                   Text(
                     _errorMessage!,
-                    style: const TextStyle(
+                    style: GoogleFonts.dmSans(
                         color: AppColors.error, fontSize: 13),
                   ),
                 ],
@@ -183,17 +192,16 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                       HapticFeedback.lightImpact();
                       context.pop();
                     },
-                    child: const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 16),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
                       child: Text.rich(
                         TextSpan(
                           text: 'Remember it? ',
-                          style:
-                              TextStyle(color: AppColors.gris, fontSize: 14),
+                          style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 14),
                           children: [
                             TextSpan(
                               text: 'Sign in',
-                              style: TextStyle(
+                              style: GoogleFonts.dmSans(
                                 color: AppColors.violetClair,
                                 fontWeight: FontWeight.w600,
                               ),

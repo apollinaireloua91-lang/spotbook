@@ -285,19 +285,32 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
       appBar: AppBar(
         backgroundColor: AppColors.fond,
         surfaceTintColor: Colors.transparent,
+        elevation: 0,
         title: Text(
           'Edit profile',
-          style: GoogleFonts.dmSans(
+          style: GoogleFonts.sora(
             color: AppColors.blanc,
-            fontWeight: FontWeight.w600,
+            fontWeight: FontWeight.w700,
             fontSize: 17,
           ),
         ),
         centerTitle: true,
-        leading: IconButton(
-          onPressed: () => context.pop(),
-          icon: const Icon(Icons.arrow_back_ios,
-              size: 20, color: AppColors.blanc),
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 12),
+          child: Center(
+            child: GestureDetector(
+              onTap: () => context.pop(),
+              child: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: AppColors.surface,
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: AppColors.border, width: 0.5),
+                ),
+                child: const Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
+              ),
+            ),
+          ),
         ),
       ),
       body: SafeArea(
@@ -504,7 +517,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                 const SizedBox(height: 32),
                 Text(
                   'SOCIAL LINKS',
-                  style: GoogleFonts.dmSans(
+                  style: GoogleFonts.sora(
                     color: AppColors.gris,
                     fontSize: 11,
                     fontWeight: FontWeight.w600,

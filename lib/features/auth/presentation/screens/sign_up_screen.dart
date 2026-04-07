@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'dart:io';
 
 import 'package:image_picker/image_picker.dart';
@@ -312,18 +313,25 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
               padding: const EdgeInsets.fromLTRB(8, 8, 24, 0),
               child: Row(
                 children: [
-                  IconButton(
-                    onPressed: _prevStep,
-                    icon: const Icon(
-                      Icons.arrow_back_ios_rounded,
-                      color: AppColors.blanc,
-                      size: 20,
+                  Semantics(
+                    label: 'Back',
+                    child: IconButton(
+                      onPressed: _prevStep,
+                      icon: Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: AppColors.surface,
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(color: AppColors.border, width: 0.5),
+                        ),
+                        child: const Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
+                      ),
                     ),
                   ),
                   const Spacer(),
                   Text(
                     'Step ${s.currentStep + 1}/$_totalSteps',
-                    style: const TextStyle(
+                    style: GoogleFonts.dmSans(
                       color: AppColors.gris,
                       fontSize: 13,
                       fontWeight: FontWeight.w500,
@@ -369,13 +377,13 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
               child: GestureDetector(
                 onTap: () => context.go('/login'),
                 child: RichText(
-                  text: const TextSpan(
+                  text: TextSpan(
                     text: 'Already have an account? ',
-                    style: TextStyle(color: AppColors.gris, fontSize: 14),
+                    style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 14),
                     children: [
                       TextSpan(
                         text: 'Sign in',
-                        style: TextStyle(
+                        style: GoogleFonts.dmSans(
                           color: AppColors.violetClair,
                           fontWeight: FontWeight.w600,
                         ),
@@ -521,9 +529,9 @@ class _Step1EmailPassword extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 28),
-            const Text(
+            Text(
               'Create your account',
-              style: TextStyle(
+              style: GoogleFonts.sora(
                 color: AppColors.blanc,
                 fontSize: 26,
                 fontWeight: FontWeight.w800,
@@ -531,9 +539,9 @@ class _Step1EmailPassword extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 8),
-            const Text(
+            Text(
               'Join the Spotbook community.',
-              style: TextStyle(color: AppColors.gris, fontSize: 15),
+              style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 15),
             ),
             const SizedBox(height: 28),
 
@@ -559,7 +567,7 @@ class _Step1EmailPassword extends StatelessWidget {
                     const SizedBox(width: 10),
                     Text(
                       'Sign in with Google',
-                      style: TextStyle(
+                      style: GoogleFonts.dmSans(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
                         color: AppColors.fond,
@@ -581,7 +589,7 @@ class _Step1EmailPassword extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: Text(
                     'or',
-                    style: TextStyle(
+                    style: GoogleFonts.dmSans(
                         color: AppColors.gris.withAlpha(180), fontSize: 13),
                   ),
                 ),
@@ -687,9 +695,9 @@ class _Step2ClientProfile extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 28),
-            const Text(
+            Text(
               'Your information',
-              style: TextStyle(
+              style: GoogleFonts.sora(
                 color: AppColors.blanc,
                 fontSize: 26,
                 fontWeight: FontWeight.w800,
@@ -697,9 +705,9 @@ class _Step2ClientProfile extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 8),
-            const Text(
+            Text(
               'How would you like to be known?',
-              style: TextStyle(color: AppColors.gris, fontSize: 15),
+              style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 15),
             ),
             const SizedBox(height: 28),
             _SignUpField(
@@ -767,9 +775,9 @@ class _Step2ProProfile extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 28),
-            const Text(
+            Text(
               'Your Pro profile',
-              style: TextStyle(
+              style: GoogleFonts.sora(
                 color: AppColors.blanc,
                 fontSize: 26,
                 fontWeight: FontWeight.w800,
@@ -777,9 +785,9 @@ class _Step2ProProfile extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 8),
-            const Text(
+            Text(
               'Introduce yourself to your future clients.',
-              style: TextStyle(color: AppColors.gris, fontSize: 15),
+              style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 15),
             ),
             const SizedBox(height: 28),
             _SignUpField(
@@ -862,7 +870,7 @@ class _Step3Categories extends ConsumerWidget {
           const SizedBox(height: 28),
           Text(
             title,
-            style: const TextStyle(
+            style: GoogleFonts.sora(
               color: AppColors.blanc,
               fontSize: 24,
               fontWeight: FontWeight.w800,
@@ -872,7 +880,7 @@ class _Step3Categories extends ConsumerWidget {
           const SizedBox(height: 8),
           Text(
             subtitle,
-            style: const TextStyle(
+            style: GoogleFonts.dmSans(
               color: AppColors.gris,
               fontSize: 14,
               height: 1.4,
@@ -924,7 +932,7 @@ class _Step3Categories extends ConsumerWidget {
                               Text(
                                 cat.label,
                                 textAlign: TextAlign.center,
-                                style: TextStyle(
+                                style: GoogleFonts.dmSans(
                                   color: isSelected
                                       ? AppColors.blanc
                                       : AppColors.grisClair,
@@ -1006,9 +1014,9 @@ class _Step4ProPhotoState extends State<_Step4ProPhoto> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const SizedBox(height: 28),
-          const Text(
+          Text(
             'Profile photo',
-            style: TextStyle(
+            style: GoogleFonts.sora(
               color: AppColors.blanc,
               fontSize: 26,
               fontWeight: FontWeight.w800,
@@ -1016,9 +1024,9 @@ class _Step4ProPhotoState extends State<_Step4ProPhoto> {
             ),
           ),
           const SizedBox(height: 8),
-          const Text(
+          Text(
             'Add a photo to build trust with your clients.',
-            style: TextStyle(color: AppColors.gris, fontSize: 15),
+            style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 15),
           ),
           const SizedBox(height: 40),
 
@@ -1048,15 +1056,15 @@ class _Step4ProPhotoState extends State<_Step4ProPhoto> {
                           : null,
                     ),
                     child: _pickedImage == null
-                        ? const Column(
+                        ? Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(Icons.add_a_photo_outlined,
+                              const Icon(Icons.add_a_photo_outlined,
                                   color: AppColors.gris, size: 36),
-                              SizedBox(height: 8),
+                              const SizedBox(height: 8),
                               Text(
                                 'Add',
-                                style: TextStyle(
+                                style: GoogleFonts.dmSans(
                                     color: AppColors.gris, fontSize: 13),
                               ),
                             ],
@@ -1096,9 +1104,9 @@ class _Step4ProPhotoState extends State<_Step4ProPhoto> {
           Center(
             child: GestureDetector(
               onTap: widget.onSkip,
-              child: const Text(
+              child: Text(
                 'Skip for now',
-                style: TextStyle(color: AppColors.gris, fontSize: 14),
+                style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 14),
               ),
             ),
           ),
@@ -1141,7 +1149,7 @@ class _SignUpField extends StatelessWidget {
       children: [
         Text(
           label,
-          style: const TextStyle(
+          style: GoogleFonts.dmSans(
             color: AppColors.grisClair,
             fontSize: 13,
             fontWeight: FontWeight.w500,
@@ -1154,12 +1162,12 @@ class _SignUpField extends StatelessWidget {
           keyboardType: keyboardType,
           validator: validator,
           textInputAction: textInputAction ?? TextInputAction.next,
-          style: const TextStyle(color: AppColors.blanc, fontSize: 16),
+          style: GoogleFonts.dmSans(color: AppColors.blanc, fontSize: 16),
           cursorColor: AppColors.violet,
           decoration: InputDecoration(
             hintText: hint,
             hintStyle:
-                TextStyle(color: AppColors.gris.withAlpha(130), fontSize: 16),
+                GoogleFonts.dmSans(color: AppColors.gris.withAlpha(130), fontSize: 16),
             prefixIcon: icon != null
                 ? Icon(icon, color: AppColors.gris, size: 20)
                 : null,
@@ -1244,7 +1252,7 @@ class _StepButton extends StatelessWidget {
                 )
               : Text(
                   label,
-                  style: const TextStyle(
+                  style: GoogleFonts.dmSans(
                     fontSize: 17,
                     fontWeight: FontWeight.w600,
                   ),

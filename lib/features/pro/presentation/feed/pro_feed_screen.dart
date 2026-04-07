@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/widgets/spotbook_loading_shimmer.dart';
@@ -168,20 +169,20 @@ class _ProFeedEmptyState extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 24),
-            const Text(
+            Text(
               'No videos yet',
               textAlign: TextAlign.center,
-              style: TextStyle(
+              style: GoogleFonts.sora(
                 color: AppColors.blanc,
                 fontSize: 20,
                 fontWeight: FontWeight.w700,
               ),
             ),
             const SizedBox(height: 12),
-            const Text(
+            Text(
               'Videos from professionals\nwill appear here',
               textAlign: TextAlign.center,
-              style: TextStyle(
+              style: GoogleFonts.dmSans(
                 color: AppColors.gris,
                 fontSize: 15,
                 height: 1.5,
@@ -201,9 +202,9 @@ class _ProFeedEmptyState extends StatelessWidget {
                   ),
                   elevation: 0,
                 ),
-                child: const Text(
+                child: Text(
                   'Refresh',
-                  style: TextStyle(
+                  style: GoogleFonts.dmSans(
                     fontSize: 15,
                     fontWeight: FontWeight.w600,
                   ),

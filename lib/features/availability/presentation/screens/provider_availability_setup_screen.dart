@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/widgets/spotbook_button.dart';
@@ -61,14 +62,26 @@ class _AvailabilityScreenBody extends ConsumerWidget {
         backgroundColor: AppColors.fond,
         appBar: AppBar(
           backgroundColor: AppColors.fond,
+          surfaceTintColor: Colors.transparent,
           elevation: 0,
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back, color: AppColors.blanc),
-            onPressed: () => context.pop(),
+          leading: Semantics(
+            label: 'Back',
+            child: IconButton(
+              icon: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: AppColors.surface,
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: AppColors.border, width: 0.5),
+                ),
+                child: const Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
+              ),
+              onPressed: () => context.pop(),
+            ),
           ),
-          title: const Text(
+          title: Text(
             'Disponibilités',
-            style: TextStyle(
+            style: GoogleFonts.sora(
                 color: AppColors.blanc, fontWeight: FontWeight.bold, fontSize: 18),
           ),
           centerTitle: false,
@@ -125,7 +138,7 @@ class _SectionHeader extends StatelessWidget {
           const SizedBox(width: 8),
           Text(
             title.toUpperCase(),
-            style: const TextStyle(
+            style: GoogleFonts.dmSans(
               color: AppColors.gris,
               fontSize: 11,
               fontWeight: FontWeight.w700,
@@ -178,9 +191,9 @@ class _MasterToggleCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     'Accept bookings',
-                    style: TextStyle(
+                    style: GoogleFonts.dmSans(
                         color: AppColors.blanc,
                         fontWeight: FontWeight.w600,
                         fontSize: 15),
@@ -189,7 +202,7 @@ class _MasterToggleCard extends StatelessWidget {
                     state.settings.acceptsBookings
                         ? 'Clients can book'
                         : 'Bookings disabled',
-                    style: const TextStyle(color: AppColors.gris, fontSize: 12),
+                    style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 12),
                   ),
                 ],
               ),
@@ -415,13 +428,13 @@ class _SlotsSectionState extends ConsumerState<_SlotsSection> {
                 border: Border.all(color: AppColors.border),
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: const Row(
+              child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.add, color: AppColors.gris, size: 16),
-                  SizedBox(width: 6),
+                  const Icon(Icons.add, color: AppColors.gris, size: 16),
+                  const SizedBox(width: 6),
                   Text('Add a slot',
-                      style: TextStyle(
+                      style: GoogleFonts.dmSans(
                           color: AppColors.gris,
                           fontSize: 13,
                           fontWeight: FontWeight.w500)),
@@ -651,7 +664,7 @@ class _MonthCalendar extends StatelessWidget {
             children: [
               Text(
                 '$monthLabel ${month.year}',
-                style: const TextStyle(
+                style: GoogleFonts.sora(
                     color: AppColors.blanc,
                     fontSize: 15,
                     fontWeight: FontWeight.w700),
@@ -834,18 +847,18 @@ class _SettingsSection extends StatelessWidget {
               padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
               child: Row(
                 children: [
-                  const Expanded(
+                  Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text('Pause entre RDV',
-                            style: TextStyle(
+                            style: GoogleFonts.dmSans(
                                 color: AppColors.blanc,
                                 fontWeight: FontWeight.w600,
                                 fontSize: 14)),
-                        SizedBox(height: 2),
+                        const SizedBox(height: 2),
                         Text('Temps tampon après chaque réservation',
-                            style: TextStyle(
+                            style: GoogleFonts.dmSans(
                                 color: AppColors.gris, fontSize: 12)),
                       ],
                     ),
@@ -878,18 +891,18 @@ class _SettingsSection extends StatelessWidget {
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
               child: Row(
                 children: [
-                  const Expanded(
+                  Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text('Délai minimum avant réservation',
-                            style: TextStyle(
+                            style: GoogleFonts.dmSans(
                                 color: AppColors.blanc,
                                 fontWeight: FontWeight.w600,
                                 fontSize: 14)),
-                        SizedBox(height: 2),
+                        const SizedBox(height: 2),
                         Text('Temps minimum entre la réservation et le RDV',
-                            style: TextStyle(
+                            style: GoogleFonts.dmSans(
                                 color: AppColors.gris, fontSize: 12)),
                       ],
                     ),
@@ -923,18 +936,18 @@ class _SettingsSection extends StatelessWidget {
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
               child: Row(
                 children: [
-                  const Expanded(
+                  Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text('Max réservations / jour',
-                            style: TextStyle(
+                            style: GoogleFonts.dmSans(
                                 color: AppColors.blanc,
                                 fontWeight: FontWeight.w600,
                                 fontSize: 14)),
-                        SizedBox(height: 2),
+                        const SizedBox(height: 2),
                         Text('Limite quotidienne de réservations',
-                            style: TextStyle(
+                            style: GoogleFonts.dmSans(
                                 color: AppColors.gris, fontSize: 12)),
                       ],
                     ),
@@ -1085,25 +1098,25 @@ class _UnsavedDialog extends StatelessWidget {
     return AlertDialog(
       backgroundColor: AppColors.surface,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      title: const Text('Modifications non sauvegardées',
-          style: TextStyle(
+      title: Text('Modifications non sauvegardées',
+          style: GoogleFonts.sora(
               color: AppColors.blanc,
               fontSize: 16,
               fontWeight: FontWeight.bold)),
-      content: const Text(
+      content: Text(
         'Vos changements seront perdus si vous quittez maintenant.',
-        style: TextStyle(color: AppColors.gris, fontSize: 14),
+        style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 14),
       ),
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(false),
-          child: const Text('Rester',
-              style: TextStyle(color: AppColors.blanc)),
+          child: Text('Rester',
+              style: GoogleFonts.dmSans(color: AppColors.blanc)),
         ),
         TextButton(
           onPressed: () => Navigator.of(context).pop(true),
-          child: const Text('Quitter',
-              style: TextStyle(color: AppColors.error)),
+          child: Text('Quitter',
+              style: GoogleFonts.dmSans(color: AppColors.error)),
         ),
       ],
     );

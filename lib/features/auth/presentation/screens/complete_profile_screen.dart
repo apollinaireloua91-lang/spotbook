@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../../../shared/theme/app_colors.dart';
@@ -196,9 +197,9 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen>
                 ),
               ),
               const SizedBox(height: 16),
-              const Text(
+              Text(
                 'Account created!',
-                style: TextStyle(
+                style: GoogleFonts.sora(
                   color: AppColors.violet,
                   fontSize: 18,
                   fontWeight: FontWeight.w700,
@@ -207,9 +208,9 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen>
               const SizedBox(height: 24),
 
               // Title
-              const Text(
+              Text(
                 'Complete your profile',
-                style: TextStyle(
+                style: GoogleFonts.sora(
                   color: AppColors.blanc,
                   fontSize: 26,
                   fontWeight: FontWeight.w800,
@@ -217,10 +218,10 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen>
                 ),
               ),
               const SizedBox(height: 8),
-              const Text(
+              Text(
                 'Add a photo and bio so pros know who they\'re working with.',
                 textAlign: TextAlign.center,
-                style: TextStyle(
+                style: GoogleFonts.dmSans(
                   color: AppColors.gris,
                   fontSize: 15,
                   height: 1.4,
@@ -280,10 +281,10 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen>
               // Display Name
               TextField(
                 controller: _displayNameCtrl,
-                style: const TextStyle(color: AppColors.blanc, fontSize: 15),
+                style: GoogleFonts.dmSans(color: AppColors.blanc, fontSize: 15),
                 decoration: InputDecoration(
                   hintText: 'Full name',
-                  hintStyle: const TextStyle(
+                  hintStyle: GoogleFonts.dmSans(
                     color: AppColors.gris,
                     fontSize: 15,
                   ),
@@ -317,11 +318,11 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen>
               // Bio
               TextField(
                 controller: _bioCtrl,
-                style: const TextStyle(color: AppColors.blanc, fontSize: 15),
+                style: GoogleFonts.dmSans(color: AppColors.blanc, fontSize: 15),
                 maxLines: 3,
                 decoration: InputDecoration(
                   hintText: 'Bio — tell us a bit about yourself...',
-                  hintStyle: TextStyle(
+                  hintStyle: GoogleFonts.dmSans(
                     color: AppColors.gris.withAlpha(128),
                     fontSize: 15,
                   ),
@@ -392,9 +393,9 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen>
                               color: AppColors.blanc,
                             ),
                           )
-                        : const Text(
+                        : Text(
                             'Save',
-                            style: TextStyle(
+                            style: GoogleFonts.dmSans(
                               fontSize: 17,
                               fontWeight: FontWeight.w600,
                             ),
@@ -407,11 +408,11 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen>
               // Skip
               GestureDetector(
                 onTap: _navigateNext,
-                child: const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 8),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8),
                   child: Text(
                     'Skip for now',
-                    style: TextStyle(color: AppColors.gris, fontSize: 14),
+                    style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 14),
                   ),
                 ),
               ),

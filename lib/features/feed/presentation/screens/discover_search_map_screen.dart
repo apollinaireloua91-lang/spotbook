@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../../../../shared/theme/app_colors.dart';
@@ -401,7 +402,7 @@ class _DiscoverSearchMapScreenState
                               const SizedBox(width: 5),
                               Text(
                                 cat,
-                                style: TextStyle(
+                                style: GoogleFonts.dmSans(
                                   color: selected
                                       ? AppColors.fond
                                       : AppColors.blanc,
@@ -449,12 +450,12 @@ class _DiscoverSearchMapScreenState
               child: Material(
                 color: AppColors.surface,
                 borderRadius: BorderRadius.circular(14),
-                child: const Padding(
-                  padding: EdgeInsets.all(14),
+                child: Padding(
+                  padding: const EdgeInsets.all(14),
                   child: Text(
                     'Some pros don\'t have GPS: their pin is placed approximately near your area (or Montreal). The list shows the actual city.',
                     textAlign: TextAlign.center,
-                    style: TextStyle(
+                    style: GoogleFonts.dmSans(
                         color: AppColors.gris, fontSize: 12, height: 1.35),
                   ),
                 ),
@@ -596,7 +597,7 @@ class _ProBottomCard extends StatelessWidget {
                       children: [
                         Text(
                           pro.displayName,
-                          style: const TextStyle(
+                          style: GoogleFonts.sora(
                             color: AppColors.blanc,
                             fontSize: 18,
                             fontWeight: FontWeight.w700,
@@ -617,7 +618,7 @@ class _ProBottomCard extends StatelessWidget {
                               const SizedBox(width: 4),
                               Text(
                                 pro.category!,
-                                style: const TextStyle(
+                                style: GoogleFonts.dmSans(
                                     color: AppColors.gris, fontSize: 14),
                               ),
                             ],
@@ -635,7 +636,7 @@ class _ProBottomCard extends StatelessWidget {
                                 pro.distanceKm != null
                                     ? '${pro.city} • ${pro.distanceKm!.toStringAsFixed(1)} km'
                                     : pro.city!,
-                                style: const TextStyle(
+                                style: GoogleFonts.dmSans(
                                     color: AppColors.gris,
                                     fontSize: 12),
                               ),
@@ -653,7 +654,7 @@ class _ProBottomCard extends StatelessWidget {
                             color: AppColors.blanc, size: 20),
                         Text(
                           pro.averageRating!.toStringAsFixed(1),
-                          style: const TextStyle(
+                          style: GoogleFonts.dmSans(
                             color: AppColors.blanc,
                             fontSize: 14,
                             fontWeight: FontWeight.w700,
@@ -670,7 +671,7 @@ class _ProBottomCard extends StatelessWidget {
                 const SizedBox(height: 12),
                 Text(
                   pro.description!.trim(),
-                  style: const TextStyle(
+                  style: GoogleFonts.dmSans(
                     color: AppColors.grisClair,
                     fontSize: 13,
                     height: 1.35,

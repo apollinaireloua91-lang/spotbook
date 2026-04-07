@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../shared/theme/app_colors.dart';
@@ -101,11 +102,11 @@ class _ProSearchScreenState extends ConsumerState<ProSearchScreen> {
                       ),
                       child: TextField(
                         controller: _searchCtrl,
-                        style: const TextStyle(
+                        style: GoogleFonts.dmSans(
                             color: AppColors.blanc, fontSize: 14),
                         decoration: InputDecoration(
                           hintText: 'Search pros, hashtags...',
-                          hintStyle: TextStyle(
+                          hintStyle: GoogleFonts.dmSans(
                               color: AppColors.gris.withAlpha(153)),
                           prefixIcon: const Icon(Icons.search,
                               color: AppColors.gris, size: 20),
@@ -147,9 +148,9 @@ class _ProSearchScreenState extends ConsumerState<ProSearchScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
+                      Text(
                         'Trending',
-                        style: TextStyle(
+                        style: GoogleFonts.sora(
                           color: AppColors.blanc,
                           fontSize: 16,
                           fontWeight: FontWeight.w700,
@@ -163,12 +164,12 @@ class _ProSearchScreenState extends ConsumerState<ProSearchScreen> {
               ),
 
               // ── Pros populaires près de toi ──
-              const SliverToBoxAdapter(
+              SliverToBoxAdapter(
                 child: Padding(
-                  padding: EdgeInsets.fromLTRB(20, 28, 20, 0),
+                  padding: const EdgeInsets.fromLTRB(20, 28, 20, 0),
                   child: Text(
                     'Popular pros near you',
-                    style: TextStyle(
+                    style: GoogleFonts.sora(
                       color: AppColors.blanc,
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
@@ -181,12 +182,12 @@ class _ProSearchScreenState extends ConsumerState<ProSearchScreen> {
               ),
 
               // ── Événements tendance ──
-              const SliverToBoxAdapter(
+              SliverToBoxAdapter(
                 child: Padding(
-                  padding: EdgeInsets.fromLTRB(20, 28, 20, 0),
+                  padding: const EdgeInsets.fromLTRB(20, 28, 20, 0),
                   child: Text(
                     'Trending events',
-                    style: TextStyle(
+                    style: GoogleFonts.sora(
                       color: AppColors.blanc,
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
@@ -197,12 +198,12 @@ class _ProSearchScreenState extends ConsumerState<ProSearchScreen> {
               const SliverToBoxAdapter(child: _TrendingEventsSection()),
 
               // ── Inspirations (posts viraux) ──
-              const SliverToBoxAdapter(
+              SliverToBoxAdapter(
                 child: Padding(
-                  padding: EdgeInsets.fromLTRB(20, 28, 20, 12),
+                  padding: const EdgeInsets.fromLTRB(20, 28, 20, 12),
                   child: Text(
                     'Inspirations',
-                    style: TextStyle(
+                    style: GoogleFonts.sora(
                       color: AppColors.blanc,
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
@@ -254,7 +255,7 @@ class _TrendingHashtags extends StatelessWidget {
             ),
             child: Text(
               _hashtags[i],
-              style: const TextStyle(
+              style: GoogleFonts.dmSans(
                 color: AppColors.violetClair,
                 fontSize: 12,
                 fontWeight: FontWeight.w500,
@@ -291,12 +292,12 @@ class _PopularProsSection extends StatelessWidget {
         }
         final pros = (snapshot.data ?? []).take(10).toList();
         if (pros.isEmpty) {
-          return const SizedBox(
+          return SizedBox(
             height: 80,
             child: Center(
               child: Text(
                 'No pros nearby',
-                style: TextStyle(color: AppColors.gris, fontSize: 13),
+                style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 13),
               ),
             ),
           );
@@ -372,7 +373,7 @@ class _ProPopularCard extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 8),
               child: Text(
                 pro.displayName,
-                style: const TextStyle(
+                style: GoogleFonts.dmSans(
                   color: AppColors.blanc,
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
@@ -386,7 +387,7 @@ class _ProPopularCard extends StatelessWidget {
             if (pro.category != null)
               Text(
                 pro.category!,
-                style: const TextStyle(color: AppColors.gris, fontSize: 10),
+                style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 10),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -401,7 +402,7 @@ class _ProPopularCard extends StatelessWidget {
                     const SizedBox(width: 2),
                     Text(
                       pro.averageRating!.toStringAsFixed(1),
-                      style: const TextStyle(
+                      style: GoogleFonts.dmSans(
                         color: AppColors.blanc,
                         fontSize: 11,
                         fontWeight: FontWeight.w600,
@@ -450,10 +451,10 @@ class _TrendingEventsSection extends ConsumerWidget {
                   borderRadius: BorderRadius.circular(14),
                   border: Border.all(color: AppColors.border, width: 0.5),
                 ),
-                child: const Center(
+                child: Center(
                   child: Text(
                     'No upcoming events',
-                    style: TextStyle(color: AppColors.gris, fontSize: 13),
+                    style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 13),
                   ),
                 ),
               ),
@@ -482,14 +483,14 @@ class _TrendingEventsSection extends ConsumerWidget {
                     children: [
                       Text(
                         e['title'] as String? ?? '',
-                        style: const TextStyle(color: AppColors.blanc, fontSize: 14, fontWeight: FontWeight.w600),
+                        style: GoogleFonts.sora(color: AppColors.blanc, fontSize: 14, fontWeight: FontWeight.w600),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                       ),
                       const SizedBox(height: 4),
                       Text(
                         e['event_date'] as String? ?? '',
-                        style: const TextStyle(color: AppColors.gris, fontSize: 12),
+                        style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 12),
                       ),
                     ],
                   ),
@@ -538,18 +539,18 @@ class _InspirationGrid extends ConsumerWidget {
             decoration: BoxDecoration(color: AppColors.surface, borderRadius: BorderRadius.circular(8)),
           ),
         ),
-        error: (_, __) => const Center(
+        error: (_, __) => Center(
           child: Padding(
-            padding: EdgeInsets.all(24),
-            child: Text('Unable to load inspirations', style: TextStyle(color: AppColors.gris, fontSize: 13)),
+            padding: const EdgeInsets.all(24),
+            child: Text('Unable to load inspirations', style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 13)),
           ),
         ),
         data: (list) {
           if (list.isEmpty) {
-            return const Center(
+            return Center(
               child: Padding(
-                padding: EdgeInsets.all(24),
-                child: Text('No inspirations yet', style: TextStyle(color: AppColors.gris, fontSize: 13)),
+                padding: const EdgeInsets.all(24),
+                child: Text('No inspirations yet', style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 13)),
               ),
             );
           }
@@ -638,7 +639,7 @@ class _ProSearchCard extends StatelessWidget {
                 children: [
                   Text(
                     result.displayName,
-                    style: const TextStyle(
+                    style: GoogleFonts.dmSans(
                       color: AppColors.blanc,
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
@@ -652,7 +653,7 @@ class _ProSearchCard extends StatelessWidget {
                       if (result.category != null) result.category!,
                       if (result.city != null) result.city!,
                     ].join(' · '),
-                    style: const TextStyle(
+                    style: GoogleFonts.dmSans(
                       color: AppColors.gris,
                       fontSize: 12,
                     ),
@@ -667,7 +668,7 @@ class _ProSearchCard extends StatelessWidget {
               const SizedBox(width: 2),
               Text(
                 result.averageRating!.toStringAsFixed(1),
-                style: const TextStyle(
+                style: GoogleFonts.dmSans(
                   color: AppColors.blanc,
                   fontSize: 12,
                   fontWeight: FontWeight.w600,

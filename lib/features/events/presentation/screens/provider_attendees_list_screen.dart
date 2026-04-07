@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -129,7 +130,7 @@ class _ProviderAttendeesListScreenState
             child: CircularProgressIndicator(color: AppColors.violet)),
         error: (e, _) => Center(
           child: Text('$e',
-              style: const TextStyle(color: AppColors.gris)),
+              style: GoogleFonts.dmSans(color: AppColors.gris)),
         ),
         data: (data) {
           final filtered = _query.isEmpty
@@ -156,15 +157,15 @@ class _ProviderAttendeesListScreenState
                   children: [
                     Text(
                       '${data.totalSold}/${data.totalCapacity}',
-                      style: const TextStyle(
+                      style: GoogleFonts.sora(
                         color: AppColors.blanc,
                         fontSize: 28,
                         fontWeight: FontWeight.w800,
                       ),
                     ),
                     const SizedBox(height: 4),
-                    const Text('participants',
-                        style: TextStyle(
+                    Text('participants',
+                        style: GoogleFonts.dmSans(
                             color: AppColors.gris, fontSize: 14)),
                     const SizedBox(height: 12),
                     Row(
@@ -191,11 +192,11 @@ class _ProviderAttendeesListScreenState
                 child: TextField(
                   controller: _searchCtrl,
                   onChanged: (v) => setState(() => _query = v),
-                  style: const TextStyle(
+                  style: GoogleFonts.dmSans(
                       color: AppColors.blanc, fontSize: 14),
                   decoration: InputDecoration(
                     hintText: 'Search attendee...',
-                    hintStyle: TextStyle(
+                    hintStyle: GoogleFonts.dmSans(
                         color: AppColors.gris.withAlpha(128)),
                     prefixIcon: const Icon(Icons.search,
                         color: AppColors.gris, size: 20),
@@ -212,9 +213,9 @@ class _ProviderAttendeesListScreenState
               // List
               Expanded(
                 child: filtered.isEmpty
-                    ? const Center(
+                    ? Center(
                         child: Text('No attendees',
-                            style: TextStyle(
+                            style: GoogleFonts.dmSans(
                                 color: AppColors.gris, fontSize: 15)),
                       )
                     : ListView.separated(
@@ -247,13 +248,13 @@ class _StatItem extends StatelessWidget {
     return Column(
       children: [
         Text(value,
-            style: const TextStyle(
+            style: GoogleFonts.sora(
                 color: AppColors.blanc,
                 fontWeight: FontWeight.bold,
                 fontSize: 16)),
         const SizedBox(height: 2),
         Text(label,
-            style: const TextStyle(
+            style: GoogleFonts.dmSans(
                 color: AppColors.gris, fontSize: 12)),
       ],
     );
@@ -287,7 +288,7 @@ class _AttendeeCard extends StatelessWidget {
               children: [
                 Text(
                   attendee.userName,
-                  style: const TextStyle(
+                  style: GoogleFonts.dmSans(
                     color: AppColors.blanc,
                     fontWeight: FontWeight.w600,
                     fontSize: 14,
@@ -296,7 +297,7 @@ class _AttendeeCard extends StatelessWidget {
                 const SizedBox(height: 2),
                 Text(
                   '${attendee.ticketTypeName} · ${DateFormat('dd/MM/yy').format(attendee.purchasedAt)}',
-                  style: const TextStyle(
+                  style: GoogleFonts.dmSans(
                       color: AppColors.gris, fontSize: 12),
                 ),
               ],

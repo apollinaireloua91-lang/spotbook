@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:shimmer/shimmer.dart';
 
 import '../../../../shared/theme/app_colors.dart';
@@ -23,27 +24,69 @@ class FavoritesScreen extends ConsumerWidget {
         backgroundColor: AppColors.fond,
         appBar: AppBar(
           backgroundColor: AppColors.fond,
+          surfaceTintColor: Colors.transparent,
+          elevation: 0,
           leading: Semantics(
             label: 'Back',
             child: IconButton(
-              icon: const Icon(Icons.arrow_back_ios, color: AppColors.blanc, size: 20),
+              icon: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: AppColors.surface,
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: AppColors.border, width: 0.5),
+                ),
+                child: const Icon(Icons.arrow_back_ios_new,
+                    color: AppColors.blanc, size: 16),
+              ),
               onPressed: () {
                 HapticFeedback.mediumImpact();
                 context.pop();
               },
             ),
           ),
-          title: const Text('Favorites',
-              style: TextStyle(color: AppColors.blanc, fontWeight: FontWeight.bold)),
+          title: Text(
+            'Favorites',
+            style: GoogleFonts.sora(
+              color: AppColors.blanc,
+              fontWeight: FontWeight.w700,
+              fontSize: 17,
+            ),
+          ),
           centerTitle: true,
-          bottom: const TabBar(
-            indicatorColor: AppColors.blanc,
-            labelColor: AppColors.blanc,
-            unselectedLabelColor: AppColors.gris,
-            tabs: [
-              Tab(text: 'Pros'),
-              Tab(text: 'Events'),
-            ],
+          bottom: PreferredSize(
+            preferredSize: const Size.fromHeight(52),
+            child: Container(
+              margin: const EdgeInsets.symmetric(horizontal: 20),
+              padding: const EdgeInsets.all(4),
+              decoration: BoxDecoration(
+                color: AppColors.surface,
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: AppColors.border, width: 0.5),
+              ),
+              child: TabBar(
+                indicator: BoxDecoration(
+                  color: AppColors.violet,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                indicatorSize: TabBarIndicatorSize.tab,
+                dividerColor: Colors.transparent,
+                labelColor: AppColors.textOnPrimary,
+                unselectedLabelColor: AppColors.gris,
+                labelStyle: GoogleFonts.dmSans(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 13,
+                ),
+                unselectedLabelStyle: GoogleFonts.dmSans(
+                  fontWeight: FontWeight.w500,
+                  fontSize: 13,
+                ),
+                tabs: const [
+                  Tab(text: 'Pros'),
+                  Tab(text: 'Events'),
+                ],
+              ),
+            ),
           ),
         ),
         body: state.isLoading
@@ -54,12 +97,14 @@ class FavoritesScreen extends ConsumerWidget {
                     favorites: state.proFavorites,
                     emptyIcon: Icons.person_outline,
                     emptyLabel: 'No favorite pros',
+                    emptySubLabel: 'Pros you save will appear here.',
                     onTap: (fav) => context.push('/pro/${fav.targetId}'),
                   ),
                   _FavoritesList(
                     favorites: state.eventFavorites,
                     emptyIcon: Icons.event_outlined,
                     emptyLabel: 'No favorite events',
+                    emptySubLabel: 'Events you save will appear here.',
                     onTap: (fav) => context.push('/event/${fav.targetId}'),
                   ),
                 ],
@@ -72,11 +117,11 @@ class FavoritesScreen extends ConsumerWidget {
     return Shimmer.fromColors(
       baseColor: AppColors.surface,
       highlightColor: AppColors.surfaceAlt,
-      child: ListView.builder(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+      child: ListView.separated(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         itemCount: 6,
+        separatorBuilder: (_, __) => const SizedBox(height: 10),
         itemBuilder: (_, __) => Container(
-          margin: const EdgeInsets.symmetric(vertical: 6),
           height: 72,
           decoration: BoxDecoration(
             color: AppColors.surface,
@@ -88,17 +133,23 @@ class FavoritesScreen extends ConsumerWidget {
   }
 }
 
+// ═════════════════════════════════════════════════════════════════════════════
+// FAVORITES LIST
+// ═════════════════════════════════════════════════════════════════════════════
+
 class _FavoritesList extends StatelessWidget {
   const _FavoritesList({
     required this.favorites,
     required this.emptyIcon,
     required this.emptyLabel,
+    required this.emptySubLabel,
     required this.onTap,
   });
 
   final List<FavoriteModel> favorites;
   final IconData emptyIcon;
   final String emptyLabel;
+  final String emptySubLabel;
   final void Function(FavoriteModel) onTap;
 
   @override
@@ -108,17 +159,40 @@ class _FavoritesList extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(emptyIcon, color: AppColors.gris, size: 48),
-            const SizedBox(height: 12),
-            Text(emptyLabel, style: const TextStyle(color: AppColors.gris, fontSize: 15)),
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: AppColors.violet.withAlpha(10),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(emptyIcon, color: AppColors.violet, size: 40),
+            ),
+            const SizedBox(height: 20),
+            Text(
+              emptyLabel,
+              style: GoogleFonts.sora(
+                color: AppColors.blanc,
+                fontSize: 17,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              emptySubLabel,
+              style: GoogleFonts.dmSans(
+                color: AppColors.gris,
+                fontSize: 13,
+              ),
+            ),
           ],
         ),
       );
     }
 
-    return ListView.builder(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+    return ListView.separated(
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
       itemCount: favorites.length,
+      separatorBuilder: (_, __) => const SizedBox(height: 10),
       itemBuilder: (context, index) {
         final fav = favorites[index];
         return _FavoriteCard(favorite: fav, onTap: () => onTap(fav));
@@ -126,6 +200,10 @@ class _FavoritesList extends StatelessWidget {
     );
   }
 }
+
+// ═════════════════════════════════════════════════════════════════════════════
+// FAVORITE CARD
+// ═════════════════════════════════════════════════════════════════════════════
 
 class _FavoriteCard extends StatelessWidget {
   const _FavoriteCard({required this.favorite, required this.onTap});
@@ -137,12 +215,11 @@ class _FavoriteCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        margin: const EdgeInsets.symmetric(vertical: 4),
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
           color: AppColors.surface,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppColors.border),
+          border: Border.all(color: AppColors.border, width: 0.5),
         ),
         child: Row(
           children: [
@@ -159,19 +236,9 @@ class _FavoriteCard extends StatelessWidget {
                         height: 48,
                         color: AppColors.surfaceAlt,
                       ),
-                      errorWidget: (_, __, ___) => Container(
-                        width: 48,
-                        height: 48,
-                        color: AppColors.surfaceAlt,
-                        child: const Icon(Icons.person, color: AppColors.gris, size: 20),
-                      ),
+                      errorWidget: (_, __, ___) => _fallbackAvatar(),
                     )
-                  : Container(
-                      width: 48,
-                      height: 48,
-                      color: AppColors.surfaceAlt,
-                      child: const Icon(Icons.person, color: AppColors.gris, size: 20),
-                    ),
+                  : _fallbackAvatar(),
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -180,13 +247,22 @@ class _FavoriteCard extends StatelessWidget {
                 children: [
                   Text(
                     favorite.targetName ?? 'Unnamed',
-                    style: const TextStyle(color: AppColors.blanc, fontSize: 15, fontWeight: FontWeight.w600),
+                    style: GoogleFonts.dmSans(
+                      color: AppColors.blanc,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
-                  if (favorite.targetSubtitle != null)
+                  if (favorite.targetSubtitle != null) ...[
+                    const SizedBox(height: 2),
                     Text(
                       favorite.targetSubtitle!,
-                      style: const TextStyle(color: AppColors.gris, fontSize: 13),
+                      style: GoogleFonts.dmSans(
+                        color: AppColors.gris,
+                        fontSize: 13,
+                      ),
                     ),
+                  ],
                 ],
               ),
             ),
@@ -200,6 +276,16 @@ class _FavoriteCard extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _fallbackAvatar() {
+    return Container(
+      width: 48,
+      height: 48,
+      color: AppColors.surfaceAlt,
+      child:
+          const Icon(Icons.person, color: AppColors.gris, size: 20),
     );
   }
 }

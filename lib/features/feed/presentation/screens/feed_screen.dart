@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/theme/app_typography.dart';
@@ -51,14 +52,14 @@ class _FeedScreenState extends ConsumerState<FeedScreen> {
               Icon(Icons.play_circle_outline,
                   size: 64, color: AppColors.gris.withAlpha(128)),
               const SizedBox(height: 16),
-              const Text('No videos yet',
-                  style: TextStyle(
+              Text('No videos yet',
+                  style: GoogleFonts.sora(
                       color: AppColors.blanc,
                       fontSize: 18,
                       fontWeight: FontWeight.w600)),
               const SizedBox(height: 8),
-              const Text('Videos from professionals will appear here',
-                  style: TextStyle(color: AppColors.gris, fontSize: 14)),
+              Text('Videos from professionals will appear here',
+                  style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 14)),
             ],
           ),
         ),
@@ -202,7 +203,7 @@ class _TabItem extends StatelessWidget {
         ),
         child: AnimatedDefaultTextStyle(
           duration: const Duration(milliseconds: 200),
-          style: TextStyle(
+          style: GoogleFonts.dmSans(
             color: isActive
                 ? AppColors.blanc
                 : AppColors.blanc.withAlpha(115), // rgba(255,255,255,0.45)

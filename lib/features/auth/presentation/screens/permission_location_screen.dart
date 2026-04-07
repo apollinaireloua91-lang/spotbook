@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../shared/theme/app_colors.dart';
 import '../../data/profile_repository.dart';
@@ -27,13 +28,21 @@ class PermissionLocationScreen extends ConsumerWidget {
       backgroundColor: AppColors.fond,
       appBar: AppBar(
         backgroundColor: AppColors.fond,
+        surfaceTintColor: Colors.transparent,
         elevation: 0,
-        leading: IconButton(
-          onPressed: () => context.go('/client/goals'),
-          icon: const Icon(
-            Icons.arrow_back_ios_rounded,
-            color: AppColors.blanc,
-            size: 20,
+        leading: Semantics(
+          label: 'Back',
+          child: IconButton(
+            onPressed: () => context.go('/client/goals'),
+            icon: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: AppColors.surface,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: AppColors.border, width: 0.5),
+              ),
+              child: const Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
+            ),
           ),
         ),
       ),
@@ -54,9 +63,9 @@ class PermissionLocationScreen extends ConsumerWidget {
                       borderRadius: BorderRadius.circular(8),
                       color: AppColors.violet.withAlpha(25),
                     ),
-                    child: const Text(
+                    child: Text(
                       'STEP 3/3',
-                      style: TextStyle(
+                      style: GoogleFonts.dmSans(
                         color: AppColors.violet,
                         fontSize: 11,
                         fontWeight: FontWeight.w600,
@@ -121,9 +130,9 @@ class PermissionLocationScreen extends ConsumerWidget {
               const Spacer(),
 
               // Title
-              const Text(
+              Text(
                 'Enable your location',
-                style: TextStyle(
+                style: GoogleFonts.sora(
                   color: AppColors.blanc,
                   fontSize: 24,
                   fontWeight: FontWeight.w800,
@@ -131,10 +140,10 @@ class PermissionLocationScreen extends ConsumerWidget {
                 ),
               ),
               const SizedBox(height: 12),
-              const Text(
+              Text(
                 'Discover the best professionals near you by enabling location services.',
                 textAlign: TextAlign.center,
-                style: TextStyle(
+                style: GoogleFonts.dmSans(
                   color: AppColors.gris,
                   fontSize: 14,
                   height: 1.5,
@@ -170,9 +179,9 @@ class PermissionLocationScreen extends ConsumerWidget {
                       ),
                     ),
                     icon: const Icon(Icons.pin_drop, size: 20),
-                    label: const Text(
+                    label: Text(
                       'Allow location',
-                      style: TextStyle(
+                      style: GoogleFonts.dmSans(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
                       ),
@@ -188,9 +197,9 @@ class PermissionLocationScreen extends ConsumerWidget {
                 height: 48,
                 child: TextButton(
                   onPressed: () => context.go('/client/feed'),
-                  child: const Text(
+                  child: Text(
                     'Not now',
-                    style: TextStyle(color: AppColors.gris, fontSize: 15),
+                    style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 15),
                   ),
                 ),
               ),
@@ -206,14 +215,14 @@ class PermissionLocationScreen extends ConsumerWidget {
                   color: AppColors.surface,
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: const Row(
+                child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.lock, color: AppColors.violet, size: 16),
-                    SizedBox(width: 8),
+                    const Icon(Icons.lock, color: AppColors.violet, size: 16),
+                    const SizedBox(width: 8),
                     Text(
                       'Your data is secure and private',
-                      style: TextStyle(color: AppColors.gris, fontSize: 12),
+                      style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 12),
                     ),
                   ],
                 ),

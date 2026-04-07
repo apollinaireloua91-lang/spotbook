@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../shared/theme/app_colors.dart';
 import '../../data/report_notifier.dart';
@@ -76,18 +77,18 @@ class _BookingReportSheetState extends ConsumerState<_BookingReportSheet> {
                 ),
               ),
               const SizedBox(height: 20),
-              const Text(
+              Text(
                 'Report this booking',
-                style: TextStyle(
+                style: GoogleFonts.sora(
                   color: AppColors.blanc,
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
                 ),
               ),
               const SizedBox(height: 4),
-              const Text(
+              Text(
                 'Why are you reporting this booking? Details help the moderation team.',
-                style: TextStyle(color: AppColors.gris, fontSize: 14, height: 1.35),
+                style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 14, height: 1.35),
               ),
               const SizedBox(height: 16),
               ...List.generate(_reasons.length, (i) {
@@ -111,7 +112,7 @@ class _BookingReportSheetState extends ConsumerState<_BookingReportSheet> {
                     ),
                     child: Text(
                       reason,
-                      style: TextStyle(
+                      style: GoogleFonts.dmSans(
                         color: isSelected ? AppColors.blanc : AppColors.gris,
                         fontSize: 15,
                         fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
@@ -121,9 +122,9 @@ class _BookingReportSheetState extends ConsumerState<_BookingReportSheet> {
                 );
               }),
               const SizedBox(height: 12),
-              const Text(
+              Text(
                 'Details (optional, max 500 characters)',
-                style: TextStyle(color: AppColors.gris, fontSize: 12, fontWeight: FontWeight.w600),
+                style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 12, fontWeight: FontWeight.w600),
               ),
               const SizedBox(height: 8),
               TextField(
@@ -205,9 +206,9 @@ class _BookingReportSheetState extends ConsumerState<_BookingReportSheet> {
                             strokeWidth: 2,
                           ),
                         )
-                      : const Text(
+                      : Text(
                           'Submit report',
-                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                          style: GoogleFonts.dmSans(fontWeight: FontWeight.bold, fontSize: 16),
                         ),
                 ),
               ),

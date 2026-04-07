@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/widgets/spotbook_avatar.dart';
@@ -66,23 +67,33 @@ class _DiscoverSearchResultsScreenState
               padding: const EdgeInsets.fromLTRB(4, 12, 16, 8),
               child: Row(
                 children: [
-                  IconButton(
-                    icon: const Icon(Icons.arrow_back_ios,
-                        color: AppColors.blanc, size: 20),
-                    onPressed: () {
-                      HapticFeedback.lightImpact();
-                      context.pop();
-                    },
+                  Semantics(
+                    label: 'Back',
+                    child: IconButton(
+                      icon: Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: AppColors.surface,
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(color: AppColors.border, width: 0.5),
+                        ),
+                        child: const Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
+                      ),
+                      onPressed: () {
+                        HapticFeedback.lightImpact();
+                        context.pop();
+                      },
+                    ),
                   ),
                   Expanded(
                     child: TextField(
                       controller: _searchCtrl,
                       onChanged: _onSearchChanged,
-                      style: const TextStyle(
+                      style: GoogleFonts.dmSans(
                           color: AppColors.blanc, fontSize: 14),
                       decoration: InputDecoration(
                         hintText: 'Search for a professional...',
-                        hintStyle: const TextStyle(
+                        hintStyle: GoogleFonts.dmSans(
                             color: AppColors.gris, fontSize: 14),
                         prefixIcon: const Icon(Icons.search,
                             color: AppColors.gris, size: 20),
@@ -150,7 +161,7 @@ class _DiscoverSearchResultsScreenState
                       ),
                       child: Text(
                         cat,
-                        style: TextStyle(
+                        style: GoogleFonts.dmSans(
                           color: selected
                               ? AppColors.fond
                               : AppColors.blanc,
@@ -175,7 +186,7 @@ class _DiscoverSearchResultsScreenState
                 child: Text(
                   '${s.nearbyProviders.length} '
                   'professional${s.nearbyProviders.length > 1 ? 's' : ''}',
-                  style: const TextStyle(
+                  style: GoogleFonts.dmSans(
                       color: AppColors.gris, fontSize: 13),
                 ),
               ),
@@ -300,7 +311,7 @@ class _EmptyState extends StatelessWidget {
                         ? 'No results for\n"$query"'
                         : 'No professionals available.\nPull to refresh.'),
                 textAlign: TextAlign.center,
-                style: const TextStyle(
+                style: GoogleFonts.dmSans(
                   color: AppColors.gris,
                   fontSize: 14,
                   height: 1.5,
@@ -367,7 +378,7 @@ class _ProviderCard extends StatelessWidget {
                             pro.displayName,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
+                            style: GoogleFonts.dmSans(
                               color: AppColors.blanc,
                               fontWeight: FontWeight.w600,
                               fontSize: 16,
@@ -382,7 +393,7 @@ class _ProviderCard extends StatelessWidget {
                           const SizedBox(width: 2),
                           Text(
                             pro.averageRating!.toStringAsFixed(1),
-                            style: const TextStyle(
+                            style: GoogleFonts.dmSans(
                               color: AppColors.blanc,
                               fontSize: 13,
                               fontWeight: FontWeight.w600,
@@ -396,7 +407,7 @@ class _ProviderCard extends StatelessWidget {
                       const SizedBox(height: 3),
                       Text(
                         pro.category!,
-                        style: const TextStyle(
+                        style: GoogleFonts.dmSans(
                             color: AppColors.gris, fontSize: 13),
                       ),
                     ],
@@ -414,7 +425,7 @@ class _ProviderCard extends StatelessWidget {
                                   : pro.city!,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(
+                              style: GoogleFonts.dmSans(
                                   color: AppColors.gris, fontSize: 12),
                             ),
                           ),
@@ -425,7 +436,7 @@ class _ProviderCard extends StatelessWidget {
                       const SizedBox(height: 4),
                       Text(
                         'From ${pro.minPrice!.toStringAsFixed(0)}\$',
-                        style: const TextStyle(
+                        style: GoogleFonts.dmSans(
                           color: AppColors.grisClair,
                           fontSize: 12,
                           fontWeight: FontWeight.w500,

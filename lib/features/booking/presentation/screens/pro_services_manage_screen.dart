@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../shared/theme/app_colors.dart';
-import '../../../../shared/widgets/spotbook_app_bar.dart';
 import '../../../../shared/widgets/spotbook_button.dart';
 import '../../../../shared/widgets/spotbook_card.dart';
 import '../../../../shared/widgets/spotbook_loading_shimmer.dart';
@@ -26,7 +26,37 @@ class ProServicesManageScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: AppColors.fond,
-      appBar: const SpotbookAppBar(title: 'Services & pricing'),
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        surfaceTintColor: Colors.transparent,
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        centerTitle: true,
+        automaticallyImplyLeading: false,
+        leading: GestureDetector(
+          onTap: () => context.pop(),
+          child: Center(
+            child: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: AppColors.surface,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: AppColors.border, width: 0.5),
+              ),
+              child: const Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
+            ),
+          ),
+        ),
+        title: Text(
+          'Services & pricing',
+          style: GoogleFonts.sora(
+            color: AppColors.blanc,
+            fontWeight: FontWeight.w700,
+            fontSize: 17,
+            letterSpacing: -0.3,
+          ),
+        ),
+      ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: AppColors.blanc,
         foregroundColor: AppColors.fond,
@@ -47,7 +77,7 @@ class ProServicesManageScreen extends ConsumerWidget {
                   padding: const EdgeInsets.all(20),
                   child: Text(
                     state.error!,
-                    style: const TextStyle(color: AppColors.error, fontSize: 13),
+                    style: GoogleFonts.dmSans(color: AppColors.error, fontSize: 13),
                   ),
                 ),
               ),
@@ -66,16 +96,20 @@ class ProServicesManageScreen extends ConsumerWidget {
                         const Icon(Icons.design_services_outlined,
                             color: AppColors.gris, size: 48),
                         const SizedBox(height: 16),
-                        const Text(
+                        Text(
                           'No services yet.',
                           textAlign: TextAlign.center,
-                          style: TextStyle(color: AppColors.gris, fontSize: 16),
+                          style: GoogleFonts.sora(
+                            color: AppColors.gris,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                         const SizedBox(height: 8),
-                        const Text(
+                        Text(
                           'Add a service, its duration and your rate — clients will see them in the booking flow.',
                           textAlign: TextAlign.center,
-                          style: TextStyle(color: AppColors.gris, fontSize: 13),
+                          style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 13, height: 1.4),
                         ),
                         const SizedBox(height: 24),
                         SpotbookButton.primary(
@@ -185,10 +219,10 @@ class ProServicesManageScreen extends ConsumerWidget {
                   children: [
                     Text(
                       existing == null ? 'New service' : 'Edit service',
-                      style: const TextStyle(
+                      style: GoogleFonts.sora(
                         color: AppColors.blanc,
                         fontSize: 18,
-                        fontWeight: FontWeight.w600,
+                        fontWeight: FontWeight.w700,
                       ),
                     ),
                     const SizedBox(height: 20),
@@ -222,9 +256,9 @@ class ProServicesManageScreen extends ConsumerWidget {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text(
+                              Text(
                                 'Duration',
-                                style: TextStyle(
+                                style: GoogleFonts.dmSans(
                                   color: AppColors.gris,
                                   fontSize: 12,
                                   fontWeight: FontWeight.w500,
@@ -243,7 +277,7 @@ class ProServicesManageScreen extends ConsumerWidget {
                                     value: duration,
                                     isExpanded: true,
                                     dropdownColor: AppColors.surfaceAlt,
-                                    style: const TextStyle(
+                                    style: GoogleFonts.dmSans(
                                         color: AppColors.blanc, fontSize: 15),
                                     items: const [
                                       DropdownMenuItem(value: 15, child: Text('15 min')),
@@ -267,9 +301,9 @@ class ProServicesManageScreen extends ConsumerWidget {
 
                     // ─── Payment mode: full vs deposit ──────────────────
                     const SizedBox(height: 20),
-                    const Text(
+                    Text(
                       'Payment mode',
-                      style: TextStyle(
+                      style: GoogleFonts.dmSans(
                         color: AppColors.gris,
                         fontSize: 12,
                         fontWeight: FontWeight.w500,
@@ -314,7 +348,7 @@ class ProServicesManageScreen extends ConsumerWidget {
                                 alignment: Alignment.center,
                                 child: Text(
                                   'Percentage',
-                                  style: TextStyle(
+                                  style: GoogleFonts.dmSans(
                                     color: depositType == 'percentage'
                                         ? AppColors.blanc
                                         : AppColors.gris,
@@ -345,7 +379,7 @@ class ProServicesManageScreen extends ConsumerWidget {
                                 alignment: Alignment.center,
                                 child: Text(
                                   'Fixed amount',
-                                  style: TextStyle(
+                                  style: GoogleFonts.dmSans(
                                     color: depositType == 'fixed'
                                         ? AppColors.blanc
                                         : AppColors.gris,
@@ -364,7 +398,7 @@ class ProServicesManageScreen extends ConsumerWidget {
                           children: [
                             Text(
                               '${depositPctValue.toInt()} %',
-                              style: const TextStyle(
+                              style: GoogleFonts.sora(
                                 color: AppColors.blanc,
                                 fontSize: 16,
                                 fontWeight: FontWeight.w700,
@@ -406,7 +440,7 @@ class ProServicesManageScreen extends ConsumerWidget {
                           ),
                           child: Text(
                             'Client will pay \$$depositPreview online and \$$remainingPreview on site',
-                            style: const TextStyle(
+                            style: GoogleFonts.dmSans(
                               color: AppColors.gris,
                               fontSize: 13,
                               height: 1.4,
@@ -420,13 +454,13 @@ class ProServicesManageScreen extends ConsumerWidget {
                       const SizedBox(height: 12),
                       SwitchListTile(
                         contentPadding: EdgeInsets.zero,
-                        title: const Text(
+                        title: Text(
                           'Active service',
-                          style: TextStyle(color: AppColors.blanc, fontSize: 15),
+                          style: GoogleFonts.dmSans(color: AppColors.blanc, fontSize: 15, fontWeight: FontWeight.w500),
                         ),
-                        subtitle: const Text(
+                        subtitle: Text(
                           'Disable to hide from new bookings.',
-                          style: TextStyle(color: AppColors.gris, fontSize: 12),
+                          style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 12),
                         ),
                         value: active,
                         activeThumbColor: AppColors.fond,
@@ -554,7 +588,7 @@ class _PaymentModeRadio extends StatelessWidget {
                 children: [
                   Text(
                     label,
-                    style: TextStyle(
+                    style: GoogleFonts.dmSans(
                       color: selected ? AppColors.blanc : AppColors.gris,
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
@@ -563,7 +597,7 @@ class _PaymentModeRadio extends StatelessWidget {
                   const SizedBox(height: 2),
                   Text(
                     subtitle,
-                    style: const TextStyle(color: AppColors.gris, fontSize: 11),
+                    style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 11),
                   ),
                 ],
               ),
@@ -611,7 +645,7 @@ class _ServiceTile extends StatelessWidget {
                     children: [
                       Text(
                         service.name,
-                        style: const TextStyle(
+                        style: GoogleFonts.sora(
                           color: AppColors.blanc,
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
@@ -620,7 +654,7 @@ class _ServiceTile extends StatelessWidget {
                       const SizedBox(height: 4),
                       Text(
                         '${service.durationMinutes} min · $priceLabel · $_depositLabel',
-                        style: const TextStyle(color: AppColors.gris, fontSize: 13),
+                        style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 13),
                       ),
                     ],
                   ),
@@ -632,9 +666,9 @@ class _ServiceTile extends StatelessWidget {
                       color: AppColors.gris.withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    child: const Text(
+                    child: Text(
                       'Inactive',
-                      style: TextStyle(color: AppColors.gris, fontSize: 11),
+                      style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 11, fontWeight: FontWeight.w500),
                     ),
                   ),
               ],
@@ -646,7 +680,7 @@ class _ServiceTile extends StatelessWidget {
                 service.description!,
                 maxLines: 3,
                 overflow: TextOverflow.ellipsis,
-                style: const TextStyle(color: AppColors.grisClair, fontSize: 13),
+                style: GoogleFonts.dmSans(color: AppColors.grisClair, fontSize: 13, height: 1.4),
               ),
             ],
             const SizedBox(height: 12),

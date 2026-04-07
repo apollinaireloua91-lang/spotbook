@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -172,10 +173,20 @@ class _ProviderPublicProfileClientViewScreenState
                           horizontal: 8, vertical: 4),
                       child: Align(
                         alignment: Alignment.centerLeft,
-                        child: IconButton(
-                          icon: const Icon(Icons.arrow_back_ios_new,
-                              color: AppColors.blanc, size: 20),
-                          onPressed: () => context.pop(),
+                        child: Semantics(
+                          label: 'Back',
+                          child: IconButton(
+                            icon: Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: AppColors.surface,
+                                borderRadius: BorderRadius.circular(10),
+                                border: Border.all(color: AppColors.border, width: 0.5),
+                              ),
+                              child: const Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
+                            ),
+                            onPressed: () => context.pop(),
+                          ),
                         ),
                       ),
                     ),
@@ -315,7 +326,7 @@ class _ReadyBody extends StatelessWidget {
                             child: Text(
                               p.fullName,
                               textAlign: TextAlign.center,
-                              style: const TextStyle(
+                              style: GoogleFonts.sora(
                                 color: AppColors.blanc,
                                 fontSize: 22,
                                 fontWeight: FontWeight.w800,
@@ -343,7 +354,7 @@ class _ReadyBody extends StatelessWidget {
                             p.location!,
                         ].join(' · '),
                         textAlign: TextAlign.center,
-                        style: const TextStyle(
+                        style: GoogleFonts.dmSans(
                           color: AppColors.gris,
                           fontSize: 14,
                           fontWeight: FontWeight.w500,
@@ -377,7 +388,7 @@ class _ReadyBody extends StatelessWidget {
                         child: Text(
                           p.bio!.trim(),
                           textAlign: TextAlign.center,
-                          style: const TextStyle(
+                          style: GoogleFonts.dmSans(
                             color: AppColors.grisClair,
                             fontSize: 14,
                             height: 1.5,
@@ -637,9 +648,9 @@ class _RatingBadge extends StatelessWidget {
           borderRadius: BorderRadius.circular(20),
           border: Border.all(color: AppColors.border, width: 0.5),
         ),
-        child: const Text(
+        child: Text(
           'New',
-          style: TextStyle(
+          style: GoogleFonts.dmSans(
             color: AppColors.gris,
             fontSize: 13,
             fontWeight: FontWeight.w600,

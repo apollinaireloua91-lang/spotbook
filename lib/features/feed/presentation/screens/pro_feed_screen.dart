@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../../../../shared/theme/app_colors.dart';
@@ -274,11 +275,11 @@ class _ProFeedScreenState extends ConsumerState<ProFeedScreen> {
   Widget _emptyFeedPreview(BuildContext context, ProFeedBadges badges) {
     void demoAction() {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+        SnackBar(
           backgroundColor: AppColors.surfaceAlt,
           content: Text(
             'These buttons will be active once a video is published.',
-            style: TextStyle(color: AppColors.blanc, fontSize: 13),
+            style: GoogleFonts.dmSans(color: AppColors.blanc, fontSize: 13),
           ),
         ),
       );
@@ -334,9 +335,9 @@ class _ProFeedScreenState extends ConsumerState<ProFeedScreen> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
+              Text(
                 'Ton feed pro',
-                style: TextStyle(
+                style: GoogleFonts.sora(
                   color: AppColors.blanc,
                   fontSize: 17,
                   fontWeight: FontWeight.w700,
@@ -345,7 +346,7 @@ class _ProFeedScreenState extends ConsumerState<ProFeedScreen> {
               const SizedBox(height: 8),
               Text(
                 'Only your published (approved) videos scroll here — just like for clients on your profile. Top: notifications, appointments, tickets, messages; right: interactions.',
-                style: TextStyle(
+                style: GoogleFonts.dmSans(
                   color: AppColors.gris.withValues(alpha: 0.95),
                   fontSize: 13,
                   height: 1.45,
@@ -361,17 +362,17 @@ class _ProFeedScreenState extends ConsumerState<ProFeedScreen> {
                     context.push('/pro/camera');
                   },
                   borderRadius: BorderRadius.circular(12),
-                  child: const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(Icons.videocam_rounded,
+                        const Icon(Icons.videocam_rounded,
                             color: AppColors.fond, size: 22),
-                        SizedBox(width: 10),
+                        const SizedBox(width: 10),
                         Text(
                           'Create a video',
-                          style: TextStyle(
+                          style: GoogleFonts.dmSans(
                             color: AppColors.fond,
                             fontWeight: FontWeight.w700,
                             fontSize: 14,
@@ -959,11 +960,11 @@ class _RightColButton extends StatelessWidget {
         const SizedBox(height: 5),
         Text(
           label,
-          style: const TextStyle(
+          style: GoogleFonts.dmSans(
             color: Colors.white,
             fontSize: 11,
             fontWeight: FontWeight.w600,
-            shadows: [Shadow(color: AppColors.shadowDark, blurRadius: 6)],
+            shadows: [const Shadow(color: AppColors.shadowDark, blurRadius: 6)],
           ),
         ),
       ],
@@ -1013,13 +1014,13 @@ class _SpotifyButton extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 4),
-          const Text(
+          Text(
             'Musique',
-            style: TextStyle(
+            style: GoogleFonts.dmSans(
               color: AppColors.spotifyGreen,
               fontSize: 10,
               fontWeight: FontWeight.w500,
-              shadows: [Shadow(color: AppColors.shadowDark, blurRadius: 4)],
+              shadows: [const Shadow(color: AppColors.shadowDark, blurRadius: 4)],
             ),
           ),
         ],
@@ -1060,12 +1061,12 @@ class _LeftColumnState extends State<_LeftColumn> {
             Flexible(
               child: Text(
                 video.proName ?? 'Pro',
-                style: const TextStyle(
+                style: GoogleFonts.dmSans(
                   color: Colors.white,
                   fontSize: 13,
                   fontWeight: FontWeight.w700,
                   letterSpacing: 0.2,
-                  shadows: [Shadow(color: AppColors.shadowDark, blurRadius: 6)],
+                  shadows: [const Shadow(color: AppColors.shadowDark, blurRadius: 6)],
                 ),
                 overflow: TextOverflow.ellipsis,
               ),
@@ -1082,11 +1083,11 @@ class _LeftColumnState extends State<_LeftColumn> {
         if (caption.isNotEmpty) ...[
           Text(
             caption,
-            style: TextStyle(
+            style: GoogleFonts.dmSans(
               color: Colors.white.withAlpha(200),
               fontSize: 12,
               height: 1.45,
-              shadows: const [Shadow(color: AppColors.shadowDark, blurRadius: 4)],
+              shadows: [const Shadow(color: AppColors.shadowDark, blurRadius: 4)],
             ),
             maxLines: _captionExpanded ? 8 : 2,
             overflow: _captionExpanded
@@ -1101,7 +1102,7 @@ class _LeftColumnState extends State<_LeftColumn> {
                 padding: const EdgeInsets.only(top: 2),
                 child: Text(
                   _captionExpanded ? 'show less' : 'show more',
-                  style: TextStyle(
+                  style: GoogleFonts.dmSans(
                     color: Colors.white.withAlpha(180),
                     fontSize: 11,
                     fontWeight: FontWeight.w600,
@@ -1119,11 +1120,11 @@ class _LeftColumnState extends State<_LeftColumn> {
                 for (final h in video.hashtags)
                   TextSpan(
                     text: '#$h ',
-                    style: TextStyle(
+                    style: GoogleFonts.dmSans(
                       color: Colors.white.withAlpha(180),
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
-                      shadows: const [Shadow(color: AppColors.shadowDark, blurRadius: 4)],
+                      shadows: [const Shadow(color: AppColors.shadowDark, blurRadius: 4)],
                     ),
                   ),
               ],
@@ -1168,7 +1169,7 @@ class _CategoryBadge extends StatelessWidget {
       ),
       child: Text(
         label,
-        style: const TextStyle(
+        style: GoogleFonts.dmSans(
           color: AppColors.violetClair,
           fontSize: 9,
           fontWeight: FontWeight.w600,
@@ -1212,7 +1213,7 @@ class _ServiceCtaStrip extends StatelessWidget {
               children: [
                 Text(
                   _name,
-                  style: const TextStyle(
+                  style: GoogleFonts.sora(
                     color: AppColors.blanc,
                     fontSize: 12,
                     fontWeight: FontWeight.w700,
@@ -1226,7 +1227,7 @@ class _ServiceCtaStrip extends StatelessWidget {
                     if (_priceLine.isNotEmpty) _priceLine,
                     video.serviceNextSlot ?? 'Available on request',
                   ].join(' · '),
-                  style: const TextStyle(color: AppColors.gris, fontSize: 10),
+                  style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 10),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -1241,11 +1242,11 @@ class _ServiceCtaStrip extends StatelessWidget {
               onTap: () =>
                   context.push('/client/booking-flow/${video.proId}'),
               borderRadius: BorderRadius.circular(8),
-              child: const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                 child: Text(
                   'Book',
-                  style: TextStyle(
+                  style: GoogleFonts.dmSans(
                     color: AppColors.textOnPrimary,
                     fontSize: 12,
                     fontWeight: FontWeight.w700,
@@ -1295,7 +1296,7 @@ class _EventCtaStrip extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: const TextStyle(
+                  style: GoogleFonts.sora(
                     color: AppColors.blanc,
                     fontSize: 12,
                     fontWeight: FontWeight.w700,
@@ -1306,7 +1307,7 @@ class _EventCtaStrip extends StatelessWidget {
                 if (dateStr.isNotEmpty)
                   Text(
                     dateStr,
-                    style: const TextStyle(color: AppColors.gris, fontSize: 10),
+                    style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 10),
                   ),
               ],
             ),
@@ -1319,11 +1320,11 @@ class _EventCtaStrip extends StatelessWidget {
                 '/client/ticket-purchase/${video.eventId}',
               ),
               borderRadius: BorderRadius.circular(8),
-              child: const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                 child: Text(
                   'Acheter',
-                  style: TextStyle(
+                  style: GoogleFonts.dmSans(
                     color: AppColors.textOnPrimary,
                     fontSize: 12,
                     fontWeight: FontWeight.w700,
@@ -1357,9 +1358,9 @@ class _ShareSheetContent extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'Send to',
-          style: TextStyle(
+          style: GoogleFonts.dmSans(
             color: AppColors.gris,
             fontSize: 11,
             fontWeight: FontWeight.w600,
@@ -1391,7 +1392,7 @@ class _ShareSheetContent extends StatelessWidget {
                   const SizedBox(height: 4),
                   Text(
                     name,
-                    style: const TextStyle(
+                    style: GoogleFonts.dmSans(
                       color: AppColors.grisClair,
                       fontSize: 11,
                     ),
@@ -1402,9 +1403,9 @@ class _ShareSheetContent extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 20),
-        const Text(
+        Text(
           'Share on',
-          style: TextStyle(
+          style: GoogleFonts.dmSans(
             color: AppColors.gris,
             fontSize: 11,
             fontWeight: FontWeight.w600,
@@ -1512,7 +1513,7 @@ class _ShareBrandTile extends StatelessWidget {
               const SizedBox(height: 6),
               Text(
                 label,
-                style: const TextStyle(
+                style: GoogleFonts.dmSans(
                   color: AppColors.blanc,
                   fontSize: 11,
                   fontWeight: FontWeight.w600,
@@ -1765,7 +1766,7 @@ class _SheetEmpty extends StatelessWidget {
       child: Center(
         child: Text(message,
             style:
-                const TextStyle(color: AppColors.gris, fontSize: 14)),
+                GoogleFonts.dmSans(color: AppColors.gris, fontSize: 14)),
       ),
     );
   }
@@ -1836,7 +1837,7 @@ class _NotifItem extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: TextStyle(
+                  style: GoogleFonts.dmSans(
                     color: AppColors.blanc,
                     fontSize: 13,
                     fontWeight: isUnread
@@ -1850,7 +1851,7 @@ class _NotifItem extends StatelessWidget {
                   const SizedBox(height: 2),
                   Text(
                     subtitle,
-                    style: const TextStyle(
+                    style: GoogleFonts.dmSans(
                         color: AppColors.gris, fontSize: 12),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
@@ -1864,7 +1865,7 @@ class _NotifItem extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(timestamp,
-                  style: const TextStyle(
+                  style: GoogleFonts.dmSans(
                       color: AppColors.gris, fontSize: 10)),
               if (isUnread) ...[
                 const SizedBox(height: 4),

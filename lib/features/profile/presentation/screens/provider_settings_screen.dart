@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../l10n/app_localizations.dart';
@@ -35,17 +36,26 @@ class ProviderSettingsScreen extends ConsumerWidget {
       backgroundColor: AppColors.fond,
       appBar: AppBar(
         backgroundColor: AppColors.fond,
+        surfaceTintColor: Colors.transparent,
+        elevation: 0,
         leading: Semantics(
-          label: l10n.cancel,
+          label: 'Back',
           child: IconButton(
-            icon: const Icon(Icons.arrow_back_ios,
-                color: AppColors.blanc, size: 20),
+            icon: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: AppColors.surface,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: AppColors.border, width: 0.5),
+              ),
+              child: const Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
+            ),
             onPressed: () => context.pop(),
           ),
         ),
         title: Text(
           l10n.proSettingsTitle,
-          style: const TextStyle(
+          style: GoogleFonts.sora(
             color: AppColors.blanc,
             fontWeight: FontWeight.w600,
           ),
@@ -64,7 +74,7 @@ class ProviderSettingsScreen extends ConsumerWidget {
             child: Text(
               e.toString(),
               textAlign: TextAlign.center,
-              style: const TextStyle(color: AppColors.gris),
+              style: GoogleFonts.dmSans(color: AppColors.gris),
             ),
           ),
         ),
@@ -257,7 +267,7 @@ class _SettingsBody extends ConsumerWidget {
               const SizedBox(height: 16),
               Text(
                 l10n.proSettingsPaymentsInfo,
-                style: const TextStyle(
+                style: GoogleFonts.dmSans(
                   color: AppColors.gris,
                   fontSize: 13,
                   height: 1.45,
@@ -314,7 +324,7 @@ class _SettingsBody extends ConsumerWidget {
                 contentPadding: EdgeInsets.zero,
                 title: Text(
                   l10n.proSettingsProfilePublic,
-                  style: const TextStyle(color: AppColors.blanc),
+                  style: GoogleFonts.dmSans(color: AppColors.blanc),
                 ),
                 value: data.isPublic,
                 activeThumbColor: AppColors.blanc,
@@ -328,7 +338,7 @@ class _SettingsBody extends ConsumerWidget {
                 contentPadding: EdgeInsets.zero,
                 title: Text(
                   l10n.proSettingsSearchVisible,
-                  style: const TextStyle(color: AppColors.blanc),
+                  style: GoogleFonts.dmSans(color: AppColors.blanc),
                 ),
                 value: data.searchVisible,
                 activeThumbColor: AppColors.blanc,
@@ -399,7 +409,7 @@ class _SettingsBody extends ConsumerWidget {
                 contentPadding: EdgeInsets.zero,
                 title: Text(
                   l10n.proSettingsSignOut,
-                  style: const TextStyle(
+                  style: GoogleFonts.dmSans(
                     color: AppColors.blanc,
                     fontWeight: FontWeight.w600,
                   ),
@@ -410,7 +420,7 @@ class _SettingsBody extends ConsumerWidget {
                 contentPadding: EdgeInsets.zero,
                 title: Text(
                   l10n.proSettingsDeleteAccount,
-                  style: const TextStyle(
+                  style: GoogleFonts.dmSans(
                     color: AppColors.error,
                     fontWeight: FontWeight.w600,
                   ),
@@ -569,18 +579,18 @@ class _SettingsBody extends ConsumerWidget {
         backgroundColor: AppColors.surface,
         title: Text(
           l10n.proSettingsSignOutTitle,
-          style: const TextStyle(color: AppColors.blanc),
+          style: GoogleFonts.sora(color: AppColors.blanc),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
             child: Text(l10n.cancel,
-                style: const TextStyle(color: AppColors.gris)),
+                style: GoogleFonts.dmSans(color: AppColors.gris)),
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
             child: Text(l10n.proSettingsSignOutConfirm,
-                style: const TextStyle(color: AppColors.blanc)),
+                style: GoogleFonts.dmSans(color: AppColors.blanc)),
           ),
         ],
       ),
@@ -633,7 +643,7 @@ class _SpotifyProSettingsBlockState extends ConsumerState<_SpotifyProSettingsBlo
         padding: const EdgeInsets.symmetric(vertical: 12),
         child: Text(
           l10n.error,
-          style: const TextStyle(color: AppColors.gris),
+          style: GoogleFonts.dmSans(color: AppColors.gris),
         ),
       ),
       data: (info) {
@@ -653,7 +663,7 @@ class _SpotifyProSettingsBlockState extends ConsumerState<_SpotifyProSettingsBlo
                 Expanded(
                   child: Text(
                     l10n.proSettingsSpotifyTitle,
-                    style: const TextStyle(
+                    style: GoogleFonts.sora(
                       color: AppColors.blanc,
                       fontWeight: FontWeight.w600,
                       fontSize: 15,
@@ -665,7 +675,7 @@ class _SpotifyProSettingsBlockState extends ConsumerState<_SpotifyProSettingsBlo
             const SizedBox(height: 8),
             Text(
               l10n.proSettingsSpotifyHint,
-              style: const TextStyle(
+              style: GoogleFonts.dmSans(
                 color: AppColors.gris,
                 fontSize: 13,
                 height: 1.4,
@@ -681,7 +691,7 @@ class _SpotifyProSettingsBlockState extends ConsumerState<_SpotifyProSettingsBlo
                   Expanded(
                     child: Text(
                       l10n.proSettingsSpotifyLinked,
-                      style: const TextStyle(
+                      style: GoogleFonts.dmSans(
                         color: AppColors.blanc,
                         fontSize: 14,
                       ),
@@ -798,7 +808,7 @@ class _SectionTitle extends StatelessWidget {
       padding: const EdgeInsets.only(top: 24, bottom: 8),
       child: Text(
         text,
-        style: const TextStyle(
+        style: GoogleFonts.sora(
           color: AppColors.gris,
           fontSize: 11,
           fontWeight: FontWeight.w600,
@@ -829,7 +839,7 @@ class _Tile extends StatelessWidget {
       onTap: onTap,
       title: Text(
         label,
-        style: const TextStyle(
+        style: GoogleFonts.dmSans(
           color: AppColors.blanc,
           fontWeight: FontWeight.w500,
         ),
@@ -837,7 +847,7 @@ class _Tile extends StatelessWidget {
       subtitle: value.isNotEmpty
           ? Text(
               value,
-              style: const TextStyle(color: AppColors.gris),
+              style: GoogleFonts.dmSans(color: AppColors.gris),
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
             )
@@ -872,7 +882,7 @@ class _DropdownRow<T> extends StatelessWidget {
       children: [
         Text(
           label,
-          style: const TextStyle(
+          style: GoogleFonts.dmSans(
             color: AppColors.gris,
             fontSize: 12,
             fontWeight: FontWeight.w600,
@@ -884,7 +894,7 @@ class _DropdownRow<T> extends StatelessWidget {
           value: value,
           isExpanded: true,
           dropdownColor: AppColors.surfaceAlt,
-          style: const TextStyle(color: AppColors.blanc, fontSize: 15),
+          style: GoogleFonts.dmSans(color: AppColors.blanc, fontSize: 15),
           underline: const SizedBox(),
           items: items
               .map(
@@ -949,7 +959,7 @@ class _MaxBookingsFieldState extends State<_MaxBookingsField> {
       children: [
         Text(
           widget.label,
-          style: const TextStyle(
+          style: GoogleFonts.dmSans(
             color: AppColors.gris,
             fontSize: 12,
             fontWeight: FontWeight.w600,
@@ -1048,7 +1058,7 @@ class _StripeBlockState extends ConsumerState<_StripeBlock> {
       children: [
         Text(
           _statusLine(l10n),
-          style: const TextStyle(
+          style: GoogleFonts.dmSans(
             color: AppColors.blanc,
             fontSize: 14,
             height: 1.4,

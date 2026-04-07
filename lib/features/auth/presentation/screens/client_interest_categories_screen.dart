@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../shared/theme/app_colors.dart';
 import '../../data/category_repository.dart';
@@ -26,13 +27,21 @@ class ClientInterestCategoriesScreen extends ConsumerWidget {
       backgroundColor: AppColors.fond,
       appBar: AppBar(
         backgroundColor: AppColors.fond,
+        surfaceTintColor: Colors.transparent,
         elevation: 0,
-        leading: IconButton(
-          onPressed: () => context.go('/client/feed'),
-          icon: const Icon(
-            Icons.arrow_back_ios_rounded,
-            color: AppColors.blanc,
-            size: 20,
+        leading: Semantics(
+          label: 'Back',
+          child: IconButton(
+            onPressed: () => context.go('/client/feed'),
+            icon: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: AppColors.surface,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: AppColors.border, width: 0.5),
+              ),
+              child: const Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
+            ),
           ),
         ),
       ),
@@ -51,9 +60,9 @@ class ClientInterestCategoriesScreen extends ConsumerWidget {
                     borderRadius: BorderRadius.circular(8),
                     color: AppColors.violet.withAlpha(25),
                   ),
-                  child: const Text(
+                  child: Text(
                     'STEP 1/3',
-                    style: TextStyle(
+                    style: GoogleFonts.dmSans(
                       color: AppColors.violet,
                       fontSize: 11,
                       fontWeight: FontWeight.w600,
@@ -76,9 +85,9 @@ class ClientInterestCategoriesScreen extends ConsumerWidget {
             const SizedBox(height: 24),
 
             // Title
-            const Text(
+            Text(
               'What are you interested in?',
-              style: TextStyle(
+              style: GoogleFonts.sora(
                 color: AppColors.blanc,
                 fontSize: 24,
                 fontWeight: FontWeight.w800,
@@ -86,9 +95,9 @@ class ClientInterestCategoriesScreen extends ConsumerWidget {
               ),
             ),
             const SizedBox(height: 8),
-            const Text(
+            Text(
               'Select categories you\'re interested in to personalize your feed.',
-              style: TextStyle(
+              style: GoogleFonts.dmSans(
                 color: AppColors.gris,
                 fontSize: 14,
                 height: 1.4,
@@ -102,10 +111,10 @@ class ClientInterestCategoriesScreen extends ConsumerWidget {
                 loading: () => const Center(
                   child: CircularProgressIndicator(color: AppColors.violet),
                 ),
-                error: (_, __) => const Center(
+                error: (_, __) => Center(
                   child: Text(
                     'Failed to load categories',
-                    style: TextStyle(color: AppColors.gris),
+                    style: GoogleFonts.dmSans(color: AppColors.gris),
                   ),
                 ),
                 data: (_) => GridView.builder(
@@ -153,7 +162,7 @@ class ClientInterestCategoriesScreen extends ConsumerWidget {
                                 Text(
                                   cat.label,
                                   textAlign: TextAlign.center,
-                                  style: TextStyle(
+                                  style: GoogleFonts.dmSans(
                                     color: isSelected
                                         ? AppColors.blanc
                                         : AppColors.grisClair,
@@ -215,9 +224,9 @@ class ClientInterestCategoriesScreen extends ConsumerWidget {
                       borderRadius: BorderRadius.circular(14),
                     ),
                   ),
-                  child: const Text(
+                  child: Text(
                     'Continue',
-                    style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
+                    style: GoogleFonts.dmSans(fontSize: 17, fontWeight: FontWeight.w600),
                   ),
                 ),
               ),
@@ -226,9 +235,9 @@ class ClientInterestCategoriesScreen extends ConsumerWidget {
             Center(
               child: GestureDetector(
                 onTap: () => context.go('/client/goals'),
-                child: const Text(
+                child: Text(
                   'Skip for now',
-                  style: TextStyle(color: AppColors.gris, fontSize: 14),
+                  style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 14),
                 ),
               ),
             ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../shared/theme/app_colors.dart';
 
@@ -18,6 +19,8 @@ class StripeCheckoutWebview extends StatelessWidget {
       backgroundColor: AppColors.fond,
       appBar: AppBar(
         backgroundColor: AppColors.fond,
+        surfaceTintColor: Colors.transparent,
+        elevation: 0,
         leading: Semantics(
           label: 'Close',
           child: IconButton(
@@ -28,9 +31,9 @@ class StripeCheckoutWebview extends StatelessWidget {
             },
           ),
         ),
-        title: const Text(
+        title: Text(
           'Stripe Checkout',
-          style: TextStyle(color: AppColors.blanc, fontWeight: FontWeight.bold),
+          style: GoogleFonts.sora(color: AppColors.blanc, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
       ),
@@ -41,9 +44,9 @@ class StripeCheckoutWebview extends StatelessWidget {
           children: [
             const Icon(Icons.payment, color: AppColors.gris, size: 64),
             const SizedBox(height: 24),
-            const Text(
+            Text(
               'Redirecting to Stripe...',
-              style: TextStyle(
+              style: GoogleFonts.sora(
                 color: AppColors.blanc,
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
@@ -52,15 +55,15 @@ class StripeCheckoutWebview extends StatelessWidget {
             const SizedBox(height: 12),
             Text(
               url,
-              style: const TextStyle(color: AppColors.gris, fontSize: 12),
+              style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 12),
               textAlign: TextAlign.center,
               maxLines: 3,
               overflow: TextOverflow.ellipsis,
             ),
             const SizedBox(height: 32),
-            const Text(
+            Text(
               'In production, this page will display the Stripe payment form via WebView.',
-              style: TextStyle(color: AppColors.gris, fontSize: 13),
+              style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 13),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 32),
@@ -75,8 +78,8 @@ class StripeCheckoutWebview extends StatelessWidget {
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12)),
                 ),
-                child: const Text('Done',
-                    style: TextStyle(fontWeight: FontWeight.bold)),
+                child: Text('Done',
+                    style: GoogleFonts.dmSans(fontWeight: FontWeight.bold)),
               ),
             ),
           ],

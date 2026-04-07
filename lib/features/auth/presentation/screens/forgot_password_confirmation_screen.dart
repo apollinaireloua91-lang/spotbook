@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/widgets/spotbook_button.dart';
@@ -112,29 +113,29 @@ class _ForgotPasswordConfirmationScreenState
                 opacity: _fadeAnim,
                 child: Column(
                   children: [
-                    const Text(
+                    Text(
                       'Email sent!',
-                      style: TextStyle(
+                      style: GoogleFonts.sora(
                         color: AppColors.blanc,
                         fontSize: 24,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
                     const SizedBox(height: 12),
-                    const Text(
+                    Text(
                       'Check your inbox.\nClick the link in the email to reset your password.',
                       textAlign: TextAlign.center,
-                      style: TextStyle(
+                      style: GoogleFonts.dmSans(
                         color: AppColors.gris,
                         fontSize: 15,
                         height: 1.5,
                       ),
                     ),
                     const SizedBox(height: 8),
-                    const Text(
+                    Text(
                       'If you don\'t receive anything, check your spam folder.',
                       textAlign: TextAlign.center,
-                      style: TextStyle(
+                      style: GoogleFonts.dmSans(
                         color: AppColors.grisInactif,
                         fontSize: 13,
                       ),
@@ -147,7 +148,7 @@ class _ForgotPasswordConfirmationScreenState
                           _isResending
                               ? 'Sending…'
                               : "Didn't receive it? Send again",
-                          style: TextStyle(
+                          style: GoogleFonts.dmSans(
                             color: _isResending
                                 ? AppColors.grisInactif
                                 : AppColors.violetClair,

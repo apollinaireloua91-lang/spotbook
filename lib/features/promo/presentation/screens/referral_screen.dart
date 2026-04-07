@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -83,19 +84,29 @@ class ReferralScreen extends ConsumerWidget {
       backgroundColor: AppColors.fond,
       appBar: AppBar(
         backgroundColor: AppColors.fond,
+        surfaceTintColor: Colors.transparent,
+        elevation: 0,
         leading: Semantics(
           label: 'Back',
           child: IconButton(
-            icon: const Icon(Icons.arrow_back_ios, color: AppColors.blanc, size: 20),
+            icon: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: AppColors.surface,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: AppColors.border, width: 0.5),
+              ),
+              child: const Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
+            ),
             onPressed: () {
               HapticFeedback.mediumImpact();
               context.pop();
             },
           ),
         ),
-        title: const Text(
+        title: Text(
           'Referrals',
-          style: TextStyle(color: AppColors.blanc, fontWeight: FontWeight.bold),
+          style: GoogleFonts.sora(color: AppColors.blanc, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
       ),
@@ -111,18 +122,18 @@ class ReferralScreen extends ConsumerWidget {
                   const SizedBox(height: 32),
                   const Icon(Icons.card_giftcard, color: AppColors.blanc, size: 56),
                   const SizedBox(height: 16),
-                  const Text(
+                  Text(
                     'Refer & earn!',
-                    style: TextStyle(
+                    style: GoogleFonts.sora(
                       color: AppColors.blanc,
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   const SizedBox(height: 8),
-                  const Text(
+                  Text(
                     'Invite your friends and earn CA\$10 credit for each verified sign-up.',
-                    style: TextStyle(color: AppColors.gris, fontSize: 15, height: 1.5),
+                    style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 15, height: 1.5),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 32),
@@ -136,11 +147,11 @@ class ReferralScreen extends ConsumerWidget {
                     ),
                     child: Column(
                       children: [
-                        const Text('Your code', style: TextStyle(color: AppColors.gris, fontSize: 13)),
+                        Text('Your code', style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 13)),
                         const SizedBox(height: 8),
                         Text(
                           state.code ?? '---',
-                          style: const TextStyle(
+                          style: GoogleFonts.sora(
                             color: AppColors.blanc,
                             fontSize: 28,
                             fontWeight: FontWeight.bold,
@@ -167,9 +178,9 @@ class ReferralScreen extends ConsumerWidget {
                                     }
                                   },
                                   icon: const Icon(Icons.copy, color: AppColors.blanc, size: 18),
-                                  label: const Text(
+                                  label: Text(
                                     'Copy',
-                                    style: TextStyle(color: AppColors.blanc, fontWeight: FontWeight.w500),
+                                    style: GoogleFonts.dmSans(color: AppColors.blanc, fontWeight: FontWeight.w500),
                                   ),
                                   style: OutlinedButton.styleFrom(
                                     side: const BorderSide(color: AppColors.border),
@@ -192,7 +203,7 @@ class ReferralScreen extends ConsumerWidget {
                                     );
                                   },
                                   icon: const Icon(Icons.share, size: 18),
-                                  label: const Text('Share', style: TextStyle(fontWeight: FontWeight.w600)),
+                                  label: Text('Share', style: GoogleFonts.dmSans(fontWeight: FontWeight.w600)),
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: AppColors.blanc,
                                     foregroundColor: AppColors.fond,
@@ -227,17 +238,17 @@ class ReferralScreen extends ConsumerWidget {
                     ],
                   ),
                   const SizedBox(height: 24),
-                  const Text(
+                  Text(
                     'History',
-                    style: TextStyle(color: AppColors.blanc, fontSize: 16, fontWeight: FontWeight.w600),
+                    style: GoogleFonts.sora(color: AppColors.blanc, fontSize: 16, fontWeight: FontWeight.w600),
                   ),
                   const SizedBox(height: 8),
                   if (state.history.isEmpty)
-                    const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 16),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
                       child: Text(
                         'No referrals yet',
-                        style: TextStyle(color: AppColors.gris, fontSize: 14),
+                        style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 14),
                       ),
                     )
                   else
@@ -328,9 +339,9 @@ class _StatCard extends StatelessWidget {
           Icon(icon, color: AppColors.gris, size: 24),
           const SizedBox(height: 8),
           Text(value,
-              style: const TextStyle(color: AppColors.blanc, fontSize: 22, fontWeight: FontWeight.bold)),
+              style: GoogleFonts.sora(color: AppColors.blanc, fontSize: 22, fontWeight: FontWeight.bold)),
           const SizedBox(height: 4),
-          Text(label, style: const TextStyle(color: AppColors.gris, fontSize: 13)),
+          Text(label, style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 13)),
         ],
       ),
     );

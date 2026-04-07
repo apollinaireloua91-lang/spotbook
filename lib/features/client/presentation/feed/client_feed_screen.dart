@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/widgets/spotbook_loading_shimmer.dart';
@@ -207,7 +208,7 @@ class _FeedEmptyStateState extends State<_FeedEmptyState>
                   ? 'Discover the best Pros'
                   : 'Discover the best Pros',
               textAlign: TextAlign.center,
-              style: const TextStyle(
+              style: GoogleFonts.sora(
                 color: AppColors.blanc,
                 fontSize: 22,
                 fontWeight: FontWeight.w700,
@@ -219,7 +220,7 @@ class _FeedEmptyStateState extends State<_FeedEmptyState>
                   ? 'Follow professionals to see\ntheir videos here'
                   : 'Pro videos will appear here\nas they publish their work',
               textAlign: TextAlign.center,
-              style: const TextStyle(
+              style: GoogleFonts.dmSans(
                 color: AppColors.gris,
                 fontSize: 15,
                 height: 1.5,
@@ -253,14 +254,14 @@ class _FeedEmptyStateState extends State<_FeedEmptyState>
                     ),
                   ],
                 ),
-                child: const Row(
+                child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.search, color: AppColors.textOnPrimary, size: 18),
-                    SizedBox(width: 8),
+                    const Icon(Icons.search, color: AppColors.textOnPrimary, size: 18),
+                    const SizedBox(width: 8),
                     Text(
                       'Discover Pros',
-                      style: TextStyle(
+                      style: GoogleFonts.dmSans(
                         color: AppColors.textOnPrimary,
                         fontSize: 15,
                         fontWeight: FontWeight.w600,
@@ -274,7 +275,7 @@ class _FeedEmptyStateState extends State<_FeedEmptyState>
               const SizedBox(height: 20),
               Text(
                 'An error occurred',
-                style: TextStyle(
+                style: GoogleFonts.dmSans(
                   color: AppColors.error.withAlpha(180),
                   fontSize: 13,
                 ),
@@ -282,9 +283,9 @@ class _FeedEmptyStateState extends State<_FeedEmptyState>
               const SizedBox(height: 8),
               GestureDetector(
                 onTap: widget.onRetry,
-                child: const Text(
+                child: Text(
                   'Retry',
-                  style: TextStyle(
+                  style: GoogleFonts.dmSans(
                     color: AppColors.violet,
                     fontSize: 14,
                     fontWeight: FontWeight.w600,

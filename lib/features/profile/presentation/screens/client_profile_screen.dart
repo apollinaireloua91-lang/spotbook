@@ -120,7 +120,7 @@ class _ProfileBody extends ConsumerWidget {
                   Center(
                     child: Text(
                       'My Profile',
-                      style: GoogleFonts.dmSans(
+                      style: GoogleFonts.sora(
                         color: AppColors.blanc,
                         fontSize: 18,
                         fontWeight: FontWeight.w700,
@@ -172,11 +172,11 @@ class _ProfileBody extends ConsumerWidget {
                 padding: EdgeInsets.symmetric(horizontal: 16),
                 child: SpotbookLoadingShimmer.card(itemCount: 1),
               ),
-              error: (_, __) => const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              error: (_, __) => Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 child: Text(
                   'Unable to load stats',
-                  style: TextStyle(color: AppColors.gris, fontSize: 12),
+                  style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 12),
                   textAlign: TextAlign.center,
                 ),
               ),
@@ -239,7 +239,7 @@ class _ProfileBody extends ConsumerWidget {
               padding: const EdgeInsets.only(left: 16, bottom: 10),
               child: Text(
                 'Settings',
-                style: GoogleFonts.dmSans(
+                style: GoogleFonts.sora(
                   color: AppColors.blanc,
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
@@ -277,7 +277,7 @@ class _FavoriteProsList extends StatelessWidget {
             children: [
               Text(
                 'My favorite Pros',
-                style: GoogleFonts.dmSans(
+                style: GoogleFonts.sora(
                   color: AppColors.blanc,
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
@@ -351,7 +351,7 @@ class _FavProAvatar extends StatelessWidget {
             const SizedBox(height: 6),
             Text(
               pro.businessName ?? 'Pro',
-              style: const TextStyle(
+              style: GoogleFonts.dmSans(
                 color: AppColors.gris,
                 fontSize: 10,
               ),
@@ -421,7 +421,7 @@ class _RecentHistory extends StatelessWidget {
             children: [
               Text(
                 'Recent history',
-                style: GoogleFonts.dmSans(
+                style: GoogleFonts.sora(
                   color: AppColors.blanc,
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
@@ -483,7 +483,7 @@ class _RecentHistory extends StatelessWidget {
                       children: [
                         Text(
                           service?['name'] as String? ?? 'Service',
-                          style: const TextStyle(
+                          style: GoogleFonts.dmSans(
                             color: AppColors.blanc,
                             fontSize: 13,
                             fontWeight: FontWeight.w600,
@@ -491,7 +491,7 @@ class _RecentHistory extends StatelessWidget {
                         ),
                         Text(
                           _formatDate(item['created_at'] as String?),
-                          style: const TextStyle(
+                          style: GoogleFonts.dmSans(
                             color: AppColors.gris,
                             fontSize: 11,
                           ),
@@ -501,7 +501,7 @@ class _RecentHistory extends StatelessWidget {
                   ),
                   Text(
                     '${price.toStringAsFixed(0)} \$',
-                    style: const TextStyle(
+                    style: GoogleFonts.dmSans(
                       color: AppColors.violetClair,
                       fontSize: 13,
                       fontWeight: FontWeight.w700,
@@ -568,7 +568,7 @@ class _SettingsSection extends ConsumerWidget {
               Expanded(
                 child: Text(
                   'Dark Mode',
-                  style: TextStyle(
+                  style: GoogleFonts.dmSans(
                     color: AppColors.grisClair,
                     fontSize: 13,
                   ),
@@ -670,7 +670,7 @@ class _SpecialActionsSection extends ConsumerWidget {
         ),
         title: Text(
           'Log out',
-          style: GoogleFonts.dmSans(
+          style: GoogleFonts.sora(
             color: AppColors.blanc,
             fontSize: 17,
             fontWeight: FontWeight.w700,
@@ -731,9 +731,9 @@ class _UnauthenticatedState extends StatelessWidget {
           const Icon(Icons.person_off_outlined,
               color: AppColors.gris, size: 48),
           const SizedBox(height: 12),
-          const Text(
+          Text(
             'Not signed in',
-            style: TextStyle(color: AppColors.gris, fontSize: 16),
+            style: GoogleFonts.sora(color: AppColors.gris, fontSize: 16),
           ),
           const SizedBox(height: 16),
           GestureDetector(
@@ -744,9 +744,9 @@ class _UnauthenticatedState extends StatelessWidget {
                 color: AppColors.violet,
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: const Text(
+              child: Text(
                 'Sign in',
-                style: TextStyle(
+                style: GoogleFonts.dmSans(
                   color: AppColors.blanc,
                   fontWeight: FontWeight.w600,
                 ),
@@ -773,7 +773,7 @@ class _EmptyFavorites extends StatelessWidget {
         children: [
           Text(
             'My favorite Pros',
-            style: GoogleFonts.dmSans(
+            style: GoogleFonts.sora(
               color: AppColors.blanc,
               fontSize: 14,
               fontWeight: FontWeight.w600,
@@ -798,7 +798,7 @@ class _EmptyFavorites extends StatelessWidget {
                 const SizedBox(height: 8),
                 Text(
                   'Like Pros to find them here',
-                  style: TextStyle(
+                  style: GoogleFonts.dmSans(
                     color: AppColors.gris.withAlpha(160),
                     fontSize: 13,
                   ),
@@ -826,7 +826,7 @@ class _EmptyHistory extends StatelessWidget {
         children: [
           Text(
             'Recent history',
-            style: GoogleFonts.dmSans(
+            style: GoogleFonts.sora(
               color: AppColors.blanc,
               fontSize: 14,
               fontWeight: FontWeight.w600,
@@ -851,7 +851,7 @@ class _EmptyHistory extends StatelessWidget {
                 const SizedBox(height: 8),
                 Text(
                   'Your bookings will appear here',
-                  style: TextStyle(
+                  style: GoogleFonts.dmSans(
                     color: AppColors.gris.withAlpha(160),
                     fontSize: 13,
                   ),
@@ -894,18 +894,18 @@ class _ErrorState extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 20),
-            const Text(
+            Text(
               'Loading error',
-              style: TextStyle(
+              style: GoogleFonts.sora(
                 color: AppColors.blanc,
                 fontSize: 17,
                 fontWeight: FontWeight.w700,
               ),
             ),
             const SizedBox(height: 8),
-            const Text(
+            Text(
               'Unable to load your profile',
-              style: TextStyle(color: AppColors.gris, fontSize: 14),
+              style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 14),
             ),
             const SizedBox(height: 20),
             GestureDetector(
@@ -919,9 +919,9 @@ class _ErrorState extends StatelessWidget {
                   color: AppColors.violet,
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: const Text(
+                child: Text(
                   'Retry',
-                  style: TextStyle(
+                  style: GoogleFonts.dmSans(
                     color: AppColors.blanc,
                     fontWeight: FontWeight.w600,
                   ),

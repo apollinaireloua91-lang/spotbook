@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../shared/theme/app_colors.dart';
@@ -47,9 +48,9 @@ class ProCalendarHubScreen extends ConsumerWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    const Text(
+                    Text(
                       'RÉSERVATION & ÉVÉNEMENTS',
-                      style: TextStyle(
+                      style: GoogleFonts.sora(
                         color: AppColors.gris,
                         fontSize: 11,
                         fontWeight: FontWeight.w600,
@@ -97,15 +98,15 @@ class ProCalendarHubScreen extends ConsumerWidget {
                 ),
               ),
             ),
-            const SliverToBoxAdapter(
+            SliverToBoxAdapter(
               child: Padding(
-                padding: EdgeInsets.fromLTRB(20, 16, 20, 8),
+                padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
                       'PROCHAINS RDV',
-                      style: TextStyle(
+                      style: GoogleFonts.sora(
                         color: AppColors.gris,
                         fontSize: 11,
                         fontWeight: FontWeight.w600,
@@ -129,9 +130,9 @@ class ProCalendarHubScreen extends ConsumerWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
+                          Text(
                             'No upcoming appointments',
-                            style: TextStyle(
+                            style: GoogleFonts.sora(
                               color: AppColors.blanc,
                               fontWeight: FontWeight.w600,
                               fontSize: 16,
@@ -140,7 +141,7 @@ class ProCalendarHubScreen extends ConsumerWidget {
                           const SizedBox(height: 8),
                           Text(
                             'Configure tes disponibilités et tarifs pour que les clients puissent réserver.',
-                            style: TextStyle(
+                            style: GoogleFonts.dmSans(
                               color: AppColors.gris.withValues(alpha: 0.95),
                               fontSize: 13,
                               height: 1.4,
@@ -207,7 +208,7 @@ class _HubActionCard extends StatelessWidget {
             Text(
               label,
               textAlign: TextAlign.center,
-              style: const TextStyle(
+              style: GoogleFonts.dmSans(
                 color: AppColors.blanc,
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
@@ -259,7 +260,7 @@ class _UpcomingBookingTile extends StatelessWidget {
             child: booking.clientAvatarUrl == null
                 ? Text(
                     name.isNotEmpty ? name[0].toUpperCase() : '?',
-                    style: const TextStyle(color: AppColors.blanc),
+                    style: GoogleFonts.dmSans(color: AppColors.blanc),
                   )
                 : null,
           ),
@@ -270,7 +271,7 @@ class _UpcomingBookingTile extends StatelessWidget {
               children: [
                 Text(
                   name,
-                  style: const TextStyle(
+                  style: GoogleFonts.sora(
                     color: AppColors.blanc,
                     fontWeight: FontWeight.w600,
                     fontSize: 15,
@@ -281,7 +282,7 @@ class _UpcomingBookingTile extends StatelessWidget {
                   subtitle,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(color: AppColors.gris, fontSize: 12),
+                  style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 12),
                 ),
               ],
             ),

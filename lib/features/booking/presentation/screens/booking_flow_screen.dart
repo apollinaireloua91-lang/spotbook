@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/widgets/spotbook_loading_shimmer.dart';
@@ -61,9 +62,22 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
         backgroundColor: AppColors.fond,
         appBar: AppBar(
           backgroundColor: AppColors.fond,
-          leading: IconButton(
-            icon: const Icon(Icons.close, color: AppColors.blanc),
-            onPressed: () => context.pop(),
+          surfaceTintColor: Colors.transparent,
+          elevation: 0,
+          leading: Semantics(
+            label: 'Back',
+            child: IconButton(
+              icon: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: AppColors.surface,
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: AppColors.border, width: 0.5),
+                ),
+                child: const Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
+              ),
+              onPressed: () => context.pop(),
+            ),
           ),
         ),
         body: Center(
@@ -77,7 +91,7 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
                 const SizedBox(height: 16),
                 Text(
                   'Unable to load profile',
-                  style: const TextStyle(
+                  style: GoogleFonts.sora(
                     color: AppColors.blanc,
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
@@ -88,7 +102,7 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
                 Text(
                   err.toString(),
                   textAlign: TextAlign.center,
-                  style: const TextStyle(color: AppColors.gris, fontSize: 13),
+                  style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 13),
                 ),
                 const SizedBox(height: 20),
                 GestureDetector(
@@ -105,9 +119,9 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(color: AppColors.border),
                     ),
-                    child: const Text(
+                    child: Text(
                       'Retry',
-                      style: TextStyle(
+                      style: GoogleFonts.dmSans(
                         color: AppColors.blanc,
                         fontWeight: FontWeight.w600,
                       ),

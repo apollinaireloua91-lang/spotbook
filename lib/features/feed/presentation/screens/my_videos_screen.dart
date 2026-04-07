@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../shared/theme/app_colors.dart';
 import '../../data/my_videos_notifier.dart';
@@ -15,11 +16,11 @@ class MyVideosScreen extends ConsumerWidget {
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: AppColors.surface,
-        title: const Text('Delete video?', style: TextStyle(color: AppColors.blanc)),
-        content: const Text('This action is irreversible.', style: TextStyle(color: AppColors.gris)),
+        title: Text('Delete video?', style: GoogleFonts.sora(color: AppColors.blanc, fontWeight: FontWeight.w600)),
+        content: Text('This action is irreversible.', style: GoogleFonts.dmSans(color: AppColors.gris)),
         actions: [
-          TextButton(onPressed: () => ctx.pop(false), child: const Text('Cancel', style: TextStyle(color: AppColors.gris))),
-          TextButton(onPressed: () => ctx.pop(true), child: const Text('Delete', style: TextStyle(color: AppColors.error))),
+          TextButton(onPressed: () => ctx.pop(false), child: Text('Cancel', style: GoogleFonts.dmSans(color: AppColors.gris))),
+          TextButton(onPressed: () => ctx.pop(true), child: Text('Delete', style: GoogleFonts.dmSans(color: AppColors.error))),
         ],
       ),
     );
@@ -34,11 +35,32 @@ class MyVideosScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: AppColors.fond,
-      appBar: AppBar(backgroundColor: AppColors.fond, title: const Text('My videos', style: TextStyle(color: AppColors.blanc)), centerTitle: true),
+      appBar: AppBar(
+        backgroundColor: AppColors.fond,
+        surfaceTintColor: Colors.transparent,
+        elevation: 0,
+        leading: Semantics(
+          label: 'Back',
+          child: IconButton(
+            icon: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: AppColors.surface,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: AppColors.border, width: 0.5),
+              ),
+              child: const Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
+            ),
+            onPressed: () => context.pop(),
+          ),
+        ),
+        title: Text('My videos', style: GoogleFonts.sora(color: AppColors.blanc, fontWeight: FontWeight.w600, fontSize: 17)),
+        centerTitle: true,
+      ),
       body: videos == null
           ? const Center(child: CircularProgressIndicator(color: AppColors.blanc))
           : videos.isEmpty
-              ? const Center(child: Text('No videos yet', style: TextStyle(color: AppColors.gris, fontSize: 15)))
+              ? Center(child: Text('No videos yet', style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 15)))
               : ListView.builder(
                   padding: const EdgeInsets.all(16), itemCount: videos.length,
                   itemBuilder: (context, index) {
@@ -70,7 +92,7 @@ class _VideoCard extends StatelessWidget {
         ),
         Padding(padding: const EdgeInsets.all(12), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Row(children: [
-            Expanded(child: Text(video.title, style: const TextStyle(color: AppColors.blanc, fontSize: 15, fontWeight: FontWeight.w600))),
+            Expanded(child: Text(video.title, style: GoogleFonts.sora(color: AppColors.blanc, fontSize: 15, fontWeight: FontWeight.w600))),
             _StatusBadge(status: video.status),
           ]),
           if (video.status == 'rejected' && video.rejectionReason != null) ...[

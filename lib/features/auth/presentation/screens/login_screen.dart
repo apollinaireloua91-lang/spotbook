@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../shared/theme/app_colors.dart';
 import '../../data/auth_repository.dart';
@@ -196,10 +197,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               const SizedBox(height: 56),
 
               // Logo
-              const Center(
+              Center(
                 child: Text(
                   'Spotbook',
-                  style: TextStyle(
+                  style: GoogleFonts.sora(
                     color: AppColors.blanc,
                     fontSize: 32,
                     fontWeight: FontWeight.w800,
@@ -210,9 +211,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               const SizedBox(height: 40),
 
               // Title
-              const Text(
+              Text(
                 'Welcome back!',
-                style: TextStyle(
+                style: GoogleFonts.sora(
                   color: AppColors.blanc,
                   fontSize: 28,
                   fontWeight: FontWeight.w800,
@@ -220,9 +221,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 ),
               ),
               const SizedBox(height: 8),
-              const Text(
+              Text(
                 'Sign in to continue.',
-                style: TextStyle(color: AppColors.gris, fontSize: 15),
+                style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 15),
               ),
               const SizedBox(height: 32),
 
@@ -267,7 +268,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       s.isMagicLinkLoading
                           ? 'Sending link…'
                           : 'Magic link',
-                      style: TextStyle(
+                      style: GoogleFonts.dmSans(
                         color: s.isMagicLinkLoading
                             ? AppColors.grisInactif
                             : AppColors.violetClair,
@@ -278,9 +279,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   ),
                   GestureDetector(
                     onTap: () => context.push('/forgot-password'),
-                    child: const Text(
+                    child: Text(
                       'Forgot password?',
-                      style: TextStyle(
+                      style: GoogleFonts.dmSans(
                         color: AppColors.violetClair,
                         fontSize: 13,
                         fontWeight: FontWeight.w500,
@@ -312,7 +313,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: Text(
                       'or continue with',
-                      style: TextStyle(
+                      style: GoogleFonts.dmSans(
                         color: AppColors.gris.withAlpha(180),
                         fontSize: 13,
                       ),
@@ -363,13 +364,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 child: GestureDetector(
                   onTap: () => context.go('/select-account-type'),
                   child: RichText(
-                    text: const TextSpan(
+                    text: TextSpan(
                       text: 'No account? ',
-                      style: TextStyle(color: AppColors.gris, fontSize: 14),
+                      style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 14),
                       children: [
                         TextSpan(
                           text: 'Sign up',
-                          style: TextStyle(
+                          style: GoogleFonts.dmSans(
                             color: AppColors.violetClair,
                             fontWeight: FontWeight.w600,
                           ),
@@ -419,11 +420,11 @@ class _AuthField extends StatelessWidget {
       keyboardType: keyboardType,
       textInputAction: textInputAction,
       onSubmitted: onSubmitted,
-      style: const TextStyle(color: AppColors.blanc, fontSize: 16),
+      style: GoogleFonts.dmSans(color: AppColors.blanc, fontSize: 16),
       cursorColor: AppColors.violet,
       decoration: InputDecoration(
         hintText: hint,
-        hintStyle: TextStyle(color: AppColors.gris.withAlpha(150), fontSize: 16),
+        hintStyle: GoogleFonts.dmSans(color: AppColors.gris.withAlpha(150), fontSize: 16),
         prefixIcon: prefixIcon != null
             ? Icon(prefixIcon, color: AppColors.gris, size: 20)
             : null,
@@ -501,7 +502,7 @@ class _GradientButton extends StatelessWidget {
                 )
               : Text(
                   label,
-                  style: const TextStyle(
+                  style: GoogleFonts.dmSans(
                     fontSize: 17,
                     fontWeight: FontWeight.w600,
                   ),
@@ -569,7 +570,7 @@ class _SocialButton extends StatelessWidget {
                   const SizedBox(width: 10),
                   Text(
                     label,
-                    style: TextStyle(
+                    style: GoogleFonts.dmSans(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
                       color: textColor,

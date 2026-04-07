@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:shimmer/shimmer.dart';
 
 import '../../../../shared/theme/app_colors.dart';
@@ -77,6 +78,8 @@ class ProInsightsScreen extends ConsumerWidget {
       backgroundColor: AppColors.fond,
       appBar: AppBar(
         backgroundColor: AppColors.fond,
+        surfaceTintColor: Colors.transparent,
+        elevation: 0,
         leading: Semantics(
           label: 'Back',
           child: IconButton(
@@ -84,12 +87,20 @@ class ProInsightsScreen extends ConsumerWidget {
               HapticFeedback.mediumImpact();
               context.pop();
             },
-            icon: const Icon(Icons.arrow_back_ios, color: AppColors.blanc, size: 20),
+            icon: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: AppColors.surface,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: AppColors.border, width: 0.5),
+              ),
+              child: const Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
+            ),
           ),
         ),
-        title: const Text(
+        title: Text(
           'Insights Pro',
-          style: TextStyle(color: AppColors.blanc, fontWeight: FontWeight.bold),
+          style: GoogleFonts.sora(color: AppColors.blanc, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
       ),
@@ -128,10 +139,10 @@ class ProInsightsScreen extends ConsumerWidget {
                     const SizedBox(height: 60),
                     const Icon(Icons.bar_chart, color: AppColors.gris, size: 48),
                     const SizedBox(height: 12),
-                    const Text(
+                    Text(
                       'No data for this period',
                       textAlign: TextAlign.center,
-                      style: TextStyle(color: AppColors.gris, fontSize: 15),
+                      style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 15),
                     ),
                   ] else ...[
                     Container(
@@ -298,7 +309,7 @@ class _PeriodChip extends StatelessWidget {
           ),
           child: Text(
             label,
-            style: TextStyle(
+            style: GoogleFonts.dmSans(
               color: selected ? AppColors.fond : AppColors.blanc,
               fontWeight: FontWeight.w600,
             ),
@@ -330,12 +341,12 @@ class _MetricTile extends StatelessWidget {
           Expanded(
             child: Text(
               metric.label,
-              style: const TextStyle(color: AppColors.gris, fontSize: 14),
+              style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 14),
             ),
           ),
           Text(
             metric.value.toStringAsFixed(metric.label == 'Revenue' ? 2 : 0),
-            style: const TextStyle(
+            style: GoogleFonts.sora(
               color: AppColors.blanc,
               fontSize: 18,
               fontWeight: FontWeight.bold,
@@ -352,7 +363,7 @@ class _MetricTile extends StatelessWidget {
               const SizedBox(width: 2),
               Text(
                 '${metric.deltaPercent.abs().toStringAsFixed(1)}%',
-                style: TextStyle(
+                style: GoogleFonts.dmSans(
                   color: up ? AppColors.success : AppColors.error,
                   fontSize: 12,
                   fontWeight: FontWeight.w600,

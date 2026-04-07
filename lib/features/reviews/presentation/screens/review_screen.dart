@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:shimmer/shimmer.dart';
 
 import '../../../../shared/theme/app_colors.dart';
@@ -95,11 +96,11 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
               children: [
                 const Icon(Icons.check_circle, color: AppColors.success, size: 64),
                 const SizedBox(height: 20),
-                const Text('Thank you for your review!',
-                    style: TextStyle(color: AppColors.blanc, fontSize: 22, fontWeight: FontWeight.bold)),
+                Text('Thank you for your review!',
+                    style: GoogleFonts.sora(color: AppColors.blanc, fontSize: 22, fontWeight: FontWeight.bold)),
                 const SizedBox(height: 8),
-                const Text('Your feedback helps other users.',
-                    style: TextStyle(color: AppColors.gris, fontSize: 15), textAlign: TextAlign.center),
+                Text('Your feedback helps other users.',
+                    style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 15), textAlign: TextAlign.center),
                 const SizedBox(height: 32),
                 SizedBox(
                   width: double.infinity,
@@ -114,7 +115,7 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
                       foregroundColor: AppColors.fond,
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     ),
-                    child: const Text('Done', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                    child: Text('Done', style: GoogleFonts.dmSans(fontWeight: FontWeight.bold, fontSize: 16)),
                   ),
                 ),
               ],
@@ -128,18 +129,28 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
       backgroundColor: AppColors.fond,
       appBar: AppBar(
         backgroundColor: AppColors.fond,
+        surfaceTintColor: Colors.transparent,
+        elevation: 0,
         leading: Semantics(
           label: 'Back',
           child: IconButton(
-            icon: const Icon(Icons.arrow_back_ios, color: AppColors.blanc, size: 20),
+            icon: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: AppColors.surface,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: AppColors.border, width: 0.5),
+              ),
+              child: const Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
+            ),
             onPressed: () {
               HapticFeedback.mediumImpact();
               context.pop();
             },
           ),
         ),
-        title: const Text('Leave a review',
-            style: TextStyle(color: AppColors.blanc, fontWeight: FontWeight.bold)),
+        title: Text('Leave a review',
+            style: GoogleFonts.sora(color: AppColors.blanc, fontWeight: FontWeight.bold)),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
@@ -152,8 +163,8 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
                   style: const TextStyle(color: AppColors.gris, fontSize: 15)),
               const SizedBox(height: 8),
             ],
-            const Text('How was your appointment?',
-                style: TextStyle(color: AppColors.blanc, fontSize: 20, fontWeight: FontWeight.bold),
+            Text('How was your appointment?',
+                style: GoogleFonts.sora(color: AppColors.blanc, fontSize: 20, fontWeight: FontWeight.bold),
                 textAlign: TextAlign.center),
             const SizedBox(height: 32),
             // Star rating
@@ -258,7 +269,7 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
                           ),
                         ),
                       )
-                    : const Text('Submit', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                    : Text('Submit', style: GoogleFonts.dmSans(fontWeight: FontWeight.bold, fontSize: 16)),
               ),
             ),
             const SizedBox(height: 32),

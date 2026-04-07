@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -26,14 +27,26 @@ class ProQrCodeScreen extends StatelessWidget {
       backgroundColor: AppColors.fond,
       appBar: AppBar(
         backgroundColor: AppColors.fond,
+        surfaceTintColor: Colors.transparent,
         elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppColors.blanc),
-          onPressed: () => context.pop(),
+        leading: Semantics(
+          label: 'Back',
+          child: IconButton(
+            icon: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: AppColors.surface,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: AppColors.border, width: 0.5),
+              ),
+              child: const Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
+            ),
+            onPressed: () => context.pop(),
+          ),
         ),
-        title: const Text(
+        title: Text(
           'My QR Code',
-          style: TextStyle(
+          style: GoogleFonts.sora(
               color: AppColors.blanc, fontWeight: FontWeight.bold, fontSize: 18),
         ),
         centerTitle: true,
@@ -89,7 +102,7 @@ class ProQrCodeScreen extends StatelessWidget {
                     // Name
                     Text(
                       name,
-                      style: const TextStyle(
+                      style: GoogleFonts.sora(
                           color: AppColors.blanc,
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
@@ -98,7 +111,7 @@ class ProQrCodeScreen extends StatelessWidget {
                     const SizedBox(height: 4),
                     Text(
                       '@$username',
-                      style: const TextStyle(
+                      style: GoogleFonts.dmSans(
                           color: AppColors.gris, fontSize: 14),
                     ),
                     const SizedBox(height: 16),
@@ -132,7 +145,7 @@ class ProQrCodeScreen extends StatelessWidget {
                             Flexible(
                               child: Text(
                                 profileUrl,
-                                style: const TextStyle(
+                                style: GoogleFonts.dmSans(
                                     color: AppColors.grisClair, fontSize: 12),
                                 overflow: TextOverflow.ellipsis,
                               ),
@@ -158,15 +171,15 @@ class ProQrCodeScreen extends StatelessWidget {
                   borderRadius: BorderRadius.circular(14),
                   border: Border.all(color: AppColors.border, width: 0.5),
                 ),
-                child: const Row(
+                child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Icon(Icons.info_outline, color: AppColors.gris, size: 16),
-                    SizedBox(width: 10),
+                    const Icon(Icons.info_outline, color: AppColors.gris, size: 16),
+                    const SizedBox(width: 10),
                     Expanded(
                       child: Text(
                         'Partagez ce QR code avec vos clients pour qu\'ils accèdent directement à votre profil et réservent vos services.',
-                        style: TextStyle(
+                        style: GoogleFonts.dmSans(
                             color: AppColors.gris,
                             fontSize: 13,
                             height: 1.5),

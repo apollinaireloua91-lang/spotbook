@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/locale/app_locale_notifier.dart';
@@ -39,11 +40,20 @@ class LanguageSettingsScreen extends ConsumerWidget {
       backgroundColor: AppColors.fond,
       appBar: AppBar(
         backgroundColor: AppColors.fond,
+        surfaceTintColor: Colors.transparent,
+        elevation: 0,
         leading: Semantics(
           label: l10n.cancel,
           child: IconButton(
-            icon: const Icon(Icons.arrow_back_ios,
-                color: AppColors.blanc, size: 20),
+            icon: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: AppColors.surface,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: AppColors.border, width: 0.5),
+              ),
+              child: const Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
+            ),
             onPressed: () => context.pop(),
           ),
         ),
@@ -58,7 +68,7 @@ class LanguageSettingsScreen extends ConsumerWidget {
         children: [
           Text(
             l10n.settingsLanguageScreenSubtitle,
-            style: const TextStyle(
+            style: GoogleFonts.dmSans(
               color: AppColors.gris,
               fontSize: 14,
               height: 1.45,
@@ -73,7 +83,7 @@ class LanguageSettingsScreen extends ConsumerWidget {
                 Expanded(
                   child: Text(
                     l10n.proSettingsLangFrench,
-                    style: const TextStyle(
+                    style: GoogleFonts.dmSans(
                       color: AppColors.blanc,
                       fontSize: 17,
                       fontWeight: FontWeight.w600,
@@ -98,7 +108,7 @@ class LanguageSettingsScreen extends ConsumerWidget {
                 Expanded(
                   child: Text(
                     l10n.proSettingsLangEnglish,
-                    style: const TextStyle(
+                    style: GoogleFonts.dmSans(
                       color: AppColors.blanc,
                       fontSize: 17,
                       fontWeight: FontWeight.w600,

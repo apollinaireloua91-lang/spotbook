@@ -125,7 +125,7 @@ class _PremiumGreetingHeader extends StatelessWidget {
                 const SizedBox(height: 2),
                 Text(
                   name ?? 'Pro',
-                  style: GoogleFonts.dmSans(
+                  style: GoogleFonts.sora(
                     fontSize: 22,
                     fontWeight: FontWeight.w700,
                     color: AppColors.blanc,
@@ -265,7 +265,7 @@ class _PremiumStatCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final valueStyle = GoogleFonts.dmSans(
+    final valueStyle = GoogleFonts.sora(
       fontSize: 22,
       fontWeight: FontWeight.w700,
       color: AppColors.blanc,
@@ -363,7 +363,7 @@ class _PremiumQuickActions extends StatelessWidget {
               const SizedBox(width: 8),
               Text(
                 'QUICK ACTIONS',
-                style: GoogleFonts.dmSans(
+                style: GoogleFonts.sora(
                   fontSize: 11,
                   fontWeight: FontWeight.w600,
                   letterSpacing: 2,
@@ -553,7 +553,7 @@ class _UpcomingBookingsSection extends StatelessWidget {
               Expanded(
                 child: Text(
                   'UPCOMING BOOKINGS',
-                  style: GoogleFonts.dmSans(
+                  style: GoogleFonts.sora(
                     fontSize: 11,
                     fontWeight: FontWeight.w600,
                     letterSpacing: 2,
@@ -836,7 +836,7 @@ class _PremiumNextEventCard extends StatelessWidget {
               const SizedBox(width: 8),
               Text(
                 'NEXT EVENT',
-                style: GoogleFonts.dmSans(
+                style: GoogleFonts.sora(
                   fontSize: 11,
                   fontWeight: FontWeight.w600,
                   letterSpacing: 2,
@@ -930,7 +930,7 @@ class _PremiumNextEventCard extends StatelessWidget {
                       children: [
                         Text(
                           title,
-                          style: GoogleFonts.dmSans(
+                          style: GoogleFonts.sora(
                             fontSize: 17,
                             fontWeight: FontWeight.w700,
                             color: AppColors.blanc,
@@ -1168,7 +1168,7 @@ class _ErrorView extends StatelessWidget {
               Text(
                 'Unable to load dashboard',
                 textAlign: TextAlign.center,
-                style: GoogleFonts.dmSans(
+                style: GoogleFonts.sora(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
                   color: AppColors.blanc,

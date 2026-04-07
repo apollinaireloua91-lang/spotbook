@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../shared/theme/app_colors.dart';
 import '../../data/moderation_repository.dart';
@@ -30,16 +31,16 @@ void showBlockConfirmDialog(
     builder: (ctx) => AlertDialog(
       backgroundColor: AppColors.surface,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      title: const Text('Block this user?',
-          style: TextStyle(color: AppColors.blanc, fontSize: 17, fontWeight: FontWeight.bold)),
+      title: Text('Block this user?',
+          style: GoogleFonts.sora(color: AppColors.blanc, fontSize: 17, fontWeight: FontWeight.bold)),
       content: Text(
         '${userName ?? 'This user'} will no longer be able to see your profile or contact you.',
-        style: const TextStyle(color: AppColors.gris, fontSize: 14),
+        style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 14),
       ),
       actions: [
         TextButton(
           onPressed: () => Navigator.of(ctx).pop(),
-          child: const Text('Cancel', style: TextStyle(color: AppColors.gris)),
+          child: Text('Cancel', style: GoogleFonts.dmSans(color: AppColors.gris)),
         ),
         TextButton(
           onPressed: () async {
@@ -55,8 +56,8 @@ void showBlockConfirmDialog(
               );
             }
           },
-          child: const Text('Block',
-              style: TextStyle(color: AppColors.error, fontWeight: FontWeight.bold)),
+          child: Text('Block',
+              style: GoogleFonts.dmSans(color: AppColors.error, fontWeight: FontWeight.bold)),
         ),
       ],
     ),
@@ -106,11 +107,11 @@ class _ReportSheet extends ConsumerWidget {
             ),
           ),
           const SizedBox(height: 20),
-          const Text('Report',
-              style: TextStyle(color: AppColors.blanc, fontSize: 20, fontWeight: FontWeight.bold)),
+          Text('Report',
+              style: GoogleFonts.sora(color: AppColors.blanc, fontSize: 20, fontWeight: FontWeight.bold)),
           const SizedBox(height: 4),
-          const Text('Why are you reporting this content?',
-              style: TextStyle(color: AppColors.gris, fontSize: 14)),
+          Text('Why are you reporting this content?',
+              style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 14)),
           const SizedBox(height: 16),
           ...List.generate(_reasons.length, (i) {
             final reason = _reasons[i];
@@ -133,7 +134,7 @@ class _ReportSheet extends ConsumerWidget {
                 ),
                 child: Text(
                   reason,
-                  style: TextStyle(
+                  style: GoogleFonts.dmSans(
                     color: isSelected ? AppColors.blanc : AppColors.gris,
                     fontSize: 15,
                     fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
@@ -188,8 +189,8 @@ class _ReportSheet extends ConsumerWidget {
                         strokeWidth: 2,
                       ),
                     )
-                  : const Text('Submit report',
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                  : Text('Submit report',
+                      style: GoogleFonts.dmSans(fontWeight: FontWeight.bold, fontSize: 16)),
             ),
           ),
         ],

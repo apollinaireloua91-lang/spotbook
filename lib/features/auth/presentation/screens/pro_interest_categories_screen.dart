@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../shared/theme/app_colors.dart';
 import '../../data/category_repository.dart';
@@ -46,13 +47,21 @@ class ProInterestCategoriesScreen extends ConsumerWidget {
       backgroundColor: AppColors.fond,
       appBar: AppBar(
         backgroundColor: AppColors.fond,
+        surfaceTintColor: Colors.transparent,
         elevation: 0,
-        leading: IconButton(
-          onPressed: () => context.pop(),
-          icon: const Icon(
-            Icons.arrow_back_ios_rounded,
-            color: AppColors.blanc,
-            size: 20,
+        leading: Semantics(
+          label: 'Back',
+          child: IconButton(
+            onPressed: () => context.pop(),
+            icon: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: AppColors.surface,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: AppColors.border, width: 0.5),
+              ),
+              child: const Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
+            ),
           ),
         ),
       ),
@@ -61,9 +70,9 @@ class ProInterestCategoriesScreen extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               'What do you do?',
-              style: TextStyle(
+              style: GoogleFonts.sora(
                 color: AppColors.blanc,
                 fontSize: 24,
                 fontWeight: FontWeight.w800,
@@ -71,9 +80,9 @@ class ProInterestCategoriesScreen extends ConsumerWidget {
               ),
             ),
             const SizedBox(height: 8),
-            const Text(
+            Text(
               'Select your areas of expertise so clients can easily find you.',
-              style: TextStyle(
+              style: GoogleFonts.dmSans(
                 color: AppColors.gris,
                 fontSize: 14,
                 height: 1.4,
@@ -130,7 +139,7 @@ class ProInterestCategoriesScreen extends ConsumerWidget {
                                 Text(
                                   cat.label,
                                   textAlign: TextAlign.center,
-                                  style: TextStyle(
+                                  style: GoogleFonts.dmSans(
                                     color: isSelected
                                         ? AppColors.blanc
                                         : AppColors.grisClair,
@@ -191,9 +200,9 @@ class ProInterestCategoriesScreen extends ConsumerWidget {
                       borderRadius: BorderRadius.circular(14),
                     ),
                   ),
-                  child: const Text(
+                  child: Text(
                     'Continue',
-                    style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
+                    style: GoogleFonts.dmSans(fontSize: 17, fontWeight: FontWeight.w600),
                   ),
                 ),
               ),

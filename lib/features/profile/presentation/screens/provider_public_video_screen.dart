@@ -2,6 +2,7 @@ import 'package:better_player_plus/better_player_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../shared/theme/app_colors.dart';
 import '../../domain/entities/provider_profile_data.dart';
@@ -55,17 +56,29 @@ class _ProviderPublicVideoScreenState extends State<ProviderPublicVideoScreen> {
       backgroundColor: AppColors.fond,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
+        surfaceTintColor: Colors.transparent,
         elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.close, color: AppColors.blanc),
-          onPressed: () {
-            HapticFeedback.lightImpact();
-            context.pop();
-          },
+        leading: Semantics(
+          label: 'Back',
+          child: IconButton(
+            icon: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: AppColors.surface,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: AppColors.border, width: 0.5),
+              ),
+              child: const Icon(Icons.close, color: AppColors.blanc, size: 16),
+            ),
+            onPressed: () {
+              HapticFeedback.lightImpact();
+              context.pop();
+            },
+          ),
         ),
         title: Text(
           widget.video.title ?? 'Vidéo',
-          style: const TextStyle(
+          style: GoogleFonts.sora(
             color: AppColors.blanc,
             fontSize: 16,
             fontWeight: FontWeight.w600,
@@ -76,9 +89,9 @@ class _ProviderPublicVideoScreenState extends State<ProviderPublicVideoScreen> {
       ),
       body: Center(
         child: _controller == null
-            ? const Text(
+            ? Text(
                 'Lecture indisponible',
-                style: TextStyle(color: AppColors.gris),
+                style: GoogleFonts.dmSans(color: AppColors.gris),
               )
             : AspectRatio(
                 aspectRatio: 9 / 16,

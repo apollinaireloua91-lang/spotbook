@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 import '../../../../shared/theme/app_colors.dart';
@@ -121,9 +122,9 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
             bottom: false,
             child: Padding(
               padding: const EdgeInsets.only(top: 8, left: 20),
-              child: const Text(
+              child: Text(
                 'Spotbook',
-                style: TextStyle(
+                style: GoogleFonts.dmSans(
                   color: AppColors.blanc,
                   fontSize: 20,
                   fontWeight: FontWeight.w800,
@@ -201,7 +202,7 @@ class _BottomOverlay extends StatelessWidget {
                   Text(
                     data.title,
                     textAlign: TextAlign.center,
-                    style: const TextStyle(
+                    style: GoogleFonts.sora(
                       color: AppColors.blanc,
                       fontSize: 28,
                       fontWeight: FontWeight.w800,
@@ -212,7 +213,7 @@ class _BottomOverlay extends StatelessWidget {
                   Text(
                     data.subtitle,
                     textAlign: TextAlign.center,
-                    style: TextStyle(
+                    style: GoogleFonts.dmSans(
                       color: AppColors.gris.withAlpha(200),
                       fontSize: 15,
                       height: 1.5,
@@ -249,9 +250,9 @@ class _BottomOverlay extends StatelessWidget {
               children: [
                 TextButton(
                   onPressed: onSkip,
-                  child: const Text(
+                  child: Text(
                     'Skip',
-                    style: TextStyle(
+                    style: GoogleFonts.dmSans(
                       color: AppColors.gris,
                       fontSize: 14,
                     ),
@@ -282,7 +283,7 @@ class _BottomOverlay extends StatelessWidget {
                       child: Text(
                         page < 2 ? 'Next' : 'Get Started',
                         key: ValueKey(page < 2),
-                        style: const TextStyle(
+                        style: GoogleFonts.dmSans(
                           color: AppColors.blanc,
                           fontSize: 15,
                           fontWeight: FontWeight.w700,
@@ -465,7 +466,7 @@ class _DiscoverPageState extends State<_DiscoverPage>
             children: [
               Text(
                 name,
-                style: const TextStyle(
+                style: GoogleFonts.dmSans(
                   color: AppColors.blanc,
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
@@ -473,7 +474,7 @@ class _DiscoverPageState extends State<_DiscoverPage>
               ),
               Text(
                 category,
-                style: const TextStyle(
+                style: GoogleFonts.dmSans(
                   color: AppColors.gris,
                   fontSize: 11,
                 ),
@@ -663,12 +664,12 @@ class _BookPageState extends State<_BookPage>
                 ),
               ),
               const SizedBox(width: 10),
-              const Column(
+              Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     'Kevin Barber',
-                    style: TextStyle(
+                    style: GoogleFonts.dmSans(
                       color: AppColors.blanc,
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
@@ -676,7 +677,7 @@ class _BookPageState extends State<_BookPage>
                   ),
                   Text(
                     'Premium Cut',
-                    style: TextStyle(
+                    style: GoogleFonts.dmSans(
                       color: AppColors.gris,
                       fontSize: 10,
                     ),
@@ -695,12 +696,12 @@ class _BookPageState extends State<_BookPage>
               borderRadius: BorderRadius.circular(12),
               border: Border.all(color: AppColors.border),
             ),
-            child: const Column(
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   'Fade & Design',
-                  style: TextStyle(
+                  style: GoogleFonts.dmSans(
                     color: AppColors.blanc,
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
@@ -711,7 +712,7 @@ class _BookPageState extends State<_BookPage>
                   children: [
                     Text(
                       '45 min',
-                      style: TextStyle(
+                      style: GoogleFonts.dmSans(
                         color: AppColors.gris,
                         fontSize: 11,
                       ),
@@ -719,7 +720,7 @@ class _BookPageState extends State<_BookPage>
                     SizedBox(width: 8),
                     Text(
                       '\$35',
-                      style: TextStyle(
+                      style: GoogleFonts.dmSans(
                         color: AppColors.violetClair,
                         fontSize: 13,
                         fontWeight: FontWeight.w700,
@@ -733,9 +734,9 @@ class _BookPageState extends State<_BookPage>
           const SizedBox(height: 12),
 
           // Time slots
-          const Text(
+          Text(
             'Today',
-            style: TextStyle(color: AppColors.gris, fontSize: 10),
+            style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 10),
           ),
           const SizedBox(height: 8),
           Row(
@@ -758,10 +759,10 @@ class _BookPageState extends State<_BookPage>
               gradient: AppColors.gradientAccent,
               borderRadius: BorderRadius.circular(12),
             ),
-            child: const Text(
+            child: Text(
               'Book Now',
               textAlign: TextAlign.center,
-              style: TextStyle(
+              style: GoogleFonts.dmSans(
                 color: AppColors.blanc,
                 fontSize: 13,
                 fontWeight: FontWeight.w700,
@@ -788,7 +789,7 @@ class _BookPageState extends State<_BookPage>
       ),
       child: Text(
         time,
-        style: TextStyle(
+        style: GoogleFonts.dmSans(
           color: selected ? AppColors.violetClair : AppColors.gris,
           fontSize: 11,
           fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
@@ -936,19 +937,19 @@ class _GrowPageState extends State<_GrowPage>
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     // Revenue header
-                    const Row(
+                    Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
                           'Revenue',
-                          style: TextStyle(
+                          style: GoogleFonts.dmSans(
                             color: AppColors.gris,
                             fontSize: 13,
                           ),
                         ),
                         Text(
                           'This month',
-                          style: TextStyle(
+                          style: GoogleFonts.dmSans(
                             color: AppColors.grisInactif,
                             fontSize: 11,
                           ),
@@ -968,7 +969,7 @@ class _GrowPageState extends State<_GrowPage>
                           final n = (2847 * v).toInt();
                           return Text(
                             '\$${_formatNumber(n)}',
-                            style: const TextStyle(
+                            style: GoogleFonts.sora(
                               color: AppColors.blanc,
                               fontSize: 32,
                               fontWeight: FontWeight.w800,
@@ -1049,7 +1050,7 @@ class _GrowPageState extends State<_GrowPage>
                   const SizedBox(height: 6),
                   Text(
                     days[i],
-                    style: const TextStyle(
+                    style: GoogleFonts.dmSans(
                       color: AppColors.grisInactif,
                       fontSize: 10,
                     ),
@@ -1090,7 +1091,7 @@ class _MiniStat extends StatelessWidget {
       children: [
         Text(
           value,
-          style: TextStyle(
+          style: GoogleFonts.sora(
             color: color,
             fontSize: 18,
             fontWeight: FontWeight.w700,
@@ -1099,7 +1100,7 @@ class _MiniStat extends StatelessWidget {
         const SizedBox(height: 2),
         Text(
           label,
-          style: const TextStyle(
+          style: GoogleFonts.dmSans(
             color: AppColors.gris,
             fontSize: 11,
           ),

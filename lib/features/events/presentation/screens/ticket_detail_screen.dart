@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:share_plus/share_plus.dart';
@@ -20,37 +21,67 @@ class TicketDetailScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final isUsed = ticket.status == 'used';
     final statusColor = isUsed ? AppColors.gris : AppColors.success;
-    final statusLabel = isUsed ? 'Utilisé' : 'Valide';
+    final statusLabel = isUsed ? 'Used' : 'Valid';
 
     return Scaffold(
       backgroundColor: AppColors.fond,
       appBar: AppBar(
         backgroundColor: AppColors.fond,
+        surfaceTintColor: Colors.transparent,
+        elevation: 0,
         leading: Semantics(
           label: 'Back',
           child: IconButton(
-            icon: const Icon(Icons.arrow_back_ios, color: AppColors.blanc, size: 20),
+            icon: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: AppColors.surface,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: AppColors.border, width: 0.5),
+              ),
+              child: const Icon(Icons.arrow_back_ios_new,
+                  color: AppColors.blanc, size: 16),
+            ),
             onPressed: () {
               HapticFeedback.mediumImpact();
               context.pop();
             },
           ),
         ),
-        title: const Text('My ticket', style: TextStyle(color: AppColors.blanc, fontWeight: FontWeight.bold)),
+        title: Text(
+          'My Ticket',
+          style: GoogleFonts.sora(
+            color: AppColors.blanc,
+            fontWeight: FontWeight.w700,
+            fontSize: 17,
+          ),
+        ),
         centerTitle: true,
         actions: [
           Semantics(
             label: 'Share ticket',
             child: IconButton(
-              icon: const Icon(Icons.share_outlined, color: AppColors.blanc),
+              icon: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: AppColors.surface,
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: AppColors.border, width: 0.5),
+                ),
+                child: const Icon(Icons.share_outlined,
+                    color: AppColors.blanc, size: 16),
+              ),
               onPressed: () {
                 HapticFeedback.mediumImpact();
                 SharePlus.instance.share(
-                  ShareParams(text: 'My ticket for ${ticket.eventTitle ?? 'the event'} — Spotbook'),
+                  ShareParams(
+                      text:
+                          'My ticket for ${ticket.eventTitle ?? 'the event'} — Spotbook'),
                 );
               },
             ),
           ),
+          const SizedBox(width: 4),
         ],
       ),
       body: SingleChildScrollView(
@@ -58,7 +89,8 @@ class TicketDetailScreen extends ConsumerWidget {
         child: Column(
           children: [
             const SizedBox(height: 16),
-            // Cover
+
+            // ── Cover ──
             if (ticket.eventCoverUrl != null)
               ClipRRect(
                 borderRadius: BorderRadius.circular(16),
@@ -75,26 +107,47 @@ class TicketDetailScreen extends ConsumerWidget {
                   errorWidget: (_, __, ___) => Container(
                     height: 140,
                     color: AppColors.surface,
-                    child: const Icon(Icons.event, color: AppColors.gris),
+                    child:
+                        const Icon(Icons.event, color: AppColors.gris),
                   ),
                 ),
               ),
             const SizedBox(height: 20),
+
+            // ── Title ──
             Text(
               ticket.eventTitle ?? 'Event',
-              style: const TextStyle(color: AppColors.blanc, fontSize: 22, fontWeight: FontWeight.bold),
+              style: GoogleFonts.sora(
+                color: AppColors.blanc,
+                fontSize: 22,
+                fontWeight: FontWeight.w800,
+              ),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 6),
             if (ticket.ticketTypeName != null)
-              Text(ticket.ticketTypeName!, style: const TextStyle(color: AppColors.gris, fontSize: 14)),
+              Text(
+                ticket.ticketTypeName!,
+                style: GoogleFonts.dmSans(
+                  color: AppColors.gris,
+                  fontSize: 14,
+                ),
+              ),
             const SizedBox(height: 24),
-            // QR Code
+
+            // ── QR Code ──
             Container(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
                 color: AppColors.blanc,
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.blanc.withAlpha(10),
+                    blurRadius: 20,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
               ),
               child: ticket.qrHash != null
                   ? QrImageView(
@@ -103,80 +156,113 @@ class TicketDetailScreen extends ConsumerWidget {
                       size: 220,
                       backgroundColor: AppColors.blanc,
                     )
-                  : const SizedBox(
+                  : SizedBox(
                       width: 220,
                       height: 220,
                       child: Center(
-                        child: Text('QR non disponible', style: TextStyle(color: AppColors.gris)),
+                        child: Text(
+                          'QR unavailable',
+                          style: GoogleFonts.dmSans(color: AppColors.gris),
+                        ),
                       ),
                     ),
             ),
             const SizedBox(height: 16),
-            // Status chip
+
+            // ── Status chip ──
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
               decoration: BoxDecoration(
                 color: statusColor.withValues(alpha: 0.15),
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Text(
                 statusLabel,
-                style: TextStyle(color: statusColor, fontWeight: FontWeight.w600, fontSize: 14),
+                style: GoogleFonts.dmSans(
+                  color: statusColor,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 14,
+                ),
               ),
             ),
             const SizedBox(height: 24),
-            // Event info
+
+            // ── Event info card ──
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(18),
               decoration: BoxDecoration(
                 color: AppColors.surface,
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: AppColors.border),
+                border: Border.all(color: AppColors.border, width: 0.5),
               ),
               child: Column(
                 children: [
-                  if (ticket.eventDate != null) _InfoRow(
-                    icon: Icons.calendar_today,
-                    text: DateFormat('EEEE d MMMM yyyy', 'fr_FR').format(ticket.eventDate!),
-                  ),
-                  if (ticket.eventLocation != null) _InfoRow(
-                    icon: Icons.location_on_outlined,
-                    text: ticket.eventLocation!,
-                  ),
+                  if (ticket.eventDate != null)
+                    _InfoRow(
+                      icon: Icons.calendar_today_outlined,
+                      text: DateFormat('EEEE d MMMM yyyy')
+                          .format(ticket.eventDate!),
+                    ),
+                  if (ticket.eventLocation != null)
+                    _InfoRow(
+                      icon: Icons.location_on_outlined,
+                      text: ticket.eventLocation!,
+                    ),
                   _InfoRow(
                     icon: Icons.confirmation_number_outlined,
-                    text: 'Purchased on ${DateFormat('dd/MM/yyyy HH:mm').format(ticket.purchasedAt)}',
+                    text:
+                        'Purchased ${DateFormat('dd/MM/yyyy HH:mm').format(ticket.purchasedAt)}',
                   ),
-                  if (ticket.scannedAt != null) _InfoRow(
-                    icon: Icons.check_circle_outline,
-                    text: 'Scanned on ${DateFormat('dd/MM/yyyy HH:mm').format(ticket.scannedAt!)}',
-                  ),
+                  if (ticket.scannedAt != null)
+                    _InfoRow(
+                      icon: Icons.check_circle_outline,
+                      text:
+                          'Scanned ${DateFormat('dd/MM/yyyy HH:mm').format(ticket.scannedAt!)}',
+                    ),
                 ],
               ),
             ),
             const SizedBox(height: 16),
-            // Add to calendar
+
+            // ── Add to calendar ──
             if (ticket.eventDate != null && !isUsed)
-              SizedBox(
-                width: double.infinity,
-                height: 48,
-                child: OutlinedButton.icon(
-                  onPressed: () {
-                    HapticFeedback.mediumImpact();
-                    Add2Calendar.addEvent2Cal(Event(
-                      title: ticket.eventTitle ?? 'Spotbook Event',
-                      startDate: ticket.eventDate!,
-                      endDate: ticket.eventDate!.add(const Duration(hours: 3)),
-                      location: ticket.eventLocation,
-                    ));
-                  },
-                  icon: const Icon(Icons.calendar_month, color: AppColors.blanc, size: 20),
-                  label: const Text('Add to calendar',
-                      style: TextStyle(color: AppColors.blanc, fontWeight: FontWeight.w500)),
-                  style: OutlinedButton.styleFrom(
-                    side: const BorderSide(color: AppColors.border),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              GestureDetector(
+                onTap: () {
+                  HapticFeedback.mediumImpact();
+                  Add2Calendar.addEvent2Cal(Event(
+                    title: ticket.eventTitle ?? 'Spotbook Event',
+                    startDate: ticket.eventDate!,
+                    endDate:
+                        ticket.eventDate!.add(const Duration(hours: 3)),
+                    location: ticket.eventLocation,
+                  ));
+                },
+                child: Container(
+                  width: double.infinity,
+                  height: 48,
+                  decoration: BoxDecoration(
+                    color: AppColors.surface,
+                    borderRadius: BorderRadius.circular(12),
+                    border:
+                        Border.all(color: AppColors.border, width: 0.5),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.calendar_month,
+                          color: AppColors.blanc, size: 18),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Add to Calendar',
+                        style: GoogleFonts.dmSans(
+                          color: AppColors.blanc,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -188,6 +274,10 @@ class TicketDetailScreen extends ConsumerWidget {
   }
 }
 
+// ═════════════════════════════════════════════════════════════════════════════
+// INFO ROW
+// ═════════════════════════════════════════════════════════════════════════════
+
 class _InfoRow extends StatelessWidget {
   const _InfoRow({required this.icon, required this.text});
   final IconData icon;
@@ -196,13 +286,27 @@ class _InfoRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6),
+      padding: const EdgeInsets.symmetric(vertical: 7),
       child: Row(
         children: [
-          Icon(icon, color: AppColors.gris, size: 18),
+          Container(
+            padding: const EdgeInsets.all(6),
+            decoration: BoxDecoration(
+              color: AppColors.violet.withAlpha(10),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(icon, color: AppColors.violet, size: 16),
+          ),
           const SizedBox(width: 12),
           Expanded(
-            child: Text(text, style: const TextStyle(color: AppColors.grisClair, fontSize: 14)),
+            child: Text(
+              text,
+              style: GoogleFonts.dmSans(
+                color: AppColors.grisClair,
+                fontSize: 13,
+                height: 1.3,
+              ),
+            ),
           ),
         ],
       ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -140,7 +141,7 @@ class _ProviderReviewsReceivedScreenState
                       children: [
                         Text(
                           data.averageRating.toStringAsFixed(1),
-                          style: const TextStyle(
+                          style: GoogleFonts.sora(
                             color: AppColors.blanc,
                             fontSize: 40,
                             fontWeight: FontWeight.w800,
@@ -161,7 +162,7 @@ class _ProviderReviewsReceivedScreenState
                         const SizedBox(height: 4),
                         Text(
                           '${data.reviews.length} reviews',
-                          style: const TextStyle(
+                          style: GoogleFonts.dmSans(
                               color: AppColors.gris, fontSize: 12),
                         ),
                       ],
@@ -304,7 +305,7 @@ class _RatingFilterChip extends StatelessWidget {
         ),
         child: Text(
           label,
-          style: TextStyle(
+          style: GoogleFonts.dmSans(
             color: selected ? AppColors.fond : AppColors.blanc,
             fontWeight: FontWeight.w600,
             fontSize: 13,
@@ -345,7 +346,7 @@ class _ReviewCard extends StatelessWidget {
                   children: [
                     Text(
                       review.clientName,
-                      style: const TextStyle(
+                      style: GoogleFonts.dmSans(
                         color: AppColors.blanc,
                         fontWeight: FontWeight.w600,
                         fontSize: 14,
@@ -393,7 +394,7 @@ class _ReviewCard extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               review.comment!,
-              style: const TextStyle(
+              style: GoogleFonts.dmSans(
                   color: AppColors.blanc,
                   fontSize: 13,
                   height: 1.4),

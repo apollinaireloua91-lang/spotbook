@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../shared/theme/app_colors.dart';
 import 'scanner_screen.dart';
@@ -71,7 +72,7 @@ class QrScanResultScreen extends StatelessWidget {
               const SizedBox(height: 28),
               Text(
                 title,
-                style: TextStyle(
+                style: GoogleFonts.sora(
                   color: iconColor,
                   fontSize: 26,
                   fontWeight: FontWeight.w800,
@@ -81,7 +82,7 @@ class QrScanResultScreen extends StatelessWidget {
               Text(
                 subtitle,
                 textAlign: TextAlign.center,
-                style: const TextStyle(
+                style: GoogleFonts.dmSans(
                   color: AppColors.gris,
                   fontSize: 15,
                   height: 1.4,
@@ -102,7 +103,7 @@ class QrScanResultScreen extends StatelessWidget {
                   child: Text(
                     result.reason!,
                     textAlign: TextAlign.center,
-                    style: const TextStyle(
+                    style: GoogleFonts.dmSans(
                         color: AppColors.grisInactif, fontSize: 12),
                   ),
                 ),
@@ -118,8 +119,8 @@ class QrScanResultScreen extends StatelessWidget {
                     context.pop();
                   },
                   icon: const Icon(Icons.qr_code_scanner, size: 20),
-                  label: const Text('Scan another ticket',
-                      style: TextStyle(
+                  label: Text('Scan another ticket',
+                      style: GoogleFonts.dmSans(
                           fontWeight: FontWeight.bold, fontSize: 16)),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.blanc,
@@ -139,9 +140,9 @@ class QrScanResultScreen extends StatelessWidget {
                     HapticFeedback.selectionClick();
                     context.go('/pro/events');
                   },
-                  child: const Text(
+                  child: Text(
                     'Retour aux événements',
-                    style: TextStyle(
+                    style: GoogleFonts.dmSans(
                         color: AppColors.gris,
                         fontSize: 14,
                         fontWeight: FontWeight.w500),

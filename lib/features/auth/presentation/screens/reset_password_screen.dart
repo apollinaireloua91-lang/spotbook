@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/widgets/spotbook_button.dart';
@@ -96,9 +97,9 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                   const SizedBox(height: 28),
 
                   // Title
-                  const Text(
+                  Text(
                     'New password',
-                    style: TextStyle(
+                    style: GoogleFonts.sora(
                       color: AppColors.blanc,
                       fontSize: 26,
                       fontWeight: FontWeight.w800,
@@ -106,9 +107,9 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                     ),
                   ),
                   const SizedBox(height: 8),
-                  const Text(
+                  Text(
                     'Choose a strong password for your account.',
-                    style: TextStyle(color: AppColors.gris, fontSize: 15),
+                    style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 15),
                   ),
                   const SizedBox(height: 36),
 
@@ -117,7 +118,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                     controller: _passwordCtrl,
                     obscureText: _obscure1,
                     textInputAction: TextInputAction.next,
-                    style: const TextStyle(
+                    style: GoogleFonts.dmSans(
                         color: AppColors.blanc, fontSize: 15),
                     validator: (v) {
                       if (v == null || v.length < 8) {
@@ -140,7 +141,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                     obscureText: _obscure2,
                     textInputAction: TextInputAction.done,
                     onFieldSubmitted: (_) => _submit(),
-                    style: const TextStyle(
+                    style: GoogleFonts.dmSans(
                         color: AppColors.blanc, fontSize: 15),
                     validator: (v) {
                       if (v != _passwordCtrl.text) {
@@ -170,9 +171,9 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                   // Back to login
                   GestureDetector(
                     onTap: () => context.go('/login'),
-                    child: const Text(
+                    child: Text(
                       'Back to sign in',
-                      style: TextStyle(
+                      style: GoogleFonts.dmSans(
                         color: AppColors.gris,
                         fontSize: 14,
                       ),
@@ -193,7 +194,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
   }) {
     return InputDecoration(
       hintText: hint,
-      hintStyle: const TextStyle(color: AppColors.gris, fontSize: 15),
+      hintStyle: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 15),
       prefixIcon: const Icon(Icons.lock_outline_rounded,
           color: AppColors.gris, size: 20),
       suffixIcon: suffixIcon,

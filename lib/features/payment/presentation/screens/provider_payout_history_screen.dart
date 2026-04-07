@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -127,21 +128,21 @@ class ProviderPayoutHistoryScreen extends ConsumerWidget {
         ),
         data: (payouts) {
           if (payouts.isEmpty) {
-            return const Center(
+            return Center(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(Icons.account_balance_wallet_outlined,
+                  const Icon(Icons.account_balance_wallet_outlined,
                       color: AppColors.gris, size: 48),
-                  SizedBox(height: 12),
+                  const SizedBox(height: 12),
                   Text('No payouts',
-                      style: TextStyle(
+                      style: GoogleFonts.sora(
                           color: AppColors.gris, fontSize: 15)),
-                  SizedBox(height: 4),
+                  const SizedBox(height: 4),
                   Text(
                       'Les versements apparaîtront après vos premières réservations.',
                       textAlign: TextAlign.center,
-                      style: TextStyle(
+                      style: GoogleFonts.dmSans(
                           color: AppColors.grisInactif,
                           fontSize: 13)),
                 ],
@@ -220,7 +221,7 @@ class _PayoutCard extends StatelessWidget {
               children: [
                 Text(
                   '${payout.amount.toStringAsFixed(2)} ${payout.currency}',
-                  style: const TextStyle(
+                  style: GoogleFonts.sora(
                     color: AppColors.blanc,
                     fontWeight: FontWeight.bold,
                     fontSize: 16,
@@ -230,7 +231,7 @@ class _PayoutCard extends StatelessWidget {
                 Text(
                   DateFormat('dd MMM yyyy', 'fr_FR')
                       .format(payout.createdAt),
-                  style: const TextStyle(
+                  style: GoogleFonts.dmSans(
                       color: AppColors.gris, fontSize: 12),
                 ),
                 if (payout.bankReference != null) ...[
@@ -254,7 +255,7 @@ class _PayoutCard extends StatelessWidget {
             ),
             child: Text(
               statusLabel,
-              style: TextStyle(
+              style: GoogleFonts.dmSans(
                 color: statusColor,
                 fontWeight: FontWeight.w600,
                 fontSize: 12,

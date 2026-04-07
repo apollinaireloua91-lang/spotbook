@@ -81,9 +81,24 @@ class _MyBookingsScreenState extends ConsumerState<MyBookingsScreen>
       appBar: AppBar(
         backgroundColor: AppColors.fond,
         surfaceTintColor: Colors.transparent,
+        elevation: 0,
+        leading: GestureDetector(
+          onTap: () => GoRouter.of(context).pop(),
+          child: Center(
+            child: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: AppColors.surface,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: AppColors.border, width: 0.5),
+              ),
+              child: const Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
+            ),
+          ),
+        ),
         title: Text(
           'My Bookings',
-          style: GoogleFonts.dmSans(
+          style: GoogleFonts.sora(
             color: AppColors.blanc,
             fontSize: 20,
             fontWeight: FontWeight.w700,
@@ -120,7 +135,7 @@ class _MyBookingsScreenState extends ConsumerState<MyBookingsScreen>
                   const SizedBox(width: 4),
                   Text(
                     'Filter',
-                    style: TextStyle(
+                    style: GoogleFonts.dmSans(
                       color: _filter.isActive
                           ? AppColors.violet
                           : AppColors.gris,
@@ -140,11 +155,11 @@ class _MyBookingsScreenState extends ConsumerState<MyBookingsScreen>
           indicatorSize: TabBarIndicatorSize.label,
           labelColor: AppColors.blanc,
           unselectedLabelColor: AppColors.gris,
-          labelStyle: const TextStyle(
+          labelStyle: GoogleFonts.dmSans(
             fontWeight: FontWeight.w600,
             fontSize: 14,
           ),
-          unselectedLabelStyle: const TextStyle(
+          unselectedLabelStyle: GoogleFonts.dmSans(
             fontWeight: FontWeight.w400,
             fontSize: 14,
           ),
@@ -168,7 +183,7 @@ class _MyBookingsScreenState extends ConsumerState<MyBookingsScreen>
                       ),
                       child: Text(
                         '${bookingsState.upcoming.length}',
-                        style: const TextStyle(
+                        style: GoogleFonts.dmSans(
                           color: AppColors.blanc,
                           fontSize: 11,
                           fontWeight: FontWeight.w600,
@@ -198,7 +213,7 @@ class _MyBookingsScreenState extends ConsumerState<MyBookingsScreen>
                       ),
                       child: Text(
                         '${ticketsState.tickets.length}',
-                        style: const TextStyle(
+                        style: GoogleFonts.dmSans(
                           color: AppColors.blanc,
                           fontSize: 11,
                           fontWeight: FontWeight.w600,
@@ -497,7 +512,7 @@ class _EmptyBookingsStateState extends State<_EmptyBookingsState>
                   const SizedBox(height: 20),
                   Text(
                     widget.title,
-                    style: const TextStyle(
+                    style: GoogleFonts.sora(
                       color: AppColors.blanc,
                       fontSize: 17,
                       fontWeight: FontWeight.w700,
@@ -507,7 +522,7 @@ class _EmptyBookingsStateState extends State<_EmptyBookingsState>
                   Text(
                     widget.subtitle,
                     textAlign: TextAlign.center,
-                    style: const TextStyle(
+                    style: GoogleFonts.dmSans(
                       color: AppColors.gris,
                       fontSize: 14,
                       height: 1.5,
@@ -538,7 +553,7 @@ class _EmptyBookingsStateState extends State<_EmptyBookingsState>
                         ),
                         child: Text(
                           widget.actionLabel!,
-                          style: const TextStyle(
+                          style: GoogleFonts.dmSans(
                             color: AppColors.blanc,
                             fontSize: 14,
                             fontWeight: FontWeight.w600,

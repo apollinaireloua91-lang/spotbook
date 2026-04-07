@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -20,18 +21,28 @@ class NotificationHistoryScreen extends ConsumerWidget {
       backgroundColor: AppColors.fond,
       appBar: AppBar(
         backgroundColor: AppColors.fond,
+        surfaceTintColor: Colors.transparent,
+        elevation: 0,
         leading: Semantics(
           label: 'Back',
           child: IconButton(
-            icon: const Icon(Icons.arrow_back_ios, color: AppColors.blanc, size: 20),
+            icon: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: AppColors.surface,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: AppColors.border, width: 0.5),
+              ),
+              child: const Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
+            ),
             onPressed: () {
               HapticFeedback.mediumImpact();
               context.pop();
             },
           ),
         ),
-        title: const Text('Notifications',
-            style: TextStyle(color: AppColors.blanc, fontWeight: FontWeight.bold)),
+        title: Text('Notifications',
+            style: GoogleFonts.sora(color: AppColors.blanc, fontWeight: FontWeight.w700)),
         centerTitle: true,
         actions: [
           if (state.notifications.any((n) => !n.isRead))
@@ -50,14 +61,14 @@ class NotificationHistoryScreen extends ConsumerWidget {
       body: state.isLoading
           ? _buildShimmer()
           : state.notifications.isEmpty
-              ? const Center(
+              ? Center(
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(Icons.notifications_off_outlined, color: AppColors.gris, size: 48),
-                      SizedBox(height: 12),
+                      const Icon(Icons.notifications_off_outlined, color: AppColors.gris, size: 48),
+                      const SizedBox(height: 12),
                       Text('No notifications',
-                          style: TextStyle(color: AppColors.gris, fontSize: 15)),
+                          style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 15)),
                     ],
                   ),
                 )
@@ -213,7 +224,7 @@ class _NotificationTileState extends ConsumerState<_NotificationTile>
                     children: [
                       Text(
                         n.title,
-                        style: TextStyle(
+                        style: GoogleFonts.dmSans(
                           color: AppColors.blanc,
                           fontSize: 14,
                           fontWeight: n.isRead ? FontWeight.normal : FontWeight.w600,
@@ -221,7 +232,7 @@ class _NotificationTileState extends ConsumerState<_NotificationTile>
                       ),
                       const SizedBox(height: 2),
                       Text(n.body,
-                          style: const TextStyle(color: AppColors.gris, fontSize: 13),
+                          style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 13),
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis),
                     ],
@@ -230,7 +241,7 @@ class _NotificationTileState extends ConsumerState<_NotificationTile>
                 const SizedBox(width: 8),
                 Text(
                   _formatTime(n.createdAt),
-                  style: const TextStyle(color: AppColors.gris, fontSize: 11),
+                  style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 11),
                 ),
                 if (!n.isRead) ...[
                   const SizedBox(width: 6),

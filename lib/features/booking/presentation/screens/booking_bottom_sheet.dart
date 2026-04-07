@@ -686,7 +686,7 @@ class _ServiceTile extends StatelessWidget {
               children: [
                 Text(
                   '${service.price.toStringAsFixed(0)} CA\$',
-                  style: TextStyle(
+                  style: GoogleFonts.sora(
                     color: isSelected ? AppColors.violetClair : AppColors.blanc,
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -703,9 +703,9 @@ class _ServiceTile extends StatelessWidget {
                       color: AppColors.violet.withAlpha(40),
                       borderRadius: BorderRadius.circular(6),
                     ),
-                    child: const Text(
+                    child: Text(
                       'Sélectionné',
-                      style: TextStyle(
+                      style: GoogleFonts.dmSans(
                         color: AppColors.violetClair,
                         fontSize: 10,
                         fontWeight: FontWeight.w600,
@@ -807,7 +807,7 @@ class _Step2CalendarState extends ConsumerState<_Step2Calendar> {
                 ),
                 Text(
                   '${_months[_month - 1]} $_year',
-                  style: const TextStyle(
+                  style: GoogleFonts.sora(
                     color: AppColors.blanc,
                     fontSize: 16,
                     fontWeight: FontWeight.w700,
@@ -830,7 +830,7 @@ class _Step2CalendarState extends ConsumerState<_Step2Calendar> {
                     child: Center(
                       child: Text(
                         d,
-                        style: TextStyle(
+                        style: GoogleFonts.dmSans(
                           color: AppColors.gris.withAlpha(160),
                           fontSize: 11,
                           fontWeight: FontWeight.w600,
@@ -900,7 +900,7 @@ class _Step2CalendarState extends ConsumerState<_Step2Calendar> {
                   ),
                   child: Text(
                     '$day',
-                    style: TextStyle(
+                    style: GoogleFonts.dmSans(
                       color: isSelected
                           ? AppColors.blanc
                           : isAvailable && !isPast
@@ -974,7 +974,7 @@ class _Step3Slots extends ConsumerWidget {
                 Expanded(
                   child: Text(
                     state.error!,
-                    style: const TextStyle(
+                    style: GoogleFonts.dmSans(
                         color: AppColors.error, fontSize: 13),
                   ),
                 ),
@@ -1034,7 +1034,7 @@ class _Step3Slots extends ConsumerWidget {
                   ),
                   child: Text(
                     slot.startTime.substring(0, 5),
-                    style: TextStyle(
+                    style: GoogleFonts.dmSans(
                       color: !slot.isAvailable
                           ? AppColors.gris.withAlpha(80)
                           : isSelected
@@ -1119,7 +1119,7 @@ class _Step4Summary extends ConsumerWidget {
                   children: [
                     Text(
                       proProfile.businessName,
-                      style: const TextStyle(
+                      style: GoogleFonts.sora(
                         color: AppColors.blanc,
                         fontSize: 15,
                         fontWeight: FontWeight.bold,
@@ -1128,7 +1128,7 @@ class _Step4Summary extends ConsumerWidget {
                     if (proProfile.category.isNotEmpty)
                       Text(
                         proProfile.category,
-                        style: const TextStyle(
+                        style: GoogleFonts.dmSans(
                           color: AppColors.gris,
                           fontSize: 12,
                         ),
@@ -1145,9 +1145,9 @@ class _Step4Summary extends ConsumerWidget {
                   color: AppColors.violet.withAlpha(30),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: const Text(
+                child: Text(
                   'Pro',
-                  style: TextStyle(
+                  style: GoogleFonts.dmSans(
                     color: AppColors.violetClair,
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
@@ -1244,7 +1244,7 @@ class _Step4Summary extends ConsumerWidget {
                     Expanded(
                       child: Text(
                         'Acompte de 30% à payer maintenant : ${state.depositPrice.toStringAsFixed(2)} CA\$',
-                        style: const TextStyle(
+                        style: GoogleFonts.dmSans(
                           color: AppColors.violetClair,
                           fontSize: 13,
                           fontWeight: FontWeight.w500,
@@ -1287,12 +1287,12 @@ class _DetailRow extends StatelessWidget {
         const SizedBox(width: 10),
         Text(
           label,
-          style: const TextStyle(color: AppColors.gris, fontSize: 14),
+          style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 14),
         ),
         const Spacer(),
         Text(
           value,
-          style: const TextStyle(
+          style: GoogleFonts.dmSans(
             color: AppColors.blanc,
             fontSize: 14,
             fontWeight: FontWeight.w500,
@@ -1320,11 +1320,11 @@ class _PriceRow extends StatelessWidget {
       children: [
         Text(
           label,
-          style: const TextStyle(color: AppColors.gris, fontSize: 14),
+          style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 14),
         ),
         Text(
           value,
-          style: TextStyle(
+          style: GoogleFonts.dmSans(
             color: valueColor ?? AppColors.blanc,
             fontSize: 14,
             fontWeight: FontWeight.w600,
@@ -1371,9 +1371,9 @@ class _Step5Payment extends ConsumerWidget {
                   const Icon(Icons.credit_card,
                       color: AppColors.violetClair, size: 18),
                   const SizedBox(width: 8),
-                  const Text(
+                  Text(
                     'Carte bancaire',
-                    style: TextStyle(
+                    style: GoogleFonts.sora(
                       color: AppColors.blanc,
                       fontSize: 15,
                       fontWeight: FontWeight.w600,
@@ -1385,7 +1385,7 @@ class _Step5Payment extends ConsumerWidget {
                   const SizedBox(width: 4),
                   Text(
                     'Sécurisé',
-                    style: TextStyle(
+                    style: GoogleFonts.dmSans(
                       color: AppColors.gris.withAlpha(120),
                       fontSize: 11,
                     ),
@@ -1471,8 +1471,7 @@ class _Step5Payment extends ConsumerWidget {
                 Expanded(
                   child: Text(
                     state.error!,
-                    style:
-                        const TextStyle(color: AppColors.error, fontSize: 13),
+                    style: GoogleFonts.dmSans(color: AppColors.error, fontSize: 13),
                   ),
                 ),
               ],
@@ -1613,9 +1612,9 @@ class _Step6Confirmation extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 20),
-        const Text(
+        Text(
           'Booking confirmed!',
-          style: TextStyle(
+          style: GoogleFonts.sora(
             color: AppColors.blanc,
             fontSize: 22,
             fontWeight: FontWeight.bold,
@@ -1624,7 +1623,7 @@ class _Step6Confirmation extends StatelessWidget {
         const SizedBox(height: 8),
         Text(
           'Votre RDV est bien enregistré',
-          style: TextStyle(
+          style: GoogleFonts.dmSans(
             color: AppColors.gris.withAlpha(180),
             fontSize: 14,
           ),
@@ -1643,7 +1642,7 @@ class _Step6Confirmation extends StatelessWidget {
             children: [
               Text(
                 'Booking code',
-                style: TextStyle(
+                style: GoogleFonts.dmSans(
                   color: AppColors.blanc.withAlpha(200),
                   fontSize: 12,
                   fontWeight: FontWeight.w500,
@@ -1652,7 +1651,7 @@ class _Step6Confirmation extends StatelessWidget {
               const SizedBox(height: 4),
               Text(
                 bookingCode,
-                style: const TextStyle(
+                style: GoogleFonts.sora(
                   color: AppColors.blanc,
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
@@ -1740,14 +1739,14 @@ class _Step6Confirmation extends StatelessWidget {
               borderRadius: BorderRadius.circular(14),
               border: Border.all(color: AppColors.border),
             ),
-            child: const Row(
+            child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.calendar_today, color: AppColors.blanc, size: 16),
-                SizedBox(width: 8),
+                const Icon(Icons.calendar_today, color: AppColors.blanc, size: 16),
+                const SizedBox(width: 8),
                 Text(
                   'Add to calendar',
-                  style: TextStyle(
+                  style: GoogleFonts.dmSans(
                     color: AppColors.blanc,
                     fontSize: 15,
                     fontWeight: FontWeight.w500,
@@ -1789,7 +1788,7 @@ class _EmptyState extends StatelessWidget {
             const SizedBox(height: 12),
             Text(
               message,
-              style: const TextStyle(color: AppColors.gris, fontSize: 15),
+              style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 15),
               textAlign: TextAlign.center,
             ),
           ],

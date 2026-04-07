@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:shimmer/shimmer.dart';
@@ -80,10 +81,20 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       backgroundColor: AppColors.fond,
       appBar: AppBar(
         backgroundColor: AppColors.fond,
+        surfaceTintColor: Colors.transparent,
+        elevation: 0,
         leading: Semantics(
           label: 'Back',
           child: IconButton(
-            icon: const Icon(Icons.arrow_back_ios, color: AppColors.blanc, size: 20),
+            icon: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: AppColors.surface,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: AppColors.border, width: 0.5),
+              ),
+              child: const Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
+            ),
             onPressed: () {
               HapticFeedback.mediumImpact();
               context.pop();
@@ -94,16 +105,16 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
           children: [
             Text(
               widget.otherUserName ?? 'Chat',
-              style: const TextStyle(
+              style: GoogleFonts.sora(
                 color: AppColors.blanc,
                 fontWeight: FontWeight.bold,
                 fontSize: 16,
               ),
             ),
             if (state.isOtherTyping)
-              const Text(
+              Text(
                 'typing...',
-                style: TextStyle(color: AppColors.gris, fontSize: 12),
+                style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 12),
               ),
           ],
         ),
@@ -190,12 +201,12 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
           Expanded(
             child: TextField(
               controller: _msgCtrl,
-              style: const TextStyle(color: AppColors.blanc, fontSize: 15),
+              style: GoogleFonts.dmSans(color: AppColors.blanc, fontSize: 15),
               textInputAction: TextInputAction.send,
               onSubmitted: (_) => _sendMessage(),
               decoration: InputDecoration(
                 hintText: 'Message...',
-                hintStyle: const TextStyle(color: AppColors.gris, fontSize: 15),
+                hintStyle: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 15),
                 filled: true,
                 fillColor: AppColors.surfaceAlt,
                 contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
@@ -242,7 +253,7 @@ class _MessageBubble extends StatelessWidget {
             padding: const EdgeInsets.symmetric(vertical: 8),
             child: Text(
               DateFormat('HH:mm').format(message.createdAt),
-              style: const TextStyle(color: AppColors.gris, fontSize: 11),
+              style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 11),
             ),
           ),
         Align(
@@ -288,7 +299,7 @@ class _MessageBubble extends StatelessWidget {
                 if (message.content != null)
                   Text(
                     message.content!,
-                    style: TextStyle(
+                    style: GoogleFonts.dmSans(
                       color: isMe ? AppColors.fond : AppColors.blanc,
                       fontSize: 15,
                     ),

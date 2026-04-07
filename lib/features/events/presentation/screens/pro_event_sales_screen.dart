@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/widgets/spotbook_button.dart';
@@ -65,23 +66,35 @@ class ProEventSalesScreen extends ConsumerWidget {
       appBar: AppBar(
         backgroundColor: AppColors.fond,
         elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppColors.blanc),
-          onPressed: () => context.pop(),
+        surfaceTintColor: Colors.transparent,
+        leading: Semantics(
+          label: 'Back',
+          child: IconButton(
+            icon: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: AppColors.surface,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: AppColors.border, width: 0.5),
+              ),
+              child: const Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
+            ),
+            onPressed: () => context.pop(),
+          ),
         ),
         title: async.when(
           data: (d) => Text(
             d.event.title,
-            style: const TextStyle(
+            style: GoogleFonts.sora(
                 color: AppColors.blanc,
                 fontWeight: FontWeight.bold,
                 fontSize: 17),
             overflow: TextOverflow.ellipsis,
           ),
-          loading: () => const Text('Chargement...',
-              style: TextStyle(color: AppColors.gris)),
-          error: (_, __) => const Text('Événement',
-              style: TextStyle(color: AppColors.blanc)),
+          loading: () => Text('Chargement...',
+              style: GoogleFonts.dmSans(color: AppColors.gris)),
+          error: (_, __) => Text('Événement',
+              style: GoogleFonts.sora(color: AppColors.blanc)),
         ),
         centerTitle: true,
         actions: [
@@ -98,7 +111,7 @@ class ProEventSalesScreen extends ConsumerWidget {
           child: Padding(
             padding: const EdgeInsets.all(24),
             child: Text('Erreur : $e',
-                style: const TextStyle(color: AppColors.error),
+                style: GoogleFonts.dmSans(color: AppColors.error),
                 textAlign: TextAlign.center),
           ),
         ),
@@ -148,7 +161,7 @@ class _Body extends StatelessWidget {
             // Date + status badge
             if (dateStr != null) ...[
               Text(dateStr,
-                  style: const TextStyle(color: AppColors.gris, fontSize: 13)),
+                  style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 13)),
               const SizedBox(height: 8),
             ],
             Container(
@@ -167,7 +180,7 @@ class _Body extends StatelessWidget {
               ),
               child: Text(
                 data.event.isActive ? 'En ligne' : 'Inactif',
-                style: TextStyle(
+                style: GoogleFonts.dmSans(
                   color: data.event.isActive
                       ? AppColors.success
                       : AppColors.gris,
@@ -208,14 +221,14 @@ class _Body extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text('Sales progress',
-                          style: TextStyle(
+                      Text('Sales progress',
+                          style: GoogleFonts.dmSans(
                               color: AppColors.blanc,
                               fontSize: 13,
                               fontWeight: FontWeight.w600)),
                       Text(
                           '${(data.progress * 100).toStringAsFixed(0)}%',
-                          style: const TextStyle(
+                          style: GoogleFonts.dmSans(
                               color: AppColors.blanc,
                               fontSize: 13,
                               fontWeight: FontWeight.bold)),
@@ -235,7 +248,7 @@ class _Body extends StatelessWidget {
                   const SizedBox(height: 8),
                   Text(
                     '${data.totalCapacity - data.totalSold} spots remaining',
-                    style: const TextStyle(
+                    style: GoogleFonts.dmSans(
                         color: AppColors.gris, fontSize: 12),
                   ),
                 ],
@@ -250,13 +263,13 @@ class _Body extends StatelessWidget {
                   const Icon(Icons.qr_code_scanner_outlined,
                       color: AppColors.gris, size: 20),
                   const SizedBox(width: 12),
-                  const Expanded(
+                  Expanded(
                     child: Text('Tickets scanned',
-                        style: TextStyle(
+                        style: GoogleFonts.dmSans(
                             color: AppColors.blanc, fontSize: 14)),
                   ),
                   Text('${data.scanned} / ${data.totalSold}',
-                      style: const TextStyle(
+                      style: GoogleFonts.dmSans(
                           color: AppColors.blanc,
                           fontWeight: FontWeight.bold,
                           fontSize: 14)),
@@ -269,9 +282,9 @@ class _Body extends StatelessWidget {
             if (data.event.ticketTypes.isNotEmpty) ...[
               Align(
                 alignment: Alignment.centerLeft,
-                child: const Text(
+                child: Text(
                   'Ticket types',
-                  style: TextStyle(
+                  style: GoogleFonts.sora(
                       color: AppColors.blanc,
                       fontSize: 15,
                       fontWeight: FontWeight.bold),
@@ -293,14 +306,14 @@ class _Body extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(tt.name,
-                                  style: const TextStyle(
+                                  style: GoogleFonts.dmSans(
                                       color: AppColors.blanc,
                                       fontWeight: FontWeight.w600,
                                       fontSize: 14)),
                               const SizedBox(height: 2),
                               Text(
                                 '${tt.price.toStringAsFixed(2)} CA\$',
-                                style: const TextStyle(
+                                style: GoogleFonts.dmSans(
                                     color: AppColors.gris,
                                     fontSize: 12),
                               ),
@@ -308,7 +321,7 @@ class _Body extends StatelessWidget {
                           ),
                         ),
                         Text('${tt.soldCount} / ${tt.quantity}',
-                            style: const TextStyle(
+                            style: GoogleFonts.dmSans(
                                 color: AppColors.blanc,
                                 fontWeight: FontWeight.bold,
                                 fontSize: 14)),
@@ -363,14 +376,14 @@ class _StatCard extends StatelessWidget {
           Icon(icon, color: AppColors.gris, size: 18),
           const SizedBox(height: 8),
           Text(value,
-              style: const TextStyle(
+              style: GoogleFonts.sora(
                   color: AppColors.blanc,
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                   letterSpacing: -0.5)),
           const SizedBox(height: 2),
           Text(label,
-              style: const TextStyle(color: AppColors.gris, fontSize: 11)),
+              style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 11)),
         ],
       ),
     );

@@ -4,6 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -112,19 +113,28 @@ class _MessagingInboxScreenState extends ConsumerState<MessagingInboxScreen> {
       appBar: AppBar(
         backgroundColor: AppColors.fond,
         surfaceTintColor: Colors.transparent,
+        elevation: 0,
         leading: context.canPop()
             ? IconButton(
-                icon: const Icon(Icons.arrow_back_ios,
-                    color: AppColors.blanc, size: 20),
+                icon: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: AppColors.surface,
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: AppColors.border, width: 0.5),
+                  ),
+                  child: const Icon(Icons.arrow_back_ios_new,
+                      color: AppColors.blanc, size: 16),
+                ),
                 onPressed: () {
                   HapticFeedback.lightImpact();
                   context.pop();
                 },
               )
             : null,
-        title: const Text(
+        title: Text(
           'Messages',
-          style: TextStyle(
+          style: GoogleFonts.sora(
             color: AppColors.blanc,
             fontWeight: FontWeight.w700,
             fontSize: 18,
@@ -148,12 +158,12 @@ class _MessagingInboxScreenState extends ConsumerState<MessagingInboxScreen> {
                 child: TextField(
                   controller: _searchCtrl,
                   onChanged: (v) => setState(() => _searchQuery = v),
-                  style:
-                      const TextStyle(color: AppColors.blanc, fontSize: 15),
+                  style: GoogleFonts.dmSans(
+                      color: AppColors.blanc, fontSize: 15),
                   decoration: InputDecoration(
                     hintText: 'Search conversations…',
                     hintStyle:
-                        const TextStyle(color: AppColors.gris, fontSize: 14),
+                        GoogleFonts.dmSans(color: AppColors.gris, fontSize: 14),
                     prefixIcon: const Icon(Icons.search,
                         color: AppColors.gris, size: 20),
                     suffixIcon: _searchQuery.isNotEmpty
@@ -185,7 +195,7 @@ class _MessagingInboxScreenState extends ConsumerState<MessagingInboxScreen> {
                           _searchQuery.isNotEmpty
                               ? 'No conversations found'
                               : 'No messages',
-                          style: const TextStyle(
+                          style: GoogleFonts.dmSans(
                               color: AppColors.gris, fontSize: 15),
                         ),
                       )
@@ -306,7 +316,7 @@ class _ConversationTile extends StatelessWidget {
                             name,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
+                            style: GoogleFonts.dmSans(
                               color: AppColors.blanc,
                               fontWeight: FontWeight.w600,
                               fontSize: 16,
@@ -316,7 +326,7 @@ class _ConversationTile extends StatelessWidget {
                         if (timeStr.isNotEmpty)
                           Text(
                             timeStr,
-                            style: const TextStyle(
+                            style: GoogleFonts.dmSans(
                               color: AppColors.gris,
                               fontSize: 12,
                             ),
@@ -328,11 +338,11 @@ class _ConversationTile extends StatelessWidget {
                       children: [
                         Expanded(
                           child: isTyping
-                              ? const Text(
+                              ? Text(
                                   'typing…',
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(
+                                  style: GoogleFonts.dmSans(
                                     color: AppColors.violetClair,
                                     fontSize: 14,
                                     fontStyle: FontStyle.italic,
@@ -342,7 +352,7 @@ class _ConversationTile extends StatelessWidget {
                                   preview,
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
-                                  style: const TextStyle(
+                                  style: GoogleFonts.dmSans(
                                     color: AppColors.gris,
                                     fontSize: 14,
                                   ),
@@ -359,7 +369,7 @@ class _ConversationTile extends StatelessWidget {
                             ),
                             child: Text(
                               '$unread',
-                              style: const TextStyle(
+                              style: GoogleFonts.dmSans(
                                 color: AppColors.fond,
                                 fontSize: 11,
                                 fontWeight: FontWeight.w700,

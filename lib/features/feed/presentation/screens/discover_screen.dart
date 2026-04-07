@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:shimmer/shimmer.dart';
 
 import '../../../../shared/theme/app_colors.dart';
@@ -89,13 +90,13 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
                           },
                         );
                       },
-                      style: const TextStyle(
+                      style: GoogleFonts.dmSans(
                         color: AppColors.blanc,
                         fontSize: 14,
                       ),
                       decoration: InputDecoration(
                         hintText: 'Search for a professional...',
-                        hintStyle: const TextStyle(
+                        hintStyle: GoogleFonts.dmSans(
                           color: AppColors.gris,
                           fontSize: 14,
                         ),
@@ -176,9 +177,9 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Text(
+                          Text(
                             'Recent searches',
-                            style: TextStyle(
+                            style: GoogleFonts.dmSans(
                               color: AppColors.gris,
                               fontSize: 12,
                               fontWeight: FontWeight.w500,
@@ -186,9 +187,9 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
                           ),
                           GestureDetector(
                             onTap: n.clearHistory,
-                            child: const Text(
+                            child: Text(
                               'Clear',
-                              style: TextStyle(
+                              style: GoogleFonts.dmSans(
                                 color: AppColors.violet,
                                 fontSize: 12,
                                 fontWeight: FontWeight.w600,
@@ -207,7 +208,7 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
                         ),
                         title: Text(
                           query,
-                          style: const TextStyle(
+                          style: GoogleFonts.dmSans(
                             color: AppColors.blanc,
                             fontSize: 14,
                           ),
@@ -276,7 +277,7 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
                       ),
                       child: Text(
                         label,
-                        style: TextStyle(
+                        style: GoogleFonts.dmSans(
                           color: selected
                               ? AppColors.blanc
                               : AppColors.gris,
@@ -396,7 +397,7 @@ class _ProviderCard extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 12),
               child: Text(
                 provider.displayName,
-                style: const TextStyle(
+                style: GoogleFonts.sora(
                   color: AppColors.blanc,
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
@@ -420,7 +421,7 @@ class _ProviderCard extends StatelessWidget {
                 ),
                 child: Text(
                   provider.category!,
-                  style: const TextStyle(
+                  style: GoogleFonts.dmSans(
                     color: AppColors.violetClair,
                     fontSize: 11,
                     fontWeight: FontWeight.w500,
@@ -444,7 +445,7 @@ class _ProviderCard extends StatelessWidget {
                     const SizedBox(width: 2),
                     Text(
                       provider.averageRating!.toStringAsFixed(1),
-                      style: const TextStyle(
+                      style: GoogleFonts.dmSans(
                         color: AppColors.blanc,
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
@@ -455,7 +456,7 @@ class _ProviderCard extends StatelessWidget {
                       const SizedBox(width: 2),
                       Text(
                         '(${provider.reviewCount})',
-                        style: const TextStyle(
+                        style: GoogleFonts.dmSans(
                           color: AppColors.gris,
                           fontSize: 11,
                         ),
@@ -480,7 +481,7 @@ class _ProviderCard extends StatelessWidget {
                     const SizedBox(width: 2),
                     Text(
                       '${provider.distanceKm!.toStringAsFixed(1)} km',
-                      style: const TextStyle(
+                      style: GoogleFonts.dmSans(
                         color: AppColors.gris,
                         fontSize: 11,
                       ),
@@ -496,7 +497,7 @@ class _ProviderCard extends StatelessWidget {
                     ),
                     Text(
                       'from \$${provider.minPrice!.toStringAsFixed(0)}',
-                      style: const TextStyle(
+                      style: GoogleFonts.dmSans(
                         color: AppColors.gris,
                         fontSize: 11,
                       ),
@@ -602,7 +603,7 @@ class _VideoCard extends StatelessWidget {
                       Expanded(
                         child: Text(
                           video.proName ?? 'Pro',
-                          style: const TextStyle(
+                          style: GoogleFonts.sora(
                             color: AppColors.blanc,
                             fontSize: 12,
                             fontWeight: FontWeight.w600,
@@ -615,7 +616,7 @@ class _VideoCard extends StatelessWidget {
                   const SizedBox(height: 6),
                   Text(
                     video.title,
-                    style: const TextStyle(
+                    style: GoogleFonts.dmSans(
                       color: AppColors.grisClair,
                       fontSize: 11,
                     ),
@@ -665,7 +666,7 @@ class _EmptyState extends StatelessWidget {
                   ? 'No results'
                   : 'No professionals found',
               textAlign: TextAlign.center,
-              style: const TextStyle(
+              style: GoogleFonts.sora(
                 color: AppColors.blanc,
                 fontSize: 17,
                 fontWeight: FontWeight.w700,
@@ -677,7 +678,7 @@ class _EmptyState extends StatelessWidget {
                   ? 'Try different keywords\nor adjust your filters'
                   : 'Discover the best\nprofessionals near you soon',
               textAlign: TextAlign.center,
-              style: const TextStyle(
+              style: GoogleFonts.dmSans(
                 color: AppColors.gris,
                 fontSize: 14,
                 height: 1.5,
@@ -718,19 +719,19 @@ class _ErrorState extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 20),
-            const Text(
+            Text(
               'Loading error',
-              style: TextStyle(
+              style: GoogleFonts.sora(
                 color: AppColors.blanc,
                 fontSize: 17,
                 fontWeight: FontWeight.w700,
               ),
             ),
             const SizedBox(height: 8),
-            const Text(
+            Text(
               'Check your connection\nand try again',
               textAlign: TextAlign.center,
-              style: TextStyle(
+              style: GoogleFonts.dmSans(
                 color: AppColors.gris,
                 fontSize: 14,
                 height: 1.5,
@@ -748,9 +749,9 @@ class _ErrorState extends StatelessWidget {
                   color: AppColors.violet,
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: const Text(
+                child: Text(
                   'Retry',
-                  style: TextStyle(
+                  style: GoogleFonts.dmSans(
                     color: AppColors.blanc,
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
@@ -861,9 +862,9 @@ class _FiltersSheet extends ConsumerWidget {
                 ),
               ),
             ),
-            const Text(
+            Text(
               'Filters',
-              style: TextStyle(
+              style: GoogleFonts.sora(
                 color: AppColors.blanc,
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -875,13 +876,13 @@ class _FiltersSheet extends ConsumerWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
+                Text(
                   'Distance max',
-                  style: TextStyle(color: AppColors.blanc, fontSize: 15),
+                  style: GoogleFonts.dmSans(color: AppColors.blanc, fontSize: 15),
                 ),
                 Text(
                   '${s.maxDistance.toInt()} km',
-                  style: const TextStyle(
+                  style: GoogleFonts.dmSans(
                     color: AppColors.violet,
                     fontSize: 15,
                     fontWeight: FontWeight.w600,
@@ -909,9 +910,9 @@ class _FiltersSheet extends ConsumerWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
+                Text(
                   'Minimum rating',
-                  style: TextStyle(color: AppColors.blanc, fontSize: 15),
+                  style: GoogleFonts.dmSans(color: AppColors.blanc, fontSize: 15),
                 ),
                 Row(
                   children: [
@@ -923,7 +924,7 @@ class _FiltersSheet extends ConsumerWidget {
                     const SizedBox(width: 4),
                     Text(
                       s.minRating.toStringAsFixed(1),
-                      style: const TextStyle(
+                      style: GoogleFonts.dmSans(
                         color: AppColors.violet,
                         fontSize: 15,
                         fontWeight: FontWeight.w600,
@@ -954,13 +955,13 @@ class _FiltersSheet extends ConsumerWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
+                Text(
                   'Max price',
-                  style: TextStyle(color: AppColors.blanc, fontSize: 15),
+                  style: GoogleFonts.dmSans(color: AppColors.blanc, fontSize: 15),
                 ),
                 Text(
                   '${s.maxPrice.toInt()} \$',
-                  style: const TextStyle(
+                  style: GoogleFonts.dmSans(
                     color: AppColors.violet,
                     fontSize: 15,
                     fontWeight: FontWeight.w600,
@@ -986,9 +987,9 @@ class _FiltersSheet extends ConsumerWidget {
 
             // Available today
             SwitchListTile(
-              title: const Text(
+              title: Text(
                 'Available today',
-                style: TextStyle(color: AppColors.blanc, fontSize: 15),
+                style: GoogleFonts.dmSans(color: AppColors.blanc, fontSize: 15),
               ),
               value: s.availableToday,
               activeTrackColor: AppColors.violet.withAlpha(128),
@@ -1016,9 +1017,9 @@ class _FiltersSheet extends ConsumerWidget {
                   ),
                   elevation: 0,
                 ),
-                child: const Text(
+                child: Text(
                   'Apply filters',
-                  style: TextStyle(
+                  style: GoogleFonts.dmSans(
                     fontSize: 15,
                     fontWeight: FontWeight.w600,
                   ),

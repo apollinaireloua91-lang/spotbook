@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:shimmer/shimmer.dart';
 
 import '../../../../shared/theme/app_colors.dart';
@@ -46,16 +47,16 @@ class _SavedPostsScreenState extends ConsumerState<SavedPostsScreen> {
       builder: (ctx) => AlertDialog(
         backgroundColor: AppColors.surface,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Text('Remove from favorites?',
-            style: TextStyle(color: AppColors.blanc)),
+        title: Text('Remove from favorites?',
+            style: GoogleFonts.sora(color: AppColors.blanc)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('No', style: TextStyle(color: AppColors.gris)),
+            child: Text('No', style: GoogleFonts.dmSans(color: AppColors.gris)),
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Yes', style: TextStyle(color: AppColors.error)),
+            child: Text('Yes', style: GoogleFonts.dmSans(color: AppColors.error)),
           ),
         ],
       ),
@@ -74,20 +75,29 @@ class _SavedPostsScreenState extends ConsumerState<SavedPostsScreen> {
       backgroundColor: AppColors.fond,
       appBar: AppBar(
         backgroundColor: AppColors.fond,
+        surfaceTintColor: Colors.transparent,
+        elevation: 0,
         leading: Semantics(
           label: 'Back',
           child: IconButton(
-            icon: const Icon(Icons.arrow_back_ios, color: AppColors.blanc,
-                size: 20),
+            icon: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: AppColors.surface,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: AppColors.border, width: 0.5),
+              ),
+              child: const Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
+            ),
             onPressed: () {
               HapticFeedback.mediumImpact();
               context.pop();
             },
           ),
         ),
-        title: const Text('Saved posts',
+        title: Text('Saved posts',
             style:
-                TextStyle(color: AppColors.blanc, fontWeight: FontWeight.bold)),
+                GoogleFonts.sora(color: AppColors.blanc, fontWeight: FontWeight.bold)),
         centerTitle: true,
       ),
       body: _isLoading
@@ -162,7 +172,7 @@ class _SavedPostsScreenState extends ConsumerState<SavedPostsScreen> {
                       fav.targetName!,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
+                      style: GoogleFonts.dmSans(
                         color: AppColors.blanc,
                         fontSize: 11,
                         fontWeight: FontWeight.w500,
@@ -192,14 +202,14 @@ class _SavedPostsScreenState extends ConsumerState<SavedPostsScreen> {
           Icon(Icons.bookmark_border,
               color: AppColors.gris.withValues(alpha: 0.5), size: 56),
           const SizedBox(height: 12),
-          const Text(
+          Text(
             'No saved posts',
-            style: TextStyle(color: AppColors.gris, fontSize: 15),
+            style: GoogleFonts.sora(color: AppColors.gris, fontSize: 15),
           ),
           const SizedBox(height: 4),
-          const Text(
+          Text(
             'Tap the bookmark icon to save videos',
-            style: TextStyle(color: AppColors.grisInactif, fontSize: 13),
+            style: GoogleFonts.dmSans(color: AppColors.grisInactif, fontSize: 13),
             textAlign: TextAlign.center,
           ),
         ],

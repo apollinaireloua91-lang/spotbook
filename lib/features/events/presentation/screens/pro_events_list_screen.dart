@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/widgets/spotbook_card.dart';
@@ -48,10 +49,10 @@ class _ProEventsListScreenState extends ConsumerState<ProEventsListScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Row(
                 children: [
-                  const Expanded(
+                  Expanded(
                     child: Text(
                       'My Events',
-                      style: TextStyle(
+                      style: GoogleFonts.sora(
                         color: AppColors.blanc,
                         fontSize: 26,
                         fontWeight: FontWeight.w800,
@@ -74,14 +75,14 @@ class _ProEventsListScreenState extends ConsumerState<ProEventsListScreen> {
                               const SizedBox(height: 12),
                               Container(width: 40, height: 4, decoration: BoxDecoration(color: AppColors.gris, borderRadius: BorderRadius.circular(2))),
                               const SizedBox(height: 16),
-                              const Text('Filter by status', style: TextStyle(color: AppColors.blanc, fontSize: 16, fontWeight: FontWeight.w600)),
+                              Text('Filter by status', style: GoogleFonts.sora(color: AppColors.blanc, fontSize: 16, fontWeight: FontWeight.w600)),
                               const SizedBox(height: 12),
                               ..._Filter.values.map((f) => ListTile(
                                 leading: Icon(
                                   _filter == f ? Icons.radio_button_checked : Icons.radio_button_off,
                                   color: _filter == f ? AppColors.violet : AppColors.gris,
                                 ),
-                                title: Text(f.label, style: const TextStyle(color: AppColors.blanc)),
+                                title: Text(f.label, style: GoogleFonts.dmSans(color: AppColors.blanc)),
                                 onTap: () {
                                   setState(() => _filter = f);
                                   Navigator.pop(context);
@@ -120,10 +121,10 @@ class _ProEventsListScreenState extends ConsumerState<ProEventsListScreen> {
                           Expanded(
                             child: TextField(
                               controller: _searchCtrl,
-                              style: const TextStyle(color: AppColors.blanc, fontSize: 14),
-                              decoration: const InputDecoration(
+                              style: GoogleFonts.dmSans(color: AppColors.blanc, fontSize: 14),
+                              decoration: InputDecoration(
                                 hintText: 'Search event...',
-                                hintStyle: TextStyle(color: AppColors.gris, fontSize: 14),
+                                hintStyle: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 14),
                                 border: InputBorder.none,
                                 isDense: true,
                                 contentPadding: EdgeInsets.zero,
@@ -164,7 +165,7 @@ class _ProEventsListScreenState extends ConsumerState<ProEventsListScreen> {
           ),
           error: (e, _) => Center(
             child: Text(e.toString(),
-                style: const TextStyle(color: AppColors.error)),
+                style: GoogleFonts.dmSans(color: AppColors.error)),
           ),
           data: (events) {
             final filtered = events.where((e) {
@@ -282,7 +283,7 @@ class _EventCard extends StatelessWidget {
                 const SizedBox(height: 4),
                 Text(
                   event.title,
-                  style: const TextStyle(
+                  style: GoogleFonts.sora(
                     color: AppColors.blanc,
                     fontSize: 16,
                     fontWeight: FontWeight.w700,
@@ -291,7 +292,7 @@ class _EventCard extends StatelessWidget {
                 const SizedBox(height: 4),
                 Text(
                   _dateLine(event),
-                  style: const TextStyle(color: AppColors.gris, fontSize: 12),
+                  style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 12),
                 ),
                 if (cap > 0) ...[
                   const SizedBox(height: 12),
@@ -372,15 +373,15 @@ class _StatsRow extends StatelessWidget {
                 children: [
                   Text(
                     '$ticketsSold${totalTickets != null ? ' / $totalTickets' : ''}',
-                    style: const TextStyle(
+                    style: GoogleFonts.sora(
                       color: AppColors.blanc,
                       fontSize: 15,
                       fontWeight: FontWeight.w700,
                     ),
                   ),
-                  const Text(
+                  Text(
                     'Tickets sold',
-                    style: TextStyle(color: AppColors.gris, fontSize: 10),
+                    style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 10),
                   ),
                   const SizedBox(height: 4),
                   LinearProgressIndicator(
@@ -405,15 +406,15 @@ class _StatsRow extends StatelessWidget {
               children: [
                 Text(
                   '\$${revenue!.toStringAsFixed(0)}',
-                  style: const TextStyle(
+                  style: GoogleFonts.sora(
                     color: AppColors.blanc,
                     fontSize: 15,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
-                const Text(
+                Text(
                   'Revenus',
-                  style: TextStyle(color: AppColors.gris, fontSize: 10),
+                  style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 10),
                 ),
               ],
             ),
@@ -459,7 +460,7 @@ class _StatusBadge extends StatelessWidget {
             ],
             Text(
               label,
-              style: TextStyle(
+              style: GoogleFonts.dmSans(
                 color: color,
                 fontSize: 11,
                 fontWeight: FontWeight.w700,
@@ -499,7 +500,7 @@ class _ActionBtn extends StatelessWidget {
                 const SizedBox(height: 2),
                 Text(
                   label,
-                  style: const TextStyle(color: AppColors.gris, fontSize: 9),
+                  style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 9),
                 ),
               ],
             ),
@@ -529,24 +530,24 @@ class _EmptyState extends StatelessWidget {
               filter == _Filter.all
                   ? 'No events created'
                   : 'No ${filter.label.toLowerCase()} events',
-              style: const TextStyle(
+              style: GoogleFonts.sora(
                 color: AppColors.blanc,
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
               ),
             ),
             const SizedBox(height: 8),
-            const Text(
+            Text(
               'Créez votre premier événement\npour commencer à vendre des billets.',
               textAlign: TextAlign.center,
-              style: TextStyle(color: AppColors.gris, fontSize: 13),
+              style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 13),
             ),
             const SizedBox(height: 24),
             TextButton(
               onPressed: () => context.go('/create-event'),
-              child: const Text(
+              child: Text(
                 'Create an event',
-                style: TextStyle(color: AppColors.blanc, fontSize: 14),
+                style: GoogleFonts.dmSans(color: AppColors.blanc, fontSize: 14),
               ),
             ),
           ],
@@ -594,7 +595,7 @@ class _FilterChip extends StatelessWidget {
           ),
           child: Text(
             label,
-            style: TextStyle(
+            style: GoogleFonts.dmSans(
               color: selected ? AppColors.fond : AppColors.gris,
               fontSize: 13,
               fontWeight:
