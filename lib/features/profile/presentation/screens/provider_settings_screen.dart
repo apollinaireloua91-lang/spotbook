@@ -452,7 +452,7 @@ class _SettingsBody extends ConsumerWidget {
             TextField(
               controller: ctrl,
               keyboardType: TextInputType.emailAddress,
-              style: const TextStyle(color: AppColors.blanc),
+              style: GoogleFonts.dmSans(color: AppColors.blanc),
               decoration: InputDecoration(
                 labelText: l10n.email,
                 labelStyle: const TextStyle(color: AppColors.gris),
@@ -519,7 +519,7 @@ class _SettingsBody extends ConsumerWidget {
             TextField(
               controller: ctrl,
               keyboardType: TextInputType.phone,
-              style: const TextStyle(color: AppColors.blanc),
+              style: GoogleFonts.dmSans(color: AppColors.blanc),
               decoration: InputDecoration(
                 labelText: l10n.proSettingsPhone,
                 labelStyle: const TextStyle(color: AppColors.gris),
@@ -970,7 +970,7 @@ class _MaxBookingsFieldState extends State<_MaxBookingsField> {
         TextField(
           controller: _c,
           keyboardType: TextInputType.number,
-          style: const TextStyle(color: AppColors.blanc),
+          style: GoogleFonts.dmSans(color: AppColors.blanc),
           decoration: InputDecoration(
             filled: true,
             fillColor: AppColors.surfaceAlt,

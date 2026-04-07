@@ -97,7 +97,7 @@ class _VideoCard extends StatelessWidget {
           ]),
           if (video.status == 'rejected' && video.rejectionReason != null) ...[
             const SizedBox(height: 6),
-            Text('Reason: ${video.rejectionReason}', style: const TextStyle(color: AppColors.error, fontSize: 12)),
+            Text('Reason: ${video.rejectionReason}', style: GoogleFonts.dmSans(color: AppColors.error, fontSize: 12)),
           ],
           const SizedBox(height: 8),
           Row(children: [
@@ -125,7 +125,7 @@ class _StatusBadge extends StatelessWidget {
       _ => (AppColors.gris.withAlpha(26), AppColors.gris, status),
     };
     return Container(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4), decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(8)),
-      child: Text(label, style: TextStyle(color: fg, fontSize: 11, fontWeight: FontWeight.w600)));
+      child: Text(label, style: GoogleFonts.dmSans(color: fg, fontSize: 11, fontWeight: FontWeight.w600)));
   }
 }
 
@@ -134,6 +134,6 @@ class _Stat extends StatelessWidget {
   final IconData icon; final int count;
   @override
   Widget build(BuildContext context) {
-    return Row(children: [Icon(icon, color: AppColors.gris, size: 16), const SizedBox(width: 4), Text(count.toString(), style: const TextStyle(color: AppColors.gris, fontSize: 12))]);
+    return Row(children: [Icon(icon, color: AppColors.gris, size: 16), const SizedBox(width: 4), Text(count.toString(), style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 12))]);
   }
 }

@@ -359,7 +359,7 @@ class _ProPopularCard extends StatelessWidget {
                   child: pro.avatarUrl == null
                       ? Text(
                           pro.displayName[0].toUpperCase(),
-                          style: const TextStyle(
+                          style: GoogleFonts.dmSans(
                             color: AppColors.blanc,
                             fontWeight: FontWeight.w700,
                           ),
@@ -625,7 +625,7 @@ class _ProSearchCard extends StatelessWidget {
               child: result.avatarUrl == null
                   ? Text(
                       result.displayName[0].toUpperCase(),
-                      style: const TextStyle(
+                      style: GoogleFonts.dmSans(
                         color: AppColors.blanc,
                         fontWeight: FontWeight.w700,
                       ),

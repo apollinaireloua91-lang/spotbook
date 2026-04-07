@@ -4,7 +4,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 /// Commission rates and fees fetched from the `app_config` Supabase table.
 ///
 /// Kept alive so a single fetch serves the entire session.
-/// Screens should use `ref.watch(appConfigProvider).valueOrNull` with
+/// Screens should use `ref.watch(appConfigProvider).value` with
 /// the hardcoded fallback so the UI never blocks on config loading.
 class AppConfig {
   const AppConfig({

@@ -673,7 +673,7 @@ class _RatingBadge extends StatelessWidget {
           const SizedBox(width: 4),
           Text(
             rating.toStringAsFixed(1),
-            style: const TextStyle(
+            style: GoogleFonts.sora(
               color: AppColors.blanc,
               fontSize: 14,
               fontWeight: FontWeight.w700,
@@ -682,7 +682,7 @@ class _RatingBadge extends StatelessWidget {
           const SizedBox(width: 6),
           Text(
             '($reviewsCount ${reviewsCount == 1 ? 'review' : 'reviews'})',
-            style: const TextStyle(color: AppColors.gris, fontSize: 13),
+            style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 13),
           ),
         ],
       ),
@@ -746,7 +746,7 @@ class _StatCell extends StatelessWidget {
       children: [
         Text(
           value,
-          style: const TextStyle(
+          style: GoogleFonts.sora(
             color: AppColors.blanc,
             fontSize: 18,
             fontWeight: FontWeight.w800,
@@ -755,7 +755,7 @@ class _StatCell extends StatelessWidget {
         const SizedBox(height: 2),
         Text(
           label,
-          style: const TextStyle(
+          style: GoogleFonts.dmSans(
             color: AppColors.gris,
             fontSize: 11,
             fontWeight: FontWeight.w600,
@@ -841,7 +841,7 @@ class _FollowButton extends StatelessWidget {
                         const SizedBox(width: 8),
                         Text(
                           followed ? 'Following' : 'Follow',
-                          style: TextStyle(
+                          style: GoogleFonts.dmSans(
                             color:
                                 followed ? AppColors.gris : AppColors.blanc,
                             fontSize: 15,
@@ -902,7 +902,7 @@ class _ActionButton extends StatelessWidget {
             ],
             Text(
               label,
-              style: TextStyle(
+              style: GoogleFonts.dmSans(
                 color: textColor,
                 fontSize: 16,
                 fontWeight: FontWeight.w700,
@@ -943,7 +943,7 @@ class _PillButton extends StatelessWidget {
         ),
         child: Text(
           label,
-          style: const TextStyle(
+          style: GoogleFonts.dmSans(
             color: AppColors.blanc,
             fontSize: 15,
             fontWeight: FontWeight.w700,
@@ -980,12 +980,12 @@ class _TabBarDelegate extends SliverPersistentHeaderDelegate {
         indicatorWeight: 2.5,
         dividerColor: AppColors.border,
         dividerHeight: 0.5,
-        labelStyle: const TextStyle(
+        labelStyle: GoogleFonts.dmSans(
           fontSize: 13,
           fontWeight: FontWeight.w700,
           letterSpacing: 0.3,
         ),
-        unselectedLabelStyle: const TextStyle(
+        unselectedLabelStyle: GoogleFonts.dmSans(
           fontSize: 13,
           fontWeight: FontWeight.w600,
           letterSpacing: 0.3,
@@ -1022,15 +1022,15 @@ class _VideosTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (videos.isEmpty) {
-      return const Center(
+      return Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.videocam_off_outlined,
+            const Icon(Icons.videocam_off_outlined,
                 color: AppColors.gris, size: 48),
-            SizedBox(height: 12),
+            const SizedBox(height: 12),
             Text('No videos yet',
-                style: TextStyle(color: AppColors.gris, fontSize: 15)),
+                style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 15)),
           ],
         ),
       );
@@ -1119,7 +1119,7 @@ class _VideosTab extends StatelessWidget {
                         const SizedBox(width: 2),
                         Text(
                           _fmtViews(v.viewsCount),
-                          style: const TextStyle(
+                          style: GoogleFonts.dmSans(
                             color: AppColors.blanc,
                             fontSize: 11,
                             fontWeight: FontWeight.w600,
@@ -1150,15 +1150,15 @@ class _ServicesTab extends StatelessWidget {
   Widget build(BuildContext context) {
     final active = services.where((s) => s.isActive).toList();
     if (active.isEmpty) {
-      return const Center(
+      return Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.design_services_outlined,
+            const Icon(Icons.design_services_outlined,
                 color: AppColors.gris, size: 48),
-            SizedBox(height: 12),
+            const SizedBox(height: 12),
             Text('No services available',
-                style: TextStyle(color: AppColors.gris, fontSize: 15)),
+                style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 15)),
           ],
         ),
       );
@@ -1200,7 +1200,7 @@ class _ServicesTab extends StatelessWidget {
                   children: [
                     Text(
                       s.name,
-                      style: const TextStyle(
+                      style: GoogleFonts.dmSans(
                         color: AppColors.blanc,
                         fontSize: 15,
                         fontWeight: FontWeight.w700,
@@ -1214,7 +1214,7 @@ class _ServicesTab extends StatelessWidget {
                         const SizedBox(width: 4),
                         Text(
                           '${s.durationMinutes} min',
-                          style: const TextStyle(
+                          style: GoogleFonts.dmSans(
                               color: AppColors.gris, fontSize: 13),
                         ),
                       ],
@@ -1228,7 +1228,7 @@ class _ServicesTab extends StatelessWidget {
                 children: [
                   Text(
                     price,
-                    style: const TextStyle(
+                    style: GoogleFonts.sora(
                       color: AppColors.violetClair,
                       fontSize: 17,
                       fontWeight: FontWeight.w800,
@@ -1249,9 +1249,9 @@ class _ServicesTab extends StatelessWidget {
                         color: AppColors.violet,
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      child: const Text(
+                      child: Text(
                         'Book',
-                        style: TextStyle(
+                        style: GoogleFonts.dmSans(
                           color: AppColors.blanc,
                           fontSize: 12,
                           fontWeight: FontWeight.w700,
@@ -1285,15 +1285,15 @@ class _ReviewsTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (reviews.isEmpty) {
-      return const Center(
+      return Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.rate_review_outlined,
+            const Icon(Icons.rate_review_outlined,
                 color: AppColors.gris, size: 48),
-            SizedBox(height: 12),
+            const SizedBox(height: 12),
             Text('No reviews yet',
-                style: TextStyle(color: AppColors.gris, fontSize: 15)),
+                style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 15)),
           ],
         ),
       );
@@ -1313,7 +1313,7 @@ class _ReviewsTab extends StatelessWidget {
               children: [
                 Text(
                   averageRating.toStringAsFixed(1),
-                  style: const TextStyle(
+                  style: GoogleFonts.sora(
                     color: AppColors.blanc,
                     fontSize: 40,
                     fontWeight: FontWeight.w800,
@@ -1337,7 +1337,7 @@ class _ReviewsTab extends StatelessWidget {
                     const SizedBox(height: 2),
                     Text(
                       '$reviewsCount ${reviewsCount == 1 ? 'review' : 'reviews'}',
-                      style: const TextStyle(
+                      style: GoogleFonts.dmSans(
                           color: AppColors.gris, fontSize: 13),
                     ),
                   ],
@@ -1375,7 +1375,7 @@ class _ReviewsTab extends StatelessWidget {
                           Expanded(
                             child: Text(
                               r.clientName ?? 'Client',
-                              style: const TextStyle(
+                              style: GoogleFonts.dmSans(
                                 color: AppColors.blanc,
                                 fontWeight: FontWeight.w600,
                                 fontSize: 14,
@@ -1384,7 +1384,7 @@ class _ReviewsTab extends StatelessWidget {
                           ),
                           Text(
                             fmt.format(r.createdAt),
-                            style: const TextStyle(
+                            style: GoogleFonts.dmSans(
                                 color: AppColors.gris, fontSize: 11),
                           ),
                         ],
@@ -1406,7 +1406,7 @@ class _ReviewsTab extends StatelessWidget {
                         const SizedBox(height: 6),
                         Text(
                           r.serviceName!.trim(),
-                          style: const TextStyle(
+                          style: GoogleFonts.dmSans(
                             color: AppColors.violetClair,
                             fontSize: 12,
                             fontWeight: FontWeight.w600,
@@ -1418,7 +1418,7 @@ class _ReviewsTab extends StatelessWidget {
                         const SizedBox(height: 6),
                         Text(
                           r.comment!.trim(),
-                          style: const TextStyle(
+                          style: GoogleFonts.dmSans(
                             color: AppColors.grisClair,
                             fontSize: 13,
                             height: 1.4,
@@ -1447,14 +1447,14 @@ class _EventsTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (events.isEmpty) {
-      return const Center(
+      return Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.event_outlined, color: AppColors.gris, size: 48),
-            SizedBox(height: 12),
+            const Icon(Icons.event_outlined, color: AppColors.gris, size: 48),
+            const SizedBox(height: 12),
             Text('No upcoming events',
-                style: TextStyle(color: AppColors.gris, fontSize: 15)),
+                style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 15)),
           ],
         ),
       );
@@ -1535,7 +1535,7 @@ class _EventsTab extends StatelessWidget {
                         children: [
                           Text(
                             DateFormat.d().format(e.eventDate!),
-                            style: const TextStyle(
+                            style: GoogleFonts.sora(
                               color: AppColors.blanc,
                               fontSize: 18,
                               fontWeight: FontWeight.w800,
@@ -1545,7 +1545,7 @@ class _EventsTab extends StatelessWidget {
                             DateFormat.MMM()
                                 .format(e.eventDate!)
                                 .toUpperCase(),
-                            style: const TextStyle(
+                            style: GoogleFonts.dmSans(
                               color: AppColors.violetClair,
                               fontSize: 11,
                               fontWeight: FontWeight.w700,
@@ -1572,7 +1572,7 @@ class _EventsTab extends StatelessWidget {
                       ),
                       child: Text(
                         '$remaining left',
-                        style: const TextStyle(
+                        style: GoogleFonts.dmSans(
                           color: AppColors.success,
                           fontSize: 11,
                           fontWeight: FontWeight.w700,
@@ -1594,7 +1594,7 @@ class _EventsTab extends StatelessWidget {
                         e.title,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
+                        style: GoogleFonts.sora(
                           color: AppColors.blanc,
                           fontSize: 17,
                           fontWeight: FontWeight.w800,
@@ -1613,7 +1613,7 @@ class _EventsTab extends StatelessWidget {
                                 e.venueName!,
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(
+                                style: GoogleFonts.dmSans(
                                   color: AppColors.grisClair,
                                   fontSize: 13,
                                 ),
@@ -1631,7 +1631,7 @@ class _EventsTab extends StatelessWidget {
                             const SizedBox(width: 4),
                             Text(
                               e.eventTime!,
-                              style: const TextStyle(
+                              style: GoogleFonts.dmSans(
                                 color: AppColors.grisClair,
                                 fontSize: 13,
                               ),
@@ -1649,9 +1649,9 @@ class _EventsTab extends StatelessWidget {
                             color: AppColors.violet,
                             borderRadius: BorderRadius.circular(10),
                           ),
-                          child: const Text(
+                          child: Text(
                             'Buy ticket',
-                            style: TextStyle(
+                            style: GoogleFonts.dmSans(
                               color: AppColors.blanc,
                               fontSize: 13,
                               fontWeight: FontWeight.w700,

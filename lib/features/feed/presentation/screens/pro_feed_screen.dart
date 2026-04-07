@@ -1383,7 +1383,7 @@ class _ShareSheetContent extends StatelessWidget {
                     backgroundColor: AppColors.surface,
                     child: Text(
                       name.isNotEmpty ? name[0] : '?',
-                      style: const TextStyle(
+                      style: GoogleFonts.dmSans(
                         color: AppColors.blanc,
                         fontWeight: FontWeight.w700,
                       ),
@@ -1460,11 +1460,11 @@ class _ShareSheetContent extends StatelessWidget {
                   await Clipboard.setData(ClipboardData(text: link));
                   if (context.mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
+                      SnackBar(
                         backgroundColor: AppColors.surfaceAlt,
                         content: Text(
                           'Link copied',
-                          style: TextStyle(color: AppColors.blanc),
+                          style: GoogleFonts.dmSans(color: AppColors.blanc),
                         ),
                       ),
                     );

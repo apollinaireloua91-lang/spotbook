@@ -1174,7 +1174,7 @@ class _PremiumServiceCard extends StatelessWidget {
               const SizedBox(height: 2),
               Text(
                 'dès',
-                style: TextStyle(
+                style: GoogleFonts.dmSans(
                   color: AppColors.gris.withAlpha(130),
                   fontSize: 10,
                 ),

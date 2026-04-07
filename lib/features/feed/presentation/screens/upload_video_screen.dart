@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../shared/theme/app_colors.dart';
 import '../../../auth/data/category_repository.dart';
@@ -77,11 +78,24 @@ class _UploadVideoScreenState extends ConsumerState<UploadVideoScreen> {
       backgroundColor: AppColors.fond,
       appBar: AppBar(
         backgroundColor: AppColors.fond,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppColors.blanc),
-          onPressed: () => Navigator.pop(context),
+        surfaceTintColor: Colors.transparent,
+        elevation: 0,
+        leading: Semantics(
+          label: 'Back',
+          child: IconButton(
+            icon: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: AppColors.surface,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: AppColors.border, width: 0.5),
+              ),
+              child: const Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
+            ),
+            onPressed: () => context.pop(),
+          ),
         ),
-        title: const Text('Publish a Service'),
+        title: Text('Publish a Service', style: GoogleFonts.sora(color: AppColors.blanc, fontWeight: FontWeight.w600, fontSize: 17)),
         centerTitle: true,
       ),
       body: SafeArea(child: SingleChildScrollView(padding: const EdgeInsets.symmetric(horizontal: 20), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -92,18 +106,18 @@ class _UploadVideoScreenState extends ConsumerState<UploadVideoScreen> {
             child: s.videoFile != null
                 ? Center(child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
                     const Icon(Icons.videocam, color: AppColors.success, size: 40), const SizedBox(height: 8),
-                    Text('Video selected (${s.videoDuration?.toStringAsFixed(0)}s)', style: const TextStyle(color: AppColors.blanc, fontSize: 14)),
-                    const SizedBox(height: 4), const Text('Tap to change', style: TextStyle(color: AppColors.gris, fontSize: 12))]))
-                : const Center(child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-                    Icon(Icons.videocam_outlined, color: AppColors.gris, size: 40), SizedBox(height: 8),
-                    Text('Select a video (max 2 min)', style: TextStyle(color: AppColors.gris, fontSize: 14))]))),
+                    Text('Video selected (${s.videoDuration?.toStringAsFixed(0)}s)', style: GoogleFonts.dmSans(color: AppColors.blanc, fontSize: 14)),
+                    const SizedBox(height: 4), Text('Tap to change', style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 12))]))
+                : Center(child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+                    const Icon(Icons.videocam_outlined, color: AppColors.gris, size: 40), const SizedBox(height: 8),
+                    Text('Select a video (max 2 min)', style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 14))]))),
         ),
         const SizedBox(height: 24),
         ValueListenableBuilder<TextEditingValue>(
           valueListenable: _titleCtrl,
           builder: (context, value, _) => TextField(
-            controller: _titleCtrl, maxLength: 80, style: const TextStyle(color: AppColors.blanc),
-            decoration: InputDecoration(labelText: 'Title *', hintText: 'E.g.: Women\'s cut + blow-dry', labelStyle: const TextStyle(color: AppColors.gris), hintStyle: TextStyle(color: AppColors.gris.withAlpha(128)), counterStyle: const TextStyle(color: AppColors.gris), filled: true, fillColor: AppColors.surface,
+            controller: _titleCtrl, maxLength: 80, style: GoogleFonts.dmSans(color: AppColors.blanc),
+            decoration: InputDecoration(labelText: 'Title *', hintText: 'E.g.: Women\'s cut + blow-dry', labelStyle: GoogleFonts.dmSans(color: AppColors.gris), hintStyle: GoogleFonts.dmSans(color: AppColors.gris.withAlpha(128)), counterStyle: GoogleFonts.dmSans(color: AppColors.gris), filled: true, fillColor: AppColors.surface,
               border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.border)),
               enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.border)),
               focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.blanc))),
@@ -119,8 +133,8 @@ class _UploadVideoScreenState extends ConsumerState<UploadVideoScreen> {
           final validCat = catItems.any((i) => i.value == s.selectedCategory) ? s.selectedCategory : null;
           return DropdownButtonFormField<String>(
             initialValue: validCat,
-            hint: const Text('Select a category *', style: TextStyle(color: AppColors.gris)),
-            dropdownColor: AppColors.surface, style: const TextStyle(color: AppColors.blanc), icon: const Icon(Icons.keyboard_arrow_down, color: AppColors.gris),
+            hint: Text('Select a category *', style: GoogleFonts.dmSans(color: AppColors.gris)),
+            dropdownColor: AppColors.surface, style: GoogleFonts.dmSans(color: AppColors.blanc), icon: const Icon(Icons.keyboard_arrow_down, color: AppColors.gris),
             decoration: InputDecoration(filled: true, fillColor: AppColors.surface,
               border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.border)),
               enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.border))),
@@ -132,16 +146,16 @@ class _UploadVideoScreenState extends ConsumerState<UploadVideoScreen> {
         ValueListenableBuilder<TextEditingValue>(
           valueListenable: _descCtrl,
           builder: (context, value, _) => TextField(
-            controller: _descCtrl, maxLines: 4, maxLength: 300, style: const TextStyle(color: AppColors.blanc),
-            decoration: InputDecoration(labelText: 'Description *', hintText: 'Describe your service in detail...', labelStyle: const TextStyle(color: AppColors.gris), hintStyle: TextStyle(color: AppColors.gris.withAlpha(128)), counterStyle: const TextStyle(color: AppColors.gris), filled: true, fillColor: AppColors.surface,
+            controller: _descCtrl, maxLines: 4, maxLength: 300, style: GoogleFonts.dmSans(color: AppColors.blanc),
+            decoration: InputDecoration(labelText: 'Description *', hintText: 'Describe your service in detail...', labelStyle: GoogleFonts.dmSans(color: AppColors.gris), hintStyle: GoogleFonts.dmSans(color: AppColors.gris.withAlpha(128)), counterStyle: GoogleFonts.dmSans(color: AppColors.gris), filled: true, fillColor: AppColors.surface,
               border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.border)),
               enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.border)),
               focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.blanc))),
           ),
         ),
         const SizedBox(height: 16),
-        TextField(controller: _hashtagCtrl, style: const TextStyle(color: AppColors.blanc),
-          decoration: InputDecoration(labelText: 'Hashtags (optional, max 5)', hintText: 'haircut, trending, paris', labelStyle: const TextStyle(color: AppColors.gris), hintStyle: TextStyle(color: AppColors.gris.withAlpha(128)), filled: true, fillColor: AppColors.surface,
+        TextField(controller: _hashtagCtrl, style: GoogleFonts.dmSans(color: AppColors.blanc),
+          decoration: InputDecoration(labelText: 'Hashtags (optional, max 5)', hintText: 'haircut, trending, paris', labelStyle: GoogleFonts.dmSans(color: AppColors.gris), hintStyle: GoogleFonts.dmSans(color: AppColors.gris.withAlpha(128)), filled: true, fillColor: AppColors.surface,
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.border)),
             enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.border)),
             focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.blanc)))),
@@ -149,7 +163,7 @@ class _UploadVideoScreenState extends ConsumerState<UploadVideoScreen> {
         if (s.isUploading) ...[
           ClipRRect(borderRadius: BorderRadius.circular(4), child: LinearProgressIndicator(value: s.uploadProgress, backgroundColor: AppColors.surface, valueColor: const AlwaysStoppedAnimation<Color>(AppColors.blanc), minHeight: 6)),
           const SizedBox(height: 8),
-          Center(child: Text('${(s.uploadProgress * 100).toInt()}% — Publishing...', style: const TextStyle(color: AppColors.gris, fontSize: 13))),
+          Center(child: Text('${(s.uploadProgress * 100).toInt()}% — Publishing...', style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 13))),
           const SizedBox(height: 16),
         ],
         ListenableBuilder(
@@ -159,7 +173,7 @@ class _UploadVideoScreenState extends ConsumerState<UploadVideoScreen> {
             return SizedBox(width: double.infinity, height: 52, child: ElevatedButton(
               onPressed: valid && !s.isUploading ? _publish : null,
               style: ElevatedButton.styleFrom(backgroundColor: AppColors.blanc, foregroundColor: AppColors.fond, disabledBackgroundColor: AppColors.surfaceAlt, disabledForegroundColor: AppColors.gris, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
-              child: const Text('Publish my service', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+              child: Text('Publish my service', style: GoogleFonts.dmSans(fontSize: 16, fontWeight: FontWeight.w600)),
             ));
           },
         ),

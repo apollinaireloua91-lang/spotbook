@@ -2,6 +2,7 @@ import 'package:better_player_plus/better_player_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/widgets/spotbook_app_bar.dart';
@@ -120,16 +121,16 @@ class _ProviderVideoEditScreenState extends State<ProviderVideoEditScreen> {
         backgroundColor: AppColors.surface,
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20)),
-        title: const Text('Add text',
-            style: TextStyle(color: AppColors.blanc)),
+        title: Text('Add text',
+            style: GoogleFonts.sora(color: AppColors.blanc, fontWeight: FontWeight.w600)),
         content: TextField(
           controller: _textCtrl,
-          style: const TextStyle(color: AppColors.blanc),
+          style: GoogleFonts.dmSans(color: AppColors.blanc),
           maxLength: 50,
           decoration: InputDecoration(
             hintText: 'Your text...',
-            hintStyle: TextStyle(color: AppColors.gris.withAlpha(128)),
-            counterStyle: const TextStyle(color: AppColors.gris),
+            hintStyle: GoogleFonts.dmSans(color: AppColors.gris.withAlpha(128)),
+            counterStyle: GoogleFonts.dmSans(color: AppColors.gris),
             filled: true,
             fillColor: AppColors.surfaceAlt,
             border: OutlineInputBorder(
@@ -144,8 +145,8 @@ class _ProviderVideoEditScreenState extends State<ProviderVideoEditScreen> {
               setState(() => _overlayText = null);
               Navigator.pop(ctx);
             },
-            child: const Text('Delete',
-                style: TextStyle(color: AppColors.gris)),
+            child: Text('Delete',
+                style: GoogleFonts.dmSans(color: AppColors.gris)),
           ),
           TextButton(
             onPressed: () {
@@ -153,8 +154,8 @@ class _ProviderVideoEditScreenState extends State<ProviderVideoEditScreen> {
               setState(() => _overlayText = text.isEmpty ? null : text);
               Navigator.pop(ctx);
             },
-            child: const Text('OK',
-                style: TextStyle(color: AppColors.blanc)),
+            child: Text('OK',
+                style: GoogleFonts.dmSans(color: AppColors.blanc, fontWeight: FontWeight.w600)),
           ),
         ],
       ),
@@ -185,8 +186,8 @@ class _ProviderVideoEditScreenState extends State<ProviderVideoEditScreen> {
         actions: [
           TextButton(
             onPressed: _onNext,
-            child: const Text('Next',
-                style: TextStyle(
+            child: Text('Next',
+                style: GoogleFonts.dmSans(
                     color: AppColors.violet,
                     fontWeight: FontWeight.w700,
                     fontSize: 16)),
@@ -222,7 +223,7 @@ class _ProviderVideoEditScreenState extends State<ProviderVideoEditScreen> {
                         ),
                         child: Text(
                           _overlayText!,
-                          style: const TextStyle(
+                          style: GoogleFonts.sora(
                             color: AppColors.blanc,
                             fontSize: 22,
                             fontWeight: FontWeight.bold,
@@ -263,11 +264,11 @@ class _ProviderVideoEditScreenState extends State<ProviderVideoEditScreen> {
                                 (_totalDuration.inMilliseconds *
                                         _trimStart)
                                     .round())),
-                        style: const TextStyle(
+                        style: GoogleFonts.dmSans(
                             color: AppColors.gris, fontSize: 12),
                       ),
-                      const Text('Trim',
-                          style: TextStyle(
+                      Text('Trim',
+                          style: GoogleFonts.dmSans(
                               color: AppColors.blanc,
                               fontSize: 13,
                               fontWeight: FontWeight.w600)),
@@ -277,7 +278,7 @@ class _ProviderVideoEditScreenState extends State<ProviderVideoEditScreen> {
                                 (_totalDuration.inMilliseconds *
                                         _trimEnd)
                                     .round())),
-                        style: const TextStyle(
+                        style: GoogleFonts.dmSans(
                             color: AppColors.gris, fontSize: 12),
                       ),
                     ],
@@ -358,7 +359,7 @@ class _ProviderVideoEditScreenState extends State<ProviderVideoEditScreen> {
                     child: Text(
                       _filterNames[index],
                       textAlign: TextAlign.center,
-                      style: TextStyle(
+                      style: GoogleFonts.dmSans(
                         color: selected
                             ? AppColors.blanc
                             : AppColors.gris,
@@ -409,7 +410,7 @@ class _ToolButton extends StatelessWidget {
               size: 24),
           const SizedBox(height: 4),
           Text(label,
-              style: TextStyle(
+              style: GoogleFonts.dmSans(
                 color: isActive ? AppColors.violet : AppColors.gris,
                 fontSize: 11,
               )),

@@ -34,15 +34,26 @@ class SpotbookAppBar extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     return AppBar(
       backgroundColor: Colors.transparent,
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       scrolledUnderElevation: 0,
       centerTitle: centerTitle,
       automaticallyImplyLeading: false,
       leading: showBack
-          ? IconButton(
-              icon: const Icon(Icons.arrow_back_ios_new, size: 20),
-              color: AppColors.blanc,
-              onPressed: onBack ?? () => context.pop(),
+          ? Semantics(
+              label: 'Back',
+              child: IconButton(
+                icon: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: AppColors.surface,
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: AppColors.border, width: 0.5),
+                  ),
+                  child: const Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
+                ),
+                onPressed: onBack ?? () => context.pop(),
+              ),
             )
           : null,
       title: title != null
