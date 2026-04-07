@@ -117,8 +117,8 @@ class ProSubscriptionScreen extends ConsumerWidget {
             const SizedBox(height: 12),
             _FeatureTile(
               icon: Icons.auto_awesome,
-              title: 'Auto-approved videos',
-              subtitle: 'Your videos are published instantly.',
+              title: 'Priority visibility',
+              subtitle: 'Your videos get boosted in the feed.',
             ),
             const SizedBox(height: 32),
             if (state.error != null) ...[

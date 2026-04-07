@@ -98,7 +98,6 @@ class _StatusBadge extends StatelessWidget {
   Widget build(BuildContext context) {
     final (Color bg, Color fg, String label) = switch (status) {
       'approved' => (AppColors.success.withAlpha(26), AppColors.success, 'Published'),
-      'pending_review' => (AppColors.warning.withAlpha(26), AppColors.warning, 'Under review'),
       'rejected' => (AppColors.error.withAlpha(26), AppColors.error, 'Rejected'),
       'flagged' => (AppColors.warning.withAlpha(26), AppColors.warning, 'Flagged'),
       _ => (AppColors.gris.withAlpha(26), AppColors.gris, status),
