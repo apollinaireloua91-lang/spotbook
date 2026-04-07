@@ -52,6 +52,21 @@ class PaymentRepository {
     return url;
   }
 
+  /// Calls stripe-connect-dashboard to get the pro's Stripe status + URL.
+  /// Returns {status, detailsSubmitted, chargesEnabled, payoutsEnabled, url}.
+  Future<Map<String, dynamic>> getStripeConnectStatus() async {
+    await _supabase.auth.refreshSession();
+    final res = await _supabase.functions.invoke(
+      'stripe-connect-dashboard',
+      method: HttpMethod.post,
+    );
+    if (res.status != 200) {
+      final err = res.data is Map ? res.data['error'] : 'Failed to fetch status';
+      throw Exception(err ?? 'Failed to fetch status');
+    }
+    return res.data as Map<String, dynamic>;
+  }
+
   /// Calls stripe-create-catering-intent edge function to get a clientSecret
   /// for the catering deposit PaymentIntent (30% of total estimate).
   Future<String> createCateringPaymentIntent(String submissionId) async {

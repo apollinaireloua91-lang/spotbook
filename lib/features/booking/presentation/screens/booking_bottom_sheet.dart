@@ -4,9 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
 import 'package:shimmer/shimmer.dart';
 
+import '../../../../core/services/app_config_provider.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/utils/analytics_service.dart';
 import '../../../../shared/widgets/confetti_overlay.dart';
@@ -196,7 +198,7 @@ class _StepIndicator extends StatelessWidget {
                   const SizedBox(height: 6),
                   Text(
                     _stepLabels[i],
-                    style: TextStyle(
+                    style: GoogleFonts.dmSans(
                       color: isActive || isDone
                           ? AppColors.blanc
                           : AppColors.gris.withAlpha(120),
@@ -263,7 +265,7 @@ class _StepHeader extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: const TextStyle(
+                  style: GoogleFonts.sora(
                     color: AppColors.blanc,
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
@@ -273,7 +275,7 @@ class _StepHeader extends StatelessWidget {
                   const SizedBox(height: 2),
                   Text(
                     subtitle!,
-                    style: TextStyle(
+                    style: GoogleFonts.dmSans(
                       color: AppColors.gris.withAlpha(180),
                       fontSize: 13,
                     ),
@@ -331,7 +333,7 @@ class _CtaButton extends StatelessWidget {
                 )
               : Text(
                   label,
-                  style: TextStyle(
+                  style: GoogleFonts.dmSans(
                     color: enabled ? AppColors.blanc : AppColors.gris,
                     fontSize: 16,
                     fontWeight: FontWeight.w700,
@@ -482,9 +484,9 @@ class _Step1Services extends ConsumerWidget {
                   Icon(Icons.local_offer_outlined,
                       color: AppColors.violetClair, size: 18),
                   const SizedBox(width: 8),
-                  const Text(
+                  Text(
                     'Code promo',
-                    style: TextStyle(
+                    style: GoogleFonts.sora(
                       color: AppColors.blanc,
                       fontSize: 15,
                       fontWeight: FontWeight.w600,
@@ -498,11 +500,11 @@ class _Step1Services extends ConsumerWidget {
                   Expanded(
                     child: TextField(
                       controller: promoCtrl,
-                      style: const TextStyle(color: AppColors.blanc),
+                      style: GoogleFonts.dmSans(color: AppColors.blanc),
                       textCapitalization: TextCapitalization.characters,
                       decoration: InputDecoration(
                         hintText: 'Enter a code',
-                        hintStyle: const TextStyle(color: AppColors.gris),
+                        hintStyle: GoogleFonts.dmSans(color: AppColors.gris),
                         filled: true,
                         fillColor: AppColors.surfaceAlt,
                         contentPadding: const EdgeInsets.symmetric(
@@ -539,7 +541,7 @@ class _Step1Services extends ConsumerWidget {
                       ),
                       child: Text(
                         state.promoApplied ? 'Applied ✓' : 'Apply',
-                        style: TextStyle(
+                        style: GoogleFonts.dmSans(
                           color: state.promoApplied
                               ? AppColors.success
                               : AppColors.blanc,
@@ -572,8 +574,7 @@ class _Step1Services extends ConsumerWidget {
                 Expanded(
                   child: Text(
                     state.error!,
-                    style:
-                        const TextStyle(color: AppColors.error, fontSize: 13),
+                    style: GoogleFonts.dmSans(color: AppColors.error, fontSize: 13),
                   ),
                 ),
               ],
@@ -643,7 +644,7 @@ class _ServiceTile extends StatelessWidget {
                 children: [
                   Text(
                     service.name,
-                    style: const TextStyle(
+                    style: GoogleFonts.sora(
                       color: AppColors.blanc,
                       fontSize: 15,
                       fontWeight: FontWeight.w600,
@@ -653,7 +654,7 @@ class _ServiceTile extends StatelessWidget {
                     const SizedBox(height: 2),
                     Text(
                       service.description!,
-                      style: const TextStyle(
+                      style: GoogleFonts.dmSans(
                         color: AppColors.gris,
                         fontSize: 12,
                       ),
@@ -670,7 +671,7 @@ class _ServiceTile extends StatelessWidget {
                       const SizedBox(width: 4),
                       Text(
                         '${service.durationMinutes} min',
-                        style: TextStyle(
+                        style: GoogleFonts.dmSans(
                           color: AppColors.gris.withAlpha(160),
                           fontSize: 12,
                         ),
@@ -684,7 +685,7 @@ class _ServiceTile extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Text(
-                  '${service.price.toStringAsFixed(0)} €',
+                  '${service.price.toStringAsFixed(0)} CA\$',
                   style: TextStyle(
                     color: isSelected ? AppColors.violetClair : AppColors.blanc,
                     fontSize: 18,
@@ -1207,9 +1208,9 @@ class _Step4Summary extends ConsumerWidget {
           child: Column(
             children: [
               _PriceRow(
-                label: 'Service price',
+                label: 'Prix du service',
                 value:
-                    '${state.selectedService?.price.toStringAsFixed(2) ?? '0'} €',
+                    '${state.selectedService?.price.toStringAsFixed(2) ?? '0'} CA\$',
               ),
               if (state.promoApplied && state.promoCode != null) ...[
                 const SizedBox(height: 8),
@@ -1217,14 +1218,14 @@ class _Step4Summary extends ConsumerWidget {
                   label: 'Promo (${state.promoCode!.code})',
                   value: state.promoCode!.discountType == 'percentage'
                       ? '-${state.promoCode!.discountValue.toStringAsFixed(0)}%'
-                      : '-${state.promoCode!.discountValue.toStringAsFixed(2)} €',
+                      : '-${state.promoCode!.discountValue.toStringAsFixed(2)} CA\$',
                   valueColor: AppColors.success,
                 ),
               ],
               const Divider(color: AppColors.border, height: 20),
               _PriceRow(
                 label: 'Total',
-                value: '${state.totalPrice.toStringAsFixed(2)} €',
+                value: '${state.totalPrice.toStringAsFixed(2)} CA\$',
               ),
               const SizedBox(height: 8),
               Container(
@@ -1242,7 +1243,7 @@ class _Step4Summary extends ConsumerWidget {
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
-                        '30% deposit to pay now: ${state.depositPrice.toStringAsFixed(2)} €',
+                        'Acompte de 30% à payer maintenant : ${state.depositPrice.toStringAsFixed(2)} CA\$',
                         style: const TextStyle(
                           color: AppColors.violetClair,
                           fontSize: 13,
@@ -1259,7 +1260,7 @@ class _Step4Summary extends ConsumerWidget {
 
         const SizedBox(height: 28),
         _CtaButton(
-          label: 'Payer ${state.depositPrice.toStringAsFixed(2)} €',
+          label: 'Payer ${state.depositPrice.toStringAsFixed(2)} CA\$',
           onPressed: () =>
               ref.read(bookingFlowProvider.notifier).nextStep(),
         ),
@@ -1349,7 +1350,7 @@ class _Step5Payment extends ConsumerWidget {
       children: [
         _StepHeader(
           title: 'Payment',
-          subtitle: 'Deposit: ${state.depositPrice.toStringAsFixed(2)} €',
+          subtitle: 'Deposit: ${state.depositPrice.toStringAsFixed(2)} CA\$',
           onBack: () =>
               ref.read(bookingFlowProvider.notifier).previousStep(),
         ),
@@ -1420,25 +1421,36 @@ class _Step5Payment extends ConsumerWidget {
             borderRadius: BorderRadius.circular(14),
             border: Border.all(color: AppColors.border),
           ),
-          child: Column(
-            children: [
-              _PriceRow(
-                label: 'Service total',
-                value: '${state.totalPrice.toStringAsFixed(2)} €',
-              ),
-              const SizedBox(height: 6),
-              _PriceRow(
-                label: 'Deposit (30%)',
-                value: '${state.depositPrice.toStringAsFixed(2)} €',
-                valueColor: AppColors.violetClair,
-              ),
-              const SizedBox(height: 6),
-              _PriceRow(
-                label: 'Remaining balance (on-site)',
-                value:
-                    '${(state.totalPrice - state.depositPrice).toStringAsFixed(2)} €',
-              ),
-            ],
+          child: Builder(
+            builder: (ctx) {
+              final cfg = ref.watch(appConfigProvider).value ?? AppConfig.fallback;
+              final serviceFee = cfg.serviceFeeClient;
+              return Column(
+                children: [
+                  _PriceRow(
+                    label: 'Service total',
+                    value: '${state.totalPrice.toStringAsFixed(2)} CA\$',
+                  ),
+                  const SizedBox(height: 6),
+                  _PriceRow(
+                    label: 'Acompte (30%)',
+                    value: '${state.depositPrice.toStringAsFixed(2)} CA\$',
+                    valueColor: AppColors.violetClair,
+                  ),
+                  const SizedBox(height: 6),
+                  _PriceRow(
+                    label: 'Frais de service',
+                    value: '${serviceFee.toStringAsFixed(2)} CA\$',
+                  ),
+                  const SizedBox(height: 6),
+                  _PriceRow(
+                    label: 'Solde restant (sur place)',
+                    value:
+                        '${(state.totalPrice - state.depositPrice).toStringAsFixed(2)} CA\$',
+                  ),
+                ],
+              );
+            },
           ),
         ),
 
@@ -1470,7 +1482,7 @@ class _Step5Payment extends ConsumerWidget {
 
         const SizedBox(height: 28),
         _CtaButton(
-          label: 'Payer ${state.depositPrice.toStringAsFixed(2)} €',
+          label: 'Payer ${state.depositPrice.toStringAsFixed(2)} CA\$',
           isLoading: state.isCreating || state.isPaying,
           onPressed: (state.isCreating || state.isPaying)
               ? null
