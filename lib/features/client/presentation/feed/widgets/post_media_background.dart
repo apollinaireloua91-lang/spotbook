@@ -95,10 +95,8 @@ class PostMediaBackgroundState extends State<PostMediaBackground> {
     return Stack(
       fit: StackFit.expand,
       children: [
-        // Video or thumbnail fallback — IgnorePointer prevents BetterPlayer's
-        // internal GestureDetector from stealing taps meant for play/pause.
         if (_controller != null)
-          IgnorePointer(child: BetterPlayer(controller: _controller!))
+          BetterPlayer(controller: _controller!)
         else if (widget.thumbnailUrl != null)
           CachedNetworkImage(
             imageUrl: widget.thumbnailUrl!,

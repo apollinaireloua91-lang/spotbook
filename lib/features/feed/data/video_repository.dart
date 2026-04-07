@@ -188,12 +188,6 @@ class VideoRepository {
     await _supabase.from('videos').delete().eq('id', videoId);
   }
 
-  Future<Map<String, dynamic>> getCloudflareUploadUrl() async {
-    final res = await _supabase.functions
-        .invoke('generate-cloudflare-upload-url');
-    return res.data as Map<String, dynamic>;
-  }
-
   Future<Map<String, dynamic>> submitForModeration({
     required String title,
     required String description,

@@ -127,33 +127,35 @@ class _ProFeedScreenState extends ConsumerState<ProFeedScreen> {
             onPageChanged: _onPageChanged,
             itemBuilder: (context, index) {
               final video = feed.videos[index];
-              return GestureDetector(
-                onTap: () {
-                  HapticFeedback.lightImpact();
-                  final bgState = _bgKey.currentState;
-                  if (bgState == null) return;
-                  final nowPlaying = bgState.togglePlayPause();
-                  setState(() {
-                    _isPaused = !nowPlaying;
-                    _showPlayPauseIcon = true;
-                  });
-                  Future.delayed(const Duration(milliseconds: 800), () {
-                    if (mounted) setState(() => _showPlayPauseIcon = false);
-                  });
-                },
-                onDoubleTap: () => _onDoubleTap(video, index),
-                onHorizontalDragEnd: (details) {
-                  if ((details.primaryVelocity ?? 0) < -300) {
-                    context.push('/pro/profile');
-                  }
-                },
-                child: _PostBackground(
-                  key: index == currentIndex ? _bgKey : null,
-                  video: video,
-                  isActive: index == currentIndex,
-                ),
+              return _PostBackground(
+                key: index == currentIndex ? _bgKey : null,
+                video: video,
+                isActive: index == currentIndex,
               );
             },
+          ),
+
+          // ── Tap / double-tap detector ─────────────────────────
+          // Positioned.fill with translucent behavior so taps reach
+          // both this detector AND the overlay buttons above.
+          Positioned.fill(
+            child: GestureDetector(
+              behavior: HitTestBehavior.translucent,
+              onTap: () {
+                HapticFeedback.lightImpact();
+                final bgState = _bgKey.currentState;
+                if (bgState == null) return;
+                final nowPlaying = bgState.togglePlayPause();
+                setState(() {
+                  _isPaused = !nowPlaying;
+                  _showPlayPauseIcon = true;
+                });
+                Future.delayed(const Duration(milliseconds: 800), () {
+                  if (mounted) setState(() => _showPlayPauseIcon = false);
+                });
+              },
+              onDoubleTap: () => _onDoubleTap(currentVideo, currentIndex),
+            ),
           ),
 
           // ── Top bar overlay (fixed) ───────────────────────────
@@ -174,20 +176,16 @@ class _ProFeedScreenState extends ConsumerState<ProFeedScreen> {
             ),
           ),
 
-          // ── Right column (centrée verticalement, au-dessus de la nav) ─
-          Positioned.fill(
-            child: Align(
-              alignment: Alignment.centerRight,
-              child: Padding(
-                padding: const EdgeInsets.only(right: 10, bottom: 72),
-                child: _RightColumn(
-                  video: currentVideo,
-                  onLike: () => _toggleLike(currentVideo, currentIndex),
-                  onSave: () => _toggleSave(currentVideo, currentIndex),
-                  onShare: () => _showShareSheet(context, currentVideo),
-                  onSpotify: () => _showSpotifySheet(context),
-                ),
-              ),
+          // ── Right column (only wraps actual icons, not full screen) ─
+          Positioned(
+            right: 10,
+            bottom: 72,
+            child: _RightColumn(
+              video: currentVideo,
+              onLike: () => _toggleLike(currentVideo, currentIndex),
+              onSave: () => _toggleSave(currentVideo, currentIndex),
+              onShare: () => _showShareSheet(context, currentVideo),
+              onSpotify: () => _showSpotifySheet(context),
             ),
           ),
 
@@ -201,30 +199,32 @@ class _ProFeedScreenState extends ConsumerState<ProFeedScreen> {
 
           // ── Play/Pause overlay ──────────────────────────────
           if (_showPlayPauseIcon || _isPaused)
-            Center(
-              child: AnimatedOpacity(
-                opacity: _showPlayPauseIcon ? 1.0 : (_isPaused ? 0.6 : 0.0),
-                duration: const Duration(milliseconds: 200),
-                child: Container(
-                  width: 64,
-                  height: 64,
-                  decoration: BoxDecoration(
-                    color: Colors.black.withAlpha(115),
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(
-                    _isPaused
-                        ? Icons.play_arrow_rounded
-                        : Icons.pause_rounded,
-                    color: Colors.white,
-                    size: 36,
+            IgnorePointer(
+              child: Center(
+                child: AnimatedOpacity(
+                  opacity: _showPlayPauseIcon ? 1.0 : (_isPaused ? 0.6 : 0.0),
+                  duration: const Duration(milliseconds: 200),
+                  child: Container(
+                    width: 64,
+                    height: 64,
+                    decoration: BoxDecoration(
+                      color: Colors.black.withAlpha(115),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      _isPaused
+                          ? Icons.play_arrow_rounded
+                          : Icons.pause_rounded,
+                      color: Colors.white,
+                      size: 36,
+                    ),
                   ),
                 ),
               ),
             ),
 
           // ── Double-tap heart animation ────────────────────────
-          if (showHeart) const Center(child: LikeAnimation()),
+          if (showHeart) const IgnorePointer(child: Center(child: LikeAnimation())),
         ],
       ),
     );
@@ -492,10 +492,8 @@ class _PostBackgroundState extends ConsumerState<_PostBackground> {
     return Stack(
       fit: StackFit.expand,
       children: [
-        // Video or thumbnail — IgnorePointer prevents BetterPlayer's
-        // internal GestureDetector from stealing taps meant for play/pause.
         if (_controller != null)
-          IgnorePointer(child: BetterPlayer(controller: _controller!))
+          BetterPlayer(controller: _controller!)
         else if (widget.video.thumbnailUrl != null)
           CachedNetworkImage(
             imageUrl: widget.video.thumbnailUrl!,
