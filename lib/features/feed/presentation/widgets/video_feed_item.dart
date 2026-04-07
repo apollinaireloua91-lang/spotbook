@@ -292,9 +292,9 @@ class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
           // ─── Bottom overlay: Pro name + Book (or custom override) ───
           if (widget.bottomOverlayOverride != null)
             Positioned(
-              bottom: 80,
+              bottom: 100,
               left: 16,
-              right: 76,
+              right: 72,
               child: widget.bottomOverlayOverride!,
             )
           else

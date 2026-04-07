@@ -12,10 +12,10 @@ import '../../../../feed/presentation/widgets/share_bottom_sheet.dart';
 import '../../../../moderation/presentation/screens/report_sheet.dart';
 
 /// Right action column for the Pro feed.
-/// Order: Avatar → Like → Save → Share → Spotify → More
+/// Order: Avatar → Like (with count) → Save → Share → More
 /// NO comment button (exclusive to Client).
 ///
-/// Spec: 46px circles, 20px gaps, backdrop blur(8px), border rgba(255,255,255,0.12).
+/// Spec: 44px circles, 18px gaps, backdrop blur(10px), frosted glass.
 class PostRightColumnPro extends StatelessWidget {
   const PostRightColumnPro({
     super.key,
@@ -30,40 +30,50 @@ class PostRightColumnPro extends StatelessWidget {
   final VoidCallback onToggleSave;
   final VoidCallback? onToggleFollow;
 
+  String _formatCount(int count) {
+    if (count >= 1000000) return '${(count / 1000000).toStringAsFixed(1)}M';
+    if (count >= 1000) return '${(count / 1000).toStringAsFixed(1)}k';
+    if (count == 0) return '';
+    return count.toString();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        // ── Pro avatar (46px + 2px border) ──
+        // ── Pro avatar (44px + 2px border) ──
         GestureDetector(
           onTap: () => context.push('/pro/${video.proId}'),
           child: SizedBox(
-            width: 46,
-            height: 56,
+            width: 44,
+            height: 54,
             child: Stack(
               clipBehavior: Clip.none,
               children: [
                 Container(
-                  width: 46,
-                  height: 46,
+                  width: 44,
+                  height: 44,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     border: Border.all(color: Colors.white, width: 2),
+                    boxShadow: const [
+                      BoxShadow(color: Colors.black26, blurRadius: 8),
+                    ],
                   ),
                   child: CircleAvatar(
-                    radius: 21,
+                    radius: 20,
                     backgroundColor: AppColors.surfaceAlt,
                     backgroundImage: video.proAvatarUrl != null
                         ? CachedNetworkImageProvider(video.proAvatarUrl!)
                         : null,
                     child: video.proAvatarUrl == null
                         ? const Icon(Icons.person,
-                            size: 20, color: AppColors.gris)
+                            size: 18, color: AppColors.gris)
                         : null,
                   ),
                 ),
-                // "+" follow badge — violet
+                // "+" follow badge
                 if (!video.isFollowed)
                   Positioned(
                     bottom: 0,
@@ -76,15 +86,19 @@ class PostRightColumnPro extends StatelessWidget {
                           onToggleFollow?.call();
                         },
                         child: Container(
-                          width: 20,
-                          height: 20,
+                          width: 18,
+                          height: 18,
                           decoration: BoxDecoration(
-                            color: const Color(0xFF043603),
+                            color: Colors.white,
                             shape: BoxShape.circle,
-                            border: Border.all(color: Colors.white, width: 1.5),
+                            border:
+                                Border.all(color: Colors.white, width: 1.5),
+                            boxShadow: const [
+                              BoxShadow(color: Colors.black26, blurRadius: 4),
+                            ],
                           ),
                           child: const Icon(Icons.add,
-                              color: Colors.white, size: 14),
+                              color: Colors.black, size: 12),
                         ),
                       ),
                     ),
@@ -93,41 +107,41 @@ class PostRightColumnPro extends StatelessWidget {
             ),
           ),
         ),
-        const SizedBox(height: 20),
+        const SizedBox(height: 18),
 
-        // ── Like ──
+        // ── Like (with count) ──
         _BlurActionButton(
           icon: video.isLiked ? Icons.favorite : Icons.favorite_border,
-          iconSize: 28,
-          label: '',
+          iconSize: 26,
+          label: _formatCount(video.likesCount),
           color: video.isLiked ? Colors.red : Colors.white,
           onTap: () {
             HapticFeedback.mediumImpact();
             onToggleLike();
           },
         ),
-        const SizedBox(height: 20),
+        const SizedBox(height: 18),
 
         // ── Save (BookmarkBounce) ──
         BookmarkBounce(
           isSaved: video.isSaved,
           child: _BlurActionButton(
             icon: video.isSaved ? Icons.bookmark : Icons.bookmark_border,
-            iconSize: 26,
-            label: '',
-            color: video.isSaved ? const Color(0xFF043603) : Colors.white,
+            iconSize: 24,
+            label: _formatCount(video.savesCount),
+            color: video.isSaved ? Colors.white : Colors.white,
             onTap: () {
               HapticFeedback.lightImpact();
               onToggleSave();
             },
           ),
         ),
-        const SizedBox(height: 20),
+        const SizedBox(height: 18),
 
         // ── Share ──
         _BlurActionButton(
           icon: Icons.reply,
-          iconSize: 24,
+          iconSize: 22,
           label: '',
           onTap: () {
             showModalBottomSheet(
@@ -138,12 +152,12 @@ class PostRightColumnPro extends StatelessWidget {
           },
           mirrorIcon: true,
         ),
-        const SizedBox(height: 20),
+        const SizedBox(height: 18),
 
         // ── More (moderation) ──
         _BlurActionButton(
           icon: Icons.more_horiz,
-          iconSize: 22,
+          iconSize: 20,
           label: '',
           onTap: () => _openModerationMenu(context),
         ),
@@ -199,7 +213,7 @@ class PostRightColumnPro extends StatelessWidget {
   }
 }
 
-/// 46px action button with backdrop blur.
+/// 44px action button with frosted glass backdrop blur.
 class _BlurActionButton extends StatelessWidget {
   const _BlurActionButton({
     required this.icon,
@@ -225,15 +239,15 @@ class _BlurActionButton extends StatelessWidget {
         children: [
           ClipOval(
             child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+              filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
               child: Container(
-                width: 46,
-                height: 46,
+                width: 44,
+                height: 44,
                 decoration: BoxDecoration(
-                  color: Colors.black.withAlpha(89),
+                  color: Colors.black.withAlpha(77),
                   shape: BoxShape.circle,
                   border: Border.all(
-                    color: Colors.white.withAlpha(31),
+                    color: Colors.white.withAlpha(25),
                     width: 1,
                   ),
                 ),
@@ -242,18 +256,22 @@ class _BlurActionButton extends StatelessWidget {
                       ? Transform.flip(
                           flipX: true,
                           child: Icon(icon, color: color, size: iconSize,
-                            shadows: const [Shadow(color: Colors.black54, blurRadius: 6)],
+                            shadows: const [
+                              Shadow(color: Colors.black54, blurRadius: 6),
+                            ],
                           ),
                         )
                       : Icon(icon, color: color, size: iconSize,
-                          shadows: const [Shadow(color: Colors.black54, blurRadius: 6)],
+                          shadows: const [
+                            Shadow(color: Colors.black54, blurRadius: 6),
+                          ],
                         ),
                 ),
               ),
             ),
           ),
           if (label.isNotEmpty) ...[
-            const SizedBox(height: 4),
+            const SizedBox(height: 3),
             Text(label, style: const TextStyle(
               color: Colors.white,
               fontSize: 11,

@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../../shared/theme/app_colors.dart';
 import '../../../../feed/domain/video_model.dart';
 import 'booking_strip.dart';
 import 'catering_strip.dart';
 import 'event_strip.dart';
 
 /// Left column + bottom overlay for ProFeedScreen.
-/// Shows: Pro name + category badge, CTA strip.
+/// Premium layout: Pro name + PRO badge, video title, CTA strip.
 class PostLeftColumnPro extends StatelessWidget {
   const PostLeftColumnPro({super.key, required this.video});
 
@@ -22,7 +21,7 @@ class PostLeftColumnPro extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        // ── Pro name + category badge ──
+        // ── Pro name + PRO badge ──
         GestureDetector(
           onTap: () => context.push('/pro/${v.proId}'),
           child: Row(
@@ -33,12 +32,13 @@ class PostLeftColumnPro extends StatelessWidget {
                   v.proName ?? 'Pro',
                   style: const TextStyle(
                     color: Colors.white,
-                    fontSize: 15,
-                    fontWeight: FontWeight.w700,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: -0.3,
                     shadows: [
                       Shadow(
-                        color: Colors.black,
-                        blurRadius: 6,
+                        color: Colors.black87,
+                        blurRadius: 8,
                         offset: Offset(0, 1),
                       ),
                     ],
@@ -47,13 +47,46 @@ class PostLeftColumnPro extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
-              if (v.proCategory != null) ...[
-                const SizedBox(width: 8),
-                _CategoryBadge(category: v.proCategory!),
-              ],
+              const SizedBox(width: 8),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                decoration: BoxDecoration(
+                  color: Colors.white.withAlpha(25),
+                  borderRadius: BorderRadius.circular(4),
+                  border: Border.all(color: Colors.white.withAlpha(40)),
+                ),
+                child: const Text(
+                  'PRO',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 9,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: 1,
+                  ),
+                ),
+              ),
             ],
           ),
         ),
+
+        // ── Video title ──
+        if (v.title.isNotEmpty) ...[
+          const SizedBox(height: 6),
+          Text(
+            v.title,
+            style: TextStyle(
+              color: Colors.white.withAlpha(200),
+              fontSize: 13,
+              fontWeight: FontWeight.w500,
+              height: 1.3,
+              shadows: const [
+                Shadow(color: Colors.black54, blurRadius: 6),
+              ],
+            ),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ],
 
         // ── CTA strip ──
         if (v.serviceName != null || v.eventName != null) ...[
@@ -83,67 +116,7 @@ class PostLeftColumnPro extends StatelessWidget {
               eventId: v.eventId,
             ),
         ],
-
       ],
     );
-  }
-}
-
-/// Category badge pill with semi-transparent colored background.
-class _CategoryBadge extends StatelessWidget {
-  const _CategoryBadge({required this.category});
-
-  final String category;
-
-  @override
-  Widget build(BuildContext context) {
-    final color = _colorForCategory(category);
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-      decoration: BoxDecoration(
-        color: color.withAlpha(51),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Text(
-        category,
-        style: TextStyle(
-          color: color,
-          fontSize: 9,
-          fontWeight: FontWeight.w600,
-        ),
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-      ),
-    );
-  }
-
-  Color _colorForCategory(String cat) {
-    final lower = cat.toLowerCase();
-    if (lower.contains('coiffure') || lower.contains('barb')) {
-      return AppColors.violet;
-    }
-    if (lower.contains('traiteur') || lower.contains('cater')) {
-      return AppColors.catering;
-    }
-    if (lower.contains('événement') || lower.contains('event')) {
-      return AppColors.rose;
-    }
-    if (lower.contains('beauté') || lower.contains('beauty') ||
-        lower.contains('makeup')) {
-      return AppColors.roseClair;
-    }
-    if (lower.contains('fitness') || lower.contains('sport') ||
-        lower.contains('coach')) {
-      return AppColors.success;
-    }
-    if (lower.contains('photo') || lower.contains('vidéo') ||
-        lower.contains('video')) {
-      return AppColors.infoBlue;
-    }
-    if (lower.contains('musique') || lower.contains('music') ||
-        lower.contains('dj')) {
-      return AppColors.spotifyGreen;
-    }
-    return AppColors.violetClair;
   }
 }
