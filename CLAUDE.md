@@ -235,13 +235,9 @@ Champs obligatoires : titre (5-80 chars) + catégorie (liste fermée) + descript
 
 Durée max vidéo : 2 minutes (120 secondes).
 
-Toute vidéo passe par moderate-video avant publication.
-
-Statuts : pending_review → approved (visible) | rejected | flagged (3 signalements)
+Les vidéos sont publiées immédiatement avec status = "approved" (pas de modération).
 
 Le feed n'affiche QUE les posts avec vidéos status = "approved".
-
-TOP PRO : auto-approbation immédiate.
 
 Un post peut être lié à un service (service_id) ou un événement (event_id).
 
