@@ -6,9 +6,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:video_compress/video_compress.dart';
+import 'package:video_player/video_player.dart';
 
 import '../../../../core/services/cloudflare_stream_service.dart';
-import '../../../../core/widgets/spotbook_video_player.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../../auth/data/category_repository.dart';
 import 'cubit/video_upload_cubit.dart';
@@ -43,6 +43,8 @@ class _VideoPreviewScreenState extends ConsumerState<VideoPreviewScreen> {
   final List<String> _hashtags = [];
 
   late final VideoUploadCubit _cubit;
+  late final VideoPlayerController _videoCtrl;
+  bool _videoReady = false;
 
   @override
   void initState() {
@@ -51,8 +53,17 @@ class _VideoPreviewScreenState extends ConsumerState<VideoPreviewScreen> {
       cfService: CloudflareStreamService(Supabase.instance.client),
     );
     _cubit.setStep(UploadStep.previewing);
+    _initVideoPreview();
     _loadVideoDuration();
     _loadProData();
+  }
+
+  Future<void> _initVideoPreview() async {
+    _videoCtrl = VideoPlayerController.file(widget.videoFile);
+    await _videoCtrl.initialize();
+    _videoCtrl.setLooping(true);
+    await _videoCtrl.play();
+    if (mounted) setState(() => _videoReady = true);
   }
 
   Future<void> _loadVideoDuration() async {
@@ -139,6 +150,7 @@ class _VideoPreviewScreenState extends ConsumerState<VideoPreviewScreen> {
 
   @override
   void dispose() {
+    _videoCtrl.dispose();
     _titleCtrl.dispose();
     _descCtrl.dispose();
     _hashtagCtrl.dispose();
@@ -209,13 +221,42 @@ class _VideoPreviewScreenState extends ConsumerState<VideoPreviewScreen> {
                       borderRadius: BorderRadius.circular(16),
                       child: AspectRatio(
                         aspectRatio: 9 / 16,
-                        child: SpotbookVideoPlayer(
-                          videoUrl: '',
-                          localFile: widget.videoFile,
-                          showControls: true,
-                          initiallyMuted: false,
-                          loop: true,
-                        ),
+                        child: _videoReady
+                            ? GestureDetector(
+                                onTap: () {
+                                  if (_videoCtrl.value.isPlaying) {
+                                    _videoCtrl.pause();
+                                  } else {
+                                    _videoCtrl.play();
+                                  }
+                                  setState(() {});
+                                },
+                                child: Stack(
+                                  alignment: Alignment.center,
+                                  children: [
+                                    VideoPlayer(_videoCtrl),
+                                    if (!_videoCtrl.value.isPlaying)
+                                      Container(
+                                        padding: const EdgeInsets.all(12),
+                                        decoration: BoxDecoration(
+                                          color: AppColors.overlayMedium,
+                                          shape: BoxShape.circle,
+                                        ),
+                                        child: const Icon(
+                                          Icons.play_arrow,
+                                          color: AppColors.blanc,
+                                          size: 32,
+                                        ),
+                                      ),
+                                  ],
+                                ),
+                              )
+                            : const Center(
+                                child: CircularProgressIndicator(
+                                  color: AppColors.blanc,
+                                  strokeWidth: 2,
+                                ),
+                              ),
                       ),
                     ),
 
