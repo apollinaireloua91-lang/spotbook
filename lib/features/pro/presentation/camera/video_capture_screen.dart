@@ -69,6 +69,14 @@ class _VideoCaptureScreenState extends State<VideoCaptureScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.fond,
+      appBar: AppBar(
+        backgroundColor: AppColors.fond,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: AppColors.blanc),
+          onPressed: () => context.pop(),
+        ),
+      ),
       body: SafeArea(
         child: Center(
           child: Padding(

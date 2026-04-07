@@ -55,29 +55,23 @@ serve(async (req) => {
     const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabaseAdmin = createClient(supabaseUrl, serviceRoleKey);
 
-    const { data: userRow, error: userErr } = await supabaseAdmin
-      .from("users")
-      .select("id, role")
+    // Check profiles_pro existence — this is the definitive proof of
+    // being a provider. We don't rely on users.role because the
+    // security hardening RLS policy can prevent it from being updated
+    // (e.g. during the "Become Pro" flow).
+    const { data: profile, error: profileErr } = await supabaseAdmin
+      .from("profiles_pro")
+      .select("id")
       .eq("id", user.id)
       .maybeSingle();
 
-    if (userErr || !userRow || userRow.role !== "pro") {
+    if (profileErr || !profile) {
       return jsonResponse(
         { error: "Only provider accounts can request upload URLs" },
         403,
         undefined,
         req,
       );
-    }
-
-    const { data: profile } = await supabaseAdmin
-      .from("profiles_pro")
-      .select("id")
-      .eq("id", user.id)
-      .maybeSingle();
-
-    if (!profile) {
-      return jsonResponse({ error: "Pro profile not found" }, 404, undefined, req);
     }
 
     let body: Record<string, unknown> = {};

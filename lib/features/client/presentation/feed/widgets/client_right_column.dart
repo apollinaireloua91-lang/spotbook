@@ -111,12 +111,16 @@ class _ActionIcon extends StatelessWidget {
           Icon(
             icon,
             color: color,
-            size: 28,
+            size: 32,
             shadows: const [
               Shadow(
-                color: AppColors.overlayHeavy,
-                blurRadius: 8,
-                offset: Offset(0, 1),
+                color: Color(0xCC000000),
+                blurRadius: 12,
+                offset: Offset(0, 2),
+              ),
+              Shadow(
+                color: Color(0x66000000),
+                blurRadius: 4,
               ),
             ],
           ),
@@ -125,14 +129,18 @@ class _ActionIcon extends StatelessWidget {
             Text(
               _formatCount(count!),
               style: const TextStyle(
-                color: AppColors.textOnVideo,
-                fontSize: 11,
-                fontWeight: FontWeight.w600,
+                color: Colors.white,
+                fontSize: 12,
+                fontWeight: FontWeight.w700,
                 shadows: [
                   Shadow(
-                    color: AppColors.overlayHeavy,
-                    blurRadius: 4,
+                    color: Color(0xCC000000),
+                    blurRadius: 8,
                     offset: Offset(0, 1),
+                  ),
+                  Shadow(
+                    color: Color(0x66000000),
+                    blurRadius: 4,
                   ),
                 ],
               ),
@@ -214,12 +222,16 @@ class _AnimatedActionIconState extends State<_AnimatedActionIcon>
             child: Icon(
               widget.icon,
               color: widget.color,
-              size: 28,
+              size: 32,
               shadows: const [
                 Shadow(
-                  color: AppColors.overlayHeavy,
-                  blurRadius: 8,
-                  offset: Offset(0, 1),
+                  color: Color(0xCC000000),
+                  blurRadius: 12,
+                  offset: Offset(0, 2),
+                ),
+                Shadow(
+                  color: Color(0x66000000),
+                  blurRadius: 4,
                 ),
               ],
             ),
@@ -229,14 +241,18 @@ class _AnimatedActionIconState extends State<_AnimatedActionIcon>
             Text(
               _formatCount(widget.count!),
               style: const TextStyle(
-                color: AppColors.textOnVideo,
-                fontSize: 11,
-                fontWeight: FontWeight.w600,
+                color: Colors.white,
+                fontSize: 12,
+                fontWeight: FontWeight.w700,
                 shadows: [
                   Shadow(
-                    color: AppColors.overlayHeavy,
-                    blurRadius: 4,
+                    color: Color(0xCC000000),
+                    blurRadius: 8,
                     offset: Offset(0, 1),
+                  ),
+                  Shadow(
+                    color: Color(0x66000000),
+                    blurRadius: 4,
                   ),
                 ],
               ),
@@ -312,15 +328,15 @@ class _ProAvatarWithFollowState extends State<_ProAvatarWithFollow>
     return GestureDetector(
       onTap: () => context.push('/pro/${widget.proId}'),
       child: SizedBox(
-        width: 52,
-        height: 56,
+        width: 56,
+        height: 62,
         child: Stack(
           clipBehavior: Clip.none,
           children: [
             // Avatar
             Container(
-              width: 44,
-              height: 44,
+              width: 48,
+              height: 48,
               margin: const EdgeInsets.only(left: 4),
               decoration: BoxDecoration(
                 shape: BoxShape.circle,

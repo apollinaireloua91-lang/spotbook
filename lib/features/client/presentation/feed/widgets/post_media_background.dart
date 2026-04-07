@@ -118,11 +118,11 @@ class PostMediaBackgroundState extends State<PostMediaBackground> {
                 colors: [
                   Colors.transparent,
                   Colors.transparent,
-                  Colors.black.withAlpha(40),
-                  Colors.black.withAlpha(140),
-                  Colors.black.withAlpha(200),
+                  Colors.black.withAlpha(60),
+                  Colors.black.withAlpha(160),
+                  Colors.black.withAlpha(220),
                 ],
-                stops: const [0.0, 0.35, 0.55, 0.75, 1.0],
+                stops: const [0.0, 0.30, 0.50, 0.72, 1.0],
               ),
             ),
           ),
@@ -132,7 +132,7 @@ class PostMediaBackgroundState extends State<PostMediaBackground> {
           top: 0,
           bottom: 0,
           right: 0,
-          width: 90,
+          width: 100,
           child: DecoratedBox(
             decoration: BoxDecoration(
               gradient: LinearGradient(
@@ -140,7 +140,7 @@ class PostMediaBackgroundState extends State<PostMediaBackground> {
                 end: Alignment.centerRight,
                 colors: [
                   Colors.transparent,
-                  Colors.black.withAlpha(60),
+                  Colors.black.withAlpha(90),
                 ],
               ),
             ),

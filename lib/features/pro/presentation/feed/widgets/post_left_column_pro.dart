@@ -225,7 +225,7 @@ class _CaptionText extends StatelessWidget {
   }
 
   static const _baseStyle = TextStyle(
-    color: Color(0xFFDDDDDD),
+    color: AppColors.textOnVideo,
     fontSize: 12,
     height: 1.4,
     shadows: [

@@ -3,7 +3,6 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../../shared/theme/app_colors.dart';
-import '../../../../../shared/theme/app_typography.dart';
 import '../../../../feed/data/feed_notifier.dart';
 import '../cubit/client_feed_cubit.dart';
 
@@ -26,12 +25,8 @@ class ClientTopBar extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: Row(
               children: [
-                // LEFT — Logo
-                Text(
-                  'Spotbook',
-                  style: AppTypography.spotbookLogo(onVideoBackground: true)
-                      .copyWith(fontSize: 19),
-                ),
+                // LEFT — spacer for balance
+                const SizedBox(width: 34),
                 const Spacer(),
                 // CENTER — Tab pills
                 _FeedTabGroup(

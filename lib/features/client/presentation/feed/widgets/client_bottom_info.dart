@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../../shared/theme/app_colors.dart';
 import '../../../../feed/domain/video_model.dart';
 
 /// Bottom overlay: Pro name + Book button. Nothing else.
@@ -37,14 +36,14 @@ class ClientBottomInfo extends StatelessWidget {
             context.push('/pro/${video.proId}');
           },
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
             decoration: BoxDecoration(
-              color: AppColors.violet,
-              borderRadius: BorderRadius.circular(20),
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(24),
               boxShadow: [
                 BoxShadow(
-                  color: AppColors.violet.withAlpha(102),
-                  blurRadius: 12,
+                  color: Colors.black.withAlpha(80),
+                  blurRadius: 16,
                   offset: const Offset(0, 4),
                 ),
               ],
@@ -52,9 +51,10 @@ class ClientBottomInfo extends StatelessWidget {
             child: const Text(
               'Book',
               style: TextStyle(
-                color: AppColors.textOnPrimary,
-                fontSize: 13,
-                fontWeight: FontWeight.w700,
+                color: Color(0xFF1A1A1A),
+                fontSize: 14,
+                fontWeight: FontWeight.w800,
+                letterSpacing: 0.3,
               ),
             ),
           ),
