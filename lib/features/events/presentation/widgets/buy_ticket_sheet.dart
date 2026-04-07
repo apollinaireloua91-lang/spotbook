@@ -109,7 +109,7 @@ class _BuyTicketSheetState extends ConsumerState<_BuyTicketSheet> {
           const Divider(color: AppColors.border),
           const SizedBox(height: 8),
           _PriceRow(label: 'Subtotal', value: '${state.total.toStringAsFixed(2)} CA\$'),
-          _PriceRow(label: 'Service fee (12%)', value: '${state.commission.toStringAsFixed(2)} CA\$'),
+          _PriceRow(label: 'Service fee (${state.commissionPct}%)', value: '${state.commission.toStringAsFixed(2)} CA\$'),
           const SizedBox(height: 8),
           _PriceRow(label: 'Total', value: '${state.grandTotal.toStringAsFixed(2)} CA\$', isBold: true),
           const SizedBox(height: 16),

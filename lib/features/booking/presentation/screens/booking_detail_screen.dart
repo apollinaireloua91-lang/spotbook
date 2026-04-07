@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../../../core/services/app_config_provider.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/widgets/spotbook_button.dart';
 import '../../../../shared/widgets/spotbook_loading_shimmer.dart';
@@ -455,7 +456,11 @@ class _DetailBody extends StatelessWidget {
             delegate: SliverChildListDelegate([
               _PersonCard(name: name, avatarUrl: avatarUrl),
               const SizedBox(height: 20),
-              _InfoSection(booking: booking, isProViewer: isProViewer),
+              _InfoSection(
+                booking: booking,
+                isProViewer: isProViewer,
+                commissionRate: (ref.watch(appConfigProvider).value ?? AppConfig.fallback).commissionBookings,
+              ),
               const SizedBox(height: 24),
               _StatusTimeline(booking: booking),
               const SizedBox(height: 28),
@@ -602,10 +607,15 @@ class _PersonCard extends StatelessWidget {
 }
 
 class _InfoSection extends StatelessWidget {
-  const _InfoSection({required this.booking, required this.isProViewer});
+  const _InfoSection({
+    required this.booking,
+    required this.isProViewer,
+    required this.commissionRate,
+  });
 
   final BookingModel booking;
   final bool isProViewer;
+  final double commissionRate;
 
   @override
   Widget build(BuildContext context) {
@@ -617,7 +627,8 @@ class _InfoSection extends StatelessWidget {
         : null;
     final timeLine = end != null ? '$start — $end' : start;
 
-    final commission = booking.depositAmount * 0.18;
+    final commissionPct = (commissionRate * 100).round();
+    final commission = booking.depositAmount * commissionRate;
     final netEst = booking.depositAmount - commission;
 
     final remainingStatusLabel = switch (booking.remainingPaymentStatus) {
@@ -672,7 +683,7 @@ class _InfoSection extends StatelessWidget {
           if (isProViewer && (booking.status == 'confirmed' || booking.status == 'completed')) ...[
             const SizedBox(height: 8),
             Text(
-              'Est. commission 18% on deposit: ${commission.toStringAsFixed(2)} ${booking.currency} · Net approx.: ${netEst.toStringAsFixed(2)} ${booking.currency}',
+              'Est. commission $commissionPct% on deposit: ${commission.toStringAsFixed(2)} ${booking.currency} · Net approx.: ${netEst.toStringAsFixed(2)} ${booking.currency}',
               style: const TextStyle(
                 color: AppColors.gris,
                 fontSize: 12,
@@ -699,7 +710,7 @@ class _InfoSection extends StatelessWidget {
           if (isProViewer && (booking.status == 'confirmed' || booking.status == 'completed')) ...[
             const SizedBox(height: 8),
             Text(
-              'Est. commission 18%: ${commission.toStringAsFixed(2)} ${booking.currency} · Net approx.: ${netEst.toStringAsFixed(2)} ${booking.currency}',
+              'Est. commission $commissionPct%: ${commission.toStringAsFixed(2)} ${booking.currency} · Net approx.: ${netEst.toStringAsFixed(2)} ${booking.currency}',
               style: const TextStyle(
                 color: AppColors.gris,
                 fontSize: 12,

@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../../../../core/services/app_config_provider.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../../auth/data/auth_repository.dart';
 
@@ -19,6 +20,7 @@ class SettingsScreen extends ConsumerWidget {
     final role =
         ref.read(authRepositoryProvider).currentUserRole ?? 'client';
     final isPro = role == 'pro';
+    final cfg = ref.watch(appConfigProvider).value ?? AppConfig.fallback;
 
     return Scaffold(
       backgroundColor: AppColors.fond,
@@ -107,12 +109,12 @@ class SettingsScreen extends ConsumerWidget {
                 _SettingsItem(
                   icon: Icons.percent_outlined,
                   label: 'Commissions',
-                  subtitle: 'Bookings 18% · Events 12% · Fee \$2.50',
+                  subtitle: 'Bookings ${(cfg.commissionBookings * 100).round()}% · Events ${(cfg.commissionEvents * 100).round()}% · Fee \$${cfg.serviceFeeClient.toStringAsFixed(2)}',
                   onTap: () {
                     showDialog(context: context, builder: (_) => AlertDialog(
                       backgroundColor: AppColors.surface,
                       title: const Text('Spotbook Commissions', style: TextStyle(color: AppColors.blanc)),
-                      content: const Text('Service bookings: 18%\nEvent tickets: 12%\nCatering deposits: 18%\nClient service fee: \$2.50/booking', style: TextStyle(color: AppColors.gris)),
+                      content: Text('Service bookings: ${(cfg.commissionBookings * 100).round()}%\nEvent tickets: ${(cfg.commissionEvents * 100).round()}%\nCatering deposits: ${(cfg.commissionCatering * 100).round()}%\nClient service fee: \$${cfg.serviceFeeClient.toStringAsFixed(2)}/booking', style: const TextStyle(color: AppColors.gris)),
                       actions: [TextButton(onPressed: () => context.pop(), child: const Text('OK'))],
                     ));
                   },

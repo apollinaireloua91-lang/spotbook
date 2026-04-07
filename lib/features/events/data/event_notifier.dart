@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/services/app_config_provider.dart';
 import '../domain/event_models.dart';
 import 'event_repository.dart';
 
@@ -104,18 +105,21 @@ class BuyTicketState {
     this.isLoading = false,
     this.clientSecret,
     this.error,
+    this.commissionRate = 0.12,
   });
   final TicketTypeModel? selectedType;
   final int quantity;
   final bool isLoading;
   final String? clientSecret;
   final String? error;
+  final double commissionRate;
 
   double get total =>
       (selectedType?.price ?? 0) * quantity;
-  double get commission => total * 0.12;
+  double get commission => total * commissionRate;
   double get grandTotal => total + commission;
   int get totalCents => (grandTotal * 100).round();
+  int get commissionPct => (commissionRate * 100).round();
 
   BuyTicketState copyWith({
     TicketTypeModel? selectedType,
@@ -123,6 +127,7 @@ class BuyTicketState {
     bool? isLoading,
     String? clientSecret,
     String? error,
+    double? commissionRate,
   }) =>
       BuyTicketState(
         selectedType: selectedType ?? this.selectedType,
@@ -130,12 +135,18 @@ class BuyTicketState {
         isLoading: isLoading ?? this.isLoading,
         clientSecret: clientSecret ?? this.clientSecret,
         error: error,
+        commissionRate: commissionRate ?? this.commissionRate,
       );
 }
 
 class BuyTicketNotifier extends Notifier<BuyTicketState> {
   @override
-  BuyTicketState build() => const BuyTicketState();
+  BuyTicketState build() {
+    final config = ref.watch(appConfigProvider).value;
+    return BuyTicketState(
+      commissionRate: config?.commissionEvents ?? 0.12,
+    );
+  }
 
   void selectType(TicketTypeModel type) {
     state = state.copyWith(selectedType: type, quantity: 1);

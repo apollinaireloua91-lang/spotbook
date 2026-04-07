@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../core/services/app_config_provider.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/widgets/spotbook_loading_shimmer.dart';
 import '../../data/booking_notifier.dart';
@@ -24,12 +25,11 @@ class ProRevenueScreen extends ConsumerStatefulWidget {
 class _ProRevenueScreenState extends ConsumerState<ProRevenueScreen> {
   int _periodDays = 30;
 
-  static const _commissionRate = 0.18;
-
   @override
   Widget build(BuildContext context) {
     final chartAsync = ref.watch(proRevenueDailyProvider(_periodDays));
     final txAsync = ref.watch(proTransactionsProvider(_periodDays));
+    final config = ref.watch(appConfigProvider).value ?? AppConfig.fallback;
 
     return Scaffold(
       backgroundColor: AppColors.fond,
@@ -375,7 +375,7 @@ class _ProRevenueScreenState extends ConsumerState<ProRevenueScreen> {
                       itemBuilder: (context, index) =>
                           _TransactionRow(
                         booking: transactions[index],
-                        commissionRate: _commissionRate,
+                        commissionRate: config.commissionBookings,
                       ),
                     );
                   },

@@ -43,7 +43,7 @@ class _UploadVideoScreenState extends ConsumerState<UploadVideoScreen> {
     final ok = await ref.read(uploadVideoProvider.notifier).pickVideo();
     if (!ok && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Video too long — max 60 seconds'), backgroundColor: AppColors.error),
+        const SnackBar(content: Text('Video too long — max 2 minutes'), backgroundColor: AppColors.error),
       );
     }
   }
@@ -96,7 +96,7 @@ class _UploadVideoScreenState extends ConsumerState<UploadVideoScreen> {
                     const SizedBox(height: 4), const Text('Tap to change', style: TextStyle(color: AppColors.gris, fontSize: 12))]))
                 : const Center(child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
                     Icon(Icons.videocam_outlined, color: AppColors.gris, size: 40), SizedBox(height: 8),
-                    Text('Select a video (max 60s)', style: TextStyle(color: AppColors.gris, fontSize: 14))]))),
+                    Text('Select a video (max 2 min)', style: TextStyle(color: AppColors.gris, fontSize: 14))]))),
         ),
         const SizedBox(height: 24),
         ValueListenableBuilder<TextEditingValue>(

@@ -25,6 +25,7 @@ export 'realtime/presence_provider.dart';
 export 'realtime/realtime_bootstrap.dart';
 
 // Services
+export 'services/app_config_provider.dart';
 export 'services/cloudflare_stream_service.dart';
 
 // Widgets
