@@ -19,14 +19,12 @@ class ClientBottomInfo extends StatelessWidget {
           child: Text(
             video.proName ?? 'Pro',
             style: const TextStyle(
-              color: AppColors.textOnVideo,
-              fontSize: 15,
-              fontWeight: FontWeight.w700,
+              color: Colors.white,
+              fontSize: 16,
+              fontWeight: FontWeight.w800,
               shadows: [
-                Shadow(
-                  color: AppColors.overlayHeavy,
-                  blurRadius: 4,
-                ),
+                Shadow(color: Color(0xCC000000), blurRadius: 8, offset: Offset(0, 1)),
+                Shadow(color: Color(0x66000000), blurRadius: 4),
               ],
             ),
             overflow: TextOverflow.ellipsis,
