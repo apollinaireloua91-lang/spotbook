@@ -45,6 +45,8 @@ class CloudflareStreamService {
     String? mimeType,
     int? fileSizeBytes,
   }) async {
+    await _supabase.auth.refreshSession();
+
     final body = <String, dynamic>{};
     if (mimeType != null) body['mimeType'] = mimeType;
     if (fileSizeBytes != null) body['fileSizeBytes'] = fileSizeBytes;
