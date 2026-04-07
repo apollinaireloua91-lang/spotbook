@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../shared/theme/app_colors.dart';
 import '../../data/notification_notifier.dart';
@@ -17,33 +18,46 @@ class NotificationSettingsScreen extends ConsumerWidget {
       backgroundColor: AppColors.fond,
       appBar: AppBar(
         backgroundColor: AppColors.fond,
+        surfaceTintColor: Colors.transparent,
+        elevation: 0,
         leading: Semantics(
           label: 'Back',
           child: IconButton(
-            icon: const Icon(Icons.arrow_back_ios, color: AppColors.blanc, size: 20),
+            icon: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: AppColors.surface,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: AppColors.border, width: 0.5),
+              ),
+              child: const Icon(Icons.arrow_back_ios_new,
+                  color: AppColors.blanc, size: 16),
+            ),
             onPressed: () {
               HapticFeedback.mediumImpact();
               context.pop();
             },
           ),
         ),
-        title: const Text('Notification preferences',
-            style: TextStyle(color: AppColors.blanc, fontWeight: FontWeight.bold, fontSize: 17)),
+        title: Text(
+          'Notifications',
+          style: GoogleFonts.sora(
+            color: AppColors.blanc,
+            fontWeight: FontWeight.w700,
+            fontSize: 17,
+          ),
+        ),
         centerTitle: true,
       ),
       body: state.isLoading
           ? const Center(
-              child: SizedBox(
-                width: 24,
-                height: 24,
-                child: CircularProgressIndicator(color: AppColors.blanc, strokeWidth: 2),
-              ),
+              child: CircularProgressIndicator(
+                  color: AppColors.violet, strokeWidth: 2),
             )
           : ListView(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
               children: [
-                const Text('APPOINTMENTS',
-                    style: TextStyle(color: AppColors.gris, fontSize: 12, fontWeight: FontWeight.w600, letterSpacing: 1)),
+                _SectionLabel(label: 'APPOINTMENTS'),
                 const SizedBox(height: 8),
                 _ToggleTile(
                   title: 'Reminders',
@@ -58,8 +72,7 @@ class NotificationSettingsScreen extends ConsumerWidget {
                   dbKey: 'booking_update_enabled',
                 ),
                 const SizedBox(height: 24),
-                const Text('COMMUNICATION',
-                    style: TextStyle(color: AppColors.gris, fontSize: 12, fontWeight: FontWeight.w600, letterSpacing: 1)),
+                _SectionLabel(label: 'COMMUNICATION'),
                 const SizedBox(height: 8),
                 _ToggleTile(
                   title: 'Messages',
@@ -74,8 +87,7 @@ class NotificationSettingsScreen extends ConsumerWidget {
                   dbKey: 'review_request_enabled',
                 ),
                 const SizedBox(height: 24),
-                const Text('EVENTS',
-                    style: TextStyle(color: AppColors.gris, fontSize: 12, fontWeight: FontWeight.w600, letterSpacing: 1)),
+                _SectionLabel(label: 'EVENTS'),
                 const SizedBox(height: 8),
                 _ToggleTile(
                   title: 'Waitlist',
@@ -84,8 +96,7 @@ class NotificationSettingsScreen extends ConsumerWidget {
                   dbKey: 'waitlist_enabled',
                 ),
                 const SizedBox(height: 24),
-                const Text('OTHER',
-                    style: TextStyle(color: AppColors.gris, fontSize: 12, fontWeight: FontWeight.w600, letterSpacing: 1)),
+                _SectionLabel(label: 'OTHER'),
                 const SizedBox(height: 8),
                 _ToggleTile(
                   title: 'Marketing',
@@ -98,6 +109,32 @@ class NotificationSettingsScreen extends ConsumerWidget {
     );
   }
 }
+
+// ═════════════════════════════════════════════════════════════════════════════
+// SECTION LABEL
+// ═════════════════════════════════════════════════════════════════════════════
+
+class _SectionLabel extends StatelessWidget {
+  const _SectionLabel({required this.label});
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      label,
+      style: GoogleFonts.dmSans(
+        color: AppColors.gris,
+        fontSize: 11,
+        fontWeight: FontWeight.w600,
+        letterSpacing: 1.5,
+      ),
+    );
+  }
+}
+
+// ═════════════════════════════════════════════════════════════════════════════
+// TOGGLE TILE
+// ═════════════════════════════════════════════════════════════════════════════
 
 class _ToggleTile extends ConsumerWidget {
   const _ToggleTile({
@@ -119,19 +156,33 @@ class _ToggleTile extends ConsumerWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: AppColors.border, width: 0.5),
       ),
       child: SwitchListTile(
         contentPadding: EdgeInsets.zero,
-        title: Text(title,
-            style: const TextStyle(color: AppColors.blanc, fontSize: 15, fontWeight: FontWeight.w500)),
-        subtitle: Text(subtitle,
-            style: const TextStyle(color: AppColors.gris, fontSize: 13)),
+        title: Text(
+          title,
+          style: GoogleFonts.dmSans(
+            color: AppColors.blanc,
+            fontSize: 15,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        subtitle: Text(
+          subtitle,
+          style: GoogleFonts.dmSans(
+            color: AppColors.gris,
+            fontSize: 13,
+          ),
+        ),
         value: value,
-        activeTrackColor: AppColors.blanc,
+        activeTrackColor: AppColors.violet,
         inactiveTrackColor: AppColors.surfaceAlt,
         thumbColor: WidgetStateProperty.resolveWith((states) {
-          if (states.contains(WidgetState.selected)) return AppColors.fond;
+          if (states.contains(WidgetState.selected)) {
+            return AppColors.textOnPrimary;
+          }
           return AppColors.gris;
         }),
         onChanged: (v) {

@@ -27,18 +27,34 @@ class SettingsScreen extends ConsumerWidget {
       appBar: AppBar(
         backgroundColor: AppColors.fond,
         surfaceTintColor: Colors.transparent,
+        elevation: 0,
         title: Text(
           'Settings',
-          style: GoogleFonts.dmSans(
+          style: GoogleFonts.sora(
             color: AppColors.blanc,
-            fontWeight: FontWeight.w600,
+            fontWeight: FontWeight.w700,
             fontSize: 17,
           ),
         ),
         centerTitle: true,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppColors.blanc),
-          onPressed: () => context.pop(),
+        leading: Semantics(
+          label: 'Back',
+          child: IconButton(
+            icon: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: AppColors.surface,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: AppColors.border, width: 0.5),
+              ),
+              child: const Icon(Icons.arrow_back_ios_new,
+                  color: AppColors.blanc, size: 16),
+            ),
+            onPressed: () {
+              HapticFeedback.mediumImpact();
+              context.pop();
+            },
+          ),
         ),
       ),
       body: ListView(

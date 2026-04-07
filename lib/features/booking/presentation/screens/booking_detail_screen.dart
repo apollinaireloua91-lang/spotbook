@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../core/services/app_config_provider.dart';
@@ -307,10 +308,12 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
               onBack: () => context.pop(),
             );
           }
+          final commissionRate = (ref.watch(appConfigProvider).value ?? AppConfig.fallback).commissionBookings;
           return _DetailBody(
             booking: booking,
             isProViewer: isProViewer,
             actionBusy: _actionBusy,
+            commissionRate: commissionRate,
             onChat: () => _openChat(booking, isProViewer: isProViewer),
             onMarkCompleted: () => _markCompleted(booking),
             onReport: () => showBookingReportSheet(
@@ -353,9 +356,23 @@ class _ErrorScaffold extends StatelessWidget {
       backgroundColor: AppColors.fond,
       appBar: AppBar(
         backgroundColor: AppColors.fond,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: AppColors.blanc, size: 20),
-          onPressed: onBack,
+        surfaceTintColor: Colors.transparent,
+        elevation: 0,
+        leading: Semantics(
+          label: 'Back',
+          child: IconButton(
+            icon: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: AppColors.surface,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: AppColors.border, width: 0.5),
+              ),
+              child: const Icon(Icons.arrow_back_ios_new,
+                  color: AppColors.blanc, size: 16),
+            ),
+            onPressed: onBack,
+          ),
         ),
       ),
       body: Center(
@@ -364,7 +381,7 @@ class _ErrorScaffold extends StatelessWidget {
           child: Text(
             message,
             textAlign: TextAlign.center,
-            style: const TextStyle(color: AppColors.gris),
+            style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 14),
           ),
         ),
       ),
@@ -377,6 +394,7 @@ class _DetailBody extends StatelessWidget {
     required this.booking,
     required this.isProViewer,
     required this.actionBusy,
+    required this.commissionRate,
     required this.onChat,
     required this.onMarkCompleted,
     required this.onReport,
@@ -389,6 +407,7 @@ class _DetailBody extends StatelessWidget {
   final BookingModel booking;
   final bool isProViewer;
   final bool actionBusy;
+  final double commissionRate;
   final VoidCallback onChat;
   final VoidCallback onMarkCompleted;
   final VoidCallback onReport;
@@ -411,16 +430,30 @@ class _DetailBody extends StatelessWidget {
         SliverAppBar(
           pinned: true,
           backgroundColor: AppColors.fond,
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back_ios, color: AppColors.blanc, size: 20),
-            onPressed: () {
-              HapticFeedback.lightImpact();
-              context.pop();
-            },
+          surfaceTintColor: Colors.transparent,
+          elevation: 0,
+          leading: Semantics(
+            label: 'Back',
+            child: IconButton(
+              icon: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: AppColors.surface,
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: AppColors.border, width: 0.5),
+                ),
+                child: const Icon(Icons.arrow_back_ios_new,
+                    color: AppColors.blanc, size: 16),
+              ),
+              onPressed: () {
+                HapticFeedback.lightImpact();
+                context.pop();
+              },
+            ),
           ),
-          title: const Text(
-            'Booking details',
-            style: TextStyle(
+          title: Text(
+            'Booking Details',
+            style: GoogleFonts.sora(
               color: AppColors.blanc,
               fontWeight: FontWeight.w700,
               fontSize: 17,
@@ -442,7 +475,7 @@ class _DetailBody extends StatelessWidget {
                   value: 'report',
                   child: Text(
                     'Report this booking',
-                    style: TextStyle(color: AppColors.blanc),
+                    style: GoogleFonts.dmSans(color: AppColors.blanc),
                   ),
                 ),
               ],
@@ -459,7 +492,7 @@ class _DetailBody extends StatelessWidget {
               _InfoSection(
                 booking: booking,
                 isProViewer: isProViewer,
-                commissionRate: (ref.watch(appConfigProvider).value ?? AppConfig.fallback).commissionBookings,
+                commissionRate: commissionRate,
               ),
               const SizedBox(height: 24),
               _StatusTimeline(booking: booking),
@@ -529,7 +562,7 @@ class _StatusBanner extends StatelessWidget {
       color: bg,
       child: Text(
         label,
-        style: TextStyle(
+        style: GoogleFonts.dmSans(
           color: fg,
           fontWeight: FontWeight.w700,
           fontSize: 15,
@@ -576,7 +609,7 @@ class _PersonCard extends StatelessWidget {
           Expanded(
             child: Text(
               name,
-              style: const TextStyle(
+              style: GoogleFonts.sora(
                 color: AppColors.blanc,
                 fontSize: 18,
                 fontWeight: FontWeight.w700,
@@ -596,7 +629,7 @@ class _PersonCard extends StatelessWidget {
       alignment: Alignment.center,
       child: Text(
         n.isNotEmpty ? n[0].toUpperCase() : '?',
-        style: const TextStyle(
+        style: GoogleFonts.sora(
           color: AppColors.blanc,
           fontSize: 22,
           fontWeight: FontWeight.w600,
@@ -722,9 +755,9 @@ class _InfoSection extends StatelessWidget {
 
         if (booking.bookingCode != null) ...[
           const SizedBox(height: 16),
-          const Text(
+          Text(
             'Booking code',
-            style: TextStyle(
+            style: GoogleFonts.dmSans(
               color: AppColors.gris,
               fontSize: 12,
               fontWeight: FontWeight.w600,
@@ -733,7 +766,7 @@ class _InfoSection extends StatelessWidget {
           const SizedBox(height: 4),
           SelectableText(
             booking.bookingCode!,
-            style: const TextStyle(
+            style: GoogleFonts.sora(
               color: AppColors.blanc,
               fontSize: 16,
               fontWeight: FontWeight.w700,
@@ -759,12 +792,15 @@ class _InfoSection extends StatelessWidget {
               children: [
                 Text(
                   label,
-                  style: const TextStyle(color: AppColors.gris, fontSize: 12),
+                  style: GoogleFonts.dmSans(
+                    color: AppColors.gris,
+                    fontSize: 12,
+                  ),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   value,
-                  style: const TextStyle(
+                  style: GoogleFonts.dmSans(
                     color: AppColors.blanc,
                     fontSize: 15,
                     fontWeight: FontWeight.w600,
@@ -798,14 +834,17 @@ class _InfoSection extends StatelessWidget {
               children: [
                 Text(
                   label,
-                  style: const TextStyle(color: AppColors.gris, fontSize: 12),
+                  style: GoogleFonts.dmSans(
+                    color: AppColors.gris,
+                    fontSize: 12,
+                  ),
                 ),
                 const SizedBox(height: 2),
                 Row(
                   children: [
                     Text(
                       value,
-                      style: const TextStyle(
+                      style: GoogleFonts.dmSans(
                         color: AppColors.blanc,
                         fontSize: 15,
                         fontWeight: FontWeight.w600,
@@ -821,7 +860,7 @@ class _InfoSection extends StatelessWidget {
                       ),
                       child: Text(
                         badgeLabel,
-                        style: TextStyle(
+                        style: GoogleFonts.dmSans(
                           color: badgeColor,
                           fontSize: 11,
                           fontWeight: FontWeight.w600,
@@ -1029,9 +1068,9 @@ class _StatusTimeline extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Timeline',
-            style: TextStyle(
+            style: GoogleFonts.sora(
               color: AppColors.blanc,
               fontSize: 14,
               fontWeight: FontWeight.w700,
@@ -1072,7 +1111,7 @@ class _StatusTimeline extends StatelessWidget {
                     Expanded(
                       child: Text(
                         label,
-                        style: TextStyle(
+                        style: GoogleFonts.dmSans(
                           color: isReached ? AppColors.blanc : AppColors.gris,
                           fontSize: 14,
                           fontWeight:
@@ -1088,9 +1127,9 @@ class _StatusTimeline extends StatelessWidget {
                           color: AppColors.success.withValues(alpha: 0.12),
                           borderRadius: BorderRadius.circular(6),
                         ),
-                        child: const Text(
+                        child: Text(
                           'Current',
-                          style: TextStyle(
+                          style: GoogleFonts.dmSans(
                             color: AppColors.success,
                             fontSize: 11,
                             fontWeight: FontWeight.w600,
@@ -1133,7 +1172,7 @@ class _StatusTimeline extends StatelessWidget {
                   booking.status == 'cancelled_full_refund'
                       ? 'Cancelled — refunded'
                       : 'Cancelled',
-                  style: const TextStyle(
+                  style: GoogleFonts.dmSans(
                     color: AppColors.error,
                     fontSize: 14,
                     fontWeight: FontWeight.w700,
