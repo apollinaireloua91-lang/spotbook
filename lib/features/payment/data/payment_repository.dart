@@ -13,6 +13,7 @@ class PaymentRepository {
   /// Calls stripe-create-intent edge function to get a clientSecret
   /// for the booking's deposit PaymentIntent.
   Future<String> createPaymentIntent(String bookingId) async {
+    await _supabase.auth.refreshSession();
     final res = await _supabase.functions.invoke(
       'stripe-create-intent',
       body: {'bookingId': bookingId},
@@ -32,6 +33,9 @@ class PaymentRepository {
   /// Calls stripe-connect-onboarding edge function to get the Stripe
   /// Account Link URL for Express onboarding.
   Future<String> createStripeConnectLink() async {
+    // Force-refresh the session so the JWT is fresh for the gateway.
+    await _supabase.auth.refreshSession();
+
     final res = await _supabase.functions.invoke(
       'stripe-connect-onboarding',
       method: HttpMethod.post,
@@ -50,6 +54,7 @@ class PaymentRepository {
 
   /// Creates a Stripe Checkout session for Pro Premium subscription.
   Future<String> createProSubscription() async {
+    await _supabase.auth.refreshSession();
     final res = await _supabase.functions.invoke('create-pro-subscription');
     if (res.status != 200) {
       final err = res.data is Map ? res.data['error'] : 'Subscription failed';
