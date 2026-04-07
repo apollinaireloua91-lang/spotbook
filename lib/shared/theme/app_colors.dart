@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 abstract final class AppColors {
   // ─── Backgrounds ───
-  static const Color fond = Color(0xFFFFFFFF);           // Blanc pur
+  static const Color fond = Color(0xFFFFF8F0);           // Beige chaud
   static const Color surface = Color(0xFFFFF3DA);         // Beige chaud
   static const Color surfaceAlt = Color(0xFFFFF8ED);      // Beige très clair
   static const Color surfaceAuth = Color(0xFFFFF8ED);     // Beige clair (auth)
@@ -50,9 +50,9 @@ abstract final class AppColors {
   static const Color cateringLight = Color(0xFFFFB347);
 
   // ─── Strip backgrounds (on video — keep semi-transparent dark) ───
-  static const Color ctaServiceStripBg = Color(0xE6FFFFFF);
-  static const Color ctaEventStripBg = Color(0xE6FFFFFF);
-  static const Color ctaBookingStripBg = Color(0xE6FFFFFF);
+  static const Color ctaServiceStripBg = Color(0xE6FFF8F0);
+  static const Color ctaEventStripBg = Color(0xE6FFF8F0);
+  static const Color ctaBookingStripBg = Color(0xE6FFF8F0);
   static const Color ctaCateringStripBg = Color(0xE6FFF3DA);
 
   // ─── Shadows & overlays (keep dark for video overlays) ───
@@ -71,7 +71,7 @@ abstract final class AppColors {
   static const Color ratingAmber = Color(0xFFFFB800);
 
   // ─── Nav bar ───
-  static const Color navBarBg = Color(0xFFFFFFFF);
+  static const Color navBarBg = Color(0xFFFFF8F0);
 
   // ─── Status ───
   static const Color statusCompleted = Color(0xFF043603);

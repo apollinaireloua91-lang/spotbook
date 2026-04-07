@@ -9,6 +9,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../shared/theme/app_colors.dart';
+import '../../../../shared/theme/theme_mode_notifier.dart';
 import '../../../../shared/widgets/spotbook_button.dart';
 import '../../../auth/data/auth_repository.dart';
 import '../../../booking/data/booking_repository.dart';
@@ -1400,11 +1401,13 @@ class _CateringSection extends ConsumerWidget {
 // INLINE SETTINGS SECTION — clean, only essentials
 // ═════════════════════════════════════════════════════════════════════════════
 
-class _InlineSettingsSection extends StatelessWidget {
+class _InlineSettingsSection extends ConsumerWidget {
   const _InlineSettingsSection();
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isDark = ref.watch(themeModeProvider) == ThemeMode.dark;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -1439,7 +1442,57 @@ class _InlineSettingsSection extends StatelessWidget {
           subtitle: 'Payment setup',
           onTap: () => context.push('/pro/stripe-connect'),
         ),
+        _DarkModeTile(
+          isDark: isDark,
+          onChanged: (_) => ref.read(themeModeProvider.notifier).toggle(),
+        ),
       ],
+    );
+  }
+}
+
+class _DarkModeTile extends StatelessWidget {
+  const _DarkModeTile({required this.isDark, required this.onChanged});
+
+  final bool isDark;
+  final ValueChanged<bool> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 14),
+      decoration: const BoxDecoration(
+        border: Border(
+          bottom: BorderSide(color: AppColors.border, width: 0.5),
+        ),
+      ),
+      child: Row(
+        children: [
+          Icon(
+            isDark ? Icons.dark_mode : Icons.light_mode,
+            color: AppColors.blanc,
+            size: 20,
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              'Dark Mode',
+              style: GoogleFonts.dmSans(
+                color: AppColors.blanc,
+                fontSize: 14,
+              ),
+            ),
+          ),
+          SizedBox(
+            height: 24,
+            child: Switch.adaptive(
+              value: isDark,
+              onChanged: onChanged,
+              activeTrackColor: AppColors.violet,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

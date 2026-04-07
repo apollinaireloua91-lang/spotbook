@@ -20,18 +20,18 @@ class ClientShell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bottomInset = MediaQuery.paddingOf(context).bottom;
+    final theme = Theme.of(context);
 
     return Scaffold(
       extendBody: true,
-      backgroundColor: AppColors.fond,
       body: navigationShell,
       bottomNavigationBar: Container(
         height: 65 + bottomInset,
         padding: EdgeInsets.only(bottom: bottomInset),
         decoration: BoxDecoration(
-          color: Colors.white,
-          border: const Border(
-            top: BorderSide(color: AppColors.border, width: 0.5),
+          color: theme.scaffoldBackgroundColor,
+          border: Border(
+            top: BorderSide(color: theme.dividerColor, width: 0.5),
           ),
           boxShadow: [
             BoxShadow(
@@ -96,6 +96,8 @@ class _ClientNavItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final primary = Theme.of(context).colorScheme.primary;
+
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: () {
@@ -112,15 +114,13 @@ class _ClientNavItem extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
                 color: selected
-                    ? const Color(0xFF043603).withAlpha(20)
+                    ? primary.withAlpha(20)
                     : Colors.transparent,
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(
                 selected ? activeIcon : icon,
-                color: selected
-                    ? const Color(0xFF043603)
-                    : AppColors.grisInactif,
+                color: selected ? primary : AppColors.grisInactif,
                 size: 22,
               ),
             ),
@@ -128,9 +128,7 @@ class _ClientNavItem extends StatelessWidget {
             Text(
               label,
               style: TextStyle(
-                color: selected
-                    ? const Color(0xFF043603)
-                    : AppColors.grisInactif,
+                color: selected ? primary : AppColors.grisInactif,
                 fontSize: 10,
                 fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
               ),

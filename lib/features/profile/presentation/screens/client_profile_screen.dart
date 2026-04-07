@@ -8,6 +8,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../shared/theme/app_colors.dart';
+import '../../../../shared/theme/theme_mode_notifier.dart';
 import '../../../../shared/widgets/spotbook_loading_shimmer.dart';
 import '../../data/profile_repository.dart';
 import '../../domain/profile_models.dart';
@@ -519,27 +520,71 @@ class _RecentHistory extends StatelessWidget {
 
 // ─── Settings section ───────────────────────────────────────────────────────
 
-class _SettingsSection extends StatelessWidget {
+class _SettingsSection extends ConsumerWidget {
   const _SettingsSection();
 
   @override
-  Widget build(BuildContext context) {
-    return SettingsList(
-      items: [
-        SettingsItemData(
-          icon: 'notifications_outlined',
-          label: 'Notifications',
-          onTap: () => context.push('/notification-settings'),
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isDark = ref.watch(themeModeProvider) == ThemeMode.dark;
+
+    return Column(
+      children: [
+        SettingsList(
+          items: [
+            SettingsItemData(
+              icon: 'notifications_outlined',
+              label: 'Notifications',
+              onTap: () => context.push('/notification-settings'),
+            ),
+            SettingsItemData(
+              icon: 'language',
+              label: 'Language',
+              onTap: () => context.push('/language-settings'),
+            ),
+            SettingsItemData(
+              icon: 'star_outline',
+              label: 'My reviews',
+              onTap: () => context.push('/favorites'),
+            ),
+          ],
         ),
-        SettingsItemData(
-          icon: 'language',
-          label: 'Language',
-          onTap: () => context.push('/language-settings'),
-        ),
-        SettingsItemData(
-          icon: 'star_outline',
-          label: 'My reviews',
-          onTap: () => context.push('/favorites'),
+        const SizedBox(height: 12),
+        Container(
+          margin: const EdgeInsets.symmetric(horizontal: 16),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          decoration: BoxDecoration(
+            color: AppColors.surface,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: AppColors.blanc.withAlpha(13)),
+          ),
+          child: Row(
+            children: [
+              Icon(
+                isDark ? Icons.dark_mode : Icons.light_mode,
+                size: 18,
+                color: AppColors.grisClair,
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  'Dark Mode',
+                  style: TextStyle(
+                    color: AppColors.grisClair,
+                    fontSize: 13,
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: 24,
+                child: Switch.adaptive(
+                  value: isDark,
+                  onChanged: (_) =>
+                      ref.read(themeModeProvider.notifier).toggle(),
+                  activeTrackColor: AppColors.violet,
+                ),
+              ),
+            ],
+          ),
         ),
       ],
     );

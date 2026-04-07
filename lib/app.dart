@@ -9,6 +9,7 @@ import 'l10n/app_localizations.dart';
 import 'router/app_router.dart';
 import 'shared/locale/app_locale_notifier.dart';
 import 'shared/theme/app_theme.dart';
+import 'shared/theme/theme_mode_notifier.dart';
 import 'shared/utils/analytics_service.dart';
 
 class SpotbookApp extends ConsumerStatefulWidget {
@@ -55,11 +56,14 @@ class _SpotbookAppState extends ConsumerState<SpotbookApp> {
     ref.watch(realtimeBootstrapProvider);
 
     final locale = ref.watch(appLocaleProvider);
+    final themeMode = ref.watch(themeModeProvider);
 
     return MaterialApp.router(
       title: 'Spotbook',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light,
+      darkTheme: AppTheme.dark,
+      themeMode: themeMode,
       routerConfig: appRouter,
       locale: locale,
       supportedLocales: AppLocalizations.supportedLocales,
