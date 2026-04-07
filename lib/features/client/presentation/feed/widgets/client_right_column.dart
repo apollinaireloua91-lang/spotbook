@@ -41,7 +41,7 @@ class ClientRightColumn extends StatelessWidget {
         // Like — heart icon only
         _AnimatedActionIcon(
           icon: video.isLiked ? Icons.favorite : Icons.favorite_border,
-          color: video.isLiked ? AppColors.rose : AppColors.textOnVideo,
+          color: video.isLiked ? Colors.red : AppColors.textOnVideo,
           count: video.likesCount,
           onTap: () {
             HapticFeedback.mediumImpact();
@@ -70,12 +70,11 @@ class ClientRightColumn extends StatelessWidget {
           animate: video.isSaved,
         ),
         const SizedBox(height: 16),
-        // Share — flipped reply icon, NO label
+        // Share
         _ActionIcon(
-          icon: Icons.reply,
+          icon: Icons.share_outlined,
           color: AppColors.textOnVideo,
           onTap: onShareTap,
-          flipHorizontal: true,
         ),
         // Music indicator (conditional)
         if (video.spotifyTrackTitle != null) ...[
@@ -95,14 +94,12 @@ class _ActionIcon extends StatelessWidget {
     required this.color,
     required this.onTap,
     this.count,
-    this.flipHorizontal = false,
   });
 
   final IconData icon;
   final Color color;
   final VoidCallback onTap;
   final int? count;
-  final bool flipHorizontal;
 
   @override
   Widget build(BuildContext context) {
@@ -111,23 +108,18 @@ class _ActionIcon extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          flipHorizontal
-              ? Transform.flip(
-                  flipX: true,
-                  child: Icon(icon, color: color, size: 28),
-                )
-              : Icon(
-                  icon,
-                  color: color,
-                  size: 28,
-                  shadows: const [
-                    Shadow(
-                      color: AppColors.overlayHeavy,
-                      blurRadius: 8,
-                      offset: Offset(0, 1),
-                    ),
-                  ],
-                ),
+          Icon(
+            icon,
+            color: color,
+            size: 28,
+            shadows: const [
+              Shadow(
+                color: AppColors.overlayHeavy,
+                blurRadius: 8,
+                offset: Offset(0, 1),
+              ),
+            ],
+          ),
           if (count != null && count! > 0) ...[
             const SizedBox(height: 2),
             Text(
@@ -390,7 +382,7 @@ class _ProAvatarWithFollowState extends State<_ProAvatarWithFollow>
                           ? AppColors.success
                           : AppColors.violet,
                       shape: BoxShape.circle,
-                      border: Border.all(color: AppColors.fond, width: 1.5),
+                      border: Border.all(color: AppColors.textOnVideo, width: 1.5),
                     ),
                     child: Icon(
                       widget.isFollowed ? Icons.check : Icons.add,

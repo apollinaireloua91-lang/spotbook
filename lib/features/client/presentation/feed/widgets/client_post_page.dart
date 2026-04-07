@@ -238,7 +238,7 @@ class _ClientPostPageState extends State<ClientPostPage> {
 
   double _infoBottomOffset(
       bool hasService, bool hasEvent, bool isCatering, bool hasMusic) {
-    var base = 100.0; // Above nav bar safe area
+    var base = 110.0; // Above nav bar safe area
     if (hasService || hasEvent || isCatering) base += 56;
     if (hasMusic) base += 30;
     return base;
