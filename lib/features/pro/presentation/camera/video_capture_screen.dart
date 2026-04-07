@@ -7,8 +7,8 @@ import 'package:image_picker/image_picker.dart';
 import '../../../../shared/theme/app_colors.dart';
 import 'video_preview_screen.dart';
 
-/// Max video duration — 5 minutes (300 seconds).
-const _maxDuration = Duration(minutes: 5);
+/// Max video duration — 2 minutes (120 seconds).
+const _maxDuration = Duration(minutes: 2);
 
 /// Gallery-based video picker for Pro video upload.
 ///

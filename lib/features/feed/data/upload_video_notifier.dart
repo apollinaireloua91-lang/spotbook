@@ -46,12 +46,12 @@ class UploadVideoNotifier extends Notifier<UploadVideoState> {
   Future<bool> pickVideo() async {
     final file = await ImagePicker().pickVideo(
       source: ImageSource.gallery,
-      maxDuration: const Duration(seconds: 60),
+      maxDuration: const Duration(minutes: 2),
     );
     if (file == null) return false;
     final info = await VideoCompress.getMediaInfo(file.path);
     final durationSec = (info.duration ?? 0) / 1000;
-    if (durationSec > 60) return false;
+    if (durationSec > 120) return false;
     state = state.copyWith(videoFile: file, videoDuration: durationSec);
     return true;
   }

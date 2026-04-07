@@ -233,7 +233,7 @@ Chaque post vidéo DOIT représenter une prestation de service réelle.
 
 Champs obligatoires : titre (5-80 chars) + catégorie (liste fermée) + description (min 20 chars)
 
-Durée max vidéo : 60 secondes.
+Durée max vidéo : 2 minutes (120 secondes).
 
 Toute vidéo passe par moderate-video avant publication.
 
