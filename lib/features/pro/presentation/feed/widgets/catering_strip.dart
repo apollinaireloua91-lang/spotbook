@@ -33,7 +33,7 @@ class CateringStrip extends StatelessWidget {
             child: Text(
               title,
               style: const TextStyle(
-                color: AppColors.blanc,
+                color: Colors.white,
                 fontSize: 12,
                 fontWeight: FontWeight.w600,
               ),
@@ -54,12 +54,12 @@ class CateringStrip extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Icon(Icons.description_outlined,
-                      color: AppColors.blanc, size: 14),
+                      color: Colors.white, size: 14),
                   SizedBox(width: 4),
                   Text(
-                    'Soumission',
+                    'Quote',
                     style: TextStyle(
-                      color: AppColors.blanc,
+                      color: Colors.white,
                       fontSize: 11,
                       fontWeight: FontWeight.w700,
                     ),

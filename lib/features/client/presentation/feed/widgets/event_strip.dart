@@ -42,7 +42,7 @@ class EventStrip extends StatelessWidget {
                   Text(
                     eventName ?? 'Event',
                     style: const TextStyle(
-                      color: AppColors.blanc,
+                      color: Colors.white,
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
                     ),
@@ -54,7 +54,7 @@ class EventStrip extends StatelessWidget {
                     Text(
                       eventDate!,
                       style: TextStyle(
-                        color: AppColors.blanc.withAlpha(136),
+                        color: Colors.white.withAlpha(136),
                         fontSize: 10,
                       ),
                     ),

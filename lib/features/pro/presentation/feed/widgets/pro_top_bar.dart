@@ -4,11 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../../shared/theme/app_colors.dart';
-import '../../../../../shared/theme/app_typography.dart';
 import '../cubit/pro_feed_cubit.dart';
 import 'pro_notif_sheets.dart';
 
-/// Pro feed top bar: "Spotbook" logo left, 4 notification buttons right.
+/// Pro feed top bar: 4 notification buttons aligned right.
 class ProTopBar extends StatelessWidget {
   const ProTopBar({super.key});
 
@@ -27,10 +26,6 @@ class ProTopBar extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: Row(
               children: [
-                Text(
-                  'Spotbook',
-                  style: AppTypography.spotbookLogo(onVideoBackground: true),
-                ),
                 const Spacer(),
                 _ProNotifButton(
                   icon: Icons.notifications_outlined,
@@ -159,17 +154,20 @@ class _ProNotifButtonState extends State<_ProNotifButton>
             width: 32,
             height: 32,
             decoration: BoxDecoration(
-              color: AppColors.surfaceAlt.withAlpha(217),
+              color: Colors.black.withAlpha(77),
               borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: AppColors.blanc.withAlpha(26)),
+              border: Border.all(color: Colors.white.withAlpha(26)),
             ),
             child: Stack(
               children: [
                 Center(
                   child: Icon(
                     widget.icon,
-                    color: AppColors.blanc,
+                    color: Colors.white,
                     size: 16,
+                    shadows: const [
+                      Shadow(color: Colors.black54, blurRadius: 6),
+                    ],
                   ),
                 ),
                 if (widget.hasUnread)

@@ -259,8 +259,10 @@ class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
         fit: StackFit.expand,
         children: [
           // ─── Video / Thumbnail ───
+          // IgnorePointer prevents BetterPlayer's internal GestureDetector
+          // from stealing taps meant for play/pause and double-tap like.
           if (_controller != null)
-            BetterPlayer(controller: _controller!)
+            IgnorePointer(child: BetterPlayer(controller: _controller!))
           else if (widget.video.thumbnailUrl != null)
             CachedNetworkImage(
               imageUrl: widget.video.thumbnailUrl!,

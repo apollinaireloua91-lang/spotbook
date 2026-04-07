@@ -34,7 +34,7 @@ class CateringStrip extends StatelessWidget {
               child: Text(
                 'Menu traiteur disponible',
                 style: TextStyle(
-                  color: AppColors.blanc.withAlpha(200),
+                  color: Colors.white.withAlpha(200),
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
                 ),

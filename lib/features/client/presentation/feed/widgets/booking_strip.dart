@@ -40,7 +40,7 @@ class BookingStrip extends StatelessWidget {
               child: Text(
                 serviceName ?? 'Service',
                 style: const TextStyle(
-                  color: AppColors.blanc,
+                  color: Colors.white,
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
                 ),
@@ -53,7 +53,7 @@ class BookingStrip extends StatelessWidget {
               Text(
                 '${servicePrice!.toStringAsFixed(0)}\$',
                 style: const TextStyle(
-                  color: AppColors.blanc,
+                  color: Colors.white,
                   fontSize: 15,
                   fontWeight: FontWeight.w800,
                 ),

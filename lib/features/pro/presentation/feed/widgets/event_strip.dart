@@ -40,7 +40,7 @@ class EventStrip extends StatelessWidget {
                 Text(
                   eventName,
                   style: const TextStyle(
-                    color: AppColors.blanc,
+                    color: Colors.white,
                     fontSize: 12,
                     fontWeight: FontWeight.w700,
                   ),
@@ -76,9 +76,9 @@ class EventStrip extends StatelessWidget {
                 borderRadius: BorderRadius.circular(10),
               ),
               child: const Text(
-                'Acheter',
+                'Buy',
                 style: TextStyle(
-                  color: AppColors.blanc,
+                  color: Colors.white,
                   fontSize: 11,
                   fontWeight: FontWeight.w700,
                 ),

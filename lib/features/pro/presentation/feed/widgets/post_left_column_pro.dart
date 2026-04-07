@@ -8,22 +8,15 @@ import 'catering_strip.dart';
 import 'event_strip.dart';
 
 /// Left column + bottom overlay for ProFeedScreen.
-/// Shows: Pro name + category badge, caption (expandable), CTA strip.
-class PostLeftColumnPro extends StatefulWidget {
+/// Shows: Pro name + category badge, CTA strip.
+class PostLeftColumnPro extends StatelessWidget {
   const PostLeftColumnPro({super.key, required this.video});
 
   final VideoModel video;
 
   @override
-  State<PostLeftColumnPro> createState() => _PostLeftColumnProState();
-}
-
-class _PostLeftColumnProState extends State<PostLeftColumnPro> {
-  bool _captionExpanded = false;
-
-  @override
   Widget build(BuildContext context) {
-    final v = widget.video;
+    final v = video;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -39,12 +32,12 @@ class _PostLeftColumnProState extends State<PostLeftColumnPro> {
                 child: Text(
                   v.proName ?? 'Pro',
                   style: const TextStyle(
-                    color: AppColors.blanc,
-                    fontSize: 13,
+                    color: Colors.white,
+                    fontSize: 15,
                     fontWeight: FontWeight.w700,
                     shadows: [
                       Shadow(
-                        color: AppColors.overlayHeavy,
+                        color: Colors.black,
                         blurRadius: 6,
                         offset: Offset(0, 1),
                       ),
@@ -61,18 +54,6 @@ class _PostLeftColumnProState extends State<PostLeftColumnPro> {
             ],
           ),
         ),
-
-        // ── Caption ──
-        if (v.description != null && v.description!.isNotEmpty) ...[
-          const SizedBox(height: 6),
-          GestureDetector(
-            onTap: () => setState(() => _captionExpanded = !_captionExpanded),
-            child: _CaptionText(
-              text: v.description!,
-              expanded: _captionExpanded,
-            ),
-          ),
-        ],
 
         // ── CTA strip ──
         if (v.serviceName != null || v.eventName != null) ...[
@@ -165,89 +146,4 @@ class _CategoryBadge extends StatelessWidget {
     }
     return AppColors.violetClair;
   }
-}
-
-/// Caption text with max 2 lines (collapsed) and hashtag coloring.
-class _CaptionText extends StatelessWidget {
-  const _CaptionText({required this.text, required this.expanded});
-
-  final String text;
-  final bool expanded;
-
-  static final _hashtagPattern = RegExp(r'#\w+');
-
-  @override
-  Widget build(BuildContext context) {
-    return RichText(
-      maxLines: expanded ? 20 : 2,
-      overflow: TextOverflow.ellipsis,
-      text: _buildSpan(text),
-    );
-  }
-
-  TextSpan _buildSpan(String text) {
-    final children = <InlineSpan>[];
-    int lastEnd = 0;
-
-    for (final match in _hashtagPattern.allMatches(text)) {
-      if (match.start > lastEnd) {
-        children.add(TextSpan(
-          text: text.substring(lastEnd, match.start),
-          style: _baseStyle,
-        ));
-      }
-      children.add(TextSpan(
-        text: match.group(0),
-        style: _hashtagStyle,
-      ));
-      lastEnd = match.end;
-    }
-
-    if (lastEnd < text.length) {
-      children.add(TextSpan(
-        text: text.substring(lastEnd),
-        style: _baseStyle,
-      ));
-    }
-
-    if (!expanded) {
-      children.add(const TextSpan(
-        text: ' more',
-        style: TextStyle(
-          color: AppColors.gris,
-          fontSize: 12,
-          fontWeight: FontWeight.w500,
-        ),
-      ));
-    }
-
-    return TextSpan(children: children);
-  }
-
-  static const _baseStyle = TextStyle(
-    color: AppColors.textOnVideo,
-    fontSize: 12,
-    height: 1.4,
-    shadows: [
-      Shadow(
-        color: AppColors.overlayHeavy,
-        blurRadius: 4,
-        offset: Offset(0, 1),
-      ),
-    ],
-  );
-
-  static const _hashtagStyle = TextStyle(
-    color: AppColors.violet,
-    fontSize: 12,
-    height: 1.4,
-    fontWeight: FontWeight.w600,
-    shadows: [
-      Shadow(
-        color: AppColors.overlayHeavy,
-        blurRadius: 4,
-        offset: Offset(0, 1),
-      ),
-    ],
-  );
 }

@@ -6,7 +6,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../../shared/theme/app_colors.dart';
-import '../../../../../shared/theme/app_typography.dart';
 import '../../../../../shared/widgets/bookmark_bounce.dart';
 import '../../../../feed/domain/video_model.dart';
 import '../../../../feed/presentation/widgets/share_bottom_sheet.dart';
@@ -50,7 +49,7 @@ class PostRightColumnPro extends StatelessWidget {
                   height: 46,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    border: Border.all(color: AppColors.blanc, width: 2),
+                    border: Border.all(color: Colors.white, width: 2),
                   ),
                   child: CircleAvatar(
                     radius: 21,
@@ -79,12 +78,13 @@ class PostRightColumnPro extends StatelessWidget {
                         child: Container(
                           width: 20,
                           height: 20,
-                          decoration: const BoxDecoration(
-                            color: AppColors.violet,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF043603),
                             shape: BoxShape.circle,
+                            border: Border.all(color: Colors.white, width: 1.5),
                           ),
                           child: const Icon(Icons.add,
-                              color: AppColors.blanc, size: 14),
+                              color: Colors.white, size: 14),
                         ),
                       ),
                     ),
@@ -99,8 +99,8 @@ class PostRightColumnPro extends StatelessWidget {
         _BlurActionButton(
           icon: video.isLiked ? Icons.favorite : Icons.favorite_border,
           iconSize: 28,
-          label: _formatCount(video.likesCount),
-          color: video.isLiked ? AppColors.rose : AppColors.blanc,
+          label: '',
+          color: video.isLiked ? Colors.red : Colors.white,
           onTap: () {
             HapticFeedback.mediumImpact();
             onToggleLike();
@@ -114,8 +114,8 @@ class PostRightColumnPro extends StatelessWidget {
           child: _BlurActionButton(
             icon: video.isSaved ? Icons.bookmark : Icons.bookmark_border,
             iconSize: 26,
-            label: _formatCount(video.savesCount),
-            color: video.isSaved ? AppColors.violet : AppColors.blanc,
+            label: '',
+            color: video.isSaved ? const Color(0xFF043603) : Colors.white,
             onTap: () {
               HapticFeedback.lightImpact();
               onToggleSave();
@@ -197,12 +197,6 @@ class PostRightColumnPro extends StatelessWidget {
       ),
     );
   }
-
-  String _formatCount(int count) {
-    if (count >= 1000000) return '${(count / 1000000).toStringAsFixed(1)}M';
-    if (count >= 1000) return '${(count / 1000).toStringAsFixed(1)}K';
-    return count.toString();
-  }
 }
 
 /// 46px action button with backdrop blur.
@@ -212,7 +206,7 @@ class _BlurActionButton extends StatelessWidget {
     required this.label,
     required this.onTap,
     this.iconSize = 24,
-    this.color = AppColors.blanc,
+    this.color = Colors.white,
     this.mirrorIcon = false,
   });
 
@@ -239,7 +233,7 @@ class _BlurActionButton extends StatelessWidget {
                   color: Colors.black.withAlpha(89),
                   shape: BoxShape.circle,
                   border: Border.all(
-                    color: AppColors.blanc.withAlpha(31),
+                    color: Colors.white.withAlpha(31),
                     width: 1,
                   ),
                 ),
@@ -247,16 +241,25 @@ class _BlurActionButton extends StatelessWidget {
                   child: mirrorIcon
                       ? Transform.flip(
                           flipX: true,
-                          child: Icon(icon, color: color, size: iconSize),
+                          child: Icon(icon, color: color, size: iconSize,
+                            shadows: const [Shadow(color: Colors.black54, blurRadius: 6)],
+                          ),
                         )
-                      : Icon(icon, color: color, size: iconSize),
+                      : Icon(icon, color: color, size: iconSize,
+                          shadows: const [Shadow(color: Colors.black54, blurRadius: 6)],
+                        ),
                 ),
               ),
             ),
           ),
           if (label.isNotEmpty) ...[
             const SizedBox(height: 4),
-            Text(label, style: AppTypography.feedActionCount),
+            Text(label, style: const TextStyle(
+              color: Colors.white,
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+              shadows: [Shadow(color: Colors.black54, blurRadius: 4)],
+            )),
           ],
         ],
       ),

@@ -127,35 +127,29 @@ class _ProFeedScreenState extends ConsumerState<ProFeedScreen> {
             onPageChanged: _onPageChanged,
             itemBuilder: (context, index) {
               final video = feed.videos[index];
-              return _PostBackground(
-                key: index == currentIndex ? _bgKey : null,
-                video: video,
-                isActive: index == currentIndex,
+              return GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: () {
+                  HapticFeedback.lightImpact();
+                  final bgState = _bgKey.currentState;
+                  if (bgState == null) return;
+                  final nowPlaying = bgState.togglePlayPause();
+                  setState(() {
+                    _isPaused = !nowPlaying;
+                    _showPlayPauseIcon = true;
+                  });
+                  Future.delayed(const Duration(milliseconds: 800), () {
+                    if (mounted) setState(() => _showPlayPauseIcon = false);
+                  });
+                },
+                onDoubleTap: () => _onDoubleTap(video, index),
+                child: _PostBackground(
+                  key: index == currentIndex ? _bgKey : null,
+                  video: video,
+                  isActive: index == currentIndex,
+                ),
               );
             },
-          ),
-
-          // ── Tap / double-tap detector ─────────────────────────
-          // Positioned.fill with translucent behavior so taps reach
-          // both this detector AND the overlay buttons above.
-          Positioned.fill(
-            child: GestureDetector(
-              behavior: HitTestBehavior.translucent,
-              onTap: () {
-                HapticFeedback.lightImpact();
-                final bgState = _bgKey.currentState;
-                if (bgState == null) return;
-                final nowPlaying = bgState.togglePlayPause();
-                setState(() {
-                  _isPaused = !nowPlaying;
-                  _showPlayPauseIcon = true;
-                });
-                Future.delayed(const Duration(milliseconds: 800), () {
-                  if (mounted) setState(() => _showPlayPauseIcon = false);
-                });
-              },
-              onDoubleTap: () => _onDoubleTap(currentVideo, currentIndex),
-            ),
           ),
 
           // ── Top bar overlay (fixed) ───────────────────────────
@@ -493,7 +487,7 @@ class _PostBackgroundState extends ConsumerState<_PostBackground> {
       fit: StackFit.expand,
       children: [
         if (_controller != null)
-          BetterPlayer(controller: _controller!)
+          IgnorePointer(child: BetterPlayer(controller: _controller!))
         else if (widget.video.thumbnailUrl != null)
           CachedNetworkImage(
             imageUrl: widget.video.thumbnailUrl!,
