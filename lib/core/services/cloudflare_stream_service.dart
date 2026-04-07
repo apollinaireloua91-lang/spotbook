@@ -13,7 +13,7 @@ class UploadSession {
     required this.videoUid,
   });
 
-  /// TUS upload URL — send the file bytes here.
+  /// Direct upload URL — send the file bytes here via POST.
   final String uploadUrl;
 
   /// Cloudflare Stream UID (hex32).
@@ -30,15 +30,12 @@ class UploadSession {
 
 /// Service that handles the complete Cloudflare Stream upload pipeline:
 /// 1. Request a direct upload URL via Supabase Edge Function
-/// 2. Upload video bytes directly to Cloudflare via TUS protocol
+/// 2. Upload video bytes directly to Cloudflare via multipart POST
 /// 3. Submit metadata to Supabase (published immediately, no moderation)
 class CloudflareStreamService {
   CloudflareStreamService(this._supabase);
 
   final SupabaseClient _supabase;
-
-  /// Chunk size for TUS upload — 1 MB for reliable progress tracking.
-  static const int _chunkSize = 1024 * 1024;
 
   /// Step 1: Request a direct upload URL from the Edge Function.
   ///
@@ -82,9 +79,9 @@ class CloudflareStreamService {
     return UploadSession(uploadUrl: uploadUrl, videoUid: uid);
   }
 
-  /// Step 2: Upload video file directly to Cloudflare via TUS protocol.
+  /// Step 2: Upload video file directly to Cloudflare via multipart POST.
   ///
-  /// Uses chunked upload (1MB) for progress tracking and memory efficiency.
+  /// Streams the file for progress tracking and memory efficiency.
   /// [onProgress] reports 0.0 → 1.0.
   Future<void> uploadVideo({
     required String uploadUrl,
@@ -94,37 +91,52 @@ class CloudflareStreamService {
     final fileSize = await videoFile.length();
     if (fileSize == 0) throw Exception('Video file is empty');
 
-    // TUS protocol: send the file via PATCH with Upload-Offset header
     final uri = Uri.parse(uploadUrl);
-    int uploadedBytes = 0;
 
-    final fileStream = videoFile.openSync();
-    try {
-      while (uploadedBytes < fileSize) {
-        final remaining = fileSize - uploadedBytes;
-        final chunkLen = remaining < _chunkSize ? remaining : _chunkSize;
-        final chunk = fileStream.readSync(chunkLen);
+    // Build multipart form data with streaming for progress tracking.
+    final boundary = 'SpotbookUpload${DateTime.now().millisecondsSinceEpoch}';
+    final headerPart =
+        '--$boundary\r\n'
+        'Content-Disposition: form-data; name="file"; filename="video.mp4"\r\n'
+        'Content-Type: video/mp4\r\n'
+        '\r\n';
+    final footerPart = '\r\n--$boundary--\r\n';
 
-        final request = http.Request('PATCH', uri)
-          ..headers['Content-Type'] = 'application/offset+octet-stream'
-          ..headers['Upload-Offset'] = '$uploadedBytes'
-          ..headers['Tus-Resumable'] = '1.0.0'
-          ..bodyBytes = chunk;
+    final headerBytes = headerPart.codeUnits;
+    final footerBytes = footerPart.codeUnits;
+    final totalSize = headerBytes.length + fileSize + footerBytes.length;
 
-        final streamedResponse = await request.send();
-        final statusCode = streamedResponse.statusCode;
+    final request = http.StreamedRequest('POST', uri);
+    request.headers['Content-Type'] = 'multipart/form-data; boundary=$boundary';
+    request.contentLength = totalSize;
 
-        if (statusCode != 204 && statusCode != 200) {
-          final body = await streamedResponse.stream.bytesToString();
-          throw Exception('TUS upload failed ($statusCode): $body');
-        }
+    // Start sending — the client begins reading from sink.
+    final responseFuture = request.send();
 
-        uploadedBytes += chunkLen;
-        onProgress(uploadedBytes / fileSize);
-      }
-    } finally {
-      fileStream.closeSync();
+    var bytesSent = 0;
+
+    // Multipart header
+    request.sink.add(headerBytes);
+    bytesSent += headerBytes.length;
+
+    // Stream video file in chunks
+    await for (final chunk in videoFile.openRead()) {
+      request.sink.add(chunk);
+      bytesSent += chunk.length;
+      onProgress(bytesSent / totalSize);
     }
+
+    // Multipart footer
+    request.sink.add(footerBytes);
+    await request.sink.close();
+
+    final response = await responseFuture;
+    if (response.statusCode != 200 && response.statusCode != 201) {
+      final body = await response.stream.bytesToString();
+      throw Exception('Upload failed (${response.statusCode}): $body');
+    }
+
+    onProgress(1.0);
   }
 
   /// Step 3: Insert video metadata directly into the `videos` table.
