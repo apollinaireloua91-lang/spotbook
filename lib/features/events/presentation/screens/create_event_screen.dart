@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -53,6 +55,7 @@ class _CreateNotifier extends Notifier<_CreateState> {
     required String title,
     required String description,
     required DateTime date,
+    required TimeOfDay startTime,
     required String location,
     String? address,
     XFile? coverImage,
@@ -60,12 +63,23 @@ class _CreateNotifier extends Notifier<_CreateState> {
     state = state.copyWith(isCreating: true);
     try {
       final repo = ref.read(eventRepositoryProvider);
+
+      // Calculate total capacity from ticket types
+      int totalCapacity = 0;
+      for (final t in state.ticketTypes) {
+        if (t.name.isNotEmpty && t.quantity > 0) {
+          totalCapacity += t.quantity;
+        }
+      }
+
       final event = await repo.createEvent(
         title: title,
         description: description,
         eventDate: date,
+        startTime: startTime,
         location: location,
         address: address,
+        totalCapacity: totalCapacity,
       );
 
       if (coverImage != null) {
@@ -111,6 +125,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
   final _locationCtrl = TextEditingController();
   final _addressCtrl = TextEditingController();
   DateTime _selectedDate = DateTime.now().add(const Duration(days: 7));
+  TimeOfDay _selectedTime = const TimeOfDay(hour: 19, minute: 0);
   XFile? _coverImage;
 
   @override
@@ -128,9 +143,41 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
       initialDate: _selectedDate,
       firstDate: DateTime.now(),
       lastDate: DateTime.now().add(const Duration(days: 365)),
+      builder: (context, child) => Theme(
+        data: Theme.of(context).copyWith(
+          colorScheme: const ColorScheme.light(
+            primary: AppColors.violet,
+            onPrimary: Colors.white,
+            surface: AppColors.fond,
+            onSurface: AppColors.blanc,
+          ),
+        ),
+        child: child!,
+      ),
     );
     if (date != null) {
-      _selectedDate = date;
+      setState(() => _selectedDate = date);
+    }
+  }
+
+  Future<void> _pickTime() async {
+    final time = await showTimePicker(
+      context: context,
+      initialTime: _selectedTime,
+      builder: (context, child) => Theme(
+        data: Theme.of(context).copyWith(
+          colorScheme: const ColorScheme.light(
+            primary: AppColors.violet,
+            onPrimary: Colors.white,
+            surface: AppColors.fond,
+            onSurface: AppColors.blanc,
+          ),
+        ),
+        child: child!,
+      ),
+    );
+    if (time != null) {
+      setState(() => _selectedTime = time);
     }
   }
 
@@ -138,15 +185,18 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
     final image = await ImagePicker()
         .pickImage(source: ImageSource.gallery, maxWidth: 1200, imageQuality: 85);
     if (image != null) {
-      _coverImage = image;
+      setState(() => _coverImage = image);
     }
   }
 
   Future<void> _submit() async {
-    if (_titleCtrl.text.trim().isEmpty || _locationCtrl.text.trim().isEmpty) {
+    final title = _titleCtrl.text.trim();
+    final location = _locationCtrl.text.trim();
+
+    if (title.isEmpty || location.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Title and location required'),
+          content: Text('Title and location are required'),
           backgroundColor: AppColors.error,
         ),
       );
@@ -154,21 +204,34 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
     }
     try {
       await ref.read(_createProvider.notifier).create(
-            title: _titleCtrl.text.trim(),
+            title: title,
             description: _descCtrl.text.trim(),
             date: _selectedDate,
-            location: _locationCtrl.text.trim(),
-            address: _addressCtrl.text.trim(),
+            startTime: _selectedTime,
+            location: location,
+            address: _addressCtrl.text.trim().isEmpty
+                ? null
+                : _addressCtrl.text.trim(),
             coverImage: _coverImage,
           );
       if (mounted) context.pop();
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(e.toString()), backgroundColor: AppColors.error),
+          SnackBar(
+            content: Text(e.toString()),
+            backgroundColor: AppColors.error,
+          ),
         );
       }
     }
+  }
+
+  String _formatTime(TimeOfDay time) {
+    final hour = time.hourOfPeriod == 0 ? 12 : time.hourOfPeriod;
+    final min = time.minute.toString().padLeft(2, '0');
+    final period = time.period == DayPeriod.am ? 'AM' : 'PM';
+    return '$hour:$min $period';
   }
 
   @override
@@ -178,6 +241,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
       backgroundColor: AppColors.fond,
       appBar: AppBar(
         backgroundColor: AppColors.fond,
+        elevation: 0,
         leading: Semantics(
           label: 'Back',
           child: IconButton(
@@ -189,7 +253,10 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
           ),
         ),
         title: const Text('Create event',
-            style: TextStyle(color: AppColors.blanc, fontWeight: FontWeight.bold)),
+            style: TextStyle(
+                color: AppColors.blanc,
+                fontWeight: FontWeight.bold,
+                fontSize: 18)),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
@@ -198,72 +265,167 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 16),
+
+            // ── Cover image ──
             GestureDetector(
               onTap: _pickCover,
               child: Container(
                 height: 180,
                 width: double.infinity,
+                clipBehavior: Clip.antiAlias,
                 decoration: BoxDecoration(
                   color: AppColors.surface,
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(color: AppColors.border),
                 ),
-                child: const Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.add_photo_alternate_outlined, color: AppColors.gris, size: 40),
-                    SizedBox(height: 8),
-                    Text('Add a cover image', style: TextStyle(color: AppColors.gris, fontSize: 14)),
-                  ],
-                ),
+                child: _coverImage != null
+                    ? Stack(
+                        fit: StackFit.expand,
+                        children: [
+                          Image.file(
+                            File(_coverImage!.path),
+                            fit: BoxFit.cover,
+                          ),
+                          Positioned(
+                            top: 8,
+                            right: 8,
+                            child: Container(
+                              padding: const EdgeInsets.all(6),
+                              decoration: BoxDecoration(
+                                color: Colors.black.withAlpha(120),
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Icon(Icons.edit,
+                                  color: Colors.white, size: 16),
+                            ),
+                          ),
+                        ],
+                      )
+                    : const Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.add_photo_alternate_outlined,
+                              color: AppColors.gris, size: 40),
+                          SizedBox(height: 8),
+                          Text('Add a cover image',
+                              style: TextStyle(
+                                  color: AppColors.gris, fontSize: 14)),
+                        ],
+                      ),
               ),
             ),
             const SizedBox(height: 20),
+
+            // ── Title ──
             _buildField(_titleCtrl, 'Event title', Icons.event),
             const SizedBox(height: 14),
-            _buildField(_descCtrl, 'Description', Icons.description, maxLines: 3),
+
+            // ── Description ──
+            _buildField(_descCtrl, 'Description', Icons.description,
+                maxLines: 3),
             const SizedBox(height: 14),
-            GestureDetector(
-              onTap: _pickDate,
-              child: Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: AppColors.surface,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: AppColors.border),
-                ),
-                child: Row(
-                  children: [
-                    const Icon(Icons.calendar_today, color: AppColors.gris, size: 20),
-                    const SizedBox(width: 12),
-                    Text(
-                      DateFormat('MMMM d, yyyy', 'en_US').format(_selectedDate),
-                      style: const TextStyle(color: AppColors.blanc, fontSize: 15),
+
+            // ── Date + Time row ──
+            Row(
+              children: [
+                // Date picker
+                Expanded(
+                  child: GestureDetector(
+                    onTap: _pickDate,
+                    child: Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: AppColors.surface,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: AppColors.border),
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.calendar_today,
+                              color: AppColors.gris, size: 18),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              DateFormat('MMM d, yyyy').format(_selectedDate),
+                              style: const TextStyle(
+                                  color: AppColors.blanc, fontSize: 14),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ],
+                  ),
                 ),
-              ),
+                const SizedBox(width: 10),
+                // Time picker
+                GestureDetector(
+                  onTap: _pickTime,
+                  child: Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: AppColors.surface,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: AppColors.border),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.access_time,
+                            color: AppColors.gris, size: 18),
+                        const SizedBox(width: 8),
+                        Text(
+                          _formatTime(_selectedTime),
+                          style: const TextStyle(
+                              color: AppColors.blanc, fontSize: 14),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
             const SizedBox(height: 14),
-            _buildField(_locationCtrl, 'Location', Icons.location_on_outlined),
+
+            // ── Location ──
+            _buildField(
+                _locationCtrl, 'Location', Icons.location_on_outlined),
             const SizedBox(height: 14),
-            _buildField(_addressCtrl, 'Address (optional)', Icons.pin_drop_outlined),
+
+            // ── Address ──
+            _buildField(
+                _addressCtrl, 'Address (optional)', Icons.pin_drop_outlined),
             const SizedBox(height: 24),
+
+            // ── Ticket types ──
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 const Text('Ticket types',
-                    style: TextStyle(color: AppColors.blanc, fontSize: 16, fontWeight: FontWeight.w600)),
+                    style: TextStyle(
+                        color: AppColors.blanc,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600)),
                 if (s.ticketTypes.length < 5)
                   Semantics(
                     label: 'Add ticket type',
                     child: IconButton(
-                      icon: const Icon(Icons.add_circle_outline, color: AppColors.blanc),
-                      onPressed: () => ref.read(_createProvider.notifier).addTicketType(),
+                      icon: const Icon(Icons.add_circle_outline,
+                          color: AppColors.blanc),
+                      onPressed: () =>
+                          ref.read(_createProvider.notifier).addTicketType(),
                     ),
                   ),
               ],
             ),
+            if (s.ticketTypes.isEmpty)
+              Padding(
+                padding: const EdgeInsets.only(top: 4, bottom: 8),
+                child: Text(
+                  'Tap + to add ticket types (name, price, quantity)',
+                  style: TextStyle(
+                      color: AppColors.gris.withAlpha(180), fontSize: 13),
+                ),
+              ),
             const SizedBox(height: 8),
             ListView.separated(
               shrinkWrap: true,
@@ -273,14 +435,18 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
               itemBuilder: (context, index) {
                 return _TicketTypeRow(
                   index: index,
-                  onRemove: () => ref.read(_createProvider.notifier).removeTicketType(index),
+                  onRemove: () =>
+                      ref.read(_createProvider.notifier).removeTicketType(index),
                   onUpdate: (name, price, qty) => ref
                       .read(_createProvider.notifier)
-                      .updateTicketType(index, name: name, price: price, quantity: qty),
+                      .updateTicketType(index,
+                          name: name, price: price, quantity: qty),
                 );
               },
             ),
             const SizedBox(height: 32),
+
+            // ── Publish button ──
             SizedBox(
               width: double.infinity,
               height: 52,
@@ -290,11 +456,18 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                   backgroundColor: AppColors.blanc,
                   foregroundColor: AppColors.fond,
                   disabledBackgroundColor: AppColors.surfaceAlt,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12)),
                 ),
                 child: s.isCreating
-                    ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: AppColors.gris, strokeWidth: 2))
-                    : const Text('Publish event', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                    ? const SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(
+                            color: AppColors.gris, strokeWidth: 2))
+                    : const Text('Publish event',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 16)),
               ),
             ),
             const SizedBox(height: 32),
@@ -304,7 +477,8 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
     );
   }
 
-  Widget _buildField(TextEditingController ctrl, String hint, IconData icon, {int maxLines = 1}) {
+  Widget _buildField(TextEditingController ctrl, String hint, IconData icon,
+      {int maxLines = 1}) {
     return TextField(
       controller: ctrl,
       maxLines: maxLines,
@@ -315,14 +489,17 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
         prefixIcon: Icon(icon, color: AppColors.gris, size: 20),
         filled: true,
         fillColor: AppColors.surface,
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+        border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide.none),
       ),
     );
   }
 }
 
 class _TicketTypeRow extends StatelessWidget {
-  const _TicketTypeRow({required this.index, required this.onRemove, required this.onUpdate});
+  const _TicketTypeRow(
+      {required this.index, required this.onRemove, required this.onUpdate});
   final int index;
   final VoidCallback onRemove;
   final void Function(String? name, double? price, int? qty) onUpdate;
@@ -342,7 +519,11 @@ class _TicketTypeRow extends StatelessWidget {
             flex: 3,
             child: TextField(
               style: const TextStyle(color: AppColors.blanc, fontSize: 14),
-              decoration: const InputDecoration(hintText: 'Name', hintStyle: TextStyle(color: AppColors.gris, fontSize: 13), isDense: true, border: InputBorder.none),
+              decoration: const InputDecoration(
+                  hintText: 'Name',
+                  hintStyle: TextStyle(color: AppColors.gris, fontSize: 13),
+                  isDense: true,
+                  border: InputBorder.none),
               onChanged: (v) => onUpdate(v, null, null),
             ),
           ),
@@ -352,7 +533,11 @@ class _TicketTypeRow extends StatelessWidget {
             child: TextField(
               style: const TextStyle(color: AppColors.blanc, fontSize: 14),
               keyboardType: TextInputType.number,
-              decoration: const InputDecoration(hintText: 'Price', hintStyle: TextStyle(color: AppColors.gris, fontSize: 13), isDense: true, border: InputBorder.none),
+              decoration: const InputDecoration(
+                  hintText: 'Price \$',
+                  hintStyle: TextStyle(color: AppColors.gris, fontSize: 13),
+                  isDense: true,
+                  border: InputBorder.none),
               onChanged: (v) => onUpdate(null, double.tryParse(v), null),
             ),
           ),
@@ -362,7 +547,11 @@ class _TicketTypeRow extends StatelessWidget {
             child: TextField(
               style: const TextStyle(color: AppColors.blanc, fontSize: 14),
               keyboardType: TextInputType.number,
-              decoration: const InputDecoration(hintText: 'Qty', hintStyle: TextStyle(color: AppColors.gris, fontSize: 13), isDense: true, border: InputBorder.none),
+              decoration: const InputDecoration(
+                  hintText: 'Qty',
+                  hintStyle: TextStyle(color: AppColors.gris, fontSize: 13),
+                  isDense: true,
+                  border: InputBorder.none),
               onChanged: (v) => onUpdate(null, null, int.tryParse(v)),
             ),
           ),
@@ -371,7 +560,8 @@ class _TicketTypeRow extends StatelessWidget {
             child: IconButton(
               icon: const Icon(Icons.close, color: AppColors.gris, size: 18),
               onPressed: onRemove,
-              constraints: const BoxConstraints(minHeight: 48, minWidth: 48),
+              constraints:
+                  const BoxConstraints(minHeight: 48, minWidth: 48),
             ),
           ),
         ],

@@ -98,10 +98,12 @@ class ClientSearchState extends Equatable {
 class ClientSearchCubit extends Cubit<ClientSearchState> {
   ClientSearchCubit() : super(const ClientSearchState()) {
     _loadInitialData();
+    _subscribeToEvents();
   }
 
   Timer? _debounce;
   List<ProSearchResult> _allPros = [];
+  RealtimeChannel? _eventsChannel;
 
   // Fallback center (Montréal)
   static const _defaultLat = 45.5100;
@@ -316,6 +318,81 @@ class ClientSearchCubit extends Cubit<ClientSearchState> {
 
   Future<void> refresh() => _loadInitialData();
 
+  // ── Realtime subscription for events ──
+
+  void _subscribeToEvents() {
+    final supabase = Supabase.instance.client;
+    _eventsChannel = supabase
+        .channel('public:events')
+        .onPostgresChanges(
+          event: PostgresChangeEvent.all,
+          schema: 'public',
+          table: 'events',
+          callback: (_) => _refreshEvents(),
+        )
+        .subscribe();
+  }
+
+  Future<void> _refreshEvents() async {
+    try {
+      final supabase = Supabase.instance.client;
+
+      final eventsData = await supabase
+          .from('events')
+          .select('*, ticket_types(id, name, price, quantity, sold_count)')
+          .eq('is_active', true)
+          .gte('event_date', DateTime.now().toIso8601String())
+          .order('event_date');
+
+      final eventProIds = eventsData
+          .map((e) => e['pro_id'] as String?)
+          .whereType<String>()
+          .toSet()
+          .toList();
+
+      final eventUsersData = eventProIds.isEmpty
+          ? <dynamic>[]
+          : await supabase
+              .from('users')
+              .select('id, full_name')
+              .inFilter('id', eventProIds);
+
+      final eventUserMap = <String, String>{
+        for (final u in eventUsersData)
+          u['id'] as String: u['full_name'] as String? ?? '',
+      };
+
+      final events = eventsData.map((raw) {
+        final e = Map<String, dynamic>.from(raw as Map);
+        final dateStr = e['event_date'] as String? ?? '';
+        final ticketTypes = (e['ticket_types'] as List<dynamic>?) ?? [];
+        final startingPrice = ticketTypes.isNotEmpty
+            ? (ticketTypes[0]['price'] as num?)?.toDouble() ?? 0
+            : 0.0;
+        return EventSearchResult(
+          id: e['id'] as String,
+          title: e['title'] as String? ?? '',
+          location: e['location'] as String? ?? '',
+          lat: (e['latitude'] as num?)?.toDouble() ?? _defaultLat,
+          lng: (e['longitude'] as num?)?.toDouble() ?? _defaultLng,
+          date: DateTime.tryParse(dateStr) ?? DateTime.now(),
+          time: e['start_time'] as String? ?? '',
+          totalSpots: (e['total_capacity'] as int?) ?? 0,
+          soldSpots: (e['tickets_sold'] as int?) ?? 0,
+          price: startingPrice,
+          imageUrl: e['cover_url'] as String?,
+          proName: eventUserMap[e['pro_id'] as String?],
+        );
+      }).toList();
+
+      if (!isClosed) {
+        emit(state.copyWith(events: events));
+      }
+    } catch (_) {
+      // Silently fail — events will refresh on next manual refresh
+    }
+  }
+
   // ── Internal filter logic ──
 
   void _applyFilters({String? query, String? category}) {
@@ -378,6 +455,9 @@ class ClientSearchCubit extends Cubit<ClientSearchState> {
   @override
   Future<void> close() {
     _debounce?.cancel();
+    if (_eventsChannel != null) {
+      Supabase.instance.client.removeChannel(_eventsChannel!);
+    }
     return super.close();
   }
 }

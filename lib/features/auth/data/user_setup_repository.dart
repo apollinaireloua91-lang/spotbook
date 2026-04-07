@@ -76,6 +76,24 @@ class UserSetupRepository {
     }, onConflict: 'user_id');
   }
 
+  /// Creates a `profiles_pro` row so the Edge Function recognises this user
+  /// as a provider (required for video upload, etc.).
+  Future<void> createProProfile({
+    required String businessName,
+    required String category,
+    required String city,
+  }) async {
+    final user = _supabase.auth.currentUser;
+    if (user == null) return;
+
+    await _supabase.from('profiles_pro').upsert({
+      'id': user.id,
+      'business_name': businessName,
+      'category': category,
+      'city': city,
+    });
+  }
+
   Future<String?> _resolveCountry() async {
     try {
       await Geolocator.getCurrentPosition(

@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -57,11 +58,17 @@ class EventRepository {
     required String title,
     required String description,
     required DateTime eventDate,
+    required TimeOfDay startTime,
     required String location,
     String? address,
+    int totalCapacity = 0,
   }) async {
     final uid = currentUserId;
     if (uid == null) throw Exception('Not authenticated');
+
+    // Format time as HH:mm:ss for PostgreSQL time column
+    final timeStr =
+        '${startTime.hour.toString().padLeft(2, '0')}:${startTime.minute.toString().padLeft(2, '0')}:00';
 
     final data = await _supabase
         .from('events')
@@ -69,9 +76,13 @@ class EventRepository {
           'pro_id': uid,
           'title': title,
           'description': description,
-          'event_date': eventDate.toIso8601String(),
+          'event_date': eventDate.toIso8601String().split('T').first,
+          'start_time': timeStr,
           'location': location,
           'address': address,
+          'is_active': true,
+          'status': 'published',
+          'total_capacity': totalCapacity,
         })
         .select(_eventSelect)
         .single();
@@ -106,6 +117,14 @@ class EventRepository {
       'price': price,
       'quantity': quantity,
     });
+  }
+
+  /// Update total_capacity on the event after all ticket types are added.
+  Future<void> updateTotalCapacity(String eventId, int totalCapacity) async {
+    await _supabase
+        .from('events')
+        .update({'total_capacity': totalCapacity})
+        .eq('id', eventId);
   }
 
   Future<List<TicketTypeModel>> getTicketTypes(String eventId) async {

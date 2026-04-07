@@ -83,20 +83,20 @@ abstract final class AppTypography {
       );
 
   /// Grands titres shell pro (Explorer, Agenda, etc.).
-  static TextStyle get proHubTitle => GoogleFonts.dmSans(
+  static TextStyle get proHubTitle => GoogleFonts.sora(
         fontSize: 22,
         fontWeight: FontWeight.w700,
-        letterSpacing: -0.3,
+        letterSpacing: -0.5,
         height: 1.15,
         color: AppColors.blanc,
       );
 
   /// Nom affiché profil (client, style « réseau social »).
-  static TextStyle get profileDisplayName => GoogleFonts.dmSans(
-        fontSize: 22,
+  static TextStyle get profileDisplayName => GoogleFonts.sora(
+        fontSize: 24,
         fontWeight: FontWeight.w700,
-        height: 1.15,
-        letterSpacing: -0.2,
+        height: 1.1,
+        letterSpacing: -0.5,
         color: AppColors.blanc,
       );
 

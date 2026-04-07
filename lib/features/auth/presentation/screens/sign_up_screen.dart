@@ -98,7 +98,26 @@ class _SignUpNotifier extends Notifier<_SignUpState> {
             longitude: longitude,
             role: role,
           );
-      await ref.read(userSetupRepositoryProvider).setupNewUser();
+      final setupRepo = ref.read(userSetupRepositoryProvider);
+      await setupRepo.setupNewUser();
+
+      // Pro signup: create profiles_pro so Edge Functions recognise this user
+      if (role == 'pro' && businessName.isNotEmpty) {
+        String category = 'Other';
+        final cats = ref.read(proCategoriesProvider).value;
+        if (cats != null && state.selectedCategories.isNotEmpty) {
+          final idx = state.selectedCategories.first;
+          if (idx >= 0 && idx < cats.length) {
+            category = cats[idx].label;
+          }
+        }
+        await setupRepo.createProProfile(
+          businessName: businessName,
+          category: category,
+          city: city,
+        );
+      }
+
       await AnalyticsService.instance.capture('signup_completed', properties: {
         'role': role,
       });
@@ -116,7 +135,20 @@ class _SignUpNotifier extends Notifier<_SignUpState> {
       await repo.signInWithGoogle();
       // Set role for Google sign-in users
       await repo.updateUserRole(role);
-      await ref.read(userSetupRepositoryProvider).setupNewUser();
+      final setupRepo = ref.read(userSetupRepositoryProvider);
+      await setupRepo.setupNewUser();
+
+      // Pro Google sign-in: create minimal profiles_pro row
+      if (role == 'pro') {
+        final user = repo.currentUser;
+        final name = user?.userMetadata?['full_name'] as String? ?? 'My Business';
+        await setupRepo.createProProfile(
+          businessName: name,
+          category: 'Other',
+          city: '',
+        );
+      }
+
       final profile = await repo.getUserProfile();
       state = state.copyWith(isLoading: false);
       return profile?['role'] as String?;

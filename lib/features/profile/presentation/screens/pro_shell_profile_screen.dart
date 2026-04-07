@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -123,13 +125,80 @@ class ProShellProfileScreen extends ConsumerWidget {
 // PROFILE BODY
 // ═════════════════════════════════════════════════════════════════════════════
 
-class _ProSelfProfileBody extends ConsumerWidget {
+class _ProSelfProfileBody extends ConsumerStatefulWidget {
   const _ProSelfProfileBody({required this.profile});
 
   final ProProfile profile;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<_ProSelfProfileBody> createState() =>
+      _ProSelfProfileBodyState();
+}
+
+class _ProSelfProfileBodyState extends ConsumerState<_ProSelfProfileBody>
+    with TickerProviderStateMixin {
+  late final AnimationController _entranceCtrl;
+  late final List<Animation<double>> _fadeAnims;
+  late final List<Animation<Offset>> _slideAnims;
+
+  static const _sectionCount = 7;
+
+  @override
+  void initState() {
+    super.initState();
+    _entranceCtrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1200),
+    );
+
+    _fadeAnims = List.generate(_sectionCount, (i) {
+      final start = (i * 0.1).clamp(0.0, 0.7);
+      final end = (start + 0.4).clamp(0.0, 1.0);
+      return Tween<double>(begin: 0, end: 1).animate(
+        CurvedAnimation(
+          parent: _entranceCtrl,
+          curve: Interval(start, end, curve: Curves.easeOut),
+        ),
+      );
+    });
+
+    _slideAnims = List.generate(_sectionCount, (i) {
+      final start = (i * 0.1).clamp(0.0, 0.7);
+      final end = (start + 0.4).clamp(0.0, 1.0);
+      return Tween<Offset>(
+        begin: const Offset(0, 0.15),
+        end: Offset.zero,
+      ).animate(
+        CurvedAnimation(
+          parent: _entranceCtrl,
+          curve: Interval(start, end, curve: Curves.easeOutCubic),
+        ),
+      );
+    });
+
+    _entranceCtrl.forward();
+  }
+
+  @override
+  void dispose() {
+    _entranceCtrl.dispose();
+    super.dispose();
+  }
+
+  Widget _animated(int index, Widget child) {
+    final i = index.clamp(0, _sectionCount - 1);
+    return FadeTransition(
+      opacity: _fadeAnims[i],
+      child: SlideTransition(
+        position: _slideAnims[i],
+        child: child,
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final profile = widget.profile;
     final isTraiteur = isCateringCategory(profile.category);
 
     return Scaffold(
@@ -148,37 +217,47 @@ class _ProSelfProfileBody extends ConsumerWidget {
             padding: const EdgeInsets.fromLTRB(20, 16, 20, 100),
             children: [
               // ── Header ──
-              _ProfileHeader(profile: profile),
+              _animated(0, _ProfileHeader(profile: profile)),
 
               const SizedBox(height: 16),
 
               // ── Social Icons Row ──
-              _SocialIconsRow(connections: profile.socialConnections),
+              _animated(1, _SocialIconsRow(connections: profile.socialConnections)),
 
               const SizedBox(height: 20),
 
               // ── Quick Actions ──
-              _QuickActions(profile: profile),
+              _animated(2, _QuickActions(profile: profile)),
 
-              const SizedBox(height: 24),
+              const SizedBox(height: 28),
 
               // ── Videos Section ──
-              _SectionHeader(
-                title: 'My videos',
-                onSeeAll: () => context.push('/pro/feed'),
-              ),
-              const SizedBox(height: 10),
-              _VideosRow(ref: ref),
+              _animated(3, Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _SectionHeader(
+                    title: 'My videos',
+                    onSeeAll: () => context.push('/pro/feed'),
+                  ),
+                  const SizedBox(height: 10),
+                  _VideosRow(ref: ref),
+                ],
+              )),
 
-              const SizedBox(height: 24),
+              const SizedBox(height: 28),
 
               // ── Services Section ──
-              _SectionHeader(
-                title: 'My services',
-                onSeeAll: () => context.push('/pro/services'),
-              ),
-              const SizedBox(height: 10),
-              _ServicesList(ref: ref),
+              _animated(4, Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _SectionHeader(
+                    title: 'My services',
+                    onSeeAll: () => context.push('/pro/services'),
+                  ),
+                  const SizedBox(height: 10),
+                  _ServicesList(ref: ref),
+                ],
+              )),
 
               // ── Catering Section (conditional — Cuisine/Traiteur/Chef) ──
               if (isTraiteur) ...[
@@ -186,20 +265,25 @@ class _ProSelfProfileBody extends ConsumerWidget {
                 _CateringSection(proId: profile.id),
               ],
 
-              const SizedBox(height: 24),
+              const SizedBox(height: 28),
 
               // ── Events Section ──
-              _SectionHeader(
-                title: 'My events',
-                onSeeAll: () => context.push('/pro/events'),
-              ),
-              const SizedBox(height: 10),
-              _EventsList(ref: ref),
+              _animated(5, Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _SectionHeader(
+                    title: 'My events',
+                    onSeeAll: () => context.push('/pro/events'),
+                  ),
+                  const SizedBox(height: 10),
+                  _EventsList(ref: ref),
+                ],
+              )),
 
               const SizedBox(height: 32),
 
               // ── Settings Section ──
-              const _InlineSettingsSection(),
+              _animated(6, const _InlineSettingsSection()),
 
               const SizedBox(height: 20),
 
@@ -228,24 +312,32 @@ class _ProfileHeader extends StatefulWidget {
 
 class _ProfileHeaderState extends State<_ProfileHeader>
     with SingleTickerProviderStateMixin {
-  late final AnimationController _breathCtrl;
-  late final Animation<double> _breathAnim;
+  late final AnimationController _avatarCtrl;
+  late final Animation<double> _avatarScale;
+  late final Animation<double> _ringRotation;
 
   @override
   void initState() {
     super.initState();
-    _breathCtrl = AnimationController(
+    _avatarCtrl = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 2400),
-    )..repeat(reverse: true);
-    _breathAnim = Tween<double>(begin: 0, end: -4).animate(
-      CurvedAnimation(parent: _breathCtrl, curve: Curves.easeInOut),
+      duration: const Duration(seconds: 6),
+    )..repeat();
+    _avatarScale = TweenSequence<double>([
+      TweenSequenceItem(tween: Tween(begin: 1.0, end: 1.03), weight: 50),
+      TweenSequenceItem(tween: Tween(begin: 1.03, end: 1.0), weight: 50),
+    ]).animate(CurvedAnimation(
+      parent: _avatarCtrl,
+      curve: Curves.easeInOut,
+    ));
+    _ringRotation = Tween<double>(begin: 0, end: 2 * math.pi).animate(
+      CurvedAnimation(parent: _avatarCtrl, curve: Curves.linear),
     );
   }
 
   @override
   void dispose() {
-    _breathCtrl.dispose();
+    _avatarCtrl.dispose();
     super.dispose();
   }
 
@@ -266,134 +358,174 @@ class _ProfileHeaderState extends State<_ProfileHeader>
               context.push('/settings');
             },
             child: Container(
-              width: 36,
-              height: 36,
+              width: 38,
+              height: 38,
               decoration: BoxDecoration(
-                color: AppColors.blanc.withAlpha(10),
-                borderRadius: BorderRadius.circular(10),
+                color: AppColors.surfaceAlt,
+                borderRadius: BorderRadius.circular(12),
                 border: Border.all(color: AppColors.border, width: 0.5),
               ),
               child: const Icon(Icons.settings_outlined,
-                  color: AppColors.blanc, size: 18),
+                  color: AppColors.gris, size: 18),
             ),
           ),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 12),
 
-        // Avatar 80px with violet border + breathing animation
+        // Avatar 96px with animated gradient ring
         AnimatedBuilder(
-          animation: _breathAnim,
+          animation: _avatarCtrl,
           builder: (context, child) {
-            return Transform.translate(
-              offset: Offset(0, _breathAnim.value),
-              child: child,
-            );
-          },
-          child: Container(
-            width: 80,
-            height: 80,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border: Border.all(color: AppColors.violet, width: 2.5),
-              gradient: const LinearGradient(
-                begin: Alignment(-0.5, -0.5),
-                end: Alignment(0.5, 0.5),
-                colors: [
-                  AppColors.violetDarkGradient,
-                  AppColors.violetDarkGradientEnd,
-                ],
-              ),
-            ),
-            child: profile.avatarUrl != null
-                ? ClipOval(
-                    child: CachedNetworkImage(
-                      imageUrl: profile.avatarUrl!,
-                      fit: BoxFit.cover,
-                      width: 80,
-                      height: 80,
-                    ),
-                  )
-                : Center(
-                    child: Text(
-                      initial,
-                      style: GoogleFonts.dmSans(
-                        fontSize: 28,
-                        fontWeight: FontWeight.w800,
-                        color: AppColors.blanc,
+            return Transform.scale(
+              scale: _avatarScale.value,
+              child: SizedBox(
+                width: 102,
+                height: 102,
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    // Rotating gradient ring
+                    Transform.rotate(
+                      angle: _ringRotation.value,
+                      child: Container(
+                        width: 102,
+                        height: 102,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          gradient: SweepGradient(
+                            colors: [
+                              AppColors.violet,
+                              AppColors.rose,
+                              AppColors.violet.withAlpha(80),
+                              AppColors.violet,
+                            ],
+                            stops: const [0.0, 0.3, 0.7, 1.0],
+                          ),
+                        ),
                       ),
                     ),
-                  ),
-          ),
+                    // White gap ring
+                    Container(
+                      width: 96,
+                      height: 96,
+                      decoration: const BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: AppColors.fond,
+                      ),
+                    ),
+                    // Avatar circle
+                    Container(
+                      width: 90,
+                      height: 90,
+                      decoration: const BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: AppColors.surface,
+                      ),
+                      child: ClipOval(
+                        child: _buildAvatar(profile, initial),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
         ),
-        const SizedBox(height: 14),
+        const SizedBox(height: 18),
 
-        // Name — bold 22px UPPERCASE
+        // Name — Sora bold, proper case
         Text(
-          name.toUpperCase(),
-          style: GoogleFonts.dmSans(
-            fontSize: 22,
-            fontWeight: FontWeight.w800,
+          name,
+          style: GoogleFonts.sora(
+            fontSize: 24,
+            fontWeight: FontWeight.w700,
             color: AppColors.blanc,
-            letterSpacing: 0.8,
+            letterSpacing: -0.5,
+            height: 1.1,
           ),
           textAlign: TextAlign.center,
         ),
-        const SizedBox(height: 8),
 
-        // Category badge pill
-        if (profile.category.isNotEmpty)
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
-            decoration: BoxDecoration(
-              color: AppColors.violet.withAlpha(25),
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(
-                color: AppColors.violet.withAlpha(60),
-                width: 0.5,
-              ),
-            ),
-            child: Text(
-              profile.category,
-              style: GoogleFonts.dmSans(
-                fontSize: 11,
-                fontWeight: FontWeight.w600,
-                color: AppColors.violetClair,
-              ),
+        // Username handle
+        if (profile.username != null && profile.username!.isNotEmpty) ...[
+          const SizedBox(height: 4),
+          Text(
+            '@${profile.username}',
+            style: GoogleFonts.dmSans(
+              fontSize: 14,
+              color: AppColors.gris,
+              fontWeight: FontWeight.w400,
             ),
           ),
-        const SizedBox(height: 8),
+        ],
+        const SizedBox(height: 10),
 
-        // City / location
-        if (profile.city != null && profile.city!.trim().isNotEmpty)
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(Icons.location_on,
-                  size: 13, color: AppColors.gris),
-              const SizedBox(width: 3),
-              Text(
-                profile.city!,
-                style: GoogleFonts.dmSans(
-                  fontSize: 13,
-                  color: AppColors.gris,
+        // Category badge + location in a row
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (profile.category.isNotEmpty)
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+                decoration: BoxDecoration(
+                  color: AppColors.violet.withAlpha(20),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Text(
+                  profile.category,
+                  style: GoogleFonts.dmSans(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.violet,
+                  ),
                 ),
               ),
-            ],
-          ),
+            if (profile.category.isNotEmpty &&
+                profile.city != null &&
+                profile.city!.trim().isNotEmpty)
+              const SizedBox(width: 8),
+            if (profile.city != null && profile.city!.trim().isNotEmpty)
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.location_on_outlined,
+                      size: 13, color: AppColors.gris.withAlpha(180)),
+                  const SizedBox(width: 2),
+                  Text(
+                    profile.city!,
+                    style: GoogleFonts.dmSans(
+                      fontSize: 12,
+                      color: AppColors.gris,
+                    ),
+                  ),
+                ],
+              ),
+          ],
+        ),
 
         // Rating
         if (profile.reviewsCount > 0) ...[
-          const SizedBox(height: 6),
+          const SizedBox(height: 8),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.star, color: AppColors.warning, size: 14),
-              const SizedBox(width: 3),
+              ...List.generate(5, (i) {
+                final filled = i < profile.rating.round();
+                return Icon(
+                  filled ? Icons.star_rounded : Icons.star_outline_rounded,
+                  color: filled ? AppColors.starGold : AppColors.grisInactif,
+                  size: 16,
+                );
+              }),
+              const SizedBox(width: 6),
               Text(
-                '${profile.rating.toStringAsFixed(1)} (${profile.reviewsCount} reviews)',
+                '${profile.rating.toStringAsFixed(1)} (${profile.reviewsCount})',
                 style: GoogleFonts.dmSans(
                   fontSize: 12,
                   color: AppColors.gris,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
             ],
@@ -402,20 +534,20 @@ class _ProfileHeaderState extends State<_ProfileHeader>
 
         // Bio
         if (profile.bio != null && profile.bio!.trim().isNotEmpty) ...[
-          const SizedBox(height: 10),
+          const SizedBox(height: 12),
           Text(
             profile.bio!.trim(),
             textAlign: TextAlign.center,
-            maxLines: 2,
+            maxLines: 3,
             overflow: TextOverflow.ellipsis,
             style: GoogleFonts.dmSans(
-              fontSize: 13,
+              fontSize: 14,
               color: AppColors.gris,
-              height: 1.4,
+              height: 1.5,
             ),
           ),
         ],
-        const SizedBox(height: 16),
+        const SizedBox(height: 18),
 
         // Edit Profile button — full width outline
         SpotbookButton.outlined(
@@ -426,6 +558,42 @@ class _ProfileHeaderState extends State<_ProfileHeader>
           },
         ),
       ],
+    );
+  }
+
+  Widget _buildAvatar(ProProfile profile, String initial) {
+    if (profile.avatarUrl != null && profile.avatarUrl!.isNotEmpty) {
+      return CachedNetworkImage(
+        imageUrl: profile.avatarUrl!,
+        fit: BoxFit.cover,
+        width: 90,
+        height: 90,
+        placeholder: (_, __) => _InitialCircle(initial: initial),
+        errorWidget: (_, __, ___) => _InitialCircle(initial: initial),
+      );
+    }
+    return _InitialCircle(initial: initial);
+  }
+}
+
+class _InitialCircle extends StatelessWidget {
+  const _InitialCircle({required this.initial});
+  final String initial;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      color: AppColors.surface,
+      child: Center(
+        child: Text(
+          initial,
+          style: GoogleFonts.sora(
+            fontSize: 32,
+            fontWeight: FontWeight.w700,
+            color: AppColors.violet,
+          ),
+        ),
+      ),
     );
   }
 }
@@ -617,7 +785,7 @@ class _QuickActions extends StatelessWidget {
   }
 }
 
-class _QuickActionBtn extends StatelessWidget {
+class _QuickActionBtn extends StatefulWidget {
   const _QuickActionBtn({
     required this.icon,
     required this.label,
@@ -629,33 +797,97 @@ class _QuickActionBtn extends StatelessWidget {
   final VoidCallback onTap;
 
   @override
+  State<_QuickActionBtn> createState() => _QuickActionBtnState();
+}
+
+class _QuickActionBtnState extends State<_QuickActionBtn>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _ctrl;
+  late final Animation<double> _scaleAnim;
+  late final Animation<double> _tiltAnim;
+
+  @override
+  void initState() {
+    super.initState();
+    _ctrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 150),
+    );
+    _scaleAnim = Tween<double>(begin: 1.0, end: 0.92).animate(
+      CurvedAnimation(parent: _ctrl, curve: Curves.easeInOut),
+    );
+    _tiltAnim = Tween<double>(begin: 0, end: 0.06).animate(
+      CurvedAnimation(parent: _ctrl, curve: Curves.easeInOut),
+    );
+  }
+
+  @override
+  void dispose() {
+    _ctrl.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Expanded(
       child: GestureDetector(
-        onTap: () {
+        onTapDown: (_) => _ctrl.forward(),
+        onTapUp: (_) {
+          _ctrl.reverse();
           HapticFeedback.selectionClick();
-          onTap();
+          widget.onTap();
         },
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 14),
-          decoration: BoxDecoration(
-            color: AppColors.surfaceAlt,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: AppColors.border, width: 0.5),
-          ),
-          child: Column(
-            children: [
-              Icon(icon, color: AppColors.violet, size: 20),
-              const SizedBox(height: 5),
-              Text(
-                label,
-                style: GoogleFonts.dmSans(
-                  fontSize: 10,
-                  color: AppColors.gris,
-                  fontWeight: FontWeight.w500,
-                ),
+        onTapCancel: () => _ctrl.reverse(),
+        child: AnimatedBuilder(
+          animation: _ctrl,
+          builder: (context, child) {
+            return Transform.scale(
+              scale: _scaleAnim.value,
+              child: Transform(
+                alignment: Alignment.center,
+                transform: Matrix4.identity()
+                  ..setEntry(3, 2, 0.002)
+                  ..rotateX(_tiltAnim.value),
+                child: child,
               ),
-            ],
+            );
+          },
+          child: Container(
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            decoration: BoxDecoration(
+              color: AppColors.surfaceAlt,
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: AppColors.border, width: 0.5),
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.shadowCard,
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Column(
+              children: [
+                Container(
+                  width: 36,
+                  height: 36,
+                  decoration: BoxDecoration(
+                    color: AppColors.violet.withAlpha(15),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Icon(widget.icon, color: AppColors.violet, size: 18),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  widget.label,
+                  style: GoogleFonts.dmSans(
+                    fontSize: 10,
+                    color: AppColors.gris,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -679,22 +911,30 @@ class _SectionHeader extends StatelessWidget {
       children: [
         Text(
           title,
-          style: GoogleFonts.dmSans(
-            fontSize: 14,
+          style: GoogleFonts.sora(
+            fontSize: 16,
             fontWeight: FontWeight.w700,
             color: AppColors.blanc,
+            letterSpacing: -0.3,
           ),
         ),
         const Spacer(),
         if (onSeeAll != null)
           GestureDetector(
             onTap: onSeeAll,
-            child: Text(
-              'See all',
-              style: GoogleFonts.dmSans(
-                fontSize: 11,
-                color: AppColors.violet,
-                fontWeight: FontWeight.w500,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              decoration: BoxDecoration(
+                color: AppColors.violet.withAlpha(12),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Text(
+                'See all',
+                style: GoogleFonts.dmSans(
+                  fontSize: 11,
+                  color: AppColors.violet,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
           ),
@@ -844,55 +1084,71 @@ class _ProSelfServiceCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
-      padding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
+      padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
       decoration: BoxDecoration(
-        color: AppColors.surfaceAlt,
-        borderRadius: BorderRadius.circular(12),
+        color: AppColors.fond,
+        borderRadius: BorderRadius.circular(14),
         border: Border.all(color: AppColors.border, width: 0.5),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.shadowCard,
+            blurRadius: 6,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Row(
         children: [
           Container(
-            width: 34,
-            height: 34,
+            width: 38,
+            height: 38,
             decoration: BoxDecoration(
-              color: AppColors.violetDarkGradientEnd,
-              borderRadius: BorderRadius.circular(8),
+              color: AppColors.violet.withAlpha(15),
+              borderRadius: BorderRadius.circular(10),
             ),
             child: const Icon(Icons.design_services_outlined,
-                color: AppColors.violet, size: 16),
+                color: AppColors.violet, size: 18),
           ),
-          const SizedBox(width: 10),
+          const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   service.name,
-                  style: GoogleFonts.dmSans(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w700,
+                  style: GoogleFonts.sora(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
                     color: AppColors.blanc,
+                    letterSpacing: -0.2,
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
+                const SizedBox(height: 2),
                 Text(
                   '${service.durationMinutes} min',
                   style: GoogleFonts.dmSans(
-                    fontSize: 9,
-                    color: AppColors.grisInactif,
+                    fontSize: 11,
+                    color: AppColors.gris,
                   ),
                 ),
               ],
             ),
           ),
-          Text(
-            '\$${service.price.toStringAsFixed(0)}',
-            style: GoogleFonts.dmSans(
-              fontSize: 12,
-              fontWeight: FontWeight.w700,
-              color: AppColors.violet,
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+            decoration: BoxDecoration(
+              color: AppColors.violet.withAlpha(12),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Text(
+              '\$${service.price.toStringAsFixed(0)}',
+              style: GoogleFonts.sora(
+                fontSize: 13,
+                fontWeight: FontWeight.w700,
+                color: AppColors.violet,
+              ),
             ),
           ),
         ],
@@ -958,23 +1214,56 @@ class _ProSelfEventCard extends StatelessWidget {
     return GestureDetector(
       onTap: () => context.push('/event/${event.id}'),
       child: Container(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: AppColors.surfaceAlt,
-          borderRadius: BorderRadius.circular(12),
+          color: AppColors.fond,
+          borderRadius: BorderRadius.circular(14),
           border: Border.all(color: AppColors.border, width: 0.5),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.shadowCard,
+              blurRadius: 6,
+              offset: const Offset(0, 2),
+            ),
+          ],
         ),
         child: Row(
           children: [
+            // Date badge instead of generic icon
             Container(
-              width: 44,
-              height: 44,
+              width: 46,
+              height: 46,
               decoration: BoxDecoration(
-                color: AppColors.rose.withAlpha(20),
-                borderRadius: BorderRadius.circular(10),
+                gradient: AppColors.gradientAccent,
+                borderRadius: BorderRadius.circular(12),
               ),
-              child: const Icon(Icons.event,
-                  color: AppColors.rose, size: 20),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    event.eventDate != null
+                        ? DateFormat.d().format(event.eventDate!)
+                        : '—',
+                    style: GoogleFonts.sora(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.textOnPrimary,
+                      height: 1.1,
+                    ),
+                  ),
+                  Text(
+                    event.eventDate != null
+                        ? DateFormat.MMM().format(event.eventDate!).toUpperCase()
+                        : '',
+                    style: GoogleFonts.dmSans(
+                      fontSize: 9,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.textOnPrimary.withAlpha(200),
+                      height: 1.1,
+                    ),
+                  ),
+                ],
+              ),
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -983,18 +1272,20 @@ class _ProSelfEventCard extends StatelessWidget {
                 children: [
                   Text(
                     event.title,
-                    style: GoogleFonts.dmSans(
-                      fontSize: 12,
+                    style: GoogleFonts.sora(
+                      fontSize: 13,
                       fontWeight: FontWeight.w600,
                       color: AppColors.blanc,
+                      letterSpacing: -0.2,
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
+                  const SizedBox(height: 3),
                   Text(
                     dateStr,
                     style: GoogleFonts.dmSans(
-                      fontSize: 10,
+                      fontSize: 11,
                       color: AppColors.gris,
                     ),
                   ),
@@ -1002,12 +1293,19 @@ class _ProSelfEventCard extends StatelessWidget {
               ),
             ),
             if (event.minPrice > 0)
-              Text(
-                '\$${event.minPrice.toStringAsFixed(0)}',
-                style: GoogleFonts.dmSans(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.violet,
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                decoration: BoxDecoration(
+                  color: AppColors.violet.withAlpha(12),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  '\$${event.minPrice.toStringAsFixed(0)}',
+                  style: GoogleFonts.sora(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.violet,
+                  ),
                 ),
               ),
           ],
@@ -1112,7 +1410,7 @@ class _InlineSettingsSection extends StatelessWidget {
       children: [
         Text(
           'SETTINGS',
-          style: GoogleFonts.dmSans(
+          style: GoogleFonts.sora(
             color: AppColors.gris,
             fontSize: 11,
             fontWeight: FontWeight.w600,
@@ -1313,32 +1611,53 @@ class _EmptySection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.symmetric(vertical: 28, horizontal: 20),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.border, width: 0.5),
+        color: AppColors.surfaceAlt.withAlpha(120),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: AppColors.border,
+          width: 0.5,
+          strokeAlign: BorderSide.strokeAlignCenter,
+        ),
       ),
       child: Column(
         children: [
-          Icon(icon, color: AppColors.grisInactif, size: 28),
-          const SizedBox(height: 8),
+          Container(
+            width: 48,
+            height: 48,
+            decoration: BoxDecoration(
+              color: AppColors.grisInactif.withAlpha(20),
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: Icon(icon, color: AppColors.grisInactif, size: 22),
+          ),
+          const SizedBox(height: 12),
           Text(
             text,
             style: GoogleFonts.dmSans(
-              fontSize: 12,
+              fontSize: 13,
               color: AppColors.gris,
             ),
           ),
           if (actionLabel != null && onAction != null) ...[
-            const SizedBox(height: 8),
+            const SizedBox(height: 12),
             GestureDetector(
               onTap: onAction,
-              child: Text(
-                actionLabel!,
-                style: GoogleFonts.dmSans(
-                  fontSize: 11,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.violet,
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                decoration: BoxDecoration(
+                  color: AppColors.violet.withAlpha(12),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Text(
+                  actionLabel!,
+                  style: GoogleFonts.dmSans(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.violet,
+                  ),
                 ),
               ),
             ),

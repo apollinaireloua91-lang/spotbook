@@ -35,7 +35,12 @@ serve(async (req) => {
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseAnon = Deno.env.get("SUPABASE_ANON_KEY")!;
 
-    const supabaseForJwt = createClient(supabaseUrl, supabaseAnon);
+    // Server-side options: no session persistence (no localStorage in Deno)
+    const serverOpts = {
+      auth: { autoRefreshToken: false, persistSession: false },
+    };
+
+    const supabaseForJwt = createClient(supabaseUrl, supabaseAnon, serverOpts);
     const {
       data: { user },
       error: jwtError,
@@ -50,15 +55,11 @@ serve(async (req) => {
       return jsonResponse({ error: "Not authenticated" }, 401, undefined, req);
     }
 
-    // Use service role key for server-side checks — RLS on `users`
-    // can block the user's own JWT from reading their row.
+    // Use service role key for server-side checks — bypasses RLS.
     const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const supabaseAdmin = createClient(supabaseUrl, serviceRoleKey);
+    const supabaseAdmin = createClient(supabaseUrl, serviceRoleKey, serverOpts);
 
-    // Check profiles_pro existence — this is the definitive proof of
-    // being a provider. We don't rely on users.role because the
-    // security hardening RLS policy can prevent it from being updated
-    // (e.g. during the "Become Pro" flow).
+    // Primary check: profiles_pro existence
     const { data: profile, error: profileErr } = await supabaseAdmin
       .from("profiles_pro")
       .select("id")
@@ -66,12 +67,41 @@ serve(async (req) => {
       .maybeSingle();
 
     if (profileErr || !profile) {
-      return jsonResponse(
-        { error: "Only provider accounts can request upload URLs" },
-        403,
-        undefined,
-        req,
+      console.error(
+        "[generate-cloudflare-upload-url] profiles_pro check failed",
+        JSON.stringify({
+          userId: user.id,
+          profileErr: profileErr?.message ?? profileErr,
+          profileData: profile,
+          serviceRoleKeySet: !!serviceRoleKey,
+          serviceRoleKeyLength: serviceRoleKey?.length ?? 0,
+        }),
       );
+
+      // Fallback: check users.role directly
+      const { data: userRow, error: userErr } = await supabaseAdmin
+        .from("users")
+        .select("role")
+        .eq("id", user.id)
+        .maybeSingle();
+
+      console.error(
+        "[generate-cloudflare-upload-url] fallback users.role check",
+        JSON.stringify({
+          userId: user.id,
+          userRole: userRow?.role,
+          userErr: userErr?.message ?? userErr,
+        }),
+      );
+
+      if (userErr || userRow?.role !== "pro") {
+        return jsonResponse(
+          { error: "Only provider accounts can request upload URLs" },
+          403,
+          undefined,
+          req,
+        );
+      }
     }
 
     let body: Record<string, unknown> = {};
