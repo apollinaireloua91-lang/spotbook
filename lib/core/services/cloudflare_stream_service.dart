@@ -127,9 +127,9 @@ class CloudflareStreamService {
     }
   }
 
-  /// Step 3: Submit video metadata to Supabase via the moderate-video Edge Function.
+  /// Step 3: Insert video metadata directly into the `videos` table.
   ///
-  /// This creates the video row in the `videos` table with status `approved`.
+  /// No moderation — videos publish immediately with status `approved`.
   Future<String> submitMetadata({
     required String cloudflareId,
     required String title,
@@ -142,32 +142,37 @@ class CloudflareStreamService {
     String? spotifyTrackTitle,
     String? spotifyTrackArtist,
   }) async {
-    final body = <String, dynamic>{
+    final userId = _supabase.auth.currentUser?.id;
+    if (userId == null) throw Exception('Not authenticated');
+
+    final streamUrl = cloudflareManifestUrl(cloudflareId);
+    final thumbUrl = cloudflareThumbnailUrl(cloudflareId);
+
+    final row = <String, dynamic>{
+      'pro_id': userId,
       'cloudflare_id': cloudflareId,
       'title': title,
       'description': description,
       'category': category,
       'hashtags': hashtags,
-      if (duration != null) 'duration': duration,
+      'status': 'approved',
+      'visibility': 'public',
+      if (streamUrl != null) 'stream_url': streamUrl,
+      if (thumbUrl != null) 'thumbnail_url': thumbUrl,
+      if (duration != null) 'duration_seconds': duration,
       if (serviceId != null) 'service_id': serviceId,
       if (eventId != null) 'event_id': eventId,
+      if (spotifyTrackTitle != null) 'spotify_track_title': spotifyTrackTitle,
+      if (spotifyTrackArtist != null) 'spotify_track_artist': spotifyTrackArtist,
     };
 
-    final response = await _supabase.functions.invoke(
-      'moderate-video',
-      body: body,
-      method: HttpMethod.post,
-    );
+    final response = await _supabase
+        .from('videos')
+        .insert(row)
+        .select('id')
+        .single();
 
-    if (response.status != 200) {
-      final error = response.data is Map
-          ? (response.data['error'] ?? 'Metadata submission failed')
-          : 'Metadata submission failed';
-      throw Exception(error);
-    }
-
-    final data = response.data as Map<String, dynamic>;
-    return data['videoId'] as String;
+    return response['id'] as String;
   }
 
   /// Convenience: run the full upload pipeline in one call.

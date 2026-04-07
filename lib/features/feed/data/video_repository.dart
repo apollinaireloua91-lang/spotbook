@@ -188,35 +188,6 @@ class VideoRepository {
     await _supabase.from('videos').delete().eq('id', videoId);
   }
 
-  Future<Map<String, dynamic>> submitForModeration({
-    required String title,
-    required String description,
-    required String category,
-    required double? duration,
-    required String cloudflareId,
-    required String streamUrl,
-    required String thumbnailUrl,
-    required List<String> hashtags,
-  }) async {
-    final res = await _supabase.functions.invoke(
-      'moderate-video',
-      body: {
-        'title': title,
-        'description': description,
-        'category': category,
-        'duration': duration,
-        'cloudflare_id': cloudflareId,
-        'stream_url': streamUrl,
-        'thumbnail_url': thumbnailUrl,
-        'hashtags': hashtags,
-      },
-    );
-    if (res.status != 200) {
-      final err = res.data is Map ? res.data['error'] : 'Upload failed';
-      throw Exception(err ?? 'Upload failed');
-    }
-    return res.data as Map<String, dynamic>;
-  }
 
   Future<List<VideoModel>> searchVideos(String query) async {
     final data = await _supabase
