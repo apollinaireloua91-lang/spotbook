@@ -171,7 +171,7 @@ class CloudflareStreamService {
       'visibility': 'public',
       if (streamUrl != null) 'stream_url': streamUrl,
       if (thumbUrl != null) 'thumbnail_url': thumbUrl,
-      if (duration != null) 'duration_seconds': duration,
+      if (duration != null) 'duration_seconds': duration.round(),
       if (serviceId != null) 'service_id': serviceId,
       if (eventId != null) 'event_id': eventId,
       if (spotifyTrackTitle != null) 'spotify_track_title': spotifyTrackTitle,
