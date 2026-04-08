@@ -353,8 +353,8 @@ class _ProRevenueScreenState extends ConsumerState<ProRevenueScreen> {
                 const SizedBox(height: 12),
                 // Transaction list
                 txAsync.when(
-                  loading: () => const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 20),
+                  loading: () => Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 20),
                     child: Center(
                         child: CircularProgressIndicator(
                             color: AppColors.violet)),

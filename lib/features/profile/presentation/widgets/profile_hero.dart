@@ -78,7 +78,7 @@ class _ProfileHeroState extends State<ProfileHero>
             child: Padding(
               padding: const EdgeInsets.all(3),
               child: Container(
-                decoration: const BoxDecoration(
+                decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color: AppColors.fond,
                 ),
@@ -93,7 +93,7 @@ class _ProfileHeroState extends State<ProfileHero>
                     : Container(
                         width: 76,
                         height: 76,
-                        decoration: const BoxDecoration(
+                        decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           gradient: AppColors.gradientAccent,
                         ),
@@ -181,12 +181,12 @@ class _ProfileHeroState extends State<ProfileHero>
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.location_on_outlined,
+              Icon(Icons.location_on_outlined,
                   color: AppColors.gris, size: 14),
               const SizedBox(width: 4),
               Text(
                 p.city!,
-                style: const TextStyle(
+                style: TextStyle(
                   color: AppColors.gris,
                   fontSize: 13,
                 ),

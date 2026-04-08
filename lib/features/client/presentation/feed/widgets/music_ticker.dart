@@ -67,7 +67,7 @@ class _MusicTickerState extends State<MusicTicker>
               shape: BoxShape.circle,
               border: Border.all(color: AppColors.border, width: 1.5),
             ),
-            child: const Icon(
+            child: Icon(
               Icons.music_note,
               color: AppColors.blanc,
               size: 12,

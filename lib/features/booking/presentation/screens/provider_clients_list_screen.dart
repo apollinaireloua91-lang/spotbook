@@ -159,7 +159,7 @@ class _ProviderClientsListScreenState
       backgroundColor: AppColors.fond,
       appBar: const SpotbookAppBar(title: 'My clients'),
       body: clientsAsync.when(
-        loading: () => const Center(
+        loading: () => Center(
             child: CircularProgressIndicator(color: AppColors.violet)),
         error: (e, _) => Center(
           child: Text('$e',
@@ -182,7 +182,7 @@ class _ProviderClientsListScreenState
                     hintText: 'Search client...',
                     hintStyle: TextStyle(
                         color: AppColors.gris.withAlpha(128)),
-                    prefixIcon: const Icon(Icons.search,
+                    prefixIcon: Icon(Icons.search,
                         color: AppColors.gris, size: 20),
                     filled: true,
                     fillColor: AppColors.surface,
@@ -232,7 +232,7 @@ class _ProviderClientsListScreenState
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            const Icon(Icons.people_outline,
+                            Icon(Icons.people_outline,
                                 color: AppColors.gris, size: 48),
                             const SizedBox(height: 12),
                             Text('No clients',
@@ -371,7 +371,7 @@ class _ClientCard extends StatelessWidget {
               HapticFeedback.lightImpact();
               context.push('/pro/messages');
             },
-            icon: const Icon(Icons.chat_bubble_outline,
+            icon: Icon(Icons.chat_bubble_outline,
                 color: AppColors.violet, size: 22),
           ),
         ],

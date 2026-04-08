@@ -104,7 +104,7 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
             backgroundColor: AppColors.surface,
             content: Text(
               e.toString(),
-              style: const TextStyle(color: AppColors.blanc),
+              style: TextStyle(color: AppColors.blanc),
             ),
           ),
         );
@@ -121,22 +121,22 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
       builder: (ctx) => AlertDialog(
         backgroundColor: AppColors.surface,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Text(
+        title: Text(
           'Mark as completed?',
           style: TextStyle(color: AppColors.blanc),
         ),
-        content: const Text(
+        content: Text(
           'The client will be able to leave a review. This action confirms the service took place.',
           style: TextStyle(color: AppColors.gris, height: 1.4),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Cancel', style: TextStyle(color: AppColors.gris)),
+            child: Text('Cancel', style: TextStyle(color: AppColors.gris)),
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Confirm', style: TextStyle(color: AppColors.blanc)),
+            child: Text('Confirm', style: TextStyle(color: AppColors.blanc)),
           ),
         ],
       ),
@@ -153,7 +153,7 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             backgroundColor: AppColors.surface,
-            content: const Text(
+            content: Text(
               'Appointment marked as completed',
               style: TextStyle(color: AppColors.blanc),
             ),
@@ -167,7 +167,7 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
             backgroundColor: AppColors.surface,
             content: Text(
               e.toString(),
-              style: const TextStyle(color: AppColors.error),
+              style: TextStyle(color: AppColors.error),
             ),
           ),
         );
@@ -184,22 +184,22 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
       builder: (ctx) => AlertDialog(
         backgroundColor: AppColors.surface,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Text(
+        title: Text(
           'Confirm balance payment?',
           style: TextStyle(color: AppColors.blanc),
         ),
         content: Text(
           'You confirm receiving ${(booking.remainingAmount ?? 0).toStringAsFixed(2)} ${booking.currency} on site.',
-          style: const TextStyle(color: AppColors.gris, height: 1.4),
+          style: TextStyle(color: AppColors.gris, height: 1.4),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Cancel', style: TextStyle(color: AppColors.gris)),
+            child: Text('Cancel', style: TextStyle(color: AppColors.gris)),
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Confirm', style: TextStyle(color: AppColors.blanc)),
+            child: Text('Confirm', style: TextStyle(color: AppColors.blanc)),
           ),
         ],
       ),
@@ -213,7 +213,7 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
       ref.invalidate(proBookingsProvider);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
+          SnackBar(
             backgroundColor: AppColors.surface,
             content: Text(
               'Balance marked as paid',
@@ -229,7 +229,7 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
             backgroundColor: AppColors.surface,
             content: Text(
               e.toString(),
-              style: const TextStyle(color: AppColors.error),
+              style: TextStyle(color: AppColors.error),
             ),
           ),
         );
@@ -249,7 +249,7 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
       ref.invalidate(clientBookingsProvider);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
+          SnackBar(
             backgroundColor: AppColors.surface,
             content: Text(
               'Booking accepted',
@@ -265,7 +265,7 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
             backgroundColor: AppColors.error,
             content: Text(
               e.toString(),
-              style: const TextStyle(color: AppColors.blanc),
+              style: TextStyle(color: AppColors.blanc),
             ),
           ),
         );
@@ -368,7 +368,7 @@ class _ErrorScaffold extends StatelessWidget {
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(color: AppColors.border, width: 0.5),
               ),
-              child: const Icon(Icons.arrow_back_ios_new,
+              child: Icon(Icons.arrow_back_ios_new,
                   color: AppColors.blanc, size: 16),
             ),
             onPressed: onBack,
@@ -442,7 +442,7 @@ class _DetailBody extends StatelessWidget {
                   borderRadius: BorderRadius.circular(10),
                   border: Border.all(color: AppColors.border, width: 0.5),
                 ),
-                child: const Icon(Icons.arrow_back_ios_new,
+                child: Icon(Icons.arrow_back_ios_new,
                     color: AppColors.blanc, size: 16),
               ),
               onPressed: () {
@@ -462,7 +462,7 @@ class _DetailBody extends StatelessWidget {
           centerTitle: true,
           actions: [
             PopupMenuButton<String>(
-              icon: const Icon(Icons.more_vert, color: AppColors.blanc),
+              icon: Icon(Icons.more_vert, color: AppColors.blanc),
               color: AppColors.surface,
               onSelected: (value) {
                 if (value == 'report') {
@@ -717,7 +717,7 @@ class _InfoSection extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               'Est. commission $commissionPct% on deposit: ${commission.toStringAsFixed(2)} ${booking.currency} · Net approx.: ${netEst.toStringAsFixed(2)} ${booking.currency}',
-              style: const TextStyle(
+              style: TextStyle(
                 color: AppColors.gris,
                 fontSize: 12,
                 height: 1.4,
@@ -725,7 +725,7 @@ class _InfoSection extends StatelessWidget {
             ),
             Text(
               'On-site balance: ${(booking.remainingAmount ?? 0).toStringAsFixed(2)} ${booking.currency} (no commission)',
-              style: const TextStyle(
+              style: TextStyle(
                 color: AppColors.gris,
                 fontSize: 12,
                 height: 1.4,
@@ -744,7 +744,7 @@ class _InfoSection extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               'Est. commission $commissionPct%: ${commission.toStringAsFixed(2)} ${booking.currency} · Net approx.: ${netEst.toStringAsFixed(2)} ${booking.currency}',
-              style: const TextStyle(
+              style: TextStyle(
                 color: AppColors.gris,
                 fontSize: 12,
                 height: 1.4,
@@ -1164,7 +1164,7 @@ class _StatusTimeline extends StatelessWidget {
                     color: AppColors.error.withValues(alpha: 0.12),
                     border: Border.all(color: AppColors.error, width: 1.5),
                   ),
-                  child: const Icon(Icons.cancel_outlined,
+                  child: Icon(Icons.cancel_outlined,
                       size: 16, color: AppColors.error),
                 ),
                 const SizedBox(width: 12),

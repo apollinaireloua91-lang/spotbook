@@ -187,7 +187,7 @@ class _SocialLinkBottomSheetState extends State<SocialLinkBottomSheet> {
           const SizedBox(height: 12),
           Text(
             'Link ${p.label}',
-            style: const TextStyle(
+            style: TextStyle(
               color: AppColors.blanc,
               fontSize: 18,
               fontWeight: FontWeight.w700,
@@ -196,14 +196,14 @@ class _SocialLinkBottomSheetState extends State<SocialLinkBottomSheet> {
           const SizedBox(height: 6),
           Text(
             'Paste your ${p.label} profile link',
-            style: const TextStyle(color: AppColors.gris, fontSize: 13),
+            style: TextStyle(color: AppColors.gris, fontSize: 13),
           ),
           const SizedBox(height: 20),
 
           // URL field
           TextField(
             controller: _controller,
-            style: const TextStyle(color: AppColors.blanc, fontSize: 14),
+            style: TextStyle(color: AppColors.blanc, fontSize: 14),
             decoration: InputDecoration(
               hintText: p.hintUrl,
               hintStyle: TextStyle(
@@ -222,7 +222,7 @@ class _SocialLinkBottomSheetState extends State<SocialLinkBottomSheet> {
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: AppColors.blanc),
+                borderSide: BorderSide(color: AppColors.blanc),
               ),
               contentPadding:
                   const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
@@ -242,10 +242,10 @@ class _SocialLinkBottomSheetState extends State<SocialLinkBottomSheet> {
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
-                      side: const BorderSide(color: AppColors.border),
+                      side: BorderSide(color: AppColors.border),
                     ),
                   ),
-                  child: const Text(
+                  child: Text(
                     'Cancel',
                     style: TextStyle(color: AppColors.gris, fontSize: 14),
                   ),
@@ -317,7 +317,7 @@ class AddSocialPlatformSheet extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 20),
-          const Text(
+          Text(
             'ADD A NETWORK',
             style: TextStyle(
               color: AppColors.gris,
@@ -328,8 +328,8 @@ class AddSocialPlatformSheet extends StatelessWidget {
           ),
           const SizedBox(height: 20),
           if (available.isEmpty)
-            const Padding(
-              padding: EdgeInsets.symmetric(vertical: 24),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 24),
               child: Text(
                 'All networks have been added.',
                 style: TextStyle(color: AppColors.gris, fontSize: 13),
@@ -362,7 +362,7 @@ class AddSocialPlatformSheet extends StatelessWidget {
                       const SizedBox(height: 6),
                       Text(
                         p.label,
-                        style: const TextStyle(
+                        style: TextStyle(
                           color: AppColors.grisClair,
                           fontSize: 10,
                           fontWeight: FontWeight.w500,

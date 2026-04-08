@@ -8,6 +8,7 @@ import 'core/realtime/realtime_bootstrap.dart';
 import 'l10n/app_localizations.dart';
 import 'router/app_router.dart';
 import 'shared/locale/app_locale_notifier.dart';
+import 'shared/theme/app_colors.dart';
 import 'shared/theme/app_theme.dart';
 import 'shared/theme/theme_mode_notifier.dart';
 import 'shared/utils/analytics_service.dart';
@@ -57,6 +58,14 @@ class _SpotbookAppState extends ConsumerState<SpotbookApp> {
 
     final locale = ref.watch(appLocaleProvider);
     final themeMode = ref.watch(themeModeProvider);
+
+    // Resolve effective brightness and sync AppColors
+    final effectiveBrightness = themeMode == ThemeMode.dark
+        ? Brightness.dark
+        : themeMode == ThemeMode.light
+            ? Brightness.light
+            : MediaQuery.platformBrightnessOf(context);
+    AppColors.brightness = effectiveBrightness;
 
     return MaterialApp.router(
       title: 'Spotbook',

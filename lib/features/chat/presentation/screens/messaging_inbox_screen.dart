@@ -123,7 +123,7 @@ class _MessagingInboxScreenState extends ConsumerState<MessagingInboxScreen> {
                     borderRadius: BorderRadius.circular(10),
                     border: Border.all(color: AppColors.border, width: 0.5),
                   ),
-                  child: const Icon(Icons.arrow_back_ios_new,
+                  child: Icon(Icons.arrow_back_ios_new,
                       color: AppColors.blanc, size: 16),
                 ),
                 onPressed: () {
@@ -164,7 +164,7 @@ class _MessagingInboxScreenState extends ConsumerState<MessagingInboxScreen> {
                     hintText: 'Search conversations…',
                     hintStyle:
                         GoogleFonts.dmSans(color: AppColors.gris, fontSize: 14),
-                    prefixIcon: const Icon(Icons.search,
+                    prefixIcon: Icon(Icons.search,
                         color: AppColors.gris, size: 20),
                     suffixIcon: _searchQuery.isNotEmpty
                         ? GestureDetector(
@@ -172,7 +172,7 @@ class _MessagingInboxScreenState extends ConsumerState<MessagingInboxScreen> {
                               _searchCtrl.clear();
                               setState(() => _searchQuery = '');
                             },
-                            child: const Icon(Icons.close,
+                            child: Icon(Icons.close,
                                 color: AppColors.gris, size: 18),
                           )
                         : null,
@@ -207,7 +207,7 @@ class _MessagingInboxScreenState extends ConsumerState<MessagingInboxScreen> {
                         child: ListView.separated(
                           padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
                           itemCount: filtered.length,
-                          separatorBuilder: (_, __) => const Divider(
+                          separatorBuilder: (_, __) => Divider(
                             height: 1,
                             color: AppColors.border,
                           ),
@@ -292,7 +292,7 @@ class _ConversationTile extends StatelessWidget {
                           width: 52,
                           height: 52,
                           color: AppColors.surfaceAlt,
-                          child: const Icon(Icons.person,
+                          child: Icon(Icons.person,
                               color: AppColors.gris),
                         ),
                       )
@@ -300,7 +300,7 @@ class _ConversationTile extends StatelessWidget {
                         width: 52,
                         height: 52,
                         color: AppColors.surfaceAlt,
-                        child: const Icon(Icons.person,
+                        child: Icon(Icons.person,
                             color: AppColors.gris),
                       ),
               ),

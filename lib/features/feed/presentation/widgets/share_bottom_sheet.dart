@@ -11,7 +11,7 @@ class ShareBottomSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
@@ -30,7 +30,7 @@ class ShareBottomSheet extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 20),
-            const Text(
+            Text(
               'Share',
               style: TextStyle(
                 color: AppColors.blanc,
@@ -124,7 +124,7 @@ class _ShareOption extends StatelessWidget {
           const SizedBox(height: 8),
           Text(
             label,
-            style: const TextStyle(
+            style: TextStyle(
               color: AppColors.gris,
               fontSize: 11,
               fontWeight: FontWeight.w500,

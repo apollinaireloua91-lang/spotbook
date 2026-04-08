@@ -593,7 +593,7 @@ class _UpcomingBookingsSection extends StatelessWidget {
                         color: AppColors.violet.withAlpha(15),
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      child: const Icon(Icons.calendar_today_outlined,
+                      child: Icon(Icons.calendar_today_outlined,
                           color: AppColors.gris, size: 28),
                     ),
                     const SizedBox(height: 12),
@@ -714,7 +714,7 @@ class _PremiumBookingTile extends StatelessWidget {
                                   booking.clientAvatarUrl!)
                               : null,
                           child: booking.clientAvatarUrl == null
-                              ? const Icon(Icons.person,
+                              ? Icon(Icons.person,
                                   color: AppColors.gris, size: 20)
                               : null,
                         ),
@@ -870,7 +870,7 @@ class _PremiumNextEventCard extends StatelessWidget {
                           placeholder: (_, __) => Container(
                             height: 150,
                             color: AppColors.surfaceAlt,
-                            child: const Center(
+                            child: Center(
                               child: Icon(Icons.image,
                                   color: AppColors.grisInactif, size: 32),
                             ),
@@ -878,7 +878,7 @@ class _PremiumNextEventCard extends StatelessWidget {
                           errorWidget: (_, __, ___) => Container(
                             height: 150,
                             color: AppColors.surfaceAlt,
-                            child: const Center(
+                            child: Center(
                               child: Icon(Icons.broken_image,
                                   color: AppColors.grisInactif, size: 32),
                             ),
@@ -918,7 +918,7 @@ class _PremiumNextEventCard extends StatelessWidget {
                           end: Alignment.bottomRight,
                         ),
                       ),
-                      child: const Center(
+                      child: Center(
                         child: Icon(Icons.event,
                             color: AppColors.grisInactif, size: 40),
                       ),
@@ -951,7 +951,7 @@ class _PremiumNextEventCard extends StatelessWidget {
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  const Icon(Icons.calendar_today,
+                                  Icon(Icons.calendar_today,
                                       color: AppColors.violet, size: 12),
                                   const SizedBox(width: 5),
                                   Text(
@@ -972,7 +972,7 @@ class _PremiumNextEventCard extends StatelessWidget {
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  const Icon(Icons.location_on_outlined,
+                                  Icon(Icons.location_on_outlined,
                                       color: AppColors.gris, size: 14),
                                   const SizedBox(width: 4),
                                   Flexible(
@@ -1028,7 +1028,7 @@ class _DashboardShimmer extends StatelessWidget {
               // Greeting
               Row(
                 children: [
-                  const CircleAvatar(
+                  CircleAvatar(
                       radius: 26, backgroundColor: AppColors.surface),
                   const SizedBox(width: 14),
                   Column(
@@ -1161,7 +1161,7 @@ class _ErrorView extends StatelessWidget {
                   color: AppColors.error.withAlpha(15),
                   borderRadius: BorderRadius.circular(16),
                 ),
-                child: const Icon(Icons.cloud_off,
+                child: Icon(Icons.cloud_off,
                     color: AppColors.error, size: 36),
               ),
               const SizedBox(height: 20),

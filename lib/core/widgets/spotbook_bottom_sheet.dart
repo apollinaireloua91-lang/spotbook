@@ -84,7 +84,7 @@ class _SpotbookSheetState extends State<_SpotbookSheet>
         scale: _scaleAnimation,
         alignment: Alignment.bottomCenter,
         child: Container(
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             color: SpotbookColors.surfaceAlt,
             borderRadius: BorderRadius.only(
               topLeft: Radius.circular(24),
@@ -126,7 +126,7 @@ class _SpotbookSheetState extends State<_SpotbookSheet>
                       ),
                       IconButton(
                         onPressed: () => Navigator.of(context).maybePop(),
-                        icon: const Icon(
+                        icon: Icon(
                           Icons.close,
                           color: SpotbookColors.textSecondary,
                         ),

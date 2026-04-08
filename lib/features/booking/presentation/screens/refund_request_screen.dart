@@ -174,7 +174,7 @@ class _RefundRequestScreenState extends ConsumerState<RefundRequestScreen> {
         centerTitle: true,
       ),
       body: _isLoading
-          ? const Center(
+          ? Center(
               child:
                   CircularProgressIndicator(color: AppColors.violet))
           : _booking == null

@@ -48,26 +48,26 @@ class _CommentsSheetState extends ConsumerState<CommentsSheet> {
       initialChildSize: 0.6, maxChildSize: 0.9, minChildSize: 0.3,
       builder: (context, scrollController) {
         return Container(
-          decoration: const BoxDecoration(color: AppColors.surface, borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+          decoration: BoxDecoration(color: AppColors.surface, borderRadius: const BorderRadius.vertical(top: Radius.circular(20))),
           child: Column(children: [
             Container(margin: const EdgeInsets.symmetric(vertical: 12), width: 40, height: 4, decoration: BoxDecoration(color: AppColors.gris, borderRadius: BorderRadius.circular(2))),
-            Padding(padding: const EdgeInsets.symmetric(horizontal: 16), child: Text('Comments (${s.comments.length})', style: const TextStyle(color: AppColors.blanc, fontSize: 16, fontWeight: FontWeight.w600))),
-            const SizedBox(height: 8), const Divider(color: AppColors.border, height: 1),
+            Padding(padding: const EdgeInsets.symmetric(horizontal: 16), child: Text('Comments (${s.comments.length})', style: TextStyle(color: AppColors.blanc, fontSize: 16, fontWeight: FontWeight.w600))),
+            const SizedBox(height: 8), Divider(color: AppColors.border, height: 1),
             Expanded(
               child: s.isLoading
-                  ? const Center(child: CircularProgressIndicator(color: AppColors.blanc))
+                  ? Center(child: CircularProgressIndicator(color: AppColors.blanc))
                   : s.comments.isEmpty
-                      ? const Center(child: Text('No comments yet', style: TextStyle(color: AppColors.gris, fontSize: 14)))
+                      ? Center(child: Text('No comments yet', style: TextStyle(color: AppColors.gris, fontSize: 14)))
                       : ListView.builder(controller: scrollController, reverse: true, itemCount: s.comments.length,
                           itemBuilder: (context, index) => _CommentTile(comment: s.comments[s.comments.length - 1 - index])),
             ),
-            const Divider(color: AppColors.border, height: 1),
+            Divider(color: AppColors.border, height: 1),
             Padding(
               padding: EdgeInsets.only(left: 16, right: 8, bottom: MediaQuery.of(context).viewInsets.bottom + 8, top: 8),
               child: Row(children: [
-                Expanded(child: TextField(controller: _textCtrl, style: const TextStyle(color: AppColors.blanc, fontSize: 14),
-                  decoration: InputDecoration(hintText: 'Add a comment...', hintStyle: const TextStyle(color: AppColors.gris), filled: true, fillColor: AppColors.surfaceAlt, border: OutlineInputBorder(borderRadius: BorderRadius.circular(24), borderSide: BorderSide.none), contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10)))),
-                IconButton(onPressed: _sendComment, icon: const Icon(Icons.send, color: AppColors.accent, size: 22)),
+                Expanded(child: TextField(controller: _textCtrl, style: TextStyle(color: AppColors.blanc, fontSize: 14),
+                  decoration: InputDecoration(hintText: 'Add a comment...', hintStyle: TextStyle(color: AppColors.gris), filled: true, fillColor: AppColors.surfaceAlt, border: OutlineInputBorder(borderRadius: BorderRadius.circular(24), borderSide: BorderSide.none), contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10)))),
+                IconButton(onPressed: _sendComment, icon: Icon(Icons.send, color: AppColors.accent, size: 22)),
               ]),
             ),
           ]),
@@ -88,12 +88,12 @@ class _CommentTile extends StatelessWidget {
       child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
         CircleAvatar(radius: 16, backgroundColor: AppColors.surfaceAlt,
           backgroundImage: comment.userAvatarUrl != null ? CachedNetworkImageProvider(comment.userAvatarUrl!) : null,
-          child: comment.userAvatarUrl == null ? const Icon(Icons.person, size: 16, color: AppColors.gris) : null),
+          child: comment.userAvatarUrl == null ? Icon(Icons.person, size: 16, color: AppColors.gris) : null),
         const SizedBox(width: 10),
         Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text(comment.userName ?? 'User', style: const TextStyle(color: AppColors.blanc, fontSize: 13, fontWeight: FontWeight.w600)),
+          Text(comment.userName ?? 'User', style: TextStyle(color: AppColors.blanc, fontSize: 13, fontWeight: FontWeight.w600)),
           const SizedBox(height: 2),
-          Text(comment.content, style: const TextStyle(color: AppColors.grisClair, fontSize: 13)),
+          Text(comment.content, style: TextStyle(color: AppColors.grisClair, fontSize: 13)),
         ])),
       ]),
     );

@@ -153,7 +153,7 @@ class _ClientEventsDiscoveryScreenState
           // Events list
           Expanded(
             child: eventsState.isLoading
-                ? const Center(
+                ? Center(
                     child: CircularProgressIndicator(
                         color: AppColors.violet))
                 : Builder(builder: (context) {
@@ -164,7 +164,7 @@ class _ClientEventsDiscoveryScreenState
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            const Icon(Icons.event_busy,
+                            Icon(Icons.event_busy,
                                 color: AppColors.gris, size: 48),
                             const SizedBox(height: 12),
                             Text('No events found',
@@ -283,14 +283,14 @@ class _EventCard extends StatelessWidget {
                           Container(color: AppColors.surfaceAlt),
                       errorWidget: (_, __, ___) => Container(
                         color: AppColors.surfaceAlt,
-                        child: const Icon(Icons.event,
+                        child: Icon(Icons.event,
                             color: AppColors.gris, size: 40),
                       ),
                     )
                   else
                     Container(
                       color: AppColors.surfaceAlt,
-                      child: const Icon(Icons.event,
+                      child: Icon(Icons.event,
                           color: AppColors.gris, size: 40),
                     ),
                   // Price badge
@@ -331,7 +331,7 @@ class _EventCard extends StatelessWidget {
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            const Icon(Icons.local_fire_department,
+                            Icon(Icons.local_fire_department,
                                 color: AppColors.blanc, size: 14),
                             const SizedBox(width: 4),
                             Text('Se vend vite',
@@ -365,7 +365,7 @@ class _EventCard extends StatelessWidget {
                     const SizedBox(height: 6),
                     Row(
                       children: [
-                        const Icon(Icons.calendar_today,
+                        Icon(Icons.calendar_today,
                             color: AppColors.gris, size: 14),
                         const SizedBox(width: 6),
                         Text(dateFmt,
@@ -379,7 +379,7 @@ class _EventCard extends StatelessWidget {
                     const SizedBox(height: 4),
                     Row(
                       children: [
-                        const Icon(Icons.location_on_outlined,
+                        Icon(Icons.location_on_outlined,
                             color: AppColors.gris, size: 14),
                         const SizedBox(width: 6),
                         Expanded(

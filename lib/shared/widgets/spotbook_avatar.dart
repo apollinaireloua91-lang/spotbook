@@ -157,7 +157,7 @@ class _GradientRingState extends State<_GradientRing>
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               gradient: SweepGradient(
-                colors: const [
+                colors: [
                   AppColors.violet,
                   AppColors.rose,
                   AppColors.violetClair,
@@ -233,7 +233,7 @@ class _InitialsAvatar extends StatelessWidget {
     return Container(
       width: size,
       height: size,
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: AppColors.surfaceAlt,
         shape: BoxShape.circle,
       ),

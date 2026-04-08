@@ -35,7 +35,7 @@ class _ClientShareBottomSheetState extends State<ClientShareBottomSheet>
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: AppColors.surfaceAlt,
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
@@ -54,7 +54,7 @@ class _ClientShareBottomSheetState extends State<ClientShareBottomSheet>
               ),
             ),
             const SizedBox(height: 18),
-            const Text(
+            Text(
               'Share',
               style: TextStyle(
                 color: AppColors.blanc,

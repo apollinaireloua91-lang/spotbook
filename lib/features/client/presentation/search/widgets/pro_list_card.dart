@@ -91,7 +91,7 @@ class ProListCard extends StatelessWidget {
                           Container(
                             width: 8,
                             height: 8,
-                            decoration: const BoxDecoration(
+                            decoration: BoxDecoration(
                               color: AppColors.success,
                               shape: BoxShape.circle,
                             ),

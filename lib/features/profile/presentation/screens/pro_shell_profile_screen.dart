@@ -987,7 +987,7 @@ class _VideosRow extends StatelessWidget {
           ),
         );
       },
-      loading: () => const SizedBox(
+      loading: () => SizedBox(
         height: 160,
         child: Center(
             child: CircularProgressIndicator(color: AppColors.violet)),
@@ -1066,7 +1066,7 @@ class _ServicesList extends StatelessWidget {
           ],
         );
       },
-      loading: () => const SizedBox(
+      loading: () => SizedBox(
         height: 80,
         child: Center(
             child: CircularProgressIndicator(color: AppColors.violet)),
@@ -1191,7 +1191,7 @@ class _EventsList extends StatelessWidget {
           ],
         );
       },
-      loading: () => const SizedBox(
+      loading: () => SizedBox(
         height: 80,
         child: Center(
             child: CircularProgressIndicator(color: AppColors.violet)),

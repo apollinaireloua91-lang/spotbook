@@ -98,15 +98,15 @@ class _BookingSheetState extends ConsumerState<_BookingSheet> {
       maxChildSize: 0.95,
       builder: (context, scrollController) {
         return Container(
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             color: AppColors.fond,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
           ),
           child: Column(
             children: [
               _buildHandle(),
               _StepIndicator(currentStep: state.step),
-              const Divider(color: AppColors.border, height: 1),
+              Divider(color: AppColors.border, height: 1),
               Expanded(
                 child: SingleChildScrollView(
                   controller: scrollController,
@@ -252,7 +252,7 @@ class _StepHeader extends StatelessWidget {
                   borderRadius: BorderRadius.circular(10),
                   border: Border.all(color: AppColors.border),
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.arrow_back_ios_new,
                   color: AppColors.blanc,
                   size: 16,
@@ -323,7 +323,7 @@ class _CtaButton extends StatelessWidget {
         ),
         child: Center(
           child: isLoading
-              ? const SizedBox(
+              ? SizedBox(
                   width: 20,
                   height: 20,
                   child: CircularProgressIndicator(
@@ -568,7 +568,7 @@ class _Step1Services extends ConsumerWidget {
             ),
             child: Row(
               children: [
-                const Icon(Icons.error_outline,
+                Icon(Icons.error_outline,
                     color: AppColors.error, size: 16),
                 const SizedBox(width: 8),
                 Expanded(
@@ -814,7 +814,7 @@ class _Step2CalendarState extends ConsumerState<_Step2Calendar> {
                   ),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.chevron_right, color: AppColors.blanc),
+                  icon: Icon(Icons.chevron_right, color: AppColors.blanc),
                   onPressed: _nextMonth,
                 ),
               ],
@@ -968,7 +968,7 @@ class _Step3Slots extends ConsumerWidget {
             ),
             child: Row(
               children: [
-                const Icon(Icons.warning_amber_rounded,
+                Icon(Icons.warning_amber_rounded,
                     color: AppColors.error, size: 16),
                 const SizedBox(width: 8),
                 Expanded(
@@ -1109,7 +1109,7 @@ class _Step4Summary extends ConsumerWidget {
                     ? CachedNetworkImageProvider(proProfile.avatarUrl!)
                     : null,
                 child: proProfile.avatarUrl == null
-                    ? const Icon(Icons.person, color: AppColors.gris, size: 20)
+                    ? Icon(Icons.person, color: AppColors.gris, size: 20)
                     : null,
               ),
               const SizedBox(width: 12),
@@ -1174,19 +1174,19 @@ class _Step4Summary extends ConsumerWidget {
                 label: 'Service',
                 value: state.selectedService?.name ?? '',
               ),
-              const Divider(color: AppColors.border, height: 20),
+              Divider(color: AppColors.border, height: 20),
               _DetailRow(
                 icon: Icons.calendar_today,
                 label: 'Date',
                 value: dateDisplay,
               ),
-              const Divider(color: AppColors.border, height: 20),
+              Divider(color: AppColors.border, height: 20),
               _DetailRow(
                 icon: Icons.schedule,
                 label: 'Heure',
                 value: state.selectedSlot?.startTime.substring(0, 5) ?? '',
               ),
-              const Divider(color: AppColors.border, height: 20),
+              Divider(color: AppColors.border, height: 20),
               _DetailRow(
                 icon: Icons.timelapse,
                 label: 'Durée',
@@ -1235,7 +1235,7 @@ class _Step4Summary extends ConsumerWidget {
                     value: '${state.totalPrice.toStringAsFixed(2)} CA\$',
                   ),
                 ],
-                const Divider(color: AppColors.border, height: 20),
+                Divider(color: AppColors.border, height: 20),
                 _PriceRow(
                   label: 'Acompte (30%)',
                   value: '${depositAmount.toStringAsFixed(2)} CA\$',
@@ -1245,7 +1245,7 @@ class _Step4Summary extends ConsumerWidget {
                   label: 'Frais de service',
                   value: '${serviceFee.toStringAsFixed(2)} CA\$',
                 ),
-                const Divider(color: AppColors.border, height: 20),
+                Divider(color: AppColors.border, height: 20),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -1278,7 +1278,7 @@ class _Step4Summary extends ConsumerWidget {
                   ),
                   child: Row(
                     children: [
-                      const Icon(Icons.event_outlined,
+                      Icon(Icons.event_outlined,
                           color: AppColors.violetClair, size: 16),
                       const SizedBox(width: 8),
                       Expanded(
@@ -1418,7 +1418,7 @@ class _Step5Payment extends ConsumerWidget {
             children: [
               Row(
                 children: [
-                  const Icon(Icons.credit_card,
+                  Icon(Icons.credit_card,
                       color: AppColors.violetClair, size: 18),
                   const SizedBox(width: 8),
                   Text(
@@ -1515,7 +1515,7 @@ class _Step5Payment extends ConsumerWidget {
             ),
             child: Row(
               children: [
-                const Icon(Icons.error_outline,
+                Icon(Icons.error_outline,
                     color: AppColors.error, size: 16),
                 const SizedBox(width: 8),
                 Expanded(
@@ -1656,7 +1656,7 @@ class _Step6Confirmation extends StatelessWidget {
                 shape: BoxShape.circle,
                 color: AppColors.success.withAlpha(25),
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.check_circle,
                 color: AppColors.success,
                 size: 60,
@@ -1795,7 +1795,7 @@ class _Step6Confirmation extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Icons.calendar_today, color: AppColors.blanc, size: 16),
+                Icon(Icons.calendar_today, color: AppColors.blanc, size: 16),
                 const SizedBox(width: 8),
                 Text(
                   'Add to calendar',

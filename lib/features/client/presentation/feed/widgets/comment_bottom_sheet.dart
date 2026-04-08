@@ -57,7 +57,7 @@ class _CommentBottomSheetState extends ConsumerState<CommentBottomSheet> {
       minChildSize: 0.3,
       builder: (context, scrollController) {
         return Container(
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             color: AppColors.surfaceAlt,
             borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
           ),
@@ -80,7 +80,7 @@ class _CommentBottomSheetState extends ConsumerState<CommentBottomSheet> {
                   children: [
                     Text(
                       'Comments',
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: AppColors.blanc,
                         fontSize: 15,
                         fontWeight: FontWeight.w700,
@@ -104,7 +104,7 @@ class _CommentBottomSheetState extends ConsumerState<CommentBottomSheet> {
               // Comments list
               Expanded(
                 child: s.isLoading
-                    ? const Center(
+                    ? Center(
                         child: CircularProgressIndicator(
                           color: AppColors.violet,
                           strokeWidth: 2,
@@ -173,7 +173,7 @@ class _CommentBottomSheetState extends ConsumerState<CommentBottomSheet> {
                     CircleAvatar(
                       radius: 14,
                       backgroundColor: AppColors.violet.withAlpha(60),
-                      child: const Icon(
+                      child: Icon(
                         Icons.person,
                         size: 14,
                         color: AppColors.violet,
@@ -190,7 +190,7 @@ class _CommentBottomSheetState extends ConsumerState<CommentBottomSheet> {
                         child: TextField(
                           controller: _textCtrl,
                           focusNode: _focusNode,
-                          style: const TextStyle(
+                          style: TextStyle(
                             color: AppColors.blanc,
                             fontSize: 13,
                           ),
@@ -213,7 +213,7 @@ class _CommentBottomSheetState extends ConsumerState<CommentBottomSheet> {
                     const SizedBox(width: 4),
                     IconButton(
                       onPressed: _sendComment,
-                      icon: const Icon(
+                      icon: Icon(
                         Icons.send_rounded,
                         color: AppColors.violet,
                         size: 20,

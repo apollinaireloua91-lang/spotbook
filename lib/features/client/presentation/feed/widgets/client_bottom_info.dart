@@ -89,7 +89,7 @@ class ClientBottomInfo extends StatelessWidget {
               Container(
                 width: 16,
                 height: 16,
-                decoration: const BoxDecoration(
+                decoration: BoxDecoration(
                   color: AppColors.violet,
                   shape: BoxShape.circle,
                 ),

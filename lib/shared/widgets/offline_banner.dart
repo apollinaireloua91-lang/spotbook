@@ -18,7 +18,7 @@ class OfflineBanner extends ConsumerWidget {
           width: double.infinity,
           padding: const EdgeInsets.symmetric(vertical: 8),
           color: AppColors.error,
-          child: const Text(
+          child: Text(
             'Hors connexion',
             textAlign: TextAlign.center,
             style: TextStyle(

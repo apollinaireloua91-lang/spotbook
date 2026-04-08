@@ -189,8 +189,8 @@ class _ProRdvScreenState extends ConsumerState<ProRdvScreen>
 
               // ── Time Slots ──
               if (state.isLoading)
-                const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 40),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 40),
                   child: Center(
                     child:
                         CircularProgressIndicator(color: AppColors.violet),

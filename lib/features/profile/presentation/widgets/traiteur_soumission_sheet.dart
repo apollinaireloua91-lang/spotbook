@@ -114,7 +114,7 @@ class _SoumissionSheetState extends State<_SoumissionSheet> {
   Future<void> _submit() async {
     if (_guestCount <= 0) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+        SnackBar(
           backgroundColor: AppColors.error,
           content: Text('Please enter the number of guests',
               style: TextStyle(color: AppColors.blanc)),
@@ -151,7 +151,7 @@ class _SoumissionSheetState extends State<_SoumissionSheet> {
       if (mounted) {
         Navigator.of(context).pop();
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
+          SnackBar(
             backgroundColor: AppColors.success,
             content: Text(
               'Quote request sent! Response in 24-48h.',
@@ -166,7 +166,7 @@ class _SoumissionSheetState extends State<_SoumissionSheet> {
           SnackBar(
             backgroundColor: AppColors.error,
             content: Text('Error: $e',
-                style: const TextStyle(color: AppColors.blanc)),
+                style: TextStyle(color: AppColors.blanc)),
           ),
         );
       }
@@ -183,9 +183,9 @@ class _SoumissionSheetState extends State<_SoumissionSheet> {
       constraints: BoxConstraints(
         maxHeight: MediaQuery.sizeOf(context).height * 0.85,
       ),
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: AppColors.fond,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -215,7 +215,7 @@ class _SoumissionSheetState extends State<_SoumissionSheet> {
                 ),
                 const Spacer(),
                 IconButton(
-                  icon: const Icon(Icons.close,
+                  icon: Icon(Icons.close,
                       color: AppColors.gris, size: 20),
                   onPressed: () => Navigator.of(context).pop(),
                 ),
@@ -383,7 +383,7 @@ class _SoumissionSheetState extends State<_SoumissionSheet> {
                     ),
                     child: Center(
                       child: _isSubmitting
-                          ? const SizedBox(
+                          ? SizedBox(
                               width: 20,
                               height: 20,
                               child: CircularProgressIndicator(
@@ -451,11 +451,11 @@ class _SoumissionSheetState extends State<_SoumissionSheet> {
             const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.border),
+          borderSide: BorderSide(color: AppColors.border),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.border),
+          borderSide: BorderSide(color: AppColors.border),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
@@ -482,7 +482,7 @@ class _SoumissionSheetState extends State<_SoumissionSheet> {
           value: value,
           isExpanded: true,
           dropdownColor: AppColors.surface,
-          icon: const Icon(Icons.keyboard_arrow_down,
+          icon: Icon(Icons.keyboard_arrow_down,
               color: AppColors.gris, size: 20),
           style: GoogleFonts.dmSans(
             fontSize: 13,
@@ -510,7 +510,7 @@ class _SoumissionSheetState extends State<_SoumissionSheet> {
           value: _selectedForfait?.id,
           isExpanded: true,
           dropdownColor: AppColors.surface,
-          icon: const Icon(Icons.keyboard_arrow_down,
+          icon: Icon(Icons.keyboard_arrow_down,
               color: AppColors.gris, size: 20),
           style: GoogleFonts.dmSans(
             fontSize: 13,
@@ -548,7 +548,7 @@ class _SoumissionSheetState extends State<_SoumissionSheet> {
           builder: (ctx, child) {
             return Theme(
               data: Theme.of(ctx).copyWith(
-                colorScheme: const ColorScheme.dark(
+                colorScheme: ColorScheme.dark(
                   primary: AppColors.catering,
                   surface: AppColors.surface,
                 ),
@@ -568,7 +568,7 @@ class _SoumissionSheetState extends State<_SoumissionSheet> {
         ),
         child: Row(
           children: [
-            const Icon(Icons.calendar_today,
+            Icon(Icons.calendar_today,
                 size: 16, color: AppColors.gris),
             const SizedBox(width: 10),
             Text(
@@ -595,7 +595,7 @@ class _SoumissionSheetState extends State<_SoumissionSheet> {
           builder: (ctx, child) {
             return Theme(
               data: Theme.of(ctx).copyWith(
-                colorScheme: const ColorScheme.dark(
+                colorScheme: ColorScheme.dark(
                   primary: AppColors.catering,
                   surface: AppColors.surface,
                 ),
@@ -615,7 +615,7 @@ class _SoumissionSheetState extends State<_SoumissionSheet> {
         ),
         child: Row(
           children: [
-            const Icon(Icons.schedule, size: 16, color: AppColors.gris),
+            Icon(Icons.schedule, size: 16, color: AppColors.gris),
             const SizedBox(width: 10),
             Text(
               label,

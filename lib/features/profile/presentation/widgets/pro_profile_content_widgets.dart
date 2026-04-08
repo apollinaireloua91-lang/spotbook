@@ -77,7 +77,7 @@ class VideoThumbnailCard extends StatelessWidget {
                       ),
                       child: Text(
                         formatVideoDuration(video.durationSeconds),
-                        style: const TextStyle(
+                        style: TextStyle(
                           color: AppColors.blanc,
                           fontSize: 11,
                           fontWeight: FontWeight.w600,
@@ -94,7 +94,7 @@ class VideoThumbnailCard extends StatelessWidget {
                 video.title,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
+                style: TextStyle(
                   color: AppColors.blanc,
                   fontSize: 13,
                   fontWeight: FontWeight.w500,
@@ -134,7 +134,7 @@ class ProServiceCard extends StatelessWidget {
         children: [
           Text(
             service.name,
-            style: const TextStyle(
+            style: TextStyle(
               color: AppColors.blanc,
               fontSize: 16,
               fontWeight: FontWeight.w600,
@@ -143,7 +143,7 @@ class ProServiceCard extends StatelessWidget {
           const SizedBox(height: 6),
           Text(
             '${service.durationMinutes} min · ${service.price.toStringAsFixed(0)} €',
-            style: const TextStyle(color: AppColors.gris, fontSize: 13),
+            style: TextStyle(color: AppColors.gris, fontSize: 13),
           ),
           const SizedBox(height: 12),
           SpotbookButton.primary(
@@ -204,7 +204,7 @@ class ProEventProfileCard extends StatelessWidget {
                         imageUrl: event.coverUrl!,
                         fit: BoxFit.cover,
                       )
-                    : const ColoredBox(
+                    : ColoredBox(
                         color: AppColors.surfaceAlt,
                         child: Icon(
                           Icons.event_outlined,
@@ -224,7 +224,7 @@ class ProEventProfileCard extends StatelessWidget {
                       event.title,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: AppColors.blanc,
                         fontSize: 15,
                         fontWeight: FontWeight.w600,
@@ -233,7 +233,7 @@ class ProEventProfileCard extends StatelessWidget {
                     const SizedBox(height: 6),
                     Text(
                       dateStr,
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: AppColors.gris,
                         fontSize: 13,
                       ),
@@ -241,7 +241,7 @@ class ProEventProfileCard extends StatelessWidget {
                     const SizedBox(height: 4),
                     Text(
                       'Ticket · $priceStr',
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: AppColors.gris,
                         fontSize: 13,
                       ),

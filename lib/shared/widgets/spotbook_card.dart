@@ -44,7 +44,7 @@ class SpotbookCard extends StatelessWidget {
             color: borderColor,
             width: selected ? 1.5 : 0.5,
           ),
-          boxShadow: const [
+          boxShadow: [
             BoxShadow(
               color: AppColors.shadowCard,
               blurRadius: 8,

@@ -497,7 +497,7 @@ class CateringRequestQuoteCTA extends StatelessWidget {
                 color: AppColors.blanc.withAlpha(51),
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: const Center(
+              child: Center(
                 child: Icon(Icons.description_outlined,
                     color: AppColors.blanc, size: 18),
               ),
@@ -525,7 +525,7 @@ class CateringRequestQuoteCTA extends StatelessWidget {
                 ],
               ),
             ),
-            const Icon(Icons.arrow_forward_ios,
+            Icon(Icons.arrow_forward_ios,
                 color: AppColors.blanc, size: 14),
           ],
         ),

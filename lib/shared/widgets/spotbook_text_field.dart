@@ -96,7 +96,7 @@ class _SpotbookTextFieldState extends State<SpotbookTextField>
             if (widget.label != null) ...[
               Text(
                 widget.label!,
-                style: const TextStyle(
+                style: TextStyle(
                   color: AppColors.grisClair,
                   fontSize: 13,
                   fontWeight: FontWeight.w500,
@@ -122,14 +122,14 @@ class _SpotbookTextFieldState extends State<SpotbookTextField>
                 maxLines: widget.obscureText ? 1 : widget.maxLines,
                 maxLength: widget.maxLength,
                 autofocus: widget.autofocus,
-                style: const TextStyle(
+                style: TextStyle(
                   color: AppColors.blanc,
                   fontSize: 16,
                 ),
                 cursorColor: AppColors.blanc,
                 decoration: InputDecoration(
                   hintText: widget.hint,
-                  hintStyle: const TextStyle(
+                  hintStyle: TextStyle(
                     color: AppColors.gris,
                     fontSize: 16,
                   ),
@@ -159,7 +159,7 @@ class _SpotbookTextFieldState extends State<SpotbookTextField>
               const SizedBox(height: 6),
               Text(
                 widget.errorText!,
-                style: const TextStyle(
+                style: TextStyle(
                   color: AppColors.error,
                   fontSize: 12,
                 ),

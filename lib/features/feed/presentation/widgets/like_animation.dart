@@ -50,7 +50,7 @@ class _LikeAnimationState extends State<LikeAnimation>
           opacity: _opacity.value,
           child: Transform.scale(
             scale: _scale.value,
-            child: const Icon(
+            child: Icon(
               Icons.favorite,
               color: AppColors.rose,
               size: 100,

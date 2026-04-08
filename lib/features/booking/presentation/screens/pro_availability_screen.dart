@@ -214,7 +214,7 @@ class ProAvailabilityScreen extends ConsumerWidget {
                                 builder: (c, child) {
                                   return Theme(
                                     data: Theme.of(c).copyWith(
-                                      colorScheme: const ColorScheme.dark(
+                                      colorScheme: ColorScheme.dark(
                                         primary: AppColors.blanc,
                                         onPrimary: AppColors.fond,
                                         surface: AppColors.surface,

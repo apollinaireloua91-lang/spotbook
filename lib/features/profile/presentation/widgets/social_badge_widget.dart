@@ -48,7 +48,7 @@ class SocialBadgeWidget extends StatelessWidget {
           const SizedBox(width: 6),
           Text(
             formatReach(followersCount),
-            style: const TextStyle(
+            style: TextStyle(
               color: AppColors.blanc,
               fontSize: 14,
               fontWeight: FontWeight.w600,
@@ -75,7 +75,7 @@ class SocialBadgeWidget extends StatelessWidget {
               const SizedBox(width: 4),
               Text(
                 formatReach(followersCount),
-                style: const TextStyle(
+                style: TextStyle(
                   color: AppColors.blanc,
                   fontSize: 12,
                   fontWeight: FontWeight.w600,

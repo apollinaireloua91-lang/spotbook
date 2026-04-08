@@ -64,7 +64,7 @@ class CommentBubble extends StatelessWidget {
                 children: [
                   Text(
                     comment.userName ?? 'Utilisateur',
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: AppColors.blanc,
                       fontSize: 10,
                       fontWeight: FontWeight.w700,

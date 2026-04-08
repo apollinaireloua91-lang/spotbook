@@ -264,11 +264,11 @@ class _SpotbookVideoPlayerState extends State<SpotbookVideoPlayer>
                     color: AppColors.overlayMedium,
                     borderRadius: BorderRadius.circular(20),
                   ),
-                  child: const Row(
+                  child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Icon(Icons.volume_off, color: AppColors.blanc, size: 16),
-                      SizedBox(width: 6),
+                      const SizedBox(width: 6),
                       Text(
                         'Tap for sound',
                         style: TextStyle(
@@ -285,7 +285,7 @@ class _SpotbookVideoPlayerState extends State<SpotbookVideoPlayer>
 
           // ── Persistent mute icon (bottom-right, feed only) ──
           if (!widget.showControls && _isMuted && !_showMuteIndicator)
-            const Positioned(
+            Positioned(
               bottom: 16,
               right: 16,
               child: Icon(

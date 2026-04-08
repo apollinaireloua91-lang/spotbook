@@ -6,6 +6,7 @@ import {
   jsonResponse,
   securityHeadersFor,
 } from "../_shared/security.ts";
+import { generateQrPng } from "../_shared/qr_png.ts";
 
 async function assertCanSignTicket(
   req: Request,
@@ -104,8 +105,42 @@ serve(async (req) => {
       p_metadata: { event_id: ticket.event_id },
     });
 
-    // Do not expose qr_hash in response — client retrieves ticket data via SELECT
-    return jsonResponse({ success: true, ticketId: ticketId }, 200, undefined, req);
+    // ── Generate QR PNG and upload to Storage ──────────────────────
+    let qrCodeUrl: string | undefined;
+    try {
+      const qrData = `${ticketId}|${qrHash}`;
+      const pngBytes = generateQrPng(qrData, 8, 2);
+
+      // Ensure bucket exists (idempotent — error ignored if already created)
+      await supabase.storage.createBucket("ticket-qr-codes", { public: true });
+
+      const filePath = `${ticketId}.png`;
+      const { error: uploadErr } = await supabase.storage
+        .from("ticket-qr-codes")
+        .upload(filePath, pngBytes, {
+          contentType: "image/png",
+          upsert: true,
+        });
+
+      if (uploadErr) {
+        console.error("QR PNG upload failed:", uploadErr.message);
+      } else {
+        const { data: urlData } = supabase.storage
+          .from("ticket-qr-codes")
+          .getPublicUrl(filePath);
+        qrCodeUrl = urlData?.publicUrl;
+      }
+    } catch (qrErr) {
+      // QR image generation is non-blocking — ticket is still valid without it
+      console.error("QR PNG generation failed:", qrErr);
+    }
+
+    return jsonResponse(
+      { success: true, ticketId, qrCodeUrl },
+      200,
+      undefined,
+      req,
+    );
   } catch (error) {
     console.error("sign-qr-ticket error:", error);
     return jsonResponse({ error: "internal_error" }, 500, undefined, req);

@@ -40,9 +40,9 @@ class _SpotifySheetChrome extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     return Container(
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: AppColors.surfaceAlt,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -68,7 +68,7 @@ class _SpotifySheetChrome extends StatelessWidget {
                 Expanded(
                   child: Text(
                     l10n.spotifySheetTitle,
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: AppColors.blanc,
                       fontSize: 13,
                       fontWeight: FontWeight.w700,
@@ -77,7 +77,7 @@ class _SpotifySheetChrome extends StatelessWidget {
                 ),
                 IconButton(
                   onPressed: () => context.pop(),
-                  icon: const Icon(Icons.close, color: AppColors.gris),
+                  icon: Icon(Icons.close, color: AppColors.gris),
                 ),
               ],
             ),
@@ -196,7 +196,7 @@ class _SpotifyMusicSheetBodyState extends ConsumerState<_SpotifyMusicSheetBody> 
                     linked
                         ? l10n.spotifySheetLinkedHint
                         : l10n.spotifySheetNotLinkedHint,
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: AppColors.grisClair,
                       fontSize: 11,
                     ),
@@ -219,13 +219,13 @@ class _SpotifyMusicSheetBodyState extends ConsumerState<_SpotifyMusicSheetBody> 
               setState(() {});
               ref.read(spotifySearchProvider.notifier).search(v);
             },
-            style: const TextStyle(color: AppColors.blanc, fontSize: 14),
+            style: TextStyle(color: AppColors.blanc, fontSize: 14),
             decoration: InputDecoration(
               hintText: l10n.spotifySheetSearchHint,
               hintStyle:
-                  const TextStyle(color: AppColors.gris, fontSize: 14),
+                  TextStyle(color: AppColors.gris, fontSize: 14),
               prefixIcon:
-                  const Icon(Icons.search, color: AppColors.gris, size: 20),
+                  Icon(Icons.search, color: AppColors.gris, size: 20),
               suffixIcon: _controller.text.isNotEmpty
                   ? IconButton(
                       onPressed: () {
@@ -233,7 +233,7 @@ class _SpotifyMusicSheetBodyState extends ConsumerState<_SpotifyMusicSheetBody> 
                         ref.read(spotifySearchProvider.notifier).search('');
                         setState(() {});
                       },
-                      icon: const Icon(Icons.close,
+                      icon: Icon(Icons.close,
                           color: AppColors.gris, size: 18),
                     )
                   : null,
@@ -243,11 +243,11 @@ class _SpotifyMusicSheetBodyState extends ConsumerState<_SpotifyMusicSheetBody> 
                   const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: AppColors.border),
+                borderSide: BorderSide(color: AppColors.border),
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: AppColors.border),
+                borderSide: BorderSide(color: AppColors.border),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
@@ -264,7 +264,7 @@ class _SpotifyMusicSheetBodyState extends ConsumerState<_SpotifyMusicSheetBody> 
               alignment: Alignment.centerLeft,
               child: Text(
                 l10n.spotifySheetTopTracksHeader,
-                style: const TextStyle(
+                style: TextStyle(
                   color: AppColors.gris,
                   fontSize: 11,
                   fontWeight: FontWeight.w600,
@@ -287,7 +287,7 @@ class _SpotifyMusicSheetBodyState extends ConsumerState<_SpotifyMusicSheetBody> 
               child: Center(
                 child: Text(
                   l10n.spotifySheetNoResults,
-                  style: const TextStyle(color: AppColors.gris, fontSize: 14),
+                  style: TextStyle(color: AppColors.gris, fontSize: 14),
                 ),
               ),
             )
@@ -299,7 +299,7 @@ class _SpotifyMusicSheetBodyState extends ConsumerState<_SpotifyMusicSheetBody> 
                       ? l10n.spotifySheetEmptyTop
                       : l10n.spotifySheetEmptyNeedLink,
                   textAlign: TextAlign.center,
-                  style: const TextStyle(color: AppColors.gris, fontSize: 12),
+                  style: TextStyle(color: AppColors.gris, fontSize: 12),
                 ),
               ),
             )
@@ -307,7 +307,7 @@ class _SpotifyMusicSheetBodyState extends ConsumerState<_SpotifyMusicSheetBody> 
             Expanded(
               child: ListView.separated(
                 itemCount: state.tracks.length,
-                separatorBuilder: (_, __) => const Divider(
+                separatorBuilder: (_, __) => Divider(
                   height: 1,
                   color: AppColors.sheetSeparator,
                 ),
@@ -334,7 +334,7 @@ class _SpotifyMusicSheetBodyState extends ConsumerState<_SpotifyMusicSheetBody> 
                           backgroundColor: AppColors.surfaceAlt,
                           content: Text(
                             l10n.spotifySheetTrackAdded(track.name),
-                            style: const TextStyle(color: AppColors.blanc),
+                            style: TextStyle(color: AppColors.blanc),
                           ),
                         ),
                       );
@@ -395,7 +395,7 @@ class _TrackTile extends StatelessWidget {
                   children: [
                     Text(
                       track.name,
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: AppColors.blanc,
                         fontSize: 12,
                         fontWeight: FontWeight.w700,
@@ -406,7 +406,7 @@ class _TrackTile extends StatelessWidget {
                     const SizedBox(height: 2),
                     Text(
                       track.artist,
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: AppColors.gris,
                         fontSize: 10,
                       ),
@@ -465,6 +465,6 @@ class _TrackTile extends StatelessWidget {
 
   Widget _albumPlaceholder() => Container(
         color: AppColors.surface,
-        child: const Icon(Icons.album, color: AppColors.gris, size: 22),
+        child: Icon(Icons.album, color: AppColors.gris, size: 22),
       );
 }

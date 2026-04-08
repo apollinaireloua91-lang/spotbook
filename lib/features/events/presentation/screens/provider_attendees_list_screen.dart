@@ -126,7 +126,7 @@ class _ProviderAttendeesListScreenState
       backgroundColor: AppColors.fond,
       appBar: const SpotbookAppBar(title: 'Participants'),
       body: dataAsync.when(
-        loading: () => const Center(
+        loading: () => Center(
             child: CircularProgressIndicator(color: AppColors.violet)),
         error: (e, _) => Center(
           child: Text('$e',
@@ -198,7 +198,7 @@ class _ProviderAttendeesListScreenState
                     hintText: 'Search attendee...',
                     hintStyle: GoogleFonts.dmSans(
                         color: AppColors.gris.withAlpha(128)),
-                    prefixIcon: const Icon(Icons.search,
+                    prefixIcon: Icon(Icons.search,
                         color: AppColors.gris, size: 20),
                     filled: true,
                     fillColor: AppColors.surface,

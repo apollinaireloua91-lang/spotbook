@@ -427,7 +427,7 @@ class _DiscoverSearchMapScreenState
 
           // ── Loading indicator ──
           if (s.isLoading)
-            const Positioned(
+            Positioned(
               left: 0,
               right: 0,
               bottom: 120,
@@ -548,10 +548,10 @@ class _ProBottomCard extends StatelessWidget {
         }
       },
       child: Container(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           color: AppColors.surface,
           borderRadius:
-              BorderRadius.vertical(top: Radius.circular(20)),
+              const BorderRadius.vertical(top: Radius.circular(20)),
           boxShadow: [
             BoxShadow(
               color: AppColors.overlayLight,
@@ -629,7 +629,7 @@ class _ProBottomCard extends StatelessWidget {
                           const SizedBox(height: 2),
                           Row(
                             children: [
-                              const Icon(Icons.location_on_outlined,
+                              Icon(Icons.location_on_outlined,
                                   color: AppColors.gris, size: 13),
                               const SizedBox(width: 3),
                               Text(
@@ -650,7 +650,7 @@ class _ProBottomCard extends StatelessWidget {
                       pro.averageRating! > 0)
                     Column(
                       children: [
-                        const Icon(Icons.star_rounded,
+                        Icon(Icons.star_rounded,
                             color: AppColors.blanc, size: 20),
                         Text(
                           pro.averageRating!.toStringAsFixed(1),

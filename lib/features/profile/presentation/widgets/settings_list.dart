@@ -116,7 +116,7 @@ class _SettingsItemTileState extends State<_SettingsItemTile> {
             AnimatedContainer(
               duration: const Duration(milliseconds: 150),
               transform: Matrix4.translationValues(_chevronOffset, 0, 0),
-              child: const Icon(
+              child: Icon(
                 Icons.chevron_right,
                 size: 18,
                 color: AppColors.grisInactif,

@@ -59,8 +59,8 @@ class _ForgotPasswordConfirmationScreenState
       await ref.read(authRepositoryProvider).resetPassword(email);
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Reset link resent!'),
+        SnackBar(
+          content: const Text('Reset link resent!'),
           backgroundColor: AppColors.violet,
         ),
       );
@@ -98,7 +98,7 @@ class _ForgotPasswordConfirmationScreenState
                     shape: BoxShape.circle,
                     color: AppColors.violet.withAlpha(25),
                   ),
-                  child: const Icon(
+                  child: Icon(
                     Icons.mark_email_read_outlined,
                     color: AppColors.violet,
                     size: 44,

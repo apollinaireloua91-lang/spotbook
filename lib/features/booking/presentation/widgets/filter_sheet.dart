@@ -135,7 +135,7 @@ class _FilterSheetState extends State<FilterSheet> {
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
-            colorScheme: const ColorScheme.dark(
+            colorScheme: ColorScheme.dark(
               primary: AppColors.violet,
               surface: AppColors.surface,
             ),

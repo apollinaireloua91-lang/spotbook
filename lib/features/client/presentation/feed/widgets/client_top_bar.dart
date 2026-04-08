@@ -265,9 +265,9 @@ class _ClientNotificationsSheet extends StatelessWidget {
       constraints: BoxConstraints(
         maxHeight: MediaQuery.of(context).size.height * 0.7,
       ),
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -282,7 +282,7 @@ class _ClientNotificationsSheet extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 20),
-          const Text(
+          Text(
             'Notifications',
             style: TextStyle(
               color: AppColors.blanc,
@@ -291,13 +291,13 @@ class _ClientNotificationsSheet extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 40),
-          const Icon(
+          Icon(
             Icons.notifications_outlined,
             color: AppColors.gris,
             size: 48,
           ),
           const SizedBox(height: 12),
-          const Text(
+          Text(
             'No notifications',
             style: TextStyle(color: AppColors.gris, fontSize: 14),
           ),

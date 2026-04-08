@@ -105,7 +105,7 @@ class ProMapCard extends StatelessWidget {
                               Container(
                                 width: 7,
                                 height: 7,
-                                decoration: const BoxDecoration(
+                                decoration: BoxDecoration(
                                   color: AppColors.success,
                                   shape: BoxShape.circle,
                                 ),
@@ -166,7 +166,7 @@ class ProMapCard extends StatelessWidget {
                     ),
                   const Spacer(),
                   // Distance
-                  const Icon(
+                  Icon(
                     Icons.near_me_outlined,
                     size: 12,
                     color: AppColors.gris,

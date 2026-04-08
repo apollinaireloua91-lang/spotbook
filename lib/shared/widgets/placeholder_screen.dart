@@ -14,7 +14,7 @@ class PlaceholderScreen extends StatelessWidget {
       body: Center(
         child: Text(
           title,
-          style: const TextStyle(
+          style: TextStyle(
             color: AppColors.blanc,
             fontSize: 18,
             fontWeight: FontWeight.w600,

@@ -301,7 +301,7 @@ class _SearchMapViewState extends State<SearchMapView> {
                       ),
                     ],
                   ),
-                  child: const Icon(
+                  child: Icon(
                     Icons.my_location,
                     color: AppColors.blanc,
                     size: 18,

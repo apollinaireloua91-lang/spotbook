@@ -162,7 +162,7 @@ class _ProFeedEmptyState extends StatelessWidget {
                 shape: BoxShape.circle,
                 color: AppColors.violet.withAlpha(25),
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.play_circle_rounded,
                 size: 48,
                 color: AppColors.violet,

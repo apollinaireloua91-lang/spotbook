@@ -409,8 +409,8 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                     fontSize: 15,
                   ),
                   suffixIcon: _isCheckingUsername
-                      ? const Padding(
-                          padding: EdgeInsets.all(14),
+                      ? Padding(
+                          padding: const EdgeInsets.all(14),
                           child: SizedBox(
                             width: 16,
                             height: 16,

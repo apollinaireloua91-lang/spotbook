@@ -127,8 +127,8 @@ class PersonCountPicker extends StatelessWidget {
                 label: '$count personnes',
                 value: '× ${totalPerPerson.toStringAsFixed(0)} \$',
               ),
-              const Padding(
-                padding: EdgeInsets.symmetric(vertical: 10),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 10),
                 child: Divider(color: AppColors.border, height: 1),
               ),
               Row(

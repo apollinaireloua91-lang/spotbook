@@ -130,7 +130,7 @@ class _NotifBell extends StatelessWidget {
             ),
             child: Stack(
               children: [
-                const Center(
+                Center(
                   child: Icon(
                     Icons.notifications_outlined,
                     color: AppColors.blanc,

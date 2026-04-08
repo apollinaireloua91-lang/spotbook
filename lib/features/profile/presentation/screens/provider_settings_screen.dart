@@ -48,7 +48,7 @@ class ProviderSettingsScreen extends ConsumerWidget {
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(color: AppColors.border, width: 0.5),
               ),
-              child: const Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
+              child: Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
             ),
             onPressed: () => context.pop(),
           ),
@@ -147,13 +147,13 @@ class _SettingsBody extends ConsumerWidget {
                 value: data.email.isEmpty ? '—' : data.email,
                 onTap: () => _showEmailSheet(context, ref, l10n),
               ),
-              const Divider(color: AppColors.border, height: 1),
+              Divider(color: AppColors.border, height: 1),
               _Tile(
                 label: l10n.proSettingsPhone,
                 value: data.phone?.isNotEmpty == true ? data.phone! : '—',
                 onTap: () => _showPhoneSheet(context, ref, l10n),
               ),
-              const Divider(color: AppColors.border, height: 1),
+              Divider(color: AppColors.border, height: 1),
               _Tile(
                 label: l10n.proSettingsChangePassword,
                 value: '',
@@ -174,7 +174,7 @@ class _SettingsBody extends ConsumerWidget {
                 showChevron: true,
                 onTap: () => context.push('/pro/profile/edit'),
               ),
-              const Divider(color: AppColors.border, height: 1),
+              Divider(color: AppColors.border, height: 1),
               _Tile(
                 label: l10n.proSettingsWorkAddress,
                 value: '',
@@ -207,7 +207,7 @@ class _SettingsBody extends ConsumerWidget {
                   patchSettings({'cancellation_policy': v});
                 },
               ),
-              const Divider(color: AppColors.border, height: 24),
+              Divider(color: AppColors.border, height: 24),
               _DropdownRow<int>(
                 label: l10n.proSettingsMinAdvance,
                 value: ProviderSettingsScreen._advanceHours
@@ -223,7 +223,7 @@ class _SettingsBody extends ConsumerWidget {
                   patchSettings({'min_advance_hours': v});
                 },
               ),
-              const Divider(color: AppColors.border, height: 24),
+              Divider(color: AppColors.border, height: 24),
               _DropdownRow<int>(
                 label: l10n.proSettingsMinGap,
                 value: ProviderSettingsScreen._gapMinutes
@@ -240,7 +240,7 @@ class _SettingsBody extends ConsumerWidget {
                   patchSettings({'min_gap_minutes': v});
                 },
               ),
-              const Divider(color: AppColors.border, height: 24),
+              Divider(color: AppColors.border, height: 24),
               _MaxBookingsField(
                 value: data.maxBookingsPerDay,
                 label: l10n.proSettingsMaxPerDay,
@@ -290,14 +290,14 @@ class _SettingsBody extends ConsumerWidget {
                 showChevron: true,
                 onTap: () => context.push('/pro/profile/promo-codes'),
               ),
-              const Divider(color: AppColors.border, height: 1),
+              Divider(color: AppColors.border, height: 1),
               _Tile(
                 label: 'My QR Code',
                 value: '',
                 showChevron: true,
                 onTap: () => context.push('/pro/profile/qr-code'),
               ),
-              const Divider(color: AppColors.border, height: 1),
+              Divider(color: AppColors.border, height: 1),
               _Tile(
                 label: 'Analytiques',
                 value: '',
@@ -378,7 +378,7 @@ class _SettingsBody extends ConsumerWidget {
                   mode: LaunchMode.externalApplication,
                 ),
               ),
-              const Divider(color: AppColors.border, height: 1),
+              Divider(color: AppColors.border, height: 1),
               _Tile(
                 label: 'Terms of service',
                 value: '',
@@ -388,7 +388,7 @@ class _SettingsBody extends ConsumerWidget {
                   mode: LaunchMode.externalApplication,
                 ),
               ),
-              const Divider(color: AppColors.border, height: 1),
+              Divider(color: AppColors.border, height: 1),
               _Tile(
                 label: 'Privacy policy',
                 value: '',
@@ -455,11 +455,11 @@ class _SettingsBody extends ConsumerWidget {
               style: GoogleFonts.dmSans(color: AppColors.blanc),
               decoration: InputDecoration(
                 labelText: l10n.email,
-                labelStyle: const TextStyle(color: AppColors.gris),
-                enabledBorder: const UnderlineInputBorder(
+                labelStyle: TextStyle(color: AppColors.gris),
+                enabledBorder: UnderlineInputBorder(
                   borderSide: BorderSide(color: AppColors.border),
                 ),
-                focusedBorder: const UnderlineInputBorder(
+                focusedBorder: UnderlineInputBorder(
                   borderSide: BorderSide(color: AppColors.blanc),
                 ),
               ),
@@ -522,11 +522,11 @@ class _SettingsBody extends ConsumerWidget {
               style: GoogleFonts.dmSans(color: AppColors.blanc),
               decoration: InputDecoration(
                 labelText: l10n.proSettingsPhone,
-                labelStyle: const TextStyle(color: AppColors.gris),
-                enabledBorder: const UnderlineInputBorder(
+                labelStyle: TextStyle(color: AppColors.gris),
+                enabledBorder: UnderlineInputBorder(
                   borderSide: BorderSide(color: AppColors.border),
                 ),
-                focusedBorder: const UnderlineInputBorder(
+                focusedBorder: UnderlineInputBorder(
                   borderSide: BorderSide(color: AppColors.blanc),
                 ),
               ),
@@ -626,8 +626,8 @@ class _SpotifyProSettingsBlockState extends ConsumerState<_SpotifyProSettingsBlo
     final oauth = ref.watch(spotifyOAuthServiceProvider);
 
     return link.when(
-      loading: () => const Padding(
-        padding: EdgeInsets.symmetric(vertical: 16),
+      loading: () => Padding(
+        padding: const EdgeInsets.symmetric(vertical: 16),
         child: Center(
           child: SizedBox(
             width: 24,
@@ -853,8 +853,8 @@ class _Tile extends StatelessWidget {
             )
           : null,
       trailing: showChevron
-          ? const Icon(Icons.chevron_right, color: AppColors.gris)
-          : const Icon(Icons.edit_outlined,
+          ? Icon(Icons.chevron_right, color: AppColors.gris)
+          : Icon(Icons.edit_outlined,
               color: AppColors.gris, size: 20),
     );
   }
@@ -976,15 +976,15 @@ class _MaxBookingsFieldState extends State<_MaxBookingsField> {
             fillColor: AppColors.surfaceAlt,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(14),
-              borderSide: const BorderSide(color: AppColors.border),
+              borderSide: BorderSide(color: AppColors.border),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(14),
-              borderSide: const BorderSide(color: AppColors.border),
+              borderSide: BorderSide(color: AppColors.border),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(14),
-              borderSide: const BorderSide(color: AppColors.blanc),
+              borderSide: BorderSide(color: AppColors.blanc),
             ),
           ),
           onEditingComplete: _commit,

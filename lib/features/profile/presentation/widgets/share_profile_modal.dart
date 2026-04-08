@@ -41,7 +41,7 @@ class ShareProfileModal extends StatelessWidget {
     await Clipboard.setData(ClipboardData(text: profileUrl));
     if (context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+        SnackBar(
           backgroundColor: AppColors.surface,
           content: Text(
             'Link copied',
@@ -103,7 +103,7 @@ class ShareProfileModal extends StatelessWidget {
           Text(
             displayName,
             textAlign: TextAlign.center,
-            style: const TextStyle(
+            style: TextStyle(
               color: AppColors.blanc,
               fontSize: 17,
               fontWeight: FontWeight.w600,
@@ -159,7 +159,7 @@ class _SheetTile extends StatelessWidget {
       leading: Icon(icon, color: AppColors.blanc, size: 22),
       title: Text(
         label,
-        style: const TextStyle(
+        style: TextStyle(
           color: AppColors.blanc,
           fontSize: 16,
           fontWeight: FontWeight.w500,

@@ -100,7 +100,7 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
                           color: AppColors.gris,
                           fontSize: 14,
                         ),
-                        prefixIcon: const Icon(
+                        prefixIcon: Icon(
                           Icons.search,
                           color: AppColors.gris,
                           size: 20,
@@ -109,7 +109,7 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
                           valueListenable: _searchCtrl,
                           builder: (_, value, __) => value.text.isNotEmpty
                               ? IconButton(
-                                  icon: const Icon(
+                                  icon: Icon(
                                     Icons.clear,
                                     color: AppColors.gris,
                                     size: 18,
@@ -145,7 +145,7 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(color: AppColors.border),
                       ),
-                      child: const Icon(
+                      child: Icon(
                         Icons.tune,
                         color: AppColors.blanc,
                         size: 20,
@@ -201,7 +201,7 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
                     ),
                     ...s.searchHistory.map(
                       (query) => ListTile(
-                        leading: const Icon(
+                        leading: Icon(
                           Icons.history,
                           color: AppColors.gris,
                           size: 18,
@@ -383,7 +383,7 @@ class _ProviderCard extends StatelessWidget {
                     ? CachedNetworkImageProvider(provider.avatarUrl!)
                     : null,
                 child: provider.avatarUrl == null
-                    ? const Icon(
+                    ? Icon(
                         Icons.person,
                         size: 28,
                         color: AppColors.gris,
@@ -437,7 +437,7 @@ class _ProviderCard extends StatelessWidget {
                 children: [
                   if (provider.averageRating != null &&
                       provider.averageRating! > 0) ...[
-                    const Icon(
+                    Icon(
                       Icons.star_rounded,
                       color: AppColors.warning,
                       size: 14,
@@ -466,8 +466,8 @@ class _ProviderCard extends StatelessWidget {
                   if (provider.distanceKm != null) ...[
                     if (provider.averageRating != null &&
                         provider.averageRating! > 0)
-                      const Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 6),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 6),
                         child: Text(
                           '·',
                           style: TextStyle(color: AppColors.gris),
@@ -488,8 +488,8 @@ class _ProviderCard extends StatelessWidget {
                     ),
                   ],
                   if (provider.minPrice != null) ...[
-                    const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 6),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 6),
                       child: Text(
                         '·',
                         style: TextStyle(color: AppColors.gris),
@@ -566,7 +566,7 @@ class _VideoCard extends StatelessWidget {
                       )
                     : Container(
                         color: AppColors.surfaceAlt,
-                        child: const Center(
+                        child: Center(
                           child: Icon(
                             Icons.play_circle_outline,
                             color: AppColors.gris,
@@ -592,7 +592,7 @@ class _VideoCard extends StatelessWidget {
                                 video.proAvatarUrl!)
                             : null,
                         child: video.proAvatarUrl == null
-                            ? const Icon(
+                            ? Icon(
                                 Icons.person,
                                 size: 12,
                                 color: AppColors.gris,
@@ -654,7 +654,7 @@ class _EmptyState extends StatelessWidget {
                 shape: BoxShape.circle,
                 color: AppColors.violet.withAlpha(25),
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.search_off_rounded,
                 size: 36,
                 color: AppColors.violet,
@@ -712,7 +712,7 @@ class _ErrorState extends StatelessWidget {
                 shape: BoxShape.circle,
                 color: AppColors.error.withAlpha(25),
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.wifi_off_rounded,
                 size: 36,
                 color: AppColors.error,
@@ -797,7 +797,7 @@ class _ShimmerGrid extends StatelessWidget {
               Container(
                 width: 64,
                 height: 64,
-                decoration: const BoxDecoration(
+                decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color: AppColors.surfaceAlt,
                 ),
@@ -840,9 +840,9 @@ class _FiltersSheet extends ConsumerWidget {
 
     return Container(
       padding: const EdgeInsets.fromLTRB(24, 16, 24, 0),
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
       ),
       child: SafeArea(
         top: false,
@@ -916,7 +916,7 @@ class _FiltersSheet extends ConsumerWidget {
                 ),
                 Row(
                   children: [
-                    const Icon(
+                    Icon(
                       Icons.star_rounded,
                       color: AppColors.warning,
                       size: 16,

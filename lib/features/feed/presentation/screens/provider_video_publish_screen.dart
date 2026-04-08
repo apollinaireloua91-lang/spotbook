@@ -629,11 +629,11 @@ class _VideoPreviewCard extends StatelessWidget {
                     left: 10,
                     child: Container(
                       padding: const EdgeInsets.all(4),
-                      decoration: const BoxDecoration(
+                      decoration: BoxDecoration(
                         color: AppColors.success,
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(Icons.check,
+                      child: Icon(Icons.check,
                           color: AppColors.textOnPrimary, size: 14),
                     ),
                   ),

@@ -35,7 +35,7 @@ class _FeedScreenState extends ConsumerState<FeedScreen> {
     final topPad = MediaQuery.of(context).padding.top;
 
     if (s.isLoading) {
-      return const Scaffold(
+      return Scaffold(
         backgroundColor: AppColors.fond,
         body: Center(
             child: CircularProgressIndicator(color: AppColors.blanc)),

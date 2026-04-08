@@ -28,7 +28,7 @@ class ClientNavBar extends StatelessWidget {
 
     return Container(
       height: 70 + bottomInset,
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: AppColors.fond,
         border: Border(
           top: BorderSide(color: AppColors.border, width: 0.5),

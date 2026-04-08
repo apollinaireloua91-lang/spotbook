@@ -123,7 +123,7 @@ class _EmptyStateState extends State<EmptyState>
             Text(
               widget.title,
               textAlign: TextAlign.center,
-              style: const TextStyle(
+              style: TextStyle(
                 color: AppColors.blanc,
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
@@ -134,7 +134,7 @@ class _EmptyStateState extends State<EmptyState>
               Text(
                 widget.subtitle!,
                 textAlign: TextAlign.center,
-                style: const TextStyle(
+                style: TextStyle(
                   color: AppColors.gris,
                   fontSize: 14,
                   height: 1.5,
@@ -147,7 +147,7 @@ class _EmptyStateState extends State<EmptyState>
                 onPressed: widget.onCta,
                 child: Text(
                   widget.ctaLabel!,
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: AppColors.blanc,
                     fontSize: 14,
                     fontWeight: FontWeight.w600,

@@ -84,7 +84,7 @@ class _SearchHeaderState extends State<SearchHeader> {
                         fontSize: 12,
                         color: AppColors.grisInactif,
                       ),
-                      prefixIcon: const Icon(
+                      prefixIcon: Icon(
                         Icons.search,
                         color: AppColors.grisInactif,
                         size: 18,
@@ -95,7 +95,7 @@ class _SearchHeaderState extends State<SearchHeader> {
                                 _controller.clear();
                                 context.read<ClientSearchCubit>().search('');
                               },
-                              child: const Icon(
+                              child: Icon(
                                 Icons.close,
                                 color: AppColors.gris,
                                 size: 16,
@@ -127,7 +127,7 @@ class _SearchHeaderState extends State<SearchHeader> {
                     backgroundColor: Colors.transparent,
                     builder: (ctx) => Container(
                       height: MediaQuery.of(ctx).size.height * 0.65,
-                      decoration: const BoxDecoration(
+                      decoration: BoxDecoration(
                         color: AppColors.surfaceAlt,
                         borderRadius:
                             BorderRadius.vertical(top: Radius.circular(24)),
@@ -167,14 +167,14 @@ class _SearchHeaderState extends State<SearchHeader> {
                                           AppColors.blanc.withValues(alpha: 0.06),
                                       shape: BoxShape.circle,
                                     ),
-                                    child: const Icon(Icons.close,
+                                    child: Icon(Icons.close,
                                         color: AppColors.gris, size: 16),
                                   ),
                                 ),
                               ],
                             ),
                           ),
-                          const Divider(color: AppColors.border, height: 1),
+                          Divider(color: AppColors.border, height: 1),
                           Expanded(
                             child: ListView(
                               padding: const EdgeInsets.all(16),
@@ -342,7 +342,7 @@ class _SearchHeaderState extends State<SearchHeader> {
                       color: AppColors.violet.withValues(alpha: 0.25),
                     ),
                   ),
-                  child: const Icon(
+                  child: Icon(
                     Icons.tune,
                     color: AppColors.violet,
                     size: 16,

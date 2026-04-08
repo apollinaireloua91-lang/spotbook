@@ -18,7 +18,7 @@ class _ConfettiOverlayState extends State<ConfettiOverlay>
   late final AnimationController _controller;
   late final List<_ConfettiParticle> _particles;
 
-  static const _colors = [
+  static List<Color> get _colors => [
     AppColors.violet,
     AppColors.rose,
     AppColors.violetClair,

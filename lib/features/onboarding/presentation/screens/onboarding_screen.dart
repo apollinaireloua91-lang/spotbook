@@ -846,7 +846,7 @@ class _PulsingBadgeState extends State<_PulsingBadge>
             ),
           ],
         ),
-        child: const Icon(
+        child: Icon(
           Icons.check_rounded,
           color: AppColors.blanc,
           size: 28,
@@ -985,7 +985,7 @@ class _GrowPageState extends State<_GrowPage>
                     const SizedBox(height: 16),
 
                     // Stats row
-                    const Row(
+                    Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
                         _MiniStat(
@@ -1039,7 +1039,7 @@ class _GrowPageState extends State<_GrowPage>
                     width: 24,
                     height: 80 * values[i] * barProgress,
                     decoration: BoxDecoration(
-                      gradient: const LinearGradient(
+                      gradient: LinearGradient(
                         begin: Alignment.bottomCenter,
                         end: Alignment.topCenter,
                         colors: [AppColors.violet, AppColors.rose],

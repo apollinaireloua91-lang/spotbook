@@ -240,7 +240,7 @@ class _ProviderVideoEditScreenState extends State<ProviderVideoEditScreen> {
                         color: AppColors.fond.withAlpha(120),
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(Icons.play_arrow,
+                      child: Icon(Icons.play_arrow,
                           color: AppColors.blanc, size: 36),
                     ),
                 ],

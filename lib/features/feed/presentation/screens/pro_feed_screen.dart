@@ -647,7 +647,7 @@ class _ProTopBar extends StatelessWidget {
                 Icons.bolt_rounded,
                 size: 22,
                 color: Colors.white.withAlpha(235),
-                shadows: const [
+                shadows: [
                   Shadow(color: AppColors.shadowDark, blurRadius: 8),
                 ],
               ),
@@ -727,7 +727,7 @@ class _BadgeButton extends StatelessWidget {
                     borderRadius: BorderRadius.circular(14),
                   ),
                   child: Icon(icon, color: Colors.white, size: 20,
-                      shadows: const [
+                      shadows: [
                         Shadow(color: AppColors.shadowDark, blurRadius: 6),
                       ]),
                 ),
@@ -1005,7 +1005,7 @@ class _SpotifyButton extends StatelessWidget {
                     ),
                   ],
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.music_note,
                   color: AppColors.spotifyGreen,
                   size: 30,
@@ -1021,7 +1021,7 @@ class _SpotifyButton extends StatelessWidget {
               color: AppColors.spotifyGreen,
               fontSize: 10,
               fontWeight: FontWeight.w500,
-              shadows: [const Shadow(color: AppColors.shadowDark, blurRadius: 4)],
+              shadows: [Shadow(color: AppColors.shadowDark, blurRadius: 4)],
             ),
           ),
         ],
@@ -1792,7 +1792,7 @@ class _SheetList extends StatelessWidget {
         shrinkWrap: true,
         itemCount: itemCount,
         separatorBuilder: (_, __) =>
-            const Divider(color: AppColors.sheetSeparator, height: 1),
+            Divider(color: AppColors.sheetSeparator, height: 1),
         itemBuilder: itemBuilder,
       ),
     );

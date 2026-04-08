@@ -51,7 +51,7 @@ class SocialBadge extends StatelessWidget {
           const SizedBox(width: 6),
           Text(
             '@$handle',
-            style: const TextStyle(
+            style: TextStyle(
               color: AppColors.blanc,
               fontSize: 13,
               fontWeight: FontWeight.w500,
@@ -61,7 +61,7 @@ class SocialBadge extends StatelessWidget {
             const SizedBox(width: 8),
             Text(
               _formattedFollowers,
-              style: const TextStyle(
+              style: TextStyle(
                 color: AppColors.gris,
                 fontSize: 12,
                 fontWeight: FontWeight.w500,

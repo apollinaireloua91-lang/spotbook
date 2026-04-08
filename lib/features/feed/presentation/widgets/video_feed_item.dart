@@ -196,9 +196,9 @@ class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
       backgroundColor: Colors.transparent,
       builder: (ctx) => Container(
         padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           color: AppColors.surface,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
         ),
         child: SafeArea(
           top: false,
@@ -216,8 +216,8 @@ class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
               ),
               ListTile(
                 contentPadding: EdgeInsets.zero,
-                leading: const Icon(Icons.flag_outlined, color: AppColors.blanc),
-                title: const Text('Report', style: TextStyle(color: AppColors.blanc)),
+                leading: Icon(Icons.flag_outlined, color: AppColors.blanc),
+                title: Text('Report', style: TextStyle(color: AppColors.blanc)),
                 onTap: () {
                   Navigator.of(ctx).pop();
                   showReportSheet(
@@ -229,8 +229,8 @@ class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
               ),
               ListTile(
                 contentPadding: EdgeInsets.zero,
-                leading: const Icon(Icons.block, color: AppColors.error),
-                title: const Text('Block this pro', style: TextStyle(color: AppColors.error)),
+                leading: Icon(Icons.block, color: AppColors.error),
+                title: Text('Block this pro', style: TextStyle(color: AppColors.error)),
                 onTap: () {
                   Navigator.of(ctx).pop();
                   showBlockConfirmDialog(
@@ -375,7 +375,7 @@ class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
                         Container(
                           width: 16,
                           height: 16,
-                          decoration: const BoxDecoration(
+                          decoration: BoxDecoration(
                             color: AppColors.violet,
                             shape: BoxShape.circle,
                           ),

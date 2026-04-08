@@ -698,7 +698,7 @@ class _MonthCalendar extends StatelessWidget {
                 .map((l) => Expanded(
                       child: Center(
                         child: Text(l,
-                            style: const TextStyle(
+                            style: TextStyle(
                                 color: AppColors.gris,
                                 fontSize: 11,
                                 fontWeight: FontWeight.w600)),
@@ -807,14 +807,14 @@ class _BlockedDateRow extends StatelessWidget {
       ),
       child: Row(
         children: [
-          const Icon(Icons.block, color: AppColors.error, size: 14),
+          Icon(Icons.block, color: AppColors.error, size: 14),
           const SizedBox(width: 10),
           Text(label,
-              style: const TextStyle(color: AppColors.blanc, fontSize: 14)),
+              style: TextStyle(color: AppColors.blanc, fontSize: 14)),
           const Spacer(),
           GestureDetector(
             onTap: onRemove,
-            child: const Icon(Icons.close, color: AppColors.gris, size: 18),
+            child: Icon(Icons.close, color: AppColors.gris, size: 18),
           ),
         ],
       ),
@@ -867,7 +867,7 @@ class _SettingsSection extends StatelessWidget {
                     value: state.settings.minGapMinutes,
                     dropdownColor: AppColors.surface,
                     underline: const SizedBox.shrink(),
-                    style: const TextStyle(
+                    style: TextStyle(
                         color: AppColors.blanc,
                         fontSize: 14,
                         fontWeight: FontWeight.w600),
@@ -885,7 +885,7 @@ class _SettingsSection extends StatelessWidget {
                 ],
               ),
             ),
-            const Divider(color: AppColors.border, height: 24),
+            Divider(color: AppColors.border, height: 24),
             // Min advance hours
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
@@ -913,7 +913,7 @@ class _SettingsSection extends StatelessWidget {
                         : 2,
                     dropdownColor: AppColors.surface,
                     underline: const SizedBox.shrink(),
-                    style: const TextStyle(
+                    style: TextStyle(
                         color: AppColors.blanc,
                         fontSize: 14,
                         fontWeight: FontWeight.w600),
@@ -930,7 +930,7 @@ class _SettingsSection extends StatelessWidget {
                 ],
               ),
             ),
-            const Divider(color: AppColors.border, height: 24),
+            Divider(color: AppColors.border, height: 24),
             // Max bookings per day
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
@@ -965,7 +965,7 @@ class _SettingsSection extends StatelessWidget {
                         child: Center(
                           child: Text(
                             '${state.settings.maxBookingsPerDay}',
-                            style: const TextStyle(
+                            style: TextStyle(
                               color: AppColors.blanc,
                               fontSize: 16,
                               fontWeight: FontWeight.w700,
@@ -1061,9 +1061,9 @@ class _SaveBar extends StatelessWidget {
                           await notifier.save();
                           if (context.mounted) {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
+                              SnackBar(
                                 content:
-                                    Text('Disponibilités enregistrées'),
+                                    const Text('Disponibilités enregistrées'),
                                 backgroundColor: AppColors.success,
                               ),
                             );
@@ -1071,8 +1071,8 @@ class _SaveBar extends StatelessWidget {
                         } catch (_) {
                           if (context.mounted) {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Erreur lors de l\'enregistrement'),
+                              SnackBar(
+                                content: const Text('Erreur lors de l\'enregistrement'),
                                 backgroundColor: AppColors.error,
                               ),
                             );

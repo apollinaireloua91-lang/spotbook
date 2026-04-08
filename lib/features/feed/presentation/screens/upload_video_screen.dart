@@ -134,7 +134,7 @@ class _UploadVideoScreenState extends ConsumerState<UploadVideoScreen> {
           return DropdownButtonFormField<String>(
             initialValue: validCat,
             hint: Text('Select a category *', style: GoogleFonts.dmSans(color: AppColors.gris)),
-            dropdownColor: AppColors.surface, style: GoogleFonts.dmSans(color: AppColors.blanc), icon: const Icon(Icons.keyboard_arrow_down, color: AppColors.gris),
+            dropdownColor: AppColors.surface, style: GoogleFonts.dmSans(color: AppColors.blanc), icon: Icon(Icons.keyboard_arrow_down, color: AppColors.gris),
             decoration: InputDecoration(filled: true, fillColor: AppColors.surface,
               border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: AppColors.border)),
               enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: AppColors.border))),
@@ -161,7 +161,7 @@ class _UploadVideoScreenState extends ConsumerState<UploadVideoScreen> {
             focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: AppColors.blanc)))),
         const SizedBox(height: 32),
         if (s.isUploading) ...[
-          ClipRRect(borderRadius: BorderRadius.circular(4), child: LinearProgressIndicator(value: s.uploadProgress, backgroundColor: AppColors.surface, valueColor: const AlwaysStoppedAnimation<Color>(AppColors.blanc), minHeight: 6)),
+          ClipRRect(borderRadius: BorderRadius.circular(4), child: LinearProgressIndicator(value: s.uploadProgress, backgroundColor: AppColors.surface, valueColor: AlwaysStoppedAnimation<Color>(AppColors.blanc), minHeight: 6)),
           const SizedBox(height: 8),
           Center(child: Text('${(s.uploadProgress * 100).toInt()}% — Publishing...', style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 13))),
           const SizedBox(height: 16),

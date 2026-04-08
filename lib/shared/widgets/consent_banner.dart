@@ -16,7 +16,7 @@ class ConsentBanner extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -25,11 +25,11 @@ class ConsentBanner extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text(
+            Text(
               'We use analytics cookies to improve your experience. '
               'You can change your mind at any time in settings.',
               style: TextStyle(
-                color: AppColors.grisClair,
+                color: AppColors.gris,
                 fontSize: 14,
                 height: 1.5,
               ),

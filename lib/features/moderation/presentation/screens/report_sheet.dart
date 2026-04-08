@@ -49,8 +49,8 @@ void showBlockConfirmDialog(
             if (ctx.mounted) Navigator.of(ctx).pop();
             if (context.mounted) {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('User blocked'),
+                SnackBar(
+                  content: const Text('User blocked'),
                   backgroundColor: AppColors.success,
                 ),
               );
@@ -88,7 +88,7 @@ class _ReportSheet extends ConsumerWidget {
         top: 20,
         bottom: MediaQuery.of(context).viewPadding.bottom + 20,
       ),
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -160,8 +160,8 @@ class _ReportSheet extends ConsumerWidget {
                         if (context.mounted) {
                           Navigator.of(context).pop();
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Report submitted'),
+                            SnackBar(
+                              content: const Text('Report submitted'),
                               backgroundColor: AppColors.success,
                             ),
                           );
@@ -181,7 +181,7 @@ class _ReportSheet extends ConsumerWidget {
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               ),
               child: reportState.isSubmitting
-                  ? const SizedBox(
+                  ? SizedBox(
                       height: 20,
                       width: 20,
                       child: CircularProgressIndicator(

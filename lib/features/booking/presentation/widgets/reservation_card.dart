@@ -11,22 +11,22 @@ LinearGradient _categoryGradient(String? category) {
   switch (category?.toLowerCase()) {
     case 'barbier':
     case 'coiffure':
-      return const LinearGradient(
+      return LinearGradient(
         colors: [AppColors.violet, AppColors.violetClair],
       );
     case 'nails':
     case 'esthétique':
-      return const LinearGradient(
+      return LinearGradient(
         colors: [AppColors.rose, AppColors.roseClair],
       );
     case 'massage':
     case 'bien-être':
-      return const LinearGradient(
+      return LinearGradient(
         colors: [AppColors.success, AppColors.successLight],
       );
     case 'traiteur':
     case 'cuisine':
-      return const LinearGradient(
+      return LinearGradient(
         colors: [AppColors.warning, AppColors.starGoldLight],
       );
     default:
@@ -205,13 +205,13 @@ class _ReservationCardState extends State<ReservationCard>
                                 fit: BoxFit.cover,
                                 errorWidget: (_, __, ___) => Container(
                                   color: AppColors.surfaceAlt,
-                                  child: const Icon(Icons.person,
+                                  child: Icon(Icons.person,
                                       color: AppColors.gris, size: 20),
                                 ),
                               )
                             : Container(
                                 color: AppColors.surfaceAlt,
-                                child: const Icon(Icons.person,
+                                child: Icon(Icons.person,
                                     color: AppColors.gris, size: 20),
                               ),
                       ),
@@ -224,7 +224,7 @@ class _ReservationCardState extends State<ReservationCard>
                       children: [
                         Text(
                           b.proName ?? 'Professional',
-                          style: const TextStyle(
+                          style: TextStyle(
                             color: AppColors.blanc,
                             fontWeight: FontWeight.w700,
                             fontSize: 14,
@@ -233,7 +233,7 @@ class _ReservationCardState extends State<ReservationCard>
                         const SizedBox(height: 2),
                         Text(
                           b.serviceName ?? 'Service',
-                          style: const TextStyle(
+                          style: TextStyle(
                             color: AppColors.gris,
                             fontSize: 12,
                           ),
@@ -301,7 +301,7 @@ class _ReservationCardState extends State<ReservationCard>
                       ),
                       child: Text(
                         'Deposit: ${b.depositAmount.toStringAsFixed(0)} \$',
-                        style: const TextStyle(
+                        style: TextStyle(
                           color: AppColors.warning,
                           fontSize: 11,
                           fontWeight: FontWeight.w600,
@@ -417,7 +417,7 @@ class _InfoPill extends StatelessWidget {
       ),
       child: Text(
         '$icon $text',
-        style: const TextStyle(
+        style: TextStyle(
           color: AppColors.blanc,
           fontSize: 10,
           fontWeight: FontWeight.w500,

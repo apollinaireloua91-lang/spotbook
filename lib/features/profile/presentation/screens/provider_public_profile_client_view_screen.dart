@@ -819,7 +819,7 @@ class _FollowButton extends StatelessWidget {
             ),
             child: Center(
               child: busy
-                  ? const SizedBox(
+                  ? SizedBox(
                       width: 18,
                       height: 18,
                       child: CircularProgressIndicator(
@@ -1209,7 +1209,7 @@ class _ServicesTab extends StatelessWidget {
                     const SizedBox(height: 4),
                     Row(
                       children: [
-                        const Icon(Icons.schedule,
+                        Icon(Icons.schedule,
                             color: AppColors.gris, size: 13),
                         const SizedBox(width: 4),
                         Text(
@@ -1289,7 +1289,7 @@ class _ReviewsTab extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.rate_review_outlined,
+            Icon(Icons.rate_review_outlined,
                 color: AppColors.gris, size: 48),
             const SizedBox(height: 12),
             Text('No reviews yet',
@@ -1495,7 +1495,7 @@ class _EventsTab extends StatelessWidget {
                   )
                 else
                   Container(
-                    decoration: const BoxDecoration(
+                    decoration: BoxDecoration(
                       gradient: LinearGradient(
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
@@ -1605,7 +1605,7 @@ class _EventsTab extends StatelessWidget {
                         const SizedBox(height: 4),
                         Row(
                           children: [
-                            const Icon(Icons.location_on_outlined,
+                            Icon(Icons.location_on_outlined,
                                 size: 13, color: AppColors.grisClair),
                             const SizedBox(width: 4),
                             Expanded(
@@ -1626,7 +1626,7 @@ class _EventsTab extends StatelessWidget {
                         const SizedBox(height: 4),
                         Row(
                           children: [
-                            const Icon(Icons.schedule,
+                            Icon(Icons.schedule,
                                 size: 13, color: AppColors.grisClair),
                             const SizedBox(width: 4),
                             Text(

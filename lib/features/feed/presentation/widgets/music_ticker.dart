@@ -123,7 +123,7 @@ class _SpinningDiscState extends State<_SpinningDisc>
           shape: BoxShape.circle,
           border: Border.all(color: AppColors.border, width: 1.5),
         ),
-        child: const Center(
+        child: Center(
           child: Icon(
             Icons.music_note,
             color: AppColors.blanc,

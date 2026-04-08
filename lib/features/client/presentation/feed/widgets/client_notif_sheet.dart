@@ -59,9 +59,9 @@ class _ClientNotifSheetState extends ConsumerState<ClientNotifSheet>
       minChildSize: 0.3,
       builder: (context, scrollController) {
         return Container(
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             color: AppColors.surfaceAlt,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
           ),
           child: Column(
             children: [
@@ -76,8 +76,8 @@ class _ClientNotifSheetState extends ConsumerState<ClientNotifSheet>
                 ),
               ),
               // Header
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Row(
                   children: [
                     Text(
@@ -97,7 +97,7 @@ class _ClientNotifSheetState extends ConsumerState<ClientNotifSheet>
               // Content
               Expanded(
                 child: _isLoading
-                    ? const Center(
+                    ? Center(
                         child: CircularProgressIndicator(
                           color: AppColors.violet,
                           strokeWidth: 2,
@@ -114,7 +114,7 @@ class _ClientNotifSheetState extends ConsumerState<ClientNotifSheet>
                                   size: 40,
                                 ),
                                 const SizedBox(height: 10),
-                                const Text(
+                                Text(
                                   'No notifications',
                                   style: TextStyle(
                                     color: AppColors.gris,
@@ -196,7 +196,7 @@ class _ClientNotifSheetState extends ConsumerState<ClientNotifSheet>
                   children: [
                     Text(
                       notif.title,
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: AppColors.blanc,
                         fontSize: 11,
                         fontWeight: FontWeight.w700,
@@ -303,7 +303,7 @@ class _PulsingDotState extends State<_PulsingDot>
       child: Container(
         width: 7,
         height: 7,
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           color: AppColors.rose,
           shape: BoxShape.circle,
         ),

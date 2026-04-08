@@ -37,7 +37,7 @@ class EventSearchCard extends StatelessWidget {
             Container(
               height: 65,
               width: double.infinity,
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 gradient: AppColors.gradientAccent,
               ),
               child: Stack(
@@ -110,7 +110,7 @@ class EventSearchCard extends StatelessWidget {
                   // Location
                   Row(
                     children: [
-                      const Icon(
+                      Icon(
                         Icons.location_on_outlined,
                         size: 10,
                         color: AppColors.gris,

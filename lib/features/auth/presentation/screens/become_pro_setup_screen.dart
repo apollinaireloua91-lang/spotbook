@@ -481,7 +481,7 @@ class _StepAddress extends ConsumerWidget {
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.check_circle,
+                    Icon(Icons.check_circle,
                         color: AppColors.success, size: 18),
                     const SizedBox(width: 10),
                     Expanded(

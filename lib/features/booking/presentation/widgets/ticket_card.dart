@@ -146,7 +146,7 @@ class _TicketCardState extends State<TicketCard>
             height: 44,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(12),
-              gradient: const LinearGradient(
+              gradient: LinearGradient(
                 colors: [AppColors.rose, AppColors.roseClair],
               ),
             ),
@@ -156,14 +156,14 @@ class _TicketCardState extends State<TicketCard>
                     child: CachedNetworkImage(
                       imageUrl: t.eventCoverUrl!,
                       fit: BoxFit.cover,
-                      errorWidget: (_, __, ___) => const Icon(
+                      errorWidget: (_, __, ___) => Icon(
                         Icons.celebration,
                         color: AppColors.blanc,
                         size: 22,
                       ),
                     ),
                   )
-                : const Icon(
+                : Icon(
                     Icons.celebration,
                     color: AppColors.blanc,
                     size: 22,
@@ -176,7 +176,7 @@ class _TicketCardState extends State<TicketCard>
               children: [
                 Text(
                   t.eventTitle ?? 'Event',
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: AppColors.blanc,
                     fontWeight: FontWeight.w700,
                     fontSize: 14,
@@ -188,7 +188,7 @@ class _TicketCardState extends State<TicketCard>
                 if (t.eventDate != null)
                   Text(
                     _formatEventDate(t.eventDate!),
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: AppColors.rose,
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
@@ -198,7 +198,7 @@ class _TicketCardState extends State<TicketCard>
                   const SizedBox(height: 2),
                   Text(
                     t.ticketTypeName!,
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: AppColors.gris,
                       fontSize: 11,
                     ),
@@ -220,11 +220,11 @@ class _TicketCardState extends State<TicketCard>
                     version: QrVersions.auto,
                     size: 40,
                     backgroundColor: Colors.transparent,
-                    eyeStyle: const QrEyeStyle(
+                    eyeStyle: QrEyeStyle(
                       eyeShape: QrEyeShape.square,
                       color: AppColors.blanc,
                     ),
-                    dataModuleStyle: const QrDataModuleStyle(
+                    dataModuleStyle: QrDataModuleStyle(
                       dataModuleShape: QrDataModuleShape.square,
                       color: AppColors.blanc,
                     ),
@@ -238,7 +238,7 @@ class _TicketCardState extends State<TicketCard>
                     color: AppColors.surfaceAlt,
                     borderRadius: BorderRadius.circular(6),
                   ),
-                  child: const Icon(
+                  child: Icon(
                     Icons.qr_code_2,
                     color: AppColors.gris,
                     size: 24,
@@ -283,7 +283,7 @@ class _TicketCardState extends State<TicketCard>
         children: [
           Text(
             t.eventTitle ?? 'Event',
-            style: const TextStyle(
+            style: TextStyle(
               color: AppColors.blanc,
               fontWeight: FontWeight.w700,
               fontSize: 16,
@@ -313,11 +313,11 @@ class _TicketCardState extends State<TicketCard>
                 color: AppColors.surfaceAlt,
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: const Column(
+              child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(Icons.qr_code_2, color: AppColors.gris, size: 48),
-                  SizedBox(height: 8),
+                  const SizedBox(height: 8),
                   Text(
                     'QR non disponible',
                     style: TextStyle(color: AppColors.gris, fontSize: 12),

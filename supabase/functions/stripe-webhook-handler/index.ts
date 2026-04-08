@@ -93,7 +93,10 @@ serve(async (req) => {
           if (!ticketTypeId || !eventId || !userId) break;
           if (!isValidUuid(ticketTypeId) || !isValidUuid(eventId) || !isValidUuid(userId)) break;
 
-          // Create tickets and sign QR for each
+          // Create tickets, sign QR, and collect first ticket info for email
+          let firstTicketId: string | undefined;
+          let firstQrCodeUrl: string | undefined;
+
           for (let i = 0; i < quantity; i++) {
             const { data: ticket, error: ticketErr } = await supabase
               .from("tickets")
@@ -112,13 +115,20 @@ serve(async (req) => {
               continue;
             }
 
-            // Sign QR via edge function
+            // Sign QR via edge function — capture response for QR image URL
             try {
-              await supabase.functions.invoke("sign-qr-ticket", {
-                body: { ticketId: ticket.id },
-              });
+              const { data: signData } = await supabase.functions.invoke(
+                "sign-qr-ticket",
+                { body: { ticketId: ticket.id } },
+              );
+              // Keep the first ticket's info for the email
+              if (i === 0) {
+                firstTicketId = ticket.id;
+                firstQrCodeUrl = signData?.qrCodeUrl;
+              }
             } catch (e) {
               console.error("QR signing failed for ticket:", ticket.id, e);
+              if (i === 0) firstTicketId = ticket.id;
             }
           }
 
@@ -131,7 +141,7 @@ serve(async (req) => {
           // Fetch event details for notifications + email
           const { data: eventData } = await supabase
             .from("events")
-            .select("title, pro_id, date, location")
+            .select("title, pro_id, event_date, location")
             .eq("id", eventId)
             .single();
 
@@ -159,20 +169,21 @@ serve(async (req) => {
             });
           }
 
-          // Email — ticket purchased
+          // Email — ticket purchased (with QR code + client name)
           const { data: buyerUser } = await supabase
             .from("users")
-            .select("email")
+            .select("email, full_name")
             .eq("id", userId)
             .single();
 
           if (buyerUser?.email) {
             await sendEmail("ticket_purchased", buyerUser.email, {
+              clientName: buyerUser.full_name ?? "Client",
               eventName: eventTitle,
-              quantity,
-              amount: pi.amount ? (pi.amount / 100).toFixed(2) : "",
-              date: eventData?.date ?? "",
-              location: eventData?.location ?? "",
+              eventDate: eventData?.event_date ?? "",
+              venue: eventData?.location ?? "",
+              ticketId: firstTicketId ?? "",
+              qrCodeUrl: firstQrCodeUrl ?? undefined,
             });
           }
 

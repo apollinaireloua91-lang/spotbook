@@ -166,11 +166,11 @@ class _PanelContentState extends State<_PanelContent>
                           child: Container(
                             width: 28,
                             height: 28,
-                            decoration: const BoxDecoration(
+                            decoration: BoxDecoration(
                               color: AppColors.surface,
                               shape: BoxShape.circle,
                             ),
-                            child: const Icon(
+                            child: Icon(
                               Icons.close,
                               size: 14,
                               color: AppColors.gris,
@@ -277,7 +277,7 @@ class _PanelContentState extends State<_PanelContent>
                                     Container(
                                       width: 7,
                                       height: 7,
-                                      decoration: const BoxDecoration(
+                                      decoration: BoxDecoration(
                                         color: AppColors.success,
                                         shape: BoxShape.circle,
                                       ),
@@ -404,7 +404,7 @@ class _PanelContentState extends State<_PanelContent>
                               ),
                               alignment: Alignment.center,
                               child: _isNavigating
-                                  ? const SizedBox(
+                                  ? SizedBox(
                                       width: 18,
                                       height: 18,
                                       child: CircularProgressIndicator(
@@ -416,7 +416,7 @@ class _PanelContentState extends State<_PanelContent>
                                       mainAxisAlignment:
                                           MainAxisAlignment.center,
                                       children: [
-                                        const Icon(
+                                        Icon(
                                           Icons.chat_bubble_outline,
                                           size: 16,
                                           color: AppColors.blanc,
@@ -652,7 +652,7 @@ class _GlowBookButtonState extends State<_GlowBookButton>
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(
+              Icon(
                 Icons.calendar_today,
                 size: 16,
                 color: AppColors.blanc,

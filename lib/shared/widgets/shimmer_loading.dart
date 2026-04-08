@@ -117,7 +117,7 @@ class ShimmerServiceCard extends StatelessWidget {
                 Container(
                   width: 48,
                   height: 48,
-                  decoration: const BoxDecoration(
+                  decoration: BoxDecoration(
                     color: AppColors.surfaceAlt,
                     shape: BoxShape.circle,
                   ),

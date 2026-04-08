@@ -58,7 +58,7 @@ class _BecomeProSheetState extends State<BecomeProSheet>
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.only(top: 60),
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
@@ -146,7 +146,7 @@ class _BecomeProSheetState extends State<BecomeProSheet>
                             children: [
                               Text(
                                 advantage.title,
-                                style: const TextStyle(
+                                style: TextStyle(
                                   color: AppColors.blanc,
                                   fontSize: 14,
                                   fontWeight: FontWeight.w600,
@@ -155,7 +155,7 @@ class _BecomeProSheetState extends State<BecomeProSheet>
                               const SizedBox(height: 2),
                               Text(
                                 advantage.desc,
-                                style: const TextStyle(
+                                style: TextStyle(
                                   color: AppColors.gris,
                                   fontSize: 12,
                                 ),
