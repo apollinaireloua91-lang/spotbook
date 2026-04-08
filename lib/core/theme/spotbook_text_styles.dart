@@ -95,11 +95,11 @@ abstract final class SpotbookTextStyles {
         color: SpotbookColors.white,
       );
 
-  // ─── Logo Spotbook — DM Sans bold 20, textPrimary on light bg ───
+  // ─── Logo Spotbook — DM Sans bold 20, violet on light bg ───
   static TextStyle get logo => GoogleFonts.dmSans(
         fontSize: 20,
         fontWeight: FontWeight.w700,
-        color: SpotbookColors.textPrimary,
+        color: SpotbookColors.violet,
       );
 
   // ─── Navigation ───

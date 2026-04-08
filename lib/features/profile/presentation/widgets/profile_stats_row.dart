@@ -25,7 +25,7 @@ class ProfileStatsRow extends StatelessWidget {
       margin: const EdgeInsets.symmetric(horizontal: 16),
       padding: const EdgeInsets.symmetric(vertical: 16),
       decoration: BoxDecoration(
-        color: const Color(0xFFFFF3DA),
+        color: const Color(0xFFFDF2C3),
         borderRadius: BorderRadius.circular(16),
       ),
       child: IntrinsicHeight(
@@ -34,22 +34,22 @@ class ProfileStatsRow extends StatelessWidget {
             _StatItem(
                 value: totalRdv,
                 label: 'Bookings',
-                color: const Color(0xFF043603)),
+                color: const Color(0xFF8039C5)),
             _Divider(),
             _StatItem(
                 value: totalFollowing,
                 label: 'Following',
-                color: const Color(0xFF2D8C2A)),
+                color: const Color(0xFF9B5DD6)),
             _Divider(),
             _StatItem(
                 value: totalEvents,
                 label: 'Events',
-                color: const Color(0xFF043603)),
+                color: const Color(0xFF8039C5)),
             _Divider(),
             _StatItem(
                 value: totalReviews,
                 label: 'Reviews',
-                color: const Color(0xFF2D8C2A)),
+                color: const Color(0xFF9B5DD6)),
           ],
         ),
       ),
@@ -105,7 +105,7 @@ class _Divider extends StatelessWidget {
     return Container(
       width: 1,
       height: 28,
-      color: const Color(0xFFE8E0D0),
+      color: const Color(0xFFE0E0E0),
     );
   }
 }

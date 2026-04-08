@@ -289,7 +289,7 @@ class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
             ),
           ),
 
-          // ─── Bottom overlay: Pro name + Book (or custom override) ───
+          // ─── Bottom overlay: Book Now + Pro info + caption ───
           if (widget.bottomOverlayOverride != null)
             Positioned(
               bottom: 100,
@@ -299,54 +299,113 @@ class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
             )
           else
             Positioned(
-              bottom: 90,
+              bottom: 100,
               left: 16,
-              right: 76,
-              child: GestureDetector(
-                onTap: () => context.push('/pro/${widget.video.proId}'),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Flexible(
-                      child: Text(
-                        widget.video.proName ?? 'Pro',
-                        style: const TextStyle(
-                          color: AppColors.textOnVideo,
-                          fontSize: 15,
-                          fontWeight: FontWeight.w700,
-                          shadows: [
-                            Shadow(
-                              color: AppColors.overlayHeavy,
-                              blurRadius: 6,
-                              offset: Offset(0, 1),
+              right: 72,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Book Now CTA
+                  GestureDetector(
+                    onTap: () {
+                      HapticFeedback.lightImpact();
+                      context.push('/pro/${widget.video.proId}');
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 9),
+                      decoration: BoxDecoration(
+                        color: AppColors.violet,
+                        borderRadius: BorderRadius.circular(22),
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppColors.violet.withAlpha(90),
+                            blurRadius: 16,
+                            offset: const Offset(0, 5),
+                          ),
+                        ],
+                      ),
+                      child: const Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.calendar_today_rounded,
+                              color: Colors.white, size: 14),
+                          SizedBox(width: 7),
+                          Text(
+                            'Book Now',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 13,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: 0.3,
                             ),
-                          ],
-                        ),
-                        overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
                       ),
                     ),
-                    const SizedBox(width: 8),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 6, vertical: 2),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withAlpha(25),
-                        borderRadius: BorderRadius.circular(4),
-                        border: Border.all(
-                            color: Colors.white.withAlpha(40)),
-                      ),
-                      child: const Text(
-                        'PRO',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 9,
-                          fontWeight: FontWeight.w800,
-                          letterSpacing: 1,
+                  ),
+                  const SizedBox(height: 12),
+                  // @username + verified badge
+                  GestureDetector(
+                    onTap: () =>
+                        context.push('/pro/${widget.video.proId}'),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Flexible(
+                          child: Text(
+                            '@${widget.video.proName ?? 'Pro'}',
+                            style: const TextStyle(
+                              color: AppColors.textOnVideo,
+                              fontSize: 15,
+                              fontWeight: FontWeight.w800,
+                              shadows: [
+                                Shadow(
+                                  color: AppColors.overlayHeavy,
+                                  blurRadius: 8,
+                                  offset: Offset(0, 1),
+                                ),
+                              ],
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         ),
+                        const SizedBox(width: 6),
+                        Container(
+                          width: 16,
+                          height: 16,
+                          decoration: const BoxDecoration(
+                            color: AppColors.violet,
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(Icons.check,
+                              color: Colors.white, size: 10),
+                        ),
+                      ],
+                    ),
+                  ),
+                  // Caption
+                  if (widget.video.title.isNotEmpty) ...[
+                    const SizedBox(height: 6),
+                    Text(
+                      widget.video.title,
+                      style: TextStyle(
+                        color: Colors.white.withAlpha(215),
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500,
+                        height: 1.35,
+                        shadows: const [
+                          Shadow(
+                              color: AppColors.overlayMedium,
+                              blurRadius: 6),
+                        ],
                       ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ],
-                ),
+                ],
               ),
             ),
 
@@ -415,7 +474,7 @@ class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
                                     width: 18,
                                     height: 18,
                                     decoration: BoxDecoration(
-                                      color: const Color(0xFF043603),
+                                      color: const Color(0xFF8039C5),
                                       shape: BoxShape.circle,
                                       border: Border.all(
                                           color: Colors.white, width: 2),
@@ -455,7 +514,7 @@ class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
                             : Icons.bookmark_outline,
                         label: '',
                         color: widget.video.isSaved
-                            ? const Color(0xFF043603)
+                            ? const Color(0xFF8039C5)
                             : Colors.white,
                         onTap: _toggleSave,
                       ),
@@ -557,20 +616,29 @@ class _ActionButton extends StatelessWidget {
           Icon(
             icon,
             color: color,
-            size: 28,
+            size: 30,
             shadows: const [
-              Shadow(color: Colors.black38, blurRadius: 6),
+              Shadow(
+                  color: Colors.black54,
+                  blurRadius: 12,
+                  offset: Offset(0, 2)),
+              Shadow(color: Colors.black26, blurRadius: 4),
             ],
           ),
           if (label.isNotEmpty) ...[
-            const SizedBox(height: 2),
+            const SizedBox(height: 3),
             Text(
               label,
               style: const TextStyle(
                 color: Colors.white,
-                fontSize: 11,
-                fontWeight: FontWeight.w600,
-                shadows: [Shadow(color: Colors.black38, blurRadius: 4)],
+                fontSize: 12,
+                fontWeight: FontWeight.w700,
+                shadows: [
+                  Shadow(
+                      color: Colors.black54,
+                      blurRadius: 6,
+                      offset: Offset(0, 1)),
+                ],
               ),
             ),
           ],

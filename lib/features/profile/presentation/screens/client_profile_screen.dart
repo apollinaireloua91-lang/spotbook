@@ -195,7 +195,7 @@ class _ProfileBody extends ConsumerWidget {
                     context.push('/edit-profile');
                   },
                   style: OutlinedButton.styleFrom(
-                    side: const BorderSide(color: Color(0xFFE8E0D0)),
+                    side: const BorderSide(color: Color(0xFFE0E0E0)),
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(14),
@@ -204,7 +204,7 @@ class _ProfileBody extends ConsumerWidget {
                   child: Text(
                     'Edit Profile',
                     style: GoogleFonts.dmSans(
-                      color: const Color(0xFF1A1A1A),
+                      color: const Color(0xFF0C0C0C),
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -613,14 +613,14 @@ class _SpecialActionsSection extends ConsumerWidget {
               width: double.infinity,
               padding: const EdgeInsets.symmetric(vertical: 16),
               decoration: BoxDecoration(
-                color: const Color(0xFFFFF3DA),
+                color: const Color(0xFFFDF2C3),
                 borderRadius: BorderRadius.circular(14),
               ),
               child: Center(
                 child: Text(
                   'Become Pro',
                   style: GoogleFonts.dmSans(
-                    color: const Color(0xFF043603),
+                    color: const Color(0xFF8039C5),
                     fontSize: 15,
                     fontWeight: FontWeight.w600,
                   ),
@@ -636,14 +636,14 @@ class _SpecialActionsSection extends ConsumerWidget {
               width: double.infinity,
               padding: const EdgeInsets.symmetric(vertical: 16),
               decoration: BoxDecoration(
-                color: const Color(0xFFFFF3DA),
+                color: const Color(0xFFFDF2C3),
                 borderRadius: BorderRadius.circular(14),
               ),
               child: Center(
                 child: Text(
                   'Log out',
                   style: GoogleFonts.dmSans(
-                    color: const Color(0xFFD32F2F),
+                    color: const Color(0xFFEF4444),
                     fontSize: 15,
                     fontWeight: FontWeight.w600,
                   ),

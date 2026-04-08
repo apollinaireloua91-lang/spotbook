@@ -47,7 +47,7 @@ abstract final class SpotbookTheme {
         elevation: 0,
       ),
 
-      // ─── Bouton primaire (fond vert, texte blanc, radius 12) ───
+      // ─── Bouton primaire (fond violet, texte blanc, radius 12) ───
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: SpotbookColors.violet,

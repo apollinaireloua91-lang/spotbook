@@ -1,32 +1,32 @@
 import 'package:flutter/material.dart';
 
-/// Palette Spotbook — Blanc + Beige + Vert.
+/// Palette Spotbook — Violet + Beige + Light.
 ///
 /// Utilisation : `SpotbookColors.primary` ou `SpotbookColors.gradientForCategory('barbier')`.
 abstract final class SpotbookColors {
   // ─── Fond ───
-  static const Color background = Color(0xFFFFFFFF);
-  static const Color surface = Color(0xFFFFF3DA);
-  static const Color surfaceAlt = Color(0xFFFFF8ED);
-  static const Color border = Color(0xFFE8E0D0);
+  static const Color background = Color(0xFFF3F4F1);
+  static const Color surface = Color(0xFFFFFFFF);
+  static const Color surfaceAlt = Color(0xFFF9F9F7);
+  static const Color border = Color(0xFFE0E0E0);
 
   // ─── Texte ───
   static const Color white = Color(0xFFFFFFFF);
-  static const Color textPrimary = Color(0xFF1A1A1A);
+  static const Color textPrimary = Color(0xFF0C0C0C);
   static const Color textSecondary = Color(0xFF6B6B6B);
   static const Color textDisabled = Color(0xFFB0B0B0);
   static const Color textCaption = Color(0xFF6B6B6B);
 
-  // ─── Primary (Vert) ───
-  static const Color violet = Color(0xFF043603);
-  static const Color violetLight = Color(0xFF0A5E08);
-  static const Color rose = Color(0xFF2D8C2A);
-  static const Color roseLight = Color(0xFF2D8C2A);
+  // ─── Primary (Violet) ───
+  static const Color violet = Color(0xFF8039C5);
+  static const Color violetLight = Color(0xFF9B5DD6);
+  static const Color rose = Color(0xFFFDF2C3);
+  static const Color roseLight = Color(0xFFFDF2C3);
 
   // ─── Sémantique ───
-  static const Color success = Color(0xFF043603);
-  static const Color error = Color(0xFFD32F2F);
-  static const Color warning = Color(0xFFFF8C42);
+  static const Color success = Color(0xFF22C55E);
+  static const Color error = Color(0xFFEF4444);
+  static const Color warning = Color(0xFFFFBB33);
 
   // ─── Marques ───
   static const Color spotifyGreen = Color(0xFF1ED760);
@@ -35,13 +35,13 @@ abstract final class SpotbookColors {
 
   // ─── Gradients principaux ───
   static const LinearGradient gradientAccent = LinearGradient(
-    colors: [Color(0xFF043603), Color(0xFF2D8C2A)],
+    colors: [Color(0xFF8039C5), Color(0xFF9B5DD6)],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
 
   static const LinearGradient gradientAccentVertical = LinearGradient(
-    colors: [Color(0xFF043603), Color(0xFF2D8C2A)],
+    colors: [Color(0xFF8039C5), Color(0xFF9B5DD6)],
     begin: Alignment.topCenter,
     end: Alignment.bottomCenter,
   );
@@ -64,7 +64,7 @@ abstract final class SpotbookColors {
       end: Alignment.bottomRight,
     ),
     'photo': const LinearGradient(
-      colors: [Color(0xFF043603), Color(0xFF2D8C2A)],
+      colors: [Color(0xFF8039C5), Color(0xFF9B5DD6)],
       begin: Alignment.topLeft,
       end: Alignment.bottomRight,
     ),
@@ -74,7 +74,7 @@ abstract final class SpotbookColors {
       end: Alignment.bottomRight,
     ),
     'esthetique': const LinearGradient(
-      colors: [Color(0xFF2D8C2A), Color(0xFF4ADE80)],
+      colors: [Color(0xFF9B5DD6), Color(0xFFB98AE8)],
       begin: Alignment.topLeft,
       end: Alignment.bottomRight,
     ),
@@ -84,7 +84,7 @@ abstract final class SpotbookColors {
       end: Alignment.bottomRight,
     ),
     'dj': const LinearGradient(
-      colors: [Color(0xFF043603), Color(0xFF0A5E08)],
+      colors: [Color(0xFF6A2EA8), Color(0xFF8039C5)],
       begin: Alignment.topLeft,
       end: Alignment.bottomRight,
     ),

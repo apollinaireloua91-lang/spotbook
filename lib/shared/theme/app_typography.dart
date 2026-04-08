@@ -7,14 +7,14 @@ import 'app_colors.dart';
 /// Hiérarchie : logo marque → titres d'écran → sections (overline) → corps.
 abstract final class AppTypography {
   /// Marque « Spotbook » — DM Sans bold, 20px.
-  /// On light bg: dark text. On video: white + shadow.
+  /// On light bg: violet. On video: white + shadow.
   static TextStyle spotbookLogo({bool onVideoBackground = false}) {
     return GoogleFonts.dmSans(
       fontSize: 20,
       fontWeight: FontWeight.bold,
       letterSpacing: -0.5,
       height: 1.05,
-      color: onVideoBackground ? AppColors.textOnVideo : AppColors.blanc,
+      color: onVideoBackground ? AppColors.textOnVideo : AppColors.violet,
       shadows: onVideoBackground
           ? const [
               Shadow(
@@ -140,7 +140,7 @@ abstract final class AppTypography {
         ],
       );
 
-  /// Barre de navigation basse (client : actif en vert ; pro : géré séparément).
+  /// Barre de navigation basse (client : actif en violet ; pro : géré séparément).
   static TextStyle navLabel({
     required bool selected,
     required bool isClientShell,

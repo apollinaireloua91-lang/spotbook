@@ -2,33 +2,33 @@ import 'package:flutter/material.dart';
 
 abstract final class AppColors {
   // ─── Backgrounds ───
-  static const Color fond = Color(0xFFFFF8F0);           // Beige chaud
-  static const Color surface = Color(0xFFFFF3DA);         // Beige chaud
-  static const Color surfaceAlt = Color(0xFFFFF8ED);      // Beige très clair
-  static const Color surfaceAuth = Color(0xFFFFF8ED);     // Beige clair (auth)
+  static const Color fond = Color(0xFFF3F4F1);
+  static const Color surface = Color(0xFFFFFFFF);
+  static const Color surfaceAlt = Color(0xFFF9F9F7);
+  static const Color surfaceAuth = Color(0xFFF9F9F7);
 
-  // ─── Primary (Vert) ───
-  static const Color violet = Color(0xFF043603);          // Vert foncé (primary)
-  static const Color violetClair = Color(0xFF0A5E08);     // Vert moyen
-  static const Color rose = Color(0xFF2D8C2A);            // Vert clair (accent)
-  static const Color roseClair = Color(0xFF2D8C2A);       // Vert clair
+  // ─── Primary (Violet) ───
+  static const Color violet = Color(0xFF8039C5);
+  static const Color violetClair = Color(0xFF9B5DD6);
+  static const Color rose = Color(0xFFFDF2C3);
+  static const Color roseClair = Color(0xFFFDF2C3);
 
   // ─── Text ───
-  static const Color blanc = Color(0xFF1A1A1A);           // Noir (text principal)
-  static const Color gris = Color(0xFF6B6B6B);            // Gris (secondary text)
-  static const Color grisClair = Color(0xFF6B6B6B);       // Gris
-  static const Color grisInactif = Color(0xFFB0B0B0);     // Gris clair (disabled)
-  static const Color accent = Color(0xFF2D8C2A);          // Vert clair
-  static const Color accentGreen = Color(0xFF043603);     // Vert
+  static const Color blanc = Color(0xFF0C0C0C);
+  static const Color gris = Color(0xFF6B6B6B);
+  static const Color grisClair = Color(0xFF6B6B6B);
+  static const Color grisInactif = Color(0xFFB0B0B0);
+  static const Color accent = Color(0xFF9B5DD6);
+  static const Color accentGreen = Color(0xFF8039C5);
 
   // ─── Borders ───
-  static const Color border = Color(0xFFE8E0D0);          // Beige foncé
-  static const Color sheetSeparator = Color(0xFFE8E0D0);
+  static const Color border = Color(0xFFE0E0E0);
+  static const Color sheetSeparator = Color(0xFFE0E0E0);
 
   // ─── Semantic ───
-  static const Color success = Color(0xFF043603);
-  static const Color error = Color(0xFFD32F2F);
-  static const Color warning = Color(0xFFFF8C42);
+  static const Color success = Color(0xFF22C55E);
+  static const Color error = Color(0xFFEF4444);
+  static const Color warning = Color(0xFFFFBB33);
 
   // ─── Brand ───
   static const Color spotifyGreen = Color(0xFF1DB954);
@@ -45,17 +45,17 @@ abstract final class AppColors {
 
   // ─── Catering ───
   static const Color catering = Color(0xFFFF8C42);
-  static const Color cateringBg = Color(0xFFFFF3DA);
+  static const Color cateringBg = Color(0xFFFDF2C3);
   static const Color cateringDark = Color(0xFFF97316);
   static const Color cateringLight = Color(0xFFFFB347);
 
-  // ─── Strip backgrounds (on video — keep semi-transparent dark) ───
-  static const Color ctaServiceStripBg = Color(0xE6FFF8F0);
-  static const Color ctaEventStripBg = Color(0xE6FFF8F0);
-  static const Color ctaBookingStripBg = Color(0xE6FFF8F0);
-  static const Color ctaCateringStripBg = Color(0xE6FFF3DA);
+  // ─── Strip backgrounds (on video) ───
+  static const Color ctaServiceStripBg = Color(0xE6F3F4F1);
+  static const Color ctaEventStripBg = Color(0xE6F3F4F1);
+  static const Color ctaBookingStripBg = Color(0xE6F3F4F1);
+  static const Color ctaCateringStripBg = Color(0xE6FDF2C3);
 
-  // ─── Shadows & overlays (keep dark for video overlays) ───
+  // ─── Shadows & overlays ───
   static const Color shadowCard = Color(0x1A000000);
   static const Color shadowDark = Color(0x33000000);
   static const Color overlayLight = Color(0x22000000);
@@ -71,36 +71,36 @@ abstract final class AppColors {
   static const Color ratingAmber = Color(0xFFFFB800);
 
   // ─── Nav bar ───
-  static const Color navBarBg = Color(0xFFFFF8F0);
+  static const Color navBarBg = Color(0xFFF3F4F1);
 
   // ─── Status ───
-  static const Color statusCompleted = Color(0xFF043603);
+  static const Color statusCompleted = Color(0xFF22C55E);
   static const Color successLight = Color(0xFF86EFAC);
 
   // ─── Info ───
   static const Color infoBlue = Color(0xFF42A5F5);
   static const Color locationBlue = Color(0xFF007AFF);
 
-  // ─── Text on video (keep white for readability) ───
+  // ─── Text on video (always white) ───
   static const Color textOnVideo = Color(0xFFFFFFFF);
 
-  // ─── Text on primary buttons (white on green) ───
+  // ─── Text on primary buttons (always white) ───
   static const Color textOnPrimary = Color(0xFFFFFFFF);
 
   // ─── Gradients ───
   static const LinearGradient gradientAccent = LinearGradient(
-    colors: [Color(0xFF043603), Color(0xFF2D8C2A)],
+    colors: [Color(0xFF8039C5), Color(0xFF9B5DD6)],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
 
   static const LinearGradient gradientAccentVertical = LinearGradient(
-    colors: [Color(0xFF043603), Color(0xFF2D8C2A)],
+    colors: [Color(0xFF8039C5), Color(0xFF9B5DD6)],
     begin: Alignment.topCenter,
     end: Alignment.bottomCenter,
   );
 
-  // ─── Legacy gradient helpers (kept for compat) ───
-  static const Color violetDarkGradient = Color(0xFF043603);
-  static const Color violetDarkGradientEnd = Color(0xFF0A5E08);
+  // ─── Legacy gradient helpers ───
+  static const Color violetDarkGradient = Color(0xFF6A2EA8);
+  static const Color violetDarkGradientEnd = Color(0xFF8039C5);
 }

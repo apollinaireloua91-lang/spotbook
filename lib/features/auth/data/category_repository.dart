@@ -38,7 +38,7 @@ class ProCategory {
 
   /// Parse gradient colors from hex strings (#RRGGBB)
   Color get startColor {
-    if (gradientStart == null) return const Color(0xFF043603);
+    if (gradientStart == null) return const Color(0xFF8039C5);
     return _parseHex(gradientStart!);
   }
 
@@ -50,7 +50,7 @@ class ProCategory {
   static Color _parseHex(String hex) {
     final clean = hex.replaceAll('#', '');
     if (clean.length == 6) return Color(int.parse('FF$clean', radix: 16));
-    return const Color(0xFF043603);
+    return const Color(0xFF8039C5);
   }
 
   static const _labelIconMap = <String, IconData>{

@@ -154,8 +154,9 @@ class _FeedTabPill extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(3),
       decoration: BoxDecoration(
-        color: AppColors.blanc.withAlpha(15), // rgba(255,255,255,0.06)
+        color: Colors.black.withAlpha(60),
         borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: Colors.white.withAlpha(18)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -197,7 +198,7 @@ class _TabItem extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
         decoration: BoxDecoration(
           color: isActive
-              ? AppColors.violet.withAlpha(128) // rgba(108,62,244,0.5)
+              ? Colors.white.withAlpha(40)
               : Colors.transparent,
           borderRadius: BorderRadius.circular(8),
         ),
@@ -205,8 +206,8 @@ class _TabItem extends StatelessWidget {
           duration: const Duration(milliseconds: 200),
           style: GoogleFonts.dmSans(
             color: isActive
-                ? AppColors.blanc
-                : AppColors.blanc.withAlpha(115), // rgba(255,255,255,0.45)
+                ? Colors.white
+                : Colors.white.withAlpha(140),
             fontSize: 13,
             fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
           ),
@@ -238,17 +239,17 @@ class _NotificationBell extends ConsumerWidget {
             width: 34,
             height: 34,
             decoration: BoxDecoration(
-              color: AppColors.surfaceAlt.withAlpha(217), // rgba(22,22,31,0.85)
+              color: Colors.black.withAlpha(90),
               borderRadius: BorderRadius.circular(11),
               border: Border.all(
-                  color: AppColors.blanc.withAlpha(26)), // rgba(255,255,255,0.1)
+                  color: Colors.white.withAlpha(30)),
             ),
             child: Stack(
               children: [
                 const Center(
                   child: Icon(
                     Icons.notifications_outlined,
-                    color: AppColors.blanc,
+                    color: Colors.white,
                     size: 19,
                   ),
                 ),
@@ -260,9 +261,9 @@ class _NotificationBell extends ConsumerWidget {
                       width: 7,
                       height: 7,
                       decoration: BoxDecoration(
-                        color: AppColors.rose,
+                        color: AppColors.error,
                         shape: BoxShape.circle,
-                        border: Border.all(color: AppColors.fond, width: 1),
+                        border: Border.all(color: Colors.white, width: 1),
                       ),
                     ),
                   ),
