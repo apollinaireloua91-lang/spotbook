@@ -95,7 +95,7 @@ class _ProFeedScreenState extends ConsumerState<ProFeedScreen> {
     final showHeart = ref.watch(_doubleTapHeartProvider);
 
     if (feed.isLoading) {
-      return const Scaffold(
+      return Scaffold(
         backgroundColor: AppColors.fond,
         body: Center(
           child: CircularProgressIndicator(color: AppColors.blanc),
@@ -174,7 +174,7 @@ class _ProFeedScreenState extends ConsumerState<ProFeedScreen> {
           // ── Right column (only wraps actual icons, not full screen) ─
           Positioned(
             right: 10,
-            bottom: 72,
+            bottom: 110,
             child: _RightColumn(
               video: currentVideo,
               onLike: () => _toggleLike(currentVideo, currentIndex),
@@ -188,7 +188,7 @@ class _ProFeedScreenState extends ConsumerState<ProFeedScreen> {
           Positioned(
             left: 16,
             right: 80,
-            bottom: 88,
+            bottom: 110,
             child: _LeftColumn(video: currentVideo),
           ),
 
@@ -367,7 +367,7 @@ class _ProFeedScreenState extends ConsumerState<ProFeedScreen> {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Icon(Icons.videocam_rounded,
+                        Icon(Icons.videocam_rounded,
                             color: AppColors.fond, size: 22),
                         const SizedBox(width: 10),
                         Text(
@@ -503,18 +503,18 @@ class _PostBackgroundState extends ConsumerState<_PostBackground> {
           bottom: 0,
           left: 0,
           right: 0,
-          height: 360,
+          height: 400,
           child: DecoratedBox(
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.bottomCenter,
                 end: Alignment.topCenter,
                 colors: [
-                  Colors.black.withAlpha(180),
-                  Colors.black.withAlpha(100),
+                  Colors.black.withAlpha(210),
+                  Colors.black.withAlpha(120),
                   Colors.transparent,
                 ],
-                stops: const [0, 0.45, 1],
+                stops: const [0, 0.5, 1],
               ),
             ),
           ),
@@ -693,12 +693,12 @@ class _ProTopBar extends StatelessWidget {
 }
 
 class _BadgeButton extends StatelessWidget {
-  const _BadgeButton({
+  _BadgeButton({
     required this.icon,
     required this.onTap,
     this.hasUnread = false,
-    this.badgeColor = AppColors.rose,
-  });
+    Color? badgeColor,
+  }) : badgeColor = badgeColor ?? AppColors.rose;
 
   final IconData icon;
   final VoidCallback onTap;
@@ -952,7 +952,8 @@ class _RightColButton extends StatelessWidget {
               ),
               child: Icon(icon, color: color, size: iconSize,
                   shadows: const [
-                    Shadow(color: AppColors.shadowDark, blurRadius: 8),
+                    Shadow(color: Colors.black54, blurRadius: 12),
+                    Shadow(color: Colors.black38, blurRadius: 24),
                   ]),
             ),
           ),
@@ -964,7 +965,7 @@ class _RightColButton extends StatelessWidget {
             color: Colors.white,
             fontSize: 11,
             fontWeight: FontWeight.w600,
-            shadows: [const Shadow(color: AppColors.shadowDark, blurRadius: 6)],
+            shadows: [const Shadow(color: Colors.black54, blurRadius: 10)],
           ),
         ),
       ],
@@ -1015,7 +1016,7 @@ class _SpotifyButton extends StatelessWidget {
           ),
           const SizedBox(height: 4),
           Text(
-            'Musique',
+            'Music',
             style: GoogleFonts.dmSans(
               color: AppColors.spotifyGreen,
               fontSize: 10,
@@ -1066,7 +1067,7 @@ class _LeftColumnState extends State<_LeftColumn> {
                   fontSize: 13,
                   fontWeight: FontWeight.w700,
                   letterSpacing: 0.2,
-                  shadows: [const Shadow(color: AppColors.shadowDark, blurRadius: 6)],
+                  shadows: [const Shadow(color: Colors.black54, blurRadius: 10)],
                 ),
                 overflow: TextOverflow.ellipsis,
               ),
@@ -1087,7 +1088,7 @@ class _LeftColumnState extends State<_LeftColumn> {
               color: Colors.white.withAlpha(200),
               fontSize: 12,
               height: 1.45,
-              shadows: [const Shadow(color: AppColors.shadowDark, blurRadius: 4)],
+              shadows: [const Shadow(color: Colors.black54, blurRadius: 8)],
             ),
             maxLines: _captionExpanded ? 8 : 2,
             overflow: _captionExpanded
@@ -1124,7 +1125,7 @@ class _LeftColumnState extends State<_LeftColumn> {
                       color: Colors.white.withAlpha(180),
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
-                      shadows: [const Shadow(color: AppColors.shadowDark, blurRadius: 4)],
+                      shadows: [const Shadow(color: Colors.black54, blurRadius: 8)],
                     ),
                   ),
               ],
@@ -1236,19 +1237,19 @@ class _ServiceCtaStrip extends StatelessWidget {
           ),
           const SizedBox(width: 8),
           Material(
-            color: AppColors.violet,
+            color: AppColors.success,
             borderRadius: BorderRadius.circular(8),
             child: InkWell(
               onTap: () =>
                   context.push('/client/booking-flow/${video.proId}'),
               borderRadius: BorderRadius.circular(8),
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                 child: Text(
                   'Book',
                   style: GoogleFonts.dmSans(
                     color: AppColors.textOnPrimary,
-                    fontSize: 12,
+                    fontSize: 13,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
@@ -1323,7 +1324,7 @@ class _EventCtaStrip extends StatelessWidget {
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                 child: Text(
-                  'Acheter',
+                  'Get Tickets',
                   style: GoogleFonts.dmSans(
                     color: AppColors.textOnPrimary,
                     fontSize: 12,
@@ -1746,7 +1747,7 @@ class _SheetLoader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const SizedBox(
+    return SizedBox(
       height: 100,
       child: Center(
         child: CircularProgressIndicator(color: AppColors.blanc),
@@ -1799,14 +1800,14 @@ class _SheetList extends StatelessWidget {
 }
 
 class _NotifItem extends StatelessWidget {
-  const _NotifItem({
+  _NotifItem({
     required this.icon,
     required this.title,
     required this.subtitle,
     required this.timestamp,
-    this.iconColor = AppColors.blanc,
+    Color? iconColor,
     this.isUnread = false,
-  });
+  }) : iconColor = iconColor ?? AppColors.blanc;
 
   final IconData icon;
   final String title;
@@ -1872,7 +1873,7 @@ class _NotifItem extends StatelessWidget {
                 Container(
                   width: 6,
                   height: 6,
-                  decoration: const BoxDecoration(
+                  decoration: BoxDecoration(
                     color: AppColors.blanc,
                     shape: BoxShape.circle,
                   ),

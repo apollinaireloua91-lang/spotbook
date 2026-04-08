@@ -270,7 +270,7 @@ class _SpotbookVideoPlayerState extends State<SpotbookVideoPlayer>
                       Icon(Icons.volume_off, color: AppColors.blanc, size: 16),
                       SizedBox(width: 6),
                       Text(
-                        'Tapez pour activer le son',
+                        'Tap for sound',
                         style: TextStyle(
                           color: AppColors.blanc,
                           fontSize: 12,
