@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 /// Brightness-aware color palette for Spotbook.
 ///
 /// **Light mode**: White/beige/violet (#8039C5)
-/// **Dark mode**: Black/deep-purple/neon-violet (#8E05C2)
+/// **Dark mode**: Deep-dark neutrals + neon-violet (#A855F7) accent
 ///
 /// All screens use `AppColors.xxx` — colors resolve automatically based on
 /// the current brightness set via [AppColors.brightness].
@@ -18,37 +18,37 @@ abstract final class AppColors {
   // ═════════════════════════════════════════════════════════════════════════
 
   // ─── Backgrounds ───
-  static Color get fond => isDark ? const Color(0xFF000000) : const Color(0xFFF3F4F1);
-  static Color get surface => isDark ? const Color(0xFF3E065F) : const Color(0xFFFFFFFF);
-  static Color get surfaceAlt => isDark ? const Color(0xFF1A0330) : const Color(0xFFF9F9F7);
-  static Color get surfaceAuth => isDark ? const Color(0xFF0A0A0A) : const Color(0xFFF9F9F7);
-  static Color get surfaceElevated => isDark ? const Color(0xFF4A0A6E) : const Color(0xFFFFFFFF);
+  static Color get fond => isDark ? const Color(0xFF0D0D14) : const Color(0xFFF3F4F1);
+  static Color get surface => isDark ? const Color(0xFF1E1E2E) : const Color(0xFFFFFFFF);
+  static Color get surfaceAlt => isDark ? const Color(0xFF16161F) : const Color(0xFFF9F9F7);
+  static Color get surfaceAuth => isDark ? const Color(0xFF0D0D14) : const Color(0xFFF9F9F7);
+  static Color get surfaceElevated => isDark ? const Color(0xFF252538) : const Color(0xFFFFFFFF);
 
   // ─── Primary ───
-  static Color get violet => isDark ? const Color(0xFF8E05C2) : const Color(0xFF8039C5);
-  static Color get violetClair => isDark ? const Color(0xFFA020F0) : const Color(0xFF9B5DD6);
-  static Color get rose => isDark ? const Color(0xFF700B97) : const Color(0xFFFDF2C3);
-  static Color get roseClair => isDark ? const Color(0xFF9B30FF) : const Color(0xFFFDF2C3);
+  static Color get violet => isDark ? const Color(0xFFA855F7) : const Color(0xFF8039C5);
+  static Color get violetClair => isDark ? const Color(0xFFC084FC) : const Color(0xFF9B5DD6);
+  static Color get rose => isDark ? const Color(0xFFF43E8F) : const Color(0xFFFDF2C3);
+  static Color get roseClair => isDark ? const Color(0xFFFF6BAA) : const Color(0xFFFDF2C3);
 
   // ─── Text ───
   static Color get blanc => isDark ? const Color(0xFFFFFFFF) : const Color(0xFF0C0C0C);
-  static Color get gris => isDark ? const Color(0xFFB8B8CC) : const Color(0xFF6B6B6B);
+  static Color get gris => isDark ? const Color(0xFF9090AA) : const Color(0xFF6B6B6B);
   static Color get grisClair => isDark ? const Color(0xFFB8B8CC) : const Color(0xFF6B6B6B);
-  static Color get grisInactif => isDark ? const Color(0xFF4A4A5A) : const Color(0xFFB0B0B0);
-  static Color get accent => isDark ? const Color(0xFFA020F0) : const Color(0xFF9B5DD6);
-  static Color get accentGreen => isDark ? const Color(0xFF8E05C2) : const Color(0xFF8039C5);
+  static Color get grisInactif => isDark ? const Color(0xFF555555) : const Color(0xFFB0B0B0);
+  static Color get accent => isDark ? const Color(0xFFC084FC) : const Color(0xFF9B5DD6);
+  static Color get accentGreen => isDark ? const Color(0xFF34D399) : const Color(0xFF8039C5);
 
   // ─── Borders ───
-  static Color get border => isDark ? const Color(0xFF4A0A6E) : const Color(0xFFE0E0E0);
-  static Color get sheetSeparator => isDark ? const Color(0xFF2A0445) : const Color(0xFFE0E0E0);
+  static Color get border => isDark ? const Color(0xFF2A2A3A) : const Color(0xFFE0E0E0);
+  static Color get sheetSeparator => isDark ? const Color(0xFF2A2A3A) : const Color(0xFFE0E0E0);
 
   // ─── Semantic ───
   static Color get success => isDark ? const Color(0xFF22C55E) : const Color(0xFF22C55E);
-  static Color get error => isDark ? const Color(0xFFEF4444) : const Color(0xFFEF4444);
-  static Color get warning => isDark ? const Color(0xFFF59E0B) : const Color(0xFFFFBB33);
+  static Color get error => isDark ? const Color(0xFFFF4444) : const Color(0xFFEF4444);
+  static Color get warning => isDark ? const Color(0xFFFFBB33) : const Color(0xFFFFBB33);
 
   // ─── Catering ───
-  static Color get cateringBg => isDark ? const Color(0xFF3E065F) : const Color(0xFFFDF2C3);
+  static Color get cateringBg => isDark ? const Color(0xFF1E1E2E) : const Color(0xFFFDF2C3);
 
   // ─── Strip backgrounds (on video — always dark for readability) ───
   static Color get ctaServiceStripBg => const Color(0xCC1A1A2E);
@@ -57,20 +57,20 @@ abstract final class AppColors {
   static Color get ctaCateringStripBg => isDark ? const Color(0xCC2E1A08) : const Color(0xCC2E1A08);
 
   // ─── Nav bar ───
-  static Color get navBarBg => isDark ? const Color(0xFF0A0A0A) : const Color(0xFFF3F4F1);
+  static Color get navBarBg => isDark ? const Color(0xFF0D0D14) : const Color(0xFFF3F4F1);
 
   // ─── Status ───
   static Color get statusCompleted => isDark ? const Color(0xFF22C55E) : const Color(0xFF22C55E);
   static Color get successLight => isDark ? const Color(0xFF86EFAC) : const Color(0xFF86EFAC);
 
-  // ─── Shadows (stronger glow in dark) ───
-  static Color get shadowCard => isDark ? const Color(0x268E05C2) : const Color(0x1A000000);
-  static Color get shadowDark => isDark ? const Color(0x408E05C2) : const Color(0x33000000);
+  // ─── Shadows (neon glow in dark) ───
+  static Color get shadowCard => isDark ? const Color(0x26A855F7) : const Color(0x1A000000);
+  static Color get shadowDark => isDark ? const Color(0x40A855F7) : const Color(0x33000000);
 
   // ─── Gradients ───
   static LinearGradient get gradientAccent => isDark
       ? const LinearGradient(
-          colors: [Color(0xFF700B97), Color(0xFF8E05C2)],
+          colors: [Color(0xFF7C3AED), Color(0xFFA855F7)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         )
@@ -82,7 +82,7 @@ abstract final class AppColors {
 
   static LinearGradient get gradientAccentVertical => isDark
       ? const LinearGradient(
-          colors: [Color(0xFF700B97), Color(0xFF8E05C2)],
+          colors: [Color(0xFF7C3AED), Color(0xFFA855F7)],
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
         )
@@ -93,8 +93,8 @@ abstract final class AppColors {
         );
 
   // ─── Legacy gradient helpers ───
-  static Color get violetDarkGradient => isDark ? const Color(0xFF700B97) : const Color(0xFF6A2EA8);
-  static Color get violetDarkGradientEnd => isDark ? const Color(0xFF8E05C2) : const Color(0xFF8039C5);
+  static Color get violetDarkGradient => isDark ? const Color(0xFF7C3AED) : const Color(0xFF6A2EA8);
+  static Color get violetDarkGradientEnd => isDark ? const Color(0xFFA855F7) : const Color(0xFF8039C5);
 
   // ═════════════════════════════════════════════════════════════════════════
   // CONSTANT COLORS (same in both modes)
@@ -145,14 +145,14 @@ abstract final class AppColors {
   // DARK MODE GLOW HELPERS
   // ═════════════════════════════════════════════════════════════════════════
 
-  static Color get glow => isDark ? const Color(0xFF8E05C2) : Colors.transparent;
-  static Color get glowLight => isDark ? const Color(0xFFBB6BD9) : Colors.transparent;
+  static Color get glow => isDark ? const Color(0xFFA855F7) : Colors.transparent;
+  static Color get glowLight => isDark ? const Color(0xFFC084FC) : Colors.transparent;
 
   /// Neon glow shadow for cards in dark mode, subtle shadow in light mode.
   static List<BoxShadow> get cardShadow => isDark
       ? [
           BoxShadow(
-            color: const Color(0xFF8E05C2).withAlpha(38),
+            color: const Color(0xFFA855F7).withAlpha(30),
             blurRadius: 20,
             spreadRadius: -2,
           ),
@@ -169,7 +169,7 @@ abstract final class AppColors {
   static List<BoxShadow> get primaryButtonShadow => isDark
       ? [
           BoxShadow(
-            color: const Color(0xFF8E05C2).withAlpha(102),
+            color: const Color(0xFFA855F7).withAlpha(90),
             blurRadius: 16,
             spreadRadius: -2,
             offset: const Offset(0, 4),

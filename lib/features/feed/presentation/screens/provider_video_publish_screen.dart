@@ -9,20 +9,20 @@ import '../../../booking/presentation/notifiers/pro_scheduling_notifiers.dart';
 import '../../data/upload_video_notifier.dart';
 
 const _allowedCategories = <String, String>{
-  'coiffure': 'Coiffure',
-  'beaute': 'Beaute',
+  'coiffure': 'Hair',
+  'beaute': 'Beauty',
   'fitness': 'Fitness',
-  'photo': 'Photographie',
-  'musique': 'Musique',
-  'cuisine': 'Cuisine',
+  'photo': 'Photography',
+  'musique': 'Music',
+  'cuisine': 'Cooking',
   'massage': 'Massage',
-  'tatouage': 'Tatouage',
-  'maquillage': 'Maquillage',
-  'mode': 'Mode',
-  'danse': 'Danse',
+  'tatouage': 'Tattoo',
+  'maquillage': 'Makeup',
+  'mode': 'Fashion',
+  'danse': 'Dance',
   'art': 'Art',
   'coaching': 'Coaching',
-  'autre_service': 'Autre service',
+  'autre_service': 'Other',
 };
 
 const _categoryIcons = <String, IconData>{
@@ -79,13 +79,13 @@ class _ProviderVideoPublishScreenState
 
   List<String> _missingRequirements(UploadVideoState s) {
     final out = <String>[];
-    if (s.videoFile == null) out.add('choisir une video');
+    if (s.videoFile == null) out.add('select a video');
     if (_titleCtrl.text.trim().length < 5) {
-      out.add('titre : au moins 5 caracteres');
+      out.add('title: at least 5 characters');
     }
-    if (s.selectedCategory == null) out.add('une categorie');
+    if (s.selectedCategory == null) out.add('choose a category');
     if (_descCtrl.text.trim().length < 20) {
-      out.add('description : au moins 20 caracteres');
+      out.add('description: at least 20 characters');
     }
     return out;
   }
@@ -103,7 +103,7 @@ class _ProviderVideoPublishScreenState
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           content: Text(
-            'Pour publier : ${missing.join(' · ')}',
+            'To publish: ${missing.join(' · ')}',
             style: GoogleFonts.dmSans(
                 color: AppColors.blanc, fontSize: 13, height: 1.35),
           ),
@@ -126,7 +126,7 @@ class _ProviderVideoPublishScreenState
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Video publiee !',
+          content: Text('Video published!',
               style: GoogleFonts.dmSans(color: AppColors.textOnPrimary)),
           backgroundColor: AppColors.success,
           behavior: SnackBarBehavior.floating,
@@ -214,7 +214,7 @@ class _ProviderVideoPublishScreenState
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content: Text(
-                                'Format ou duree invalide (mp4/mov/m4v, max 60s)',
+                                'Invalid format or duration (mp4/mov/m4v, max 60s)',
                                 style: GoogleFonts.dmSans(
                                     color: AppColors.textOnPrimary),
                               ),
@@ -240,7 +240,7 @@ class _ProviderVideoPublishScreenState
                     _PremiumTextField(
                       controller: _titleCtrl,
                       label: 'Title',
-                      hint: 'Ex: Coupe femme + brushing',
+                      hint: 'Ex: Women\'s cut + blowout',
                       maxLength: 80,
                       prefixIcon: Icons.title_rounded,
                       onChanged: (_) => setState(() {}),
@@ -263,7 +263,7 @@ class _ProviderVideoPublishScreenState
                     _PremiumTextField(
                       controller: _hashtagCtrl,
                       label: 'Hashtags (optional, max 5)',
-                      hint: 'coiffure, tendance, paris',
+                      hint: 'hair, trending, style',
                       prefixIcon: Icons.tag_rounded,
                     ),
                     const SizedBox(height: 24),
@@ -538,129 +538,139 @@ class _VideoPreviewCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final hasVideo = videoFile != null;
     return GestureDetector(
       onTap: onPickVideo,
       child: Container(
         width: double.infinity,
-        height: 140,
+        height: 160,
         decoration: BoxDecoration(
-          color: AppColors.surface,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppColors.border, width: 0.5),
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.shadowCard,
-              blurRadius: 8,
-              offset: const Offset(0, 2),
-            ),
-          ],
+          gradient: hasVideo ? AppColors.gradientAccent : null,
+          color: hasVideo ? null : AppColors.surface,
+          borderRadius: BorderRadius.circular(20),
+          border: hasVideo
+              ? null
+              : Border.all(
+                  color: AppColors.border,
+                  width: 1,
+                ),
+          boxShadow: hasVideo ? AppColors.primaryButtonShadow : AppColors.cardShadow,
         ),
-        child: videoFile != null
-            ? Stack(
-                children: [
-                  // Video ready indicator
-                  Center(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(14),
-                          decoration: BoxDecoration(
-                            color: AppColors.violet.withAlpha(20),
-                            shape: BoxShape.circle,
-                          ),
-                          child: Icon(Icons.videocam_rounded,
-                              color: AppColors.violet, size: 28),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'Video ready',
-                          style: GoogleFonts.dmSans(
-                            color: AppColors.blanc,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        const SizedBox(height: 2),
-                        Text(
-                          'Tap to change',
-                          style: GoogleFonts.dmSans(
-                            color: AppColors.violet,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  // Duration badge
-                  if (duration != null)
-                    Positioned(
-                      top: 10,
-                      right: 10,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 5),
-                        decoration: BoxDecoration(
-                          color: AppColors.violet,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const Icon(Icons.timer_outlined,
-                                color: AppColors.textOnPrimary, size: 13),
-                            const SizedBox(width: 4),
-                            Text(
-                              '${duration!.toStringAsFixed(0)}s',
-                              style: GoogleFonts.dmSans(
-                                color: AppColors.textOnPrimary,
-                                fontSize: 12,
-                                fontWeight: FontWeight.w700,
-                              ),
+        child: hasVideo
+            ? Container(
+                margin: const EdgeInsets.all(2),
+                decoration: BoxDecoration(
+                  color: AppColors.surface,
+                  borderRadius: BorderRadius.circular(18),
+                ),
+                child: Stack(
+                  children: [
+                    Center(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              color: AppColors.violet.withAlpha(25),
+                              shape: BoxShape.circle,
                             ),
-                          ],
+                            child: Icon(Icons.videocam_rounded,
+                                color: AppColors.violet, size: 32),
+                          ),
+                          const SizedBox(height: 10),
+                          Text(
+                            'Video ready',
+                            style: GoogleFonts.sora(
+                              color: AppColors.blanc,
+                              fontSize: 15,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            'Tap to change',
+                            style: GoogleFonts.dmSans(
+                              color: AppColors.violet,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    if (duration != null)
+                      Positioned(
+                        top: 12,
+                        right: 12,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 5),
+                          decoration: BoxDecoration(
+                            color: AppColors.violet,
+                            borderRadius: BorderRadius.circular(8),
+                            boxShadow: AppColors.primaryButtonShadow,
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(Icons.timer_outlined,
+                                  color: AppColors.textOnPrimary, size: 13),
+                              const SizedBox(width: 4),
+                              Text(
+                                '${duration!.toStringAsFixed(0)}s',
+                                style: GoogleFonts.dmSans(
+                                  color: AppColors.textOnPrimary,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                  // Checkmark badge
-                  Positioned(
-                    top: 10,
-                    left: 10,
-                    child: Container(
-                      padding: const EdgeInsets.all(4),
-                      decoration: BoxDecoration(
-                        color: AppColors.success,
-                        shape: BoxShape.circle,
+                    Positioned(
+                      top: 12,
+                      left: 12,
+                      child: Container(
+                        padding: const EdgeInsets.all(5),
+                        decoration: BoxDecoration(
+                          color: AppColors.success,
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(Icons.check,
+                            color: AppColors.textOnPrimary, size: 14),
                       ),
-                      child: Icon(Icons.check,
-                          color: AppColors.textOnPrimary, size: 14),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               )
             : Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Container(
-                    padding: const EdgeInsets.all(14),
+                    padding: const EdgeInsets.all(18),
                     decoration: BoxDecoration(
-                      color: AppColors.gris.withAlpha(20),
+                      color: AppColors.violet.withAlpha(15),
                       shape: BoxShape.circle,
+                      border: Border.all(
+                        color: AppColors.violet.withAlpha(30),
+                        width: 1.5,
+                      ),
                     ),
                     child: Icon(Icons.video_call_rounded,
-                        color: AppColors.gris, size: 28),
+                        color: AppColors.violet, size: 30),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 12),
                   Text(
                     'Choose a video',
-                    style: GoogleFonts.dmSans(
+                    style: GoogleFonts.sora(
                       color: AppColors.blanc,
-                      fontSize: 14,
+                      fontSize: 15,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
-                  const SizedBox(height: 2),
+                  const SizedBox(height: 4),
                   Text(
                     'mp4, mov, m4v · max 60s',
                     style: GoogleFonts.dmSans(
@@ -690,21 +700,29 @@ class _SectionHeader extends StatelessWidget {
     return Row(
       children: [
         Container(
-          padding: const EdgeInsets.all(6),
+          padding: const EdgeInsets.all(7),
           decoration: BoxDecoration(
-            color: AppColors.violet.withAlpha(15),
+            gradient: AppColors.gradientAccent,
             borderRadius: BorderRadius.circular(8),
+            boxShadow: AppColors.primaryButtonShadow,
           ),
-          child: Icon(icon, color: AppColors.violet, size: 14),
+          child: Icon(icon, color: AppColors.textOnPrimary, size: 13),
         ),
-        const SizedBox(width: 8),
+        const SizedBox(width: 10),
         Text(
           title,
           style: GoogleFonts.sora(
-            color: AppColors.gris,
-            fontSize: 11,
+            color: AppColors.blanc,
+            fontSize: 12,
             fontWeight: FontWeight.w700,
-            letterSpacing: 1.2,
+            letterSpacing: 1.0,
+          ),
+        ),
+        const SizedBox(width: 8),
+        Expanded(
+          child: Container(
+            height: 1,
+            color: AppColors.border,
           ),
         ),
       ],
