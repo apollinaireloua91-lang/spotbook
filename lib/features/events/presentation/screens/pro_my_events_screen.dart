@@ -49,7 +49,7 @@ class ProMyEventsScreen extends ConsumerWidget {
         centerTitle: true,
         actions: [
           IconButton(
-            icon: const Icon(Icons.add, color: AppColors.blanc),
+            icon: Icon(Icons.add, color: AppColors.blanc),
             onPressed: () => context.push('/create-event'),
           ),
         ],
@@ -90,7 +90,7 @@ class ProMyEventsScreen extends ConsumerWidget {
             },
           );
         },
-        loading: () => const Center(
+        loading: () => Center(
           child: CircularProgressIndicator(color: AppColors.blanc),
         ),
         error: (err, _) => Center(
@@ -148,7 +148,7 @@ class _ProEventRow extends StatelessWidget {
                   ],
                 ),
               ),
-              const Icon(Icons.chevron_right, color: AppColors.gris),
+              Icon(Icons.chevron_right, color: AppColors.gris),
             ],
           ),
         ),

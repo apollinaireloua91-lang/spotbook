@@ -128,7 +128,7 @@ class _ProRdvScreenState extends ConsumerState<ProRdvScreen>
               // ── Header ──
               Row(
                 children: [
-                  const Icon(
+                  Icon(
                     Icons.calendar_month_rounded,
                     color: AppColors.violetClair,
                     size: 24,
@@ -311,7 +311,7 @@ class _ProRdvScreenState extends ConsumerState<ProRdvScreen>
       ref.invalidate(proBookingsProvider);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
+          SnackBar(
             backgroundColor: AppColors.surface,
             content: Text('Booking confirmed',
                 style: TextStyle(color: AppColors.blanc)),
@@ -324,7 +324,7 @@ class _ProRdvScreenState extends ConsumerState<ProRdvScreen>
           SnackBar(
             backgroundColor: AppColors.error,
             content:
-                Text(e.toString(), style: const TextStyle(color: AppColors.blanc)),
+                Text(e.toString(), style: TextStyle(color: AppColors.blanc)),
           ),
         );
       }
@@ -340,7 +340,7 @@ class _ProRdvScreenState extends ConsumerState<ProRdvScreen>
       ref.invalidate(proBookingsProvider);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
+          SnackBar(
             backgroundColor: AppColors.surface,
             content: Text('Appointment marked complete',
                 style: TextStyle(color: AppColors.blanc)),
@@ -353,7 +353,7 @@ class _ProRdvScreenState extends ConsumerState<ProRdvScreen>
           SnackBar(
             backgroundColor: AppColors.error,
             content:
-                Text(e.toString(), style: const TextStyle(color: AppColors.blanc)),
+                Text(e.toString(), style: TextStyle(color: AppColors.blanc)),
           ),
         );
       }
@@ -863,7 +863,7 @@ class _TimeSlotCard extends StatelessWidget {
                                   child: booking.clientAvatarUrl == null
                                       ? Text(
                                           name[0].toUpperCase(),
-                                          style: const TextStyle(
+                                          style: TextStyle(
                                             color: AppColors.blanc,
                                             fontSize: 10,
                                             fontWeight: FontWeight.w600,
@@ -921,7 +921,7 @@ class _TimeSlotCard extends StatelessWidget {
                               children: [
                                 if (booking.serviceDurationMinutes !=
                                     null) ...[
-                                  const Icon(Icons.schedule,
+                                  Icon(Icons.schedule,
                                       size: 11, color: AppColors.grisInactif),
                                   const SizedBox(width: 3),
                                   Text(
@@ -933,7 +933,7 @@ class _TimeSlotCard extends StatelessWidget {
                                   ),
                                   const SizedBox(width: 10),
                                 ],
-                                const Icon(Icons.attach_money,
+                                Icon(Icons.attach_money,
                                     size: 11, color: AppColors.grisInactif),
                                 Text(
                                   '\$${booking.totalAmount.toStringAsFixed(0)}',
@@ -1158,7 +1158,7 @@ class _EmptyDayState extends StatelessWidget {
       ),
       child: Column(
         children: [
-          const Icon(Icons.event_available,
+          Icon(Icons.event_available,
               color: AppColors.grisInactif, size: 32),
           const SizedBox(height: 10),
           Text(

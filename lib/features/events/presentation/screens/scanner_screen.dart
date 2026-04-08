@@ -193,7 +193,7 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> {
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(color: AppColors.border, width: 0.5),
               ),
-              child: const Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
+              child: Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
             ),
             onPressed: () {
               HapticFeedback.mediumImpact();
@@ -215,7 +215,7 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Icons.confirmation_number, color: AppColors.blanc, size: 18),
+                Icon(Icons.confirmation_number, color: AppColors.blanc, size: 18),
                 const SizedBox(width: 8),
                 Text(
                   '${state.scannedCount} / ${state.totalSold} scanned',

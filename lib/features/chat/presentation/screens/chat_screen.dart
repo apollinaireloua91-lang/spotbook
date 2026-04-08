@@ -93,7 +93,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(color: AppColors.border, width: 0.5),
               ),
-              child: const Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
+              child: Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
             ),
             onPressed: () {
               HapticFeedback.mediumImpact();
@@ -184,7 +184,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         top: 8,
         bottom: MediaQuery.of(context).viewPadding.bottom + 8,
       ),
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: AppColors.surface,
         border: Border(top: BorderSide(color: AppColors.border)),
       ),
@@ -193,7 +193,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
           Semantics(
             label: 'Send image',
             child: IconButton(
-              icon: const Icon(Icons.image_outlined, color: AppColors.gris),
+              icon: Icon(Icons.image_outlined, color: AppColors.gris),
               onPressed: _pickImage,
               constraints: const BoxConstraints(minHeight: 48, minWidth: 48),
             ),
@@ -221,7 +221,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
           Semantics(
             label: 'Send',
             child: IconButton(
-              icon: const Icon(Icons.send, color: AppColors.blanc),
+              icon: Icon(Icons.send, color: AppColors.blanc),
               onPressed: _sendMessage,
               constraints: const BoxConstraints(minHeight: 48, minWidth: 48),
             ),
@@ -292,7 +292,7 @@ class _MessageBubble extends StatelessWidget {
                         width: 200,
                         height: 150,
                         color: AppColors.surface,
-                        child: const Icon(Icons.broken_image, color: AppColors.gris),
+                        child: Icon(Icons.broken_image, color: AppColors.gris),
                       ),
                     ),
                   ),

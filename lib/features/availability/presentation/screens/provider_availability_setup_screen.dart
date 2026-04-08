@@ -21,14 +21,14 @@ class ProviderAvailabilitySetupScreen extends ConsumerWidget {
     final async = ref.watch(availabilityProvider);
 
     return async.when(
-      loading: () => const Scaffold(
+      loading: () => Scaffold(
         backgroundColor: AppColors.fond,
         body: Center(child: CircularProgressIndicator(color: AppColors.blanc)),
       ),
       error: (e, _) => Scaffold(
         backgroundColor: AppColors.fond,
         body: Center(
-          child: Text(e.toString(), style: const TextStyle(color: AppColors.error)),
+          child: Text(e.toString(), style: TextStyle(color: AppColors.error)),
         ),
       ),
       data: (state) => _AvailabilityScreenBody(state: state),
@@ -74,7 +74,7 @@ class _AvailabilityScreenBody extends ConsumerWidget {
                   borderRadius: BorderRadius.circular(10),
                   border: Border.all(color: AppColors.border, width: 0.5),
                 ),
-                child: const Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
+                child: Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
               ),
               onPressed: () => context.pop(),
             ),
@@ -100,7 +100,7 @@ class _AvailabilityScreenBody extends ConsumerWidget {
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Text(state.error!,
-                      style: const TextStyle(color: AppColors.error, fontSize: 13)),
+                      style: TextStyle(color: AppColors.error, fontSize: 13)),
                 ),
               ),
             _MasterToggleCard(state: state, notifier: notifier),
@@ -314,9 +314,9 @@ class _DayCard extends StatelessWidget {
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 14),
               child: Row(
                 children: [
-                  const Icon(Icons.bedtime_outlined, color: AppColors.gris, size: 14),
+                  Icon(Icons.bedtime_outlined, color: AppColors.gris, size: 14),
                   const SizedBox(width: 6),
-                  const Text('Day off',
+                  Text('Day off',
                       style: TextStyle(color: AppColors.gris, fontSize: 13)),
                 ],
               ),
@@ -431,7 +431,7 @@ class _SlotsSectionState extends ConsumerState<_SlotsSection> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(Icons.add, color: AppColors.gris, size: 16),
+                  Icon(Icons.add, color: AppColors.gris, size: 16),
                   const SizedBox(width: 6),
                   Text('Add a slot',
                       style: GoogleFonts.dmSans(
@@ -478,8 +478,8 @@ class _SlotRow extends StatelessWidget {
               }
             },
           ),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 8),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
             child: Text('→',
                 style: TextStyle(color: AppColors.gris, fontSize: 14)),
           ),
@@ -502,7 +502,7 @@ class _SlotRow extends StatelessWidget {
           ),
           if (!slot.isValid) ...[
             const SizedBox(width: 6),
-            const Icon(Icons.warning_amber_rounded,
+            Icon(Icons.warning_amber_rounded,
                 color: AppColors.warning, size: 16),
           ],
           const Spacer(),
@@ -516,7 +516,7 @@ class _SlotRow extends StatelessWidget {
                 shape: BoxShape.circle,
               ),
               child:
-                  const Icon(Icons.close, color: AppColors.error, size: 16),
+                  Icon(Icons.close, color: AppColors.error, size: 16),
             ),
           ),
         ],
@@ -545,11 +545,11 @@ class _TimeButton extends StatelessWidget {
         ),
         child: Text(
           '$h:$m',
-          style: const TextStyle(
+          style: TextStyle(
             color: AppColors.blanc,
             fontSize: 14,
             fontWeight: FontWeight.w600,
-            fontFeatures: [FontFeature.tabularFigures()],
+            fontFeatures: const [FontFeature.tabularFigures()],
           ),
         ),
       ),
@@ -672,7 +672,7 @@ class _MonthCalendar extends StatelessWidget {
               const Spacer(),
               IconButton(
                 icon:
-                    const Icon(Icons.chevron_left, color: AppColors.gris),
+                    Icon(Icons.chevron_left, color: AppColors.gris),
                 onPressed: onPrevMonth,
                 iconSize: 20,
                 padding: EdgeInsets.zero,
@@ -681,7 +681,7 @@ class _MonthCalendar extends StatelessWidget {
               ),
               IconButton(
                 icon:
-                    const Icon(Icons.chevron_right, color: AppColors.gris),
+                    Icon(Icons.chevron_right, color: AppColors.gris),
                 onPressed: onNextMonth,
                 iconSize: 20,
                 padding: EdgeInsets.zero,

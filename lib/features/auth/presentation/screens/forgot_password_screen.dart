@@ -74,7 +74,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(color: AppColors.border, width: 0.5),
               ),
-              child: const Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
+              child: Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
             ),
             onPressed: () {
               HapticFeedback.mediumImpact();
@@ -132,32 +132,32 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                     hintText: 'Email',
                     hintStyle: GoogleFonts.dmSans(
                         color: AppColors.gris, fontSize: 15),
-                    prefixIcon: const Icon(Icons.email_outlined,
+                    prefixIcon: Icon(Icons.email_outlined,
                         color: AppColors.gris, size: 20),
                     filled: true,
                     fillColor: AppColors.surface,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(14),
-                      borderSide: const BorderSide(color: AppColors.border),
+                      borderSide: BorderSide(color: AppColors.border),
                     ),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(14),
-                      borderSide: const BorderSide(color: AppColors.border),
+                      borderSide: BorderSide(color: AppColors.border),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(14),
                       borderSide:
-                          const BorderSide(color: AppColors.violet),
+                          BorderSide(color: AppColors.violet),
                     ),
                     errorBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(14),
                       borderSide:
-                          const BorderSide(color: AppColors.error),
+                          BorderSide(color: AppColors.error),
                     ),
                     focusedErrorBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(14),
                       borderSide:
-                          const BorderSide(color: AppColors.error),
+                          BorderSide(color: AppColors.error),
                     ),
                     contentPadding: const EdgeInsets.symmetric(
                         horizontal: 16, vertical: 16),

@@ -324,7 +324,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                           borderRadius: BorderRadius.circular(10),
                           border: Border.all(color: AppColors.border, width: 0.5),
                         ),
-                        child: const Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
+                        child: Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
                       ),
                     ),
                   ),
@@ -353,7 +353,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                     value: (s.currentStep + 1) / _totalSteps,
                     backgroundColor: AppColors.surface,
                     valueColor:
-                        const AlwaysStoppedAnimation<Color>(AppColors.violet),
+                        AlwaysStoppedAnimation<Color>(AppColors.violet),
                     minHeight: 4,
                   ),
                 ),
@@ -944,7 +944,7 @@ class _Step3Categories extends ConsumerWidget {
                           ),
                         ),
                         if (isSelected)
-                          const Positioned(
+                          Positioned(
                             top: 8,
                             right: 8,
                             child: Icon(
@@ -1059,7 +1059,7 @@ class _Step4ProPhotoState extends State<_Step4ProPhoto> {
                         ? Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              const Icon(Icons.add_a_photo_outlined,
+                              Icon(Icons.add_a_photo_outlined,
                                   color: AppColors.gris, size: 36),
                               const SizedBox(height: 8),
                               Text(
@@ -1078,11 +1078,11 @@ class _Step4ProPhotoState extends State<_Step4ProPhoto> {
                       child: Container(
                         width: 32,
                         height: 32,
-                        decoration: const BoxDecoration(
+                        decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           color: AppColors.violet,
                         ),
-                        child: const Icon(
+                        child: Icon(
                           Icons.edit,
                           color: AppColors.blanc,
                           size: 16,
@@ -1184,15 +1184,15 @@ class _SignUpField extends StatelessWidget {
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: AppColors.violet),
+              borderSide: BorderSide(color: AppColors.violet),
             ),
             errorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: AppColors.error),
+              borderSide: BorderSide(color: AppColors.error),
             ),
             focusedErrorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: AppColors.error),
+              borderSide: BorderSide(color: AppColors.error),
             ),
             contentPadding:
                 const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
@@ -1242,7 +1242,7 @@ class _StepButton extends StatelessWidget {
             ),
           ),
           child: isLoading
-              ? const SizedBox(
+              ? SizedBox(
                   width: 22,
                   height: 22,
                   child: CircularProgressIndicator(

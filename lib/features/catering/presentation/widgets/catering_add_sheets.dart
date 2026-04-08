@@ -63,7 +63,7 @@ class _AddDishSheetState extends State<_AddDishSheet> {
     final name = _nameCtrl.text.trim();
     if (name.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+        SnackBar(
           backgroundColor: AppColors.error,
           content:
               Text('Please enter a dish name', style: TextStyle(color: AppColors.blanc)),
@@ -86,7 +86,7 @@ class _AddDishSheetState extends State<_AddDishSheet> {
         Navigator.of(context).pop();
         widget.onDone();
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
+          SnackBar(
             backgroundColor: AppColors.success,
             content: Text('Dish added!', style: TextStyle(color: AppColors.blanc)),
           ),
@@ -97,7 +97,7 @@ class _AddDishSheetState extends State<_AddDishSheet> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             backgroundColor: AppColors.error,
-            content: Text('Error: $e', style: const TextStyle(color: AppColors.blanc)),
+            content: Text('Error: $e', style: TextStyle(color: AppColors.blanc)),
           ),
         );
       }
@@ -114,7 +114,7 @@ class _AddDishSheetState extends State<_AddDishSheet> {
       constraints: BoxConstraints(
         maxHeight: MediaQuery.sizeOf(context).height * 0.7,
       ),
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: AppColors.fond,
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -146,7 +146,7 @@ class _AddDishSheetState extends State<_AddDishSheet> {
                 ),
                 const Spacer(),
                 IconButton(
-                  icon: const Icon(Icons.close, color: AppColors.gris, size: 20),
+                  icon: Icon(Icons.close, color: AppColors.gris, size: 20),
                   onPressed: () => Navigator.of(context).pop(),
                 ),
               ],
@@ -247,7 +247,7 @@ class _AddPackageSheetState extends State<_AddPackageSheet> {
     final price = double.tryParse(_priceCtrl.text);
     if (name.isEmpty || price == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+        SnackBar(
           backgroundColor: AppColors.error,
           content: Text('Name and price are required',
               style: TextStyle(color: AppColors.blanc)),
@@ -278,7 +278,7 @@ class _AddPackageSheetState extends State<_AddPackageSheet> {
         Navigator.of(context).pop();
         widget.onDone();
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
+          SnackBar(
             backgroundColor: AppColors.success,
             content: Text('Package added!', style: TextStyle(color: AppColors.blanc)),
           ),
@@ -289,7 +289,7 @@ class _AddPackageSheetState extends State<_AddPackageSheet> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             backgroundColor: AppColors.error,
-            content: Text('Error: $e', style: const TextStyle(color: AppColors.blanc)),
+            content: Text('Error: $e', style: TextStyle(color: AppColors.blanc)),
           ),
         );
       }
@@ -306,7 +306,7 @@ class _AddPackageSheetState extends State<_AddPackageSheet> {
       constraints: BoxConstraints(
         maxHeight: MediaQuery.sizeOf(context).height * 0.8,
       ),
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: AppColors.fond,
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -336,7 +336,7 @@ class _AddPackageSheetState extends State<_AddPackageSheet> {
                 ),
                 const Spacer(),
                 IconButton(
-                  icon: const Icon(Icons.close, color: AppColors.gris, size: 20),
+                  icon: Icon(Icons.close, color: AppColors.gris, size: 20),
                   onPressed: () => Navigator.of(context).pop(),
                 ),
               ],
@@ -445,11 +445,11 @@ class _CateringField extends StatelessWidget {
             contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: AppColors.border),
+              borderSide: BorderSide(color: AppColors.border),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: AppColors.border),
+              borderSide: BorderSide(color: AppColors.border),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
@@ -490,7 +490,7 @@ class _CateringSubmitButton extends StatelessWidget {
         ),
         child: Center(
           child: isSubmitting
-              ? const SizedBox(
+              ? SizedBox(
                   width: 20,
                   height: 20,
                   child: CircularProgressIndicator(

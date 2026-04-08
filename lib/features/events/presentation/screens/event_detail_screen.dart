@@ -26,7 +26,7 @@ class EventDetailScreen extends ConsumerWidget {
         loading: () => _buildShimmer(),
         error: (e, _) => Center(
           child: Text('Erreur: $e',
-              style: const TextStyle(color: AppColors.error)),
+              style: TextStyle(color: AppColors.error)),
         ),
         data: (event) => _EventDetailBody(event: event),
       ),
@@ -389,7 +389,7 @@ class _OrganizerCard extends StatelessWidget {
                 ? CachedNetworkImageProvider(event.proAvatarUrl!)
                 : null,
             child: event.proAvatarUrl == null
-                ? const Icon(Icons.person, color: AppColors.gris, size: 20)
+                ? Icon(Icons.person, color: AppColors.gris, size: 20)
                 : null,
           ),
           const SizedBox(width: 12),

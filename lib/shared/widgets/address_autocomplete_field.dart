@@ -178,12 +178,12 @@ class _AddressAutocompleteFieldState extends State<AddressAutocompleteField> {
       children: [
         TextFormField(
           controller: widget.controller,
-          style: const TextStyle(color: AppColors.blanc),
+          style: TextStyle(color: AppColors.blanc),
           onChanged: _onQueryChanged,
           decoration: InputDecoration(
             labelText: widget.label,
             hintText: widget.hint,
-            labelStyle: const TextStyle(color: AppColors.gris),
+            labelStyle: TextStyle(color: AppColors.gris),
             hintStyle: TextStyle(color: AppColors.gris.withAlpha(128)),
             prefixIcon: widget.icon != null
                 ? Icon(widget.icon, color: AppColors.gris, size: 20)
@@ -220,16 +220,16 @@ class _AddressAutocompleteFieldState extends State<AddressAutocompleteField> {
               physics: const NeverScrollableScrollPhysics(),
               itemCount: _predictions.length,
               separatorBuilder: (_, __) =>
-                  const Divider(color: AppColors.border, height: 1),
+                  Divider(color: AppColors.border, height: 1),
               itemBuilder: (context, index) {
                 final prediction = _predictions[index];
                 return ListTile(
-                  leading: const Icon(Icons.location_on_outlined,
+                  leading: Icon(Icons.location_on_outlined,
                       color: AppColors.gris, size: 20),
                   title: Text(prediction.primary,
-                      style: const TextStyle(color: AppColors.blanc)),
+                      style: TextStyle(color: AppColors.blanc)),
                   subtitle: Text(prediction.secondary,
-                      style: const TextStyle(
+                      style: TextStyle(
                           color: AppColors.gris, fontSize: 12)),
                   onTap: () => _selectPlace(prediction),
                 );

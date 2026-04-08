@@ -43,7 +43,7 @@ class ProServicesManageScreen extends ConsumerWidget {
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(color: AppColors.border, width: 0.5),
               ),
-              child: const Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
+              child: Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
             ),
           ),
         ),
@@ -93,7 +93,7 @@ class ProServicesManageScreen extends ConsumerWidget {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Icon(Icons.design_services_outlined,
+                        Icon(Icons.design_services_outlined,
                             color: AppColors.gris, size: 48),
                         const SizedBox(height: 16),
                         Text(

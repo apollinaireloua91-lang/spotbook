@@ -87,7 +87,7 @@ class _ReviewSheetState extends State<ReviewSheet> {
         Container(
           margin: const EdgeInsets.only(top: 60),
           padding: EdgeInsets.fromLTRB(24, 8, 24, 24 + bottomPadding),
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             color: AppColors.surface,
             borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
           ),
@@ -106,7 +106,7 @@ class _ReviewSheetState extends State<ReviewSheet> {
               ),
 
               // Title
-              const Text(
+              Text(
                 'Leave a review',
                 style: TextStyle(
                   color: AppColors.blanc,
@@ -118,7 +118,7 @@ class _ReviewSheetState extends State<ReviewSheet> {
                 const SizedBox(height: 4),
                 Text(
                   widget.serviceName!,
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: AppColors.gris,
                     fontSize: 13,
                   ),
@@ -153,7 +153,7 @@ class _ReviewSheetState extends State<ReviewSheet> {
                 controller: _commentController,
                 maxLines: 4,
                 maxLength: 500,
-                style: const TextStyle(
+                style: TextStyle(
                   color: AppColors.blanc,
                   fontSize: 14,
                 ),
@@ -166,20 +166,20 @@ class _ReviewSheetState extends State<ReviewSheet> {
                   fillColor: AppColors.fond,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(color: AppColors.border),
+                    borderSide: BorderSide(color: AppColors.border),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(color: AppColors.border),
+                    borderSide: BorderSide(color: AppColors.border),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(
+                    borderSide: BorderSide(
                       color: AppColors.violet,
                       width: 1.5,
                     ),
                   ),
-                  counterStyle: const TextStyle(color: AppColors.gris),
+                  counterStyle: TextStyle(color: AppColors.gris),
                 ),
               ),
 
@@ -200,7 +200,7 @@ class _ReviewSheetState extends State<ReviewSheet> {
                   ),
                   child: Center(
                     child: _isSubmitting
-                        ? const SizedBox(
+                        ? SizedBox(
                             width: 20,
                             height: 20,
                             child: CircularProgressIndicator(
@@ -208,7 +208,7 @@ class _ReviewSheetState extends State<ReviewSheet> {
                               color: AppColors.blanc,
                             ),
                           )
-                        : const Text(
+                        : Text(
                             'Publier l\'avis',
                             style: TextStyle(
                               color: AppColors.blanc,

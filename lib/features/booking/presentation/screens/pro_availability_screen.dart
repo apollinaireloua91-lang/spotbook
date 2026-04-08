@@ -172,7 +172,7 @@ class ProAvailabilityScreen extends ConsumerWidget {
                             ),
                           ),
                           IconButton(
-                            icon: const Icon(Icons.delete_outline,
+                            icon: Icon(Icons.delete_outline,
                                 color: AppColors.error),
                             onPressed: () async {
                               HapticFeedback.lightImpact();
@@ -305,7 +305,7 @@ class ProAvailabilityScreen extends ConsumerWidget {
                   initialTime: start,
                   builder: (c, child) => Theme(
                     data: Theme.of(c).copyWith(
-                      colorScheme: const ColorScheme.dark(
+                      colorScheme: ColorScheme.dark(
                         primary: AppColors.blanc,
                         onPrimary: AppColors.fond,
                         surface: AppColors.surface,
@@ -324,7 +324,7 @@ class ProAvailabilityScreen extends ConsumerWidget {
                   initialTime: end,
                   builder: (c, child) => Theme(
                     data: Theme.of(c).copyWith(
-                      colorScheme: const ColorScheme.dark(
+                      colorScheme: ColorScheme.dark(
                         primary: AppColors.blanc,
                         onPrimary: AppColors.fond,
                         surface: AppColors.surface,
@@ -384,7 +384,7 @@ class ProAvailabilityScreen extends ConsumerWidget {
                             onPressed: pickStart,
                             style: OutlinedButton.styleFrom(
                               foregroundColor: AppColors.blanc,
-                              side: const BorderSide(color: AppColors.border),
+                              side: BorderSide(color: AppColors.border),
                             ),
                             child: Text(
                               'Début ${start.format(context)}',
@@ -397,7 +397,7 @@ class ProAvailabilityScreen extends ConsumerWidget {
                             onPressed: pickEnd,
                             style: OutlinedButton.styleFrom(
                               foregroundColor: AppColors.blanc,
-                              side: const BorderSide(color: AppColors.border),
+                              side: BorderSide(color: AppColors.border),
                             ),
                             child: Text(
                               'Fin ${end.format(context)}',

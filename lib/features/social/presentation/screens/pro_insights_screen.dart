@@ -94,7 +94,7 @@ class ProInsightsScreen extends ConsumerWidget {
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(color: AppColors.border, width: 0.5),
               ),
-              child: const Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
+              child: Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
             ),
           ),
         ),
@@ -137,7 +137,7 @@ class ProInsightsScreen extends ConsumerWidget {
                   const SizedBox(height: 16),
                   if (data == null || data.revenueSeries.every((p) => p.value == 0)) ...[
                     const SizedBox(height: 60),
-                    const Icon(Icons.bar_chart, color: AppColors.gris, size: 48),
+                    Icon(Icons.bar_chart, color: AppColors.gris, size: 48),
                     const SizedBox(height: 12),
                     Text(
                       'No data for this period',
@@ -159,7 +159,7 @@ class ProInsightsScreen extends ConsumerWidget {
                             gridData: FlGridData(
                               show: true,
                               drawVerticalLine: false,
-                              getDrawingHorizontalLine: (_) => const FlLine(
+                              getDrawingHorizontalLine: (_) => FlLine(
                                 color: AppColors.border,
                                 strokeWidth: 1,
                               ),
@@ -174,7 +174,7 @@ class ProInsightsScreen extends ConsumerWidget {
                                   interval: _leftInterval(data.revenueSeries),
                                   getTitlesWidget: (value, _) => Text(
                                     value.toInt().toString(),
-                                    style: const TextStyle(color: AppColors.gris, fontSize: 11),
+                                    style: TextStyle(color: AppColors.gris, fontSize: 11),
                                   ),
                                 ),
                               ),
@@ -189,7 +189,7 @@ class ProInsightsScreen extends ConsumerWidget {
                                     }
                                     return Text(
                                       data.revenueSeries[idx].label,
-                                      style: const TextStyle(color: AppColors.gris, fontSize: 11),
+                                      style: TextStyle(color: AppColors.gris, fontSize: 11),
                                     );
                                   },
                                 ),

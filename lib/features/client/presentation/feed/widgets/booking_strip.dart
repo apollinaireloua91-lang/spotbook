@@ -31,7 +31,7 @@ class BookingStrip extends StatelessWidget {
           color: AppColors.ctaBookingStripBg,
           borderRadius: BorderRadius.circular(14),
           border: Border.all(
-            color: AppColors.violet.withAlpha(64),
+            color: AppColors.success.withAlpha(64),
           ),
         ),
         child: Row(
@@ -63,7 +63,7 @@ class BookingStrip extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               decoration: BoxDecoration(
-                color: AppColors.violet,
+                color: AppColors.success,
                 borderRadius: BorderRadius.circular(12),
               ),
               child: const Text(

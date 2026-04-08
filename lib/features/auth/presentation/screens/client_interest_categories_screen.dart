@@ -40,7 +40,7 @@ class ClientInterestCategoriesScreen extends ConsumerWidget {
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(color: AppColors.border, width: 0.5),
               ),
-              child: const Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
+              child: Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
             ),
           ),
         ),
@@ -75,7 +75,7 @@ class ClientInterestCategoriesScreen extends ConsumerWidget {
             const SizedBox(height: 8),
             ClipRRect(
               borderRadius: BorderRadius.circular(4),
-              child: const LinearProgressIndicator(
+              child: LinearProgressIndicator(
                 value: 0.33,
                 backgroundColor: AppColors.surface,
                 valueColor: AlwaysStoppedAnimation<Color>(AppColors.violet),
@@ -108,7 +108,7 @@ class ClientInterestCategoriesScreen extends ConsumerWidget {
             // Grid
             Expanded(
               child: asyncCats.when(
-                loading: () => const Center(
+                loading: () => Center(
                   child: CircularProgressIndicator(color: AppColors.violet),
                 ),
                 error: (_, __) => Center(
@@ -174,7 +174,7 @@ class ClientInterestCategoriesScreen extends ConsumerWidget {
                             ),
                           ),
                           if (isSelected)
-                            const Positioned(
+                            Positioned(
                               top: 8,
                               right: 8,
                               child: Icon(

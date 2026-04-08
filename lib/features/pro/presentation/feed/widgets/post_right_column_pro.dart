@@ -68,7 +68,7 @@ class PostRightColumnPro extends StatelessWidget {
                         ? CachedNetworkImageProvider(video.proAvatarUrl!)
                         : null,
                     child: video.proAvatarUrl == null
-                        ? const Icon(Icons.person,
+                        ? Icon(Icons.person,
                             size: 18, color: AppColors.gris)
                         : null,
                   ),
@@ -172,7 +172,7 @@ class PostRightColumnPro extends StatelessWidget {
       backgroundColor: Colors.transparent,
       builder: (ctx) => Container(
         padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           color: AppColors.surface,
           borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
         ),
@@ -193,8 +193,8 @@ class PostRightColumnPro extends StatelessWidget {
               ListTile(
                 contentPadding: EdgeInsets.zero,
                 leading:
-                    const Icon(Icons.flag_outlined, color: AppColors.blanc),
-                title: const Text('Report',
+                    Icon(Icons.flag_outlined, color: AppColors.blanc),
+                title: Text('Report',
                     style: TextStyle(color: AppColors.blanc)),
                 onTap: () {
                   Navigator.of(ctx).pop();

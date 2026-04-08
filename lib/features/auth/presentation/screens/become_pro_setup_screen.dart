@@ -220,7 +220,7 @@ class _BecomeProSetupScreenState extends ConsumerState<BecomeProSetupScreen> {
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(color: AppColors.border, width: 0.5),
               ),
-              child: const Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
+              child: Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
             ),
           ),
         ),
@@ -356,15 +356,15 @@ class _StepBusinessInfo extends ConsumerWidget {
               style: TextStyle(color: AppColors.gris.withAlpha(180)),
             ),
             dropdownColor: AppColors.surfaceAuth,
-            style: const TextStyle(color: AppColors.blanc),
-            icon: const Icon(
+            style: TextStyle(color: AppColors.blanc),
+            icon: Icon(
               Icons.keyboard_arrow_down,
               color: AppColors.gris,
             ),
             decoration: InputDecoration(
               labelText: 'Service category',
-              labelStyle: const TextStyle(color: AppColors.gris),
-              prefixIcon: const Icon(Icons.star_outline,
+              labelStyle: TextStyle(color: AppColors.gris),
+              prefixIcon: Icon(Icons.star_outline,
                   color: AppColors.gris, size: 20),
               filled: true,
               fillColor: AppColors.surfaceAuth,
@@ -575,20 +575,20 @@ class _StepBioConfirm extends ConsumerWidget {
           // Bio
           TextField(
             controller: bioCtrl,
-            style: const TextStyle(color: AppColors.blanc),
+            style: TextStyle(color: AppColors.blanc),
             maxLines: 4,
             maxLength: 300,
             decoration: InputDecoration(
               labelText: 'Professional bio',
               hintText:
                   'Briefly describe your experience and what makes your services unique...',
-              labelStyle: const TextStyle(color: AppColors.gris),
+              labelStyle: TextStyle(color: AppColors.gris),
               hintStyle: TextStyle(color: AppColors.gris.withAlpha(128)),
-              prefixIcon: const Icon(Icons.text_fields,
+              prefixIcon: Icon(Icons.text_fields,
                   color: AppColors.gris, size: 20),
               filled: true,
               fillColor: AppColors.surfaceAuth,
-              counterStyle: const TextStyle(color: AppColors.gris),
+              counterStyle: TextStyle(color: AppColors.gris),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
                 borderSide: BorderSide.none,
@@ -640,7 +640,7 @@ class _StepBioConfirm extends ConsumerWidget {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Icon(Icons.info_outline,
+                Icon(Icons.info_outline,
                     color: AppColors.accent, size: 18),
                 const SizedBox(width: 10),
                 Expanded(
@@ -745,12 +745,12 @@ Widget _field({
 }) {
   return TextField(
     controller: controller,
-    style: const TextStyle(color: AppColors.blanc),
+    style: TextStyle(color: AppColors.blanc),
     keyboardType: keyboardType,
     decoration: InputDecoration(
       labelText: label,
       hintText: hint,
-      labelStyle: const TextStyle(color: AppColors.gris),
+      labelStyle: TextStyle(color: AppColors.gris),
       hintStyle: TextStyle(color: AppColors.gris.withAlpha(128)),
       prefixIcon: Icon(icon, color: AppColors.gris, size: 20),
       filled: true,

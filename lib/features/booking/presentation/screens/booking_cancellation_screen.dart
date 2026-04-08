@@ -32,7 +32,7 @@ class BookingCancellationScreen extends ConsumerWidget {
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(color: AppColors.border, width: 0.5),
               ),
-              child: const Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
+              child: Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
             ),
             onPressed: () => context.pop(),
           ),
@@ -48,7 +48,7 @@ class BookingCancellationScreen extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Icon(Icons.warning_amber_rounded,
+            Icon(Icons.warning_amber_rounded,
                 color: AppColors.warning, size: 48),
             const SizedBox(height: 16),
             Text(
@@ -60,14 +60,14 @@ class BookingCancellationScreen extends ConsumerWidget {
               ),
             ),
             const SizedBox(height: 16),
-            const _PolicyRow(
+            _PolicyRow(
               icon: Icons.check_circle_outline,
               color: AppColors.success,
               text:
                   'More than 48h before appointment: full deposit refund.',
             ),
             const SizedBox(height: 12),
-            const _PolicyRow(
+            _PolicyRow(
               icon: Icons.cancel_outlined,
               color: AppColors.error,
               text:
@@ -119,7 +119,7 @@ class BookingCancellationScreen extends ConsumerWidget {
                       borderRadius: BorderRadius.circular(12)),
                 ),
                 child: state.isCancelling
-                    ? const SizedBox(
+                    ? SizedBox(
                         height: 20,
                         width: 20,
                         child: CircularProgressIndicator(
@@ -137,7 +137,7 @@ class BookingCancellationScreen extends ConsumerWidget {
                 onPressed: state.isCancelling ? null : () => context.pop(),
                 style: OutlinedButton.styleFrom(
                   foregroundColor: AppColors.blanc,
-                  side: const BorderSide(color: AppColors.border),
+                  side: BorderSide(color: AppColors.border),
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12)),
                 ),

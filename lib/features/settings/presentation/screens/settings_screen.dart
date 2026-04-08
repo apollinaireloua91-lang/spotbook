@@ -47,7 +47,7 @@ class SettingsScreen extends ConsumerWidget {
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(color: AppColors.border, width: 0.5),
               ),
-              child: const Icon(Icons.arrow_back_ios_new,
+              child: Icon(Icons.arrow_back_ios_new,
                   color: AppColors.blanc, size: 16),
             ),
             onPressed: () {
@@ -116,8 +116,8 @@ class SettingsScreen extends ConsumerWidget {
                   onTap: () {
                     showDialog(context: context, builder: (_) => AlertDialog(
                       backgroundColor: AppColors.surface,
-                      title: const Text('Cancellation policy', style: TextStyle(color: AppColors.blanc)),
-                      content: const Text('Cancellation < 48h before appointment: deposit is kept by the pro.\nCancellation > 48h: full refund.', style: TextStyle(color: AppColors.gris)),
+                      title: Text('Cancellation policy', style: TextStyle(color: AppColors.blanc)),
+                      content: Text('Cancellation < 48h before appointment: deposit is kept by the pro.\nCancellation > 48h: full refund.', style: TextStyle(color: AppColors.gris)),
                       actions: [TextButton(onPressed: () => context.pop(), child: const Text('OK'))],
                     ));
                   },
@@ -129,8 +129,8 @@ class SettingsScreen extends ConsumerWidget {
                   onTap: () {
                     showDialog(context: context, builder: (_) => AlertDialog(
                       backgroundColor: AppColors.surface,
-                      title: const Text('Spotbook Commissions', style: TextStyle(color: AppColors.blanc)),
-                      content: Text('Service bookings: ${(cfg.commissionBookings * 100).round()}%\nEvent tickets: ${(cfg.commissionEvents * 100).round()}%\nCatering deposits: ${(cfg.commissionCatering * 100).round()}%\nClient service fee: \$${cfg.serviceFeeClient.toStringAsFixed(2)}/booking', style: const TextStyle(color: AppColors.gris)),
+                      title: Text('Spotbook Commissions', style: TextStyle(color: AppColors.blanc)),
+                      content: Text('Service bookings: ${(cfg.commissionBookings * 100).round()}%\nEvent tickets: ${(cfg.commissionEvents * 100).round()}%\nCatering deposits: ${(cfg.commissionCatering * 100).round()}%\nClient service fee: \$${cfg.serviceFeeClient.toStringAsFixed(2)}/booking', style: TextStyle(color: AppColors.gris)),
                       actions: [TextButton(onPressed: () => context.pop(), child: const Text('OK'))],
                     ));
                   },
@@ -392,7 +392,7 @@ class _SettingsItem extends StatelessWidget {
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           border: Border(
             bottom: BorderSide(color: AppColors.border, width: 0.5),
           ),
@@ -425,7 +425,7 @@ class _SettingsItem extends StatelessWidget {
                 ],
               ),
             ),
-            const Icon(Icons.arrow_forward_ios,
+            Icon(Icons.arrow_forward_ios,
                 color: AppColors.gris, size: 14),
           ],
         ),

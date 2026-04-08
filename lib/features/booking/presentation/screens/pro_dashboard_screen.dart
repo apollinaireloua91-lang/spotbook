@@ -105,7 +105,7 @@ class _PremiumGreetingHeader extends StatelessWidget {
                   ? CachedNetworkImageProvider(avatarUrl!)
                   : null,
               child: avatarUrl == null
-                  ? const Icon(Icons.person, color: AppColors.gris, size: 24)
+                  ? Icon(Icons.person, color: AppColors.gris, size: 24)
                   : null,
             ),
           ),
@@ -204,7 +204,7 @@ class _PremiumStatsRow extends StatelessWidget {
         children: [
           _PremiumStatCard(
             icon: Icons.attach_money_rounded,
-            gradientColors: const [AppColors.success, Color(0xFF34D399)],
+            gradientColors: [AppColors.success, const Color(0xFF34D399)],
             label: 'Revenue',
             numericValue: int.tryParse(revenue),
             valueSuffix: ' CA\$',
@@ -217,14 +217,14 @@ class _PremiumStatsRow extends StatelessWidget {
           const SizedBox(width: 12),
           _PremiumStatCard(
             icon: Icons.calendar_today_rounded,
-            gradientColors: const [AppColors.violet, AppColors.violetClair],
+            gradientColors: [AppColors.violet, AppColors.violetClair],
             label: 'Bookings',
             numericValue: bookings as int?,
           ),
           const SizedBox(width: 12),
           _PremiumStatCard(
             icon: Icons.star_rounded,
-            gradientColors: const [AppColors.warning, Color(0xFFFFD700)],
+            gradientColors: [AppColors.warning, const Color(0xFFFFD700)],
             label: 'Avg rating',
             displayValue: rating,
             subtitle: '$reviewCount reviews',
@@ -232,7 +232,7 @@ class _PremiumStatsRow extends StatelessWidget {
           const SizedBox(width: 12),
           _PremiumStatCard(
             icon: Icons.confirmation_number_outlined,
-            gradientColors: const [AppColors.rose, AppColors.roseClair],
+            gradientColors: [AppColors.rose, AppColors.roseClair],
             label: 'Tickets sold',
             numericValue: ticketsSold,
           ),
@@ -378,21 +378,21 @@ class _PremiumQuickActions extends StatelessWidget {
               _PremiumActionButton(
                 icon: Icons.event,
                 label: 'Create\nevent',
-                gradientColors: const [AppColors.violet, AppColors.violetClair],
+                gradientColors: [AppColors.violet, AppColors.violetClair],
                 onTap: () => context.push('/create-event'),
               ),
               const SizedBox(width: 10),
               _PremiumActionButton(
                 icon: Icons.qr_code_scanner,
                 label: 'Scan\nticket',
-                gradientColors: const [AppColors.rose, AppColors.roseClair],
+                gradientColors: [AppColors.rose, AppColors.roseClair],
                 onTap: () => context.push('/pro/scanner-picker'),
               ),
               const SizedBox(width: 10),
               _PremiumActionButton(
                 icon: Icons.calendar_month,
                 label: 'View\ncalendar',
-                gradientColors: const [AppColors.accent, Color(0xFF00A3CC)],
+                gradientColors: [AppColors.accent, const Color(0xFF00A3CC)],
                 onTap: () => context.push('/pro/rdv'),
               ),
             ],
@@ -403,21 +403,21 @@ class _PremiumQuickActions extends StatelessWidget {
               _PremiumActionButton(
                 icon: Icons.build_outlined,
                 label: 'Manage\nservices',
-                gradientColors: const [AppColors.violetClair, Color(0xFFB794F4)],
+                gradientColors: [AppColors.violetClair, const Color(0xFFB794F4)],
                 onTap: () => context.push('/pro/services'),
               ),
               const SizedBox(width: 10),
               _PremiumActionButton(
                 icon: Icons.bar_chart_rounded,
                 label: 'Revenue\n& Stats',
-                gradientColors: const [AppColors.success, Color(0xFF34D399)],
+                gradientColors: [AppColors.success, const Color(0xFF34D399)],
                 onTap: () => context.push('/pro/revenue'),
               ),
               const SizedBox(width: 10),
               _PremiumActionButton(
                 icon: Icons.celebration,
                 label: 'My\nevents',
-                gradientColors: const [AppColors.warning, Color(0xFFFFD700)],
+                gradientColors: [AppColors.warning, const Color(0xFFFFD700)],
                 onTap: () => context.push('/pro/events'),
               ),
             ],

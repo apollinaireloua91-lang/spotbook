@@ -87,7 +87,7 @@ class _SavedPostsScreenState extends ConsumerState<SavedPostsScreen> {
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(color: AppColors.border, width: 0.5),
               ),
-              child: const Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
+              child: Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
             ),
             onPressed: () {
               HapticFeedback.mediumImpact();
@@ -142,14 +142,14 @@ class _SavedPostsScreenState extends ConsumerState<SavedPostsScreen> {
                   placeholder: (_, __) => Container(color: AppColors.surface),
                   errorWidget: (_, __, ___) => Container(
                     color: AppColors.surface,
-                    child: const Icon(Icons.videocam_off,
+                    child: Icon(Icons.videocam_off,
                         color: AppColors.gris, size: 24),
                   ),
                 )
               else
                 Container(
                   color: AppColors.surface,
-                  child: const Icon(Icons.videocam,
+                  child: Icon(Icons.videocam,
                       color: AppColors.gris, size: 24),
                 ),
               // Title overlay at bottom
@@ -181,7 +181,7 @@ class _SavedPostsScreenState extends ConsumerState<SavedPostsScreen> {
                   ),
                 ),
               // Bookmark icon
-              const Positioned(
+              Positioned(
                 top: 6,
                 right: 6,
                 child: Icon(Icons.bookmark,

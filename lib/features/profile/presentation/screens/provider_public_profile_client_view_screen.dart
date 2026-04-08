@@ -94,7 +94,7 @@ class _ProviderPublicProfileClientViewScreenState
     if (svc == null) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
+          SnackBar(
             backgroundColor: AppColors.surface,
             content: Text(
               'No bookable services at this time.',
@@ -119,7 +119,7 @@ class _ProviderPublicProfileClientViewScreenState
     if (!context.mounted) return;
     if (convId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+        SnackBar(
           backgroundColor: AppColors.surface,
           content: Text(
             'Sign in to send a message.',
@@ -151,7 +151,7 @@ class _ProviderPublicProfileClientViewScreenState
               backgroundColor: AppColors.surface,
               content: Text(
                 state.message,
-                style: const TextStyle(color: AppColors.blanc),
+                style: TextStyle(color: AppColors.blanc),
               ),
             ),
           );
@@ -183,7 +183,7 @@ class _ProviderPublicProfileClientViewScreenState
                                 borderRadius: BorderRadius.circular(10),
                                 border: Border.all(color: AppColors.border, width: 0.5),
                               ),
-                              child: const Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
+                              child: Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
                             ),
                             onPressed: () => context.pop(),
                           ),
@@ -201,7 +201,7 @@ class _ProviderPublicProfileClientViewScreenState
                                 message,
                                 textAlign: TextAlign.center,
                                 style:
-                                    const TextStyle(color: AppColors.gris),
+                                    TextStyle(color: AppColors.gris),
                               ),
                               const SizedBox(height: 16),
                               _PillButton(
@@ -295,13 +295,13 @@ class _ReadyBody extends StatelessWidget {
                     // ── GRADIENT RING AVATAR ──
                     Container(
                       padding: const EdgeInsets.all(3),
-                      decoration: const BoxDecoration(
+                      decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         gradient: AppColors.gradientAccent,
                       ),
                       child: Container(
                         padding: const EdgeInsets.all(3),
-                        decoration: const BoxDecoration(
+                        decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           color: AppColors.fond,
                         ),
@@ -336,7 +336,7 @@ class _ReadyBody extends StatelessWidget {
                           ),
                           if (p.isVerified) ...[
                             const SizedBox(width: 6),
-                            const Icon(Icons.verified,
+                            Icon(Icons.verified,
                                 color: AppColors.violet, size: 20),
                           ],
                         ],
@@ -560,7 +560,7 @@ class _CoverSection extends StatelessWidget {
             ),
 
           // Bottom gradient fade to fond
-          const Positioned(
+          Positioned(
             bottom: 0,
             left: 0,
             right: 0,
@@ -861,14 +861,14 @@ class _FollowButton extends StatelessWidget {
 // ─── Action Button (Book / Message) ─────────────────────────────────────────
 
 class _ActionButton extends StatelessWidget {
-  const _ActionButton({
+  _ActionButton({
     required this.label,
     required this.color,
     required this.onTap,
-    this.textColor = AppColors.blanc,
+    Color? textColor,
     this.icon,
     this.borderColor,
-  });
+  }) : textColor = textColor ?? AppColors.blanc;
 
   final String label;
   final Color color;
@@ -1026,7 +1026,7 @@ class _VideosTab extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.videocam_off_outlined,
+            Icon(Icons.videocam_off_outlined,
                 color: AppColors.gris, size: 48),
             const SizedBox(height: 12),
             Text('No videos yet',
@@ -1066,7 +1066,7 @@ class _VideosTab extends StatelessWidget {
                 else
                   Container(
                     color: AppColors.surfaceAlt,
-                    child: const Icon(Icons.play_circle_outline,
+                    child: Icon(Icons.play_circle_outline,
                         color: AppColors.gris, size: 40),
                   ),
 
@@ -1095,7 +1095,7 @@ class _VideosTab extends StatelessWidget {
                       color: AppColors.blanc.withAlpha(30),
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(Icons.play_arrow_rounded,
+                    child: Icon(Icons.play_arrow_rounded,
                         color: AppColors.blanc, size: 28),
                   ),
                 ),
@@ -1114,7 +1114,7 @@ class _VideosTab extends StatelessWidget {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Icon(Icons.play_arrow,
+                        Icon(Icons.play_arrow,
                             color: AppColors.blanc, size: 12),
                         const SizedBox(width: 2),
                         Text(
@@ -1154,7 +1154,7 @@ class _ServicesTab extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.design_services_outlined,
+            Icon(Icons.design_services_outlined,
                 color: AppColors.gris, size: 48),
             const SizedBox(height: 12),
             Text('No services available',
@@ -1189,7 +1189,7 @@ class _ServicesTab extends StatelessWidget {
                   color: AppColors.violet.withAlpha(25),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: const Icon(Icons.spa_outlined,
+                child: Icon(Icons.spa_outlined,
                     color: AppColors.violetClair, size: 22),
               ),
               const SizedBox(width: 14),
@@ -1451,7 +1451,7 @@ class _EventsTab extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.event_outlined, color: AppColors.gris, size: 48),
+            Icon(Icons.event_outlined, color: AppColors.gris, size: 48),
             const SizedBox(height: 12),
             Text('No upcoming events',
                 style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 15)),

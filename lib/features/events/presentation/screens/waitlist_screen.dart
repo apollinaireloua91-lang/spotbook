@@ -67,7 +67,7 @@ class WaitlistScreen extends ConsumerWidget {
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(color: AppColors.border, width: 0.5),
               ),
-              child: const Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
+              child: Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
             ),
             onPressed: () {
               HapticFeedback.mediumImpact();
@@ -126,7 +126,7 @@ class WaitlistScreen extends ConsumerWidget {
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
                   child: state.isJoining
-                      ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: AppColors.gris, strokeWidth: 2))
+                      ? SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: AppColors.gris, strokeWidth: 2))
                       : Text('Join the waitlist',
                           style: GoogleFonts.dmSans(fontWeight: FontWeight.bold, fontSize: 16)),
                 ),
@@ -141,7 +141,7 @@ class WaitlistScreen extends ConsumerWidget {
                     context.pop();
                   },
                   style: OutlinedButton.styleFrom(
-                    side: const BorderSide(color: AppColors.border),
+                    side: BorderSide(color: AppColors.border),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
                   child: Text('Back',

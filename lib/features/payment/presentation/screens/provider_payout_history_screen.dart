@@ -110,7 +110,7 @@ class ProviderPayoutHistoryScreen extends ConsumerWidget {
         title: 'Payout history',
         actions: [
           IconButton(
-            icon: const Icon(Icons.settings_outlined,
+            icon: Icon(Icons.settings_outlined,
                 color: AppColors.blanc, size: 22),
             onPressed: () {
               HapticFeedback.selectionClick();
@@ -120,11 +120,11 @@ class ProviderPayoutHistoryScreen extends ConsumerWidget {
         ],
       ),
       body: payoutsAsync.when(
-        loading: () => const Center(
+        loading: () => Center(
             child: CircularProgressIndicator(color: AppColors.violet)),
         error: (e, _) => Center(
           child: Text('$e',
-              style: const TextStyle(color: AppColors.gris)),
+              style: TextStyle(color: AppColors.gris)),
         ),
         data: (payouts) {
           if (payouts.isEmpty) {
@@ -132,7 +132,7 @@ class ProviderPayoutHistoryScreen extends ConsumerWidget {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(Icons.account_balance_wallet_outlined,
+                  Icon(Icons.account_balance_wallet_outlined,
                       color: AppColors.gris, size: 48),
                   const SizedBox(height: 12),
                   Text('No payouts',
@@ -238,7 +238,7 @@ class _PayoutCard extends StatelessWidget {
                   const SizedBox(height: 2),
                   Text(
                     'Réf: ${payout.bankReference!.substring(0, payout.bankReference!.length.clamp(0, 16))}…',
-                    style: const TextStyle(
+                    style: TextStyle(
                         color: AppColors.grisInactif,
                         fontSize: 11),
                   ),

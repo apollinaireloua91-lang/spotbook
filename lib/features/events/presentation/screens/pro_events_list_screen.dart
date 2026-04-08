@@ -114,8 +114,8 @@ class _ProEventsListScreenState extends ConsumerState<ProEventsListScreen> {
                       ),
                       child: Row(
                         children: [
-                          const Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 12),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 12),
                             child: Icon(Icons.search, color: AppColors.gris, size: 20),
                           ),
                           Expanded(
@@ -160,7 +160,7 @@ class _ProEventsListScreenState extends ConsumerState<ProEventsListScreen> {
           ),
         ],
         body: async.when(
-          loading: () => const Center(
+          loading: () => Center(
             child: CircularProgressIndicator(color: AppColors.blanc),
           ),
           error: (e, _) => Center(
@@ -388,7 +388,7 @@ class _StatsRow extends StatelessWidget {
                     value: pct.clamp(0.0, 1.0),
                     backgroundColor: AppColors.border,
                     valueColor:
-                        const AlwaysStoppedAnimation<Color>(AppColors.blanc),
+                        AlwaysStoppedAnimation<Color>(AppColors.blanc),
                     minHeight: 3,
                     borderRadius: BorderRadius.circular(2),
                   ),
@@ -520,7 +520,7 @@ class _EmptyState extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(
+            Icon(
               Icons.confirmation_number_outlined,
               color: AppColors.gris,
               size: 56,

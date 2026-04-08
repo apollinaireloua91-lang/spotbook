@@ -64,16 +64,16 @@ class PushNotificationService {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: Text(
           title,
-          style: const TextStyle(color: AppColors.blanc, fontWeight: FontWeight.bold, fontSize: 16),
+          style: TextStyle(color: AppColors.blanc, fontWeight: FontWeight.bold, fontSize: 16),
         ),
         content: Text(
           body,
-          style: const TextStyle(color: AppColors.gris, fontSize: 14),
+          style: TextStyle(color: AppColors.gris, fontSize: 14),
         ),
         actions: [
           TextButton(
             onPressed: () => ctx.pop(),
-            child: const Text('OK', style: TextStyle(color: AppColors.blanc)),
+            child: Text('OK', style: TextStyle(color: AppColors.blanc)),
           ),
           if (message.data['type'] != null)
             TextButton(
@@ -81,7 +81,7 @@ class PushNotificationService {
                 ctx.pop();
                 _navigateFromNotification(context, message);
               },
-              child: const Text('Voir', style: TextStyle(color: AppColors.blanc, fontWeight: FontWeight.bold)),
+              child: Text('Voir', style: TextStyle(color: AppColors.blanc, fontWeight: FontWeight.bold)),
             ),
         ],
       ),

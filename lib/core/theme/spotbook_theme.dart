@@ -16,7 +16,7 @@ abstract final class SpotbookTheme {
       canvasColor: SpotbookColors.surface,
       dividerColor: SpotbookColors.border,
       textTheme: SpotbookTextStyles.textTheme(base.textTheme),
-      colorScheme: const ColorScheme.light(
+      colorScheme: ColorScheme.light(
         primary: SpotbookColors.violet,
         secondary: SpotbookColors.rose,
         surface: SpotbookColors.surface,
@@ -29,7 +29,7 @@ abstract final class SpotbookTheme {
       ),
 
       // ─── AppBar ───
-      appBarTheme: const AppBarTheme(
+      appBarTheme: AppBarTheme(
         backgroundColor: Colors.transparent,
         elevation: 0,
         scrolledUnderElevation: 0,
@@ -39,7 +39,7 @@ abstract final class SpotbookTheme {
       ),
 
       // ─── Bottom Navigation ───
-      bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+      bottomNavigationBarTheme: BottomNavigationBarThemeData(
         backgroundColor: SpotbookColors.background,
         selectedItemColor: SpotbookColors.violet,
         unselectedItemColor: SpotbookColors.textDisabled,
@@ -66,7 +66,7 @@ abstract final class SpotbookTheme {
         style: OutlinedButton.styleFrom(
           foregroundColor: SpotbookColors.textPrimary,
           backgroundColor: SpotbookColors.surface,
-          side: const BorderSide(color: SpotbookColors.border),
+          side: BorderSide(color: SpotbookColors.border),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
@@ -92,22 +92,22 @@ abstract final class SpotbookTheme {
         ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: SpotbookColors.border),
+          borderSide: BorderSide(color: SpotbookColors.border),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: SpotbookColors.border),
+          borderSide: BorderSide(color: SpotbookColors.border),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(
+          borderSide: BorderSide(
             color: SpotbookColors.violet,
             width: 1.5,
           ),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: SpotbookColors.error),
+          borderSide: BorderSide(color: SpotbookColors.error),
         ),
         hintStyle: SpotbookTextStyles.bodySecondary,
         labelStyle: SpotbookTextStyles.bodySecondary,
@@ -119,13 +119,13 @@ abstract final class SpotbookTheme {
         elevation: 0,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
-          side: const BorderSide(color: SpotbookColors.border, width: 0.5),
+          side: BorderSide(color: SpotbookColors.border, width: 0.5),
         ),
         margin: EdgeInsets.zero,
       ),
 
       // ─── Bottom Sheet ───
-      bottomSheetTheme: const BottomSheetThemeData(
+      bottomSheetTheme: BottomSheetThemeData(
         backgroundColor: SpotbookColors.background,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
@@ -160,7 +160,7 @@ abstract final class SpotbookTheme {
       // ─── Chip ───
       chipTheme: ChipThemeData(
         backgroundColor: SpotbookColors.surface,
-        side: const BorderSide(color: SpotbookColors.border, width: 0.5),
+        side: BorderSide(color: SpotbookColors.border, width: 0.5),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
         ),
@@ -168,14 +168,14 @@ abstract final class SpotbookTheme {
       ),
 
       // ─── Divider ───
-      dividerTheme: const DividerThemeData(
+      dividerTheme: DividerThemeData(
         color: SpotbookColors.border,
         thickness: 0.5,
         space: 0,
       ),
 
       // ─── Progress ───
-      progressIndicatorTheme: const ProgressIndicatorThemeData(
+      progressIndicatorTheme: ProgressIndicatorThemeData(
         color: SpotbookColors.violet,
         linearTrackColor: SpotbookColors.surface,
       ),

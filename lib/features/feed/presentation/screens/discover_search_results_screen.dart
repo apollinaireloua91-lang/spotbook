@@ -77,7 +77,7 @@ class _DiscoverSearchResultsScreenState
                           borderRadius: BorderRadius.circular(10),
                           border: Border.all(color: AppColors.border, width: 0.5),
                         ),
-                        child: const Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
+                        child: Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
                       ),
                       onPressed: () {
                         HapticFeedback.lightImpact();
@@ -95,13 +95,13 @@ class _DiscoverSearchResultsScreenState
                         hintText: 'Search for a professional...',
                         hintStyle: GoogleFonts.dmSans(
                             color: AppColors.gris, fontSize: 14),
-                        prefixIcon: const Icon(Icons.search,
+                        prefixIcon: Icon(Icons.search,
                             color: AppColors.gris, size: 20),
                         suffixIcon: ValueListenableBuilder<TextEditingValue>(
                           valueListenable: _searchCtrl,
                           builder: (_, v, __) => v.text.isNotEmpty
                               ? IconButton(
-                                  icon: const Icon(Icons.clear,
+                                  icon: Icon(Icons.clear,
                                       color: AppColors.gris, size: 18),
                                   onPressed: () {
                                     _searchCtrl.clear();
@@ -194,7 +194,7 @@ class _DiscoverSearchResultsScreenState
             // ── Content ──
             Expanded(
               child: s.isLoading
-                  ? const Center(
+                  ? Center(
                       child: CircularProgressIndicator(
                         color: AppColors.blanc,
                         strokeWidth: 2,
@@ -388,7 +388,7 @@ class _ProviderCard extends StatelessWidget {
                         if (pro.averageRating != null &&
                             pro.averageRating! > 0) ...[
                           const SizedBox(width: 6),
-                          const Icon(Icons.star_rounded,
+                          Icon(Icons.star_rounded,
                               color: AppColors.blanc, size: 14),
                           const SizedBox(width: 2),
                           Text(
@@ -415,7 +415,7 @@ class _ProviderCard extends StatelessWidget {
                       const SizedBox(height: 3),
                       Row(
                         children: [
-                          const Icon(Icons.location_on_outlined,
+                          Icon(Icons.location_on_outlined,
                               color: AppColors.gris, size: 13),
                           const SizedBox(width: 3),
                           Expanded(

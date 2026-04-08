@@ -49,7 +49,7 @@ class MyVideosScreen extends ConsumerWidget {
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(color: AppColors.border, width: 0.5),
               ),
-              child: const Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
+              child: Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
             ),
             onPressed: () => context.pop(),
           ),
@@ -58,7 +58,7 @@ class MyVideosScreen extends ConsumerWidget {
         centerTitle: true,
       ),
       body: videos == null
-          ? const Center(child: CircularProgressIndicator(color: AppColors.blanc))
+          ? Center(child: CircularProgressIndicator(color: AppColors.blanc))
           : videos.isEmpty
               ? Center(child: Text('No videos yet', style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 15)))
               : ListView.builder(
@@ -88,7 +88,7 @@ class _VideoCard extends StatelessWidget {
           child: SizedBox(height: 180, width: double.infinity,
             child: video.thumbnailUrl != null
                 ? CachedNetworkImage(imageUrl: video.thumbnailUrl!, fit: BoxFit.cover, errorWidget: (_, __, ___) => Container(color: AppColors.surfaceAlt))
-                : Container(color: AppColors.surfaceAlt, child: const Icon(Icons.videocam, color: AppColors.gris, size: 40))),
+                : Container(color: AppColors.surfaceAlt, child: Icon(Icons.videocam, color: AppColors.gris, size: 40))),
         ),
         Padding(padding: const EdgeInsets.all(12), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Row(children: [
@@ -104,7 +104,7 @@ class _VideoCard extends StatelessWidget {
             _Stat(Icons.visibility, video.viewsCount), const SizedBox(width: 16),
             _Stat(Icons.favorite, video.likesCount), const SizedBox(width: 16),
             _Stat(Icons.chat_bubble_outline, video.commentsCount), const Spacer(),
-            GestureDetector(onTap: onDelete, child: const Icon(Icons.delete_outline, color: AppColors.error, size: 20)),
+            GestureDetector(onTap: onDelete, child: Icon(Icons.delete_outline, color: AppColors.error, size: 20)),
           ]),
         ])),
       ]),

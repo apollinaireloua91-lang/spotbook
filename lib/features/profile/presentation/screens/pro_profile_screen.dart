@@ -84,7 +84,7 @@ class ProProfileScreen extends ConsumerWidget {
         }
         return _PremiumProfileScaffold(profile: profile);
       },
-      loading: () => const Scaffold(
+      loading: () => Scaffold(
         backgroundColor: AppColors.fond,
         body: Center(child: CircularProgressIndicator(color: AppColors.violet)),
       ),
@@ -118,7 +118,7 @@ class _BackButton extends StatelessWidget {
             borderRadius: BorderRadius.circular(10),
             border: Border.all(color: AppColors.border, width: 0.5),
           ),
-          child: const Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
+          child: Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
         ),
         onPressed: () => context.pop(),
       ),
@@ -198,7 +198,7 @@ class _PremiumProfileScaffoldState
       backgroundColor: Colors.transparent,
       builder: (ctx) => Container(
         padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           color: AppColors.surface,
           borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
         ),
@@ -219,7 +219,7 @@ class _PremiumProfileScaffoldState
               ListTile(
                 contentPadding: EdgeInsets.zero,
                 leading:
-                    const Icon(Icons.flag_outlined, color: AppColors.blanc),
+                    Icon(Icons.flag_outlined, color: AppColors.blanc),
                 title: Text('Report',
                     style: GoogleFonts.dmSans(color: AppColors.blanc)),
                 onTap: () {
@@ -230,7 +230,7 @@ class _PremiumProfileScaffoldState
               ),
               ListTile(
                 contentPadding: EdgeInsets.zero,
-                leading: const Icon(Icons.block, color: AppColors.error),
+                leading: Icon(Icons.block, color: AppColors.error),
                 title: Text('Block',
                     style: GoogleFonts.dmSans(color: AppColors.error)),
                 onTap: () {
@@ -417,7 +417,7 @@ class _PremiumProfileScaffoldState
                 right: 0,
                 height: 140,
                 child: Container(
-                  decoration: const BoxDecoration(
+                  decoration: BoxDecoration(
                     gradient: LinearGradient(
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
@@ -455,7 +455,7 @@ class _PremiumProfileScaffoldState
                 },
                 child: Container(
                   padding: const EdgeInsets.all(3),
-                  decoration: const BoxDecoration(
+                  decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     gradient: LinearGradient(
                       begin: Alignment.topLeft,
@@ -469,7 +469,7 @@ class _PremiumProfileScaffoldState
                   ),
                   child: Container(
                     padding: const EdgeInsets.all(3),
-                    decoration: const BoxDecoration(
+                    decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       color: AppColors.fond,
                     ),
@@ -480,7 +480,7 @@ class _PremiumProfileScaffoldState
                           ? CachedNetworkImageProvider(p.avatarUrl!)
                           : null,
                       child: p.avatarUrl == null
-                          ? const Icon(Icons.person,
+                          ? Icon(Icons.person,
                               size: 40, color: AppColors.gris)
                           : null,
                     ),
@@ -514,11 +514,11 @@ class _PremiumProfileScaffoldState
                     const SizedBox(width: 6),
                     Container(
                       padding: const EdgeInsets.all(2),
-                      decoration: const BoxDecoration(
+                      decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         color: AppColors.violet,
                       ),
-                      child: const Icon(
+                      child: Icon(
                         Icons.check,
                         size: 12,
                         color: AppColors.blanc,
@@ -901,7 +901,7 @@ class _BookButton extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.calendar_today_outlined,
+            Icon(Icons.calendar_today_outlined,
                 color: AppColors.blanc, size: 16),
             const SizedBox(width: 8),
             Text(
@@ -1375,7 +1375,7 @@ class _ReviewCard extends StatelessWidget {
                     ? CachedNetworkImageProvider(review.clientAvatarUrl!)
                     : null,
                 child: review.clientAvatarUrl == null
-                    ? const Icon(Icons.person, size: 14, color: AppColors.gris)
+                    ? Icon(Icons.person, size: 14, color: AppColors.gris)
                     : null,
               ),
               const SizedBox(width: 10),
@@ -1465,7 +1465,7 @@ class _TraiteurMenuWrapper extends ConsumerWidget {
     return servicesAsync.when(
       data: (services) => TraiteurMenuTab(services: services),
       loading: () =>
-          const Center(child: CircularProgressIndicator(color: AppColors.violet)),
+          Center(child: CircularProgressIndicator(color: AppColors.violet)),
       error: (_, __) => Center(
         child:
             Text('Loading error', style: GoogleFonts.dmSans(color: AppColors.gris)),
@@ -1547,7 +1547,7 @@ class _ErrorState extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(Icons.error_outline, color: AppColors.error, size: 36),
+          Icon(Icons.error_outline, color: AppColors.error, size: 36),
           const SizedBox(height: 12),
           Text('Loading error',
               style: GoogleFonts.sora(color: AppColors.gris, fontSize: 14)),

@@ -148,8 +148,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       await ref.read(_loginProvider.notifier).sendMagicLink(email);
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Magic link sent! Check your email.'),
+        SnackBar(
+          content: const Text('Magic link sent! Check your email.'),
           backgroundColor: AppColors.violet,
           behavior: SnackBarBehavior.floating,
         ),
@@ -352,7 +352,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   borderColor: AppColors.border,
                   onPressed: () {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Apple Sign In — coming soon (v1.1)'), backgroundColor: AppColors.surface),
+                      SnackBar(content: const Text('Apple Sign In — coming soon (v1.1)'), backgroundColor: AppColors.surface),
                     );
                   },
                 ),
@@ -441,7 +441,7 @@ class _AuthField extends StatelessWidget {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.violet),
+          borderSide: BorderSide(color: AppColors.violet),
         ),
         contentPadding:
             const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
@@ -492,7 +492,7 @@ class _GradientButton extends StatelessWidget {
             ),
           ),
           child: isLoading
-              ? const SizedBox(
+              ? SizedBox(
                   width: 22,
                   height: 22,
                   child: CircularProgressIndicator(

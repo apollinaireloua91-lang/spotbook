@@ -94,7 +94,7 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Icon(Icons.check_circle, color: AppColors.success, size: 64),
+                Icon(Icons.check_circle, color: AppColors.success, size: 64),
                 const SizedBox(height: 20),
                 Text('Thank you for your review!',
                     style: GoogleFonts.sora(color: AppColors.blanc, fontSize: 22, fontWeight: FontWeight.bold)),
@@ -141,7 +141,7 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(color: AppColors.border, width: 0.5),
               ),
-              child: const Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
+              child: Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
             ),
             onPressed: () {
               HapticFeedback.mediumImpact();
@@ -160,7 +160,7 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
             const SizedBox(height: 32),
             if (widget.serviceName != null) ...[
               Text(widget.serviceName!,
-                  style: const TextStyle(color: AppColors.gris, fontSize: 15)),
+                  style: TextStyle(color: AppColors.gris, fontSize: 15)),
               const SizedBox(height: 8),
             ],
             Text('How was your appointment?',
@@ -196,7 +196,7 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
             const SizedBox(height: 8),
             Text(
               _ratingLabel(state.rating),
-              style: const TextStyle(color: AppColors.gris, fontSize: 14),
+              style: TextStyle(color: AppColors.gris, fontSize: 14),
             ),
             const SizedBox(height: 32),
             // Comment
@@ -210,13 +210,13 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
                       controller: _commentCtrl,
                       maxLines: 4,
                       maxLength: 300,
-                      style: const TextStyle(color: AppColors.blanc, fontSize: 15),
+                      style: TextStyle(color: AppColors.blanc, fontSize: 15),
                       decoration: InputDecoration(
                         hintText: 'Share your experience (optional)',
-                        hintStyle: const TextStyle(color: AppColors.gris),
+                        hintStyle: TextStyle(color: AppColors.gris),
                         filled: true,
                         fillColor: AppColors.surface,
-                        counterStyle: const TextStyle(color: AppColors.gris),
+                        counterStyle: TextStyle(color: AppColors.gris),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide: BorderSide.none,

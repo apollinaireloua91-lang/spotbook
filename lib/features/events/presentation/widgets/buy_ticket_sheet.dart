@@ -50,9 +50,9 @@ class _BuyTicketSheetState extends ConsumerState<_BuyTicketSheet> {
         top: 20,
         bottom: MediaQuery.of(context).viewInsets.bottom + 20,
       ),
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -71,34 +71,34 @@ class _BuyTicketSheetState extends ConsumerState<_BuyTicketSheet> {
           const SizedBox(height: 20),
           Text(
             widget.ticketType.name,
-            style: const TextStyle(color: AppColors.blanc, fontSize: 20, fontWeight: FontWeight.bold),
+            style: TextStyle(color: AppColors.blanc, fontSize: 20, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 4),
           Text(
             widget.event.title,
-            style: const TextStyle(color: AppColors.gris, fontSize: 14),
+            style: TextStyle(color: AppColors.gris, fontSize: 14),
           ),
           const SizedBox(height: 20),
           // Quantity selector
           Row(
             children: [
-              const Text('Quantité', style: TextStyle(color: AppColors.blanc, fontSize: 15)),
+              Text('Quantité', style: TextStyle(color: AppColors.blanc, fontSize: 15)),
               const Spacer(),
               Semantics(
                 label: 'Réduire quantité',
                 child: IconButton(
-                  icon: const Icon(Icons.remove_circle_outline, color: AppColors.blanc),
+                  icon: Icon(Icons.remove_circle_outline, color: AppColors.blanc),
                   onPressed: state.quantity > 1
                       ? () => ref.read(buyTicketProvider.notifier).setQuantity(state.quantity - 1)
                       : null,
                 ),
               ),
               Text('${state.quantity}',
-                  style: const TextStyle(color: AppColors.blanc, fontSize: 18, fontWeight: FontWeight.bold)),
+                  style: TextStyle(color: AppColors.blanc, fontSize: 18, fontWeight: FontWeight.bold)),
               Semantics(
                 label: 'Augmenter quantité',
                 child: IconButton(
-                  icon: const Icon(Icons.add_circle_outline, color: AppColors.blanc),
+                  icon: Icon(Icons.add_circle_outline, color: AppColors.blanc),
                   onPressed: state.quantity < 4 && state.quantity < widget.ticketType.remaining
                       ? () => ref.read(buyTicketProvider.notifier).setQuantity(state.quantity + 1)
                       : null,
@@ -106,7 +106,7 @@ class _BuyTicketSheetState extends ConsumerState<_BuyTicketSheet> {
               ),
             ],
           ),
-          const Divider(color: AppColors.border),
+          Divider(color: AppColors.border),
           const SizedBox(height: 8),
           _PriceRow(label: 'Subtotal', value: '${state.total.toStringAsFixed(2)} CA\$'),
           _PriceRow(label: 'Service fee (${state.commissionPct}%)', value: '${state.commission.toStringAsFixed(2)} CA\$'),
@@ -126,18 +126,18 @@ class _BuyTicketSheetState extends ConsumerState<_BuyTicketSheet> {
                 fillColor: AppColors.surfaceAlt,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(color: AppColors.border),
+                  borderSide: BorderSide(color: AppColors.border),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(color: AppColors.border),
+                  borderSide: BorderSide(color: AppColors.border),
                 ),
               ),
             ),
           ),
           if (state.error != null) ...[
             const SizedBox(height: 8),
-            Text(state.error!, style: const TextStyle(color: AppColors.error, fontSize: 13)),
+            Text(state.error!, style: TextStyle(color: AppColors.error, fontSize: 13)),
           ],
           const SizedBox(height: 16),
           SizedBox(
@@ -175,8 +175,8 @@ class _BuyTicketSheetState extends ConsumerState<_BuyTicketSheet> {
                         if (context.mounted) {
                           Navigator.of(context).pop();
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Billet(s) acheté(s) !'),
+                            SnackBar(
+                              content: const Text('Billet(s) acheté(s) !'),
                               backgroundColor: AppColors.success,
                             ),
                           );
@@ -199,7 +199,7 @@ class _BuyTicketSheetState extends ConsumerState<_BuyTicketSheet> {
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               ),
               child: state.isLoading
-                  ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: AppColors.gris, strokeWidth: 2))
+                  ? SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: AppColors.gris, strokeWidth: 2))
                   : Text('Payer ${state.grandTotal.toStringAsFixed(2)} CA\$', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
             ),
           ),

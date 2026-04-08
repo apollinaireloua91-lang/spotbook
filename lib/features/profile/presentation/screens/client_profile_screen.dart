@@ -145,7 +145,7 @@ class _ProfileBody extends ConsumerWidget {
                             color: AppColors.blanc.withAlpha(13),
                           ),
                         ),
-                        child: const Icon(
+                        child: Icon(
                           Icons.settings_outlined,
                           color: AppColors.gris,
                           size: 18,
@@ -344,7 +344,7 @@ class _FavProAvatar extends StatelessWidget {
                     ? CachedNetworkImageProvider(pro.avatarUrl!)
                     : null,
                 child: pro.avatarUrl == null
-                    ? const Icon(Icons.person, size: 24, color: AppColors.gris)
+                    ? Icon(Icons.person, size: 24, color: AppColors.gris)
                     : null,
               ),
             ),
@@ -728,7 +728,7 @@ class _UnauthenticatedState extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(Icons.person_off_outlined,
+          Icon(Icons.person_off_outlined,
               color: AppColors.gris, size: 48),
           const SizedBox(height: 12),
           Text(
@@ -887,7 +887,7 @@ class _ErrorState extends StatelessWidget {
                 shape: BoxShape.circle,
                 color: AppColors.error.withAlpha(25),
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.error_outline,
                 size: 36,
                 color: AppColors.error,

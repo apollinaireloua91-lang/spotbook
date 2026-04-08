@@ -96,7 +96,7 @@ class ReferralScreen extends ConsumerWidget {
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(color: AppColors.border, width: 0.5),
               ),
-              child: const Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
+              child: Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
             ),
             onPressed: () {
               HapticFeedback.mediumImpact();
@@ -120,7 +120,7 @@ class ReferralScreen extends ConsumerWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 children: [
                   const SizedBox(height: 32),
-                  const Icon(Icons.card_giftcard, color: AppColors.blanc, size: 56),
+                  Icon(Icons.card_giftcard, color: AppColors.blanc, size: 56),
                   const SizedBox(height: 16),
                   Text(
                     'Refer & earn!',
@@ -170,20 +170,20 @@ class ReferralScreen extends ConsumerWidget {
                                     if (state.code != null) {
                                       Clipboard.setData(ClipboardData(text: state.code!));
                                       ScaffoldMessenger.of(context).showSnackBar(
-                                        const SnackBar(
-                                          content: Text('Code copied!'),
+                                        SnackBar(
+                                          content: const Text('Code copied!'),
                                           backgroundColor: AppColors.success,
                                         ),
                                       );
                                     }
                                   },
-                                  icon: const Icon(Icons.copy, color: AppColors.blanc, size: 18),
+                                  icon: Icon(Icons.copy, color: AppColors.blanc, size: 18),
                                   label: Text(
                                     'Copy',
                                     style: GoogleFonts.dmSans(color: AppColors.blanc, fontWeight: FontWeight.w500),
                                   ),
                                   style: OutlinedButton.styleFrom(
-                                    side: const BorderSide(color: AppColors.border),
+                                    side: BorderSide(color: AppColors.border),
                                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                                   ),
                                 ),
@@ -263,14 +263,14 @@ class ReferralScreen extends ConsumerWidget {
                         ),
                         child: Row(
                           children: [
-                            const Icon(Icons.person_add_alt_1, color: AppColors.blanc, size: 18),
+                            Icon(Icons.person_add_alt_1, color: AppColors.blanc, size: 18),
                             const SizedBox(width: 10),
                             Expanded(
                               child: Text(
                                 item.referredId.isEmpty
                                     ? 'Sign-up pending'
                                     : 'Friend signed up (${item.referredId.substring(0, 6)})',
-                                style: const TextStyle(color: AppColors.blanc, fontSize: 14),
+                                style: TextStyle(color: AppColors.blanc, fontSize: 14),
                               ),
                             ),
                             Text(

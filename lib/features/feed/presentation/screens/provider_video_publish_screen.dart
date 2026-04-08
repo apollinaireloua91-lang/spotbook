@@ -172,7 +172,7 @@ class _ProviderVideoPublishScreenState
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(color: AppColors.border, width: 0.5),
               ),
-              child: const Icon(Icons.arrow_back_ios_new,
+              child: Icon(Icons.arrow_back_ios_new,
                   color: AppColors.blanc, size: 16),
             ),
             onPressed: () {
@@ -307,7 +307,7 @@ class _ProviderVideoPublishScreenState
                           dropdownColor: AppColors.surface,
                           style: GoogleFonts.dmSans(
                               color: AppColors.blanc, fontSize: 14),
-                          icon: const Icon(Icons.keyboard_arrow_down_rounded,
+                          icon: Icon(Icons.keyboard_arrow_down_rounded,
                               color: AppColors.gris),
                           decoration: InputDecoration(
                             contentPadding: const EdgeInsets.symmetric(
@@ -569,7 +569,7 @@ class _VideoPreviewCard extends StatelessWidget {
                             color: AppColors.violet.withAlpha(20),
                             shape: BoxShape.circle,
                           ),
-                          child: const Icon(Icons.videocam_rounded,
+                          child: Icon(Icons.videocam_rounded,
                               color: AppColors.violet, size: 28),
                         ),
                         const SizedBox(height: 8),
@@ -648,7 +648,7 @@ class _VideoPreviewCard extends StatelessWidget {
                       color: AppColors.gris.withAlpha(20),
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(Icons.video_call_rounded,
+                    child: Icon(Icons.video_call_rounded,
                         color: AppColors.gris, size: 28),
                   ),
                   const SizedBox(height: 8),
@@ -768,7 +768,7 @@ class _PremiumTextField extends StatelessWidget {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
-          borderSide: const BorderSide(color: AppColors.violet, width: 1.5),
+          borderSide: BorderSide(color: AppColors.violet, width: 1.5),
         ),
       ),
     );
@@ -1048,7 +1048,7 @@ class _UploadProgressCard extends StatelessWidget {
               value: progress,
               backgroundColor: AppColors.border,
               valueColor:
-                  const AlwaysStoppedAnimation<Color>(AppColors.violet),
+                  AlwaysStoppedAnimation<Color>(AppColors.violet),
               minHeight: 6,
             ),
           ),

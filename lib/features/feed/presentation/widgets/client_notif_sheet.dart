@@ -52,9 +52,9 @@ class ClientNotifSheet extends ConsumerWidget {
 
     return Container(
       constraints: BoxConstraints(maxHeight: maxH),
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
         border: Border(top: BorderSide(color: AppColors.border)),
       ),
       child: Column(
@@ -74,7 +74,7 @@ class ClientNotifSheet extends ConsumerWidget {
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Row(
               children: [
-                const Text(
+                Text(
                   'My notifications',
                   style: TextStyle(
                     color: AppColors.blanc,
@@ -85,7 +85,7 @@ class ClientNotifSheet extends ConsumerWidget {
                 const Spacer(),
                 GestureDetector(
                   onTap: () => Navigator.of(context).pop(),
-                  child: const Icon(
+                  child: Icon(
                     Icons.close,
                     color: AppColors.gris,
                     size: 22,
@@ -95,15 +95,15 @@ class ClientNotifSheet extends ConsumerWidget {
             ),
           ),
           const SizedBox(height: 12),
-          const Divider(color: AppColors.border, height: 1),
+          Divider(color: AppColors.border, height: 1),
           if (s.isLoading)
-            const Padding(
-              padding: EdgeInsets.all(40),
+            Padding(
+              padding: const EdgeInsets.all(40),
               child: CircularProgressIndicator(color: AppColors.blanc),
             )
           else if (s.notifications.isEmpty)
-            const Padding(
-              padding: EdgeInsets.all(40),
+            Padding(
+              padding: const EdgeInsets.all(40),
               child: Text(
                 'No notifications',
                 style: TextStyle(color: AppColors.gris, fontSize: 14),
@@ -156,7 +156,7 @@ class _NotifItem extends StatelessWidget {
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         border: Border(bottom: BorderSide(color: AppColors.border, width: 0.5)),
       ),
       child: Row(
@@ -179,7 +179,7 @@ class _NotifItem extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: AppColors.grisClair,
                     fontSize: 11,
                     fontWeight: FontWeight.w600,
@@ -190,7 +190,7 @@ class _NotifItem extends StatelessWidget {
                 const SizedBox(height: 2),
                 Text(
                   body,
-                  style: const TextStyle(color: AppColors.gris, fontSize: 10),
+                  style: TextStyle(color: AppColors.gris, fontSize: 10),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -202,14 +202,14 @@ class _NotifItem extends StatelessWidget {
             children: [
               Text(
                 timeAgo,
-                style: const TextStyle(color: AppColors.gris, fontSize: 9),
+                style: TextStyle(color: AppColors.gris, fontSize: 9),
               ),
               const SizedBox(height: 4),
               if (!isRead)
                 Container(
                   width: 8,
                   height: 8,
-                  decoration: const BoxDecoration(
+                  decoration: BoxDecoration(
                     color: AppColors.blanc,
                     shape: BoxShape.circle,
                   ),

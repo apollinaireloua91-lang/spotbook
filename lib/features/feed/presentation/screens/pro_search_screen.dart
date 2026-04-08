@@ -58,7 +58,7 @@ class _ProSearchScreenState extends ConsumerState<ProSearchScreen> {
       setState(() => _isSearching = false);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Search error'), backgroundColor: AppColors.error),
+          SnackBar(content: const Text('Search error'), backgroundColor: AppColors.error),
         );
       }
     }
@@ -108,7 +108,7 @@ class _ProSearchScreenState extends ConsumerState<ProSearchScreen> {
                           hintText: 'Search pros, hashtags...',
                           hintStyle: GoogleFonts.dmSans(
                               color: AppColors.gris.withAlpha(153)),
-                          prefixIcon: const Icon(Icons.search,
+                          prefixIcon: Icon(Icons.search,
                               color: AppColors.gris, size: 20),
                           border: InputBorder.none,
                           contentPadding:
@@ -124,7 +124,7 @@ class _ProSearchScreenState extends ConsumerState<ProSearchScreen> {
 
             // ── Search results ──
             if (_isSearching)
-              const SliverFillRemaining(
+              SliverFillRemaining(
                 child: Center(
                   child:
                       CircularProgressIndicator(color: AppColors.violet),
@@ -283,7 +283,7 @@ class _PopularProsSection extends StatelessWidget {
       future: ref.read(discoverSearchRepositoryProvider).getAllProviders(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const SizedBox(
+          return SizedBox(
             height: 180,
             child: Center(
               child: CircularProgressIndicator(color: AppColors.violet),
@@ -398,7 +398,7 @@ class _ProPopularCard extends StatelessWidget {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(Icons.star, color: AppColors.warning, size: 12),
+                    Icon(Icons.star, color: AppColors.warning, size: 12),
                     const SizedBox(width: 2),
                     Text(
                       pro.averageRating!.toStringAsFixed(1),
@@ -664,7 +664,7 @@ class _ProSearchCard extends StatelessWidget {
               ),
             ),
             if (result.averageRating != null && result.averageRating! > 0) ...[
-              const Icon(Icons.star, color: AppColors.warning, size: 14),
+              Icon(Icons.star, color: AppColors.warning, size: 14),
               const SizedBox(width: 2),
               Text(
                 result.averageRating!.toStringAsFixed(1),

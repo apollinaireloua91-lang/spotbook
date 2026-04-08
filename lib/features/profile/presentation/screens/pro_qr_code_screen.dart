@@ -39,7 +39,7 @@ class ProQrCodeScreen extends StatelessWidget {
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(color: AppColors.border, width: 0.5),
               ),
-              child: const Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
+              child: Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
             ),
             onPressed: () => context.pop(),
           ),
@@ -52,7 +52,7 @@ class ProQrCodeScreen extends StatelessWidget {
         centerTitle: true,
         actions: [
           IconButton(
-            icon: const Icon(Icons.share_outlined, color: AppColors.blanc),
+            icon: Icon(Icons.share_outlined, color: AppColors.blanc),
             onPressed: () =>
                 SharePlus.instance.share(ShareParams(text: profileUrl)),
           ),
@@ -88,11 +88,11 @@ class ProQrCodeScreen extends StatelessWidget {
                         version: QrVersions.auto,
                         size: 200,
                         backgroundColor: AppColors.blanc,
-                        eyeStyle: const QrEyeStyle(
+                        eyeStyle: QrEyeStyle(
                           eyeShape: QrEyeShape.square,
                           color: AppColors.fond,
                         ),
-                        dataModuleStyle: const QrDataModuleStyle(
+                        dataModuleStyle: QrDataModuleStyle(
                           dataModuleShape: QrDataModuleShape.square,
                           color: AppColors.fond,
                         ),
@@ -120,10 +120,10 @@ class ProQrCodeScreen extends StatelessWidget {
                       onTap: () {
                         Clipboard.setData(ClipboardData(text: profileUrl));
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Lien copié !'),
+                          SnackBar(
+                            content: const Text('Lien copié !'),
                             backgroundColor: AppColors.success,
-                            duration: Duration(seconds: 2),
+                            duration: const Duration(seconds: 2),
                           ),
                         );
                       },
@@ -139,7 +139,7 @@ class ProQrCodeScreen extends StatelessWidget {
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            const Icon(Icons.link,
+                            Icon(Icons.link,
                                 color: AppColors.gris, size: 14),
                             const SizedBox(width: 6),
                             Flexible(
@@ -151,7 +151,7 @@ class ProQrCodeScreen extends StatelessWidget {
                               ),
                             ),
                             const SizedBox(width: 6),
-                            const Icon(Icons.copy,
+                            Icon(Icons.copy,
                                 color: AppColors.gris, size: 13),
                           ],
                         ),
@@ -174,7 +174,7 @@ class ProQrCodeScreen extends StatelessWidget {
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Icon(Icons.info_outline, color: AppColors.gris, size: 16),
+                    Icon(Icons.info_outline, color: AppColors.gris, size: 16),
                     const SizedBox(width: 10),
                     Expanded(
                       child: Text(
@@ -205,8 +205,8 @@ class ProQrCodeScreen extends StatelessWidget {
                 onPressed: () {
                   Clipboard.setData(ClipboardData(text: profileUrl));
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Link copied to clipboard'),
+                    SnackBar(
+                      content: const Text('Link copied to clipboard'),
                       backgroundColor: AppColors.success,
                     ),
                   );

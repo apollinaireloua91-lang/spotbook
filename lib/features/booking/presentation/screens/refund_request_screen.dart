@@ -160,7 +160,7 @@ class _RefundRequestScreenState extends ConsumerState<RefundRequestScreen> {
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(color: AppColors.border, width: 0.5),
               ),
-              child: const Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
+              child: Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
             ),
             onPressed: () {
               HapticFeedback.mediumImpact();
@@ -227,7 +227,7 @@ class _RefundRequestScreenState extends ConsumerState<RefundRequestScreen> {
                 if (booking.slotStartTime != null)
                   _infoRow(Icons.access_time, booking.slotStartTime!),
                 const SizedBox(height: 12),
-                const Divider(color: AppColors.border, height: 1),
+                Divider(color: AppColors.border, height: 1),
                 const SizedBox(height: 12),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -360,15 +360,15 @@ class _RefundRequestScreenState extends ConsumerState<RefundRequestScreen> {
               counterStyle: GoogleFonts.dmSans(color: AppColors.gris),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: AppColors.border),
+                borderSide: BorderSide(color: AppColors.border),
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: AppColors.border),
+                borderSide: BorderSide(color: AppColors.border),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: AppColors.blanc),
+                borderSide: BorderSide(color: AppColors.blanc),
               ),
             ),
           ),

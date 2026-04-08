@@ -109,7 +109,7 @@ class CommentBubble extends StatelessWidget {
                       GestureDetector(
                         onTap: onReplyTap,
                         child: Text(
-                          'Répondre',
+                          'Reply',
                           style: TextStyle(
                             color: AppColors.gris,
                             fontSize: 9,

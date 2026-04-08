@@ -146,7 +146,7 @@ class _ProBusinessDetailsScreenState
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(color: AppColors.border, width: 0.5),
               ),
-              child: const Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
+              child: Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
             ),
           ),
         ),
@@ -211,20 +211,20 @@ class _ProBusinessDetailsScreenState
                 initialValue: categoryLabels.contains(s.selectedCategory)
                     ? s.selectedCategory
                     : null,
-                hint: const Text(
+                hint: Text(
                   'Select your category',
                   style: TextStyle(color: AppColors.gris),
                 ),
                 dropdownColor: AppColors.surfaceAuth,
-                style: const TextStyle(color: AppColors.blanc),
-                icon: const Icon(
+                style: TextStyle(color: AppColors.blanc),
+                icon: Icon(
                   Icons.keyboard_arrow_down,
                   color: AppColors.gris,
                 ),
                 decoration: InputDecoration(
                   labelText: 'Service category',
-                  labelStyle: const TextStyle(color: AppColors.gris),
-                  prefixIcon: const Icon(Icons.star_outline,
+                  labelStyle: TextStyle(color: AppColors.gris),
+                  prefixIcon: Icon(Icons.star_outline,
                       color: AppColors.gris, size: 20),
                   filled: true,
                   fillColor: AppColors.surfaceAuth,
@@ -255,14 +255,14 @@ class _ProBusinessDetailsScreenState
                 Padding(
                   padding: const EdgeInsets.only(top: 8),
                   child: Row(children: [
-                    const Icon(Icons.check_circle,
+                    Icon(Icons.check_circle,
                         color: AppColors.success, size: 16),
                     const SizedBox(width: 6),
                     Expanded(
                       child: Text(
                         '${s.placeDetails!.city}'
                         '${s.placeDetails!.province != null ? ', ${s.placeDetails!.province}' : ''}',
-                        style: const TextStyle(
+                        style: TextStyle(
                             color: AppColors.success, fontSize: 13),
                       ),
                     ),
@@ -273,20 +273,20 @@ class _ProBusinessDetailsScreenState
               // Bio
               TextField(
                 controller: _bioCtrl,
-                style: const TextStyle(color: AppColors.blanc),
+                style: TextStyle(color: AppColors.blanc),
                 maxLines: 4,
                 maxLength: 300,
                 decoration: InputDecoration(
                   labelText: 'Professional bio',
                   hintText:
                       'Briefly describe your experience and what makes your services unique...',
-                  labelStyle: const TextStyle(color: AppColors.gris),
+                  labelStyle: TextStyle(color: AppColors.gris),
                   hintStyle: TextStyle(color: AppColors.gris.withAlpha(128)),
-                  prefixIcon: const Icon(Icons.text_fields,
+                  prefixIcon: Icon(Icons.text_fields,
                       color: AppColors.gris, size: 20),
                   filled: true,
                   fillColor: AppColors.surfaceAuth,
-                  counterStyle: const TextStyle(color: AppColors.gris),
+                  counterStyle: TextStyle(color: AppColors.gris),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide.none,
@@ -308,7 +308,7 @@ class _ProBusinessDetailsScreenState
                         borderRadius: BorderRadius.circular(12)),
                   ),
                   child: s.isLoading
-                      ? const SizedBox(
+                      ? SizedBox(
                           width: 20,
                           height: 20,
                           child: CircularProgressIndicator(
@@ -346,11 +346,11 @@ class _ProBusinessDetailsScreenState
   }) {
     return TextField(
       controller: controller,
-      style: const TextStyle(color: AppColors.blanc),
+      style: TextStyle(color: AppColors.blanc),
       decoration: InputDecoration(
         labelText: label,
         hintText: hint,
-        labelStyle: const TextStyle(color: AppColors.gris),
+        labelStyle: TextStyle(color: AppColors.gris),
         hintStyle: TextStyle(color: AppColors.gris.withAlpha(128)),
         prefixIcon: Icon(icon, color: AppColors.gris, size: 20),
         filled: true,

@@ -44,8 +44,8 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
 
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Password updated successfully!'),
+        SnackBar(
+          content: const Text('Password updated successfully!'),
           backgroundColor: AppColors.success,
         ),
       );
@@ -88,7 +88,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                       shape: BoxShape.circle,
                       color: AppColors.violet.withAlpha(25),
                     ),
-                    child: const Icon(
+                    child: Icon(
                       Icons.lock_reset_rounded,
                       color: AppColors.violet,
                       size: 40,
@@ -195,30 +195,30 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
     return InputDecoration(
       hintText: hint,
       hintStyle: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 15),
-      prefixIcon: const Icon(Icons.lock_outline_rounded,
+      prefixIcon: Icon(Icons.lock_outline_rounded,
           color: AppColors.gris, size: 20),
       suffixIcon: suffixIcon,
       filled: true,
       fillColor: AppColors.surface,
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(14),
-        borderSide: const BorderSide(color: AppColors.border),
+        borderSide: BorderSide(color: AppColors.border),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(14),
-        borderSide: const BorderSide(color: AppColors.border),
+        borderSide: BorderSide(color: AppColors.border),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(14),
-        borderSide: const BorderSide(color: AppColors.violet),
+        borderSide: BorderSide(color: AppColors.violet),
       ),
       errorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(14),
-        borderSide: const BorderSide(color: AppColors.error),
+        borderSide: BorderSide(color: AppColors.error),
       ),
       focusedErrorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(14),
-        borderSide: const BorderSide(color: AppColors.error),
+        borderSide: BorderSide(color: AppColors.error),
       ),
       contentPadding:
           const EdgeInsets.symmetric(horizontal: 16, vertical: 16),

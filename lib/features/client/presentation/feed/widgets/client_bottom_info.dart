@@ -27,11 +27,11 @@ class ClientBottomInfo extends StatelessWidget {
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
             decoration: BoxDecoration(
-              color: AppColors.violet,
+              color: AppColors.success,
               borderRadius: BorderRadius.circular(24),
               boxShadow: [
                 BoxShadow(
-                  color: AppColors.violet.withAlpha(128),
+                  color: AppColors.success.withAlpha(128),
                   blurRadius: 12,
                   offset: const Offset(0, 4),
                 ),

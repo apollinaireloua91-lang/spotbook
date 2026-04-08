@@ -49,11 +49,11 @@ abstract final class AppColors {
   static const Color cateringDark = Color(0xFFF97316);
   static const Color cateringLight = Color(0xFFFFB347);
 
-  // ─── Strip backgrounds (on video) ───
-  static const Color ctaServiceStripBg = Color(0xE6F3F4F1);
-  static const Color ctaEventStripBg = Color(0xE6F3F4F1);
-  static const Color ctaBookingStripBg = Color(0xE6F3F4F1);
-  static const Color ctaCateringStripBg = Color(0xE6FDF2C3);
+  // ─── Strip backgrounds (on video — always dark for readability) ───
+  static const Color ctaServiceStripBg = Color(0xCC1A1A2E);
+  static const Color ctaEventStripBg = Color(0xCC1A1A2E);
+  static const Color ctaBookingStripBg = Color(0xCC1A1A2E);
+  static const Color ctaCateringStripBg = Color(0xCC2E1A08);
 
   // ─── Shadows & overlays ───
   static const Color shadowCard = Color(0x1A000000);

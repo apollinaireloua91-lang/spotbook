@@ -104,7 +104,9 @@ class _ClientPostPageState extends State<ClientPostPage> {
     final hasService = v.serviceId != null;
     final hasEvent = v.eventId != null;
     final isCatering =
-        v.proCategory?.toLowerCase() == 'traiteur' && !hasService && !hasEvent;
+        (v.proCategory?.toLowerCase() == 'traiteur' ||
+            v.proCategory?.toLowerCase() == 'catering') &&
+            !hasService && !hasEvent;
 
     return GestureDetector(
       onTap: _onSingleTap,

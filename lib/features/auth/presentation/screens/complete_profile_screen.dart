@@ -123,8 +123,8 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen>
     } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Upload failed'),
+          SnackBar(
+            content: const Text('Upload failed'),
             backgroundColor: AppColors.error,
           ),
         );
@@ -144,8 +144,8 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen>
     } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Save failed'),
+          SnackBar(
+            content: const Text('Save failed'),
             backgroundColor: AppColors.error,
           ),
         );
@@ -189,7 +189,7 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen>
                       ),
                     ],
                   ),
-                  child: const Icon(
+                  child: Icon(
                     Icons.check_rounded,
                     color: AppColors.blanc,
                     size: 36,
@@ -241,7 +241,7 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen>
                           ? NetworkImage(s.avatarUrl!)
                           : null,
                       child: s.avatarUrl == null
-                          ? const Icon(
+                          ? Icon(
                               Icons.person,
                               size: 40,
                               color: AppColors.gris,
@@ -254,19 +254,19 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen>
                       child: Container(
                         width: 34,
                         height: 34,
-                        decoration: const BoxDecoration(
+                        decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           gradient: AppColors.gradientAccent,
                         ),
                         child: s.isUploading
-                            ? const Padding(
-                                padding: EdgeInsets.all(8),
+                            ? Padding(
+                                padding: const EdgeInsets.all(8),
                                 child: CircularProgressIndicator(
                                   strokeWidth: 2,
                                   color: AppColors.blanc,
                                 ),
                               )
-                            : const Icon(
+                            : Icon(
                                 Icons.camera_alt,
                                 size: 16,
                                 color: AppColors.blanc,
@@ -288,7 +288,7 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen>
                     color: AppColors.gris,
                     fontSize: 15,
                   ),
-                  prefixIcon: const Icon(
+                  prefixIcon: Icon(
                     Icons.person_outline,
                     color: AppColors.gris,
                     size: 20,
@@ -297,15 +297,15 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen>
                   fillColor: AppColors.surface,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(14),
-                    borderSide: const BorderSide(color: AppColors.border),
+                    borderSide: BorderSide(color: AppColors.border),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(14),
-                    borderSide: const BorderSide(color: AppColors.border),
+                    borderSide: BorderSide(color: AppColors.border),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(14),
-                    borderSide: const BorderSide(color: AppColors.violet),
+                    borderSide: BorderSide(color: AppColors.violet),
                   ),
                   contentPadding: const EdgeInsets.symmetric(
                     horizontal: 16,
@@ -326,8 +326,8 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen>
                     color: AppColors.gris.withAlpha(128),
                     fontSize: 15,
                   ),
-                  prefixIcon: const Padding(
-                    padding: EdgeInsets.only(bottom: 40),
+                  prefixIcon: Padding(
+                    padding: const EdgeInsets.only(bottom: 40),
                     child: Icon(
                       Icons.edit_outlined,
                       color: AppColors.gris,
@@ -338,15 +338,15 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen>
                   fillColor: AppColors.surface,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(14),
-                    borderSide: const BorderSide(color: AppColors.border),
+                    borderSide: BorderSide(color: AppColors.border),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(14),
-                    borderSide: const BorderSide(color: AppColors.border),
+                    borderSide: BorderSide(color: AppColors.border),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(14),
-                    borderSide: const BorderSide(color: AppColors.violet),
+                    borderSide: BorderSide(color: AppColors.violet),
                   ),
                   contentPadding: const EdgeInsets.symmetric(
                     horizontal: 16,
@@ -385,7 +385,7 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen>
                       ),
                     ),
                     child: s.isSaving
-                        ? const SizedBox(
+                        ? SizedBox(
                             width: 22,
                             height: 22,
                             child: CircularProgressIndicator(

@@ -50,7 +50,7 @@ class SpotbookAppBar extends StatelessWidget implements PreferredSizeWidget {
                     borderRadius: BorderRadius.circular(10),
                     border: Border.all(color: AppColors.border, width: 0.5),
                   ),
-                  child: const Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
+                  child: Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
                 ),
                 onPressed: onBack ?? () => context.pop(),
               ),

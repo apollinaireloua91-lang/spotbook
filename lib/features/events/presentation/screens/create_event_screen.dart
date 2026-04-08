@@ -200,8 +200,8 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
 
     if (title.isEmpty || location.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Title and location are required'),
+        SnackBar(
+          content: const Text('Title and location are required'),
           backgroundColor: AppColors.error,
         ),
       );
@@ -266,7 +266,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                     borderRadius: BorderRadius.circular(10),
                     border: Border.all(color: AppColors.border, width: 0.5),
                   ),
-                  child: const Icon(Icons.arrow_back_ios_new,
+                  child: Icon(Icons.arrow_back_ios_new,
                       color: AppColors.blanc, size: 16),
                 ),
                 onPressed: () {
@@ -616,7 +616,7 @@ class _CoverImagePicker extends StatelessWidget {
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Icon(Icons.edit, size: 14, color: AppColors.blanc),
+                          Icon(Icons.edit, size: 14, color: AppColors.blanc),
                           const SizedBox(width: 4),
                           Text(
                             'Change',
@@ -1093,7 +1093,7 @@ class _PublishButton extends StatelessWidget {
         ),
         child: Center(
           child: isCreating
-              ? const SizedBox(
+              ? SizedBox(
                   height: 22,
                   width: 22,
                   child: CircularProgressIndicator(

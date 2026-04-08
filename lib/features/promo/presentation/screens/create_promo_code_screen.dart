@@ -121,7 +121,7 @@ class _CreatePromoCodeScreenState extends ConsumerState<CreatePromoCodeScreen> {
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(color: AppColors.border, width: 0.5),
               ),
-              child: const Icon(Icons.arrow_back_ios_new,
+              child: Icon(Icons.arrow_back_ios_new,
                   color: AppColors.blanc, size: 16),
             ),
             onPressed: () {
@@ -260,7 +260,7 @@ class _CreatePromoCodeScreenState extends ConsumerState<CreatePromoCodeScreen> {
               color: AppColors.violet.withAlpha(10),
               shape: BoxShape.circle,
             ),
-            child: const Icon(Icons.local_offer_outlined,
+            child: Icon(Icons.local_offer_outlined,
                 color: AppColors.violet, size: 40),
           ),
           const SizedBox(height: 20),
@@ -346,7 +346,7 @@ class _CreateFormSection extends StatelessWidget {
                   color: AppColors.violet.withAlpha(12),
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: const Icon(Icons.add_circle_outline,
+                child: Icon(Icons.add_circle_outline,
                     color: AppColors.violet, size: 18),
               ),
               const SizedBox(width: 12),
@@ -426,7 +426,7 @@ class _CreateFormSection extends StatelessWidget {
               ),
               child: Center(
                 child: isCreating
-                    ? const SizedBox(
+                    ? SizedBox(
                         width: 20,
                         height: 20,
                         child: CircularProgressIndicator(
@@ -516,7 +516,7 @@ class _PremiumField extends StatelessWidget {
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
               borderSide:
-                  const BorderSide(color: AppColors.violet, width: 1),
+                  BorderSide(color: AppColors.violet, width: 1),
             ),
           ),
         ),

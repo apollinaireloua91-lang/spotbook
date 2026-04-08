@@ -47,9 +47,9 @@ class SpotbookBottomSheet extends StatelessWidget {
     final bottomInset = MediaQuery.viewInsetsOf(context).bottom;
 
     return Container(
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: AppColors.surfaceAlt,
-        borderRadius: BorderRadius.only(
+        borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(24),
           topRight: Radius.circular(24),
         ),
@@ -77,7 +77,7 @@ class SpotbookBottomSheet extends StatelessWidget {
                   Expanded(
                     child: Text(
                       title!,
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: AppColors.blanc,
                         fontSize: 13,
                         fontWeight: FontWeight.w700,
@@ -87,7 +87,7 @@ class SpotbookBottomSheet extends StatelessWidget {
                   ),
                   IconButton(
                     onPressed: () => Navigator.of(context).maybePop(),
-                    icon: const Icon(Icons.close, color: AppColors.gris),
+                    icon: Icon(Icons.close, color: AppColors.gris),
                     visualDensity: VisualDensity.compact,
                   ),
                 ],

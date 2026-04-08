@@ -28,7 +28,7 @@ class ProCalendarHubScreen extends ConsumerWidget {
         title: 'Agenda',
         actions: [
           IconButton(
-            icon: const Icon(Icons.refresh, color: AppColors.blanc),
+            icon: Icon(Icons.refresh, color: AppColors.blanc),
             onPressed: () {
               HapticFeedback.selectionClick();
               ref.read(proBookingsProvider.notifier).refresh();
@@ -287,7 +287,7 @@ class _UpcomingBookingTile extends StatelessWidget {
               ],
             ),
           ),
-          const Icon(Icons.chevron_right, color: AppColors.gris),
+          Icon(Icons.chevron_right, color: AppColors.gris),
         ],
       ),
     );

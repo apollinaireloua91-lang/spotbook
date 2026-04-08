@@ -44,7 +44,7 @@ class _UploadVideoScreenState extends ConsumerState<UploadVideoScreen> {
     final ok = await ref.read(uploadVideoProvider.notifier).pickVideo();
     if (!ok && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Video too long — max 2 minutes'), backgroundColor: AppColors.error),
+        SnackBar(content: const Text('Video too long — max 2 minutes'), backgroundColor: AppColors.error),
       );
     }
   }
@@ -58,7 +58,7 @@ class _UploadVideoScreenState extends ConsumerState<UploadVideoScreen> {
       );
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Video published!'), backgroundColor: AppColors.success),
+        SnackBar(content: const Text('Video published!'), backgroundColor: AppColors.success),
       );
       context.pop();
     } catch (e) {
@@ -90,7 +90,7 @@ class _UploadVideoScreenState extends ConsumerState<UploadVideoScreen> {
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(color: AppColors.border, width: 0.5),
               ),
-              child: const Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
+              child: Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
             ),
             onPressed: () => context.pop(),
           ),
@@ -105,11 +105,11 @@ class _UploadVideoScreenState extends ConsumerState<UploadVideoScreen> {
           child: Container(width: double.infinity, height: 180, decoration: BoxDecoration(color: AppColors.surface, borderRadius: BorderRadius.circular(16), border: Border.all(color: AppColors.border)),
             child: s.videoFile != null
                 ? Center(child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-                    const Icon(Icons.videocam, color: AppColors.success, size: 40), const SizedBox(height: 8),
+                    Icon(Icons.videocam, color: AppColors.success, size: 40), const SizedBox(height: 8),
                     Text('Video selected (${s.videoDuration?.toStringAsFixed(0)}s)', style: GoogleFonts.dmSans(color: AppColors.blanc, fontSize: 14)),
                     const SizedBox(height: 4), Text('Tap to change', style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 12))]))
                 : Center(child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-                    const Icon(Icons.videocam_outlined, color: AppColors.gris, size: 40), const SizedBox(height: 8),
+                    Icon(Icons.videocam_outlined, color: AppColors.gris, size: 40), const SizedBox(height: 8),
                     Text('Select a video (max 2 min)', style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 14))]))),
         ),
         const SizedBox(height: 24),
@@ -118,9 +118,9 @@ class _UploadVideoScreenState extends ConsumerState<UploadVideoScreen> {
           builder: (context, value, _) => TextField(
             controller: _titleCtrl, maxLength: 80, style: GoogleFonts.dmSans(color: AppColors.blanc),
             decoration: InputDecoration(labelText: 'Title *', hintText: 'E.g.: Women\'s cut + blow-dry', labelStyle: GoogleFonts.dmSans(color: AppColors.gris), hintStyle: GoogleFonts.dmSans(color: AppColors.gris.withAlpha(128)), counterStyle: GoogleFonts.dmSans(color: AppColors.gris), filled: true, fillColor: AppColors.surface,
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.border)),
-              enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.border)),
-              focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.blanc))),
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: AppColors.border)),
+              enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: AppColors.border)),
+              focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: AppColors.blanc))),
           ),
         ),
         const SizedBox(height: 16),
@@ -136,8 +136,8 @@ class _UploadVideoScreenState extends ConsumerState<UploadVideoScreen> {
             hint: Text('Select a category *', style: GoogleFonts.dmSans(color: AppColors.gris)),
             dropdownColor: AppColors.surface, style: GoogleFonts.dmSans(color: AppColors.blanc), icon: const Icon(Icons.keyboard_arrow_down, color: AppColors.gris),
             decoration: InputDecoration(filled: true, fillColor: AppColors.surface,
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.border)),
-              enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.border))),
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: AppColors.border)),
+              enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: AppColors.border))),
             items: catItems,
             onChanged: (v) => n.setCategory(v),
           );
@@ -148,17 +148,17 @@ class _UploadVideoScreenState extends ConsumerState<UploadVideoScreen> {
           builder: (context, value, _) => TextField(
             controller: _descCtrl, maxLines: 4, maxLength: 300, style: GoogleFonts.dmSans(color: AppColors.blanc),
             decoration: InputDecoration(labelText: 'Description *', hintText: 'Describe your service in detail...', labelStyle: GoogleFonts.dmSans(color: AppColors.gris), hintStyle: GoogleFonts.dmSans(color: AppColors.gris.withAlpha(128)), counterStyle: GoogleFonts.dmSans(color: AppColors.gris), filled: true, fillColor: AppColors.surface,
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.border)),
-              enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.border)),
-              focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.blanc))),
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: AppColors.border)),
+              enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: AppColors.border)),
+              focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: AppColors.blanc))),
           ),
         ),
         const SizedBox(height: 16),
         TextField(controller: _hashtagCtrl, style: GoogleFonts.dmSans(color: AppColors.blanc),
           decoration: InputDecoration(labelText: 'Hashtags (optional, max 5)', hintText: 'haircut, trending, paris', labelStyle: GoogleFonts.dmSans(color: AppColors.gris), hintStyle: GoogleFonts.dmSans(color: AppColors.gris.withAlpha(128)), filled: true, fillColor: AppColors.surface,
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.border)),
-            enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.border)),
-            focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.blanc)))),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: AppColors.border)),
+            enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: AppColors.border)),
+            focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: AppColors.blanc)))),
         const SizedBox(height: 32),
         if (s.isUploading) ...[
           ClipRRect(borderRadius: BorderRadius.circular(4), child: LinearProgressIndicator(value: s.uploadProgress, backgroundColor: AppColors.surface, valueColor: const AlwaysStoppedAnimation<Color>(AppColors.blanc), minHeight: 6)),

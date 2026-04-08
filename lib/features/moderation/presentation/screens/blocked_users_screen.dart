@@ -73,7 +73,7 @@ class BlockedUsersScreen extends ConsumerWidget {
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(color: AppColors.border, width: 0.5),
               ),
-              child: const Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
+              child: Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
             ),
             onPressed: () {
               HapticFeedback.mediumImpact();
@@ -107,7 +107,7 @@ class BlockedUsersScreen extends ConsumerWidget {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Icon(Icons.block, color: AppColors.gris, size: 48),
+                      Icon(Icons.block, color: AppColors.gris, size: 48),
                       const SizedBox(height: 12),
                       Text('No blocked users',
                           style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 15)),
@@ -140,7 +140,7 @@ class BlockedUsersScreen extends ConsumerWidget {
                                 ? CachedNetworkImageProvider(block.blockedAvatarUrl!)
                                 : null,
                             child: block.blockedAvatarUrl == null
-                                ? const Icon(Icons.person, color: AppColors.gris, size: 20)
+                                ? Icon(Icons.person, color: AppColors.gris, size: 20)
                                 : null,
                           ),
                           const SizedBox(width: 12),
@@ -162,7 +162,7 @@ class BlockedUsersScreen extends ConsumerWidget {
                                 ref.read(_blockedProvider.notifier).unblock(block.blockedId);
                               },
                               style: OutlinedButton.styleFrom(
-                                side: const BorderSide(color: AppColors.border),
+                                side: BorderSide(color: AppColors.border),
                                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                                 padding: const EdgeInsets.symmetric(horizontal: 16),
                               ),

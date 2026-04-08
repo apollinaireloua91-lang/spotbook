@@ -43,7 +43,7 @@ class _ClientSearchBody extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(Icons.wifi_off, color: AppColors.gris, size: 48),
+                  Icon(Icons.wifi_off, color: AppColors.gris, size: 48),
                   const SizedBox(height: 16),
                   Text(
                     state.error!,
@@ -53,7 +53,7 @@ class _ClientSearchBody extends StatelessWidget {
                   const SizedBox(height: 16),
                   TextButton.icon(
                     onPressed: () => context.read<ClientSearchCubit>().refresh(),
-                    icon: const Icon(Icons.refresh, color: AppColors.violet),
+                    icon: Icon(Icons.refresh, color: AppColors.violet),
                     label: Text('Retry', style: GoogleFonts.dmSans(color: AppColors.violet)),
                   ),
                 ],

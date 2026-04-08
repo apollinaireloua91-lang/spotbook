@@ -26,10 +26,10 @@ class EventStrip extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
         decoration: BoxDecoration(
-          color: AppColors.ctaEventStripBg.withAlpha(230),
+          color: AppColors.ctaEventStripBg,
           borderRadius: BorderRadius.circular(14),
           border: Border.all(
-            color: AppColors.rose.withAlpha(64),
+            color: AppColors.violet.withAlpha(64),
           ),
         ),
         child: Row(

@@ -57,7 +57,7 @@ class _BookingReportSheetState extends ConsumerState<_BookingReportSheet> {
       padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
       child: Container(
         padding: EdgeInsets.fromLTRB(20, 20, 20, bottomInset + 20),
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           color: AppColors.surface,
           borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
         ),
@@ -131,26 +131,26 @@ class _BookingReportSheetState extends ConsumerState<_BookingReportSheet> {
                 controller: _detailsCtrl,
                 maxLines: 4,
                 maxLength: 500,
-                style: const TextStyle(color: AppColors.blanc, fontSize: 15),
+                style: TextStyle(color: AppColors.blanc, fontSize: 15),
                 cursorColor: AppColors.blanc,
                 decoration: InputDecoration(
                   filled: true,
                   fillColor: AppColors.fond,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(color: AppColors.border),
+                    borderSide: BorderSide(color: AppColors.border),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(color: AppColors.border),
+                    borderSide: BorderSide(color: AppColors.border),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(color: AppColors.blanc, width: 1),
+                    borderSide: BorderSide(color: AppColors.blanc, width: 1),
                   ),
                   hintText: 'Context, dates, exchanges…',
                   hintStyle: TextStyle(color: AppColors.gris.withValues(alpha: 0.7)),
-                  counterStyle: const TextStyle(color: AppColors.gris),
+                  counterStyle: TextStyle(color: AppColors.gris),
                 ),
               ),
               const SizedBox(height: 16),
@@ -172,8 +172,8 @@ class _BookingReportSheetState extends ConsumerState<_BookingReportSheet> {
                             if (context.mounted) {
                               Navigator.of(context).pop();
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text(
+                                SnackBar(
+                                  content: const Text(
                                     'Report submitted. Thank you, review within 24h.',
                                   ),
                                   backgroundColor: AppColors.success,
@@ -198,7 +198,7 @@ class _BookingReportSheetState extends ConsumerState<_BookingReportSheet> {
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
                   child: reportState.isSubmitting
-                      ? const SizedBox(
+                      ? SizedBox(
                           height: 20,
                           width: 20,
                           child: CircularProgressIndicator(

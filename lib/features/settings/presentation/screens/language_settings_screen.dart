@@ -30,7 +30,7 @@ class LanguageSettingsScreen extends ConsumerWidget {
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           content: Text(
             l10n.settingsLanguageSavedSnack,
-            style: const TextStyle(color: AppColors.blanc),
+            style: TextStyle(color: AppColors.blanc),
           ),
         ),
       );
@@ -52,7 +52,7 @@ class LanguageSettingsScreen extends ConsumerWidget {
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(color: AppColors.border, width: 0.5),
               ),
-              child: const Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
+              child: Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
             ),
             onPressed: () => context.pop(),
           ),
@@ -91,7 +91,7 @@ class LanguageSettingsScreen extends ConsumerWidget {
                   ),
                 ),
                 if (locale.languageCode == 'fr')
-                  const Icon(
+                  Icon(
                     Icons.check_circle_rounded,
                     color: AppColors.violet,
                     size: 26,
@@ -116,7 +116,7 @@ class LanguageSettingsScreen extends ConsumerWidget {
                   ),
                 ),
                 if (locale.languageCode == 'en')
-                  const Icon(
+                  Icon(
                     Icons.check_circle_rounded,
                     color: AppColors.violet,
                     size: 26,

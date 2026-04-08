@@ -68,7 +68,7 @@ class _PaymentReceiptScreenState extends ConsumerState<PaymentReceiptScreen>
           label: 'Close',
           child: IconButton(
             icon:
-                const Icon(Icons.close, color: AppColors.blanc, size: 22),
+                Icon(Icons.close, color: AppColors.blanc, size: 22),
             onPressed: () {
               HapticFeedback.mediumImpact();
               context.pop();
@@ -81,11 +81,11 @@ class _PaymentReceiptScreenState extends ConsumerState<PaymentReceiptScreen>
         centerTitle: true,
       ),
       body: _isLoading
-          ? const Center(
+          ? Center(
               child:
                   CircularProgressIndicator(color: AppColors.violet))
           : _booking == null
-              ? const Center(
+              ? Center(
                   child: Text('Booking not found',
                       style: TextStyle(color: AppColors.gris)))
               : FadeTransition(
@@ -168,8 +168,8 @@ class _PaymentReceiptScreenState extends ConsumerState<PaymentReceiptScreen>
                 if (booking.serviceDurationMinutes != null)
                   _receiptRow(
                       'Duration', '${booking.serviceDurationMinutes} min'),
-                const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 12),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 12),
                   child: Divider(color: AppColors.border, height: 1),
                 ),
                 _receiptRow(
@@ -198,11 +198,11 @@ class _PaymentReceiptScreenState extends ConsumerState<PaymentReceiptScreen>
                     ClipboardData(text: booking.bookingCode!));
                 HapticFeedback.lightImpact();
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
+                  SnackBar(
                     backgroundColor: AppColors.surface,
                     content: Text('Code copied',
                         style: TextStyle(color: AppColors.blanc)),
-                    duration: Duration(seconds: 1),
+                    duration: const Duration(seconds: 1),
                   ),
                 );
               },
@@ -218,7 +218,7 @@ class _PaymentReceiptScreenState extends ConsumerState<PaymentReceiptScreen>
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(Icons.copy,
+                    Icon(Icons.copy,
                         color: AppColors.violetClair, size: 16),
                     const SizedBox(width: 8),
                     Text(

@@ -77,7 +77,7 @@ class _FilterSheetState extends State<FilterSheet> {
   DateTime? _dateTo;
   late final TextEditingController _proNameController;
 
-  static const _statusOptions = [
+  static final _statusOptions = [
     ('confirmed', 'Confirmed', AppColors.success),
     ('pending_payment', 'Pending', AppColors.violetClair),
     ('completed', 'Completed', AppColors.gris),
@@ -162,7 +162,7 @@ class _FilterSheetState extends State<FilterSheet> {
     return Container(
       margin: const EdgeInsets.only(top: 60),
       padding: EdgeInsets.fromLTRB(24, 8, 24, 24 + bottomPadding),
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
@@ -186,7 +186,7 @@ class _FilterSheetState extends State<FilterSheet> {
           // Header
           Row(
             children: [
-              const Text(
+              Text(
                 'Filtrer',
                 style: TextStyle(
                   color: AppColors.blanc,
@@ -197,7 +197,7 @@ class _FilterSheetState extends State<FilterSheet> {
               const Spacer(),
               GestureDetector(
                 onTap: _reset,
-                child: const Text(
+                child: Text(
                   'Réinitialiser',
                   style: TextStyle(
                     color: AppColors.violetClair,
@@ -212,7 +212,7 @@ class _FilterSheetState extends State<FilterSheet> {
           const SizedBox(height: 20),
 
           // Status chips
-          const Text(
+          Text(
             'STATUT',
             style: TextStyle(
               color: AppColors.gris,
@@ -268,7 +268,7 @@ class _FilterSheetState extends State<FilterSheet> {
           const SizedBox(height: 24),
 
           // Date range
-          const Text(
+          Text(
             'PÉRIODE',
             style: TextStyle(
               color: AppColors.gris,
@@ -303,7 +303,7 @@ class _FilterSheetState extends State<FilterSheet> {
           const SizedBox(height: 24),
 
           // Pro name search
-          const Text(
+          Text(
             'PROFESSIONNEL',
             style: TextStyle(
               color: AppColors.gris,
@@ -315,11 +315,11 @@ class _FilterSheetState extends State<FilterSheet> {
           const SizedBox(height: 10),
           TextField(
             controller: _proNameController,
-            style: const TextStyle(color: AppColors.blanc, fontSize: 14),
+            style: TextStyle(color: AppColors.blanc, fontSize: 14),
             decoration: InputDecoration(
               hintText: 'Search for a pro...',
               hintStyle: TextStyle(color: AppColors.gris.withAlpha(150)),
-              prefixIcon: const Icon(
+              prefixIcon: Icon(
                 Icons.search,
                 color: AppColors.gris,
                 size: 18,
@@ -332,15 +332,15 @@ class _FilterSheetState extends State<FilterSheet> {
               ),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: AppColors.border),
+                borderSide: BorderSide(color: AppColors.border),
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: AppColors.border),
+                borderSide: BorderSide(color: AppColors.border),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: AppColors.violet),
+                borderSide: BorderSide(color: AppColors.violet),
               ),
             ),
           ),
@@ -357,7 +357,7 @@ class _FilterSheetState extends State<FilterSheet> {
                 color: AppColors.violet,
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: const Center(
+              child: Center(
                 child: Text(
                   'Apply filters',
                   style: TextStyle(
@@ -425,7 +425,7 @@ class _DatePickerButton extends StatelessWidget {
             if (date != null)
               GestureDetector(
                 onTap: onClear,
-                child: const Icon(
+                child: Icon(
                   Icons.close,
                   size: 14,
                   color: AppColors.gris,

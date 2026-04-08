@@ -54,9 +54,9 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
     final proAsync = ref.watch(_bookingProProvider(widget.providerId));
 
     return proAsync.when(
-      loading: () => const Scaffold(
+      loading: () => Scaffold(
         backgroundColor: AppColors.fond,
-        body: Center(child: SpotbookLoadingShimmer.profile()),
+        body: const Center(child: SpotbookLoadingShimmer.profile()),
       ),
       error: (err, _) => Scaffold(
         backgroundColor: AppColors.fond,
@@ -74,7 +74,7 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
                   borderRadius: BorderRadius.circular(10),
                   border: Border.all(color: AppColors.border, width: 0.5),
                 ),
-                child: const Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
+                child: Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
               ),
               onPressed: () => context.pop(),
             ),
@@ -86,7 +86,7 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Icon(Icons.error_outline,
+                Icon(Icons.error_outline,
                     color: AppColors.gris, size: 48),
                 const SizedBox(height: 16),
                 Text(
@@ -138,12 +138,12 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (mounted) context.pop();
           });
-          return const Scaffold(backgroundColor: AppColors.fond);
+          return Scaffold(backgroundColor: AppColors.fond);
         }
         _openSheet(pro);
-        return const Scaffold(
+        return Scaffold(
           backgroundColor: AppColors.fond,
-          body: Center(child: SpotbookLoadingShimmer.profile()),
+          body: const Center(child: SpotbookLoadingShimmer.profile()),
         );
       },
     );

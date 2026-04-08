@@ -167,8 +167,8 @@ class _VideoPreviewScreenState extends ConsumerState<VideoPreviewScreen> {
         listener: (context, state) {
           if (state.step == UploadStep.done) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Video published!'),
+              SnackBar(
+                content: const Text('Video published!'),
                 backgroundColor: AppColors.success,
               ),
             );
@@ -207,7 +207,7 @@ class _VideoPreviewScreenState extends ConsumerState<VideoPreviewScreen> {
                       borderRadius: BorderRadius.circular(10),
                       border: Border.all(color: AppColors.border, width: 0.5),
                     ),
-                    child: const Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
+                    child: Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
                   ),
                   onPressed: isWorking ? null : () => context.pop(),
                 ),
@@ -256,7 +256,7 @@ class _VideoPreviewScreenState extends ConsumerState<VideoPreviewScreen> {
                                           color: AppColors.overlayMedium,
                                           shape: BoxShape.circle,
                                         ),
-                                        child: const Icon(
+                                        child: Icon(
                                           Icons.play_arrow,
                                           color: AppColors.blanc,
                                           size: 32,
@@ -265,7 +265,7 @@ class _VideoPreviewScreenState extends ConsumerState<VideoPreviewScreen> {
                                   ],
                                 ),
                               )
-                            : const Center(
+                            : Center(
                                 child: CircularProgressIndicator(
                                   color: AppColors.blanc,
                                   strokeWidth: 2,
@@ -278,7 +278,7 @@ class _VideoPreviewScreenState extends ConsumerState<VideoPreviewScreen> {
                       const SizedBox(height: 8),
                       Text(
                         'Duration: ${_videoDuration!.toStringAsFixed(1)}s',
-                        style: const TextStyle(
+                        style: TextStyle(
                           color: AppColors.gris,
                           fontSize: 13,
                         ),
@@ -310,13 +310,13 @@ class _VideoPreviewScreenState extends ConsumerState<VideoPreviewScreen> {
                           : null;
                       return DropdownButtonFormField<String>(
                         initialValue: validCat,
-                        hint: const Text(
+                        hint: Text(
                           'Category *',
                           style: TextStyle(color: AppColors.gris),
                         ),
                         dropdownColor: AppColors.surface,
-                        style: const TextStyle(color: AppColors.blanc),
-                        icon: const Icon(
+                        style: TextStyle(color: AppColors.blanc),
+                        icon: Icon(
                           Icons.keyboard_arrow_down,
                           color: AppColors.gris,
                         ),
@@ -354,14 +354,14 @@ class _VideoPreviewScreenState extends ConsumerState<VideoPreviewScreen> {
                           return Chip(
                             label: Text(
                               '#$tag',
-                              style: const TextStyle(
+                              style: TextStyle(
                                 color: AppColors.blanc,
                                 fontSize: 13,
                               ),
                             ),
                             backgroundColor: AppColors.surface,
                             deleteIconColor: AppColors.gris,
-                            side: const BorderSide(color: AppColors.border),
+                            side: BorderSide(color: AppColors.border),
                             onDeleted:
                                 isWorking ? null : () => _removeHashtag(tag),
                           );
@@ -383,12 +383,12 @@ class _VideoPreviewScreenState extends ConsumerState<VideoPreviewScreen> {
                       const SizedBox(height: 8),
                       DropdownButtonFormField<String>(
                         initialValue: _linkedServiceId,
-                        hint: const Text(
+                        hint: Text(
                           'None (optional)',
                           style: TextStyle(color: AppColors.gris, fontSize: 14),
                         ),
                         dropdownColor: AppColors.surface,
-                        style: const TextStyle(
+                        style: TextStyle(
                           color: AppColors.blanc,
                           fontSize: 14,
                         ),
@@ -427,12 +427,12 @@ class _VideoPreviewScreenState extends ConsumerState<VideoPreviewScreen> {
                       const SizedBox(height: 8),
                       DropdownButtonFormField<String>(
                         initialValue: _linkedEventId,
-                        hint: const Text(
+                        hint: Text(
                           'None (optional)',
                           style: TextStyle(color: AppColors.gris, fontSize: 14),
                         ),
                         dropdownColor: AppColors.surface,
-                        style: const TextStyle(
+                        style: TextStyle(
                           color: AppColors.blanc,
                           fontSize: 14,
                         ),
@@ -466,7 +466,7 @@ class _VideoPreviewScreenState extends ConsumerState<VideoPreviewScreen> {
                         child: LinearProgressIndicator(
                           value: state.uploadProgress,
                           backgroundColor: AppColors.surface,
-                          valueColor: const AlwaysStoppedAnimation<Color>(
+                          valueColor: AlwaysStoppedAnimation<Color>(
                             AppColors.violet,
                           ),
                           minHeight: 6,
@@ -476,7 +476,7 @@ class _VideoPreviewScreenState extends ConsumerState<VideoPreviewScreen> {
                       Center(
                         child: Text(
                           _progressLabel(state),
-                          style: const TextStyle(
+                          style: TextStyle(
                             color: AppColors.gris,
                             fontSize: 13,
                           ),
@@ -514,7 +514,7 @@ class _VideoPreviewScreenState extends ConsumerState<VideoPreviewScreen> {
                                 ),
                               ),
                               child: isWorking
-                                  ? const SizedBox(
+                                  ? SizedBox(
                                       width: 22,
                                       height: 22,
                                       child: CircularProgressIndicator(
@@ -570,27 +570,27 @@ class _VideoPreviewScreenState extends ConsumerState<VideoPreviewScreen> {
       controller: controller,
       maxLength: maxLength,
       maxLines: maxLines,
-      style: const TextStyle(color: AppColors.blanc),
+      style: TextStyle(color: AppColors.blanc),
       onSubmitted: onSubmitted,
       decoration: InputDecoration(
         labelText: label,
         hintText: hint,
-        labelStyle: const TextStyle(color: AppColors.gris),
+        labelStyle: TextStyle(color: AppColors.gris),
         hintStyle: TextStyle(color: AppColors.gris.withAlpha(128)),
-        counterStyle: const TextStyle(color: AppColors.gris),
+        counterStyle: TextStyle(color: AppColors.gris),
         filled: true,
         fillColor: AppColors.surface,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.border),
+          borderSide: BorderSide(color: AppColors.border),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.border),
+          borderSide: BorderSide(color: AppColors.border),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.blanc),
+          borderSide: BorderSide(color: AppColors.blanc),
         ),
       ),
     );
@@ -602,11 +602,11 @@ class _VideoPreviewScreenState extends ConsumerState<VideoPreviewScreen> {
       fillColor: AppColors.surface,
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(color: AppColors.border),
+        borderSide: BorderSide(color: AppColors.border),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(color: AppColors.border),
+        borderSide: BorderSide(color: AppColors.border),
       ),
     );
   }

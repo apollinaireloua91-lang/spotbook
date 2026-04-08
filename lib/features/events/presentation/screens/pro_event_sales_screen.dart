@@ -77,7 +77,7 @@ class ProEventSalesScreen extends ConsumerWidget {
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(color: AppColors.border, width: 0.5),
               ),
-              child: const Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
+              child: Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
             ),
             onPressed: () => context.pop(),
           ),
@@ -99,13 +99,13 @@ class ProEventSalesScreen extends ConsumerWidget {
         centerTitle: true,
         actions: [
           IconButton(
-            icon: const Icon(Icons.edit_outlined, color: AppColors.blanc),
+            icon: Icon(Icons.edit_outlined, color: AppColors.blanc),
             onPressed: () => context.push('/create-event'),
           ),
         ],
       ),
       body: async.when(
-        loading: () => const Center(
+        loading: () => Center(
             child: CircularProgressIndicator(color: AppColors.blanc)),
         error: (e, _) => Center(
           child: Padding(
@@ -240,7 +240,7 @@ class _Body extends StatelessWidget {
                     child: LinearProgressIndicator(
                       value: data.progress,
                       backgroundColor: AppColors.border,
-                      valueColor: const AlwaysStoppedAnimation<Color>(
+                      valueColor: AlwaysStoppedAnimation<Color>(
                           AppColors.blanc),
                       minHeight: 8,
                     ),
@@ -260,7 +260,7 @@ class _Body extends StatelessWidget {
             _SectionCard(
               child: Row(
                 children: [
-                  const Icon(Icons.qr_code_scanner_outlined,
+                  Icon(Icons.qr_code_scanner_outlined,
                       color: AppColors.gris, size: 20),
                   const SizedBox(width: 12),
                   Expanded(

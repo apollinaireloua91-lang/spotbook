@@ -91,7 +91,7 @@ class _ClientVideoDetailScreenState
     final videoAsync = ref.watch(_videoDetailProvider(widget.videoId));
 
     return videoAsync.when(
-      loading: () => const Scaffold(
+      loading: () => Scaffold(
         backgroundColor: AppColors.fond,
         body: Center(
             child: CircularProgressIndicator(color: AppColors.violet)),
@@ -112,7 +112,7 @@ class _ClientVideoDetailScreenState
                   borderRadius: BorderRadius.circular(10),
                   border: Border.all(color: AppColors.border, width: 0.5),
                 ),
-                child: const Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
+                child: Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
               ),
               onPressed: () => context.pop(),
             ),
@@ -141,7 +141,7 @@ class _ClientVideoDetailScreenState
                       borderRadius: BorderRadius.circular(10),
                       border: Border.all(color: AppColors.border, width: 0.5),
                     ),
-                    child: const Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
+                    child: Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
                   ),
                   onPressed: () => context.pop(),
                 ),
@@ -198,7 +198,7 @@ class _ClientVideoDetailScreenState
                         borderRadius: BorderRadius.circular(10),
                         border: Border.all(color: AppColors.border, width: 0.5),
                       ),
-                      child: const Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
+                      child: Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
                     ),
                     onPressed: () => context.pop(),
                   ),
@@ -397,7 +397,7 @@ class _CommentsSheetState extends ConsumerState<_CommentsSheet> {
     } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Unable to send comment'), backgroundColor: AppColors.error),
+          SnackBar(content: const Text('Unable to send comment'), backgroundColor: AppColors.error),
         );
       }
     }
@@ -410,9 +410,9 @@ class _CommentsSheetState extends ConsumerState<_CommentsSheet> {
 
     return Container(
       height: MediaQuery.of(context).size.height * 0.6,
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: AppColors.surfaceAlt,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
       ),
       child: Column(
         children: [
@@ -436,10 +436,10 @@ class _CommentsSheetState extends ConsumerState<_CommentsSheet> {
               ),
             ),
           ),
-          const Divider(color: AppColors.border, height: 1),
+          Divider(color: AppColors.border, height: 1),
           Expanded(
             child: commentsAsync.when(
-              loading: () => const Center(
+              loading: () => Center(
                   child: CircularProgressIndicator(
                       color: AppColors.violet)),
               error: (e, _) => Center(
@@ -504,7 +504,7 @@ class _CommentsSheetState extends ConsumerState<_CommentsSheet> {
             top: false,
             child: Container(
               padding: const EdgeInsets.fromLTRB(16, 8, 8, 8),
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 color: AppColors.surface,
                 border:
                     Border(top: BorderSide(color: AppColors.border)),
@@ -528,7 +528,7 @@ class _CommentsSheetState extends ConsumerState<_CommentsSheet> {
                   IconButton(
                     onPressed: _isSending ? null : _send,
                     icon: _isSending
-                        ? const SizedBox(
+                        ? SizedBox(
                             width: 18,
                             height: 18,
                             child: CircularProgressIndicator(
@@ -536,7 +536,7 @@ class _CommentsSheetState extends ConsumerState<_CommentsSheet> {
                               strokeWidth: 2,
                             ),
                           )
-                        : const Icon(Icons.send,
+                        : Icon(Icons.send,
                             color: AppColors.violet, size: 22),
                   ),
                 ],

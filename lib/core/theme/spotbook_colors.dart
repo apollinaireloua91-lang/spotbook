@@ -1,32 +1,34 @@
 import 'package:flutter/material.dart';
 
-/// Palette Spotbook — Violet + Beige + Light.
+import '../../shared/theme/app_colors.dart';
+
+/// Palette Spotbook — delegates to [AppColors] for dark-mode awareness.
 ///
 /// Utilisation : `SpotbookColors.primary` ou `SpotbookColors.gradientForCategory('barbier')`.
 abstract final class SpotbookColors {
   // ─── Fond ───
-  static const Color background = Color(0xFFF3F4F1);
-  static const Color surface = Color(0xFFFFFFFF);
-  static const Color surfaceAlt = Color(0xFFF9F9F7);
-  static const Color border = Color(0xFFE0E0E0);
+  static Color get background => AppColors.fond;
+  static Color get surface => AppColors.surface;
+  static Color get surfaceAlt => AppColors.surfaceAlt;
+  static Color get border => AppColors.border;
 
   // ─── Texte ───
   static const Color white = Color(0xFFFFFFFF);
-  static const Color textPrimary = Color(0xFF0C0C0C);
-  static const Color textSecondary = Color(0xFF6B6B6B);
-  static const Color textDisabled = Color(0xFFB0B0B0);
-  static const Color textCaption = Color(0xFF6B6B6B);
+  static Color get textPrimary => AppColors.blanc;
+  static Color get textSecondary => AppColors.gris;
+  static Color get textDisabled => AppColors.grisInactif;
+  static Color get textCaption => AppColors.gris;
 
   // ─── Primary (Violet) ───
-  static const Color violet = Color(0xFF8039C5);
-  static const Color violetLight = Color(0xFF9B5DD6);
-  static const Color rose = Color(0xFFFDF2C3);
-  static const Color roseLight = Color(0xFFFDF2C3);
+  static Color get violet => AppColors.violet;
+  static Color get violetLight => AppColors.violetClair;
+  static Color get rose => AppColors.rose;
+  static Color get roseLight => AppColors.roseClair;
 
   // ─── Sémantique ───
-  static const Color success = Color(0xFF22C55E);
-  static const Color error = Color(0xFFEF4444);
-  static const Color warning = Color(0xFFFFBB33);
+  static Color get success => AppColors.success;
+  static Color get error => AppColors.error;
+  static Color get warning => AppColors.warning;
 
   // ─── Marques ───
   static const Color spotifyGreen = Color(0xFF1ED760);
@@ -34,17 +36,9 @@ abstract final class SpotbookColors {
   static const Color orangeLight = Color(0xFFFFB347);
 
   // ─── Gradients principaux ───
-  static const LinearGradient gradientAccent = LinearGradient(
-    colors: [Color(0xFF8039C5), Color(0xFF9B5DD6)],
-    begin: Alignment.topLeft,
-    end: Alignment.bottomRight,
-  );
-
-  static const LinearGradient gradientAccentVertical = LinearGradient(
-    colors: [Color(0xFF8039C5), Color(0xFF9B5DD6)],
-    begin: Alignment.topCenter,
-    end: Alignment.bottomCenter,
-  );
+  static LinearGradient get gradientAccent => AppColors.gradientAccent;
+  static LinearGradient get gradientAccentVertical =>
+      AppColors.gradientAccentVertical;
 
   // ─── Gradients catégorie Pro ───
   static final Map<String, LinearGradient> _categoryGradients = {

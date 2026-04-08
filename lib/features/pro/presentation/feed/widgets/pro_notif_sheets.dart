@@ -90,7 +90,7 @@ class _SheetChrome extends StatelessWidget {
     final maxH = MediaQuery.sizeOf(context).height * 0.75;
     return Container(
       constraints: BoxConstraints(maxHeight: maxH),
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
         border: Border(top: BorderSide(color: AppColors.border)),
@@ -119,7 +119,7 @@ class _SheetChrome extends StatelessWidget {
                 Expanded(
                   child: Text(
                     title,
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: AppColors.blanc,
                       fontSize: 17,
                       fontWeight: FontWeight.bold,
@@ -128,13 +128,13 @@ class _SheetChrome extends StatelessWidget {
                 ),
                 GestureDetector(
                   onTap: () => Navigator.of(context).pop(),
-                  child: const Icon(Icons.close, color: AppColors.gris, size: 22),
+                  child: Icon(Icons.close, color: AppColors.gris, size: 22),
                 ),
               ],
             ),
           ),
           const SizedBox(height: 12),
-          const Divider(color: AppColors.border, height: 1),
+          Divider(color: AppColors.border, height: 1),
           Flexible(child: child),
         ],
       ),
@@ -236,8 +236,8 @@ class _NotifList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (isLoading) {
-      return const Padding(
-        padding: EdgeInsets.all(40),
+      return Padding(
+        padding: const EdgeInsets.all(40),
         child: Center(
           child: CircularProgressIndicator(color: AppColors.blanc, strokeWidth: 2),
         ),
@@ -249,7 +249,7 @@ class _NotifList extends StatelessWidget {
         child: Center(
           child: Text(
             emptyText,
-            style: const TextStyle(color: AppColors.gris, fontSize: 14),
+            style: TextStyle(color: AppColors.gris, fontSize: 14),
           ),
         ),
       );
@@ -330,7 +330,7 @@ class _StaggeredNotifItemState extends State<_StaggeredNotifItem>
         position: _slide,
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             border: Border(
               bottom: BorderSide(color: AppColors.border, width: 0.5),
             ),
@@ -366,7 +366,7 @@ class _StaggeredNotifItemState extends State<_StaggeredNotifItem>
                   children: [
                     Text(
                       title,
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: AppColors.grisClair,
                         fontSize: 11,
                         fontWeight: FontWeight.w600,
@@ -377,7 +377,7 @@ class _StaggeredNotifItemState extends State<_StaggeredNotifItem>
                     const SizedBox(height: 2),
                     Text(
                       body,
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: AppColors.gris,
                         fontSize: 10,
                       ),
@@ -392,14 +392,14 @@ class _StaggeredNotifItemState extends State<_StaggeredNotifItem>
                 children: [
                   Text(
                     timeAgo,
-                    style: const TextStyle(color: AppColors.gris, fontSize: 9),
+                    style: TextStyle(color: AppColors.gris, fontSize: 9),
                   ),
                   const SizedBox(height: 4),
                   if (!isRead)
                     Container(
                       width: 8,
                       height: 8,
-                      decoration: const BoxDecoration(
+                      decoration: BoxDecoration(
                         color: AppColors.success,
                         shape: BoxShape.circle,
                       ),

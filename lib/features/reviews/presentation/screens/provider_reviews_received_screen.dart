@@ -109,11 +109,11 @@ class _ProviderReviewsReceivedScreenState
       backgroundColor: AppColors.fond,
       appBar: const SpotbookAppBar(title: 'Reviews received'),
       body: dataAsync.when(
-        loading: () => const Center(
+        loading: () => Center(
             child: CircularProgressIndicator(color: AppColors.violet)),
         error: (e, _) => Center(
           child: Text('$e',
-              style: const TextStyle(color: AppColors.gris)),
+              style: TextStyle(color: AppColors.gris)),
         ),
         data: (data) {
           final filtered = _filterRating == null
@@ -183,11 +183,11 @@ class _ProviderReviewsReceivedScreenState
                             child: Row(
                               children: [
                                 Text('$stars',
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                         color: AppColors.gris,
                                         fontSize: 12)),
                                 const SizedBox(width: 4),
-                                const Icon(Icons.star,
+                                Icon(Icons.star,
                                     color: AppColors.warning,
                                     size: 12),
                                 const SizedBox(width: 8),
@@ -200,7 +200,7 @@ class _ProviderReviewsReceivedScreenState
                                       backgroundColor:
                                           AppColors.surfaceAlt,
                                       valueColor:
-                                          const AlwaysStoppedAnimation(
+                                          AlwaysStoppedAnimation(
                                               AppColors.warning),
                                       minHeight: 6,
                                     ),
@@ -211,7 +211,7 @@ class _ProviderReviewsReceivedScreenState
                                   width: 24,
                                   child: Text(
                                     '$count',
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                         color: AppColors.gris,
                                         fontSize: 12),
                                   ),
@@ -256,8 +256,8 @@ class _ProviderReviewsReceivedScreenState
               const SizedBox(height: 16),
               // Review cards
               if (filtered.isEmpty)
-                const Padding(
-                  padding: EdgeInsets.only(top: 40),
+                Padding(
+                  padding: const EdgeInsets.only(top: 40),
                   child: Center(
                     child: Text('No reviews',
                         style: TextStyle(
@@ -355,7 +355,7 @@ class _ReviewCard extends StatelessWidget {
                     Text(
                       DateFormat('dd MMM yyyy', 'en_US')
                           .format(review.createdAt),
-                      style: const TextStyle(
+                      style: TextStyle(
                           color: AppColors.gris, fontSize: 12),
                     ),
                   ],
@@ -384,7 +384,7 @@ class _ReviewCard extends StatelessWidget {
               ),
               child: Text(
                 review.serviceName!,
-                style: const TextStyle(
+                style: TextStyle(
                     color: AppColors.gris, fontSize: 11),
               ),
             ),

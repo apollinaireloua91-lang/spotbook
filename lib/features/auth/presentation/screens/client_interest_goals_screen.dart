@@ -76,7 +76,7 @@ class ClientInterestGoalsScreen extends ConsumerWidget {
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(color: AppColors.border, width: 0.5),
               ),
-              child: const Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
+              child: Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
             ),
           ),
         ),
@@ -113,7 +113,7 @@ class ClientInterestGoalsScreen extends ConsumerWidget {
             const SizedBox(height: 8),
             ClipRRect(
               borderRadius: BorderRadius.circular(4),
-              child: const LinearProgressIndicator(
+              child: LinearProgressIndicator(
                 value: 0.66,
                 backgroundColor: AppColors.surface,
                 valueColor: AlwaysStoppedAnimation<Color>(AppColors.violet),
@@ -220,7 +220,7 @@ class ClientInterestGoalsScreen extends ConsumerWidget {
                             ),
                           ),
                           if (isSelected)
-                            const Icon(
+                            Icon(
                               Icons.check_circle_rounded,
                               color: AppColors.violet,
                               size: 22,

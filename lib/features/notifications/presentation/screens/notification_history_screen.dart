@@ -33,7 +33,7 @@ class NotificationHistoryScreen extends ConsumerWidget {
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(color: AppColors.border, width: 0.5),
               ),
-              child: const Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
+              child: Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
             ),
             onPressed: () {
               HapticFeedback.mediumImpact();
@@ -49,7 +49,7 @@ class NotificationHistoryScreen extends ConsumerWidget {
             Semantics(
               label: 'Mark all as read',
               child: IconButton(
-                icon: const Icon(Icons.done_all, color: AppColors.blanc),
+                icon: Icon(Icons.done_all, color: AppColors.blanc),
                 onPressed: () {
                   HapticFeedback.mediumImpact();
                   ref.read(notificationListProvider.notifier).markAllAsRead();
@@ -65,7 +65,7 @@ class NotificationHistoryScreen extends ConsumerWidget {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Icon(Icons.notifications_off_outlined, color: AppColors.gris, size: 48),
+                      Icon(Icons.notifications_off_outlined, color: AppColors.gris, size: 48),
                       const SizedBox(height: 12),
                       Text('No notifications',
                           style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 15)),
@@ -187,7 +187,7 @@ class _NotificationTileState extends ConsumerState<_NotificationTile>
             color: AppColors.error.withValues(alpha: 0.2),
             borderRadius: BorderRadius.circular(16),
           ),
-          child: const Icon(Icons.delete_outline, color: AppColors.error),
+          child: Icon(Icons.delete_outline, color: AppColors.error),
         ),
         child: GestureDetector(
           onTap: () {
@@ -248,7 +248,7 @@ class _NotificationTileState extends ConsumerState<_NotificationTile>
                   Container(
                     width: 8,
                     height: 8,
-                    decoration: const BoxDecoration(
+                    decoration: BoxDecoration(
                       color: AppColors.blanc,
                       shape: BoxShape.circle,
                     ),

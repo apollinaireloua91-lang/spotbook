@@ -138,7 +138,7 @@ class _StripeConnectScreenState extends ConsumerState<StripeConnectScreen>
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(color: AppColors.border, width: 0.5),
               ),
-              child: const Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
+              child: Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
             ),
           ),
         ),
@@ -158,7 +158,7 @@ class _StripeConnectScreenState extends ConsumerState<StripeConnectScreen>
         ],
       ),
       body: _isLoading
-          ? const Center(
+          ? Center(
               child: CircularProgressIndicator(color: AppColors.violet),
             )
           : RefreshIndicator(
@@ -406,7 +406,7 @@ class _StatusCard extends StatelessWidget {
           // Checklist for pending/active
           if (isPending || isActive) ...[
             const SizedBox(height: 16),
-            const Divider(color: AppColors.border, height: 1),
+            Divider(color: AppColors.border, height: 1),
             const SizedBox(height: 14),
             _CheckItem(
               label: 'Informations soumises',
@@ -577,7 +577,7 @@ class _TrustBadge extends StatelessWidget {
               ],
             ),
           ),
-          const Icon(Icons.check_circle, color: AppColors.success, size: 18),
+          Icon(Icons.check_circle, color: AppColors.success, size: 18),
         ],
       ),
     );

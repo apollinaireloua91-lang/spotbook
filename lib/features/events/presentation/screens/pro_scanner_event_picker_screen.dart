@@ -55,7 +55,7 @@ class _ProScannerEventPickerScreenState
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(color: AppColors.border, width: 0.5),
               ),
-              child: const Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
+              child: Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
             ),
             onPressed: () {
               HapticFeedback.lightImpact();
@@ -102,7 +102,7 @@ class _ProScannerEventPickerScreenState
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const CircularProgressIndicator(color: AppColors.blanc),
+                  CircularProgressIndicator(color: AppColors.blanc),
                   const SizedBox(height: 16),
                   Text(
                     'Opening camera...',
@@ -166,14 +166,14 @@ class _ProScannerEventPickerScreenState
                                     width: 64,
                                     height: 64,
                                     color: AppColors.surfaceAlt,
-                                    child: const Icon(Icons.event, color: AppColors.gris),
+                                    child: Icon(Icons.event, color: AppColors.gris),
                                   ),
                                 )
                               : Container(
                                   width: 64,
                                   height: 64,
                                   color: AppColors.surfaceAlt,
-                                  child: const Icon(Icons.event, color: AppColors.gris),
+                                  child: Icon(Icons.event, color: AppColors.gris),
                                 ),
                         ),
                         const SizedBox(width: 14),
@@ -202,7 +202,7 @@ class _ProScannerEventPickerScreenState
                             ],
                           ),
                         ),
-                        const Icon(Icons.qr_code_scanner, color: AppColors.blanc, size: 26),
+                        Icon(Icons.qr_code_scanner, color: AppColors.blanc, size: 26),
                       ],
                     ),
                   ),

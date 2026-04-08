@@ -41,7 +41,7 @@ class PermissionLocationScreen extends ConsumerWidget {
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(color: AppColors.border, width: 0.5),
               ),
-              child: const Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
+              child: Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
             ),
           ),
         ),
@@ -78,7 +78,7 @@ class PermissionLocationScreen extends ConsumerWidget {
               const SizedBox(height: 8),
               ClipRRect(
                 borderRadius: BorderRadius.circular(4),
-                child: const LinearProgressIndicator(
+                child: LinearProgressIndicator(
                   value: 1.0,
                   backgroundColor: AppColors.surface,
                   valueColor: AlwaysStoppedAnimation<Color>(AppColors.violet),
@@ -118,7 +118,7 @@ class PermissionLocationScreen extends ConsumerWidget {
                         color: AppColors.violet.withAlpha(20),
                       ),
                     ),
-                    const Icon(
+                    Icon(
                       Icons.pin_drop,
                       color: AppColors.violet,
                       size: 40,
@@ -218,7 +218,7 @@ class PermissionLocationScreen extends ConsumerWidget {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(Icons.lock, color: AppColors.violet, size: 16),
+                    Icon(Icons.lock, color: AppColors.violet, size: 16),
                     const SizedBox(width: 8),
                     Text(
                       'Your data is secure and private',

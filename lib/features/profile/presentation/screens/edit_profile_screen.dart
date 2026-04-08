@@ -273,7 +273,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     _initControllers(s);
 
     if (s.isLoading) {
-      return const Scaffold(
+      return Scaffold(
         backgroundColor: AppColors.fond,
         body: Center(
             child: CircularProgressIndicator(color: AppColors.blanc)),
@@ -307,7 +307,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                   borderRadius: BorderRadius.circular(10),
                   border: Border.all(color: AppColors.border, width: 0.5),
                 ),
-                child: const Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
+                child: Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
               ),
             ),
           ),
@@ -340,12 +340,12 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                               ? CachedNetworkImageProvider(_avatarUrl!)
                               : null,
                           child: _isUploadingAvatar
-                              ? const CircularProgressIndicator(
+                              ? CircularProgressIndicator(
                                   strokeWidth: 2,
                                   color: AppColors.blanc,
                                 )
                               : _avatarUrl == null
-                                  ? const Icon(Icons.person,
+                                  ? Icon(Icons.person,
                                       size: 40, color: AppColors.gris)
                                   : null,
                         ),
@@ -364,7 +364,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                               width: 2,
                             ),
                           ),
-                          child: const Icon(
+                          child: Icon(
                             Icons.camera_alt,
                             color: AppColors.blanc,
                             size: 14,
@@ -399,12 +399,12 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
               const SizedBox(height: 8),
               TextField(
                 controller: _usernameCtrl,
-                style: const TextStyle(color: AppColors.blanc, fontSize: 15),
+                style: TextStyle(color: AppColors.blanc, fontSize: 15),
                 decoration: InputDecoration(
                   filled: true,
                   fillColor: AppColors.surface,
                   prefixText: '@',
-                  prefixStyle: const TextStyle(
+                  prefixStyle: TextStyle(
                     color: AppColors.gris,
                     fontSize: 15,
                   ),
@@ -422,11 +422,11 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                         )
                       : _usernameError == null &&
                               _usernameCtrl.text.trim().length >= 3
-                          ? const Icon(Icons.check_circle,
+                          ? Icon(Icons.check_circle,
                               color: AppColors.success, size: 20)
                           : null,
                   errorText: _usernameError,
-                  errorStyle: const TextStyle(
+                  errorStyle: TextStyle(
                     color: AppColors.error,
                     fontSize: 12,
                   ),
@@ -470,7 +470,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                 controller: _bioCtrl,
                 maxLines: 3,
                 maxLength: 160,
-                style: const TextStyle(color: AppColors.blanc, fontSize: 15),
+                style: TextStyle(color: AppColors.blanc, fontSize: 15),
                 decoration: InputDecoration(
                   hintText: 'Describe yourself in a few words...',
                   hintStyle: TextStyle(
@@ -479,18 +479,18 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                   ),
                   filled: true,
                   fillColor: AppColors.surface,
-                  counterStyle: const TextStyle(color: AppColors.gris),
+                  counterStyle: TextStyle(color: AppColors.gris),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(color: AppColors.border),
+                    borderSide: BorderSide(color: AppColors.border),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(color: AppColors.border),
+                    borderSide: BorderSide(color: AppColors.border),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(color: AppColors.violet),
+                    borderSide: BorderSide(color: AppColors.violet),
                   ),
                   contentPadding: const EdgeInsets.symmetric(
                     horizontal: 16,
@@ -577,21 +577,21 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
         TextField(
           controller: controller,
           maxLines: maxLines,
-          style: const TextStyle(color: AppColors.blanc, fontSize: 15),
+          style: TextStyle(color: AppColors.blanc, fontSize: 15),
           decoration: InputDecoration(
             filled: true,
             fillColor: AppColors.surface,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: AppColors.border),
+              borderSide: BorderSide(color: AppColors.border),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: AppColors.border),
+              borderSide: BorderSide(color: AppColors.border),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: AppColors.violet),
+              borderSide: BorderSide(color: AppColors.violet),
             ),
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 16,
@@ -621,7 +621,7 @@ class _SocialLinkField extends StatelessWidget {
   Widget build(BuildContext context) {
     return TextField(
       controller: controller,
-      style: const TextStyle(color: AppColors.blanc, fontSize: 14),
+      style: TextStyle(color: AppColors.blanc, fontSize: 14),
       decoration: InputDecoration(
         prefixIcon: Icon(platform.icon, color: AppColors.gris, size: 20),
         hintText: platform.placeholder,
@@ -638,15 +638,15 @@ class _SocialLinkField extends StatelessWidget {
         fillColor: AppColors.surface,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.border),
+          borderSide: BorderSide(color: AppColors.border),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.border),
+          borderSide: BorderSide(color: AppColors.border),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.violet),
+          borderSide: BorderSide(color: AppColors.violet),
         ),
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 16,
@@ -654,7 +654,7 @@ class _SocialLinkField extends StatelessWidget {
         ),
         suffixIcon: controller.text.isNotEmpty
             ? IconButton(
-                icon: const Icon(Icons.clear,
+                icon: Icon(Icons.clear,
                     color: AppColors.gris, size: 18),
                 onPressed: () => controller.clear(),
               )

@@ -95,7 +95,7 @@ class ProShellProfileScreen extends ConsumerWidget {
     return profileAsync.when(
       data: (profile) {
         if (profile == null) {
-          return const Scaffold(
+          return Scaffold(
             backgroundColor: AppColors.fond,
             body: Center(
               child: Text('Not signed in',
@@ -105,7 +105,7 @@ class ProShellProfileScreen extends ConsumerWidget {
         }
         return _ProSelfProfileBody(profile: profile);
       },
-      loading: () => const Scaffold(
+      loading: () => Scaffold(
         backgroundColor: AppColors.fond,
         body: Center(
           child: CircularProgressIndicator(color: AppColors.violet),
@@ -115,7 +115,7 @@ class ProShellProfileScreen extends ConsumerWidget {
         backgroundColor: AppColors.fond,
         body: Center(
           child: Text('Error: $e',
-              style: const TextStyle(color: AppColors.error)),
+              style: TextStyle(color: AppColors.error)),
         ),
       ),
     );
@@ -366,7 +366,7 @@ class _ProfileHeaderState extends State<_ProfileHeader>
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(color: AppColors.border, width: 0.5),
               ),
-              child: const Icon(Icons.settings_outlined,
+              child: Icon(Icons.settings_outlined,
                   color: AppColors.gris, size: 18),
             ),
           ),
@@ -409,7 +409,7 @@ class _ProfileHeaderState extends State<_ProfileHeader>
                     Container(
                       width: 96,
                       height: 96,
-                      decoration: const BoxDecoration(
+                      decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         color: AppColors.fond,
                       ),
@@ -418,7 +418,7 @@ class _ProfileHeaderState extends State<_ProfileHeader>
                     Container(
                       width: 90,
                       height: 90,
-                      decoration: const BoxDecoration(
+                      decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         color: AppColors.surface,
                       ),
@@ -677,7 +677,7 @@ class _SocialIconsRow extends StatelessWidget {
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(color: AppColors.border, width: 1.5),
               ),
-              child: const Icon(Icons.add,
+              child: Icon(Icons.add,
                   color: AppColors.grisInactif, size: 18),
             ),
           ),
@@ -1020,7 +1020,7 @@ class _AddVideoCard extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.add, color: AppColors.grisInactif, size: 24),
+            Icon(Icons.add, color: AppColors.grisInactif, size: 24),
             const SizedBox(height: 6),
             Text(
               'Add',
@@ -1107,7 +1107,7 @@ class _ProSelfServiceCard extends StatelessWidget {
               color: AppColors.violet.withAlpha(15),
               borderRadius: BorderRadius.circular(10),
             ),
-            child: const Icon(Icons.design_services_outlined,
+            child: Icon(Icons.design_services_outlined,
                 color: AppColors.violet, size: 18),
           ),
           const SizedBox(width: 12),
@@ -1461,7 +1461,7 @@ class _DarkModeTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 14),
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         border: Border(
           bottom: BorderSide(color: AppColors.border, width: 0.5),
         ),
@@ -1519,7 +1519,7 @@ class _SettingsTile extends StatelessWidget {
       },
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 14),
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           border: Border(
             bottom: BorderSide(color: AppColors.border, width: 0.5),
           ),
@@ -1550,7 +1550,7 @@ class _SettingsTile extends StatelessWidget {
                 ],
               ),
             ),
-            const Icon(Icons.arrow_forward_ios,
+            Icon(Icons.arrow_forward_ios,
                 color: AppColors.gris, size: 13),
           ],
         ),

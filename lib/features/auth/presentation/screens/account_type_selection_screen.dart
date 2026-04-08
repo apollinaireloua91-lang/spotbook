@@ -59,7 +59,7 @@ class _AccountTypeSelectionScreenState
                 subtitle: 'I\'m looking for professionals',
                 description: 'Discover, book, attend',
                 isSelected: _selectedRole == 'client',
-                gradientColors: const [AppColors.violet, AppColors.violetClair],
+                gradientColors: [AppColors.violet, AppColors.violetClair],
                 onTap: () {
                   HapticFeedback.selectionClick();
                   setState(() => _selectedRole = 'client');
@@ -74,7 +74,7 @@ class _AccountTypeSelectionScreenState
                 subtitle: 'I offer my services',
                 description: 'Publish, manage, earn',
                 isSelected: _selectedRole == 'pro',
-                gradientColors: const [AppColors.rose, AppColors.roseClair],
+                gradientColors: [AppColors.rose, AppColors.roseClair],
                 onTap: () {
                   HapticFeedback.selectionClick();
                   setState(() => _selectedRole = 'pro');

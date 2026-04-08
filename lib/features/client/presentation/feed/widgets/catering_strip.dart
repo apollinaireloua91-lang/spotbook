@@ -32,7 +32,7 @@ class CateringStrip extends StatelessWidget {
           children: [
             Expanded(
               child: Text(
-                'Menu traiteur disponible',
+                'Catering menu available',
                 style: TextStyle(
                   color: Colors.white.withAlpha(200),
                   fontSize: 12,
@@ -48,7 +48,7 @@ class CateringStrip extends StatelessWidget {
                 borderRadius: BorderRadius.circular(10),
               ),
               child: const Text(
-                '📋 Soumission',
+                'Request Quote',
                 style: TextStyle(
                   color: AppColors.textOnPrimary,
                   fontSize: 12,

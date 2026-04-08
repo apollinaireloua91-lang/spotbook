@@ -24,7 +24,7 @@ class StripeCheckoutWebview extends StatelessWidget {
         leading: Semantics(
           label: 'Close',
           child: IconButton(
-            icon: const Icon(Icons.close, color: AppColors.blanc),
+            icon: Icon(Icons.close, color: AppColors.blanc),
             onPressed: () {
               HapticFeedback.mediumImpact();
               context.pop();
@@ -42,7 +42,7 @@ class StripeCheckoutWebview extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.payment, color: AppColors.gris, size: 64),
+            Icon(Icons.payment, color: AppColors.gris, size: 64),
             const SizedBox(height: 24),
             Text(
               'Redirecting to Stripe...',
