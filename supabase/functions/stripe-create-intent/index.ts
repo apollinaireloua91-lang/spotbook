@@ -115,13 +115,17 @@ serve(async (req) => {
       apiVersion: "2023-10-16",
     });
 
+    const totalPriceCents = Math.round((booking.total_amount ?? 0) * 100);
     const depositCents = Math.round(booking.deposit_amount * 100);
+    const serviceFeeCents = Math.round((booking.service_fee ?? 2.50) * 100);
+    const chargeAmount = depositCents + serviceFeeCents;
     const pro = booking.profiles_pro;
     const commissionRate = pro?.commission_rate ?? 0.18;
-    const applicationFee = Math.round(depositCents * commissionRate);
+    // FULL commission on total price taken upfront from the deposit
+    const fullCommission = Math.round(totalPriceCents * commissionRate);
 
     const params: Record<string, unknown> = {
-      amount: depositCents,
+      amount: chargeAmount,
       currency: (booking.currency || "cad").toLowerCase(),
       automatic_payment_methods: { enabled: true },
       metadata: {
@@ -134,7 +138,7 @@ serve(async (req) => {
 
     if (pro?.stripe_account_id) {
       params.transfer_data = { destination: pro.stripe_account_id };
-      params.application_fee_amount = applicationFee;
+      params.application_fee_amount = fullCommission;
     }
 
     const paymentIntent = await stripe.paymentIntents.create(
