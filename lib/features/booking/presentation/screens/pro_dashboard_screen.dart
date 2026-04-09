@@ -7,6 +7,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:shimmer/shimmer.dart';
 
 import '../../../../shared/theme/app_colors.dart';
+import '../../../../shared/theme/theme_mode_notifier.dart';
 import '../../../../shared/widgets/animated_counter.dart';
 import '../../data/booking_notifier.dart';
 import '../../domain/booking_models.dart';
@@ -16,6 +17,7 @@ class ProDashboardScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    ref.watch(themeModeProvider);
     final state = ref.watch(proDashboardProvider);
 
     if (state.isLoading) return const _DashboardShimmer();

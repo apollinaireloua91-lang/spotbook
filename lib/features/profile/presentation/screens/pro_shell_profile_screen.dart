@@ -90,6 +90,10 @@ class ProShellProfileScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // Watch theme mode so the entire subtree rebuilds when dark mode toggles,
+    // re-evaluating all AppColors.xxx getters with the updated brightness.
+    ref.watch(themeModeProvider);
+
     final profileAsync = ref.watch(_proSelfProfileProvider);
 
     return profileAsync.when(

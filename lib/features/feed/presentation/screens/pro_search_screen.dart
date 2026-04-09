@@ -7,6 +7,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/theme/app_typography.dart';
+import '../../../../shared/theme/theme_mode_notifier.dart';
 import '../../data/discover_search_repository.dart';
 import '../../domain/provider_search_result.dart';
 
@@ -66,6 +67,7 @@ class _ProSearchScreenState extends ConsumerState<ProSearchScreen> {
 
   @override
   Widget build(BuildContext context) {
+    ref.watch(themeModeProvider);
     return Scaffold(
       backgroundColor: AppColors.fond,
       body: SafeArea(

@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../../core/services/app_config_provider.dart';
 import '../../../../shared/theme/app_colors.dart';
+import '../../../../shared/theme/theme_mode_notifier.dart';
 import '../../../auth/data/auth_repository.dart';
 
 // ═════════════════════════════════════════════════════════════════════════════
@@ -17,6 +18,7 @@ class SettingsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    ref.watch(themeModeProvider);
     final role =
         ref.read(authRepositoryProvider).currentUserRole ?? 'client';
     final isPro = role == 'pro';

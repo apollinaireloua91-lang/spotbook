@@ -8,6 +8,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../shared/theme/app_colors.dart';
+import '../../../../shared/theme/theme_mode_notifier.dart';
 import '../../../../shared/utils/time_ago.dart';
 import '../../../../shared/widgets/spotbook_loading_shimmer.dart';
 import '../../../booking/data/booking_repository.dart';
@@ -63,6 +64,9 @@ class ProProfileScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // Watch theme mode so the entire subtree rebuilds when dark mode toggles.
+    ref.watch(themeModeProvider);
+
     final profileAsync = ref.watch(proProfileProvider(proId));
 
     return profileAsync.when(

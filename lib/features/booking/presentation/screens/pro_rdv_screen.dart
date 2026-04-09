@@ -11,6 +11,7 @@ import 'package:intl/intl.dart';
 import '../../../../core/services/app_config_provider.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/theme/app_typography.dart';
+import '../../../../shared/theme/theme_mode_notifier.dart';
 import '../../../../shared/widgets/animated_counter.dart';
 import '../../data/booking_notifier.dart';
 import '../../data/booking_repository.dart';
@@ -50,6 +51,7 @@ class _ProRdvScreenState extends ConsumerState<ProRdvScreen>
 
   @override
   Widget build(BuildContext context) {
+    ref.watch(themeModeProvider);
     final state = ref.watch(proBookingsProvider);
     final appConfig =
         ref.watch(appConfigProvider).value ?? AppConfig.fallback;

@@ -73,6 +73,9 @@ class ClientProfileScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // Watch theme mode so the entire subtree rebuilds when dark mode toggles.
+    ref.watch(themeModeProvider);
+
     final profileAsync = ref.watch(clientProfileProvider);
 
     return Scaffold(

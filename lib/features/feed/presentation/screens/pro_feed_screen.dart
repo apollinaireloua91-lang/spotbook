@@ -11,6 +11,7 @@ import 'package:share_plus/share_plus.dart';
 
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/theme/app_typography.dart';
+import '../../../../shared/theme/theme_mode_notifier.dart';
 import '../../../../shared/utils/time_ago.dart';
 import '../../../../shared/widgets/spotbook_avatar.dart';
 import '../../../../shared/widgets/spotbook_bottom_sheet.dart';
@@ -90,6 +91,7 @@ class _ProFeedScreenState extends ConsumerState<ProFeedScreen> {
 
   @override
   Widget build(BuildContext context) {
+    ref.watch(themeModeProvider);
     final feed = ref.watch(proOwnFeedProvider);
     final badges = ref.watch(proFeedBadgesProvider);
     final showHeart = ref.watch(_doubleTapHeartProvider);
