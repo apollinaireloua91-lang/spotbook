@@ -87,7 +87,10 @@ class _SpotbookVideoPlayerState extends State<SpotbookVideoPlayer>
     with WidgetsBindingObserver {
   BetterPlayerController? _controller;
   late bool _isMuted;
+  bool _isPlaying = true;
+  bool _showPlayPause = false;
   bool _showMuteIndicator = false;
+  Timer? _playPauseTimer;
   Timer? _muteIndicatorTimer;
   StreamSubscription<bool>? _audioSub;
   bool _showFirstLaunchHint = false;
@@ -168,8 +171,10 @@ class _SpotbookVideoPlayerState extends State<SpotbookVideoPlayer>
     super.didUpdateWidget(oldWidget);
     if (widget.isActive && !oldWidget.isActive) {
       _controller?.play();
+      setState(() => _isPlaying = true);
     } else if (!widget.isActive && oldWidget.isActive) {
       _controller?.pause();
+      setState(() => _isPlaying = false);
     }
   }
 
@@ -179,7 +184,25 @@ class _SpotbookVideoPlayerState extends State<SpotbookVideoPlayer>
       _controller?.pause();
     } else if (state == AppLifecycleState.resumed && widget.isActive) {
       _controller?.play();
+      setState(() => _isPlaying = true);
     }
+  }
+
+  void _togglePlayPause() {
+    if (_isPlaying) {
+      _controller?.pause();
+    } else {
+      _controller?.play();
+    }
+    setState(() {
+      _isPlaying = !_isPlaying;
+      _showPlayPause = true;
+      _showFirstLaunchHint = false;
+    });
+    _playPauseTimer?.cancel();
+    _playPauseTimer = Timer(const Duration(milliseconds: 600), () {
+      if (mounted) setState(() => _showPlayPause = false);
+    });
   }
 
   void _toggleMute() {
@@ -205,6 +228,7 @@ class _SpotbookVideoPlayerState extends State<SpotbookVideoPlayer>
 
   @override
   void dispose() {
+    _playPauseTimer?.cancel();
     _muteIndicatorTimer?.cancel();
     _hintTimer?.cancel();
     _audioSub?.cancel();
@@ -220,12 +244,50 @@ class _SpotbookVideoPlayerState extends State<SpotbookVideoPlayer>
     }
 
     return GestureDetector(
-      onTap: widget.showControls ? null : _toggleMute,
+      onTap: widget.showControls ? null : _togglePlayPause,
       child: Stack(
         fit: StackFit.expand,
         children: [
           // ── Video ──
           BetterPlayer(controller: _controller!),
+
+          // ── Center play/pause indicator (flash on tap) ──
+          if (_showPlayPause)
+            Center(
+              child: AnimatedOpacity(
+                opacity: _showPlayPause ? 1.0 : 0.0,
+                duration: const Duration(milliseconds: 200),
+                child: Container(
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: AppColors.overlayMedium,
+                    borderRadius: BorderRadius.circular(40),
+                  ),
+                  child: Icon(
+                    _isPlaying ? Icons.play_arrow_rounded : Icons.pause_rounded,
+                    color: AppColors.blanc,
+                    size: 48,
+                  ),
+                ),
+              ),
+            ),
+
+          // ── Persistent pause icon (center, feed only, when paused) ──
+          if (!widget.showControls && !_isPlaying && !_showPlayPause)
+            Center(
+              child: Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: AppColors.overlayMedium,
+                  borderRadius: BorderRadius.circular(40),
+                ),
+                child: Icon(
+                  Icons.play_arrow_rounded,
+                  color: AppColors.blanc,
+                  size: 48,
+                ),
+              ),
+            ),
 
           // ── Center mute/unmute indicator (flash) ──
           if (_showMuteIndicator)
@@ -283,15 +345,25 @@ class _SpotbookVideoPlayerState extends State<SpotbookVideoPlayer>
               ),
             ),
 
-          // ── Persistent mute icon (bottom-right, feed only) ──
-          if (!widget.showControls && _isMuted && !_showMuteIndicator)
+          // ── Mute/unmute button (bottom-right, feed only) ──
+          if (!widget.showControls)
             Positioned(
               bottom: 16,
               right: 16,
-              child: Icon(
-                Icons.volume_off,
-                color: AppColors.blanc,
-                size: 16,
+              child: GestureDetector(
+                onTap: _toggleMute,
+                child: Container(
+                  padding: const EdgeInsets.all(6),
+                  decoration: BoxDecoration(
+                    color: AppColors.overlayMedium,
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Icon(
+                    _isMuted ? Icons.volume_off : Icons.volume_up,
+                    color: AppColors.blanc,
+                    size: 18,
+                  ),
+                ),
               ),
             ),
 
