@@ -61,6 +61,9 @@ import '../features/notifications/presentation/screens/notification_settings_scr
 import '../features/promo/presentation/screens/create_promo_code_screen.dart';
 import '../features/promo/presentation/screens/referral_screen.dart';
 import '../features/reviews/presentation/screens/review_screen.dart';
+import '../features/settings/presentation/screens/cancellation_policy_screen.dart';
+import '../features/settings/presentation/screens/commissions_screen.dart';
+import '../features/settings/presentation/screens/deposit_settings_screen.dart';
 import '../features/settings/presentation/screens/settings_screen.dart';
 import '../features/social/presentation/screens/pro_insights_screen.dart';
 import '../features/chat/presentation/screens/messaging_inbox_screen.dart';
@@ -322,6 +325,29 @@ final appRouter = GoRouter(
         child: ProviderVideoPublishScreen(
           editData: state.extra as Map<String, dynamic>?,
         ),
+      ),
+    ),
+
+    // ─── Pro Settings sub-screens ───
+    GoRoute(
+      path: '/pro/settings/cancellation',
+      pageBuilder: (context, state) => premiumPage(
+        state: state,
+        child: const CancellationPolicyScreen(),
+      ),
+    ),
+    GoRoute(
+      path: '/pro/settings/deposit',
+      pageBuilder: (context, state) => premiumPage(
+        state: state,
+        child: const DepositSettingsScreen(),
+      ),
+    ),
+    GoRoute(
+      path: '/pro/settings/commissions',
+      pageBuilder: (context, state) => premiumPage(
+        state: state,
+        child: const CommissionsScreen(),
       ),
     ),
 

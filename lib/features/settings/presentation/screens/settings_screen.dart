@@ -114,28 +114,20 @@ class SettingsScreen extends ConsumerWidget {
                 _SettingsItem(
                   icon: Icons.event_note_outlined,
                   label: 'Cancellation policy',
-                  subtitle: 'Refund < 48h: deposit retained',
-                  onTap: () {
-                    showDialog(context: context, builder: (_) => AlertDialog(
-                      backgroundColor: AppColors.surface,
-                      title: Text('Cancellation policy', style: TextStyle(color: AppColors.blanc)),
-                      content: Text('Cancellation < 48h before appointment: deposit is kept by the pro.\nCancellation > 48h: full refund.', style: TextStyle(color: AppColors.gris)),
-                      actions: [TextButton(onPressed: () => context.pop(), child: const Text('OK'))],
-                    ));
-                  },
+                  subtitle: 'Refund rules & timelines',
+                  onTap: () => context.push('/pro/settings/cancellation'),
+                ),
+                _SettingsItem(
+                  icon: Icons.account_balance_wallet_outlined,
+                  label: 'Deposit settings',
+                  subtitle: 'Configure deposit percentage',
+                  onTap: () => context.push('/pro/settings/deposit'),
                 ),
                 _SettingsItem(
                   icon: Icons.percent_outlined,
                   label: 'Commissions',
                   subtitle: 'Bookings ${(cfg.commissionBookings * 100).round()}% · Events ${(cfg.commissionEvents * 100).round()}% · Fee \$${cfg.serviceFeeClient.toStringAsFixed(2)}',
-                  onTap: () {
-                    showDialog(context: context, builder: (_) => AlertDialog(
-                      backgroundColor: AppColors.surface,
-                      title: Text('Spotbook Commissions', style: TextStyle(color: AppColors.blanc)),
-                      content: Text('Service bookings: ${(cfg.commissionBookings * 100).round()}%\nEvent tickets: ${(cfg.commissionEvents * 100).round()}%\nCatering deposits: ${(cfg.commissionCatering * 100).round()}%\nClient service fee: \$${cfg.serviceFeeClient.toStringAsFixed(2)}/booking', style: TextStyle(color: AppColors.gris)),
-                      actions: [TextButton(onPressed: () => context.pop(), child: const Text('OK'))],
-                    ));
-                  },
+                  onTap: () => context.push('/pro/settings/commissions'),
                 ),
               ],
             ),

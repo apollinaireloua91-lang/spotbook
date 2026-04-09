@@ -53,6 +53,9 @@ class ProSettingsNotifier extends AsyncNotifier<ProSettingsSnapshot> {
       stripeAccountId: s.stripeAccountId,
       kycStatus: s.kycStatus,
       stripePayoutLast4: s.stripePayoutLast4,
+      depositEnabled: s.depositEnabled,
+      depositPercentage: s.depositPercentage,
+      minDepositAmount: s.minDepositAmount,
     );
   }
 
@@ -73,6 +76,9 @@ class ProSettingsNotifier extends AsyncNotifier<ProSettingsSnapshot> {
       stripeAccountId: s.stripeAccountId,
       kycStatus: s.kycStatus,
       stripePayoutLast4: s.stripePayoutLast4,
+      depositEnabled: p['deposit_enabled'] as bool? ?? s.depositEnabled,
+      depositPercentage: (p['deposit_percentage'] as num?)?.toDouble() ?? s.depositPercentage,
+      minDepositAmount: (p['min_deposit_amount'] as num?)?.toDouble() ?? s.minDepositAmount,
     );
   }
 }

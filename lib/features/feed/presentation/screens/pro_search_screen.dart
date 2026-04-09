@@ -200,20 +200,7 @@ class _ProSearchScreenState extends ConsumerState<ProSearchScreen> {
               const SliverToBoxAdapter(child: _TrendingEventsSection()),
 
               // ── Inspirations (posts viraux) ──
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 28, 20, 12),
-                  child: Text(
-                    'Inspirations',
-                    style: GoogleFonts.sora(
-                      color: AppColors.blanc,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ),
-              ),
-              const SliverToBoxAdapter(child: _InspirationGrid()),
+              const SliverToBoxAdapter(child: _InspirationsSection()),
 
               const SliverToBoxAdapter(child: SizedBox(height: 100)),
             ],
@@ -518,83 +505,370 @@ final _trendingEventsProvider = FutureProvider.autoDispose<List<Map<String, dyna
 });
 
 // ═════════════════════════════════════════════════════════════════════════════
-// INSPIRATION GRID — 3 columns, thumbnail posts
+// INSPIRATIONS SECTION — Real videos from Spotbook with animations
 // ═════════════════════════════════════════════════════════════════════════════
-
-class _InspirationGrid extends ConsumerWidget {
-  const _InspirationGrid();
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final posts = ref.watch(_trendingPostsProvider);
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: posts.when(
-        loading: () => GridView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 3, mainAxisSpacing: 4, crossAxisSpacing: 4, childAspectRatio: 0.75,
-          ),
-          itemCount: 6,
-          itemBuilder: (_, __) => Container(
-            decoration: BoxDecoration(color: AppColors.surface, borderRadius: BorderRadius.circular(8)),
-          ),
-        ),
-        error: (_, __) => Center(
-          child: Padding(
-            padding: const EdgeInsets.all(24),
-            child: Text('Unable to load inspirations', style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 13)),
-          ),
-        ),
-        data: (list) {
-          if (list.isEmpty) {
-            return Center(
-              child: Padding(
-                padding: const EdgeInsets.all(24),
-                child: Text('No inspirations yet', style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 13)),
-              ),
-            );
-          }
-          return GridView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 3, mainAxisSpacing: 4, crossAxisSpacing: 4, childAspectRatio: 0.75,
-            ),
-            itemCount: list.length,
-            itemBuilder: (context, i) {
-              final post = list[i];
-              final thumb = post['thumbnail_url'] as String?;
-              return GestureDetector(
-                onTap: () => context.push('/pro/feed'),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
-                  child: thumb != null
-                      ? CachedNetworkImage(imageUrl: thumb, fit: BoxFit.cover, errorWidget: (_, __, ___) => Container(color: AppColors.surface))
-                      : Container(
-                          color: AppColors.surface,
-                          child: Icon(Icons.play_arrow_rounded, color: AppColors.gris.withAlpha(77), size: 28),
-                        ),
-                ),
-              );
-            },
-          );
-        },
-      ),
-    );
-  }
-}
 
 final _trendingPostsProvider = FutureProvider.autoDispose<List<Map<String, dynamic>>>((ref) async {
   final data = await Supabase.instance.client
       .from('posts')
-      .select('id, thumbnail_url')
+      .select('''
+        id, title, thumbnail_url, views_count, likes_count, created_at,
+        profiles_pro!pro_id(display_name, category)
+      ''')
       .eq('status', 'approved')
       .order('created_at', ascending: false)
-      .limit(9);
+      .limit(12);
   return (data as List).cast<Map<String, dynamic>>();
 });
+
+class _InspirationsSection extends ConsumerStatefulWidget {
+  const _InspirationsSection();
+
+  @override
+  ConsumerState<_InspirationsSection> createState() => _InspirationsSectionState();
+}
+
+class _InspirationsSectionState extends ConsumerState<_InspirationsSection>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _staggerCtrl;
+
+  @override
+  void initState() {
+    super.initState();
+    _staggerCtrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1200),
+    );
+  }
+
+  @override
+  void dispose() {
+    _staggerCtrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final posts = ref.watch(_trendingPostsProvider);
+
+    // Start animation when data arrives
+    posts.whenData((_) {
+      if (!_staggerCtrl.isAnimating && _staggerCtrl.value == 0) {
+        _staggerCtrl.forward();
+      }
+    });
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Section header
+        Padding(
+          padding: const EdgeInsets.fromLTRB(20, 28, 20, 0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  Icon(Icons.auto_awesome, color: AppColors.violetClair, size: 18),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Inspirations',
+                    style: GoogleFonts.sora(
+                      color: AppColors.blanc,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ],
+              ),
+              GestureDetector(
+                onTap: () => context.push('/pro/feed'),
+                child: Text(
+                  'See all',
+                  style: GoogleFonts.dmSans(
+                    color: AppColors.violet,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 13,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 12),
+
+        // Content
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: posts.when(
+            loading: () => _buildShimmerGrid(),
+            error: (_, __) => Center(
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Text(
+                  'Unable to load inspirations',
+                  style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 13),
+                ),
+              ),
+            ),
+            data: (list) {
+              if (list.isEmpty) {
+                return _buildEmptyState();
+              }
+              return _buildVideoGrid(list);
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildShimmerGrid() {
+    return GridView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 3,
+        mainAxisSpacing: 8,
+        crossAxisSpacing: 8,
+        childAspectRatio: 0.65,
+      ),
+      itemCount: 6,
+      itemBuilder: (_, __) => _ShimmerCard(),
+    );
+  }
+
+  Widget _buildEmptyState() {
+    return Padding(
+      padding: const EdgeInsets.all(32),
+      child: Center(
+        child: Column(
+          children: [
+            Icon(Icons.video_library_outlined, size: 48,
+                color: AppColors.grisInactif),
+            const SizedBox(height: 12),
+            Text('No videos yet',
+                style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 14)),
+            const SizedBox(height: 4),
+            Text('Be the first to post!',
+                style: GoogleFonts.dmSans(
+                    color: AppColors.violet, fontSize: 13, fontWeight: FontWeight.w600)),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildVideoGrid(List<Map<String, dynamic>> posts) {
+    return GridView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 3,
+        mainAxisSpacing: 8,
+        crossAxisSpacing: 8,
+        childAspectRatio: 0.65,
+      ),
+      itemCount: posts.length,
+      itemBuilder: (context, index) {
+        final post = posts[index];
+        final delay = index * 80;
+
+        return AnimatedBuilder(
+          animation: _staggerCtrl,
+          builder: (context, child) {
+            final progress = Curves.easeOutCubic.transform(
+              ((_staggerCtrl.value * 1200 - delay) / 400).clamp(0.0, 1.0),
+            );
+            return Opacity(
+              opacity: progress,
+              child: Transform.translate(
+                offset: Offset(0, 20 * (1 - progress)),
+                child: Transform.scale(
+                  scale: 0.85 + 0.15 * progress,
+                  child: child,
+                ),
+              ),
+            );
+          },
+          child: _InspirationVideoCard(post: post),
+        );
+      },
+    );
+  }
+}
+
+// ── Single inspiration video card ──
+class _InspirationVideoCard extends StatelessWidget {
+  const _InspirationVideoCard({required this.post});
+
+  final Map<String, dynamic> post;
+
+  @override
+  Widget build(BuildContext context) {
+    final thumb = post['thumbnail_url'] as String?;
+    final title = post['title'] as String? ?? '';
+    final views = post['views_count'] as int? ?? 0;
+    final likes = post['likes_count'] as int? ?? 0;
+    final pro = post['profiles_pro'] as Map<String, dynamic>?;
+    final category = pro?['category'] as String? ?? '';
+
+    return GestureDetector(
+      onTap: () => context.push('/pro/feed'),
+      child: Container(
+        decoration: BoxDecoration(
+          color: AppColors.surface,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: AppColors.border, width: 0.5),
+          boxShadow: AppColors.cardShadow,
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(12),
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              // Thumbnail
+              if (thumb != null && thumb.isNotEmpty)
+                CachedNetworkImage(
+                  imageUrl: thumb,
+                  fit: BoxFit.cover,
+                  errorWidget: (_, __, ___) => Container(
+                    color: AppColors.surfaceAlt,
+                    child: Icon(Icons.videocam, color: AppColors.grisInactif, size: 28),
+                  ),
+                )
+              else
+                Container(
+                  color: AppColors.surfaceAlt,
+                  child: Icon(Icons.videocam, color: AppColors.grisInactif, size: 28),
+                ),
+
+              // Gradient overlay at bottom
+              Positioned(
+                bottom: 0,
+                left: 0,
+                right: 0,
+                child: Container(
+                  height: 60,
+                  decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [Colors.transparent, AppColors.overlayHeavy],
+                    ),
+                  ),
+                ),
+              ),
+
+              // Play icon
+              Center(
+                child: Container(
+                  width: 30,
+                  height: 30,
+                  decoration: const BoxDecoration(
+                    color: AppColors.textOnPrimary,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(Icons.play_arrow, color: AppColors.violet, size: 16),
+                ),
+              ),
+
+              // Bottom info
+              Positioned(
+                bottom: 6,
+                left: 6,
+                right: 6,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (title.isNotEmpty)
+                      Text(
+                        title,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: GoogleFonts.dmSans(
+                          color: AppColors.textOnVideo,
+                          fontSize: 10,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    const SizedBox(height: 2),
+                    Row(
+                      children: [
+                        const Icon(Icons.visibility, color: AppColors.textOnVideo, size: 10),
+                        const SizedBox(width: 2),
+                        Text(_formatCount(views),
+                            style: GoogleFonts.dmSans(color: AppColors.textOnVideo, fontSize: 9)),
+                        const SizedBox(width: 6),
+                        const Icon(Icons.favorite, color: AppColors.textOnVideo, size: 10),
+                        const SizedBox(width: 2),
+                        Text(_formatCount(likes),
+                            style: GoogleFonts.dmSans(color: AppColors.textOnVideo, fontSize: 9)),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+
+              // Category badge
+              if (category.isNotEmpty)
+                Positioned(
+                  top: 6,
+                  left: 6,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: AppColors.violet,
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: Text(
+                      category,
+                      style: GoogleFonts.dmSans(
+                        color: AppColors.textOnPrimary,
+                        fontSize: 8,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  String _formatCount(int count) {
+    if (count >= 1000000) return '${(count / 1000000).toStringAsFixed(1)}M';
+    if (count >= 1000) return '${(count / 1000).toStringAsFixed(1)}K';
+    return count.toString();
+  }
+}
+
+// ── Shimmer loading card ──
+class _ShimmerCard extends StatelessWidget {
+  const _ShimmerCard();
+
+  @override
+  Widget build(BuildContext context) {
+    return TweenAnimationBuilder<double>(
+      tween: Tween(begin: 0.4, end: 0.8),
+      duration: const Duration(milliseconds: 1000),
+      curve: Curves.easeInOut,
+      builder: (_, opacity, __) => AnimatedOpacity(
+        opacity: opacity,
+        duration: const Duration(milliseconds: 500),
+        child: Container(
+          decoration: BoxDecoration(
+            color: AppColors.surface,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: AppColors.border, width: 0.5),
+          ),
+        ),
+      ),
+    );
+  }
+}
 
 // ═════════════════════════════════════════════════════════════════════════════
 // PRO SEARCH CARD — result item

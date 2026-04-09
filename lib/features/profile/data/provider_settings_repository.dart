@@ -19,6 +19,9 @@ class ProSettingsSnapshot {
     required this.stripeAccountId,
     required this.kycStatus,
     this.stripePayoutLast4,
+    this.depositEnabled = true,
+    this.depositPercentage = 30.0,
+    this.minDepositAmount = 10.0,
   });
 
   final String email;
@@ -33,6 +36,9 @@ class ProSettingsSnapshot {
   final String? stripeAccountId;
   final String? kycStatus;
   final String? stripePayoutLast4;
+  final bool depositEnabled;
+  final double depositPercentage;
+  final double minDepositAmount;
 }
 
 class ProviderSettingsRepository {
@@ -53,7 +59,7 @@ class ProviderSettingsRepository {
     final proRes = await _client
         .from('profiles_pro')
         .select(
-          'tel, stripe_account_id, stripe_onboarded, kyc_status, is_public, search_visible, stripe_payout_last4',
+          'tel, stripe_account_id, stripe_onboarded, kyc_status, is_public, search_visible, stripe_payout_last4, deposit_enabled, deposit_percentage, min_deposit_amount',
         )
         .eq('id', uid)
         .maybeSingle();
@@ -81,6 +87,9 @@ class ProviderSettingsRepository {
       stripeAccountId: proRes?['stripe_account_id'] as String?,
       kycStatus: proRes?['kyc_status'] as String?,
       stripePayoutLast4: proRes?['stripe_payout_last4'] as String?,
+      depositEnabled: proRes?['deposit_enabled'] as bool? ?? true,
+      depositPercentage: (proRes?['deposit_percentage'] as num?)?.toDouble() ?? 30.0,
+      minDepositAmount: (proRes?['min_deposit_amount'] as num?)?.toDouble() ?? 10.0,
     );
   }
 
