@@ -43,45 +43,58 @@ Monitoring : Sentry
 
 ## DESIGN — PALETTE SPOTBOOK
 
-fond          : #0D0D14
+### Dark Mode (défaut sur feeds vidéo)
+fond          : #000000    (noir pur — true black)
+surface       : #121218    (presque noir, touche bleutée subtile)
+surfaceAlt    : #0A0A10    (entre noir et surface)
+surfaceElev   : #1A1A26    (éléments élevés)
+border        : #1E1E2E    (bordures subtiles)
+navBar        : #000000    (noir pur)
 
-surface       : #1E1E2E
+### Light Mode
+fond          : #F5F5F3    (gris chaud très clair)
+surface       : #FFFFFF    (blanc pur)
+surfaceAlt    : #F7F7F5    (off-white)
+border        : #E5E5E5    (gris clair)
 
-surfaceAlt    : #16161F
+### Couleurs partagées (s'adaptent automatiquement via AppColors)
+violet (dark)   : #8E05C2  — primary accent, deep purple
+violet (light)  : #8039C5  — primary accent, classic purple
+violetClair     : #A855F7 (dark) / #9B5DD6 (light)
+rose            : #F43E8F
+roseClair       : #FF6BAA
+success         : #22C55E
+error / danger  : #EF4444
+warning         : #FFBB33
+logout          : #EF4444  (rouge — toujours rouge, les deux modes)
 
-border        : #2A2A3A
+### Texte
+blanc (dark)    : #FFFFFF
+blanc (light)   : #0C0C0C
+gris (dark)     : #A0A0B8  (lumineux pour lisibilité sur noir)
+gris (light)    : #6B6B6B
+grisInactif     : #555566 (dark) / #B0B0B0 (light)
 
-blanc         : #FFFFFF
+### Gradients
+gradientAccent dark  : #700B97 → #8E05C2
+gradientAccent light : #7030B0 → #9B5DD6
 
-gris          : #9090AA
-
-grisInactif   : #555555
-
-violet        : #6C3EF4
-
-violetClair   : #8B63FF
-
-rose          : #F43E8F
-
-roseClair     : #FF6BAA
-
-success       : #22C55E
-
-error         : #FF4444
-
-warning       : #FFBB33
-
+### Glow (dark mode uniquement)
+glow            : #8E05C2  (neon purple)
+glowLight       : #A855F7
 
 Typographie :
-  Titres h1/h2  : Clash Display (assets locaux)
+  Titres h1/h2  : Sora (google_fonts) — remplace Clash Display
   Corps / labels / boutons : DM Sans (google_fonts)
   Logo "Spotbook" : DM Sans bold, fontSize 20, blanc #FFFFFF — jamais coloré
 
-Bouton primaire   : fond #6C3EF4 (violet), texte blanc, borderRadius 12
+Bouton primaire   : gradient #700B97→#8E05C2 (dark) / #7030B0→#9B5DD6 (light), texte blanc, borderRadius 14, glow shadow en dark
 
-Bouton secondaire : fond #1E1E2E, texte blanc, bordure rgba(255,255,255,0.1), radius 12
+Bouton secondaire : fond surface, texte blanc, bordure border, radius 12
 
-Bouton danger     : fond rgba(244,62,143,0.12), texte #FF6BAA, radius 12
+Bouton danger     : fond rgba(239,68,68,0.08), texte #EF4444, bordure rgba(239,68,68,0.24), radius 12
+
+Bouton logout     : fond rgba(239,68,68,0.08), texte #EF4444, icône logout_rounded, radius 12
 
 
 ## RÔLES UTILISATEURS
@@ -168,7 +181,8 @@ SplashScreen
 // !! JAMAIS setState dans un écran → Riverpod (ConsumerWidget / ConsumerStatefulWidget) uniquement
 // !! JAMAIS Image.network() → CachedNetworkImage
 // !! JAMAIS Navigator.push() → context.go() go_router
-// !! JAMAIS couleur hex dans Widget → AppColors.xxx
+// !! JAMAIS couleur hex dans Widget → AppColors.xxx (dark/light adaptatif)
+// !! JAMAIS const Color(0xFF...) dans un widget → AppColors.xxx (sauf Colors.white/black pour éléments invariants)
 // !! JAMAIS clé API dans Flutter → String.fromEnvironment()
 // !! JAMAIS PawaPay, Mobile Money, Orange Money, Wave, MTN MoMo
 // !! JAMAIS Column + .map() pour des listes → ListView.builder
@@ -200,6 +214,16 @@ Commission événement   : 12%
 Commission traiteur    : 18%
 
 Frais de service client : 2.50 $/réservation
+
+Acompte (deposit) : configurable PAR SERVICE uniquement (pas de valeur globale par défaut)
+  → payment_mode : 'full' | 'deposit'
+  → deposit_type : 'percentage' | 'fixed'
+  → deposit_value : 10–30% (max 30%, contraint par CHECK SQL)
+
+Politique annulation :
+  flexible  → remboursement total si annulé >12h avant le RDV
+  moderate  → remboursement total si annulé >24h, sinon 50% gardé
+  strict    → aucun remboursement, acompte gardé
 
 // Pas de tiers premium — même taux pour tous les Pros.
 // Taux configurables via table app_config (commission_bookings, commission_events, commission_catering, service_fee_client).

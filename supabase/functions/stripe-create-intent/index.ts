@@ -123,6 +123,8 @@ serve(async (req) => {
     const commissionRate = pro?.commission_rate ?? 0.18;
     // FULL commission on total price taken upfront from the deposit
     const fullCommission = Math.round(totalPriceCents * commissionRate);
+    // application_fee = commission + service fee — ALL goes to Spotbook
+    const applicationFee = fullCommission + serviceFeeCents;
 
     const params: Record<string, unknown> = {
       amount: chargeAmount,
@@ -138,7 +140,7 @@ serve(async (req) => {
 
     if (pro?.stripe_account_id) {
       params.transfer_data = { destination: pro.stripe_account_id };
-      params.application_fee_amount = fullCommission;
+      params.application_fee_amount = applicationFee;
     }
 
     const paymentIntent = await stripe.paymentIntents.create(

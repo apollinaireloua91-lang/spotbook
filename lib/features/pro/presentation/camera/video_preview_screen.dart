@@ -81,7 +81,6 @@ class _VideoPreviewScreenState extends ConsumerState<VideoPreviewScreen> {
     final userId = supabase.auth.currentUser?.id;
     if (userId == null) return;
 
-    // Load pro services, events, and profile in parallel
     final servicesFuture = supabase
         .from('services')
         .select('id, title, price')
@@ -106,7 +105,6 @@ class _VideoPreviewScreenState extends ConsumerState<VideoPreviewScreen> {
     setState(() {
       _services = List<Map<String, dynamic>>.from(results[0] as List);
       _events = List<Map<String, dynamic>>.from(results[1] as List);
-      // Default category from pro profile
       final profile = results[2] as Map<String, dynamic>?;
       if (profile != null && _selectedCategory == null) {
         _selectedCategory = profile['category'] as String?;
@@ -172,7 +170,6 @@ class _VideoPreviewScreenState extends ConsumerState<VideoPreviewScreen> {
                 backgroundColor: AppColors.success,
               ),
             );
-            // Pop back to camera tab, then to feed
             context.go('/pro/feed');
           } else if (state.step == UploadStep.error) {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -181,7 +178,7 @@ class _VideoPreviewScreenState extends ConsumerState<VideoPreviewScreen> {
                 backgroundColor: AppColors.error,
                 action: SnackBarAction(
                   label: 'Retry',
-                  textColor: AppColors.blanc,
+                  textColor: AppColors.textOnPrimary,
                   onPressed: _publish,
                 ),
               ),
@@ -213,7 +210,7 @@ class _VideoPreviewScreenState extends ConsumerState<VideoPreviewScreen> {
                 ),
               ),
               title: Text(
-                'Preview',
+                'New Post',
                 style: GoogleFonts.sora(
                   color: AppColors.blanc,
                   fontSize: 17,
@@ -223,320 +220,302 @@ class _VideoPreviewScreenState extends ConsumerState<VideoPreviewScreen> {
               centerTitle: true,
             ),
             body: SafeArea(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 12),
+              child: Column(
+                children: [
+                  Expanded(
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const SizedBox(height: 12),
 
-                    // ── Video preview ──
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(16),
-                      child: AspectRatio(
-                        aspectRatio: 9 / 16,
-                        child: _videoReady
-                            ? GestureDetector(
-                                onTap: () {
-                                  if (_videoCtrl.value.isPlaying) {
-                                    _videoCtrl.pause();
-                                  } else {
-                                    _videoCtrl.play();
-                                  }
-                                  setState(() {});
-                                },
-                                child: Stack(
-                                  alignment: Alignment.center,
-                                  children: [
-                                    VideoPlayer(_videoCtrl),
-                                    if (!_videoCtrl.value.isPlaying)
-                                      Container(
-                                        padding: const EdgeInsets.all(12),
-                                        decoration: BoxDecoration(
-                                          color: AppColors.overlayMedium,
-                                          shape: BoxShape.circle,
+                          // ── Video preview ──
+                          _VideoPreviewCard(
+                            videoCtrl: _videoCtrl,
+                            videoReady: _videoReady,
+                            videoDuration: _videoDuration,
+                            onTap: () {
+                              if (_videoCtrl.value.isPlaying) {
+                                _videoCtrl.pause();
+                              } else {
+                                _videoCtrl.play();
+                              }
+                              setState(() {});
+                            },
+                            isPlaying: _videoReady && _videoCtrl.value.isPlaying,
+                          ),
+
+                          const SizedBox(height: 24),
+
+                          // ── Section label ──
+                          _SectionLabel(text: 'DETAILS'),
+                          const SizedBox(height: 12),
+
+                          // ── Title ──
+                          _StyledTextField(
+                            controller: _titleCtrl,
+                            label: 'Title *',
+                            hint: 'E.g.: Women\'s cut + blowout',
+                            maxLength: 80,
+                            prefixIcon: Icons.title_rounded,
+                          ),
+                          const SizedBox(height: 14),
+
+                          // ── Category ──
+                          Builder(builder: (context) {
+                            final catItems = ref.watch(proCategoriesProvider).when(
+                              data: (cats) => cats
+                                  .map((c) => DropdownMenuItem(value: c.label, child: Text(c.label)))
+                                  .toList(),
+                              loading: () => const <DropdownMenuItem<String>>[],
+                              error: (_, __) => const <DropdownMenuItem<String>>[],
+                            );
+                            final validCat = catItems.any((i) => i.value == _selectedCategory)
+                                ? _selectedCategory
+                                : null;
+                            return DropdownButtonFormField<String>(
+                              initialValue: validCat,
+                              hint: Text(
+                                'Category *',
+                                style: TextStyle(color: AppColors.grisInactif),
+                              ),
+                              dropdownColor: AppColors.surfaceElevated,
+                              style: TextStyle(color: AppColors.blanc, fontSize: 14),
+                              icon: Icon(Icons.keyboard_arrow_down_rounded, color: AppColors.gris),
+                              decoration: _fieldDecoration(prefixIcon: Icons.category_rounded),
+                              items: catItems,
+                              onChanged: isWorking ? null : (v) => setState(() => _selectedCategory = v),
+                            );
+                          }),
+                          const SizedBox(height: 14),
+
+                          // ── Description ──
+                          _StyledTextField(
+                            controller: _descCtrl,
+                            label: 'Description *',
+                            hint: 'Describe your service in detail...',
+                            maxLength: 500,
+                            maxLines: 4,
+                            prefixIcon: Icons.description_rounded,
+                          ),
+                          const SizedBox(height: 14),
+
+                          // ── Hashtags ──
+                          _StyledTextField(
+                            controller: _hashtagCtrl,
+                            label: 'Hashtags (max 5)',
+                            hint: 'Type a hashtag and press Enter',
+                            prefixIcon: Icons.tag_rounded,
+                            onSubmitted: _addHashtag,
+                          ),
+                          if (_hashtags.isNotEmpty) ...[
+                            const SizedBox(height: 10),
+                            Wrap(
+                              spacing: 8,
+                              runSpacing: 8,
+                              children: _hashtags.map((tag) {
+                                return Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                  decoration: BoxDecoration(
+                                    gradient: AppColors.gradientAccent,
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text(
+                                        '#$tag',
+                                        style: GoogleFonts.dmSans(
+                                          color: AppColors.textOnPrimary,
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.w500,
                                         ),
-                                        child: Icon(
-                                          Icons.play_arrow,
-                                          color: AppColors.blanc,
-                                          size: 32,
+                                      ),
+                                      if (!isWorking) ...[
+                                        const SizedBox(width: 4),
+                                        GestureDetector(
+                                          onTap: () => _removeHashtag(tag),
+                                          child: Icon(
+                                            Icons.close_rounded,
+                                            color: AppColors.textOnPrimary.withAlpha(180),
+                                            size: 14,
+                                          ),
                                         ),
-                                      ),
-                                  ],
+                                      ],
+                                    ],
+                                  ),
+                                );
+                              }).toList(),
+                            ),
+                          ],
+
+                          // ── Link sections ──
+                          if (_services.isNotEmpty || _events.isNotEmpty) ...[
+                            const SizedBox(height: 24),
+                            _SectionLabel(text: 'LINK TO'),
+                            const SizedBox(height: 12),
+                          ],
+
+                          if (_services.isNotEmpty) ...[
+                            DropdownButtonFormField<String>(
+                              initialValue: _linkedServiceId,
+                              hint: Text(
+                                'Link to a service (optional)',
+                                style: TextStyle(color: AppColors.grisInactif, fontSize: 14),
+                              ),
+                              dropdownColor: AppColors.surfaceElevated,
+                              style: TextStyle(color: AppColors.blanc, fontSize: 14),
+                              decoration: _fieldDecoration(prefixIcon: Icons.work_outline_rounded),
+                              items: [
+                                DropdownMenuItem<String>(
+                                  value: null,
+                                  child: Text('None', style: TextStyle(color: AppColors.gris)),
                                 ),
-                              )
-                            : Center(
-                                child: CircularProgressIndicator(
-                                  color: AppColors.blanc,
-                                  strokeWidth: 2,
-                                ),
-                              ),
-                      ),
-                    ),
-
-                    if (_videoDuration != null) ...[
-                      const SizedBox(height: 8),
-                      Text(
-                        'Duration: ${_videoDuration!.toStringAsFixed(1)}s',
-                        style: TextStyle(
-                          color: AppColors.gris,
-                          fontSize: 13,
-                        ),
-                      ),
-                    ],
-
-                    const SizedBox(height: 24),
-
-                    // ── Title ──
-                    _buildTextField(
-                      controller: _titleCtrl,
-                      label: 'Title *',
-                      hint: 'E.g.: Women\'s cut + blowout',
-                      maxLength: 80,
-                    ),
-                    const SizedBox(height: 16),
-
-                    // ── Category ──
-                    Builder(builder: (context) {
-                      final catItems = ref.watch(proCategoriesProvider).when(
-                        data: (cats) => cats
-                            .map((c) => DropdownMenuItem(value: c.label, child: Text(c.label)))
-                            .toList(),
-                        loading: () => const <DropdownMenuItem<String>>[],
-                        error: (_, __) => const <DropdownMenuItem<String>>[],
-                      );
-                      final validCat = catItems.any((i) => i.value == _selectedCategory)
-                          ? _selectedCategory
-                          : null;
-                      return DropdownButtonFormField<String>(
-                        initialValue: validCat,
-                        hint: Text(
-                          'Category *',
-                          style: TextStyle(color: AppColors.gris),
-                        ),
-                        dropdownColor: AppColors.surface,
-                        style: TextStyle(color: AppColors.blanc),
-                        icon: Icon(
-                          Icons.keyboard_arrow_down,
-                          color: AppColors.gris,
-                        ),
-                        decoration: _fieldDecoration(),
-                        items: catItems,
-                        onChanged:
-                            isWorking ? null : (v) => setState(() => _selectedCategory = v),
-                      );
-                    }),
-                    const SizedBox(height: 16),
-
-                    // ── Description ──
-                    _buildTextField(
-                      controller: _descCtrl,
-                      label: 'Description *',
-                      hint: 'Describe your service in detail...',
-                      maxLength: 500,
-                      maxLines: 4,
-                    ),
-                    const SizedBox(height: 16),
-
-                    // ── Hashtags ──
-                    _buildTextField(
-                      controller: _hashtagCtrl,
-                      label: 'Hashtags (max 5)',
-                      hint: 'Type a hashtag and press Enter',
-                      onSubmitted: _addHashtag,
-                    ),
-                    if (_hashtags.isNotEmpty) ...[
-                      const SizedBox(height: 8),
-                      Wrap(
-                        spacing: 6,
-                        runSpacing: 6,
-                        children: _hashtags.map((tag) {
-                          return Chip(
-                            label: Text(
-                              '#$tag',
-                              style: TextStyle(
-                                color: AppColors.blanc,
-                                fontSize: 13,
-                              ),
-                            ),
-                            backgroundColor: AppColors.surface,
-                            deleteIconColor: AppColors.gris,
-                            side: BorderSide(color: AppColors.border),
-                            onDeleted:
-                                isWorking ? null : () => _removeHashtag(tag),
-                          );
-                        }).toList(),
-                      ),
-                    ],
-                    const SizedBox(height: 20),
-
-                    // ── Link to service ──
-                    if (_services.isNotEmpty) ...[
-                      Text(
-                        'Link to a service',
-                        style: GoogleFonts.dmSans(
-                          color: AppColors.gris,
-                          fontSize: 13,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      DropdownButtonFormField<String>(
-                        initialValue: _linkedServiceId,
-                        hint: Text(
-                          'None (optional)',
-                          style: TextStyle(color: AppColors.gris, fontSize: 14),
-                        ),
-                        dropdownColor: AppColors.surface,
-                        style: TextStyle(
-                          color: AppColors.blanc,
-                          fontSize: 14,
-                        ),
-                        decoration: _fieldDecoration(),
-                        items: [
-                          const DropdownMenuItem(
-                            value: null,
-                            child: Text('None'),
-                          ),
-                          ..._services.map(
-                            (s) => DropdownMenuItem(
-                              value: s['id'] as String,
-                              child: Text(
-                                '${s['title']} · ${(s['price'] as num).toStringAsFixed(0)} \$',
-                              ),
-                            ),
-                          ),
-                        ],
-                        onChanged: isWorking
-                            ? null
-                            : (v) => setState(() => _linkedServiceId = v),
-                      ),
-                      const SizedBox(height: 16),
-                    ],
-
-                    // ── Link to event ──
-                    if (_events.isNotEmpty) ...[
-                      Text(
-                        'Link to an event',
-                        style: GoogleFonts.dmSans(
-                          color: AppColors.gris,
-                          fontSize: 13,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      DropdownButtonFormField<String>(
-                        initialValue: _linkedEventId,
-                        hint: Text(
-                          'None (optional)',
-                          style: TextStyle(color: AppColors.gris, fontSize: 14),
-                        ),
-                        dropdownColor: AppColors.surface,
-                        style: TextStyle(
-                          color: AppColors.blanc,
-                          fontSize: 14,
-                        ),
-                        decoration: _fieldDecoration(),
-                        items: [
-                          const DropdownMenuItem(
-                            value: null,
-                            child: Text('None'),
-                          ),
-                          ..._events.map(
-                            (e) => DropdownMenuItem(
-                              value: e['id'] as String,
-                              child: Text(e['title'] as String),
-                            ),
-                          ),
-                        ],
-                        onChanged: isWorking
-                            ? null
-                            : (v) => setState(() => _linkedEventId = v),
-                      ),
-                      const SizedBox(height: 16),
-                    ],
-
-                    const SizedBox(height: 8),
-
-                    // ── Upload progress ──
-                    if (isWorking) ...[
-                      const SizedBox(height: 8),
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(4),
-                        child: LinearProgressIndicator(
-                          value: state.uploadProgress,
-                          backgroundColor: AppColors.surface,
-                          valueColor: AlwaysStoppedAnimation<Color>(
-                            AppColors.violet,
-                          ),
-                          minHeight: 6,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Center(
-                        child: Text(
-                          _progressLabel(state),
-                          style: TextStyle(
-                            color: AppColors.gris,
-                            fontSize: 13,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                    ],
-
-                    // ── Publish button ──
-                    ListenableBuilder(
-                      listenable: Listenable.merge([_titleCtrl, _descCtrl]),
-                      builder: (context, _) {
-                        final canPublish = _isValid && !isWorking;
-                        return SizedBox(
-                          width: double.infinity,
-                          height: 52,
-                          child: DecoratedBox(
-                            decoration: BoxDecoration(
-                              gradient: canPublish
-                                  ? AppColors.gradientAccent
-                                  : null,
-                              color: canPublish ? null : AppColors.surfaceAlt,
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: ElevatedButton(
-                              onPressed: canPublish ? _publish : null,
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.transparent,
-                                shadowColor: Colors.transparent,
-                                foregroundColor: AppColors.blanc,
-                                disabledBackgroundColor: Colors.transparent,
-                                disabledForegroundColor: AppColors.gris,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                              ),
-                              child: isWorking
-                                  ? SizedBox(
-                                      width: 22,
-                                      height: 22,
-                                      child: CircularProgressIndicator(
-                                        color: AppColors.blanc,
-                                        strokeWidth: 2.5,
-                                      ),
-                                    )
-                                  : Text(
-                                      'Publish',
-                                      style: GoogleFonts.dmSans(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w700,
-                                      ),
+                                ..._services.map(
+                                  (s) => DropdownMenuItem(
+                                    value: s['id'] as String,
+                                    child: Text(
+                                      '${s['title']} · ${(s['price'] as num).toStringAsFixed(0)} \$',
                                     ),
+                                  ),
+                                ),
+                              ],
+                              onChanged: isWorking
+                                  ? null
+                                  : (v) => setState(() => _linkedServiceId = v),
+                            ),
+                            const SizedBox(height: 14),
+                          ],
+
+                          if (_events.isNotEmpty) ...[
+                            DropdownButtonFormField<String>(
+                              initialValue: _linkedEventId,
+                              hint: Text(
+                                'Link to an event (optional)',
+                                style: TextStyle(color: AppColors.grisInactif, fontSize: 14),
+                              ),
+                              dropdownColor: AppColors.surfaceElevated,
+                              style: TextStyle(color: AppColors.blanc, fontSize: 14),
+                              decoration: _fieldDecoration(prefixIcon: Icons.event_rounded),
+                              items: [
+                                DropdownMenuItem<String>(
+                                  value: null,
+                                  child: Text('None', style: TextStyle(color: AppColors.gris)),
+                                ),
+                                ..._events.map(
+                                  (e) => DropdownMenuItem(
+                                    value: e['id'] as String,
+                                    child: Text(e['title'] as String),
+                                  ),
+                                ),
+                              ],
+                              onChanged: isWorking
+                                  ? null
+                                  : (v) => setState(() => _linkedEventId = v),
+                            ),
+                            const SizedBox(height: 14),
+                          ],
+
+                          const SizedBox(height: 8),
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  // ── Bottom publish area ──
+                  Container(
+                    padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
+                    decoration: BoxDecoration(
+                      color: AppColors.fond,
+                      border: Border(
+                        top: BorderSide(color: AppColors.border, width: 0.5),
+                      ),
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        // Upload progress
+                        if (isWorking) ...[
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(6),
+                            child: LinearProgressIndicator(
+                              value: state.uploadProgress,
+                              backgroundColor: AppColors.surface,
+                              valueColor: AlwaysStoppedAnimation<Color>(AppColors.violet),
+                              minHeight: 6,
                             ),
                           ),
-                        );
-                      },
+                          const SizedBox(height: 8),
+                          Text(
+                            _progressLabel(state),
+                            style: GoogleFonts.dmSans(
+                              color: AppColors.gris,
+                              fontSize: 13,
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                        ],
+
+                        // Publish button
+                        ListenableBuilder(
+                          listenable: Listenable.merge([_titleCtrl, _descCtrl]),
+                          builder: (context, _) {
+                            final canPublish = _isValid && !isWorking;
+                            return SizedBox(
+                              width: double.infinity,
+                              height: 52,
+                              child: DecoratedBox(
+                                decoration: BoxDecoration(
+                                  gradient: canPublish ? AppColors.gradientAccent : null,
+                                  color: canPublish ? null : AppColors.surfaceAlt,
+                                  borderRadius: BorderRadius.circular(14),
+                                  boxShadow: canPublish ? AppColors.primaryButtonShadow : null,
+                                ),
+                                child: ElevatedButton(
+                                  onPressed: canPublish ? _publish : null,
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.transparent,
+                                    shadowColor: Colors.transparent,
+                                    foregroundColor: AppColors.textOnPrimary,
+                                    disabledBackgroundColor: Colors.transparent,
+                                    disabledForegroundColor: AppColors.grisInactif,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(14),
+                                    ),
+                                  ),
+                                  child: isWorking
+                                      ? SizedBox(
+                                          width: 22,
+                                          height: 22,
+                                          child: CircularProgressIndicator(
+                                            color: AppColors.textOnPrimary,
+                                            strokeWidth: 2.5,
+                                          ),
+                                        )
+                                      : Row(
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          children: [
+                                            Icon(Icons.rocket_launch_rounded, size: 18),
+                                            const SizedBox(width: 8),
+                                            Text(
+                                              'Publish',
+                                              style: GoogleFonts.dmSans(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w700,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ],
                     ),
-                    const SizedBox(height: 32),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           );
@@ -558,28 +537,202 @@ class _VideoPreviewScreenState extends ConsumerState<VideoPreviewScreen> {
     }
   }
 
-  Widget _buildTextField({
-    required TextEditingController controller,
-    required String label,
-    required String hint,
-    int? maxLength,
-    int maxLines = 1,
-    void Function(String)? onSubmitted,
-  }) {
+  InputDecoration _fieldDecoration({IconData? prefixIcon}) {
+    return InputDecoration(
+      filled: true,
+      fillColor: AppColors.surface,
+      prefixIcon: prefixIcon != null
+          ? Padding(
+              padding: const EdgeInsets.only(left: 12, right: 8),
+              child: Icon(prefixIcon, color: AppColors.gris, size: 20),
+            )
+          : null,
+      prefixIconConstraints: const BoxConstraints(minWidth: 0, minHeight: 0),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide(color: AppColors.border),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide(color: AppColors.border),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide(color: AppColors.violet, width: 1.5),
+      ),
+    );
+  }
+}
+
+// ─── Video preview card with rounded corners and overlay ─────────────────────
+
+class _VideoPreviewCard extends StatelessWidget {
+  const _VideoPreviewCard({
+    required this.videoCtrl,
+    required this.videoReady,
+    required this.videoDuration,
+    required this.onTap,
+    required this.isPlaying,
+  });
+
+  final VideoPlayerController videoCtrl;
+  final bool videoReady;
+  final double? videoDuration;
+  final VoidCallback onTap;
+  final bool isPlaying;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppColors.border, width: 0.5),
+        boxShadow: AppColors.cardShadow,
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(20),
+        child: AspectRatio(
+          aspectRatio: 9 / 14,
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              // Video
+              if (videoReady)
+                GestureDetector(
+                  onTap: onTap,
+                  child: VideoPlayer(videoCtrl),
+                )
+              else
+                Container(
+                  color: AppColors.surface,
+                  child: Center(
+                    child: CircularProgressIndicator(
+                      color: AppColors.violet,
+                      strokeWidth: 2,
+                    ),
+                  ),
+                ),
+
+              // Play/Pause overlay
+              if (videoReady && !isPlaying)
+                GestureDetector(
+                  onTap: onTap,
+                  child: Container(
+                    color: Colors.black26,
+                    child: Center(
+                      child: Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: AppColors.overlayMedium,
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: Colors.white.withAlpha(40),
+                            width: 1,
+                          ),
+                        ),
+                        child: const Icon(
+                          Icons.play_arrow_rounded,
+                          color: Colors.white,
+                          size: 36,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+
+              // Duration badge
+              if (videoDuration != null)
+                Positioned(
+                  bottom: 12,
+                  right: 12,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                    decoration: BoxDecoration(
+                      color: AppColors.overlayHeavy,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      '${videoDuration!.toStringAsFixed(1)}s',
+                      style: GoogleFonts.dmSans(
+                        color: Colors.white,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ─── Section label ───────────────────────────────────────────────────────────
+
+class _SectionLabel extends StatelessWidget {
+  const _SectionLabel({required this.text});
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      text,
+      style: GoogleFonts.sora(
+        color: AppColors.gris,
+        fontSize: 11,
+        fontWeight: FontWeight.w600,
+        letterSpacing: 2,
+      ),
+    );
+  }
+}
+
+// ─── Styled text field ───────────────────────────────────────────────────────
+
+class _StyledTextField extends StatelessWidget {
+  const _StyledTextField({
+    required this.controller,
+    required this.label,
+    required this.hint,
+    this.maxLength,
+    this.maxLines = 1,
+    this.prefixIcon,
+    this.onSubmitted,
+  });
+
+  final TextEditingController controller;
+  final String label;
+  final String hint;
+  final int? maxLength;
+  final int maxLines;
+  final IconData? prefixIcon;
+  final void Function(String)? onSubmitted;
+
+  @override
+  Widget build(BuildContext context) {
     return TextField(
       controller: controller,
       maxLength: maxLength,
       maxLines: maxLines,
-      style: TextStyle(color: AppColors.blanc),
+      style: GoogleFonts.dmSans(color: AppColors.blanc, fontSize: 14),
       onSubmitted: onSubmitted,
       decoration: InputDecoration(
         labelText: label,
         hintText: hint,
-        labelStyle: TextStyle(color: AppColors.gris),
-        hintStyle: TextStyle(color: AppColors.gris.withAlpha(128)),
-        counterStyle: TextStyle(color: AppColors.gris),
+        labelStyle: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 14),
+        hintStyle: GoogleFonts.dmSans(color: AppColors.grisInactif, fontSize: 13),
+        counterStyle: TextStyle(color: AppColors.gris, fontSize: 11),
         filled: true,
         fillColor: AppColors.surface,
+        prefixIcon: prefixIcon != null
+            ? Padding(
+                padding: const EdgeInsets.only(left: 12, right: 8),
+                child: Icon(prefixIcon, color: AppColors.gris, size: 20),
+              )
+            : null,
+        prefixIconConstraints: const BoxConstraints(minWidth: 0, minHeight: 0),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide(color: AppColors.border),
@@ -590,23 +743,8 @@ class _VideoPreviewScreenState extends ConsumerState<VideoPreviewScreen> {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: AppColors.blanc),
+          borderSide: BorderSide(color: AppColors.violet, width: 1.5),
         ),
-      ),
-    );
-  }
-
-  InputDecoration _fieldDecoration() {
-    return InputDecoration(
-      filled: true,
-      fillColor: AppColors.surface,
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: AppColors.border),
-      ),
-      enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: AppColors.border),
       ),
     );
   }

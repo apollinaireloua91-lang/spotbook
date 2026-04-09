@@ -17,8 +17,9 @@ serve(async (req) => {
 
   try {
     const authHeader = req.headers.get("Authorization");
+    console.log("[dashboard] authHeader present:", !!authHeader, authHeader?.substring(0, 20));
     if (!authHeader) {
-      return jsonResponse({ error: "unauthorized" }, 401, undefined, req);
+      return jsonResponse({ error: "unauthorized", reason: "no_auth_header" }, 401, undefined, req);
     }
 
     const supabaseUrl = Deno.env.get("SUPABASE_URL") ?? "";
@@ -27,6 +28,7 @@ serve(async (req) => {
     const stripeSecret = Deno.env.get("STRIPE_SECRET_KEY") ?? "";
 
     if (!supabaseUrl || !serviceRoleKey || !stripeSecret) {
+      console.error("[dashboard] missing env:", { supabaseUrl: !!supabaseUrl, serviceRoleKey: !!serviceRoleKey, stripeSecret: !!stripeSecret });
       return jsonResponse({ error: "server_misconfiguration" }, 500, undefined, req);
     }
 
@@ -34,12 +36,12 @@ serve(async (req) => {
     const authClient = createClient(supabaseUrl, supabaseAnonKey, {
       global: { headers: { Authorization: authHeader } },
     });
-    const {
-      data: { user },
-    } = await authClient.auth.getUser();
-    if (!user) {
-      return jsonResponse({ error: "unauthorized" }, 401, undefined, req);
+    const { data: authData, error: authError } = await authClient.auth.getUser();
+    console.log("[dashboard] getUser result:", { userId: authData?.user?.id, error: authError?.message });
+    if (authError || !authData?.user) {
+      return jsonResponse({ error: "unauthorized", reason: "getUser_failed", detail: authError?.message }, 401, undefined, req);
     }
+    const user = authData.user;
 
     const supabase = createClient(supabaseUrl, serviceRoleKey);
 

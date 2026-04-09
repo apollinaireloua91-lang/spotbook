@@ -58,35 +58,46 @@ final class PublicProviderProfileFailure extends PublicProviderProfileState {
   List<Object?> get props => [message];
 }
 
+/// Weekly schedule entry for public display.
+class PublicDaySchedule {
+  const PublicDaySchedule({required this.dayName, required this.slots});
+  final String dayName;
+  final List<String> slots; // e.g. ["09:00 – 12:00", "14:00 – 18:00"]
+}
+
 final class PublicProviderProfileReady extends PublicProviderProfileState {
   const PublicProviderProfileReady({
     required this.data,
     required this.reviews,
     required this.isFollowedByMe,
     this.followBusy = false,
+    this.weeklySchedule = const [],
   });
 
   final ProviderProfileData data;
   final List<ReviewModel> reviews;
   final bool isFollowedByMe;
   final bool followBusy;
+  final List<PublicDaySchedule> weeklySchedule;
 
   PublicProviderProfileReady copyWith({
     ProviderProfileData? data,
     List<ReviewModel>? reviews,
     bool? isFollowedByMe,
     bool? followBusy,
+    List<PublicDaySchedule>? weeklySchedule,
   }) {
     return PublicProviderProfileReady(
       data: data ?? this.data,
       reviews: reviews ?? this.reviews,
       isFollowedByMe: isFollowedByMe ?? this.isFollowedByMe,
       followBusy: followBusy ?? this.followBusy,
+      weeklySchedule: weeklySchedule ?? this.weeklySchedule,
     );
   }
 
   @override
-  List<Object?> get props => [data, reviews, isFollowedByMe, followBusy];
+  List<Object?> get props => [data, reviews, isFollowedByMe, followBusy, weeklySchedule];
 }
 
 // ─── Bloc ─────────────────────────────────────────────────────────────────────
@@ -214,11 +225,14 @@ class PublicProviderProfileBloc
         followed = row != null;
       }
 
+      final schedule = await _fetchWeeklySchedule(id);
+
       emit(
         PublicProviderProfileReady(
           data: data,
           reviews: reviews,
           isFollowedByMe: followed,
+          weeklySchedule: schedule,
         ),
       );
     } catch (e) {
@@ -290,6 +304,45 @@ class PublicProviderProfileBloc
         },
       );
     } catch (_) {}
+  }
+
+  // ─── Fetch availability schedule for public display ─────────────────────────
+
+  static const _dayNames = ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'];
+
+  Future<List<PublicDaySchedule>> _fetchWeeklySchedule(String proId) async {
+    try {
+      final rows = await _supabase
+          .from('availability_rules')
+          .select('day_of_week, start_time, end_time')
+          .eq('pro_id', proId)
+          .order('day_of_week')
+          .order('start_time');
+
+      // Group by day_of_week (DB: 0=Sun ... 6=Sat)
+      final grouped = <int, List<String>>{};
+      for (final row in rows) {
+        final dow = row['day_of_week'] as int;
+        final start = (row['start_time'] as String).substring(0, 5);
+        final end = (row['end_time'] as String).substring(0, 5);
+        grouped.putIfAbsent(dow, () => []).add('$start – $end');
+      }
+
+      // Build list in Mon–Sun order (DB: 1=Mon ... 6=Sat, 0=Sun)
+      final schedule = <PublicDaySchedule>[];
+      for (final dbDow in [1, 2, 3, 4, 5, 6, 0]) {
+        final slots = grouped[dbDow];
+        if (slots != null && slots.isNotEmpty) {
+          schedule.add(PublicDaySchedule(
+            dayName: _dayNames[dbDow],
+            slots: slots,
+          ));
+        }
+      }
+      return schedule;
+    } catch (_) {
+      return [];
+    }
   }
 
   /// Get or create the client ↔ pro conversation.

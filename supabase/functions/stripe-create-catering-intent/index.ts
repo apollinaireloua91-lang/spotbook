@@ -130,13 +130,18 @@ serve(async (req) => {
       apiVersion: "2023-10-16",
     });
 
+    const totalPriceCents = Math.round((submission.total_amount ?? 0) * 100);
     const depositCents = Math.round(depositAmount * 100);
+    const serviceFeeCents = Math.round((submission.service_fee ?? 2.50) * 100);
+    const chargeAmount = depositCents + serviceFeeCents;
     const pro = submission.profiles_pro;
     const commissionRate = pro?.commission_rate ?? 0.18;
-    const applicationFee = Math.round(depositCents * commissionRate);
+    // Commission on FULL price + service fee — ALL goes to Spotbook
+    const fullCommission = Math.round(totalPriceCents * commissionRate);
+    const applicationFee = fullCommission + serviceFeeCents;
 
     const params: Record<string, unknown> = {
-      amount: depositCents,
+      amount: chargeAmount,
       currency: "cad",
       automatic_payment_methods: { enabled: true },
       metadata: {

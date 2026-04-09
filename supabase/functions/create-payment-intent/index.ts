@@ -88,7 +88,7 @@ serve(async (req) => {
     // Fetch booking to compute amount server-side
     const { data: booking, error: bookingErr } = await supabase
       .from("bookings")
-      .select("id, client_id, pro_id, deposit_amount, status, service_id")
+      .select("id, client_id, pro_id, deposit_amount, total_amount, service_fee, status, service_id")
       .eq("id", bookingId)
       .single();
 
@@ -105,8 +105,10 @@ serve(async (req) => {
       return jsonResponse({ error: "booking_not_payable" }, 400, undefined, req);
     }
 
-    // Server-calculated amount from booking record (in cents)
-    const amount = Math.round(booking.deposit_amount * 100);
+    // Server-calculated amount: deposit + service fee (in cents)
+    const depositCents = Math.round(booking.deposit_amount * 100);
+    const serviceFeeCents = Math.round((booking.service_fee ?? 2.50) * 100);
+    const amount = depositCents + serviceFeeCents;
     if (!isValidAmountCents(amount)) {
       return jsonResponse(
         { error: "invalid_booking_amount" },
@@ -157,9 +159,11 @@ serve(async (req) => {
       return jsonResponse({ error: data.error }, 429, undefined, req);
     }
 
-    const commissionRate = Number(pro.commission_rate ?? 0.12);
-    const rawFee = Math.round(amount * commissionRate);
-    const applicationFeeAmount = Math.min(rawFee, amount - 1);
+    const totalPriceCents = Math.round((booking.total_amount ?? 0) * 100);
+    const commissionRate = Number(pro.commission_rate ?? 0.18);
+    // Commission on FULL booking price + service fee — ALL goes to Spotbook
+    const fullCommission = Math.round(totalPriceCents * commissionRate);
+    const applicationFeeAmount = fullCommission + serviceFeeCents;
 
     const idempotencyKey =
       typeof body.idempotencyKey === "string" &&
@@ -173,9 +177,7 @@ serve(async (req) => {
         amount,
         currency: "cad",
         automatic_payment_methods: { enabled: true },
-        application_fee_amount: applicationFeeAmount > 0
-          ? applicationFeeAmount
-          : undefined,
+        application_fee_amount: applicationFeeAmount,
         transfer_data: {
           destination: pro.stripe_account_id,
         },

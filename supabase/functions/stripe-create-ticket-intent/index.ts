@@ -80,7 +80,10 @@ serve(async (req) => {
     if (!isValidAmount(Number(unitPrice))) {
       return jsonResponse({ error: "ticket amount invalide" }, 400);
     }
-    const commission = Math.round(totalCents * 0.12); // 12% event commission
+    const serviceFeeCents = Math.round(2.50 * quantity * 100); // $2.50/ticket
+    const chargeAmount = totalCents + serviceFeeCents;
+    // 12% event commission + service fee — ALL goes to Spotbook
+    const commission = Math.round(totalCents * 0.12) + serviceFeeCents;
 
     const rateLimitResp = await fetch(
       `${Deno.env.get("SUPABASE_URL")}/functions/v1/rate-limiter`,
@@ -109,7 +112,7 @@ serve(async (req) => {
       ticketType.events?.profiles_pro?.stripe_account_id;
 
     const params: Record<string, unknown> = {
-      amount: totalCents,
+      amount: chargeAmount,
       currency: "cad",
       metadata: {
         ticketTypeId,

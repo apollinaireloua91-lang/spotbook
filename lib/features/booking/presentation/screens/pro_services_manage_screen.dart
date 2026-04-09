@@ -408,8 +408,8 @@ class ProServicesManageScreen extends ConsumerWidget {
                               child: Slider(
                                 value: depositPctValue,
                                 min: 10,
-                                max: 50,
-                                divisions: 8,
+                                max: 30,
+                                divisions: 4,
                                 activeColor: AppColors.blanc,
                                 inactiveColor: AppColors.border,
                                 label: '${depositPctValue.toInt()} %',

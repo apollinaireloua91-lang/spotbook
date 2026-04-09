@@ -195,7 +195,7 @@ class _ProfileBody extends ConsumerWidget {
                     context.push('/edit-profile');
                   },
                   style: OutlinedButton.styleFrom(
-                    side: const BorderSide(color: Color(0xFFE0E0E0)),
+                    side: BorderSide(color: AppColors.border),
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(14),
@@ -204,7 +204,7 @@ class _ProfileBody extends ConsumerWidget {
                   child: Text(
                     'Edit Profile',
                     style: GoogleFonts.dmSans(
-                      color: const Color(0xFF0C0C0C),
+                      color: AppColors.blanc,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -613,14 +613,15 @@ class _SpecialActionsSection extends ConsumerWidget {
               width: double.infinity,
               padding: const EdgeInsets.symmetric(vertical: 16),
               decoration: BoxDecoration(
-                color: const Color(0xFFFDF2C3),
+                gradient: AppColors.gradientAccent,
                 borderRadius: BorderRadius.circular(14),
+                boxShadow: AppColors.primaryButtonShadow,
               ),
               child: Center(
                 child: Text(
                   'Become Pro',
                   style: GoogleFonts.dmSans(
-                    color: const Color(0xFF8039C5),
+                    color: AppColors.textOnPrimary,
                     fontSize: 15,
                     fontWeight: FontWeight.w600,
                   ),
@@ -636,17 +637,32 @@ class _SpecialActionsSection extends ConsumerWidget {
               width: double.infinity,
               padding: const EdgeInsets.symmetric(vertical: 16),
               decoration: BoxDecoration(
-                color: const Color(0xFFFDF2C3),
+                color: AppColors.logout.withAlpha(20),
                 borderRadius: BorderRadius.circular(14),
+                border: Border.all(
+                  color: AppColors.logout.withAlpha(60),
+                  width: 0.5,
+                ),
               ),
               child: Center(
-                child: Text(
-                  'Log out',
-                  style: GoogleFonts.dmSans(
-                    color: const Color(0xFFEF4444),
-                    fontSize: 15,
-                    fontWeight: FontWeight.w600,
-                  ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.logout_rounded,
+                      color: AppColors.logout,
+                      size: 18,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      'Log out',
+                      style: GoogleFonts.dmSans(
+                        color: AppColors.logout,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -706,7 +722,7 @@ class _SpecialActionsSection extends ConsumerWidget {
             child: Text(
               'Log out',
               style: GoogleFonts.dmSans(
-                color: AppColors.roseClair,
+                color: AppColors.logout,
                 fontWeight: FontWeight.w600,
               ),
             ),

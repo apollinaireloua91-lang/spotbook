@@ -468,6 +468,12 @@ class _ReadyBody extends StatelessWidget {
           ),
         ),
 
+        // ── AVAILABILITY SCHEDULE ──
+        if (state.weeklySchedule.isNotEmpty)
+          SliverToBoxAdapter(
+            child: _AvailabilityScheduleSection(schedule: state.weeklySchedule),
+          ),
+
         // ── CATERING SECTION (conditional — Cuisine/Traiteur/Chef) ──
         if (isCateringCategory(p.profession))
           SliverToBoxAdapter(
@@ -506,6 +512,97 @@ class _ReadyBody extends StatelessWidget {
   }
 }
 
+// ─── Availability Schedule Section ──────────────────────────────────────────
+
+class _AvailabilityScheduleSection extends StatelessWidget {
+  const _AvailabilityScheduleSection({required this.schedule});
+
+  final List<PublicDaySchedule> schedule;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: AppColors.surface,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: AppColors.border, width: 0.5),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(Icons.schedule_rounded, color: AppColors.violet, size: 18),
+                const SizedBox(width: 8),
+                Text(
+                  'Disponibilités',
+                  style: GoogleFonts.dmSans(
+                    color: AppColors.blanc,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            for (final day in schedule) ...[
+              Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(
+                      width: 36,
+                      child: Text(
+                        day.dayName,
+                        style: GoogleFonts.dmSans(
+                          color: AppColors.gris,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Wrap(
+                        spacing: 8,
+                        runSpacing: 4,
+                        children: day.slots.map((slot) {
+                          return Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: AppColors.violet.withValues(alpha: 0.12),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Text(
+                              slot,
+                              style: GoogleFonts.dmSans(
+                                color: AppColors.violet,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 // ─── Cover Section ──────────────────────────────────────────────────────────
 
 class _CoverSection extends StatelessWidget {
@@ -530,20 +627,26 @@ class _CoverSection extends StatelessWidget {
               imageUrl: provider.coverUrl!,
               fit: BoxFit.cover,
               placeholder: (_, __) => Container(
-                decoration: const BoxDecoration(
+                decoration: BoxDecoration(
                   gradient: LinearGradient(
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
-                    colors: [Color(0xFF2A1A50), Color(0xFF1A1030)],
+                    colors: [
+                      AppColors.violet.withAlpha(80),
+                      AppColors.fond,
+                    ],
                   ),
                 ),
               ),
               errorWidget: (_, __, ___) => Container(
-                decoration: const BoxDecoration(
+                decoration: BoxDecoration(
                   gradient: LinearGradient(
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
-                    colors: [Color(0xFF2A1A50), Color(0xFF1A1030)],
+                    colors: [
+                      AppColors.violet.withAlpha(80),
+                      AppColors.fond,
+                    ],
                   ),
                 ),
               ),

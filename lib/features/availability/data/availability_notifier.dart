@@ -201,13 +201,6 @@ class AvailabilityNotifier extends AsyncNotifier<AvailabilityState> {
           return 'Heure invalide pour ${DayRule.dayName(rule.dayOfWeek)} : l\'heure de fin doit être après le début.';
         }
       }
-      // Check overlaps
-      final sorted = <DaySlot>[...rule.slots]..sort((a, b) => a.startMinutes.compareTo(b.startMinutes));
-      for (int i = 1; i < sorted.length; i++) {
-        if (sorted[i].startMinutes < sorted[i - 1].endMinutes) {
-          return 'Créneaux qui se chevauchent pour ${DayRule.dayName(rule.dayOfWeek)}.';
-        }
-      }
     }
     return null;
   }

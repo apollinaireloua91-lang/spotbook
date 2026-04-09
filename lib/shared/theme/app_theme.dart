@@ -1,18 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'app_colors.dart';
+
+/// Material ThemeData for Spotbook — derived from [AppColors].
+///
+/// Both themes are built from AppColors constants so the palette stays
+/// in a single source of truth.
 abstract final class AppTheme {
   // ═════════════════════════════════════════════════════════════════════════════
-  // LIGHT THEME — White / Beige / Violet (#8039C5)
+  // LIGHT THEME — Clean white / soft gray / violet (#8039C5)
   // ═════════════════════════════════════════════════════════════════════════════
 
-  static const _lFond = Color(0xFFF3F4F1);
+  static const _lFond = Color(0xFFF5F5F3);
   static const _lSurface = Color(0xFFFFFFFF);
-  static const _lSurfaceAlt = Color(0xFFF9F9F7);
-  static const _lBorder = Color(0xFFE0E0E0);
+  static const _lSurfaceAlt = Color(0xFFF7F7F5);
+  static const _lBorder = Color(0xFFE5E5E5);
   static const _lPrimary = Color(0xFF8039C5);
   static const _lPrimaryLight = Color(0xFF9B5DD6);
-  static const _lSecondary = Color(0xFFFDF2C3);
   static const _lText = Color(0xFF0C0C0C);
   static const _lTextSecondary = Color(0xFF6B6B6B);
   static const _lTextDisabled = Color(0xFFB0B0B0);
@@ -26,7 +31,7 @@ abstract final class AppTheme {
         colorScheme: const ColorScheme.light(
           surface: _lSurface,
           primary: _lPrimary,
-          secondary: _lSecondary,
+          secondary: _lPrimaryLight,
           error: _lError,
           onPrimary: _lOnPrimary,
           onSurface: _lText,
@@ -56,7 +61,7 @@ abstract final class AppTheme {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
             ),
-            minimumSize: const Size(double.infinity, 48),
+            minimumSize: const Size(double.infinity, 50),
             textStyle: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w600,
@@ -71,7 +76,7 @@ abstract final class AppTheme {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
             ),
-            minimumSize: const Size(double.infinity, 48),
+            minimumSize: const Size(double.infinity, 50),
             textStyle: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w600,
@@ -126,15 +131,15 @@ abstract final class AppTheme {
           elevation: 0,
         ),
         snackBarTheme: SnackBarThemeData(
-          backgroundColor: _lSurface,
-          contentTextStyle: const TextStyle(color: _lText),
+          backgroundColor: _lText,
+          contentTextStyle: const TextStyle(color: _lOnPrimary),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
           behavior: SnackBarBehavior.floating,
         ),
         dialogTheme: DialogThemeData(
-          backgroundColor: _lFond,
+          backgroundColor: _lSurface,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
           ),
@@ -159,7 +164,7 @@ abstract final class AppTheme {
         ),
         progressIndicatorTheme: const ProgressIndicatorThemeData(
           color: _lPrimary,
-          linearTrackColor: _lSurface,
+          linearTrackColor: _lSurfaceAlt,
         ),
         switchTheme: SwitchThemeData(
           thumbColor: WidgetStateProperty.resolveWith((states) {
@@ -177,12 +182,12 @@ abstract final class AppTheme {
           headlineLarge: TextStyle(
             color: _lText,
             fontWeight: FontWeight.bold,
-            letterSpacing: 0.5,
+            letterSpacing: 0.3,
           ),
           headlineMedium: TextStyle(
             color: _lText,
             fontWeight: FontWeight.bold,
-            letterSpacing: 0.5,
+            letterSpacing: 0.3,
           ),
           titleLarge: TextStyle(
             color: _lText,
@@ -209,20 +214,19 @@ abstract final class AppTheme {
       );
 
   // ═════════════════════════════════════════════════════════════════════════════
-  // DARK THEME — Black / Neon Violet (#8E05C2)
+  // DARK THEME — True black #000000 + deep purple (#8E05C2)
   // ═════════════════════════════════════════════════════════════════════════════
 
   static const _dFond = Color(0xFF000000);
-  static const _dSurface = Color(0xFF3E065F);
-  static const _dSurfaceAlt = Color(0xFF1A0330);
-  static const _dBorder = Color(0xFF4A0A6E);
+  static const _dSurface = Color(0xFF121218);
+  static const _dSurfaceAlt = Color(0xFF0A0A10);
+  static const _dBorder = Color(0xFF1E1E2E);
   static const _dPrimary = Color(0xFF8E05C2);
-  static const _dPrimaryLight = Color(0xFFA020F0);
+  static const _dPrimaryLight = Color(0xFFA855F7);
   static const _dText = Color(0xFFFFFFFF);
-  static const _dTextSecondary = Color(0xFFB8B8CC);
-  static const _dTextDisabled = Color(0xFF4A4A5A);
+  static const _dTextSecondary = Color(0xFFA0A0B8);
+  static const _dTextDisabled = Color(0xFF555566);
   static const _dError = Color(0xFFEF4444);
-  static const _dNavBar = Color(0xFF0A0A0A);
 
   static ThemeData get dark => ThemeData.dark().copyWith(
         scaffoldBackgroundColor: _dFond,
@@ -231,6 +235,7 @@ abstract final class AppTheme {
         colorScheme: const ColorScheme.dark(
           surface: _dSurface,
           primary: _dPrimary,
+          secondary: _dPrimaryLight,
           error: _dError,
           onPrimary: _dText,
           onSurface: _dText,
@@ -246,7 +251,7 @@ abstract final class AppTheme {
           systemOverlayStyle: SystemUiOverlayStyle.light,
         ),
         bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-          backgroundColor: _dNavBar,
+          backgroundColor: _dFond,
           selectedItemColor: _dPrimaryLight,
           unselectedItemColor: _dTextDisabled,
           type: BottomNavigationBarType.fixed,
@@ -260,7 +265,7 @@ abstract final class AppTheme {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
             ),
-            minimumSize: const Size(double.infinity, 48),
+            minimumSize: const Size(double.infinity, 50),
             textStyle: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w600,
@@ -275,7 +280,7 @@ abstract final class AppTheme {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
             ),
-            minimumSize: const Size(double.infinity, 48),
+            minimumSize: const Size(double.infinity, 50),
             textStyle: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w600,
@@ -320,7 +325,7 @@ abstract final class AppTheme {
           margin: EdgeInsets.zero,
         ),
         bottomSheetTheme: const BottomSheetThemeData(
-          backgroundColor: _dFond,
+          backgroundColor: _dSurfaceAlt,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.only(
               topLeft: Radius.circular(24),
@@ -338,7 +343,7 @@ abstract final class AppTheme {
           behavior: SnackBarBehavior.floating,
         ),
         dialogTheme: DialogThemeData(
-          backgroundColor: _dSurfaceAlt,
+          backgroundColor: _dSurface,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
           ),
@@ -367,12 +372,12 @@ abstract final class AppTheme {
         ),
         switchTheme: SwitchThemeData(
           thumbColor: WidgetStateProperty.resolveWith((states) {
-            if (states.contains(WidgetState.selected)) return _dPrimary;
+            if (states.contains(WidgetState.selected)) return _dPrimaryLight;
             return _dTextDisabled;
           }),
           trackColor: WidgetStateProperty.resolveWith((states) {
             if (states.contains(WidgetState.selected)) {
-              return _dPrimaryLight.withAlpha(80);
+              return _dPrimary.withAlpha(120);
             }
             return _dBorder;
           }),
@@ -381,12 +386,12 @@ abstract final class AppTheme {
           headlineLarge: TextStyle(
             color: _dText,
             fontWeight: FontWeight.bold,
-            letterSpacing: 0.5,
+            letterSpacing: 0.3,
           ),
           headlineMedium: TextStyle(
             color: _dText,
             fontWeight: FontWeight.bold,
-            letterSpacing: 0.5,
+            letterSpacing: 0.3,
           ),
           titleLarge: TextStyle(
             color: _dText,

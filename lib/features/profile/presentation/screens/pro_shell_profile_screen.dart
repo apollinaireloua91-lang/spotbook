@@ -1560,7 +1560,7 @@ class _SettingsTile extends StatelessWidget {
 }
 
 // ═════════════════════════════════════════════════════════════════════════════
-// LOG OUT BUTTON — rose style, functional
+// LOG OUT BUTTON — red destructive style, functional
 // ═════════════════════════════════════════════════════════════════════════════
 
 class _LogOutButton extends ConsumerWidget {
@@ -1605,7 +1605,7 @@ class _LogOutButton extends ConsumerWidget {
                 child: Text(
                   'Log out',
                   style: GoogleFonts.dmSans(
-                    color: AppColors.roseClair,
+                    color: AppColors.logout,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -1624,19 +1624,34 @@ class _LogOutButton extends ConsumerWidget {
         }
       },
       child: Container(
-        height: 48,
+        height: 52,
         decoration: BoxDecoration(
-          color: AppColors.rose.withAlpha(30),
+          color: AppColors.logout.withAlpha(20),
           borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: AppColors.logout.withAlpha(60),
+            width: 0.5,
+          ),
         ),
         child: Center(
-          child: Text(
-            'Log out',
-            style: GoogleFonts.dmSans(
-              color: AppColors.roseClair,
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-            ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.logout_rounded,
+                color: AppColors.logout,
+                size: 18,
+              ),
+              const SizedBox(width: 8),
+              Text(
+                'Log out',
+                style: GoogleFonts.dmSans(
+                  color: AppColors.logout,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
           ),
         ),
       ),

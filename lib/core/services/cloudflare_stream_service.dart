@@ -45,17 +45,34 @@ class CloudflareStreamService {
     String? mimeType,
     int? fileSizeBytes,
   }) async {
-    await _supabase.auth.refreshSession();
+    // Refresh session — tolerate failure (token might still be valid).
+    try {
+      await _supabase.auth.refreshSession();
+    } catch (_) {
+      // Swallow: we'll retry on 401 below.
+    }
 
     final body = <String, dynamic>{};
     if (mimeType != null) body['mimeType'] = mimeType;
     if (fileSizeBytes != null) body['fileSizeBytes'] = fileSizeBytes;
 
-    final response = await _supabase.functions.invoke(
+    var response = await _supabase.functions.invoke(
       'generate-cloudflare-upload-url',
       body: body,
       method: HttpMethod.post,
     );
+
+    // Retry once on 401 — force a fresh session and re-invoke.
+    if (response.status == 401) {
+      try {
+        await _supabase.auth.refreshSession();
+      } catch (_) {}
+      response = await _supabase.functions.invoke(
+        'generate-cloudflare-upload-url',
+        body: body,
+        method: HttpMethod.post,
+      );
+    }
 
     if (response.status != 200) {
       final error = response.data is Map

@@ -207,6 +207,13 @@ class _SettingsBody extends ConsumerWidget {
                   patchSettings({'cancellation_policy': v});
                 },
               ),
+              const SizedBox(height: 8),
+              _PolicyDescription(
+                policy: ProviderSettingsScreen._policies
+                        .contains(data.cancellationPolicy)
+                    ? data.cancellationPolicy
+                    : 'flexible',
+              ),
               Divider(color: AppColors.border, height: 24),
               _DropdownRow<int>(
                 label: l10n.proSettingsMinAdvance,
@@ -273,6 +280,8 @@ class _SettingsBody extends ConsumerWidget {
                   height: 1.45,
                 ),
               ),
+              const SizedBox(height: 12),
+              _CommissionBreakdown(),
             ],
           ),
         ),
@@ -989,6 +998,155 @@ class _MaxBookingsFieldState extends State<_MaxBookingsField> {
           ),
           onEditingComplete: _commit,
           onSubmitted: (_) => _commit(),
+        ),
+      ],
+    );
+  }
+}
+
+class _PolicyDescription extends StatelessWidget {
+  const _PolicyDescription({required this.policy});
+
+  final String policy;
+
+  @override
+  Widget build(BuildContext context) {
+    final (icon, text) = switch (policy) {
+      'moderate' => (
+        Icons.schedule_outlined,
+        'Clients can cancel up to 24 hours before the appointment for a full refund. '
+            'Within 24h, 50% of the deposit is kept.',
+      ),
+      'strict' => (
+        Icons.lock_outline,
+        'No refund once the booking is confirmed. The full deposit is kept '
+            'regardless of when the client cancels.',
+      ),
+      _ => (
+        Icons.check_circle_outline,
+        'Clients can cancel up to 12 hours before the appointment for a full refund. '
+            'Within 12h, the deposit is kept.',
+      ),
+    };
+
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: AppColors.violet.withAlpha(12),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: AppColors.violet.withAlpha(30)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, color: AppColors.violetClair, size: 18),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              text,
+              style: GoogleFonts.dmSans(
+                color: AppColors.gris,
+                fontSize: 12,
+                height: 1.5,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _CommissionBreakdown extends StatelessWidget {
+  const _CommissionBreakdown();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: AppColors.surfaceAlt,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppColors.border),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Commission rates',
+            style: GoogleFonts.sora(
+              color: AppColors.blanc,
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: 10),
+          _CommissionLine(
+            label: 'Bookings & Catering',
+            value: '18%',
+            icon: Icons.calendar_today_outlined,
+          ),
+          const SizedBox(height: 6),
+          _CommissionLine(
+            label: 'Event tickets',
+            value: '12%',
+            icon: Icons.confirmation_number_outlined,
+          ),
+          const SizedBox(height: 6),
+          _CommissionLine(
+            label: 'Client service fee',
+            value: '\$2.50 / booking',
+            icon: Icons.person_outline,
+          ),
+          const SizedBox(height: 10),
+          Text(
+            'Commission is deducted automatically before payout. '
+            'The client service fee is charged to the client, not to you.',
+            style: GoogleFonts.dmSans(
+              color: AppColors.gris,
+              fontSize: 11,
+              height: 1.45,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _CommissionLine extends StatelessWidget {
+  const _CommissionLine({
+    required this.label,
+    required this.value,
+    required this.icon,
+  });
+
+  final String label;
+  final String value;
+  final IconData icon;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Icon(icon, color: AppColors.violetClair, size: 16),
+        const SizedBox(width: 8),
+        Expanded(
+          child: Text(
+            label,
+            style: GoogleFonts.dmSans(
+              color: AppColors.blanc,
+              fontSize: 13,
+            ),
+          ),
+        ),
+        Text(
+          value,
+          style: GoogleFonts.dmSans(
+            color: AppColors.violetClair,
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+          ),
         ),
       ],
     );

@@ -105,7 +105,7 @@ class _ProfileHeroState extends State<ProfileHero>
                             style: GoogleFonts.dmSans(
                               fontSize: 28,
                               fontWeight: FontWeight.w800,
-                              color: const Color(0xFFFFFFFF),
+                              color: Colors.white,
                             ),
                           ),
                         ),
