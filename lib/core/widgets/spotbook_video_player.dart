@@ -244,6 +244,7 @@ class _SpotbookVideoPlayerState extends State<SpotbookVideoPlayer>
     }
 
     return GestureDetector(
+      behavior: HitTestBehavior.opaque,
       onTap: widget.showControls ? null : _togglePlayPause,
       child: Stack(
         fit: StackFit.expand,

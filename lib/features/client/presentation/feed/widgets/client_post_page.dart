@@ -109,6 +109,7 @@ class _ClientPostPageState extends State<ClientPostPage> {
             !hasService && !hasEvent;
 
     return GestureDetector(
+      behavior: HitTestBehavior.opaque,
       onTap: _onSingleTap,
       onDoubleTap: _onDoubleTap,
       child: Stack(
