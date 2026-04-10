@@ -59,6 +59,12 @@ abstract final class AppColors {
   static Color get ctaBookingStripBg => const Color(0xCC1A1A2E);
   static Color get ctaCateringStripBg => const Color(0xCC2E1A08);
 
+  // ─── Semantic aliases (design tokens) ───
+  static Color get card => surface;
+  static Color get textPrimary => blanc;
+  static Color get textSecondary => gris;
+  static Color get highlight => isDark ? const Color(0xFF2E1A08) : const Color(0xFFFDF2C3);
+
   // ─── Nav bar ───
   static Color get navBarBg => isDark ? const Color(0xFF000000) : const Color(0xFFF5F5F3);
 

@@ -4,10 +4,17 @@ import 'package:flutter/material.dart';
 
 import '../../../../../shared/theme/app_colors.dart';
 
+/// Big 80px heart that appears at tap position with elasticOut animation.
+/// If [position] is null, defaults to center of parent.
 class DoubleTapHeart extends StatefulWidget {
-  const DoubleTapHeart({super.key, required this.onDismissed});
+  const DoubleTapHeart({
+    super.key,
+    required this.onDismissed,
+    this.position,
+  });
 
   final VoidCallback onDismissed;
+  final Offset? position;
 
   @override
   State<DoubleTapHeart> createState() => _DoubleTapHeartState();
@@ -18,7 +25,6 @@ class _DoubleTapHeartState extends State<DoubleTapHeart>
   late final AnimationController _mainCtrl;
   late final Animation<double> _scale;
   late final Animation<double> _opacity;
-  late final Animation<double> _rotationY;
 
   late final List<_ParticleAnim> _particles;
 
@@ -28,24 +34,24 @@ class _DoubleTapHeartState extends State<DoubleTapHeart>
 
     _mainCtrl = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 700),
+      duration: const Duration(milliseconds: 800),
     );
 
+    // elasticOut for that satisfying bounce
     _scale = TweenSequence<double>([
-      TweenSequenceItem(tween: Tween(begin: 0.5, end: 1.0), weight: 35),
-      TweenSequenceItem(tween: Tween(begin: 1.0, end: 1.0), weight: 30),
+      TweenSequenceItem(tween: Tween(begin: 0.3, end: 1.0), weight: 40),
+      TweenSequenceItem(tween: Tween(begin: 1.0, end: 1.0), weight: 25),
       TweenSequenceItem(tween: Tween(begin: 1.0, end: 0.8), weight: 35),
-    ]).animate(CurvedAnimation(parent: _mainCtrl, curve: Curves.easeOut));
+    ]).animate(CurvedAnimation(
+      parent: _mainCtrl,
+      curve: Curves.elasticOut,
+    ));
 
     _opacity = TweenSequence<double>([
-      TweenSequenceItem(tween: Tween(begin: 0.0, end: 1.0), weight: 25),
-      TweenSequenceItem(tween: Tween(begin: 1.0, end: 1.0), weight: 35),
+      TweenSequenceItem(tween: Tween(begin: 0.0, end: 1.0), weight: 20),
+      TweenSequenceItem(tween: Tween(begin: 1.0, end: 1.0), weight: 40),
       TweenSequenceItem(tween: Tween(begin: 1.0, end: 0.0), weight: 40),
     ]).animate(_mainCtrl);
-
-    _rotationY = Tween<double>(begin: -0.09, end: 0.0).animate(
-      CurvedAnimation(parent: _mainCtrl, curve: Curves.easeOut),
-    );
 
     // 6 mini particle hearts
     final rng = Random();
@@ -121,21 +127,15 @@ class _DoubleTapHeartState extends State<DoubleTapHeart>
                   );
                 },
               ),
-            // Main heart with 3D perspective
-            Transform(
-              alignment: Alignment.center,
-              transform: Matrix4.identity()
-                ..setEntry(3, 2, 0.001)
-                ..rotateY(_rotationY.value),
-              child: Opacity(
-                opacity: _opacity.value,
-                child: Transform.scale(
-                  scale: _scale.value,
-                  child: Icon(
-                    Icons.favorite,
-                    color: AppColors.rose,
-                    size: 80,
-                  ),
+            // Main heart — 80px with elasticOut
+            Opacity(
+              opacity: _opacity.value,
+              child: Transform.scale(
+                scale: _scale.value,
+                child: Icon(
+                  Icons.favorite,
+                  color: AppColors.rose,
+                  size: 80,
                 ),
               ),
             ),

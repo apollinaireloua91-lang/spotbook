@@ -2,6 +2,8 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_fonts/google_fonts.dart';
+
 import '../../../../../shared/theme/app_colors.dart';
 import '../../../../feed/data/feed_notifier.dart';
 import '../cubit/client_feed_cubit.dart';
@@ -19,31 +21,53 @@ class ClientTopBar extends StatelessWidget {
           p.unreadMessages != c.unreadMessages,
       builder: (context, state) {
         final cubit = context.read<ClientFeedCubit>();
-        return SafeArea(
-          bottom: false,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: Row(
-              children: [
-                // LEFT — spacer for balance
-                const SizedBox(width: 34),
-                const Spacer(),
-                // CENTER — Tab pills
-                _FeedTabGroup(
-                  activeTab: state.activeTab,
-                  onTabChanged: cubit.switchTab,
-                ),
-                const Spacer(),
-                // RIGHT — Bell only
-                _TopBarButton(
-                  icon: Icons.notifications_outlined,
-                  dotColor: AppColors.rose,
-                  hasUnread: state.unreadBookings > 0 ||
-                      state.unreadTickets > 0 ||
-                      state.unreadMessages > 0,
-                  onTap: () => _showNotificationsSheet(context),
-                ),
+        return Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                Color(0x99000000), // black 60%
+                Color(0x66000000), // black 40%
+                Color(0x00000000), // transparent
               ],
+              stops: [0.0, 0.6, 1.0],
+            ),
+          ),
+          child: SafeArea(
+            bottom: false,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Row(
+                children: [
+                  // LEFT — Spotbook logo
+                  Text(
+                    'Spotbook',
+                    style: GoogleFonts.dmSans(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: -0.3,
+                    ),
+                  ),
+                  const Spacer(),
+                  // CENTER — Tab pills with glass effect
+                  _FeedTabGroup(
+                    activeTab: state.activeTab,
+                    onTabChanged: cubit.switchTab,
+                  ),
+                  const Spacer(),
+                  // RIGHT — Bell in glass circle
+                  _TopBarButton(
+                    icon: Icons.notifications_outlined,
+                    dotColor: AppColors.rose,
+                    hasUnread: state.unreadBookings > 0 ||
+                        state.unreadTickets > 0 ||
+                        state.unreadMessages > 0,
+                    onTap: () => _showNotificationsSheet(context),
+                  ),
+                ],
+              ),
             ),
           ),
         );
@@ -72,26 +96,33 @@ class _FeedTabGroup extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(3),
-      decoration: BoxDecoration(
-        color: Colors.black.withAlpha(77),
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          _TabButton(
-            label: 'Discover',
-            isActive: activeTab == FeedTab.discover,
-            onTap: () => onTabChanged(FeedTab.discover),
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(12),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+        child: Container(
+          padding: const EdgeInsets.all(3),
+          decoration: BoxDecoration(
+            color: Colors.white.withAlpha(38), // 15% opacity
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: Colors.white.withAlpha(20)),
           ),
-          _TabButton(
-            label: 'Following',
-            isActive: activeTab == FeedTab.following,
-            onTap: () => onTabChanged(FeedTab.following),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _TabButton(
+                label: 'Discover',
+                isActive: activeTab == FeedTab.discover,
+                onTap: () => onTabChanged(FeedTab.discover),
+              ),
+              _TabButton(
+                label: 'Following',
+                isActive: activeTab == FeedTab.following,
+                onTap: () => onTabChanged(FeedTab.following),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
@@ -115,19 +146,19 @@ class _TabButton extends StatelessWidget {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 250),
         curve: Curves.easeOut,
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
           color: isActive
-              ? Colors.white.withAlpha(51)
+              ? Colors.white.withAlpha(51) // 20% white for active
               : Colors.transparent,
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(9),
         ),
         child: AnimatedDefaultTextStyle(
           duration: const Duration(milliseconds: 200),
           style: TextStyle(
             color: isActive
                 ? AppColors.textOnVideo
-                : AppColors.textOnVideo.withAlpha(115),
+                : AppColors.textOnVideo.withAlpha(140),
             fontSize: 13,
             fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
           ),
@@ -138,7 +169,7 @@ class _TabButton extends StatelessWidget {
   }
 }
 
-/// Shared top bar button with pulsing colored dot — used for Client feed.
+/// Glass circle button with pulsing colored dot.
 class _TopBarButton extends StatefulWidget {
   const _TopBarButton({
     required this.icon,
@@ -201,16 +232,16 @@ class _TopBarButtonState extends State<_TopBarButton>
     return GestureDetector(
       onTap: widget.onTap,
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(11),
+        borderRadius: BorderRadius.circular(17),
         child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
           child: Container(
             width: 34,
             height: 34,
             decoration: BoxDecoration(
-              color: Colors.black.withAlpha(77),
-              borderRadius: BorderRadius.circular(11),
-              border: Border.all(color: Colors.white.withAlpha(26)),
+              color: Colors.white.withAlpha(38), // 15% glass
+              borderRadius: BorderRadius.circular(17),
+              border: Border.all(color: Colors.white.withAlpha(20)),
             ),
             child: Stack(
               children: [
@@ -223,8 +254,8 @@ class _TopBarButtonState extends State<_TopBarButton>
                 ),
                 if (widget.hasUnread)
                   Positioned(
-                    top: 4,
-                    right: 4,
+                    top: 5,
+                    right: 5,
                     child: AnimatedBuilder(
                       animation: _pulseCtrl,
                       builder: (context, child) {
@@ -255,7 +286,7 @@ class _TopBarButtonState extends State<_TopBarButton>
   }
 }
 
-/// Placeholder notifications bottom sheet for Client.
+/// Notifications bottom sheet for Client.
 class _ClientNotificationsSheet extends StatelessWidget {
   const _ClientNotificationsSheet();
 

@@ -6,6 +6,9 @@ import 'package:go_router/go_router.dart';
 import '../../../../../shared/theme/app_colors.dart';
 import '../../../../feed/domain/video_model.dart';
 
+/// Right action column for Client feed.
+/// Order: Avatar (violet ring + follow badge) → Like → Comment → Bookmark → Share.
+/// Icons 28px, spacing 18px, counts 11px white, no text labels.
 class ClientRightColumn extends StatelessWidget {
   const ClientRightColumn({
     super.key,
@@ -29,7 +32,7 @@ class ClientRightColumn extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        // Pro avatar + follow badge
+        // Pro avatar with violet ring + "+" badge
         _ProAvatarWithFollow(
           proId: video.proId,
           avatarUrl: video.proAvatarUrl,
@@ -37,8 +40,8 @@ class ClientRightColumn extends StatelessWidget {
           isFollowed: video.isFollowed,
           onFollowTap: onToggleFollow,
         ),
-        const SizedBox(height: 20),
-        // Like — heart icon only
+        const SizedBox(height: 18),
+        // Like
         _AnimatedActionIcon(
           icon: video.isLiked ? Icons.favorite : Icons.favorite_border,
           color: video.isLiked ? Colors.red : AppColors.textOnVideo,
@@ -49,7 +52,7 @@ class ClientRightColumn extends StatelessWidget {
           },
           animate: video.isLiked,
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: 18),
         // Comment — CLIENT EXCLUSIVE
         _ActionIcon(
           icon: Icons.chat_bubble_outline,
@@ -57,8 +60,8 @@ class ClientRightColumn extends StatelessWidget {
           count: video.commentsCount,
           onTap: onCommentTap,
         ),
-        const SizedBox(height: 16),
-        // Save/Bookmark — NO label
+        const SizedBox(height: 18),
+        // Bookmark
         _AnimatedActionIcon(
           icon: video.isSaved ? Icons.bookmark : Icons.bookmark_border,
           color: video.isSaved ? AppColors.violet : AppColors.textOnVideo,
@@ -69,24 +72,19 @@ class ClientRightColumn extends StatelessWidget {
           },
           animate: video.isSaved,
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: 18),
         // Share
         _ActionIcon(
           icon: Icons.share_outlined,
           color: AppColors.textOnVideo,
           onTap: onShareTap,
         ),
-        // Music indicator (conditional)
-        if (video.spotifyTrackTitle != null) ...[
-          const SizedBox(height: 16),
-          _SpinningMusicDisc(),
-        ],
       ],
     );
   }
 }
 
-// ── Naked action icon + optional count ──────────────────────────────────────
+// ── Action icon + optional count ────────────────────────────────────────────
 
 class _ActionIcon extends StatelessWidget {
   const _ActionIcon({
@@ -111,7 +109,7 @@ class _ActionIcon extends StatelessWidget {
           Icon(
             icon,
             color: color,
-            size: 32,
+            size: 28,
             shadows: const [
               Shadow(
                 color: Color(0xCC000000),
@@ -130,17 +128,13 @@ class _ActionIcon extends StatelessWidget {
               _formatCount(count!),
               style: const TextStyle(
                 color: Colors.white,
-                fontSize: 12,
+                fontSize: 11,
                 fontWeight: FontWeight.w700,
                 shadows: [
                   Shadow(
                     color: Color(0xCC000000),
                     blurRadius: 8,
                     offset: Offset(0, 1),
-                  ),
-                  Shadow(
-                    color: Color(0x66000000),
-                    blurRadius: 4,
                   ),
                 ],
               ),
@@ -222,7 +216,7 @@ class _AnimatedActionIconState extends State<_AnimatedActionIcon>
             child: Icon(
               widget.icon,
               color: widget.color,
-              size: 32,
+              size: 28,
               shadows: const [
                 Shadow(
                   color: Color(0xCC000000),
@@ -242,17 +236,13 @@ class _AnimatedActionIconState extends State<_AnimatedActionIcon>
               _formatCount(widget.count!),
               style: const TextStyle(
                 color: Colors.white,
-                fontSize: 12,
+                fontSize: 11,
                 fontWeight: FontWeight.w700,
                 shadows: [
                   Shadow(
                     color: Color(0xCC000000),
                     blurRadius: 8,
                     offset: Offset(0, 1),
-                  ),
-                  Shadow(
-                    color: Color(0x66000000),
-                    blurRadius: 4,
                   ),
                 ],
               ),
@@ -264,7 +254,7 @@ class _AnimatedActionIconState extends State<_AnimatedActionIcon>
   }
 }
 
-// ── Pro avatar with follow badge ────────────────────────────────────────────
+// ── Pro avatar with violet ring + follow badge ──────────────────────────────
 
 class _ProAvatarWithFollow extends StatefulWidget {
   const _ProAvatarWithFollow({
@@ -328,134 +318,99 @@ class _ProAvatarWithFollowState extends State<_ProAvatarWithFollow>
     return GestureDetector(
       onTap: () => context.push('/pro/${widget.proId}'),
       child: SizedBox(
-        width: 56,
-        height: 62,
+        width: 52,
+        height: 58,
         child: Stack(
           clipBehavior: Clip.none,
           children: [
-            // Avatar
+            // Avatar with violet ring
             Container(
-              width: 48,
-              height: 48,
-              margin: const EdgeInsets.only(left: 4),
+              width: 46,
+              height: 46,
+              margin: const EdgeInsets.only(left: 3),
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                border: Border.all(color: AppColors.textOnVideo, width: 2),
                 gradient: AppColors.gradientAccent,
               ),
-              child: widget.avatarUrl != null
-                  ? ClipOval(
-                      child: CachedNetworkImage(
-                        imageUrl: widget.avatarUrl!,
-                        fit: BoxFit.cover,
-                        width: 44,
-                        height: 44,
-                        errorWidget: (_, __, ___) => Center(
-                          child: Text(
-                            initial,
-                            style: const TextStyle(
-                              color: AppColors.textOnVideo,
-                              fontWeight: FontWeight.w700,
-                              fontSize: 16,
+              padding: const EdgeInsets.all(2),
+              child: Container(
+                decoration: const BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.black,
+                ),
+                padding: const EdgeInsets.all(1),
+                child: widget.avatarUrl != null
+                    ? ClipOval(
+                        child: CachedNetworkImage(
+                          imageUrl: widget.avatarUrl!,
+                          fit: BoxFit.cover,
+                          width: 40,
+                          height: 40,
+                          errorWidget: (_, __, ___) => Center(
+                            child: Text(
+                              initial,
+                              style: const TextStyle(
+                                color: AppColors.textOnVideo,
+                                fontWeight: FontWeight.w700,
+                                fontSize: 16,
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                    )
-                  : Center(
-                      child: Text(
-                        initial,
-                        style: const TextStyle(
-                          color: AppColors.textOnVideo,
-                          fontWeight: FontWeight.w700,
-                          fontSize: 16,
+                      )
+                    : Center(
+                        child: Text(
+                          initial,
+                          style: const TextStyle(
+                            color: AppColors.textOnVideo,
+                            fontWeight: FontWeight.w700,
+                            fontSize: 16,
+                          ),
                         ),
                       ),
-                    ),
+              ),
             ),
-            // Follow badge
+            // Follow "+" badge
             Positioned(
               bottom: 0,
-              right: 6,
-              child: GestureDetector(
-                onTap: () {
-                  HapticFeedback.lightImpact();
-                  widget.onFollowTap();
-                },
-                child: AnimatedBuilder(
-                  animation: _badgeScale,
-                  builder: (context, child) {
-                    return Transform.scale(
-                      scale: _badgeScale.value,
-                      child: child,
-                    );
+              left: 0,
+              right: 0,
+              child: Center(
+                child: GestureDetector(
+                  onTap: () {
+                    HapticFeedback.lightImpact();
+                    widget.onFollowTap();
                   },
-                  child: Container(
-                    width: 18,
-                    height: 18,
-                    decoration: BoxDecoration(
-                      color: widget.isFollowed
-                          ? AppColors.success
-                          : AppColors.violet,
-                      shape: BoxShape.circle,
-                      border: Border.all(color: AppColors.textOnVideo, width: 1.5),
-                    ),
-                    child: Icon(
-                      widget.isFollowed ? Icons.check : Icons.add,
-                      color: AppColors.textOnVideo,
-                      size: 11,
+                  child: AnimatedBuilder(
+                    animation: _badgeScale,
+                    builder: (context, child) {
+                      return Transform.scale(
+                        scale: _badgeScale.value,
+                        child: child,
+                      );
+                    },
+                    child: Container(
+                      width: 18,
+                      height: 18,
+                      decoration: BoxDecoration(
+                        color: widget.isFollowed
+                            ? AppColors.success
+                            : AppColors.violet,
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                            color: AppColors.textOnVideo, width: 1.5),
+                      ),
+                      child: Icon(
+                        widget.isFollowed ? Icons.check : Icons.add,
+                        color: AppColors.textOnVideo,
+                        size: 11,
+                      ),
                     ),
                   ),
                 ),
               ),
             ),
           ],
-        ),
-      ),
-    );
-  }
-}
-
-// ── Spinning music disc ─────────────────────────────────────────────────────
-
-class _SpinningMusicDisc extends StatefulWidget {
-  @override
-  State<_SpinningMusicDisc> createState() => _SpinningMusicDiscState();
-}
-
-class _SpinningMusicDiscState extends State<_SpinningMusicDisc>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _spinCtrl;
-
-  @override
-  void initState() {
-    super.initState();
-    _spinCtrl = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 4),
-    )..repeat();
-  }
-
-  @override
-  void dispose() {
-    _spinCtrl.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return RotationTransition(
-      turns: _spinCtrl,
-      child: Container(
-        width: 36,
-        height: 36,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          gradient: AppColors.gradientAccent,
-          border: Border.all(color: AppColors.textOnVideo.withAlpha(51), width: 2),
-        ),
-        child: const Center(
-          child: Icon(Icons.music_note, color: AppColors.textOnVideo, size: 16),
         ),
       ),
     );

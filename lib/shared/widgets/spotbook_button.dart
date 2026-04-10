@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../theme/app_colors.dart';
 
@@ -106,33 +107,51 @@ class _SpotbookButtonState extends State<SpotbookButton>
     final Color fg;
     final Border? border;
     final Gradient? gradient;
+    final List<BoxShadow> shadows;
 
     switch (widget.variant) {
       case SpotbookButtonVariant.primary:
-        bg = AppColors.blanc;
-        fg = AppColors.fond;
+        bg = Colors.transparent;
+        fg = Colors.white;
         border = null;
-        gradient = null;
+        gradient = AppColors.gradientAccent;
+        shadows = [
+          BoxShadow(
+            color: AppColors.violet.withAlpha(100),
+            blurRadius: 16,
+            offset: const Offset(0, 4),
+          ),
+        ];
       case SpotbookButtonVariant.secondary:
-        bg = AppColors.surfaceAlt;
+        bg = AppColors.surface;
         fg = AppColors.blanc;
         border = Border.all(color: AppColors.border);
         gradient = null;
+        shadows = const [];
       case SpotbookButtonVariant.outlined:
         bg = Colors.transparent;
         fg = AppColors.blanc;
         border = Border.all(color: AppColors.border);
         gradient = null;
+        shadows = const [];
       case SpotbookButtonVariant.destructive:
-        bg = AppColors.rose.withAlpha(30);
-        fg = AppColors.roseClair;
-        border = null;
+        bg = AppColors.error.withAlpha(20);
+        fg = AppColors.error;
+        border = Border.all(color: AppColors.error.withAlpha(60));
         gradient = null;
+        shadows = const [];
       case SpotbookButtonVariant.gradient:
         bg = Colors.transparent;
-        fg = AppColors.blanc;
+        fg = Colors.white;
         border = null;
         gradient = AppColors.gradientAccent;
+        shadows = [
+          BoxShadow(
+            color: AppColors.violet.withAlpha(100),
+            blurRadius: 16,
+            offset: const Offset(0, 4),
+          ),
+        ];
     }
 
     return GestureDetector(
@@ -153,8 +172,9 @@ class _SpotbookButtonState extends State<SpotbookButton>
           decoration: BoxDecoration(
             color: gradient == null ? bg : null,
             gradient: gradient,
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(14),
             border: border,
+            boxShadow: shadows,
           ),
           child: Center(
             child: widget.isLoading
@@ -175,7 +195,7 @@ class _SpotbookButtonState extends State<SpotbookButton>
                       ],
                       Text(
                         widget.label,
-                        style: TextStyle(
+                        style: GoogleFonts.dmSans(
                           color: fg,
                           fontSize: 16,
                           fontWeight: FontWeight.w600,

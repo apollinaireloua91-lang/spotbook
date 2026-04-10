@@ -723,23 +723,23 @@ class _StarIcon extends StatelessWidget {
 
   final double fill;
 
-  static const _gold = Color(0xFFFFB800);
-  static const _empty = Color(0xFF3A3A4A);
+  static Color get _gold => AppColors.ratingAmber;
+  static Color get _empty => AppColors.grisInactif;
 
   @override
   Widget build(BuildContext context) {
     if (fill >= 0.99) {
-      return const Icon(Icons.star_rounded, color: _gold, size: 18);
+      return Icon(Icons.star_rounded, color: _gold, size: 18);
     }
     if (fill <= 0.01) {
-      return const Icon(Icons.star_rounded, color: _empty, size: 18);
+      return Icon(Icons.star_rounded, color: _empty, size: 18);
     }
     return ShaderMask(
       blendMode: BlendMode.srcATop,
       shaderCallback: (rect) {
         return LinearGradient(
           stops: [fill, fill],
-          colors: const [_gold, _empty],
+          colors: [_gold, _empty],
         ).createShader(rect);
       },
       child: const Icon(Icons.star_rounded, color: Colors.white, size: 18),
@@ -1301,7 +1301,7 @@ class _ReviewSummary extends StatelessWidget {
                     i < rating.round()
                         ? Icons.star_rounded
                         : Icons.star_outline_rounded,
-                    color: const Color(0xFFFFB800),
+                    color: AppColors.ratingAmber,
                     size: 16,
                   );
                 }),
@@ -1330,8 +1330,8 @@ class _ReviewSummary extends StatelessWidget {
                             style: GoogleFonts.dmSans(
                                 color: AppColors.gris, fontSize: 11)),
                         const SizedBox(width: 6),
-                        const Icon(Icons.star_rounded,
-                            color: Color(0xFFFFB800), size: 11),
+                        Icon(Icons.star_rounded,
+                            color: AppColors.ratingAmber, size: 11),
                         const SizedBox(width: 6),
                         Expanded(
                           child: Container(
@@ -1412,7 +1412,7 @@ class _ReviewCard extends StatelessWidget {
                     i < review.rating
                         ? Icons.star_rounded
                         : Icons.star_outline_rounded,
-                    color: const Color(0xFFFFB800),
+                    color: AppColors.ratingAmber,
                     size: 14,
                   );
                 }),

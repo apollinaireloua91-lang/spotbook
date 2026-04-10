@@ -199,7 +199,7 @@ class _ProSearchScreenState extends ConsumerState<ProSearchScreen> {
               ),
               const SliverToBoxAdapter(child: _TrendingEventsSection()),
 
-              // ── Inspirations (posts viraux) ──
+              // ── Videos ──
               const SliverToBoxAdapter(child: _InspirationsSection()),
 
               const SliverToBoxAdapter(child: SizedBox(height: 100)),
@@ -572,7 +572,7 @@ class _InspirationsSectionState extends ConsumerState<_InspirationsSection>
                   Icon(Icons.auto_awesome, color: AppColors.violetClair, size: 18),
                   const SizedBox(width: 8),
                   Text(
-                    'Inspirations',
+                    'Videos',
                     style: GoogleFonts.sora(
                       color: AppColors.blanc,
                       fontSize: 16,
@@ -606,7 +606,7 @@ class _InspirationsSectionState extends ConsumerState<_InspirationsSection>
               child: Padding(
                 padding: const EdgeInsets.all(24),
                 child: Text(
-                  'Unable to load inspirations',
+                  'Unable to load videos',
                   style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 13),
                 ),
               ),
@@ -628,10 +628,10 @@ class _InspirationsSectionState extends ConsumerState<_InspirationsSection>
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 3,
-        mainAxisSpacing: 8,
-        crossAxisSpacing: 8,
-        childAspectRatio: 0.65,
+        crossAxisCount: 2,
+        mainAxisSpacing: 10,
+        crossAxisSpacing: 10,
+        childAspectRatio: 0.7,
       ),
       itemCount: 6,
       itemBuilder: (_, __) => _ShimmerCard(),
@@ -664,10 +664,10 @@ class _InspirationsSectionState extends ConsumerState<_InspirationsSection>
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 3,
-        mainAxisSpacing: 8,
-        crossAxisSpacing: 8,
-        childAspectRatio: 0.65,
+        crossAxisCount: 2,
+        mainAxisSpacing: 10,
+        crossAxisSpacing: 10,
+        childAspectRatio: 0.7,
       ),
       itemCount: posts.length,
       itemBuilder: (context, index) {

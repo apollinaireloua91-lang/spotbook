@@ -606,7 +606,7 @@ class _SpecialActionsSection extends ConsumerWidget {
       child: Column(
         children: [
           const SizedBox(height: 16),
-          // Become Pro
+          // Become Pro — highlight style
           GestureDetector(
             onTap: () {
               HapticFeedback.lightImpact();
@@ -616,18 +616,28 @@ class _SpecialActionsSection extends ConsumerWidget {
               width: double.infinity,
               padding: const EdgeInsets.symmetric(vertical: 16),
               decoration: BoxDecoration(
-                gradient: AppColors.gradientAccent,
+                color: AppColors.highlight,
                 borderRadius: BorderRadius.circular(14),
-                boxShadow: AppColors.primaryButtonShadow,
               ),
               child: Center(
-                child: Text(
-                  'Become Pro',
-                  style: GoogleFonts.dmSans(
-                    color: AppColors.textOnPrimary,
-                    fontSize: 15,
-                    fontWeight: FontWeight.w600,
-                  ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.star_rounded,
+                      color: AppColors.violet,
+                      size: 18,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      'Become Pro',
+                      style: GoogleFonts.dmSans(
+                        color: AppColors.violet,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),

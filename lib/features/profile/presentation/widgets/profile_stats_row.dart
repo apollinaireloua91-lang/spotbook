@@ -25,8 +25,9 @@ class ProfileStatsRow extends StatelessWidget {
       margin: const EdgeInsets.symmetric(horizontal: 16),
       padding: const EdgeInsets.symmetric(vertical: 16),
       decoration: BoxDecoration(
-        color: AppColors.violet.withAlpha(18),
+        color: AppColors.card,
         borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.border, width: 0.5),
       ),
       child: IntrinsicHeight(
         child: Row(
@@ -39,7 +40,7 @@ class ProfileStatsRow extends StatelessWidget {
             _StatItem(
                 value: totalFollowing,
                 label: 'Following',
-                color: AppColors.violetClair),
+                color: AppColors.violet),
             _Divider(),
             _StatItem(
                 value: totalEvents,
@@ -49,7 +50,7 @@ class ProfileStatsRow extends StatelessWidget {
             _StatItem(
                 value: totalReviews,
                 label: 'Reviews',
-                color: AppColors.violetClair),
+                color: AppColors.violet),
           ],
         ),
       ),
@@ -78,7 +79,7 @@ class _StatItem extends StatelessWidget {
             value: value,
             style: GoogleFonts.dmSans(
               color: color,
-              fontSize: 18,
+              fontSize: 20,
               fontWeight: FontWeight.w800,
             ),
             duration: const Duration(milliseconds: 600),
@@ -87,7 +88,7 @@ class _StatItem extends StatelessWidget {
           Text(
             label,
             style: GoogleFonts.dmSans(
-              color: AppColors.gris,
+              color: AppColors.textSecondary,
               fontSize: 10,
               fontWeight: FontWeight.w500,
             ),

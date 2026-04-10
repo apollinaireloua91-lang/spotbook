@@ -9,7 +9,6 @@ import '../../../../../shared/theme/app_colors.dart';
 import '../../../../../shared/widgets/bookmark_bounce.dart';
 import '../../../../feed/domain/video_model.dart';
 import '../../../../feed/presentation/widgets/share_bottom_sheet.dart';
-import '../../../../moderation/presentation/screens/report_sheet.dart';
 
 /// Right action column for the Pro feed.
 /// Order: Avatar → Like (with count) → Save → Share → More
@@ -112,7 +111,7 @@ class PostRightColumnPro extends StatelessWidget {
         // ── Like (with count) ──
         _BlurActionButton(
           icon: video.isLiked ? Icons.favorite : Icons.favorite_border,
-          iconSize: 26,
+          iconSize: 28,
           label: _formatCount(video.likesCount),
           color: video.isLiked ? Colors.red : Colors.white,
           onTap: () {
@@ -122,12 +121,12 @@ class PostRightColumnPro extends StatelessWidget {
         ),
         const SizedBox(height: 18),
 
-        // ── Save (BookmarkBounce) ──
+        // ── Bookmark (BookmarkBounce) ──
         BookmarkBounce(
           isSaved: video.isSaved,
           child: _BlurActionButton(
             icon: video.isSaved ? Icons.bookmark : Icons.bookmark_border,
-            iconSize: 24,
+            iconSize: 28,
             label: _formatCount(video.savesCount),
             color: video.isSaved ? Colors.white : Colors.white,
             onTap: () {
@@ -140,8 +139,8 @@ class PostRightColumnPro extends StatelessWidget {
 
         // ── Share ──
         _BlurActionButton(
-          icon: Icons.reply,
-          iconSize: 22,
+          icon: Icons.share_outlined,
+          iconSize: 28,
           label: '',
           onTap: () {
             showModalBottomSheet(
@@ -150,67 +149,12 @@ class PostRightColumnPro extends StatelessWidget {
               builder: (_) => ShareBottomSheet(videoId: video.id),
             );
           },
-          mirrorIcon: true,
         ),
-        const SizedBox(height: 18),
-
-        // ── More (moderation) ──
-        _BlurActionButton(
-          icon: Icons.more_horiz,
-          iconSize: 20,
-          label: '',
-          onTap: () => _openModerationMenu(context),
-        ),
+        // More menu removed — clean 4-action layout
       ],
     );
   }
 
-  void _openModerationMenu(BuildContext context) {
-    HapticFeedback.mediumImpact();
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent,
-      builder: (ctx) => Container(
-        padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
-        decoration: BoxDecoration(
-          color: AppColors.surface,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-        ),
-        child: SafeArea(
-          top: false,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                width: 36,
-                height: 4,
-                margin: const EdgeInsets.only(bottom: 16),
-                decoration: BoxDecoration(
-                  color: AppColors.gris.withAlpha(100),
-                  borderRadius: BorderRadius.circular(2),
-                ),
-              ),
-              ListTile(
-                contentPadding: EdgeInsets.zero,
-                leading:
-                    Icon(Icons.flag_outlined, color: AppColors.blanc),
-                title: Text('Report',
-                    style: TextStyle(color: AppColors.blanc)),
-                onTap: () {
-                  Navigator.of(ctx).pop();
-                  showReportSheet(
-                    context,
-                    targetId: video.id,
-                    targetType: 'video',
-                  );
-                },
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
 }
 
 /// 44px action button with frosted glass backdrop blur.
@@ -219,9 +163,8 @@ class _BlurActionButton extends StatelessWidget {
     required this.icon,
     required this.label,
     required this.onTap,
-    this.iconSize = 24,
+    this.iconSize = 28,
     this.color = Colors.white,
-    this.mirrorIcon = false,
   });
 
   final IconData icon;
@@ -229,7 +172,6 @@ class _BlurActionButton extends StatelessWidget {
   final VoidCallback onTap;
   final double iconSize;
   final Color color;
-  final bool mirrorIcon;
 
   @override
   Widget build(BuildContext context) {
@@ -252,20 +194,11 @@ class _BlurActionButton extends StatelessWidget {
                   ),
                 ),
                 child: Center(
-                  child: mirrorIcon
-                      ? Transform.flip(
-                          flipX: true,
-                          child: Icon(icon, color: color, size: iconSize,
-                            shadows: const [
-                              Shadow(color: Colors.black54, blurRadius: 6),
-                            ],
-                          ),
-                        )
-                      : Icon(icon, color: color, size: iconSize,
-                          shadows: const [
-                            Shadow(color: Colors.black54, blurRadius: 6),
-                          ],
-                        ),
+                  child: Icon(icon, color: color, size: iconSize,
+                    shadows: const [
+                      Shadow(color: Colors.black54, blurRadius: 6),
+                    ],
+                  ),
                 ),
               ),
             ),

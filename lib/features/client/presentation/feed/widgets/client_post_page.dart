@@ -40,6 +40,7 @@ class _ClientPostPageState extends State<ClientPostPage> {
   bool _viewCounted = false;
   bool _isPaused = false;
   bool _showPlayPauseIcon = false;
+  Offset? _heartPosition;
 
   final _mediaKey = GlobalKey<PostMediaBackgroundState>();
 
@@ -50,10 +51,13 @@ class _ClientPostPageState extends State<ClientPostPage> {
       _viewCounted = true;
       widget.onViewCounted();
     }
-    // Reset pause state when becoming active
     if (widget.isActive && !oldWidget.isActive) {
       setState(() => _isPaused = false);
     }
+  }
+
+  void _onDoubleTapDown(TapDownDetails details) {
+    _heartPosition = details.localPosition;
   }
 
   void _onDoubleTap() {
@@ -105,12 +109,14 @@ class _ClientPostPageState extends State<ClientPostPage> {
     final hasEvent = v.eventId != null;
     final isCatering =
         (v.proCategory?.toLowerCase() == 'traiteur' ||
-            v.proCategory?.toLowerCase() == 'catering') &&
-            !hasService && !hasEvent;
+                v.proCategory?.toLowerCase() == 'catering') &&
+            !hasService &&
+            !hasEvent;
 
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: _onSingleTap,
+      onDoubleTapDown: _onDoubleTapDown,
       onDoubleTap: _onDoubleTap,
       child: Stack(
         fit: StackFit.expand,
@@ -123,25 +129,51 @@ class _ClientPostPageState extends State<ClientPostPage> {
             isActive: widget.isActive,
           ),
 
-          // ─── Play/Pause overlay icon ───
+          // ─── Bottom gradient fade (black 70% → transparent) ───
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            height: 280,
+            child: IgnorePointer(
+              child: Container(
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.bottomCenter,
+                    end: Alignment.topCenter,
+                    colors: [
+                      Color(0xB3000000), // black 70%
+                      Color(0x66000000), // black 40%
+                      Color(0x00000000), // transparent
+                    ],
+                    stops: [0.0, 0.5, 1.0],
+                  ),
+                ),
+              ),
+            ),
+          ),
+
+          // ─── Play/Pause — small 36px top-LEFT ───
           if (_showPlayPauseIcon || _isPaused)
-            Center(
+            Positioned(
+              top: MediaQuery.paddingOf(context).top + 56,
+              left: 16,
               child: AnimatedOpacity(
-                opacity: _showPlayPauseIcon ? 1.0 : (_isPaused ? 0.6 : 0.0),
+                opacity: _showPlayPauseIcon ? 1.0 : (_isPaused ? 0.5 : 0.0),
                 duration: const Duration(milliseconds: 200),
                 child: Container(
-                  width: 64,
-                  height: 64,
+                  width: 36,
+                  height: 36,
                   decoration: BoxDecoration(
-                    color: Colors.black.withAlpha(115),
-                    shape: BoxShape.circle,
+                    color: Colors.black.withAlpha(102), // 40% opacity
+                    borderRadius: BorderRadius.circular(10),
                   ),
                   child: Icon(
                     _isPaused
                         ? Icons.play_arrow_rounded
                         : Icons.pause_rounded,
                     color: Colors.white,
-                    size: 36,
+                    size: 20,
                   ),
                 ),
               ),
@@ -161,9 +193,10 @@ class _ClientPostPageState extends State<ClientPostPage> {
             ),
           ),
 
-          // ─── Bottom info (pro name, category, caption, Book button) ───
+          // ─── Bottom info (pro name + Book pill + caption) ───
           Positioned(
-            bottom: _infoBottomOffset(hasService, hasEvent, isCatering, hasMusic),
+            bottom:
+                _infoBottomOffset(hasService, hasEvent, isCatering, hasMusic),
             left: 12,
             right: 65,
             child: ClientBottomInfo(video: v),
@@ -172,7 +205,8 @@ class _ClientPostPageState extends State<ClientPostPage> {
           // ─── Music ticker (conditional) ───
           if (hasMusic)
             Positioned(
-              bottom: _stripBottomBase(hasService, hasEvent, isCatering) + 56,
+              bottom:
+                  _stripBottomBase(hasService, hasEvent, isCatering) + 56,
               left: 14,
               right: 60,
               child: MusicTicker(
@@ -213,10 +247,13 @@ class _ClientPostPageState extends State<ClientPostPage> {
               child: CateringStrip(proId: v.proId),
             ),
 
-          // ─── Double tap heart animation ───
+          // ─── Double tap heart at tap position ───
           if (_showHeart)
-            Center(
+            Positioned(
+              left: (_heartPosition?.dx ?? MediaQuery.sizeOf(context).width / 2) - 40,
+              top: (_heartPosition?.dy ?? MediaQuery.sizeOf(context).height / 2) - 40,
               child: DoubleTapHeart(
+                position: _heartPosition,
                 onDismissed: () => setState(() => _showHeart = false),
               ),
             ),
@@ -225,7 +262,7 @@ class _ClientPostPageState extends State<ClientPostPage> {
     );
   }
 
-  // Layout helpers — push content up when CTA strip is present
+  // Layout helpers
   double _stripBottomBase(bool hasService, bool hasEvent, bool isCatering) {
     if (hasService || hasEvent || isCatering) return 95;
     return 45;
@@ -233,7 +270,7 @@ class _ClientPostPageState extends State<ClientPostPage> {
 
   double _ctaBottomOffset(
       bool hasService, bool hasEvent, bool isCatering, bool hasMusic) {
-    var base = 145.0; // Above nav bar safe area
+    var base = 145.0;
     if (hasService || hasEvent || isCatering) base += 50;
     if (hasMusic) base += 30;
     return base;
@@ -241,7 +278,7 @@ class _ClientPostPageState extends State<ClientPostPage> {
 
   double _infoBottomOffset(
       bool hasService, bool hasEvent, bool isCatering, bool hasMusic) {
-    var base = 145.0; // Aligned with right column (share button level)
+    var base = 145.0;
     if (hasService || hasEvent || isCatering) base += 50;
     if (hasMusic) base += 30;
     return base;

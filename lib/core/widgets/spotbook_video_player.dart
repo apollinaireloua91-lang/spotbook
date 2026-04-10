@@ -245,7 +245,7 @@ class _SpotbookVideoPlayerState extends State<SpotbookVideoPlayer>
 
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
-      onTap: widget.showControls ? null : _togglePlayPause,
+      onTap: _togglePlayPause,
       child: Stack(
         fit: StackFit.expand,
         children: [
@@ -341,6 +341,32 @@ class _SpotbookVideoPlayerState extends State<SpotbookVideoPlayer>
                         ),
                       ),
                     ],
+                  ),
+                ),
+              ),
+            ),
+
+          // ── Persistent play/pause button (top-left, feed only) ──
+          if (!widget.showControls)
+            Positioned(
+              top: 12,
+              left: 12,
+              child: GestureDetector(
+                onTap: _togglePlayPause,
+                behavior: HitTestBehavior.opaque,
+                child: Container(
+                  width: 36,
+                  height: 36,
+                  decoration: BoxDecoration(
+                    color: AppColors.overlayMedium,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Icon(
+                    _isPlaying
+                        ? Icons.pause_rounded
+                        : Icons.play_arrow_rounded,
+                    color: Colors.white,
+                    size: 20,
                   ),
                 ),
               ),

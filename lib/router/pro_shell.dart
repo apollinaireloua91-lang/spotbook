@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../shared/theme/app_colors.dart';
 
@@ -21,7 +22,6 @@ class ProShell extends StatelessWidget {
   Widget build(BuildContext context) {
     final bottomInset = MediaQuery.paddingOf(context).bottom;
     final currentIndex = navigationShell.currentIndex;
-    final theme = Theme.of(context);
 
     return Scaffold(
       extendBody: true,
@@ -30,15 +30,15 @@ class ProShell extends StatelessWidget {
         height: 65 + bottomInset,
         padding: EdgeInsets.only(bottom: bottomInset),
         decoration: BoxDecoration(
-          color: theme.scaffoldBackgroundColor,
+          color: AppColors.fond,
           border: Border(
-            top: BorderSide(color: theme.dividerColor, width: 0.5),
+            top: BorderSide(color: AppColors.border, width: 0.5),
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withAlpha(10),
-              blurRadius: 12,
-              offset: const Offset(0, -4),
+              color: Colors.black.withAlpha(20),
+              blurRadius: 16,
+              offset: const Offset(0, -6),
             ),
           ],
         ),
@@ -104,8 +104,6 @@ class _ProNavItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final primary = Theme.of(context).colorScheme.primary;
-
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: () {
@@ -117,26 +115,35 @@ class _ProNavItem extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            Icon(
+              selected ? activeIcon : icon,
+              color: selected ? AppColors.violet : AppColors.grisInactif,
+              size: 22,
+            ),
+            const SizedBox(height: 4),
+            // Glow dot indicator
             AnimatedContainer(
-              duration: const Duration(milliseconds: 200),
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+              duration: const Duration(milliseconds: 250),
+              width: selected ? 4 : 0,
+              height: selected ? 4 : 0,
               decoration: BoxDecoration(
-                color: selected
-                    ? primary.withAlpha(20)
-                    : Colors.transparent,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Icon(
-                selected ? activeIcon : icon,
-                color: selected ? primary : AppColors.grisInactif,
-                size: 22,
+                shape: BoxShape.circle,
+                color: AppColors.violet,
+                boxShadow: selected
+                    ? [
+                        BoxShadow(
+                          color: AppColors.violet.withAlpha(150),
+                          blurRadius: 6,
+                        ),
+                      ]
+                    : [],
               ),
             ),
             const SizedBox(height: 2),
             Text(
               label,
-              style: TextStyle(
-                color: selected ? primary : AppColors.grisInactif,
+              style: GoogleFonts.dmSans(
+                color: selected ? AppColors.violet : AppColors.grisInactif,
                 fontSize: 10,
                 fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
               ),
