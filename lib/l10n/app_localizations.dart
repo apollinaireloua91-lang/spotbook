@@ -757,6 +757,87 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Track added: {track}'**
   String spotifySheetTrackAdded(String track);
+
+  // ── Common ──
+  String get a11yBack;
+  String get buttonContinue;
+  String get buttonNext;
+  String get fieldRequired;
+
+  // ── Auth: Login ──
+  String get authWelcomeBack;
+  String get authLoginSubtitle;
+  String get authEmailHint;
+  String get authErrorEmptyFields;
+  String get authErrorEnterEmail;
+  String get authMagicLinkSent;
+  String get authMagicLinkSending;
+  String get authMagicLink;
+  String get authForgotPassword;
+  String get authOrContinueWith;
+  String get authContinueApple;
+  String get authAppleComingSoon;
+  String get authNoAccountPrefix;
+
+  // ── Auth: Account Type Selection ──
+  String get authWelcomeTitle;
+  String get authSelectAccountType;
+  String get authRoleClient;
+  String get authRoleClientSubtitle;
+  String get authRoleClientDescription;
+  String get authRolePro;
+  String get authRoleProSubtitle;
+  String get authRoleProDescription;
+  String get authAlreadyHaveAccount;
+
+  // ── Auth: Forgot / Reset Password ──
+  String get authForgotPasswordTitle;
+  String get authForgotPasswordSubtitle;
+  String get authEmailRequired;
+  String get authEmailInvalid;
+  String get authErrorTooManyAttempts;
+  String get authErrorGenericEmail;
+  String get authResetPassword;
+  String get authRememberPassword;
+  String get fieldEmail;
+  String get authEmailSent;
+  String get authCheckInbox;
+  String get authCheckSpam;
+  String get authResending;
+  String get authResendLink;
+  String get authBackToLogin;
+  String get authResetLinkResent;
+  String get authNewPasswordTitle;
+  String get authNewPasswordSubtitle;
+  String get authNewPasswordHint;
+  String get authMinPassword;
+  String get authConfirmPasswordHint;
+  String get authPasswordMismatch;
+  String get authPasswordUpdated;
+  String get authUpdatePassword;
+
+  // ── Auth: Sign Up ──
+  String authStepLabel(int current, int total);
+  String get authPasswordsDontMatch;
+  String get authWhatInterests;
+  String get authSelectCategoriesForFeed;
+  String get authCreateMyAccount;
+  String get authWhatServicesOffer;
+  String get authSelectServiceCategories;
+  String get authSignInWithGoogle;
+  String get authCreateAccountTitle;
+  String get authJoinCommunity;
+  String get fieldFullName;
+  String get fieldFullNameHint;
+  String get fieldUsername;
+  String get fieldAddress;
+  String get fieldAddressHint;
+  String get authYourInfo;
+  String get authHowKnown;
+  String get authYourProProfile;
+  String get authPresentYourself;
+  String get authMinSixChars;
+  String get fieldConfirmPassword;
 }
 
 class _AppLocalizationsDelegate

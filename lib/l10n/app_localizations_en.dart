@@ -343,4 +343,85 @@ class AppLocalizationsEn extends AppLocalizations {
   String spotifySheetTrackAdded(String track) {
     return 'Track added: $track';
   }
+
+  // ── Common ──
+  @override String get a11yBack => 'Back';
+  @override String get buttonContinue => 'Continue';
+  @override String get buttonNext => 'Next';
+  @override String get fieldRequired => 'Required';
+
+  // ── Auth: Login ──
+  @override String get authWelcomeBack => 'Welcome back!';
+  @override String get authLoginSubtitle => 'Log in to continue.';
+  @override String get authEmailHint => 'Email address';
+  @override String get authErrorEmptyFields => 'Please fill in all fields.';
+  @override String get authErrorEnterEmail => 'Please enter your email first.';
+  @override String get authMagicLinkSent => 'Magic link sent! Check your email.';
+  @override String get authMagicLinkSending => 'Sending link…';
+  @override String get authMagicLink => 'Magic link';
+  @override String get authForgotPassword => 'Forgot password?';
+  @override String get authOrContinueWith => 'or continue with';
+  @override String get authContinueApple => 'Continue with Apple';
+  @override String get authAppleComingSoon => 'Apple Sign In — coming soon (v1.1)';
+  @override String get authNoAccountPrefix => 'No account? ';
+
+  // ── Auth: Account Type Selection ──
+  @override String get authWelcomeTitle => 'Welcome to\nSpotbook';
+  @override String get authSelectAccountType => 'How would you like to use the app?';
+  @override String get authRoleClient => 'Client';
+  @override String get authRoleClientSubtitle => 'I\'m looking for professionals';
+  @override String get authRoleClientDescription => 'Discover, book, attend';
+  @override String get authRolePro => 'Professional';
+  @override String get authRoleProSubtitle => 'I offer my services';
+  @override String get authRoleProDescription => 'Publish, manage, earn';
+  @override String get authAlreadyHaveAccount => 'Already have an account? ';
+
+  // ── Auth: Forgot / Reset Password ──
+  @override String get authForgotPasswordTitle => 'Forgot password';
+  @override String get authForgotPasswordSubtitle => 'Enter your email address and we\'ll send you a link to reset your password.';
+  @override String get authEmailRequired => 'Email required';
+  @override String get authEmailInvalid => 'Invalid email';
+  @override String get authErrorTooManyAttempts => 'Too many attempts. Please try again in a few minutes.';
+  @override String get authErrorGenericEmail => 'An error occurred. Please check your email.';
+  @override String get authResetPassword => 'Reset password';
+  @override String get authRememberPassword => 'Remember it? ';
+  @override String get fieldEmail => 'Email';
+  @override String get authEmailSent => 'Email sent!';
+  @override String get authCheckInbox => 'Check your inbox.\nClick the link in the email to reset your password.';
+  @override String get authCheckSpam => 'If you don\'t receive anything, check your spam folder.';
+  @override String get authResending => 'Sending…';
+  @override String get authResendLink => 'Didn\'t receive it? Resend';
+  @override String get authBackToLogin => 'Back to login';
+  @override String get authResetLinkResent => 'Reset link resent!';
+  @override String get authNewPasswordTitle => 'New password';
+  @override String get authNewPasswordSubtitle => 'Choose a secure password for your account.';
+  @override String get authNewPasswordHint => 'New password';
+  @override String get authMinPassword => 'Minimum 8 characters';
+  @override String get authConfirmPasswordHint => 'Confirm password';
+  @override String get authPasswordMismatch => 'Passwords do not match';
+  @override String get authPasswordUpdated => 'Password updated successfully!';
+  @override String get authUpdatePassword => 'Update password';
+
+  // ── Auth: Sign Up ──
+  @override String authStepLabel(int current, int total) => 'Step $current/$total';
+  @override String get authPasswordsDontMatch => 'Passwords do not match.';
+  @override String get authWhatInterests => 'What are you interested in?';
+  @override String get authSelectCategoriesForFeed => 'Select categories to personalize your feed.';
+  @override String get authCreateMyAccount => 'Create my account';
+  @override String get authWhatServicesOffer => 'What services do you offer?';
+  @override String get authSelectServiceCategories => 'Select your service categories.';
+  @override String get authSignInWithGoogle => 'Sign in with Google';
+  @override String get authCreateAccountTitle => 'Create your account';
+  @override String get authJoinCommunity => 'Join the Spotbook community.';
+  @override String get fieldFullName => 'Full name';
+  @override String get fieldFullNameHint => 'John Doe';
+  @override String get fieldUsername => 'Username';
+  @override String get fieldAddress => 'Address';
+  @override String get fieldAddressHint => 'Start typing your address...';
+  @override String get authYourInfo => 'Your information';
+  @override String get authHowKnown => 'How would you like to be known?';
+  @override String get authYourProProfile => 'Your Pro profile';
+  @override String get authPresentYourself => 'Introduce yourself to future clients.';
+  @override String get authMinSixChars => 'Min. 6 characters';
+  @override String get fieldConfirmPassword => 'Confirm password';
 }

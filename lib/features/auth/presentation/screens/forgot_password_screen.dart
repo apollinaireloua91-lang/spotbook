@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/widgets/spotbook_button.dart';
 import '../../data/auth_repository.dart';
@@ -82,6 +83,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     final s = ref.watch(_forgotPwProvider);
 
     return Scaffold(
@@ -91,7 +93,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         leading: Semantics(
-          label: 'Retour',
+          label: l.a11yBack,
           child: IconButton(
             icon: Container(
               padding: const EdgeInsets.all(8),
@@ -120,7 +122,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
               children: [
                 const SizedBox(height: 24),
                 Text(
-                  'Mot de passe oublié',
+                  l.authForgotPasswordTitle,
                   style: GoogleFonts.sora(
                     color: AppColors.blanc,
                     fontSize: 28,
@@ -129,7 +131,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Entrez votre adresse e-mail et nous vous enverrons un lien pour réinitialiser votre mot de passe.',
+                  l.authForgotPasswordSubtitle,
                   style: GoogleFonts.dmSans(
                     color: AppColors.gris,
                     fontSize: 15,
@@ -148,14 +150,14 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                   style: GoogleFonts.dmSans(color: AppColors.blanc, fontSize: 15),
                   validator: (value) {
                     final v = value?.trim() ?? '';
-                    if (v.isEmpty) return 'E-mail requis';
+                    if (v.isEmpty) return l.authEmailRequired;
                     if (!v.contains('@') || !v.contains('.')) {
-                      return 'E-mail invalide';
+                      return l.authEmailInvalid;
                     }
                     return null;
                   },
                   decoration: InputDecoration(
-                    hintText: 'E-mail',
+                    hintText: l.fieldEmail,
                     hintStyle: GoogleFonts.dmSans(
                         color: AppColors.gris, fontSize: 15),
                     prefixIcon: Icon(Icons.email_outlined,
@@ -203,7 +205,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
 
                 // Submit button
                 SpotbookButton(
-                  label: 'Réinitialiser le mot de passe',
+                  label: l.authResetPassword,
                   variant: SpotbookButtonVariant.primary,
                   isLoading: s.isLoading,
                   onPressed: s.isLoading ? null : _submit,
@@ -222,11 +224,11 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       child: Text.rich(
                         TextSpan(
-                          text: 'Vous vous en souvenez ? ',
+                          text: l.authRememberPassword,
                           style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 14),
                           children: [
                             TextSpan(
-                              text: 'Se connecter',
+                              text: l.login,
                               style: GoogleFonts.dmSans(
                                 color: AppColors.violetClair,
                                 fontWeight: FontWeight.w600,

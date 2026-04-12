@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/widgets/spotbook_button.dart';
 import '../../data/auth_repository.dart';
@@ -60,7 +61,7 @@ class _ForgotPasswordConfirmationScreenState
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('Lien de réinitialisation renvoyé !'),
+          content: Text(AppLocalizations.of(context)!.authResetLinkResent),
           backgroundColor: AppColors.violet,
         ),
       );
@@ -79,6 +80,7 @@ class _ForgotPasswordConfirmationScreenState
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: AppColors.fond,
       body: SafeArea(
@@ -114,7 +116,7 @@ class _ForgotPasswordConfirmationScreenState
                 child: Column(
                   children: [
                     Text(
-                      'E-mail envoyé !',
+                      l.authEmailSent,
                       style: GoogleFonts.sora(
                         color: AppColors.blanc,
                         fontSize: 24,
@@ -123,7 +125,7 @@ class _ForgotPasswordConfirmationScreenState
                     ),
                     const SizedBox(height: 12),
                     Text(
-                      'Vérifiez votre boîte de réception.\nCliquez sur le lien dans l\'e-mail pour réinitialiser votre mot de passe.',
+                      l.authCheckInbox,
                       textAlign: TextAlign.center,
                       style: GoogleFonts.dmSans(
                         color: AppColors.gris,
@@ -133,7 +135,7 @@ class _ForgotPasswordConfirmationScreenState
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Si vous ne recevez rien, vérifiez votre dossier spam.',
+                      l.authCheckSpam,
                       textAlign: TextAlign.center,
                       style: GoogleFonts.dmSans(
                         color: AppColors.grisInactif,
@@ -146,8 +148,8 @@ class _ForgotPasswordConfirmationScreenState
                         onTap: _isResending ? null : _resend,
                         child: Text(
                           _isResending
-                              ? 'Envoi en cours…'
-                              : 'Pas reçu ? Renvoyer',
+                              ? l.authResending
+                              : l.authResendLink,
                           style: GoogleFonts.dmSans(
                             color: _isResending
                                 ? AppColors.grisInactif
@@ -168,7 +170,7 @@ class _ForgotPasswordConfirmationScreenState
               FadeTransition(
                 opacity: _fadeAnim,
                 child: SpotbookButton(
-                  label: 'Retour à la connexion',
+                  label: l.authBackToLogin,
                   variant: SpotbookButtonVariant.primary,
                   onPressed: () {
                     HapticFeedback.mediumImpact();

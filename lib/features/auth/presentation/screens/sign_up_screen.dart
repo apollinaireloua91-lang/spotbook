@@ -7,6 +7,7 @@ import 'dart:io';
 
 import 'package:image_picker/image_picker.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/utils/analytics_service.dart';
 import '../../../../shared/widgets/address_autocomplete_field.dart';
@@ -225,7 +226,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
     if (current == 0) {
       if (!_step1Key.currentState!.validate()) return;
       if (_passwordCtrl.text != _confirmCtrl.text) {
-        _showError('Les mots de passe ne correspondent pas.');
+        _showError(AppLocalizations.of(context)!.authPasswordsDontMatch);
         return;
       }
     } else if (current == 1) {
@@ -302,6 +303,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
   @override
   Widget build(BuildContext context) {
     final s = ref.watch(_signUpProvider);
+    final l = AppLocalizations.of(context)!;
 
     return Scaffold(
       backgroundColor: AppColors.fond,
@@ -314,7 +316,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
               child: Row(
                 children: [
                   Semantics(
-                    label: 'Retour',
+                    label: l.a11yBack,
                     child: IconButton(
                       onPressed: _prevStep,
                       icon: Container(
@@ -330,7 +332,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                   ),
                   const Spacer(),
                   Text(
-                    'Étape ${s.currentStep + 1}/$_totalSteps',
+                    l.authStepLabel(s.currentStep + 1, _totalSteps),
                     style: GoogleFonts.dmSans(
                       color: AppColors.gris,
                       fontSize: 13,
@@ -378,11 +380,11 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                 onTap: () => context.go('/login'),
                 child: RichText(
                   text: TextSpan(
-                    text: 'Déjà un compte ? ',
+                    text: l.authAlreadyHaveAccount,
                     style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 14),
                     children: [
                       TextSpan(
-                        text: 'Se connecter',
+                        text: l.login,
                         style: GoogleFonts.dmSans(
                           color: AppColors.violetClair,
                           fontWeight: FontWeight.w600,
@@ -400,6 +402,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
   }
 
   List<Widget> _buildSteps(_SignUpState s) {
+    final l = AppLocalizations.of(context)!;
     if (_isClient) {
       return [
         _Step1EmailPassword(
@@ -430,14 +433,13 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
           onNext: _nextStep,
         ),
         _Step3Categories(
-          title: 'Qu\'est-ce qui vous intéresse ?',
-          subtitle:
-              'Sélectionnez des catégories pour personnaliser votre feed.',
+          title: l.authWhatInterests,
+          subtitle: l.authSelectCategoriesForFeed,
           selectedCategories: s.selectedCategories,
           onToggle: ref.read(_signUpProvider.notifier).toggleCategory,
           onSubmit: _submit,
           isLoading: s.isLoading,
-          buttonLabel: 'Créer mon compte',
+          buttonLabel: l.authCreateMyAccount,
         ),
       ];
     } else {
@@ -471,14 +473,13 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
           onNext: _nextStep,
         ),
         _Step3Categories(
-          title: 'Quels services offrez-vous ?',
-          subtitle:
-              'Sélectionnez les catégories de vos services.',
+          title: l.authWhatServicesOffer,
+          subtitle: l.authSelectServiceCategories,
           selectedCategories: s.selectedCategories,
           onToggle: ref.read(_signUpProvider.notifier).toggleCategory,
           onSubmit: _nextStep,
           isLoading: false,
-          buttonLabel: 'Suivant',
+          buttonLabel: l.buttonNext,
         ),
         _Step4ProPhoto(
           onSubmit: _submit,
@@ -521,6 +522,7 @@ class _Step1EmailPassword extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: Form(
@@ -530,7 +532,7 @@ class _Step1EmailPassword extends StatelessWidget {
           children: [
             const SizedBox(height: 28),
             Text(
-              'Créer votre compte',
+              l.authCreateAccountTitle,
               style: GoogleFonts.sora(
                 color: AppColors.blanc,
                 fontSize: 26,
@@ -540,7 +542,7 @@ class _Step1EmailPassword extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              'Rejoignez la communauté Spotbook.',
+              l.authJoinCommunity,
               style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 15),
             ),
             const SizedBox(height: 28),
@@ -552,9 +554,9 @@ class _Step1EmailPassword extends StatelessWidget {
               child: OutlinedButton(
                 onPressed: isLoading ? null : onGoogleSignIn,
                 style: OutlinedButton.styleFrom(
-                  backgroundColor: AppColors.blanc,
-                  foregroundColor: AppColors.fond,
-                  side: BorderSide.none,
+                  backgroundColor: Colors.white,
+                  foregroundColor: const Color(0xFF1F1F1F),
+                  side: BorderSide(color: Colors.grey.shade300),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(14),
                   ),
@@ -562,15 +564,15 @@ class _Step1EmailPassword extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.g_mobiledata_rounded,
-                        size: 24, color: AppColors.fond),
+                    const Icon(Icons.g_mobiledata_rounded,
+                        size: 24, color: Color(0xFF1F1F1F)),
                     const SizedBox(width: 10),
                     Text(
-                      'Se connecter avec Google',
+                      l.authSignInWithGoogle,
                       style: GoogleFonts.dmSans(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
-                        color: AppColors.fond,
+                        color: const Color(0xFF1F1F1F),
                       ),
                     ),
                   ],
@@ -590,8 +592,7 @@ class _Step1EmailPassword extends StatelessWidget {
                       : () {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: const Text(
-                                  'Apple Sign In — bientôt disponible (v1.1)'),
+                              content: Text(l.authAppleComingSoon),
                               backgroundColor: AppColors.surface,
                               behavior: SnackBarBehavior.floating,
                               shape: RoundedRectangleBorder(
@@ -614,7 +615,7 @@ class _Step1EmailPassword extends StatelessWidget {
                           size: 24, color: AppColors.blanc),
                       const SizedBox(width: 10),
                       Text(
-                        'Continuer avec Apple',
+                        l.authContinueApple,
                         style: GoogleFonts.dmSans(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
@@ -651,12 +652,12 @@ class _Step1EmailPassword extends StatelessWidget {
 
             _SignUpField(
               controller: emailCtrl,
-              label: 'Adresse e-mail',
+              label: l.authEmailHint,
               hint: 'name@example.com',
               icon: Icons.mail_outline_rounded,
               keyboardType: TextInputType.emailAddress,
               validator: (v) {
-                if (v == null || v.isEmpty) return 'Requis';
+                if (v == null || v.isEmpty) return l.fieldRequired;
                 if (!v.contains('@')) return 'E-mail invalide';
                 return null;
               },
@@ -664,7 +665,7 @@ class _Step1EmailPassword extends StatelessWidget {
             const SizedBox(height: 16),
             _SignUpField(
               controller: passwordCtrl,
-              label: 'Mot de passe',
+              label: l.password,
               hint: '••••••••',
               icon: Icons.lock_outline_rounded,
               obscureText: obscurePassword,
@@ -679,14 +680,14 @@ class _Step1EmailPassword extends StatelessWidget {
                 ),
               ),
               validator: (v) {
-                if (v == null || v.length < 6) return 'Min. 6 caractères';
+                if (v == null || v.length < 6) return l.authMinSixChars;
                 return null;
               },
             ),
             const SizedBox(height: 16),
             _SignUpField(
               controller: confirmCtrl,
-              label: 'Confirmer le mot de passe',
+              label: l.fieldConfirmPassword,
               hint: '••••••••',
               icon: Icons.lock_outline_rounded,
               obscureText: obscureConfirm,
@@ -702,12 +703,12 @@ class _Step1EmailPassword extends StatelessWidget {
                 ),
               ),
               validator: (v) {
-                if (v == null || v.isEmpty) return 'Requis';
+                if (v == null || v.isEmpty) return l.fieldRequired;
                 return null;
               },
             ),
             const SizedBox(height: 28),
-            _StepButton(label: 'Suivant', onPressed: onNext),
+            _StepButton(label: l.buttonNext, onPressed: onNext),
           ],
         ),
       ),
@@ -736,6 +737,7 @@ class _Step2ClientProfile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: Form(
@@ -745,7 +747,7 @@ class _Step2ClientProfile extends StatelessWidget {
           children: [
             const SizedBox(height: 28),
             Text(
-              'Vos informations',
+              l.authYourInfo,
               style: GoogleFonts.sora(
                 color: AppColors.blanc,
                 fontSize: 26,
@@ -755,37 +757,37 @@ class _Step2ClientProfile extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              'Comment souhaitez-vous être connu ?',
+              l.authHowKnown,
               style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 15),
             ),
             const SizedBox(height: 28),
             _SignUpField(
               controller: nameCtrl,
-              label: 'Nom complet',
-              hint: 'John Doe',
+              label: l.fieldFullName,
+              hint: l.fieldFullNameHint,
               icon: Icons.person_outline_rounded,
-              validator: (v) => (v == null || v.isEmpty) ? 'Requis' : null,
+              validator: (v) => (v == null || v.isEmpty) ? l.fieldRequired : null,
             ),
             const SizedBox(height: 16),
             _SignUpField(
               controller: usernameCtrl,
-              label: 'Nom d\'utilisateur',
+              label: l.fieldUsername,
               hint: '@johndoe',
               icon: Icons.alternate_email_rounded,
               textInputAction: TextInputAction.done,
-              validator: (v) => (v == null || v.isEmpty) ? 'Requis' : null,
+              validator: (v) => (v == null || v.isEmpty) ? l.fieldRequired : null,
             ),
             const SizedBox(height: 16),
             AddressAutocompleteField(
               controller: addressCtrl,
-              label: 'Adresse',
-              hint: 'Commencez à taper votre adresse...',
+              label: l.fieldAddress,
+              hint: l.fieldAddressHint,
               icon: Icons.location_on_outlined,
               fillColor: AppColors.surface,
               onPlaceSelected: onPlaceSelected,
             ),
             const SizedBox(height: 28),
-            _StepButton(label: 'Suivant', onPressed: onNext),
+            _StepButton(label: l.buttonNext, onPressed: onNext),
           ],
         ),
       ),
@@ -816,6 +818,7 @@ class _Step2ProProfile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: Form(
@@ -825,7 +828,7 @@ class _Step2ProProfile extends StatelessWidget {
           children: [
             const SizedBox(height: 28),
             Text(
-              'Votre profil Pro',
+              l.authYourProProfile,
               style: GoogleFonts.sora(
                 color: AppColors.blanc,
                 fontSize: 26,
@@ -835,16 +838,16 @@ class _Step2ProProfile extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              'Présentez-vous à vos futurs clients.',
+              l.authPresentYourself,
               style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 15),
             ),
             const SizedBox(height: 28),
             _SignUpField(
               controller: nameCtrl,
-              label: 'Nom complet',
-              hint: 'John Doe',
+              label: l.fieldFullName,
+              hint: l.fieldFullNameHint,
               icon: Icons.person_outline_rounded,
-              validator: (v) => (v == null || v.isEmpty) ? 'Requis' : null,
+              validator: (v) => (v == null || v.isEmpty) ? l.fieldRequired : null,
             ),
             const SizedBox(height: 16),
             _SignUpField(
@@ -852,7 +855,7 @@ class _Step2ProProfile extends StatelessWidget {
               label: 'Nom de l\'entreprise',
               hint: 'Doe Studio',
               icon: Icons.store_outlined,
-              validator: (v) => (v == null || v.isEmpty) ? 'Requis' : null,
+              validator: (v) => (v == null || v.isEmpty) ? l.fieldRequired : null,
             ),
             const SizedBox(height: 16),
             _SignUpField(
@@ -862,19 +865,19 @@ class _Step2ProProfile extends StatelessWidget {
               icon: Icons.phone_outlined,
               keyboardType: TextInputType.phone,
               textInputAction: TextInputAction.done,
-              validator: (v) => (v == null || v.isEmpty) ? 'Requis' : null,
+              validator: (v) => (v == null || v.isEmpty) ? l.fieldRequired : null,
             ),
             const SizedBox(height: 16),
             AddressAutocompleteField(
               controller: addressCtrl,
               label: 'Adresse de l\'entreprise',
-              hint: 'Commencez à taper votre adresse…',
+              hint: l.fieldAddressHint,
               icon: Icons.location_on_outlined,
               fillColor: AppColors.surfaceAuth,
               onPlaceSelected: onPlaceSelected,
             ),
             const SizedBox(height: 28),
-            _StepButton(label: 'Suivant', onPressed: onNext),
+            _StepButton(label: l.buttonNext, onPressed: onNext),
           ],
         ),
       ),
@@ -1068,6 +1071,7 @@ class _Step4ProPhotoState extends State<_Step4ProPhoto> {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: Column(
@@ -1156,7 +1160,7 @@ class _Step4ProPhotoState extends State<_Step4ProPhoto> {
           const SizedBox(height: 40),
 
           _StepButton(
-            label: 'Créer mon compte',
+            label: l.authCreateMyAccount,
             onPressed: widget.onSubmit,
             isLoading: widget.isLoading,
           ),

@@ -345,4 +345,85 @@ class AppLocalizationsFr extends AppLocalizations {
   String spotifySheetTrackAdded(String track) {
     return 'Morceau ajouté : $track';
   }
+
+  // ── Common ──
+  @override String get a11yBack => 'Retour';
+  @override String get buttonContinue => 'Continuer';
+  @override String get buttonNext => 'Suivant';
+  @override String get fieldRequired => 'Requis';
+
+  // ── Auth: Login ──
+  @override String get authWelcomeBack => 'Bon retour !';
+  @override String get authLoginSubtitle => 'Connectez-vous pour continuer.';
+  @override String get authEmailHint => 'Adresse e-mail';
+  @override String get authErrorEmptyFields => 'Veuillez remplir tous les champs.';
+  @override String get authErrorEnterEmail => 'Veuillez d\'abord entrer votre e-mail.';
+  @override String get authMagicLinkSent => 'Lien magique envoyé ! Vérifiez votre e-mail.';
+  @override String get authMagicLinkSending => 'Envoi du lien…';
+  @override String get authMagicLink => 'Lien magique';
+  @override String get authForgotPassword => 'Mot de passe oublié ?';
+  @override String get authOrContinueWith => 'ou continuer avec';
+  @override String get authContinueApple => 'Continuer avec Apple';
+  @override String get authAppleComingSoon => 'Apple Sign In — bientôt disponible (v1.1)';
+  @override String get authNoAccountPrefix => 'Pas de compte ? ';
+
+  // ── Auth: Account Type Selection ──
+  @override String get authWelcomeTitle => 'Bienvenue sur\nSpotbook';
+  @override String get authSelectAccountType => 'Comment souhaitez-vous utiliser l\'application ?';
+  @override String get authRoleClient => 'Client';
+  @override String get authRoleClientSubtitle => 'Je recherche des professionnels';
+  @override String get authRoleClientDescription => 'Découvrir, réserver, participer';
+  @override String get authRolePro => 'Professionnel';
+  @override String get authRoleProSubtitle => 'J\'offre mes services';
+  @override String get authRoleProDescription => 'Publier, gérer, gagner';
+  @override String get authAlreadyHaveAccount => 'Déjà un compte ? ';
+
+  // ── Auth: Forgot / Reset Password ──
+  @override String get authForgotPasswordTitle => 'Mot de passe oublié';
+  @override String get authForgotPasswordSubtitle => 'Entrez votre adresse e-mail et nous vous enverrons un lien pour réinitialiser votre mot de passe.';
+  @override String get authEmailRequired => 'E-mail requis';
+  @override String get authEmailInvalid => 'E-mail invalide';
+  @override String get authErrorTooManyAttempts => 'Trop de tentatives. Veuillez réessayer dans quelques minutes.';
+  @override String get authErrorGenericEmail => 'Une erreur est survenue. Veuillez vérifier votre e-mail.';
+  @override String get authResetPassword => 'Réinitialiser le mot de passe';
+  @override String get authRememberPassword => 'Vous vous en souvenez ? ';
+  @override String get fieldEmail => 'E-mail';
+  @override String get authEmailSent => 'E-mail envoyé !';
+  @override String get authCheckInbox => 'Vérifiez votre boîte de réception.\nCliquez sur le lien dans l\'e-mail pour réinitialiser votre mot de passe.';
+  @override String get authCheckSpam => 'Si vous ne recevez rien, vérifiez votre dossier spam.';
+  @override String get authResending => 'Envoi en cours…';
+  @override String get authResendLink => 'Pas reçu ? Renvoyer';
+  @override String get authBackToLogin => 'Retour à la connexion';
+  @override String get authResetLinkResent => 'Lien de réinitialisation renvoyé !';
+  @override String get authNewPasswordTitle => 'Nouveau mot de passe';
+  @override String get authNewPasswordSubtitle => 'Choisissez un mot de passe sécurisé pour votre compte.';
+  @override String get authNewPasswordHint => 'Nouveau mot de passe';
+  @override String get authMinPassword => 'Minimum 8 caractères';
+  @override String get authConfirmPasswordHint => 'Confirmer le mot de passe';
+  @override String get authPasswordMismatch => 'Les mots de passe ne correspondent pas';
+  @override String get authPasswordUpdated => 'Mot de passe mis à jour avec succès !';
+  @override String get authUpdatePassword => 'Mettre à jour le mot de passe';
+
+  // ── Auth: Sign Up ──
+  @override String authStepLabel(int current, int total) => 'Étape $current/$total';
+  @override String get authPasswordsDontMatch => 'Les mots de passe ne correspondent pas.';
+  @override String get authWhatInterests => 'Qu\'est-ce qui vous intéresse ?';
+  @override String get authSelectCategoriesForFeed => 'Sélectionnez des catégories pour personnaliser votre feed.';
+  @override String get authCreateMyAccount => 'Créer mon compte';
+  @override String get authWhatServicesOffer => 'Quels services offrez-vous ?';
+  @override String get authSelectServiceCategories => 'Sélectionnez les catégories de vos services.';
+  @override String get authSignInWithGoogle => 'Se connecter avec Google';
+  @override String get authCreateAccountTitle => 'Créer votre compte';
+  @override String get authJoinCommunity => 'Rejoignez la communauté Spotbook.';
+  @override String get fieldFullName => 'Nom complet';
+  @override String get fieldFullNameHint => 'John Doe';
+  @override String get fieldUsername => 'Nom d\'utilisateur';
+  @override String get fieldAddress => 'Adresse';
+  @override String get fieldAddressHint => 'Commencez à taper votre adresse...';
+  @override String get authYourInfo => 'Vos informations';
+  @override String get authHowKnown => 'Comment souhaitez-vous être connu ?';
+  @override String get authYourProProfile => 'Votre profil Pro';
+  @override String get authPresentYourself => 'Présentez-vous à vos futurs clients.';
+  @override String get authMinSixChars => 'Min. 6 caractères';
+  @override String get fieldConfirmPassword => 'Confirmer le mot de passe';
 }

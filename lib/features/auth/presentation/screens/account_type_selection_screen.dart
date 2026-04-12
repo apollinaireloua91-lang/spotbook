@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
 
 class _RoleNotifier extends Notifier<String?> {
@@ -20,6 +21,7 @@ class AccountTypeSelectionScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l = AppLocalizations.of(context)!;
     final selectedRole = ref.watch(_selectedRoleProvider);
 
     void confirm() {
@@ -39,7 +41,7 @@ class AccountTypeSelectionScreen extends ConsumerWidget {
               const SizedBox(height: 48),
 
               Text(
-                'Bienvenue sur\nSpotbook',
+                l.authWelcomeTitle,
                 style: GoogleFonts.sora(
                   color: AppColors.blanc,
                   fontSize: 28,
@@ -50,7 +52,7 @@ class AccountTypeSelectionScreen extends ConsumerWidget {
               ),
               const SizedBox(height: 8),
               Text(
-                'Comment souhaitez-vous utiliser l\'application ?',
+                l.authSelectAccountType,
                 style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 15),
               ),
               const SizedBox(height: 40),
@@ -58,9 +60,9 @@ class AccountTypeSelectionScreen extends ConsumerWidget {
               // Client card
               _RoleCard(
                 icon: Icons.explore_outlined,
-                title: 'Client',
-                subtitle: 'Je recherche des professionnels',
-                description: 'Découvrir, réserver, participer',
+                title: l.authRoleClient,
+                subtitle: l.authRoleClientSubtitle,
+                description: l.authRoleClientDescription,
                 isSelected: selectedRole == 'client',
                 gradientColors: [AppColors.violet, AppColors.violetClair],
                 onTap: () {
@@ -73,9 +75,9 @@ class AccountTypeSelectionScreen extends ConsumerWidget {
               // Pro card
               _RoleCard(
                 icon: Icons.workspace_premium_outlined,
-                title: 'Professionnel',
-                subtitle: 'J\'offre mes services',
-                description: 'Publier, gérer, gagner',
+                title: l.authRolePro,
+                subtitle: l.authRoleProSubtitle,
+                description: l.authRoleProDescription,
                 isSelected: selectedRole == 'pro',
                 gradientColors: [AppColors.rose, AppColors.roseClair],
                 onTap: () {
@@ -113,7 +115,7 @@ class AccountTypeSelectionScreen extends ConsumerWidget {
                       ),
                     ),
                     child: Text(
-                      'Continuer',
+                      l.buttonContinue,
                       style: GoogleFonts.dmSans(
                         fontSize: 17,
                         fontWeight: FontWeight.w600,
@@ -130,11 +132,11 @@ class AccountTypeSelectionScreen extends ConsumerWidget {
                   onTap: () => context.go('/login'),
                   child: RichText(
                     text: TextSpan(
-                      text: 'Déjà un compte ? ',
+                      text: l.authAlreadyHaveAccount,
                       style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 14),
                       children: [
                         TextSpan(
-                          text: 'Se connecter',
+                          text: l.login,
                           style: GoogleFonts.dmSans(
                             color: AppColors.violetClair,
                             fontWeight: FontWeight.w600,

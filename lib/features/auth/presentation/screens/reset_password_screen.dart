@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/widgets/spotbook_button.dart';
 import '../../data/auth_repository.dart';
@@ -45,7 +46,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('Mot de passe mis à jour avec succès !'),
+          content: Text(AppLocalizations.of(context)!.authPasswordUpdated),
           backgroundColor: AppColors.success,
         ),
       );
@@ -68,6 +69,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: AppColors.fond,
       body: SafeArea(
@@ -98,7 +100,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
 
                   // Title
                   Text(
-                    'Nouveau mot de passe',
+                    l.authNewPasswordTitle,
                     style: GoogleFonts.sora(
                       color: AppColors.blanc,
                       fontSize: 26,
@@ -108,7 +110,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Choisissez un mot de passe sécurisé pour votre compte.',
+                    l.authNewPasswordSubtitle,
                     style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 15),
                   ),
                   const SizedBox(height: 36),
@@ -122,12 +124,12 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                         color: AppColors.blanc, fontSize: 15),
                     validator: (v) {
                       if (v == null || v.length < 8) {
-                        return 'Minimum 8 caractères';
+                        return l.authMinPassword;
                       }
                       return null;
                     },
                     decoration: _inputDecoration(
-                      hint: 'Nouveau mot de passe',
+                      hint: l.authNewPasswordHint,
                       suffixIcon: _toggleIcon(_obscure1, () {
                         setState(() => _obscure1 = !_obscure1);
                       }),
@@ -145,12 +147,12 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                         color: AppColors.blanc, fontSize: 15),
                     validator: (v) {
                       if (v != _passwordCtrl.text) {
-                        return 'Les mots de passe ne correspondent pas';
+                        return l.authPasswordMismatch;
                       }
                       return null;
                     },
                     decoration: _inputDecoration(
-                      hint: 'Confirmer le mot de passe',
+                      hint: l.authConfirmPasswordHint,
                       suffixIcon: _toggleIcon(_obscure2, () {
                         setState(() => _obscure2 = !_obscure2);
                       }),
@@ -160,7 +162,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
 
                   // Submit
                   SpotbookButton(
-                    label: 'Mettre à jour le mot de passe',
+                    label: l.authUpdatePassword,
                     variant: SpotbookButtonVariant.primary,
                     isLoading: _isLoading,
                     onPressed: _isLoading ? null : _submit,
@@ -172,7 +174,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                   GestureDetector(
                     onTap: () => context.go('/login'),
                     child: Text(
-                      'Retour à la connexion',
+                      l.authBackToLogin,
                       style: GoogleFonts.dmSans(
                         color: AppColors.gris,
                         fontSize: 14,
