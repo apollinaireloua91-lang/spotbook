@@ -397,28 +397,6 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
   }
 }
 
-// ─── Providers grid ──────────────────────────────────────────────────────────
-
-class _ProvidersGrid extends StatelessWidget {
-  const _ProvidersGrid({required this.providers});
-  final List<ProviderSearchResult> providers;
-
-  @override
-  Widget build(BuildContext context) {
-    return GridView.builder(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        crossAxisSpacing: 12,
-        mainAxisSpacing: 12,
-        childAspectRatio: 0.78,
-      ),
-      itemCount: providers.length,
-      itemBuilder: (_, index) => _ProviderCard(provider: providers[index]),
-    );
-  }
-}
-
 class _ProviderCard extends StatelessWidget {
   const _ProviderCard({required this.provider});
   final ProviderSearchResult provider;

@@ -125,7 +125,7 @@ class _LikeAnimationState extends State<LikeAnimation>
                         size: 120,
                       ),
                       // Main heart
-                      const Icon(
+                      Icon(
                         Icons.favorite,
                         color: AppColors.rose,
                         size: 100,
@@ -180,7 +180,7 @@ class _ParticlePainter extends CustomPainter {
       final opacity = (1.0 - progress).clamp(0.0, 1.0);
       if (opacity <= 0) continue;
       final paint = Paint()
-        ..color = p.color.withOpacity(opacity)
+        ..color = p.color.withValues(alpha: opacity)
         ..style = PaintingStyle.fill;
       final dx = center.dx + cos(p.angle) * p.distance * progress;
       final dy = center.dy + sin(p.angle) * p.distance * progress;
