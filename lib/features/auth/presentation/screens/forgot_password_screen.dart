@@ -37,8 +37,8 @@ class _ForgotPwNotifier extends Notifier<_ForgotPwState> {
       state = state.copyWith(
         isLoading: false,
         errorMessage: msg.contains('rate')
-            ? 'Too many attempts. Please try again in a few minutes.'
-            : 'An error occurred. Please check your email.',
+            ? 'Trop de tentatives. Veuillez réessayer dans quelques minutes.'
+            : 'Une erreur est survenue. Veuillez vérifier votre e-mail.',
       );
       return false;
     }
@@ -91,7 +91,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         leading: Semantics(
-          label: 'Back',
+          label: 'Retour',
           child: IconButton(
             icon: Container(
               padding: const EdgeInsets.all(8),
@@ -120,7 +120,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
               children: [
                 const SizedBox(height: 24),
                 Text(
-                  'Forgot password',
+                  'Mot de passe oublié',
                   style: GoogleFonts.sora(
                     color: AppColors.blanc,
                     fontSize: 28,
@@ -129,7 +129,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Enter your email address and we\'ll send you a link to reset your password.',
+                  'Entrez votre adresse e-mail et nous vous enverrons un lien pour réinitialiser votre mot de passe.',
                   style: GoogleFonts.dmSans(
                     color: AppColors.gris,
                     fontSize: 15,
@@ -148,14 +148,14 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                   style: GoogleFonts.dmSans(color: AppColors.blanc, fontSize: 15),
                   validator: (value) {
                     final v = value?.trim() ?? '';
-                    if (v.isEmpty) return 'Email required';
+                    if (v.isEmpty) return 'E-mail requis';
                     if (!v.contains('@') || !v.contains('.')) {
-                      return 'Invalid email';
+                      return 'E-mail invalide';
                     }
                     return null;
                   },
                   decoration: InputDecoration(
-                    hintText: 'Email',
+                    hintText: 'E-mail',
                     hintStyle: GoogleFonts.dmSans(
                         color: AppColors.gris, fontSize: 15),
                     prefixIcon: Icon(Icons.email_outlined,
@@ -203,7 +203,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
 
                 // Submit button
                 SpotbookButton(
-                  label: 'Reset password',
+                  label: 'Réinitialiser le mot de passe',
                   variant: SpotbookButtonVariant.primary,
                   isLoading: s.isLoading,
                   onPressed: s.isLoading ? null : _submit,
@@ -222,11 +222,11 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       child: Text.rich(
                         TextSpan(
-                          text: 'Remember it? ',
+                          text: 'Vous vous en souvenez ? ',
                           style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 14),
                           children: [
                             TextSpan(
-                              text: 'Sign in',
+                              text: 'Se connecter',
                               style: GoogleFonts.dmSans(
                                 color: AppColors.violetClair,
                                 fontWeight: FontWeight.w600,

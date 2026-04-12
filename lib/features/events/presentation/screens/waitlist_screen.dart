@@ -144,7 +144,7 @@ class WaitlistScreen extends ConsumerWidget {
                     side: BorderSide(color: AppColors.border),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
-                  child: Text('Back',
+                  child: Text('Retour',
                       style: GoogleFonts.dmSans(color: AppColors.blanc, fontWeight: FontWeight.w600, fontSize: 16)),
                 ),
               ),

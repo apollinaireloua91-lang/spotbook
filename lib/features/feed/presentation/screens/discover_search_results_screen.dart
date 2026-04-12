@@ -92,7 +92,7 @@ class _DiscoverSearchResultsScreenState
                       style: GoogleFonts.dmSans(
                           color: AppColors.blanc, fontSize: 14),
                       decoration: InputDecoration(
-                        hintText: 'Search for a professional...',
+                        hintText: 'Rechercher un professionnel...',
                         hintStyle: GoogleFonts.dmSans(
                             color: AppColors.gris, fontSize: 14),
                         prefixIcon: Icon(Icons.search,
@@ -308,7 +308,7 @@ class _EmptyState extends StatelessWidget {
                 hasError
                     ? 'Connection error.\nPull to retry.'
                     : (query != null && query!.isNotEmpty
-                        ? 'No results for\n"$query"'
+                        ? 'Aucun résultat pour\n« $query »'
                         : 'No professionals available.\nPull to refresh.'),
                 textAlign: TextAlign.center,
                 style: GoogleFonts.dmSans(

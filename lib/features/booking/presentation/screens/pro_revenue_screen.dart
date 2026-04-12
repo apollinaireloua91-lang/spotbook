@@ -156,7 +156,7 @@ class _ProRevenueScreenState extends ConsumerState<ProRevenueScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Total for period',
+                        'Total sur la période',
                         style: GoogleFonts.dmSans(
                             color: AppColors.gris, fontSize: 13),
                       ),
@@ -368,7 +368,7 @@ class _ProRevenueScreenState extends ConsumerState<ProRevenueScreen> {
                         padding: const EdgeInsets.symmetric(vertical: 24),
                         child: Center(
                           child: Text(
-                              'No transactions for this period',
+                              'Aucune transaction sur cette période',
                               style: GoogleFonts.dmSans(
                                   color: AppColors.gris,
                                   fontSize: 14)),

@@ -136,7 +136,7 @@ class _ProBusinessDetailsScreenState
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         leading: Semantics(
-          label: 'Back',
+          label: 'Retour',
           child: IconButton(
             onPressed: () => context.pop(),
             icon: Container(

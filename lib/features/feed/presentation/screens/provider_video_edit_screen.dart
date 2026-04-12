@@ -182,11 +182,11 @@ class _ProviderVideoEditScreenState extends State<ProviderVideoEditScreen> {
     return Scaffold(
       backgroundColor: AppColors.fond,
       appBar: SpotbookAppBar(
-        title: 'Edit video',
+        title: 'Modifier la vidéo',
         actions: [
           TextButton(
             onPressed: _onNext,
-            child: Text('Next',
+            child: Text('Suivant',
                 style: GoogleFonts.dmSans(
                     color: AppColors.violet,
                     fontWeight: FontWeight.w700,

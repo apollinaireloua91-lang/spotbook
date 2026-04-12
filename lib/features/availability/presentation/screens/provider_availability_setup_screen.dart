@@ -110,7 +110,7 @@ class _AvailabilityScreenBody extends ConsumerWidget {
             const _SectionHeader(
                 title: 'Dates bloquées', icon: Icons.block_outlined),
             _BlockedDatesSection(state: state, notifier: notifier),
-            const _SectionHeader(title: 'Settings', icon: Icons.tune_outlined),
+            const _SectionHeader(title: 'Paramètres', icon: Icons.tune_outlined),
             _SettingsSection(state: state, notifier: notifier),
           ],
         ),
@@ -1042,7 +1042,7 @@ class _SaveBar extends StatelessWidget {
               child: SpotbookButton.primary(
                 label: state.isSaving
                     ? 'Enregistrement...'
-                    : 'Save changes',
+                    : 'Enregistrer les modifications',
                 isLoading: state.isSaving,
                 onPressed: state.isSaving
                     ? null

@@ -20,23 +20,23 @@ class _Goal {
 const _goals = [
   _Goal(
     icon: Icons.trending_up,
-    title: 'Discover trends',
-    description: 'Explore the latest videos and trending styles',
+    title: 'Découvrir les tendances',
+    description: 'Explorez les dernières vidéos et styles tendance',
   ),
   _Goal(
     icon: Icons.pin_drop,
-    title: 'Book a nearby pro',
-    description: 'Find and book a service near you',
+    title: 'Réserver un pro près de toi',
+    description: 'Trouvez et réservez un service près de vous',
   ),
   _Goal(
     icon: Icons.confirmation_number_outlined,
-    title: 'Attend events',
-    description: 'Buy tickets for upcoming events',
+    title: 'Participer à des événements',
+    description: 'Achetez des billets pour les événements à venir',
   ),
   _Goal(
     icon: Icons.attach_money,
-    title: 'Compare prices',
-    description: 'Find the best value for money',
+    title: 'Comparer les prix',
+    description: 'Trouvez le meilleur rapport qualité-prix',
   ),
 ];
 
@@ -66,7 +66,7 @@ class ClientInterestGoalsScreen extends ConsumerWidget {
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         leading: Semantics(
-          label: 'Back',
+          label: 'Retour',
           child: IconButton(
             onPressed: () => context.go('/client/interests'),
             icon: Container(
@@ -99,7 +99,7 @@ class ClientInterestGoalsScreen extends ConsumerWidget {
                     color: AppColors.violet.withAlpha(25),
                   ),
                   child: Text(
-                    'STEP 2/3',
+                    'ÉTAPE 2/3',
                     style: GoogleFonts.dmSans(
                       color: AppColors.violet,
                       fontSize: 11,
@@ -124,7 +124,7 @@ class ClientInterestGoalsScreen extends ConsumerWidget {
 
             // Title
             Text(
-              'What is your goal?',
+              'Quel est votre objectif ?',
               style: GoogleFonts.sora(
                 color: AppColors.blanc,
                 fontSize: 24,
@@ -134,7 +134,7 @@ class ClientInterestGoalsScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              'Tell us what you\'re looking for to personalize your experience.',
+              'Dites-nous ce que vous recherchez pour personnaliser votre expérience.',
               style: GoogleFonts.dmSans(
                 color: AppColors.gris,
                 fontSize: 14,
@@ -266,7 +266,7 @@ class ClientInterestGoalsScreen extends ConsumerWidget {
                     ),
                   ),
                   child: Text(
-                    'Continue',
+                    'Continuer',
                     style: GoogleFonts.dmSans(
                       fontSize: 17,
                       fontWeight: FontWeight.w600,
@@ -280,7 +280,7 @@ class ClientInterestGoalsScreen extends ConsumerWidget {
               child: GestureDetector(
                 onTap: () => context.go('/client/location'),
                 child: Text(
-                  'Skip for now',
+                  'Passer pour le moment',
                   style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 14),
                 ),
               ),

@@ -59,7 +59,7 @@ class _ProSearchScreenState extends ConsumerState<ProSearchScreen> {
       setState(() => _isSearching = false);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: const Text('Search error'), backgroundColor: AppColors.error),
+          SnackBar(content: const Text('Erreur de recherche'), backgroundColor: AppColors.error),
         );
       }
     }
@@ -107,7 +107,7 @@ class _ProSearchScreenState extends ConsumerState<ProSearchScreen> {
                         style: GoogleFonts.dmSans(
                             color: AppColors.blanc, fontSize: 14),
                         decoration: InputDecoration(
-                          hintText: 'Search pros, hashtags...',
+                          hintText: 'Rechercher pros, hashtags...',
                           hintStyle: GoogleFonts.dmSans(
                               color: AppColors.gris.withAlpha(153)),
                           prefixIcon: Icon(Icons.search,
@@ -148,7 +148,7 @@ class _ProSearchScreenState extends ConsumerState<ProSearchScreen> {
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(20, 28, 20, 0),
                   child: Text(
-                    'Popular pros near you',
+                    'Pros populaires près de toi',
                     style: GoogleFonts.sora(
                       color: AppColors.blanc,
                       fontSize: 16,
@@ -166,7 +166,7 @@ class _ProSearchScreenState extends ConsumerState<ProSearchScreen> {
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(20, 28, 20, 0),
                   child: Text(
-                    'Trending events',
+                    'Événements tendance',
                     style: GoogleFonts.sora(
                       color: AppColors.blanc,
                       fontSize: 16,
@@ -217,7 +217,7 @@ class _PopularProsSection extends StatelessWidget {
             height: 80,
             child: Center(
               child: Text(
-                'No pros nearby',
+                'Aucun pro à proximité',
                 style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 13),
               ),
             ),
@@ -395,7 +395,7 @@ class _TrendingEventsSection extends ConsumerWidget {
                 ),
                 child: Center(
                   child: Text(
-                    'No upcoming events',
+                    'Aucun événement à venir',
                     style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 13),
                   ),
                 ),
@@ -525,7 +525,7 @@ class _InspirationsSectionState extends ConsumerState<_InspirationsSection>
                   Icon(Icons.auto_awesome, color: AppColors.violetClair, size: 18),
                   const SizedBox(width: 8),
                   Text(
-                    'Videos',
+                    'Vidéos',
                     style: GoogleFonts.sora(
                       color: AppColors.blanc,
                       fontSize: 16,
@@ -537,7 +537,7 @@ class _InspirationsSectionState extends ConsumerState<_InspirationsSection>
               GestureDetector(
                 onTap: () => context.push('/pro/feed'),
                 child: Text(
-                  'See all',
+                  'Voir tout',
                   style: GoogleFonts.dmSans(
                     color: AppColors.violet,
                     fontWeight: FontWeight.w600,
@@ -559,7 +559,7 @@ class _InspirationsSectionState extends ConsumerState<_InspirationsSection>
               child: Padding(
                 padding: const EdgeInsets.all(24),
                 child: Text(
-                  'Unable to load videos',
+                  'Impossible de charger les vidéos',
                   style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 13),
                 ),
               ),
@@ -600,10 +600,10 @@ class _InspirationsSectionState extends ConsumerState<_InspirationsSection>
             Icon(Icons.video_library_outlined, size: 48,
                 color: AppColors.grisInactif),
             const SizedBox(height: 12),
-            Text('No videos yet',
+            Text('Aucune vidéo',
                 style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 14)),
             const SizedBox(height: 4),
-            Text('Be the first to post!',
+            Text('Soyez le premier à publier !',
                 style: GoogleFonts.dmSans(
                     color: AppColors.violet, fontSize: 13, fontWeight: FontWeight.w600)),
           ],

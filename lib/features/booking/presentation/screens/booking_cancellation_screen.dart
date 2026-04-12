@@ -23,7 +23,7 @@ class BookingCancellationScreen extends ConsumerWidget {
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         leading: Semantics(
-          label: 'Back',
+          label: 'Retour',
           child: IconButton(
             icon: Container(
               padding: const EdgeInsets.all(8),
@@ -38,7 +38,7 @@ class BookingCancellationScreen extends ConsumerWidget {
           ),
         ),
         title: Text(
-          'Cancel booking',
+          'Annuler la réservation',
           style: GoogleFonts.sora(color: AppColors.blanc, fontWeight: FontWeight.bold, fontSize: 17),
         ),
         centerTitle: true,
@@ -52,7 +52,7 @@ class BookingCancellationScreen extends ConsumerWidget {
                 color: AppColors.warning, size: 48),
             const SizedBox(height: 16),
             Text(
-              'Cancellation policy',
+              'Politique d\'annulation',
               style: GoogleFonts.sora(
                 color: AppColors.blanc,
                 fontSize: 20,
@@ -64,14 +64,14 @@ class BookingCancellationScreen extends ConsumerWidget {
               icon: Icons.check_circle_outline,
               color: AppColors.success,
               text:
-                  'More than 48h before appointment: full deposit refund.',
+                  'Plus de 48h avant le rendez-vous : remboursement complet de l\'acompte.',
             ),
             const SizedBox(height: 12),
             _PolicyRow(
               icon: Icons.cancel_outlined,
               color: AppColors.error,
               text:
-                  'Less than 48h before appointment: the pro retains the deposit. No refund.',
+                  'Moins de 48h avant le rendez-vous : le pro conserve l\'acompte. Aucun remboursement.',
             ),
             const SizedBox(height: 32),
             Container(
@@ -83,7 +83,7 @@ class BookingCancellationScreen extends ConsumerWidget {
                 border: Border.all(color: AppColors.error.withAlpha(50)),
               ),
               child: Text(
-                'This action is irreversible. Do you confirm the cancellation?',
+                'Cette action est irréversible. Confirmez-vous l\'annulation ?',
                 style: GoogleFonts.dmSans(color: AppColors.error, fontSize: 14),
                 textAlign: TextAlign.center,
               ),
@@ -125,7 +125,7 @@ class BookingCancellationScreen extends ConsumerWidget {
                         child: CircularProgressIndicator(
                             color: AppColors.blanc, strokeWidth: 2),
                       )
-                    : Text('Confirm cancellation',
+                    : Text('Confirmer l\'annulation',
                         style: GoogleFonts.dmSans(fontWeight: FontWeight.bold)),
               ),
             ),
@@ -141,7 +141,7 @@ class BookingCancellationScreen extends ConsumerWidget {
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12)),
                 ),
-                child: Text('Back', style: GoogleFonts.dmSans()),
+                child: Text('Retour', style: GoogleFonts.dmSans()),
               ),
             ),
           ],

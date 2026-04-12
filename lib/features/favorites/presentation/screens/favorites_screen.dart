@@ -27,7 +27,7 @@ class FavoritesScreen extends ConsumerWidget {
           surfaceTintColor: Colors.transparent,
           elevation: 0,
           leading: Semantics(
-            label: 'Back',
+            label: 'Retour',
             child: IconButton(
               icon: Container(
                 padding: const EdgeInsets.all(8),
@@ -46,7 +46,7 @@ class FavoritesScreen extends ConsumerWidget {
             ),
           ),
           title: Text(
-            'Favorites',
+            'Favoris',
             style: GoogleFonts.sora(
               color: AppColors.blanc,
               fontWeight: FontWeight.w700,
@@ -83,7 +83,7 @@ class FavoritesScreen extends ConsumerWidget {
                 ),
                 tabs: const [
                   Tab(text: 'Pros'),
-                  Tab(text: 'Events'),
+                  Tab(text: 'Événements'),
                 ],
               ),
             ),
@@ -96,15 +96,15 @@ class FavoritesScreen extends ConsumerWidget {
                   _FavoritesList(
                     favorites: state.proFavorites,
                     emptyIcon: Icons.person_outline,
-                    emptyLabel: 'No favorite pros',
-                    emptySubLabel: 'Pros you save will appear here.',
+                    emptyLabel: 'Aucun pro favori',
+                    emptySubLabel: 'Les pros que vous aimez apparaîtront ici.',
                     onTap: (fav) => context.push('/pro/${fav.targetId}'),
                   ),
                   _FavoritesList(
                     favorites: state.eventFavorites,
                     emptyIcon: Icons.event_outlined,
-                    emptyLabel: 'No favorite events',
-                    emptySubLabel: 'Events you save will appear here.',
+                    emptyLabel: 'Aucun événement favori',
+                    emptySubLabel: 'Les événements sauvegardés apparaîtront ici.',
                     onTap: (fav) => context.push('/event/${fav.targetId}'),
                   ),
                 ],
@@ -246,7 +246,7 @@ class _FavoriteCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    favorite.targetName ?? 'Unnamed',
+                    favorite.targetName ?? 'Sans nom',
                     style: GoogleFonts.dmSans(
                       color: AppColors.blanc,
                       fontSize: 15,

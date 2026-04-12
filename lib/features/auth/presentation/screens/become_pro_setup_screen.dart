@@ -210,7 +210,7 @@ class _BecomeProSetupScreenState extends ConsumerState<BecomeProSetupScreen> {
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         leading: Semantics(
-          label: 'Back',
+          label: 'Retour',
           child: IconButton(
             onPressed: _prevStep,
             icon: Container(

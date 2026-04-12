@@ -6,11 +6,10 @@ import 'spotbook_colors.dart';
 /// Typographie Spotbook centralisée.
 ///
 /// Corps / labels / boutons : DM Sans (google_fonts).
-/// Titres h1/h2 : DM Sans bold (remplacer par Clash Display quand les
-///                assets `assets/fonts/ClashDisplay-*.ttf` seront ajoutés).
+/// Titres h1/h2 : Sora (google_fonts).
 abstract final class SpotbookTextStyles {
-  // ─── Headlines (titres d'écran) ───
-  static TextStyle get headline1 => GoogleFonts.dmSans(
+  // ─── Headlines (titres d'écran) — Sora ───
+  static TextStyle get headline1 => GoogleFonts.sora(
         fontSize: 28,
         fontWeight: FontWeight.w700,
         letterSpacing: -0.5,
@@ -18,7 +17,7 @@ abstract final class SpotbookTextStyles {
         color: SpotbookColors.textPrimary,
       );
 
-  static TextStyle get headline2 => GoogleFonts.dmSans(
+  static TextStyle get headline2 => GoogleFonts.sora(
         fontSize: 22,
         fontWeight: FontWeight.w700,
         letterSpacing: -0.3,
@@ -26,15 +25,15 @@ abstract final class SpotbookTextStyles {
         color: SpotbookColors.textPrimary,
       );
 
-  // ─── Titles (sections, cards) ───
-  static TextStyle get title => GoogleFonts.dmSans(
+  // ─── Titles (sections, cards) — Sora ───
+  static TextStyle get title => GoogleFonts.sora(
         fontSize: 18,
         fontWeight: FontWeight.w600,
         height: 1.25,
         color: SpotbookColors.textPrimary,
       );
 
-  static TextStyle get titleSmall => GoogleFonts.dmSans(
+  static TextStyle get titleSmall => GoogleFonts.sora(
         fontSize: 15,
         fontWeight: FontWeight.w600,
         height: 1.3,
@@ -139,44 +138,45 @@ abstract final class SpotbookTextStyles {
         ],
       );
 
-  /// [TextTheme] DM Sans pour le ThemeData Material.
+  /// [TextTheme] Sora (headlines/titles) + DM Sans (body/labels) pour le ThemeData Material.
   static TextTheme textTheme(TextTheme base) {
     final dmSans = GoogleFonts.dmSansTextTheme(base);
+    final sora = GoogleFonts.soraTextTheme(base);
     return dmSans.copyWith(
-      displayLarge: dmSans.displayLarge?.copyWith(
+      displayLarge: sora.displayLarge?.copyWith(
         color: SpotbookColors.textPrimary,
         fontWeight: FontWeight.w700,
       ),
-      displayMedium: dmSans.displayMedium?.copyWith(
+      displayMedium: sora.displayMedium?.copyWith(
         color: SpotbookColors.textPrimary,
         fontWeight: FontWeight.w700,
       ),
-      headlineLarge: dmSans.headlineLarge?.copyWith(
+      headlineLarge: sora.headlineLarge?.copyWith(
         color: SpotbookColors.textPrimary,
         fontWeight: FontWeight.w700,
         height: 1.2,
       ),
-      headlineMedium: dmSans.headlineMedium?.copyWith(
+      headlineMedium: sora.headlineMedium?.copyWith(
         color: SpotbookColors.textPrimary,
         fontWeight: FontWeight.w700,
         height: 1.25,
       ),
-      headlineSmall: dmSans.headlineSmall?.copyWith(
+      headlineSmall: sora.headlineSmall?.copyWith(
         color: SpotbookColors.textPrimary,
         fontWeight: FontWeight.w600,
         height: 1.25,
       ),
-      titleLarge: dmSans.titleLarge?.copyWith(
+      titleLarge: sora.titleLarge?.copyWith(
         color: SpotbookColors.textPrimary,
         fontWeight: FontWeight.w600,
         height: 1.3,
       ),
-      titleMedium: dmSans.titleMedium?.copyWith(
+      titleMedium: sora.titleMedium?.copyWith(
         color: SpotbookColors.textPrimary,
         fontWeight: FontWeight.w600,
         height: 1.35,
       ),
-      titleSmall: dmSans.titleSmall?.copyWith(
+      titleSmall: sora.titleSmall?.copyWith(
         color: SpotbookColors.textPrimary,
         fontWeight: FontWeight.w600,
         height: 1.35,

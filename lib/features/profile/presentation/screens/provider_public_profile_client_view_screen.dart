@@ -137,7 +137,7 @@ class _ProviderPublicProfileClientViewScreenState
         SnackBar(
           backgroundColor: AppColors.surface,
           content: Text(
-            'Sign in to send a message.',
+            'Connectez-vous pour envoyer un message.',
             style: TextStyle(color: AppColors.blanc),
           ),
         ),
@@ -736,7 +736,7 @@ class _CoverSection extends StatelessWidget {
                 gradient: LinearGradient(
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
-                  colors: [Color(0xFF2A1A50), Color(0xFF1A1030)],
+                  colors: [AppColors.profileHeaderStart, AppColors.profileHeaderEnd],
                 ),
               ),
             ),
@@ -1011,7 +1011,7 @@ class _FollowButton extends StatelessWidget {
         final authId = Supabase.instance.client.auth.currentUser?.id;
         if (authId == null) {
           return _ActionButton(
-            label: 'Sign in to follow',
+            label: 'Connectez-vous pour suivre',
             color: AppColors.surfaceAlt,
             textColor: AppColors.gris,
             borderColor: AppColors.border,
@@ -1314,7 +1314,7 @@ class _VideosTab extends StatelessWidget {
             Icon(Icons.videocam_off_outlined,
                 color: AppColors.gris, size: 48),
             const SizedBox(height: 12),
-            Text('No videos yet',
+            Text('Aucune vidéo',
                 style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 15)),
           ],
         ),
@@ -1442,7 +1442,7 @@ class _ServicesTab extends StatelessWidget {
             Icon(Icons.design_services_outlined,
                 color: AppColors.gris, size: 48),
             const SizedBox(height: 12),
-            Text('No services available',
+            Text('Aucun service disponible',
                 style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 15)),
           ],
         ),
@@ -1577,7 +1577,7 @@ class _ReviewsTab extends StatelessWidget {
             Icon(Icons.rate_review_outlined,
                 color: AppColors.gris, size: 48),
             const SizedBox(height: 12),
-            Text('No reviews yet',
+            Text('Aucun avis',
                 style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 15)),
           ],
         ),

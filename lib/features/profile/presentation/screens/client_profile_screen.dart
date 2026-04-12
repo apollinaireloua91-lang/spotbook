@@ -122,7 +122,7 @@ class _ProfileBody extends ConsumerWidget {
                 children: [
                   Center(
                     child: Text(
-                      'My Profile',
+                      'Mon profil',
                       style: GoogleFonts.sora(
                         color: AppColors.blanc,
                         fontSize: 18,
@@ -178,7 +178,7 @@ class _ProfileBody extends ConsumerWidget {
               error: (_, __) => Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 child: Text(
-                  'Unable to load stats',
+                  'Impossible de charger les statistiques',
                   style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 12),
                   textAlign: TextAlign.center,
                 ),
@@ -205,7 +205,7 @@ class _ProfileBody extends ConsumerWidget {
                     ),
                   ),
                   child: Text(
-                    'Edit Profile',
+                    'Modifier le profil',
                     style: GoogleFonts.dmSans(
                       color: AppColors.blanc,
                       fontWeight: FontWeight.w600,
@@ -241,7 +241,7 @@ class _ProfileBody extends ConsumerWidget {
             Padding(
               padding: const EdgeInsets.only(left: 16, bottom: 10),
               child: Text(
-                'Settings',
+                'Paramètres',
                 style: GoogleFonts.sora(
                   color: AppColors.blanc,
                   fontSize: 14,
@@ -279,7 +279,7 @@ class _FavoriteProsList extends StatelessWidget {
           child: Row(
             children: [
               Text(
-                'My favorite Pros',
+                'Mes pros favoris',
                 style: GoogleFonts.sora(
                   color: AppColors.blanc,
                   fontSize: 14,
@@ -290,7 +290,7 @@ class _FavoriteProsList extends StatelessWidget {
               GestureDetector(
                 onTap: () => context.push('/favorites'),
                 child: Text(
-                  'See all',
+                  'Voir tout',
                   style: GoogleFonts.dmSans(
                     color: AppColors.violetClair,
                     fontSize: 12,
@@ -412,8 +412,8 @@ class _RecentHistory extends StatelessWidget {
     try {
       final d = DateTime.parse(dateStr);
       const months = [
-        'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-        'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+        'Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin',
+        'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc',
       ];
       return '${d.day} ${months[d.month - 1]}';
     } catch (_) {
@@ -431,7 +431,7 @@ class _RecentHistory extends StatelessWidget {
           child: Row(
             children: [
               Text(
-                'Recent history',
+                'Historique récent',
                 style: GoogleFonts.sora(
                   color: AppColors.blanc,
                   fontSize: 14,
@@ -443,7 +443,7 @@ class _RecentHistory extends StatelessWidget {
                 builder: (ctx) => GestureDetector(
                   onTap: () => ctx.push('/client/bookings'),
                   child: Text(
-                    'See all',
+                    'Voir tout',
                     style: GoogleFonts.dmSans(
                       color: AppColors.violetClair,
                       fontSize: 12,
@@ -549,12 +549,12 @@ class _SettingsSection extends ConsumerWidget {
             ),
             SettingsItemData(
               icon: 'language',
-              label: 'Language',
+              label: 'Langue',
               onTap: () => context.push('/language-settings'),
             ),
             SettingsItemData(
               icon: 'star_outline',
-              label: 'My reviews',
+              label: 'Mes avis',
               onTap: () => context.push('/favorites'),
             ),
           ],
@@ -578,7 +578,7 @@ class _SettingsSection extends ConsumerWidget {
               const SizedBox(width: 12),
               Expanded(
                 child: Text(
-                  'Dark Mode',
+                  'Mode sombre',
                   style: GoogleFonts.dmSans(
                     color: AppColors.grisClair,
                     fontSize: 13,
@@ -645,7 +645,7 @@ class _SpecialActionsSection extends ConsumerWidget {
                     ),
                     const SizedBox(width: 8),
                     Text(
-                      'Become a Pro',
+                      'Devenir Pro',
                       style: GoogleFonts.dmSans(
                         color: Colors.white,
                         fontSize: 15,
@@ -683,7 +683,7 @@ class _SpecialActionsSection extends ConsumerWidget {
                     ),
                     const SizedBox(width: 8),
                     Text(
-                      'Log out',
+                      'Déconnexion',
                       style: GoogleFonts.dmSans(
                         color: AppColors.logout,
                         fontSize: 15,
@@ -713,7 +713,7 @@ class _SpecialActionsSection extends ConsumerWidget {
           borderRadius: BorderRadius.circular(16),
         ),
         title: Text(
-          'Log out',
+          'Déconnexion',
           style: GoogleFonts.sora(
             color: AppColors.blanc,
             fontSize: 17,
@@ -721,7 +721,7 @@ class _SpecialActionsSection extends ConsumerWidget {
           ),
         ),
         content: Text(
-          'Are you sure you want to log out?',
+          'Êtes-vous sûr de vouloir vous déconnecter ?',
           style: GoogleFonts.dmSans(
             color: AppColors.gris,
             fontSize: 14,
@@ -731,7 +731,7 @@ class _SpecialActionsSection extends ConsumerWidget {
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(),
             child: Text(
-              'Cancel',
+              'Annuler',
               style: GoogleFonts.dmSans(color: AppColors.gris),
             ),
           ),
@@ -748,7 +748,7 @@ class _SpecialActionsSection extends ConsumerWidget {
               router.go('/login');
             },
             child: Text(
-              'Log out',
+              'Déconnexion',
               style: GoogleFonts.dmSans(
                 color: AppColors.logout,
                 fontWeight: FontWeight.w600,
@@ -776,7 +776,7 @@ class _UnauthenticatedState extends StatelessWidget {
               color: AppColors.gris, size: 48),
           const SizedBox(height: 12),
           Text(
-            'Not signed in',
+            'Non connecté',
             style: GoogleFonts.sora(color: AppColors.gris, fontSize: 16),
           ),
           const SizedBox(height: 16),
@@ -789,7 +789,7 @@ class _UnauthenticatedState extends StatelessWidget {
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Text(
-                'Sign in',
+                'Se connecter',
                 style: GoogleFonts.dmSans(
                   color: AppColors.blanc,
                   fontWeight: FontWeight.w600,
@@ -816,7 +816,7 @@ class _EmptyFavorites extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'My favorite Pros',
+            'Mes pros favoris',
             style: GoogleFonts.sora(
               color: AppColors.blanc,
               fontSize: 14,
@@ -841,7 +841,7 @@ class _EmptyFavorites extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Like Pros to find them here',
+                  'Aimez des pros pour les retrouver ici',
                   style: GoogleFonts.dmSans(
                     color: AppColors.gris.withAlpha(160),
                     fontSize: 13,
@@ -869,7 +869,7 @@ class _EmptyHistory extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Recent history',
+            'Historique récent',
             style: GoogleFonts.sora(
               color: AppColors.blanc,
               fontSize: 14,
@@ -894,7 +894,7 @@ class _EmptyHistory extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Your bookings will appear here',
+                  'Vos réservations apparaîtront ici',
                   style: GoogleFonts.dmSans(
                     color: AppColors.gris.withAlpha(160),
                     fontSize: 13,
@@ -939,7 +939,7 @@ class _ErrorState extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             Text(
-              'Loading error',
+              'Erreur de chargement',
               style: GoogleFonts.sora(
                 color: AppColors.blanc,
                 fontSize: 17,
@@ -948,7 +948,7 @@ class _ErrorState extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              'Unable to load your profile',
+              'Impossible de charger votre profil',
               style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 14),
             ),
             const SizedBox(height: 20),
@@ -964,7 +964,7 @@ class _ErrorState extends StatelessWidget {
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
-                  'Retry',
+                  'Réessayer',
                   style: GoogleFonts.dmSans(
                     color: AppColors.blanc,
                     fontWeight: FontWeight.w600,

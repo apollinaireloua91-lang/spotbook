@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../shared/theme/app_colors.dart';
 
+/// Client Shell — 4 tabs, NO camera button:
+///   Feed | Découvrir | Mes RDV | Profil
 class ClientShell extends StatelessWidget {
   const ClientShell({super.key, required this.navigationShell});
 
@@ -20,7 +23,7 @@ class ClientShell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bottomInset = MediaQuery.paddingOf(context).bottom;
-    final theme = Theme.of(context);
+    final idx = navigationShell.currentIndex;
 
     return Scaffold(
       extendBody: true,
@@ -29,9 +32,9 @@ class ClientShell extends StatelessWidget {
         height: 65 + bottomInset,
         padding: EdgeInsets.only(bottom: bottomInset),
         decoration: BoxDecoration(
-          color: theme.scaffoldBackgroundColor,
+          color: AppColors.navBarBg,
           border: Border(
-            top: BorderSide(color: theme.dividerColor, width: 0.5),
+            top: BorderSide(color: AppColors.border, width: 0.5),
           ),
           boxShadow: [
             BoxShadow(
@@ -48,28 +51,28 @@ class ClientShell extends StatelessWidget {
               label: 'Feed',
               icon: Icons.play_circle_outline,
               activeIcon: Icons.play_circle_filled,
-              selected: navigationShell.currentIndex == 0,
+              selected: idx == 0,
               onTap: () => _goBranch(0),
             ),
             _ClientNavItem(
-              label: 'Search',
+              label: 'Découvrir',
               icon: Icons.search_outlined,
               activeIcon: Icons.search,
-              selected: navigationShell.currentIndex == 1,
+              selected: idx == 1,
               onTap: () => _goBranch(1),
             ),
             _ClientNavItem(
-              label: 'Bookings',
+              label: 'Mes RDV',
               icon: Icons.calendar_today_outlined,
               activeIcon: Icons.calendar_today,
-              selected: navigationShell.currentIndex == 2,
+              selected: idx == 2,
               onTap: () => _goBranch(2),
             ),
             _ClientNavItem(
-              label: 'Profile',
+              label: 'Profil',
               icon: Icons.person_outline,
               activeIcon: Icons.person,
-              selected: navigationShell.currentIndex == 3,
+              selected: idx == 3,
               onTap: () => _goBranch(3),
             ),
           ],
@@ -96,8 +99,6 @@ class _ClientNavItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final primary = Theme.of(context).colorScheme.primary;
-
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: () {
@@ -114,21 +115,21 @@ class _ClientNavItem extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
                 color: selected
-                    ? primary.withAlpha(20)
+                    ? AppColors.violet.withAlpha(20)
                     : Colors.transparent,
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(
                 selected ? activeIcon : icon,
-                color: selected ? primary : AppColors.grisInactif,
+                color: selected ? AppColors.violet : AppColors.grisInactif,
                 size: 22,
               ),
             ),
             const SizedBox(height: 2),
             Text(
               label,
-              style: TextStyle(
-                color: selected ? primary : AppColors.grisInactif,
+              style: GoogleFonts.dmSans(
+                color: selected ? AppColors.violet : AppColors.grisInactif,
                 fontSize: 10,
                 fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
               ),

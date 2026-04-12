@@ -47,16 +47,16 @@ class _SavedPostsScreenState extends ConsumerState<SavedPostsScreen> {
       builder: (ctx) => AlertDialog(
         backgroundColor: AppColors.surface,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Text('Remove from favorites?',
+        title: Text('Retirer des favoris ?',
             style: GoogleFonts.sora(color: AppColors.blanc)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: Text('No', style: GoogleFonts.dmSans(color: AppColors.gris)),
+            child: Text('Non', style: GoogleFonts.dmSans(color: AppColors.gris)),
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: Text('Yes', style: GoogleFonts.dmSans(color: AppColors.error)),
+            child: Text('Oui', style: GoogleFonts.dmSans(color: AppColors.error)),
           ),
         ],
       ),
@@ -78,7 +78,7 @@ class _SavedPostsScreenState extends ConsumerState<SavedPostsScreen> {
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         leading: Semantics(
-          label: 'Back',
+          label: 'Retour',
           child: IconButton(
             icon: Container(
               padding: const EdgeInsets.all(8),
@@ -95,7 +95,7 @@ class _SavedPostsScreenState extends ConsumerState<SavedPostsScreen> {
             },
           ),
         ),
-        title: Text('Saved posts',
+        title: Text('Posts sauvegardés',
             style:
                 GoogleFonts.sora(color: AppColors.blanc, fontWeight: FontWeight.bold)),
         centerTitle: true,
@@ -203,12 +203,12 @@ class _SavedPostsScreenState extends ConsumerState<SavedPostsScreen> {
               color: AppColors.gris.withValues(alpha: 0.5), size: 56),
           const SizedBox(height: 12),
           Text(
-            'No saved posts',
+            'Aucun post sauvegardé',
             style: GoogleFonts.sora(color: AppColors.gris, fontSize: 15),
           ),
           const SizedBox(height: 4),
           Text(
-            'Tap the bookmark icon to save videos',
+            'Appuyez sur le signet pour sauvegarder des vidéos',
             style: GoogleFonts.dmSans(color: AppColors.grisInactif, fontSize: 13),
             textAlign: TextAlign.center,
           ),

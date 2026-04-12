@@ -157,7 +157,7 @@ class _ProviderClientsListScreenState
 
     return Scaffold(
       backgroundColor: AppColors.fond,
-      appBar: const SpotbookAppBar(title: 'My clients'),
+      appBar: const SpotbookAppBar(title: 'Mes clients'),
       body: clientsAsync.when(
         loading: () => Center(
             child: CircularProgressIndicator(color: AppColors.violet)),
@@ -179,7 +179,7 @@ class _ProviderClientsListScreenState
                   style: GoogleFonts.dmSans(
                       color: AppColors.blanc, fontSize: 14),
                   decoration: InputDecoration(
-                    hintText: 'Search client...',
+                    hintText: 'Rechercher un client...',
                     hintStyle: TextStyle(
                         color: AppColors.gris.withAlpha(128)),
                     prefixIcon: Icon(Icons.search,
@@ -209,14 +209,14 @@ class _ProviderClientsListScreenState
                     ),
                     const SizedBox(width: 8),
                     _SortChip(
-                      label: 'More bookings',
+                      label: 'Plus de RDV',
                       selected: _sort == _SortBy.mostBookings,
                       onTap: () => setState(
                           () => _sort = _SortBy.mostBookings),
                     ),
                     const SizedBox(width: 8),
                     _SortChip(
-                      label: 'Highest spend',
+                      label: 'Plus dépensé',
                       selected: _sort == _SortBy.highestSpend,
                       onTap: () => setState(
                           () => _sort = _SortBy.highestSpend),
@@ -235,7 +235,7 @@ class _ProviderClientsListScreenState
                             Icon(Icons.people_outline,
                                 color: AppColors.gris, size: 48),
                             const SizedBox(height: 12),
-                            Text('No clients',
+                            Text('Aucun client',
                                 style: GoogleFonts.dmSans(
                                     color: AppColors.gris,
                                     fontSize: 15)),

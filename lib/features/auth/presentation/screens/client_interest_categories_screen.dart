@@ -30,7 +30,7 @@ class ClientInterestCategoriesScreen extends ConsumerWidget {
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         leading: Semantics(
-          label: 'Back',
+          label: 'Retour',
           child: IconButton(
             onPressed: () => context.go('/client/feed'),
             icon: Container(

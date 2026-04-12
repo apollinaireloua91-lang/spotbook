@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import 'app_colors.dart';
 
@@ -182,38 +183,12 @@ abstract final class AppTheme {
             return _lBorder;
           }),
         ),
-        textTheme: const TextTheme(
-          headlineLarge: TextStyle(
-            color: _lText,
-            fontWeight: FontWeight.bold,
-            letterSpacing: 0.3,
-          ),
-          headlineMedium: TextStyle(
-            color: _lText,
-            fontWeight: FontWeight.bold,
-            letterSpacing: 0.3,
-          ),
-          titleLarge: TextStyle(
-            color: _lText,
-            fontWeight: FontWeight.w600,
-          ),
-          titleMedium: TextStyle(
-            color: _lText,
-            fontWeight: FontWeight.w600,
-          ),
-          bodyLarge: TextStyle(
-            color: _lText,
-            height: 1.5,
-          ),
-          bodyMedium: TextStyle(
-            color: _lTextSecondary,
-            height: 1.5,
-          ),
-          labelLarge: TextStyle(
-            color: _lTextSecondary,
-            fontWeight: FontWeight.w500,
-            letterSpacing: 1.2,
-          ),
+        textTheme: _buildTextTheme(
+          sora: GoogleFonts.soraTextTheme(),
+          dmSans: GoogleFonts.dmSansTextTheme(),
+          text: _lText,
+          textSecondary: _lTextSecondary,
+          textDisabled: _lTextDisabled,
         ),
       );
 
@@ -390,38 +365,89 @@ abstract final class AppTheme {
             return _dBorder;
           }),
         ),
-        textTheme: const TextTheme(
-          headlineLarge: TextStyle(
-            color: _dText,
-            fontWeight: FontWeight.bold,
-            letterSpacing: 0.3,
-          ),
-          headlineMedium: TextStyle(
-            color: _dText,
-            fontWeight: FontWeight.bold,
-            letterSpacing: 0.3,
-          ),
-          titleLarge: TextStyle(
-            color: _dText,
-            fontWeight: FontWeight.w600,
-          ),
-          titleMedium: TextStyle(
-            color: _dText,
-            fontWeight: FontWeight.w600,
-          ),
-          bodyLarge: TextStyle(
-            color: _dText,
-            height: 1.5,
-          ),
-          bodyMedium: TextStyle(
-            color: _dTextSecondary,
-            height: 1.5,
-          ),
-          labelLarge: TextStyle(
-            color: _dTextSecondary,
-            fontWeight: FontWeight.w500,
-            letterSpacing: 1.2,
-          ),
+        textTheme: _buildTextTheme(
+          sora: GoogleFonts.soraTextTheme(),
+          dmSans: GoogleFonts.dmSansTextTheme(),
+          text: _dText,
+          textSecondary: _dTextSecondary,
+          textDisabled: _dTextDisabled,
         ),
       );
+
+  // ─── Shared text theme builder — Sora (headlines/titles) + DM Sans (body/labels) ───
+  static TextTheme _buildTextTheme({
+    required TextTheme sora,
+    required TextTheme dmSans,
+    required Color text,
+    required Color textSecondary,
+    required Color textDisabled,
+  }) {
+    return dmSans.copyWith(
+      displayLarge: sora.displayLarge?.copyWith(
+        color: text,
+        fontWeight: FontWeight.w700,
+      ),
+      displayMedium: sora.displayMedium?.copyWith(
+        color: text,
+        fontWeight: FontWeight.w700,
+      ),
+      headlineLarge: sora.headlineLarge?.copyWith(
+        color: text,
+        fontWeight: FontWeight.w700,
+        letterSpacing: 0.3,
+        height: 1.2,
+      ),
+      headlineMedium: sora.headlineMedium?.copyWith(
+        color: text,
+        fontWeight: FontWeight.w700,
+        letterSpacing: 0.3,
+        height: 1.25,
+      ),
+      headlineSmall: sora.headlineSmall?.copyWith(
+        color: text,
+        fontWeight: FontWeight.w600,
+        height: 1.25,
+      ),
+      titleLarge: sora.titleLarge?.copyWith(
+        color: text,
+        fontWeight: FontWeight.w600,
+        height: 1.3,
+      ),
+      titleMedium: sora.titleMedium?.copyWith(
+        color: text,
+        fontWeight: FontWeight.w600,
+        height: 1.35,
+      ),
+      titleSmall: sora.titleSmall?.copyWith(
+        color: text,
+        fontWeight: FontWeight.w600,
+        height: 1.35,
+      ),
+      bodyLarge: dmSans.bodyLarge?.copyWith(
+        color: text,
+        height: 1.5,
+      ),
+      bodyMedium: dmSans.bodyMedium?.copyWith(
+        color: textSecondary,
+        height: 1.5,
+      ),
+      bodySmall: dmSans.bodySmall?.copyWith(
+        color: textDisabled,
+        height: 1.45,
+      ),
+      labelLarge: dmSans.labelLarge?.copyWith(
+        color: textSecondary,
+        fontWeight: FontWeight.w600,
+        letterSpacing: 1.2,
+      ),
+      labelMedium: dmSans.labelMedium?.copyWith(
+        color: textSecondary,
+        fontWeight: FontWeight.w500,
+      ),
+      labelSmall: dmSans.labelSmall?.copyWith(
+        color: textDisabled,
+        fontWeight: FontWeight.w500,
+      ),
+    );
+  }
 }

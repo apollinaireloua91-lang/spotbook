@@ -105,7 +105,7 @@ class ReferralScreen extends ConsumerWidget {
           ),
         ),
         title: Text(
-          'Referrals',
+          'Parrainages',
           style: GoogleFonts.sora(color: AppColors.blanc, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
@@ -123,7 +123,7 @@ class ReferralScreen extends ConsumerWidget {
                   Icon(Icons.card_giftcard, color: AppColors.blanc, size: 56),
                   const SizedBox(height: 16),
                   Text(
-                    'Refer & earn!',
+                    'Parrainez et gagnez !',
                     style: GoogleFonts.sora(
                       color: AppColors.blanc,
                       fontSize: 24,
@@ -132,7 +132,7 @@ class ReferralScreen extends ConsumerWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Invite your friends and earn CA\$10 credit for each verified sign-up.',
+                    'Invitez vos amis et gagnez 10 CA\$ de crédit pour chaque inscription vérifiée.',
                     style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 15, height: 1.5),
                     textAlign: TextAlign.center,
                   ),
@@ -147,7 +147,7 @@ class ReferralScreen extends ConsumerWidget {
                     ),
                     child: Column(
                       children: [
-                        Text('Your code', style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 13)),
+                        Text('Votre code', style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 13)),
                         const SizedBox(height: 8),
                         Text(
                           state.code ?? '---',
@@ -171,7 +171,7 @@ class ReferralScreen extends ConsumerWidget {
                                       Clipboard.setData(ClipboardData(text: state.code!));
                                       ScaffoldMessenger.of(context).showSnackBar(
                                         SnackBar(
-                                          content: const Text('Code copied!'),
+                                          content: const Text('Code copié !'),
                                           backgroundColor: AppColors.success,
                                         ),
                                       );
@@ -179,7 +179,7 @@ class ReferralScreen extends ConsumerWidget {
                                   },
                                   icon: Icon(Icons.copy, color: AppColors.blanc, size: 18),
                                   label: Text(
-                                    'Copy',
+                                    'Copier',
                                     style: GoogleFonts.dmSans(color: AppColors.blanc, fontWeight: FontWeight.w500),
                                   ),
                                   style: OutlinedButton.styleFrom(
@@ -198,12 +198,12 @@ class ReferralScreen extends ConsumerWidget {
                                     HapticFeedback.mediumImpact();
                                     SharePlus.instance.share(
                                       ShareParams(
-                                        text: 'Join Spotbook with my code ${state.code} and earn CA\$10 credit!',
+                                        text: 'Rejoins Spotbook avec mon code ${state.code} et gagne 10 CA\$ de crédit !',
                                       ),
                                     );
                                   },
                                   icon: const Icon(Icons.share, size: 18),
-                                  label: Text('Share', style: GoogleFonts.dmSans(fontWeight: FontWeight.w600)),
+                                  label: Text('Partager', style: GoogleFonts.dmSans(fontWeight: FontWeight.w600)),
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: AppColors.blanc,
                                     foregroundColor: AppColors.fond,
@@ -222,7 +222,7 @@ class ReferralScreen extends ConsumerWidget {
                     children: [
                       Expanded(
                         child: _StatCard(
-                          label: 'Referrals',
+                          label: 'Parrainages',
                           value: '${state.referralCount}',
                           icon: Icons.people_outline,
                         ),
@@ -230,7 +230,7 @@ class ReferralScreen extends ConsumerWidget {
                       const SizedBox(width: 12),
                       Expanded(
                         child: _StatCard(
-                          label: 'Credits earned',
+                          label: 'Crédits gagnés',
                           value: '${state.totalCredits.toStringAsFixed(0)} CA\$',
                           icon: Icons.monetization_on_outlined,
                         ),
@@ -239,7 +239,7 @@ class ReferralScreen extends ConsumerWidget {
                   ),
                   const SizedBox(height: 24),
                   Text(
-                    'History',
+                    'Historique',
                     style: GoogleFonts.sora(color: AppColors.blanc, fontSize: 16, fontWeight: FontWeight.w600),
                   ),
                   const SizedBox(height: 8),
@@ -247,7 +247,7 @@ class ReferralScreen extends ConsumerWidget {
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       child: Text(
-                        'No referrals yet',
+                        'Aucun parrainage',
                         style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 14),
                       ),
                     )
@@ -268,8 +268,8 @@ class ReferralScreen extends ConsumerWidget {
                             Expanded(
                               child: Text(
                                 item.referredId.isEmpty
-                                    ? 'Sign-up pending'
-                                    : 'Friend signed up (${item.referredId.substring(0, 6)})',
+                                    ? 'Inscription en attente'
+                                    : 'Ami inscrit (${item.referredId.substring(0, 6)})',
                                 style: TextStyle(color: AppColors.blanc, fontSize: 14),
                               ),
                             ),

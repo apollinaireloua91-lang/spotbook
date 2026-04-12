@@ -107,7 +107,7 @@ class _ProviderReviewsReceivedScreenState
 
     return Scaffold(
       backgroundColor: AppColors.fond,
-      appBar: const SpotbookAppBar(title: 'Reviews received'),
+      appBar: const SpotbookAppBar(title: 'Avis reçus'),
       body: dataAsync.when(
         loading: () => Center(
             child: CircularProgressIndicator(color: AppColors.violet)),
@@ -161,7 +161,7 @@ class _ProviderReviewsReceivedScreenState
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          '${data.reviews.length} reviews',
+                          '${data.reviews.length} avis',
                           style: GoogleFonts.dmSans(
                               color: AppColors.gris, fontSize: 12),
                         ),
@@ -233,7 +233,7 @@ class _ProviderReviewsReceivedScreenState
                   scrollDirection: Axis.horizontal,
                   children: [
                     _RatingFilterChip(
-                      label: 'All',
+                      label: 'Tous',
                       selected: _filterRating == null,
                       onTap: () =>
                           setState(() => _filterRating = null),
@@ -259,7 +259,7 @@ class _ProviderReviewsReceivedScreenState
                 Padding(
                   padding: const EdgeInsets.only(top: 40),
                   child: Center(
-                    child: Text('No reviews',
+                    child: Text('Aucun avis',
                         style: TextStyle(
                             color: AppColors.gris, fontSize: 15)),
                   ),

@@ -40,7 +40,7 @@ class ProMyEventsScreen extends ConsumerWidget {
         surfaceTintColor: Colors.transparent,
         scrolledUnderElevation: 0,
         title: Text(
-          'My events',
+          'Mes événements',
           style: GoogleFonts.sora(
             color: AppColors.blanc,
             fontWeight: FontWeight.w600,
@@ -62,7 +62,7 @@ class ProMyEventsScreen extends ConsumerWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    'No events',
+                    'Aucun événement',
                     style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 15),
                   ),
                   const SizedBox(height: 16),

@@ -16,9 +16,9 @@ class EmptyState extends StatefulWidget {
   factory EmptyState.noMessages({VoidCallback? onCta}) {
     return EmptyState(
       emoji: '\uD83D\uDCAC',
-      title: 'No messages',
-      subtitle: 'Your conversations with pros will appear here.',
-      ctaLabel: onCta != null ? 'Discover pros' : null,
+      title: 'Aucun message',
+      subtitle: 'Vos conversations avec les pros apparaîtront ici.',
+      ctaLabel: onCta != null ? 'Découvrir des pros' : null,
       onCta: onCta,
     );
   }
@@ -26,10 +26,10 @@ class EmptyState extends StatefulWidget {
   factory EmptyState.noEvents({VoidCallback? onCta}) {
     return EmptyState(
       emoji: '\uD83C\uDFAB',
-      title: 'No events',
+      title: 'Aucun événement',
       subtitle:
-          'Create your first event to start selling tickets.',
-      ctaLabel: onCta != null ? 'Create an event' : null,
+          'Créez votre premier événement pour vendre des billets.',
+      ctaLabel: onCta != null ? 'Créer un événement' : null,
       onCta: onCta,
     );
   }
@@ -37,24 +37,24 @@ class EmptyState extends StatefulWidget {
   factory EmptyState.noBookings() {
     return const EmptyState(
       emoji: '\uD83D\uDCC5',
-      title: 'No bookings',
-      subtitle: 'Your upcoming bookings will appear here.',
+      title: 'Aucune réservation',
+      subtitle: 'Vos prochaines réservations apparaîtront ici.',
     );
   }
 
   factory EmptyState.noVideos() {
     return const EmptyState(
       emoji: '\uD83C\uDFAC',
-      title: 'No videos',
-      subtitle: 'Videos from professionals will appear here.',
+      title: 'Aucune vidéo',
+      subtitle: 'Les vidéos des professionnels apparaîtront ici.',
     );
   }
 
   factory EmptyState.noFavorites() {
     return const EmptyState(
       emoji: '\u2764\uFE0F',
-      title: 'No favorites',
-      subtitle: 'Your favorite pros and saved posts will appear here.',
+      title: 'Aucun favori',
+      subtitle: 'Vos pros favoris et posts sauvegardés apparaîtront ici.',
     );
   }
 

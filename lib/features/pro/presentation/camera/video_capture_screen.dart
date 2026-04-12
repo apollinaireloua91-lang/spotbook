@@ -59,7 +59,7 @@ class _VideoCaptureScreenState extends State<VideoCaptureScreen> {
       setState(() => _isPicking = false);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Could not load video: $e'),
+          content: Text('Impossible de charger la vidéo : $e'),
           backgroundColor: AppColors.error,
         ),
       );
@@ -75,7 +75,7 @@ class _VideoCaptureScreenState extends State<VideoCaptureScreen> {
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         leading: Semantics(
-          label: 'Back',
+          label: 'Retour',
           child: IconButton(
             icon: Container(
               padding: const EdgeInsets.all(8),
@@ -114,7 +114,7 @@ class _VideoCaptureScreenState extends State<VideoCaptureScreen> {
                 const SizedBox(height: 24),
 
                 Text(
-                  'Upload a video',
+                  'Téléverser une vidéo',
                   style: GoogleFonts.sora(
                     color: AppColors.blanc,
                     fontSize: 20,
@@ -124,7 +124,7 @@ class _VideoCaptureScreenState extends State<VideoCaptureScreen> {
                 ),
                 const SizedBox(height: 10),
                 Text(
-                  'Pick a video from your gallery to showcase your service. Max 2 minutes.',
+                  'Choisissez une vidéo de votre galerie pour présenter votre service. Max 2 minutes.',
                   style: GoogleFonts.dmSans(
                     color: AppColors.gris,
                     fontSize: 14,
@@ -151,7 +151,7 @@ class _VideoCaptureScreenState extends State<VideoCaptureScreen> {
                           )
                         : const Icon(Icons.photo_library_rounded),
                     label: Text(
-                      _isPicking ? 'Opening...' : 'Choose from Gallery',
+                      _isPicking ? 'Ouverture...' : 'Choisir depuis la galerie',
                       style: GoogleFonts.dmSans(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,

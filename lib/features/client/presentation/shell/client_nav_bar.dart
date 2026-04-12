@@ -14,11 +14,11 @@ class ClientNavBar extends StatelessWidget {
   static const _items = <_NavItemData>[
     _NavItemData(
         Icons.play_circle_outline, Icons.play_circle_filled, 'Feed'),
-    _NavItemData(Icons.search_outlined, Icons.search_rounded, 'Search'),
+    _NavItemData(Icons.search_outlined, Icons.search_rounded, 'Recherche'),
     _NavItemData(
-        Icons.calendar_today_outlined, Icons.calendar_today, 'Bookings'),
+        Icons.calendar_today_outlined, Icons.calendar_today, 'Mes RDV'),
     _NavItemData(
-        Icons.person_outline_rounded, Icons.person_rounded, 'Profile'),
+        Icons.person_outline_rounded, Icons.person_rounded, 'Profil'),
   ];
 
   @override

@@ -122,21 +122,21 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
         backgroundColor: AppColors.surface,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text(
-          'Mark as completed?',
+          'Marquer comme terminé ?',
           style: TextStyle(color: AppColors.blanc),
         ),
         content: Text(
-          'The client will be able to leave a review. This action confirms the service took place.',
+          'Le client pourra laisser un avis. Cette action confirme que la prestation a eu lieu.',
           style: TextStyle(color: AppColors.gris, height: 1.4),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: Text('Cancel', style: TextStyle(color: AppColors.gris)),
+            child: Text('Annuler', style: TextStyle(color: AppColors.gris)),
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: Text('Confirm', style: TextStyle(color: AppColors.blanc)),
+            child: Text('Confirmer', style: TextStyle(color: AppColors.blanc)),
           ),
         ],
       ),
@@ -154,7 +154,7 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
           SnackBar(
             backgroundColor: AppColors.surface,
             content: Text(
-              'Appointment marked as completed',
+              'Rendez-vous marqué comme terminé',
               style: TextStyle(color: AppColors.blanc),
             ),
           ),
@@ -185,21 +185,21 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
         backgroundColor: AppColors.surface,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text(
-          'Confirm balance payment?',
+          'Confirmer le paiement du solde ?',
           style: TextStyle(color: AppColors.blanc),
         ),
         content: Text(
-          'You confirm receiving ${(booking.remainingAmount ?? 0).toStringAsFixed(2)} ${booking.currency} on site.',
+          'Vous confirmez avoir reçu ${(booking.remainingAmount ?? 0).toStringAsFixed(2)} ${booking.currency} sur place.',
           style: TextStyle(color: AppColors.gris, height: 1.4),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: Text('Cancel', style: TextStyle(color: AppColors.gris)),
+            child: Text('Annuler', style: TextStyle(color: AppColors.gris)),
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: Text('Confirm', style: TextStyle(color: AppColors.blanc)),
+            child: Text('Confirmer', style: TextStyle(color: AppColors.blanc)),
           ),
         ],
       ),
@@ -216,7 +216,7 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
           SnackBar(
             backgroundColor: AppColors.surface,
             content: Text(
-              'Balance marked as paid',
+              'Solde marqué comme payé',
               style: TextStyle(color: AppColors.blanc),
             ),
           ),
@@ -252,7 +252,7 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
           SnackBar(
             backgroundColor: AppColors.surface,
             content: Text(
-              'Booking accepted',
+              'Réservation acceptée',
               style: TextStyle(color: AppColors.blanc),
             ),
           ),
@@ -296,7 +296,7 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
         data: (booking) {
           if (booking == null) {
             return _ErrorScaffold(
-              message: 'Booking not found',
+              message: 'Réservation introuvable',
               onBack: () => context.pop(),
             );
           }
@@ -304,7 +304,7 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
           final isClientViewer = uid == booking.clientId;
           if (!isProViewer && !isClientViewer) {
             return _ErrorScaffold(
-              message: 'Access denied',
+              message: 'Accès refusé',
               onBack: () => context.pop(),
             );
           }
@@ -359,7 +359,7 @@ class _ErrorScaffold extends StatelessWidget {
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         leading: Semantics(
-          label: 'Back',
+          label: 'Retour',
           child: IconButton(
             icon: Container(
               padding: const EdgeInsets.all(8),
@@ -421,7 +421,7 @@ class _DetailBody extends StatelessWidget {
     final banner = _StatusBanner(status: booking.status);
     final name = isProViewer
         ? (booking.clientName ?? 'Client')
-        : (booking.proName ?? 'Provider');
+        : (booking.proName ?? 'Prestataire');
     final avatarUrl =
         isProViewer ? booking.clientAvatarUrl : booking.proAvatarUrl;
 
@@ -433,7 +433,7 @@ class _DetailBody extends StatelessWidget {
           surfaceTintColor: Colors.transparent,
           elevation: 0,
           leading: Semantics(
-            label: 'Back',
+            label: 'Retour',
             child: IconButton(
               icon: Container(
                 padding: const EdgeInsets.all(8),
@@ -452,7 +452,7 @@ class _DetailBody extends StatelessWidget {
             ),
           ),
           title: Text(
-            'Booking Details',
+            'Détails du RDV',
             style: GoogleFonts.sora(
               color: AppColors.blanc,
               fontWeight: FontWeight.w700,
@@ -474,7 +474,7 @@ class _DetailBody extends StatelessWidget {
                 PopupMenuItem<String>(
                   value: 'report',
                   child: Text(
-                    'Report this booking',
+                    'Signaler cette réservation',
                     style: GoogleFonts.dmSans(color: AppColors.blanc),
                   ),
                 ),
@@ -527,27 +527,27 @@ class _StatusBanner extends StatelessWidget {
       'confirmed' => (
           AppColors.success.withValues(alpha: 0.12),
           AppColors.success,
-          'Confirmed',
+          'Confirmé',
         ),
       'pending_payment' => (
           AppColors.warning.withValues(alpha: 0.12),
           AppColors.warning,
-          'Pending payment',
+          'Paiement en attente',
         ),
       'completed' => (
           AppColors.gris.withValues(alpha: 0.15),
           AppColors.grisClair,
-          'Completed',
+          'Terminé',
         ),
       'cancelled_full_refund' => (
           AppColors.error.withValues(alpha: 0.12),
           AppColors.error,
-          'Cancelled — refunded',
+          'Annulé — remboursé',
         ),
       'cancelled_no_refund' => (
           AppColors.error.withValues(alpha: 0.12),
           AppColors.error,
-          'Cancelled',
+          'Annulé',
         ),
       _ => (
           AppColors.surfaceAlt,
@@ -665,9 +665,9 @@ class _InfoSection extends StatelessWidget {
     final netEst = booking.depositAmount - commission;
 
     final remainingStatusLabel = switch (booking.remainingPaymentStatus) {
-      'paid_on_site' => 'Paid',
-      'waived' => 'Waived',
-      _ => 'Pending',
+      'paid_on_site' => 'Payé',
+      'waived' => 'Annulé',
+      _ => 'En attente',
     };
     final remainingStatusColor = switch (booking.remainingPaymentStatus) {
       'paid_on_site' => AppColors.success,
@@ -682,11 +682,11 @@ class _InfoSection extends StatelessWidget {
         if (booking.serviceDurationMinutes != null)
           _row(
             Icons.timer_outlined,
-            'Duration',
+            'Durée',
             '${booking.serviceDurationMinutes} min',
           ),
         _row(Icons.calendar_today_outlined, 'Date', booking.slotDate ?? '—'),
-        _row(Icons.schedule, 'Time', timeLine),
+        _row(Icons.schedule, 'Heure', timeLine),
 
         // ─── Payment breakdown ───────────────────────────────
         _row(
@@ -698,17 +698,17 @@ class _InfoSection extends StatelessWidget {
           _rowWithBadge(
             Icons.account_balance_wallet_outlined,
             isProViewer
-                ? 'Deposit received online'
-                : 'Deposit paid online',
+                ? 'Acompte reçu en ligne'
+                : 'Acompte payé en ligne',
             '${booking.depositAmount.toStringAsFixed(2)} ${booking.currency}',
-            badgeLabel: 'Paid',
+            badgeLabel: 'Payé',
             badgeColor: AppColors.success,
           ),
           _rowWithBadge(
             Icons.storefront_outlined,
             isProViewer
-                ? 'Remaining to collect on site'
-                : 'Remaining to pay on site',
+                ? 'Solde à encaisser sur place'
+                : 'Solde à payer sur place',
             '${(booking.remainingAmount ?? 0).toStringAsFixed(2)} ${booking.currency}',
             badgeLabel: remainingStatusLabel,
             badgeColor: remainingStatusColor,
@@ -716,7 +716,7 @@ class _InfoSection extends StatelessWidget {
           if (isProViewer && (booking.status == 'confirmed' || booking.status == 'completed')) ...[
             const SizedBox(height: 8),
             Text(
-              'Est. commission $commissionPct% on deposit: ${commission.toStringAsFixed(2)} ${booking.currency} · Net approx.: ${netEst.toStringAsFixed(2)} ${booking.currency}',
+              'Commission est. $commissionPct% sur l\'acompte : ${commission.toStringAsFixed(2)} ${booking.currency} · Net approx. : ${netEst.toStringAsFixed(2)} ${booking.currency}',
               style: TextStyle(
                 color: AppColors.gris,
                 fontSize: 12,
@@ -724,7 +724,7 @@ class _InfoSection extends StatelessWidget {
               ),
             ),
             Text(
-              'On-site balance: ${(booking.remainingAmount ?? 0).toStringAsFixed(2)} ${booking.currency} (no commission)',
+              'Solde sur place : ${(booking.remainingAmount ?? 0).toStringAsFixed(2)} ${booking.currency} (sans commission)',
               style: TextStyle(
                 color: AppColors.gris,
                 fontSize: 12,
@@ -735,15 +735,15 @@ class _InfoSection extends StatelessWidget {
         ] else ...[
           _rowWithBadge(
             Icons.account_balance_wallet_outlined,
-            'Online payment',
+            'Paiement en ligne',
             '${booking.depositAmount.toStringAsFixed(2)} ${booking.currency}',
-            badgeLabel: 'Paid',
+            badgeLabel: 'Payé',
             badgeColor: AppColors.success,
           ),
           if (isProViewer && (booking.status == 'confirmed' || booking.status == 'completed')) ...[
             const SizedBox(height: 8),
             Text(
-              'Est. commission $commissionPct%: ${commission.toStringAsFixed(2)} ${booking.currency} · Net approx.: ${netEst.toStringAsFixed(2)} ${booking.currency}',
+              'Commission est. $commissionPct% : ${commission.toStringAsFixed(2)} ${booking.currency} · Net approx. : ${netEst.toStringAsFixed(2)} ${booking.currency}',
               style: TextStyle(
                 color: AppColors.gris,
                 fontSize: 12,
@@ -756,7 +756,7 @@ class _InfoSection extends StatelessWidget {
         if (booking.bookingCode != null) ...[
           const SizedBox(height: 16),
           Text(
-            'Booking code',
+            'Code de réservation',
             style: GoogleFonts.dmSans(
               color: AppColors.gris,
               fontSize: 12,
@@ -914,13 +914,13 @@ class _Actions extends StatelessWidget {
               onProAccept != null &&
               onProDecline != null) ...[
             SpotbookButton.primary(
-              label: 'Accept booking',
+              label: 'Accepter la réservation',
               isLoading: busy,
               onPressed: busy ? null : onProAccept,
             ),
             const SizedBox(height: 12),
             SpotbookButton.outlined(
-              label: 'Decline',
+              label: 'Refuser',
               isLoading: busy,
               onPressed: busy ? null : onProDecline,
             ),
@@ -928,7 +928,7 @@ class _Actions extends StatelessWidget {
           ],
           if (booking.status == 'confirmed') ...[
             SpotbookButton.primary(
-              label: 'Mark completed',
+              label: 'Marquer comme terminé',
               isLoading: busy,
               onPressed: busy ? null : onMarkCompleted,
             ),
@@ -936,7 +936,7 @@ class _Actions extends StatelessWidget {
           ],
           if (onMarkRemainingPaid != null) ...[
             SpotbookButton.primary(
-              label: 'Mark balance as paid',
+              label: 'Marquer le solde comme payé',
               isLoading: busy,
               onPressed: busy ? null : onMarkRemainingPaid,
             ),
@@ -951,7 +951,7 @@ class _Actions extends StatelessWidget {
           if (booking.status == 'confirmed') ...[
             const SizedBox(height: 12),
             SpotbookButton.destructive(
-              label: 'Cancel booking',
+              label: 'Annuler la réservation',
               onPressed: busy
                   ? null
                   : () {
@@ -977,14 +977,14 @@ class _Actions extends StatelessWidget {
         if (onReschedule != null) ...[
           const SizedBox(height: 12),
           SpotbookButton.secondary(
-            label: 'Reschedule',
+            label: 'Reporter',
             onPressed: busy ? null : onReschedule,
           ),
         ],
         if (booking.isUpcoming) ...[
           const SizedBox(height: 12),
           SpotbookButton.destructive(
-            label: 'Cancel booking',
+            label: 'Annuler la réservation',
             onPressed: busy
                 ? null
                 : () {
@@ -996,7 +996,7 @@ class _Actions extends StatelessWidget {
         if (booking.status == 'completed') ...[
           const SizedBox(height: 12),
           SpotbookButton.primary(
-            label: 'Leave a review',
+            label: 'Laisser un avis',
             onPressed: busy
                 ? null
                 : () {
@@ -1013,7 +1013,7 @@ class _Actions extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           SpotbookButton.secondary(
-            label: 'Book again',
+            label: 'Réserver à nouveau',
             onPressed: busy
                 ? null
                 : () {
@@ -1036,10 +1036,10 @@ class _StatusTimeline extends StatelessWidget {
   final BookingModel booking;
 
   static const _steps = [
-    ('pending_payment', 'Created', Icons.receipt_long_outlined),
-    ('pending', 'Paid', Icons.payments_outlined),
-    ('confirmed', 'Confirmed', Icons.check_circle_outline),
-    ('completed', 'Completed', Icons.done_all),
+    ('pending_payment', 'Créé', Icons.receipt_long_outlined),
+    ('pending', 'Payé', Icons.payments_outlined),
+    ('confirmed', 'Confirmé', Icons.check_circle_outline),
+    ('completed', 'Terminé', Icons.done_all),
   ];
 
   int _currentIndex() {
@@ -1069,7 +1069,7 @@ class _StatusTimeline extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Timeline',
+            'Suivi',
             style: GoogleFonts.sora(
               color: AppColors.blanc,
               fontSize: 14,
@@ -1128,7 +1128,7 @@ class _StatusTimeline extends StatelessWidget {
                           borderRadius: BorderRadius.circular(6),
                         ),
                         child: Text(
-                          'Current',
+                          'Actuel',
                           style: GoogleFonts.dmSans(
                             color: AppColors.success,
                             fontSize: 11,
@@ -1170,8 +1170,8 @@ class _StatusTimeline extends StatelessWidget {
                 const SizedBox(width: 12),
                 Text(
                   booking.status == 'cancelled_full_refund'
-                      ? 'Cancelled — refunded'
-                      : 'Cancelled',
+                      ? 'Annulé — remboursé'
+                      : 'Annulé',
                   style: GoogleFonts.dmSans(
                     color: AppColors.error,
                     fontSize: 14,

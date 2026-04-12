@@ -46,7 +46,7 @@ class _ProScannerEventPickerScreenState
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         leading: Semantics(
-          label: 'Back',
+          label: 'Retour',
           child: IconButton(
             icon: Container(
               padding: const EdgeInsets.all(8),
@@ -64,7 +64,7 @@ class _ProScannerEventPickerScreenState
           ),
         ),
         title: Text(
-          'Scan a ticket',
+          'Scanner un billet',
           style: GoogleFonts.sora(
             color: AppColors.blanc,
             fontWeight: FontWeight.w700,
@@ -105,7 +105,7 @@ class _ProScannerEventPickerScreenState
                   CircularProgressIndicator(color: AppColors.blanc),
                   const SizedBox(height: 16),
                   Text(
-                    'Opening camera...',
+                    'Ouverture de la caméra...',
                     style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 14),
                   ),
                 ],

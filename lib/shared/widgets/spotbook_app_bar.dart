@@ -41,7 +41,7 @@ class SpotbookAppBar extends StatelessWidget implements PreferredSizeWidget {
       automaticallyImplyLeading: false,
       leading: showBack
           ? Semantics(
-              label: 'Back',
+              label: 'Retour',
               child: IconButton(
                 icon: Container(
                   padding: const EdgeInsets.all(8),

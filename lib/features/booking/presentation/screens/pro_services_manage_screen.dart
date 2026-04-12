@@ -48,7 +48,7 @@ class ProServicesManageScreen extends ConsumerWidget {
           ),
         ),
         title: Text(
-          'Services & pricing',
+          'Services et tarifs',
           style: GoogleFonts.sora(
             color: AppColors.blanc,
             fontWeight: FontWeight.w700,
@@ -97,7 +97,7 @@ class ProServicesManageScreen extends ConsumerWidget {
                             color: AppColors.gris, size: 48),
                         const SizedBox(height: 16),
                         Text(
-                          'No services yet.',
+                          'Aucun service pour le moment.',
                           textAlign: TextAlign.center,
                           style: GoogleFonts.sora(
                             color: AppColors.gris,
@@ -107,13 +107,13 @@ class ProServicesManageScreen extends ConsumerWidget {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          'Add a service, its duration and your rate — clients will see them in the booking flow.',
+                          'Ajoutez un service, sa durée et votre tarif — les clients les verront lors de la réservation.',
                           textAlign: TextAlign.center,
                           style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 13, height: 1.4),
                         ),
                         const SizedBox(height: 24),
                         SpotbookButton.primary(
-                          label: 'Add a service',
+                          label: 'Ajouter un service',
                           onPressed: () => _openServiceSheet(context, ref, null),
                         ),
                       ],
@@ -218,7 +218,7 @@ class ProServicesManageScreen extends ConsumerWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      existing == null ? 'New service' : 'Edit service',
+                      existing == null ? 'Nouveau service' : 'Modifier le service',
                       style: GoogleFonts.sora(
                         color: AppColors.blanc,
                         fontSize: 18,
@@ -228,14 +228,14 @@ class ProServicesManageScreen extends ConsumerWidget {
                     const SizedBox(height: 20),
                     SpotbookTextField(
                       controller: nameCtrl,
-                      label: 'Name',
-                      hint: 'E.g. Swedish massage 60 min',
+                      label: 'Nom',
+                      hint: 'Ex. Massage suédois 60 min',
                     ),
                     const SizedBox(height: 12),
                     SpotbookTextField(
                       controller: descCtrl,
-                      label: 'Description (optional)',
-                      hint: 'Details for the client',
+                      label: 'Description (optionnel)',
+                      hint: 'Détails pour le client',
                       maxLines: 3,
                     ),
                     const SizedBox(height: 12),
@@ -244,7 +244,7 @@ class ProServicesManageScreen extends ConsumerWidget {
                         Expanded(
                           child: SpotbookTextField(
                             controller: priceCtrl,
-                            label: 'Rate (CAD)',
+                            label: 'Tarif (CAD)',
                             hint: '80.00',
                             keyboardType: const TextInputType.numberWithOptions(
                                 decimal: true),
@@ -257,7 +257,7 @@ class ProServicesManageScreen extends ConsumerWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Duration',
+                                'Durée',
                                 style: GoogleFonts.dmSans(
                                   color: AppColors.gris,
                                   fontSize: 12,
@@ -302,7 +302,7 @@ class ProServicesManageScreen extends ConsumerWidget {
                     // ─── Payment mode: full vs deposit ──────────────────
                     const SizedBox(height: 20),
                     Text(
-                      'Payment mode',
+                      'Mode de paiement',
                       style: GoogleFonts.dmSans(
                         color: AppColors.gris,
                         fontSize: 12,
@@ -311,15 +311,15 @@ class ProServicesManageScreen extends ConsumerWidget {
                     ),
                     const SizedBox(height: 8),
                     _PaymentModeRadio(
-                      label: 'Full payment',
-                      subtitle: 'Client pays the full amount online',
+                      label: 'Paiement intégral',
+                      subtitle: 'Le client paie le montant total en ligne',
                       selected: paymentMode == 'full',
                       onTap: () => setModal(() => paymentMode = 'full'),
                     ),
                     const SizedBox(height: 8),
                     _PaymentModeRadio(
-                      label: 'Deposit + remainder on site',
-                      subtitle: 'Client pays a deposit online, the rest at the appointment',
+                      label: 'Acompte + solde sur place',
+                      subtitle: 'Le client paie un acompte en ligne, le reste au rendez-vous',
                       selected: paymentMode == 'deposit',
                       onTap: () => setModal(() => paymentMode = 'deposit'),
                     ),
@@ -347,7 +347,7 @@ class ProServicesManageScreen extends ConsumerWidget {
                                 ),
                                 alignment: Alignment.center,
                                 child: Text(
-                                  'Percentage',
+                                  'Pourcentage',
                                   style: GoogleFonts.dmSans(
                                     color: depositType == 'percentage'
                                         ? AppColors.blanc
@@ -378,7 +378,7 @@ class ProServicesManageScreen extends ConsumerWidget {
                                 ),
                                 alignment: Alignment.center,
                                 child: Text(
-                                  'Fixed amount',
+                                  'Montant fixe',
                                   style: GoogleFonts.dmSans(
                                     color: depositType == 'fixed'
                                         ? AppColors.blanc
@@ -422,7 +422,7 @@ class ProServicesManageScreen extends ConsumerWidget {
                       ] else ...[
                         SpotbookTextField(
                           controller: fixedAmountCtrl,
-                          label: 'Deposit amount (CAD)',
+                          label: 'Montant de l\'acompte (CAD)',
                           hint: '100.00',
                           keyboardType: const TextInputType.numberWithOptions(
                               decimal: true),
@@ -439,7 +439,7 @@ class ProServicesManageScreen extends ConsumerWidget {
                             border: Border.all(color: AppColors.border),
                           ),
                           child: Text(
-                            'Client will pay \$$depositPreview online and \$$remainingPreview on site',
+                            'Le client paiera $depositPreview \$ en ligne et $remainingPreview \$ sur place',
                             style: GoogleFonts.dmSans(
                               color: AppColors.gris,
                               fontSize: 13,
@@ -455,11 +455,11 @@ class ProServicesManageScreen extends ConsumerWidget {
                       SwitchListTile(
                         contentPadding: EdgeInsets.zero,
                         title: Text(
-                          'Active service',
+                          'Service actif',
                           style: GoogleFonts.dmSans(color: AppColors.blanc, fontSize: 15, fontWeight: FontWeight.w500),
                         ),
                         subtitle: Text(
-                          'Disable to hide from new bookings.',
+                          'Désactiver pour masquer des nouvelles réservations.',
                           style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 12),
                         ),
                         value: active,
@@ -470,7 +470,7 @@ class ProServicesManageScreen extends ConsumerWidget {
                     ],
                     const SizedBox(height: 24),
                     SpotbookButton.primary(
-                      label: existing == null ? 'Save' : 'Update',
+                      label: existing == null ? 'Enregistrer' : 'Mettre à jour',
                       isLoading: ref.read(proServicesNotifierProvider).saving,
                       onPressed: () async {
                         final name = nameCtrl.text.trim();
@@ -550,7 +550,7 @@ class ProServicesManageScreen extends ConsumerWidget {
                             final err = ref.read(proServicesNotifierProvider).error;
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
-                                content: Text(err ?? 'Failed to save service'),
+                                content: Text(err ?? 'Échec de l\'enregistrement du service'),
                                 backgroundColor: AppColors.error,
                               ),
                             );
@@ -560,7 +560,7 @@ class ProServicesManageScreen extends ConsumerWidget {
                     ),
                     const SizedBox(height: 8),
                     SpotbookButton.outlined(
-                      label: 'Cancel',
+                      label: 'Annuler',
                       onPressed: () => context.pop(),
                     ),
                   ],
@@ -650,11 +650,11 @@ class _ServiceTile extends StatelessWidget {
   final VoidCallback onToggle;
 
   String get _depositLabel {
-    if (!service.isDepositMode) return 'Full payment';
+    if (!service.isDepositMode) return 'Paiement intégral';
     if (service.depositType == 'fixed') {
-      return 'Deposit ${service.depositValue?.toStringAsFixed(0) ?? '—'} \$';
+      return 'Acompte ${service.depositValue?.toStringAsFixed(0) ?? '—'} \$';
     }
-    return 'Deposit ${service.depositValue?.toInt() ?? 30} %';
+    return 'Acompte ${service.depositValue?.toInt() ?? 30} %';
   }
 
   @override
@@ -694,7 +694,7 @@ class _ServiceTile extends StatelessWidget {
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
-                      'Inactive',
+                      'Inactif',
                       style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 11, fontWeight: FontWeight.w500),
                     ),
                   ),
@@ -715,7 +715,7 @@ class _ServiceTile extends StatelessWidget {
               children: [
                 Expanded(
                   child: SpotbookButton.secondary(
-                    label: 'Edit',
+                    label: 'Modifier',
                     onPressed: onEdit,
                   ),
                 ),

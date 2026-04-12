@@ -166,7 +166,7 @@ class _VideoPreviewScreenState extends ConsumerState<VideoPreviewScreen> {
           if (state.step == UploadStep.done) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: const Text('Video published!'),
+                content: const Text('Vidéo publiée !'),
                 backgroundColor: AppColors.success,
               ),
             );
@@ -174,10 +174,10 @@ class _VideoPreviewScreenState extends ConsumerState<VideoPreviewScreen> {
           } else if (state.step == UploadStep.error) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text(state.errorMessage ?? 'Unknown error'),
+                content: Text(state.errorMessage ?? 'Erreur inconnue'),
                 backgroundColor: AppColors.error,
                 action: SnackBarAction(
-                  label: 'Retry',
+                  label: 'Réessayer',
                   textColor: AppColors.textOnPrimary,
                   onPressed: _publish,
                 ),
@@ -195,7 +195,7 @@ class _VideoPreviewScreenState extends ConsumerState<VideoPreviewScreen> {
               surfaceTintColor: Colors.transparent,
               elevation: 0,
               leading: Semantics(
-                label: 'Back',
+                label: 'Retour',
                 child: IconButton(
                   icon: Container(
                     padding: const EdgeInsets.all(8),
@@ -210,7 +210,7 @@ class _VideoPreviewScreenState extends ConsumerState<VideoPreviewScreen> {
                 ),
               ),
               title: Text(
-                'New Post',
+                'Nouvelle publication',
                 style: GoogleFonts.sora(
                   color: AppColors.blanc,
                   fontSize: 17,
@@ -249,14 +249,14 @@ class _VideoPreviewScreenState extends ConsumerState<VideoPreviewScreen> {
                           const SizedBox(height: 24),
 
                           // ── Section label ──
-                          _SectionLabel(text: 'DETAILS'),
+                          _SectionLabel(text: 'DÉTAILS'),
                           const SizedBox(height: 12),
 
                           // ── Title ──
                           _StyledTextField(
                             controller: _titleCtrl,
-                            label: 'Title *',
-                            hint: 'E.g.: Women\'s cut + blowout',
+                            label: 'Titre *',
+                            hint: 'Ex. : Coupe femme + brushing',
                             maxLength: 80,
                             prefixIcon: Icons.title_rounded,
                           ),
@@ -277,7 +277,7 @@ class _VideoPreviewScreenState extends ConsumerState<VideoPreviewScreen> {
                             return DropdownButtonFormField<String>(
                               initialValue: validCat,
                               hint: Text(
-                                'Category *',
+                                'Catégorie *',
                                 style: TextStyle(color: AppColors.grisInactif),
                               ),
                               dropdownColor: AppColors.surfaceElevated,
@@ -294,7 +294,7 @@ class _VideoPreviewScreenState extends ConsumerState<VideoPreviewScreen> {
                           _StyledTextField(
                             controller: _descCtrl,
                             label: 'Description *',
-                            hint: 'Describe your service in detail...',
+                            hint: 'Décrivez votre service en détail...',
                             maxLength: 500,
                             maxLines: 4,
                             prefixIcon: Icons.description_rounded,
@@ -305,7 +305,7 @@ class _VideoPreviewScreenState extends ConsumerState<VideoPreviewScreen> {
                           _StyledTextField(
                             controller: _hashtagCtrl,
                             label: 'Hashtags (max 5)',
-                            hint: 'Type a hashtag and press Enter',
+                            hint: 'Tapez un hashtag et appuyez sur Entrée',
                             prefixIcon: Icons.tag_rounded,
                             onSubmitted: _addHashtag,
                           ),
@@ -353,7 +353,7 @@ class _VideoPreviewScreenState extends ConsumerState<VideoPreviewScreen> {
                           // ── Link sections ──
                           if (_services.isNotEmpty || _events.isNotEmpty) ...[
                             const SizedBox(height: 24),
-                            _SectionLabel(text: 'LINK TO'),
+                            _SectionLabel(text: 'LIER À'),
                             const SizedBox(height: 12),
                           ],
 
@@ -361,7 +361,7 @@ class _VideoPreviewScreenState extends ConsumerState<VideoPreviewScreen> {
                             DropdownButtonFormField<String>(
                               initialValue: _linkedServiceId,
                               hint: Text(
-                                'Link to a service (optional)',
+                                'Lier à un service (optionnel)',
                                 style: TextStyle(color: AppColors.grisInactif, fontSize: 14),
                               ),
                               dropdownColor: AppColors.surfaceElevated,
@@ -370,7 +370,7 @@ class _VideoPreviewScreenState extends ConsumerState<VideoPreviewScreen> {
                               items: [
                                 DropdownMenuItem<String>(
                                   value: null,
-                                  child: Text('None', style: TextStyle(color: AppColors.gris)),
+                                  child: Text('Aucun', style: TextStyle(color: AppColors.gris)),
                                 ),
                                 ..._services.map(
                                   (s) => DropdownMenuItem(
@@ -392,7 +392,7 @@ class _VideoPreviewScreenState extends ConsumerState<VideoPreviewScreen> {
                             DropdownButtonFormField<String>(
                               initialValue: _linkedEventId,
                               hint: Text(
-                                'Link to an event (optional)',
+                                'Lier à un événement (optionnel)',
                                 style: TextStyle(color: AppColors.grisInactif, fontSize: 14),
                               ),
                               dropdownColor: AppColors.surfaceElevated,
@@ -401,7 +401,7 @@ class _VideoPreviewScreenState extends ConsumerState<VideoPreviewScreen> {
                               items: [
                                 DropdownMenuItem<String>(
                                   value: null,
-                                  child: Text('None', style: TextStyle(color: AppColors.gris)),
+                                  child: Text('Aucun', style: TextStyle(color: AppColors.gris)),
                                 ),
                                 ..._events.map(
                                   (e) => DropdownMenuItem(
@@ -499,7 +499,7 @@ class _VideoPreviewScreenState extends ConsumerState<VideoPreviewScreen> {
                                             Icon(Icons.rocket_launch_rounded, size: 18),
                                             const SizedBox(width: 8),
                                             Text(
-                                              'Publish',
+                                              'Publier',
                                               style: GoogleFonts.dmSans(
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.w700,
@@ -527,11 +527,11 @@ class _VideoPreviewScreenState extends ConsumerState<VideoPreviewScreen> {
   String _progressLabel(VideoUploadState state) {
     switch (state.step) {
       case UploadStep.compressing:
-        return 'Compressing...';
+        return 'Compression...';
       case UploadStep.uploading:
-        return 'Uploading... ${(state.uploadProgress * 100).toInt()}%';
+        return 'Téléversement... ${(state.uploadProgress * 100).toInt()}%';
       case UploadStep.processing:
-        return 'Processing on Cloudflare...';
+        return 'Traitement sur Cloudflare...';
       default:
         return '';
     }

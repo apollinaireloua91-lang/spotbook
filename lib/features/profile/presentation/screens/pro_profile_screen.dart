@@ -82,7 +82,7 @@ class ProProfileScreen extends ConsumerWidget {
             ),
             body: Center(
               child:
-                  Text('Profile not found', style: GoogleFonts.dmSans(color: AppColors.gris)),
+                  Text('Profil introuvable', style: GoogleFonts.dmSans(color: AppColors.gris)),
             ),
           );
         }
@@ -1079,7 +1079,7 @@ class _ProVideosGrid extends ConsumerWidget {
       data: (videos) {
         if (videos.isEmpty) {
           return const _EmptyState(
-              icon: Icons.videocam_outlined, text: 'No videos');
+              icon: Icons.videocam_outlined, text: 'Aucune vidéo');
         }
         return GridView.builder(
           padding: const EdgeInsets.all(12),
@@ -1119,7 +1119,7 @@ class _PremiumServicesList extends ConsumerWidget {
       data: (services) {
         if (services.isEmpty) {
           return const _EmptyState(
-              icon: Icons.design_services_outlined, text: 'No services');
+              icon: Icons.design_services_outlined, text: 'Aucun service');
         }
         return ListView.builder(
           padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
@@ -1265,7 +1265,7 @@ class _PremiumReviewsList extends ConsumerWidget {
       data: (reviews) {
         if (reviews.isEmpty) {
           return const _EmptyState(
-              icon: Icons.rate_review_outlined, text: 'No reviews');
+              icon: Icons.rate_review_outlined, text: 'Aucun avis');
         }
         return ListView.builder(
           padding: const EdgeInsets.fromLTRB(16, 0, 16, 100),
@@ -1498,7 +1498,7 @@ class _TraiteurMenuWrapper extends ConsumerWidget {
           Center(child: CircularProgressIndicator(color: AppColors.violet)),
       error: (_, __) => Center(
         child:
-            Text('Loading error', style: GoogleFonts.dmSans(color: AppColors.gris)),
+            Text('Erreur de chargement', style: GoogleFonts.dmSans(color: AppColors.gris)),
       ),
     );
   }
@@ -1519,7 +1519,7 @@ class _ProEventsList extends ConsumerWidget {
       data: (events) {
         if (events.isEmpty) {
           return const _EmptyState(
-              icon: Icons.event_outlined, text: 'No events');
+              icon: Icons.event_outlined, text: 'Aucun événement');
         }
         return ListView.builder(
           padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
@@ -1579,13 +1579,13 @@ class _ErrorState extends StatelessWidget {
         children: [
           Icon(Icons.error_outline, color: AppColors.error, size: 36),
           const SizedBox(height: 12),
-          Text('Loading error',
+          Text('Erreur de chargement',
               style: GoogleFonts.sora(color: AppColors.gris, fontSize: 14)),
           const SizedBox(height: 12),
           GestureDetector(
             onTap: onRetry,
             child: Text(
-              'Retry',
+              'Réessayer',
               style: GoogleFonts.dmSans(
                 color: AppColors.violet,
                 fontSize: 14,

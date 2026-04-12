@@ -195,7 +195,7 @@ class _ProviderAttendeesListScreenState
                   style: GoogleFonts.dmSans(
                       color: AppColors.blanc, fontSize: 14),
                   decoration: InputDecoration(
-                    hintText: 'Search attendee...',
+                    hintText: 'Rechercher un participant...',
                     hintStyle: GoogleFonts.dmSans(
                         color: AppColors.gris.withAlpha(128)),
                     prefixIcon: Icon(Icons.search,

@@ -3,7 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 import 'app_colors.dart';
 
-/// Typographie Spotbook — DM Sans (corps, labels, boutons).
+/// Typographie Spotbook — Sora (titres h1/h2) + DM Sans (corps, labels, boutons).
 /// Hiérarchie : logo marque → titres d'écran → sections (overline) → corps.
 abstract final class AppTypography {
   /// Marque « Spotbook » — DM Sans bold, 20px.
@@ -40,7 +40,7 @@ abstract final class AppTypography {
   }
 
   /// Titre de bottom sheet (ex. « Créer »).
-  static TextStyle get sheetTitle => GoogleFonts.dmSans(
+  static TextStyle get sheetTitle => GoogleFonts.sora(
         fontSize: 18,
         fontWeight: FontWeight.w700,
         height: 1.2,
@@ -49,7 +49,7 @@ abstract final class AppTypography {
       );
 
   /// Titre AppBar standard (pas de dépendance au [ThemeData] — police garantie).
-  static TextStyle get appBarTitle => GoogleFonts.dmSans(
+  static TextStyle get appBarTitle => GoogleFonts.sora(
         color: AppColors.blanc,
         fontWeight: FontWeight.w600,
         fontSize: 17,
@@ -157,81 +157,82 @@ abstract final class AppTypography {
     );
   }
 
-  /// [ThemeData.textTheme] light basé sur DM Sans + couleurs Spotbook.
+  /// [ThemeData.textTheme] Sora (headlines/titles) + DM Sans (body/labels).
   static TextTheme lightTextTheme(TextTheme base) {
-    final jakarta = GoogleFonts.dmSansTextTheme(base);
-    return jakarta.copyWith(
-      displayLarge: jakarta.displayLarge?.copyWith(
+    final dmSans = GoogleFonts.dmSansTextTheme(base);
+    final sora = GoogleFonts.soraTextTheme(base);
+    return dmSans.copyWith(
+      displayLarge: sora.displayLarge?.copyWith(
         color: AppColors.blanc,
         fontWeight: FontWeight.w700,
         letterSpacing: 0.5,
       ),
-      displayMedium: jakarta.displayMedium?.copyWith(
+      displayMedium: sora.displayMedium?.copyWith(
         color: AppColors.blanc,
         fontWeight: FontWeight.w700,
         letterSpacing: 0.5,
       ),
-      headlineLarge: jakarta.headlineLarge?.copyWith(
+      headlineLarge: sora.headlineLarge?.copyWith(
         color: AppColors.blanc,
         fontWeight: FontWeight.w700,
         letterSpacing: 0.5,
         height: 1.2,
       ),
-      headlineMedium: jakarta.headlineMedium?.copyWith(
+      headlineMedium: sora.headlineMedium?.copyWith(
         color: AppColors.blanc,
         fontWeight: FontWeight.w700,
         letterSpacing: 0.5,
         height: 1.25,
       ),
-      headlineSmall: jakarta.headlineSmall?.copyWith(
+      headlineSmall: sora.headlineSmall?.copyWith(
         color: AppColors.blanc,
         fontWeight: FontWeight.w600,
         letterSpacing: 0.3,
         height: 1.25,
       ),
-      titleLarge: jakarta.titleLarge?.copyWith(
+      titleLarge: sora.titleLarge?.copyWith(
         color: AppColors.blanc,
         fontWeight: FontWeight.w600,
         height: 1.3,
       ),
-      titleMedium: jakarta.titleMedium?.copyWith(
+      titleMedium: sora.titleMedium?.copyWith(
         color: AppColors.blanc,
         fontWeight: FontWeight.w600,
         height: 1.35,
       ),
-      titleSmall: jakarta.titleSmall?.copyWith(
+      titleSmall: sora.titleSmall?.copyWith(
         color: AppColors.blanc,
         fontWeight: FontWeight.w600,
         height: 1.35,
       ),
-      bodyLarge: jakarta.bodyLarge?.copyWith(
+      bodyLarge: dmSans.bodyLarge?.copyWith(
         color: AppColors.blanc,
         fontWeight: FontWeight.w400,
         height: 1.5,
       ),
-      bodyMedium: jakarta.bodyMedium?.copyWith(
+      bodyMedium: dmSans.bodyMedium?.copyWith(
         color: AppColors.gris,
         fontWeight: FontWeight.w400,
         height: 1.5,
       ),
-      bodySmall: jakarta.bodySmall?.copyWith(
+      bodySmall: dmSans.bodySmall?.copyWith(
         color: AppColors.grisInactif,
         fontWeight: FontWeight.w400,
         height: 1.45,
       ),
-      labelLarge: jakarta.labelLarge?.copyWith(
+      labelLarge: dmSans.labelLarge?.copyWith(
         color: AppColors.gris,
         fontWeight: FontWeight.w600,
         letterSpacing: 1.2,
         height: 1.2,
       ),
-      labelMedium: jakarta.labelMedium?.copyWith(
+      labelMedium: dmSans.labelMedium?.copyWith(
         color: AppColors.gris,
         fontWeight: FontWeight.w500,
         letterSpacing: 0.8,
         height: 1.2,
       ),
-      labelSmall: jakarta.labelSmall?.copyWith(
+      labelSmall: dmSans.labelSmall?.copyWith(
         color: AppColors.grisInactif,
         fontWeight: FontWeight.w500,
         letterSpacing: 0.5,

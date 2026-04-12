@@ -232,7 +232,7 @@ class _ProFeedScreenState extends ConsumerState<ProFeedScreen> {
   void _showNotificationsSheet(BuildContext context) {
     showSpotbookBottomSheet(
       context: context,
-      title: 'Activity on my posts',
+      title: 'Activité sur mes publications',
       child: const _NotificationsSheetContent(),
     );
   }
@@ -240,7 +240,7 @@ class _ProFeedScreenState extends ConsumerState<ProFeedScreen> {
   void _showBookingsSheet(BuildContext context) {
     showSpotbookBottomSheet(
       context: context,
-      title: 'Bookings & Appointments',
+      title: 'Réservations & Rendez-vous',
       child: const _BookingsSheetContent(),
     );
   }
@@ -248,7 +248,7 @@ class _ProFeedScreenState extends ConsumerState<ProFeedScreen> {
   void _showTicketSalesSheet(BuildContext context) {
     showSpotbookBottomSheet(
       context: context,
-      title: 'Tickets sold',
+      title: 'Billets vendus',
       child: const _TicketSalesSheetContent(),
     );
   }
@@ -256,7 +256,7 @@ class _ProFeedScreenState extends ConsumerState<ProFeedScreen> {
   void _showMessagesSheet(BuildContext context) {
     showSpotbookBottomSheet(
       context: context,
-      title: 'Client messages',
+      title: 'Messages clients',
       child: const _MessagesSheetContent(),
     );
   }
@@ -264,7 +264,7 @@ class _ProFeedScreenState extends ConsumerState<ProFeedScreen> {
   void _showShareSheet(BuildContext context, VideoModel video) {
     showSpotbookBottomSheet(
       context: context,
-      title: 'Share',
+      title: 'Partager',
       child: _ShareSheetContent(video: video),
     );
   }
@@ -280,7 +280,7 @@ class _ProFeedScreenState extends ConsumerState<ProFeedScreen> {
         SnackBar(
           backgroundColor: AppColors.surfaceAlt,
           content: Text(
-            'These buttons will be active once a video is published.',
+            'Ces boutons seront actifs une fois une vidéo publiée.',
             style: GoogleFonts.dmSans(color: AppColors.blanc, fontSize: 13),
           ),
         ),
@@ -347,7 +347,7 @@ class _ProFeedScreenState extends ConsumerState<ProFeedScreen> {
               ),
               const SizedBox(height: 8),
               Text(
-                'Only your published (approved) videos scroll here — just like for clients on your profile. Top: notifications, appointments, tickets, messages; right: interactions.',
+                'Seules vos vidéos publiées (approuvées) défilent ici — comme pour les clients sur votre profil. En haut : notifications, rendez-vous, billets, messages ; à droite : interactions.',
                 style: GoogleFonts.dmSans(
                   color: AppColors.gris.withValues(alpha: 0.95),
                   fontSize: 13,
@@ -373,7 +373,7 @@ class _ProFeedScreenState extends ConsumerState<ProFeedScreen> {
                             color: AppColors.fond, size: 22),
                         const SizedBox(width: 10),
                         Text(
-                          'Create a video',
+                          'Créer une vidéo',
                           style: GoogleFonts.dmSans(
                             color: AppColors.fond,
                             fontWeight: FontWeight.w700,
@@ -606,7 +606,7 @@ class _EmptyFeedSideActions extends StatelessWidget {
           onTap: onDemoInteractionTap,
           child: _RightColButton(
             icon: Icons.ios_share,
-            label: 'Share',
+            label: 'Partager',
             iconSize: 30,
           ),
         ),
@@ -904,7 +904,7 @@ class _RightColumn extends StatelessWidget {
           onTap: onShare,
           child: _RightColButton(
             icon: Icons.ios_share,
-            label: 'Share',
+            label: 'Partager',
             iconSize: 30,
           ),
         ),
@@ -1018,7 +1018,7 @@ class _SpotifyButton extends StatelessWidget {
           ),
           const SizedBox(height: 4),
           Text(
-            'Music',
+            'Musique',
             style: GoogleFonts.dmSans(
               color: AppColors.spotifyGreen,
               fontSize: 10,
@@ -1104,7 +1104,7 @@ class _LeftColumnState extends State<_LeftColumn> {
               child: Padding(
                 padding: const EdgeInsets.only(top: 2),
                 child: Text(
-                  _captionExpanded ? 'show less' : 'show more',
+                  _captionExpanded ? 'voir moins' : 'voir plus',
                   style: GoogleFonts.dmSans(
                     color: Colors.white.withAlpha(180),
                     fontSize: 11,
@@ -1188,7 +1188,7 @@ class _ServiceCtaStrip extends StatelessWidget {
   final VideoModel video;
 
   String get _name =>
-      video.serviceName ?? video.category ?? 'Service';
+      video.serviceName ?? video.category ?? 'Prestation';
 
   String get _priceLine {
     if (video.servicePrice != null) {
@@ -1228,7 +1228,7 @@ class _ServiceCtaStrip extends StatelessWidget {
                 Text(
                   [
                     if (_priceLine.isNotEmpty) _priceLine,
-                    video.serviceNextSlot ?? 'Available on request',
+                    video.serviceNextSlot ?? 'Disponible sur demande',
                   ].join(' · '),
                   style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 10),
                   maxLines: 1,
@@ -1248,7 +1248,7 @@ class _ServiceCtaStrip extends StatelessWidget {
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                 child: Text(
-                  'Book',
+                  'Réserver',
                   style: GoogleFonts.dmSans(
                     color: AppColors.textOnPrimary,
                     fontSize: 13,
@@ -1271,7 +1271,7 @@ class _EventCtaStrip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final title = video.eventName ?? 'Event';
+    final title = video.eventName ?? 'Événement';
     String dateStr = '';
     if (video.eventDate != null) {
       try {
@@ -1326,7 +1326,7 @@ class _EventCtaStrip extends StatelessWidget {
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                 child: Text(
-                  'Get Tickets',
+                  'Obtenir des billets',
                   style: GoogleFonts.dmSans(
                     color: AppColors.textOnPrimary,
                     fontSize: 12,
@@ -1362,7 +1362,7 @@ class _ShareSheetContent extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Send to',
+          'Envoyer à',
           style: GoogleFonts.dmSans(
             color: AppColors.gris,
             fontSize: 11,
@@ -1407,7 +1407,7 @@ class _ShareSheetContent extends StatelessWidget {
         ),
         const SizedBox(height: 20),
         Text(
-          'Share on',
+          'Partager sur',
           style: GoogleFonts.dmSans(
             color: AppColors.gris,
             fontSize: 11,
@@ -1466,7 +1466,7 @@ class _ShareSheetContent extends StatelessWidget {
                       SnackBar(
                         backgroundColor: AppColors.surfaceAlt,
                         content: Text(
-                          'Link copied',
+                          'Lien copié',
                           style: GoogleFonts.dmSans(color: AppColors.blanc),
                         ),
                       ),
@@ -1548,7 +1548,7 @@ class _NotificationsSheetContent extends ConsumerWidget {
         }
         final items = snapshot.data ?? [];
         if (items.isEmpty) {
-          return const _SheetEmpty(message: 'No notifications');
+          return const _SheetEmpty(message: 'Aucune notification');
         }
         return _SheetList(
           itemCount: items.length,
@@ -1599,7 +1599,7 @@ class _BookingsSheetContent extends ConsumerWidget {
         }
         final items = snapshot.data ?? [];
         if (items.isEmpty) {
-          return const _SheetEmpty(message: 'No bookings');
+          return const _SheetEmpty(message: 'Aucune réservation');
         }
         return _SheetList(
           itemCount: items.length,
@@ -1613,7 +1613,7 @@ class _BookingsSheetContent extends ConsumerWidget {
             return _NotifItem(
               icon: _bookingIcon(status),
               iconColor: _bookingColor(status),
-              title: serviceTitle ?? 'Booking',
+              title: serviceTitle ?? 'Réservation',
               subtitle: _bookingLabel(status),
               timestamp: timeAgo(
                   DateTime.parse(item['created_at'] as String)),
@@ -1647,11 +1647,11 @@ class _BookingsSheetContent extends ConsumerWidget {
 
   String _bookingLabel(String status) {
     return switch (status) {
-      'confirmed' => 'Confirmed',
-      'pending' => 'Pending',
-      'pending_payment' => 'Pending',
-      'cancelled' => 'Cancelled',
-      'rescheduled' => 'Rescheduled',
+      'confirmed' => 'Confirmé',
+      'pending' => 'En attente',
+      'pending_payment' => 'En attente',
+      'cancelled' => 'Annulé',
+      'rescheduled' => 'Reporté',
       _ => status,
     };
   }
@@ -1675,7 +1675,7 @@ class _TicketSalesSheetContent extends ConsumerWidget {
         }
         final items = snapshot.data ?? [];
         if (items.isEmpty) {
-          return const _SheetEmpty(message: 'No tickets sold');
+          return const _SheetEmpty(message: 'Aucun billet vendu');
         }
         return _SheetList(
           itemCount: items.length,
@@ -1686,8 +1686,8 @@ class _TicketSalesSheetContent extends ConsumerWidget {
             return _NotifItem(
               icon: Icons.confirmation_number,
               title: event?['title'] as String? ??
-                  'Ticket sold',
-              subtitle: 'Ticket purchased',
+                  'Billet vendu',
+              subtitle: 'Billet acheté',
               timestamp: timeAgo(DateTime.parse(
                   item['purchased_at'] as String)),
             );
@@ -1715,7 +1715,7 @@ class _MessagesSheetContent extends ConsumerWidget {
         }
         final items = snapshot.data ?? [];
         if (items.isEmpty) {
-          return const _SheetEmpty(message: 'No messages');
+          return const _SheetEmpty(message: 'Aucun message');
         }
         return _SheetList(
           itemCount: items.length,

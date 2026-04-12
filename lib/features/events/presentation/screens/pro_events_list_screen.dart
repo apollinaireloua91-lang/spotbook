@@ -51,7 +51,7 @@ class _ProEventsListScreenState extends ConsumerState<ProEventsListScreen> {
                 children: [
                   Expanded(
                     child: Text(
-                      'My Events',
+                      'Mes événements',
                       style: GoogleFonts.sora(
                         color: AppColors.blanc,
                         fontSize: 26,
@@ -75,7 +75,7 @@ class _ProEventsListScreenState extends ConsumerState<ProEventsListScreen> {
                               const SizedBox(height: 12),
                               Container(width: 40, height: 4, decoration: BoxDecoration(color: AppColors.gris, borderRadius: BorderRadius.circular(2))),
                               const SizedBox(height: 16),
-                              Text('Filter by status', style: GoogleFonts.sora(color: AppColors.blanc, fontSize: 16, fontWeight: FontWeight.w600)),
+                              Text('Filtrer par statut', style: GoogleFonts.sora(color: AppColors.blanc, fontSize: 16, fontWeight: FontWeight.w600)),
                               const SizedBox(height: 12),
                               ..._Filter.values.map((f) => ListTile(
                                 leading: Icon(
@@ -123,7 +123,7 @@ class _ProEventsListScreenState extends ConsumerState<ProEventsListScreen> {
                               controller: _searchCtrl,
                               style: GoogleFonts.dmSans(color: AppColors.blanc, fontSize: 14),
                               decoration: InputDecoration(
-                                hintText: 'Search event...',
+                                hintText: 'Rechercher un événement...',
                                 hintStyle: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 14),
                                 border: InputBorder.none,
                                 isDense: true,
@@ -211,7 +211,7 @@ class _EventCard extends StatelessWidget {
   const _EventCard({required this.event});
   final EventModel event;
 
-  String _statusLabel() => event.isActive ? 'Published' : 'Draft';
+  String _statusLabel() => event.isActive ? 'Publié' : 'Brouillon';
 
   Color _statusColor() =>
       event.isActive ? AppColors.success : AppColors.gris;
@@ -307,7 +307,7 @@ class _EventCard extends StatelessWidget {
                   children: [
                     _ActionBtn(
                       icon: Icons.edit_outlined,
-                      label: 'Edit',
+                      label: 'Modifier',
                       onTap: () => context.push('/event/${event.id}'),
                     ),
                     const SizedBox(width: 8),
@@ -380,7 +380,7 @@ class _StatsRow extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    'Tickets sold',
+                    'Billets vendus',
                     style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 10),
                   ),
                   const SizedBox(height: 4),
@@ -528,8 +528,8 @@ class _EmptyState extends StatelessWidget {
             const SizedBox(height: 16),
             Text(
               filter == _Filter.all
-                  ? 'No events created'
-                  : 'No ${filter.label.toLowerCase()} events',
+                  ? 'Aucun événement créé'
+                  : 'Aucun événement ${filter.label.toLowerCase()}',
               style: GoogleFonts.sora(
                 color: AppColors.blanc,
                 fontSize: 16,
@@ -546,7 +546,7 @@ class _EmptyState extends StatelessWidget {
             TextButton(
               onPressed: () => context.go('/create-event'),
               child: Text(
-                'Create an event',
+                'Créer un événement',
                 style: GoogleFonts.dmSans(color: AppColors.blanc, fontSize: 14),
               ),
             ),
@@ -561,10 +561,10 @@ enum _Filter { all, published, draft, past }
 
 extension on _Filter {
   String get label => switch (this) {
-        _Filter.all => 'All',
-        _Filter.published => 'Published',
-        _Filter.draft => 'Drafts',
-        _Filter.past => 'Past',
+        _Filter.all => 'Tous',
+        _Filter.published => 'Publiés',
+        _Filter.draft => 'Brouillons',
+        _Filter.past => 'Passés',
       };
 }
 

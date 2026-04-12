@@ -31,16 +31,16 @@ void showBlockConfirmDialog(
     builder: (ctx) => AlertDialog(
       backgroundColor: AppColors.surface,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      title: Text('Block this user?',
+      title: Text('Bloquer cet utilisateur ?',
           style: GoogleFonts.sora(color: AppColors.blanc, fontSize: 17, fontWeight: FontWeight.bold)),
       content: Text(
-        '${userName ?? 'This user'} will no longer be able to see your profile or contact you.',
+        '${userName ?? 'Cet utilisateur'} ne pourra plus voir votre profil ni vous contacter.',
         style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 14),
       ),
       actions: [
         TextButton(
           onPressed: () => Navigator.of(ctx).pop(),
-          child: Text('Cancel', style: GoogleFonts.dmSans(color: AppColors.gris)),
+          child: Text('Annuler', style: GoogleFonts.dmSans(color: AppColors.gris)),
         ),
         TextButton(
           onPressed: () async {
@@ -50,13 +50,13 @@ void showBlockConfirmDialog(
             if (context.mounted) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: const Text('User blocked'),
+                  content: const Text('Utilisateur bloqué'),
                   backgroundColor: AppColors.success,
                 ),
               );
             }
           },
-          child: Text('Block',
+          child: Text('Bloquer',
               style: GoogleFonts.dmSans(color: AppColors.error, fontWeight: FontWeight.bold)),
         ),
       ],
@@ -70,11 +70,11 @@ class _ReportSheet extends ConsumerWidget {
   final String targetType;
 
   static const _reasons = [
-    'Inappropriate content',
-    'Spam or scam',
-    'Harassment',
-    'Fake profile',
-    'Other',
+    'Contenu inapproprié',
+    'Spam ou arnaque',
+    'Harcèlement',
+    'Faux profil',
+    'Autre',
   ];
 
   @override
@@ -107,10 +107,10 @@ class _ReportSheet extends ConsumerWidget {
             ),
           ),
           const SizedBox(height: 20),
-          Text('Report',
+          Text('Signaler',
               style: GoogleFonts.sora(color: AppColors.blanc, fontSize: 20, fontWeight: FontWeight.bold)),
           const SizedBox(height: 4),
-          Text('Why are you reporting this content?',
+          Text('Pourquoi signalez-vous ce contenu ?',
               style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 14)),
           const SizedBox(height: 16),
           ...List.generate(_reasons.length, (i) {
@@ -161,7 +161,7 @@ class _ReportSheet extends ConsumerWidget {
                           Navigator.of(context).pop();
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: const Text('Report submitted'),
+                              content: const Text('Signalement envoyé'),
                               backgroundColor: AppColors.success,
                             ),
                           );
@@ -189,7 +189,7 @@ class _ReportSheet extends ConsumerWidget {
                         strokeWidth: 2,
                       ),
                     )
-                  : Text('Submit report',
+                  : Text('Envoyer le signalement',
                       style: GoogleFonts.dmSans(fontWeight: FontWeight.bold, fontSize: 16)),
             ),
           ),

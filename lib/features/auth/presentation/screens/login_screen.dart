@@ -126,7 +126,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final email = _emailCtrl.text.trim();
     final password = _passwordCtrl.text;
     if (email.isEmpty || password.isEmpty) {
-      _showError('Please fill in all fields.');
+      _showError('Veuillez remplir tous les champs.');
       return;
     }
     try {
@@ -141,7 +141,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   Future<void> _sendMagicLink() async {
     final email = _emailCtrl.text.trim();
     if (email.isEmpty) {
-      _showError('Please enter your email first.');
+      _showError('Veuillez d\'abord entrer votre e-mail.');
       return;
     }
     try {
@@ -149,7 +149,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('Magic link sent! Check your email.'),
+          content: const Text('Lien magique envoyé ! Vérifiez votre e-mail.'),
           backgroundColor: AppColors.violet,
           behavior: SnackBarBehavior.floating,
         ),
@@ -212,7 +212,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
               // Title
               Text(
-                'Welcome back!',
+                'Bon retour !',
                 style: GoogleFonts.sora(
                   color: AppColors.blanc,
                   fontSize: 28,
@@ -222,7 +222,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               ),
               const SizedBox(height: 8),
               Text(
-                'Sign in to continue.',
+                'Connectez-vous pour continuer.',
                 style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 15),
               ),
               const SizedBox(height: 32),
@@ -230,7 +230,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               // Email
               _AuthField(
                 controller: _emailCtrl,
-                hint: 'Email address',
+                hint: 'Adresse e-mail',
                 prefixIcon: Icons.mail_outline_rounded,
                 keyboardType: TextInputType.emailAddress,
                 textInputAction: TextInputAction.next,
@@ -240,7 +240,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               // Password
               _AuthField(
                 controller: _passwordCtrl,
-                hint: 'Password',
+                hint: 'Mot de passe',
                 prefixIcon: Icons.lock_outline_rounded,
                 obscureText: s.obscurePassword,
                 textInputAction: TextInputAction.done,
@@ -266,8 +266,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     onTap: s.isMagicLinkLoading ? null : _sendMagicLink,
                     child: Text(
                       s.isMagicLinkLoading
-                          ? 'Sending link…'
-                          : 'Magic link',
+                          ? 'Envoi du lien…'
+                          : 'Lien magique',
                       style: GoogleFonts.dmSans(
                         color: s.isMagicLinkLoading
                             ? AppColors.grisInactif
@@ -280,7 +280,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   GestureDetector(
                     onTap: () => context.push('/forgot-password'),
                     child: Text(
-                      'Forgot password?',
+                      'Mot de passe oublié ?',
                       style: GoogleFonts.dmSans(
                         color: AppColors.violetClair,
                         fontSize: 13,
@@ -294,7 +294,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
               // Sign in button (gradient)
               _GradientButton(
-                label: 'Sign in',
+                label: 'Se connecter',
                 isLoading: s.isLoading,
                 onPressed: s.isLoading ? null : _signIn,
               ),
@@ -312,7 +312,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: Text(
-                      'or continue with',
+                      'ou continuer avec',
                       style: GoogleFonts.dmSans(
                         color: AppColors.gris.withAlpha(180),
                         fontSize: 13,
@@ -331,7 +331,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
               // Google button
               _SocialButton(
-                label: 'Continue with Google',
+                label: 'Continuer avec Google',
                 icon: Icons.g_mobiledata_rounded,
                 iconColor: AppColors.fond,
                 backgroundColor: AppColors.blanc,
@@ -344,7 +344,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               // Apple button (iOS only)
               if (Platform.isIOS)
                 _SocialButton(
-                  label: 'Continue with Apple',
+                  label: 'Continuer avec Apple',
                   icon: Icons.apple_rounded,
                   iconColor: AppColors.blanc,
                   backgroundColor: AppColors.surface,
@@ -352,7 +352,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   borderColor: AppColors.border,
                   onPressed: () {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: const Text('Apple Sign In — coming soon (v1.1)'), backgroundColor: AppColors.surface),
+                      SnackBar(content: const Text('Apple Sign In — bientôt disponible (v1.1)'), backgroundColor: AppColors.surface),
                     );
                   },
                 ),
@@ -365,11 +365,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   onTap: () => context.go('/select-account-type'),
                   child: RichText(
                     text: TextSpan(
-                      text: 'No account? ',
+                      text: 'Pas de compte ? ',
                       style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 14),
                       children: [
                         TextSpan(
-                          text: 'Sign up',
+                          text: 'S\'inscrire',
                           style: GoogleFonts.dmSans(
                             color: AppColors.violetClair,
                             fontWeight: FontWeight.w600,

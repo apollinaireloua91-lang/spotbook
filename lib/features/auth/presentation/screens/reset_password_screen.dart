@@ -45,7 +45,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('Password updated successfully!'),
+          content: const Text('Mot de passe mis à jour avec succès !'),
           backgroundColor: AppColors.success,
         ),
       );
@@ -98,7 +98,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
 
                   // Title
                   Text(
-                    'New password',
+                    'Nouveau mot de passe',
                     style: GoogleFonts.sora(
                       color: AppColors.blanc,
                       fontSize: 26,
@@ -108,7 +108,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Choose a strong password for your account.',
+                    'Choisissez un mot de passe sécurisé pour votre compte.',
                     style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 15),
                   ),
                   const SizedBox(height: 36),
@@ -122,12 +122,12 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                         color: AppColors.blanc, fontSize: 15),
                     validator: (v) {
                       if (v == null || v.length < 8) {
-                        return 'Minimum 8 characters';
+                        return 'Minimum 8 caractères';
                       }
                       return null;
                     },
                     decoration: _inputDecoration(
-                      hint: 'New password',
+                      hint: 'Nouveau mot de passe',
                       suffixIcon: _toggleIcon(_obscure1, () {
                         setState(() => _obscure1 = !_obscure1);
                       }),
@@ -145,12 +145,12 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                         color: AppColors.blanc, fontSize: 15),
                     validator: (v) {
                       if (v != _passwordCtrl.text) {
-                        return 'Passwords do not match';
+                        return 'Les mots de passe ne correspondent pas';
                       }
                       return null;
                     },
                     decoration: _inputDecoration(
-                      hint: 'Confirm password',
+                      hint: 'Confirmer le mot de passe',
                       suffixIcon: _toggleIcon(_obscure2, () {
                         setState(() => _obscure2 = !_obscure2);
                       }),
@@ -160,7 +160,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
 
                   // Submit
                   SpotbookButton(
-                    label: 'Update password',
+                    label: 'Mettre à jour le mot de passe',
                     variant: SpotbookButtonVariant.primary,
                     isLoading: _isLoading,
                     onPressed: _isLoading ? null : _submit,
@@ -172,7 +172,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                   GestureDetector(
                     onTap: () => context.go('/login'),
                     child: Text(
-                      'Back to sign in',
+                      'Retour à la connexion',
                       style: GoogleFonts.dmSans(
                         color: AppColors.gris,
                         fontSize: 14,

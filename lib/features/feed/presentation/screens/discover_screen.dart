@@ -95,7 +95,7 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
                         fontSize: 14,
                       ),
                       decoration: InputDecoration(
-                        hintText: 'Search for a professional...',
+                        hintText: 'Rechercher un professionnel...',
                         hintStyle: GoogleFonts.dmSans(
                           color: AppColors.gris,
                           fontSize: 14,
@@ -710,8 +710,8 @@ class _EmptyState extends StatelessWidget {
             const SizedBox(height: 20),
             Text(
               hasQuery
-                  ? 'No results'
-                  : 'No professionals found',
+                  ? 'Aucun résultat'
+                  : 'Aucun professionnel trouvé',
               textAlign: TextAlign.center,
               style: GoogleFonts.sora(
                 color: AppColors.blanc,
@@ -767,7 +767,7 @@ class _ErrorState extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             Text(
-              'Loading error',
+              'Erreur de chargement',
               style: GoogleFonts.sora(
                 color: AppColors.blanc,
                 fontSize: 17,

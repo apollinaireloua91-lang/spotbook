@@ -495,7 +495,7 @@ class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
                           : Icons.favorite_outline,
                       label: _formatCount(widget.video.likesCount),
                       color: widget.video.isLiked
-                          ? Colors.red
+                          ? AppColors.rose
                           : Colors.white,
                       onTap: _toggleLike,
                     ),

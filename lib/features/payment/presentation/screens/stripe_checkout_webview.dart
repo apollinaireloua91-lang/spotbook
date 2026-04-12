@@ -45,7 +45,7 @@ class StripeCheckoutWebview extends StatelessWidget {
             Icon(Icons.payment, color: AppColors.gris, size: 64),
             const SizedBox(height: 24),
             Text(
-              'Redirecting to Stripe...',
+              'Redirection vers Stripe...',
               style: GoogleFonts.sora(
                 color: AppColors.blanc,
                 fontSize: 18,
@@ -62,7 +62,7 @@ class StripeCheckoutWebview extends StatelessWidget {
             ),
             const SizedBox(height: 32),
             Text(
-              'In production, this page will display the Stripe payment form via WebView.',
+              'En production, cette page affichera le formulaire de paiement Stripe via WebView.',
               style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 13),
               textAlign: TextAlign.center,
             ),
@@ -78,7 +78,7 @@ class StripeCheckoutWebview extends StatelessWidget {
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12)),
                 ),
-                child: Text('Done',
+                child: Text('Terminé',
                     style: GoogleFonts.dmSans(fontWeight: FontWeight.bold)),
               ),
             ),

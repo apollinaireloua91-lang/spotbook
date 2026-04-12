@@ -140,7 +140,7 @@ class ProInsightsScreen extends ConsumerWidget {
                     Icon(Icons.bar_chart, color: AppColors.gris, size: 48),
                     const SizedBox(height: 12),
                     Text(
-                      'No data for this period',
+                      'Aucune donnée pour cette période',
                       textAlign: TextAlign.center,
                       style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 15),
                     ),
@@ -345,7 +345,7 @@ class _MetricTile extends StatelessWidget {
             ),
           ),
           Text(
-            metric.value.toStringAsFixed(metric.label == 'Revenue' ? 2 : 0),
+            metric.value.toStringAsFixed(metric.label == 'Revenus' ? 2 : 0),
             style: GoogleFonts.sora(
               color: AppColors.blanc,
               fontSize: 18,

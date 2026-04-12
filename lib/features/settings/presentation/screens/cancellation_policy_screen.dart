@@ -40,7 +40,7 @@ class CancellationPolicyScreen extends StatelessWidget {
           ),
         ),
         title: Text(
-          'Cancellation Policy',
+          'Politique d\'annulation',
           style: GoogleFonts.sora(
             color: AppColors.blanc,
             fontWeight: FontWeight.w700,
@@ -69,7 +69,7 @@ class CancellationPolicyScreen extends StatelessWidget {
                       color: AppColors.violet, size: 40),
                   const SizedBox(height: 12),
                   Text(
-                    'Protect your time & revenue',
+                    'Protégez votre temps et vos revenus',
                     style: GoogleFonts.sora(
                       color: AppColors.blanc,
                       fontWeight: FontWeight.w700,
@@ -79,7 +79,7 @@ class CancellationPolicyScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Our cancellation policy ensures you\'re compensated for last-minute cancellations while remaining fair to clients.',
+                    'Notre politique d\'annulation vous protège contre les annulations de dernière minute tout en restant équitable envers les clients.',
                     style: GoogleFonts.dmSans(
                       color: AppColors.gris,
                       fontSize: 13,
@@ -93,7 +93,7 @@ class CancellationPolicyScreen extends StatelessWidget {
 
             // ── Timeline visual ──
             Text(
-              'How it works',
+              'Comment ça fonctionne',
               style: GoogleFonts.sora(
                 color: AppColors.blanc,
                 fontWeight: FontWeight.w700,
@@ -106,10 +106,10 @@ class CancellationPolicyScreen extends StatelessWidget {
             _PolicyRule(
               icon: Icons.check_circle,
               iconColor: AppColors.success,
-              title: 'More than 48 hours before',
-              subtitle: 'Full refund to client',
+              title: 'Plus de 48 heures avant',
+              subtitle: 'Remboursement intégral au client',
               description:
-                  'The client receives a complete refund of their deposit. No fees are charged.',
+                  'Le client reçoit un remboursement complet de son acompte. Aucun frais n\'est facturé.',
             ),
             const _TimelineLine(),
 
@@ -117,10 +117,10 @@ class CancellationPolicyScreen extends StatelessWidget {
             _PolicyRule(
               icon: Icons.warning_amber_rounded,
               iconColor: AppColors.warning,
-              title: 'Between 24h and 48h before',
-              subtitle: '50% of deposit retained',
+              title: 'Entre 24h et 48h avant',
+              subtitle: '50% de l\'acompte conservé',
               description:
-                  'You keep 50% of the deposit as compensation. The remaining 50% is refunded to the client.',
+                  'Vous conservez 50% de l\'acompte en compensation. Les 50% restants sont remboursés au client.',
             ),
             const _TimelineLine(),
 
@@ -128,10 +128,10 @@ class CancellationPolicyScreen extends StatelessWidget {
             _PolicyRule(
               icon: Icons.block,
               iconColor: AppColors.error,
-              title: 'Less than 24 hours before',
-              subtitle: '100% of deposit retained',
+              title: 'Moins de 24 heures avant',
+              subtitle: '100% de l\'acompte conservé',
               description:
-                  'You keep the entire deposit. The client is not eligible for a refund.',
+                  'Vous conservez la totalité de l\'acompte. Le client n\'est pas éligible à un remboursement.',
             ),
             const _TimelineLine(),
 
@@ -139,10 +139,10 @@ class CancellationPolicyScreen extends StatelessWidget {
             _PolicyRule(
               icon: Icons.person_off,
               iconColor: AppColors.error.withAlpha(200),
-              title: 'No-show',
-              subtitle: '100% of deposit retained',
+              title: 'Absence',
+              subtitle: '100% de l\'acompte conservé',
               description:
-                  'If the client doesn\'t show up, you keep the full deposit. The booking is marked as completed.',
+                  'Si le client ne se présente pas, vous conservez la totalité de l\'acompte. La réservation est marquée comme terminée.',
             ),
 
             const SizedBox(height: 28),
@@ -165,7 +165,7 @@ class CancellationPolicyScreen extends StatelessWidget {
                           color: AppColors.warning, size: 20),
                       const SizedBox(width: 8),
                       Text(
-                        'If you cancel',
+                        'Si vous annulez',
                         style: GoogleFonts.dmSans(
                           color: AppColors.warning,
                           fontWeight: FontWeight.w700,
@@ -176,7 +176,7 @@ class CancellationPolicyScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'If you cancel a booking, the client receives a full refund regardless of timing. Repeated cancellations may affect your visibility on the platform.',
+                    'Si vous annulez une réservation, le client reçoit un remboursement intégral quel que soit le délai. Les annulations répétées peuvent affecter votre visibilité sur la plateforme.',
                     style: GoogleFonts.dmSans(
                       color: AppColors.gris,
                       fontSize: 12,
@@ -190,7 +190,7 @@ class CancellationPolicyScreen extends StatelessWidget {
 
             // ── Key facts ──
             Text(
-              'Key facts',
+              'Points clés',
               style: GoogleFonts.sora(
                 color: AppColors.blanc,
                 fontWeight: FontWeight.w700,
@@ -200,19 +200,19 @@ class CancellationPolicyScreen extends StatelessWidget {
             const SizedBox(height: 12),
             const _KeyFact(
               icon: Icons.access_time,
-              text: 'Policy is based on booking start time',
+              text: 'La politique est basée sur l\'heure de début du rendez-vous',
             ),
             const _KeyFact(
               icon: Icons.payment,
-              text: 'Refunds are processed within 5-10 business days',
+              text: 'Les remboursements sont traités sous 5 à 10 jours ouvrables',
             ),
             const _KeyFact(
               icon: Icons.gavel,
-              text: 'Disputes are handled by Spotbook support',
+              text: 'Les litiges sont gérés par le support Spotbook',
             ),
             const _KeyFact(
               icon: Icons.edit_note,
-              text: 'Rescheduling is free up to 24h before',
+              text: 'Le report est gratuit jusqu\'à 24h avant le rendez-vous',
             ),
 
             const SizedBox(height: 40),

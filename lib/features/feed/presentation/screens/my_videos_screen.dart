@@ -16,11 +16,11 @@ class MyVideosScreen extends ConsumerWidget {
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: AppColors.surface,
-        title: Text('Delete video?', style: GoogleFonts.sora(color: AppColors.blanc, fontWeight: FontWeight.w600)),
+        title: Text('Supprimer la vidéo ?', style: GoogleFonts.sora(color: AppColors.blanc, fontWeight: FontWeight.w600)),
         content: Text('This action is irreversible.', style: GoogleFonts.dmSans(color: AppColors.gris)),
         actions: [
-          TextButton(onPressed: () => ctx.pop(false), child: Text('Cancel', style: GoogleFonts.dmSans(color: AppColors.gris))),
-          TextButton(onPressed: () => ctx.pop(true), child: Text('Delete', style: GoogleFonts.dmSans(color: AppColors.error))),
+          TextButton(onPressed: () => ctx.pop(false), child: Text('Annuler', style: GoogleFonts.dmSans(color: AppColors.gris))),
+          TextButton(onPressed: () => ctx.pop(true), child: Text('Supprimer', style: GoogleFonts.dmSans(color: AppColors.error))),
         ],
       ),
     );

@@ -45,7 +45,7 @@ class ProQrCodeScreen extends StatelessWidget {
           ),
         ),
         title: Text(
-          'My QR Code',
+          'Mon code QR',
           style: GoogleFonts.sora(
               color: AppColors.blanc, fontWeight: FontWeight.bold, fontSize: 18),
         ),
@@ -193,20 +193,20 @@ class ProQrCodeScreen extends StatelessWidget {
 
               // ─── Action buttons ──────────────────────────────────────────
               SpotbookButton.primary(
-                label: 'Share my profile',
+                label: 'Partager mon profil',
                 icon: Icons.share_outlined,
                 onPressed: () =>
                     SharePlus.instance.share(ShareParams(text: profileUrl)),
               ),
               const SizedBox(height: 12),
               SpotbookButton.secondary(
-                label: 'Copy link',
+                label: 'Copier le lien',
                 icon: Icons.copy_outlined,
                 onPressed: () {
                   Clipboard.setData(ClipboardData(text: profileUrl));
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: const Text('Link copied to clipboard'),
+                      content: const Text('Lien copié dans le presse-papier'),
                       backgroundColor: AppColors.success,
                     ),
                   );

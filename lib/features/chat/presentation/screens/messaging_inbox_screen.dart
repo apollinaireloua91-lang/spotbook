@@ -161,7 +161,7 @@ class _MessagingInboxScreenState extends ConsumerState<MessagingInboxScreen> {
                   style: GoogleFonts.dmSans(
                       color: AppColors.blanc, fontSize: 15),
                   decoration: InputDecoration(
-                    hintText: 'Search conversations…',
+                    hintText: 'Rechercher des conversations…',
                     hintStyle:
                         GoogleFonts.dmSans(color: AppColors.gris, fontSize: 14),
                     prefixIcon: Icon(Icons.search,
@@ -193,8 +193,8 @@ class _MessagingInboxScreenState extends ConsumerState<MessagingInboxScreen> {
                     ? Center(
                         child: Text(
                           _searchQuery.isNotEmpty
-                              ? 'No conversations found'
-                              : 'No messages',
+                              ? 'Aucune conversation trouvée'
+                              : 'Aucun message',
                           style: GoogleFonts.dmSans(
                               color: AppColors.gris, fontSize: 15),
                         ),
@@ -339,7 +339,7 @@ class _ConversationTile extends StatelessWidget {
                         Expanded(
                           child: isTyping
                               ? Text(
-                                  'typing…',
+                                  'en train d\'écrire…',
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                   style: GoogleFonts.dmSans(

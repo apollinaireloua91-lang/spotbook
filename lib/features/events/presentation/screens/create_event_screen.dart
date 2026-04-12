@@ -290,7 +290,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
               TextButton(
                 onPressed: () => context.pop(),
                 child: Text(
-                  'Cancel',
+                  'Annuler',
                   style: GoogleFonts.dmSans(
                     color: AppColors.gris,
                     fontSize: 14,
@@ -395,7 +395,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                 _PremiumField(
                   controller: _addressCtrl,
                   label: 'Address',
-                  hint: 'Search for location',
+                  hint: 'Rechercher un lieu',
                   icon: Icons.pin_drop_outlined,
                 ),
                 const SizedBox(height: 32),

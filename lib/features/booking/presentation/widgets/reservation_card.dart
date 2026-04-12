@@ -41,26 +41,26 @@ LinearGradient _categoryGradient(String? category) {
       return (
         bg: AppColors.success.withAlpha(38),
         fg: AppColors.success,
-        label: '✓ Confirmed',
+        label: '✓ Confirmé',
       );
     case 'pending_payment':
       return (
         bg: AppColors.violet.withAlpha(38),
         fg: AppColors.violetClair,
-        label: '⏳ Pending',
+        label: '⏳ En attente',
       );
     case 'completed':
       return (
         bg: AppColors.gris.withAlpha(38),
         fg: AppColors.gris,
-        label: '✓ Completed',
+        label: '✓ Terminé',
       );
     case 'cancelled_full_refund':
     case 'cancelled_no_refund':
       return (
         bg: AppColors.error.withAlpha(38),
         fg: AppColors.error,
-        label: '✗ Cancelled',
+        label: '✗ Annulé',
       );
     default:
       return (
@@ -223,7 +223,7 @@ class _ReservationCardState extends State<ReservationCard>
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          b.proName ?? 'Professional',
+                          b.proName ?? 'Professionnel',
                           style: TextStyle(
                             color: AppColors.blanc,
                             fontWeight: FontWeight.w700,
@@ -300,7 +300,7 @@ class _ReservationCardState extends State<ReservationCard>
                         borderRadius: BorderRadius.circular(6),
                       ),
                       child: Text(
-                        'Deposit: ${b.depositAmount.toStringAsFixed(0)} \$',
+                        'Acompte : ${b.depositAmount.toStringAsFixed(0)} \$',
                         style: TextStyle(
                           color: AppColors.warning,
                           fontSize: 11,
@@ -319,7 +319,7 @@ class _ReservationCardState extends State<ReservationCard>
                   children: [
                     Expanded(
                       child: _ActionButton(
-                        label: 'Cancel',
+                        label: 'Annuler',
                         bgColor: AppColors.rose.withAlpha(30),
                         textColor: AppColors.roseClair,
                         onTap: widget.onCancel ?? () {
@@ -347,7 +347,7 @@ class _ReservationCardState extends State<ReservationCard>
                   children: [
                     Expanded(
                       child: _ActionButton(
-                        label: '⭐ Leave review',
+                        label: '⭐ Laisser un avis',
                         bgColor: AppColors.violet.withAlpha(20),
                         textColor: AppColors.violetClair,
                         onTap: widget.onReview ?? () {
@@ -363,7 +363,7 @@ class _ReservationCardState extends State<ReservationCard>
                     const SizedBox(width: 10),
                     Expanded(
                       child: _ActionButton(
-                        label: '🔄 Rebook',
+                        label: '🔄 Réserver à nouveau',
                         bgColor: AppColors.surface,
                         textColor: AppColors.blanc,
                         borderColor: AppColors.border,
@@ -387,10 +387,10 @@ class _ReservationCardState extends State<ReservationCard>
     if (date == null) return '--/--';
     try {
       final parsed = DateTime.parse(date);
-      const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+      const days = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
       const months = [
-        'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-        'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+        'Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin',
+        'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc',
       ];
       return '${days[parsed.weekday - 1]} ${parsed.day} ${months[parsed.month - 1]}';
     } catch (_) {

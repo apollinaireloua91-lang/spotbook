@@ -50,7 +50,7 @@ class ProInterestCategoriesScreen extends ConsumerWidget {
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         leading: Semantics(
-          label: 'Back',
+          label: 'Retour',
           child: IconButton(
             onPressed: () => context.pop(),
             icon: Container(
@@ -187,7 +187,7 @@ class ProInterestCategoriesScreen extends ConsumerWidget {
                   onPressed: selected.isNotEmpty
                       ? () {
                           HapticFeedback.mediumImpact();
-                          context.go('/pro/dashboard');
+                          context.go('/pro/feed');
                         }
                       : null,
                   style: ElevatedButton.styleFrom(

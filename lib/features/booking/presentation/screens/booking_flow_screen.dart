@@ -65,7 +65,7 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
           surfaceTintColor: Colors.transparent,
           elevation: 0,
           leading: Semantics(
-            label: 'Back',
+            label: 'Retour',
             child: IconButton(
               icon: Container(
                 padding: const EdgeInsets.all(8),
@@ -90,7 +90,7 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
                     color: AppColors.gris, size: 48),
                 const SizedBox(height: 16),
                 Text(
-                  'Unable to load profile',
+                  'Impossible de charger le profil',
                   style: GoogleFonts.sora(
                     color: AppColors.blanc,
                     fontSize: 16,
@@ -120,7 +120,7 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
                       border: Border.all(color: AppColors.border),
                     ),
                     child: Text(
-                      'Retry',
+                      'Réessayer',
                       style: GoogleFonts.dmSans(
                         color: AppColors.blanc,
                         fontWeight: FontWeight.w600,

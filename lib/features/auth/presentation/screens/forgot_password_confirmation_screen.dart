@@ -60,7 +60,7 @@ class _ForgotPasswordConfirmationScreenState
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('Reset link resent!'),
+          content: const Text('Lien de réinitialisation renvoyé !'),
           backgroundColor: AppColors.violet,
         ),
       );
@@ -114,7 +114,7 @@ class _ForgotPasswordConfirmationScreenState
                 child: Column(
                   children: [
                     Text(
-                      'Email sent!',
+                      'E-mail envoyé !',
                       style: GoogleFonts.sora(
                         color: AppColors.blanc,
                         fontSize: 24,
@@ -123,7 +123,7 @@ class _ForgotPasswordConfirmationScreenState
                     ),
                     const SizedBox(height: 12),
                     Text(
-                      'Check your inbox.\nClick the link in the email to reset your password.',
+                      'Vérifiez votre boîte de réception.\nCliquez sur le lien dans l\'e-mail pour réinitialiser votre mot de passe.',
                       textAlign: TextAlign.center,
                       style: GoogleFonts.dmSans(
                         color: AppColors.gris,
@@ -133,7 +133,7 @@ class _ForgotPasswordConfirmationScreenState
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'If you don\'t receive anything, check your spam folder.',
+                      'Si vous ne recevez rien, vérifiez votre dossier spam.',
                       textAlign: TextAlign.center,
                       style: GoogleFonts.dmSans(
                         color: AppColors.grisInactif,
@@ -146,8 +146,8 @@ class _ForgotPasswordConfirmationScreenState
                         onTap: _isResending ? null : _resend,
                         child: Text(
                           _isResending
-                              ? 'Sending…'
-                              : "Didn't receive it? Send again",
+                              ? 'Envoi en cours…'
+                              : 'Pas reçu ? Renvoyer',
                           style: GoogleFonts.dmSans(
                             color: _isResending
                                 ? AppColors.grisInactif
@@ -168,7 +168,7 @@ class _ForgotPasswordConfirmationScreenState
               FadeTransition(
                 opacity: _fadeAnim,
                 child: SpotbookButton(
-                  label: 'Back to sign in',
+                  label: 'Retour à la connexion',
                   variant: SpotbookButtonVariant.primary,
                   onPressed: () {
                     HapticFeedback.mediumImpact();

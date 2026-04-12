@@ -39,7 +39,7 @@ class AccountTypeSelectionScreen extends ConsumerWidget {
               const SizedBox(height: 48),
 
               Text(
-                'Welcome to\nSpotbook',
+                'Bienvenue sur\nSpotbook',
                 style: GoogleFonts.sora(
                   color: AppColors.blanc,
                   fontSize: 28,
@@ -50,7 +50,7 @@ class AccountTypeSelectionScreen extends ConsumerWidget {
               ),
               const SizedBox(height: 8),
               Text(
-                'How would you like to use the app?',
+                'Comment souhaitez-vous utiliser l\'application ?',
                 style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 15),
               ),
               const SizedBox(height: 40),
@@ -59,8 +59,8 @@ class AccountTypeSelectionScreen extends ConsumerWidget {
               _RoleCard(
                 icon: Icons.explore_outlined,
                 title: 'Client',
-                subtitle: 'I\'m looking for professionals',
-                description: 'Discover, book, attend',
+                subtitle: 'Je recherche des professionnels',
+                description: 'Découvrir, réserver, participer',
                 isSelected: selectedRole == 'client',
                 gradientColors: [AppColors.violet, AppColors.violetClair],
                 onTap: () {
@@ -73,9 +73,9 @@ class AccountTypeSelectionScreen extends ConsumerWidget {
               // Pro card
               _RoleCard(
                 icon: Icons.workspace_premium_outlined,
-                title: 'Professional',
-                subtitle: 'I offer my services',
-                description: 'Publish, manage, earn',
+                title: 'Professionnel',
+                subtitle: 'J\'offre mes services',
+                description: 'Publier, gérer, gagner',
                 isSelected: selectedRole == 'pro',
                 gradientColors: [AppColors.rose, AppColors.roseClair],
                 onTap: () {
@@ -113,7 +113,7 @@ class AccountTypeSelectionScreen extends ConsumerWidget {
                       ),
                     ),
                     child: Text(
-                      'Continue',
+                      'Continuer',
                       style: GoogleFonts.dmSans(
                         fontSize: 17,
                         fontWeight: FontWeight.w600,
@@ -130,11 +130,11 @@ class AccountTypeSelectionScreen extends ConsumerWidget {
                   onTap: () => context.go('/login'),
                   child: RichText(
                     text: TextSpan(
-                      text: 'Already have an account? ',
+                      text: 'Déjà un compte ? ',
                       style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 14),
                       children: [
                         TextSpan(
-                          text: 'Sign in',
+                          text: 'Se connecter',
                           style: GoogleFonts.dmSans(
                             color: AppColors.violetClair,
                             fontWeight: FontWeight.w600,

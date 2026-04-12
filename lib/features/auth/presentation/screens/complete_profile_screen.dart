@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -124,7 +125,7 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen>
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('Upload failed'),
+            content: const Text('Échec de l\'upload'),
             backgroundColor: AppColors.error,
           ),
         );
@@ -145,7 +146,7 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen>
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('Save failed'),
+            content: const Text('Échec de l\'enregistrement'),
             backgroundColor: AppColors.error,
           ),
         );
@@ -198,7 +199,7 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen>
               ),
               const SizedBox(height: 16),
               Text(
-                'Account created!',
+                'Compte créé !',
                 style: GoogleFonts.sora(
                   color: AppColors.violet,
                   fontSize: 18,
@@ -209,7 +210,7 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen>
 
               // Title
               Text(
-                'Complete your profile',
+                'Complétez votre profil',
                 style: GoogleFonts.sora(
                   color: AppColors.blanc,
                   fontSize: 26,
@@ -219,7 +220,7 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen>
               ),
               const SizedBox(height: 8),
               Text(
-                'Add a photo and bio so pros know who they\'re working with.',
+                'Ajoutez une photo et une bio pour que les pros sachent avec qui ils travaillent.',
                 textAlign: TextAlign.center,
                 style: GoogleFonts.dmSans(
                   color: AppColors.gris,
@@ -238,7 +239,7 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen>
                       radius: 50,
                       backgroundColor: AppColors.surface,
                       backgroundImage: s.avatarUrl != null
-                          ? NetworkImage(s.avatarUrl!)
+                          ? CachedNetworkImageProvider(s.avatarUrl!)
                           : null,
                       child: s.avatarUrl == null
                           ? Icon(
@@ -283,7 +284,7 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen>
                 controller: _displayNameCtrl,
                 style: GoogleFonts.dmSans(color: AppColors.blanc, fontSize: 15),
                 decoration: InputDecoration(
-                  hintText: 'Full name',
+                  hintText: 'Nom complet',
                   hintStyle: GoogleFonts.dmSans(
                     color: AppColors.gris,
                     fontSize: 15,
@@ -321,7 +322,7 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen>
                 style: GoogleFonts.dmSans(color: AppColors.blanc, fontSize: 15),
                 maxLines: 3,
                 decoration: InputDecoration(
-                  hintText: 'Bio — tell us a bit about yourself...',
+                  hintText: 'Bio — parlez-nous un peu de vous...',
                   hintStyle: GoogleFonts.dmSans(
                     color: AppColors.gris.withAlpha(128),
                     fontSize: 15,
@@ -394,7 +395,7 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen>
                             ),
                           )
                         : Text(
-                            'Save',
+                            'Enregistrer',
                             style: GoogleFonts.dmSans(
                               fontSize: 17,
                               fontWeight: FontWeight.w600,
@@ -411,7 +412,7 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen>
                 child: Padding(
                   padding: const EdgeInsets.symmetric(vertical: 8),
                   child: Text(
-                    'Skip for now',
+                    'Passer pour le moment',
                     style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 14),
                   ),
                 ),

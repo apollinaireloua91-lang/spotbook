@@ -54,7 +54,7 @@ class _ClientSearchBody extends StatelessWidget {
                   TextButton.icon(
                     onPressed: () => context.read<ClientSearchCubit>().refresh(),
                     icon: Icon(Icons.refresh, color: AppColors.violet),
-                    label: Text('Retry', style: GoogleFonts.dmSans(color: AppColors.violet)),
+                    label: Text('Réessayer', style: GoogleFonts.dmSans(color: AppColors.violet)),
                   ),
                 ],
               ),

@@ -52,13 +52,13 @@ class _FeedScreenState extends ConsumerState<FeedScreen> {
               Icon(Icons.play_circle_outline,
                   size: 64, color: AppColors.gris.withAlpha(128)),
               const SizedBox(height: 16),
-              Text('No videos yet',
+              Text('Aucune vidéo',
                   style: GoogleFonts.sora(
                       color: AppColors.blanc,
                       fontSize: 18,
                       fontWeight: FontWeight.w600)),
               const SizedBox(height: 8),
-              Text('Videos from professionals will appear here',
+              Text('Les vidéos des professionnels apparaîtront ici',
                   style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 14)),
             ],
           ),
@@ -162,12 +162,12 @@ class _FeedTabPill extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           _TabItem(
-            label: 'Discover',
+            label: 'Découvrir',
             isActive: activeTab == FeedTab.discover,
             onTap: () => onTap(FeedTab.discover),
           ),
           _TabItem(
-            label: 'Following',
+            label: 'Abonnements',
             isActive: activeTab == FeedTab.following,
             onTap: () => onTap(FeedTab.following),
           ),

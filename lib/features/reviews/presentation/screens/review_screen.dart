@@ -96,10 +96,10 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
               children: [
                 Icon(Icons.check_circle, color: AppColors.success, size: 64),
                 const SizedBox(height: 20),
-                Text('Thank you for your review!',
+                Text('Merci pour votre avis !',
                     style: GoogleFonts.sora(color: AppColors.blanc, fontSize: 22, fontWeight: FontWeight.bold)),
                 const SizedBox(height: 8),
-                Text('Your feedback helps other users.',
+                Text('Votre retour aide les autres utilisateurs.',
                     style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 15), textAlign: TextAlign.center),
                 const SizedBox(height: 32),
                 SizedBox(
@@ -115,7 +115,7 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
                       foregroundColor: AppColors.fond,
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     ),
-                    child: Text('Done', style: GoogleFonts.dmSans(fontWeight: FontWeight.bold, fontSize: 16)),
+                    child: Text('Terminé', style: GoogleFonts.dmSans(fontWeight: FontWeight.bold, fontSize: 16)),
                   ),
                 ),
               ],
@@ -132,7 +132,7 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         leading: Semantics(
-          label: 'Back',
+          label: 'Retour',
           child: IconButton(
             icon: Container(
               padding: const EdgeInsets.all(8),
@@ -149,7 +149,7 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
             },
           ),
         ),
-        title: Text('Leave a review',
+        title: Text('Laisser un avis',
             style: GoogleFonts.sora(color: AppColors.blanc, fontWeight: FontWeight.bold)),
         centerTitle: true,
       ),
@@ -163,7 +163,7 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
                   style: TextStyle(color: AppColors.gris, fontSize: 15)),
               const SizedBox(height: 8),
             ],
-            Text('How was your appointment?',
+            Text('Comment s\'est passé votre rendez-vous ?',
                 style: GoogleFonts.sora(color: AppColors.blanc, fontSize: 20, fontWeight: FontWeight.bold),
                 textAlign: TextAlign.center),
             const SizedBox(height: 32),
@@ -212,7 +212,7 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
                       maxLength: 300,
                       style: TextStyle(color: AppColors.blanc, fontSize: 15),
                       decoration: InputDecoration(
-                        hintText: 'Share your experience (optional)',
+                        hintText: 'Partagez votre expérience (optionnel)',
                         hintStyle: TextStyle(color: AppColors.gris),
                         filled: true,
                         fillColor: AppColors.surface,
@@ -269,7 +269,7 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
                           ),
                         ),
                       )
-                    : Text('Submit', style: GoogleFonts.dmSans(fontWeight: FontWeight.bold, fontSize: 16)),
+                    : Text('Envoyer', style: GoogleFonts.dmSans(fontWeight: FontWeight.bold, fontSize: 16)),
               ),
             ),
             const SizedBox(height: 32),
@@ -282,17 +282,17 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
   String _ratingLabel(int rating) {
     switch (rating) {
       case 1:
-        return 'Disappointing';
+        return 'Décevant';
       case 2:
-        return 'Average';
+        return 'Moyen';
       case 3:
-        return 'Good';
+        return 'Bien';
       case 4:
-        return 'Very good';
+        return 'Très bien';
       case 5:
         return 'Excellent';
       default:
-        return 'Tap to rate';
+        return 'Appuyez pour noter';
     }
   }
 }

@@ -167,7 +167,7 @@ class _ClientEventsDiscoveryScreenState
                             Icon(Icons.event_busy,
                                 color: AppColors.gris, size: 48),
                             const SizedBox(height: 12),
-                            Text('No events found',
+                            Text('Aucun événement trouvé',
                                 style: GoogleFonts.dmSans(
                                     color: AppColors.gris,
                                     fontSize: 15)),

@@ -57,7 +57,7 @@ class _CommentsSheetState extends ConsumerState<CommentsSheet> {
               child: s.isLoading
                   ? Center(child: CircularProgressIndicator(color: AppColors.blanc))
                   : s.comments.isEmpty
-                      ? Center(child: Text('No comments yet', style: TextStyle(color: AppColors.gris, fontSize: 14)))
+                      ? Center(child: Text('Aucun commentaire', style: TextStyle(color: AppColors.gris, fontSize: 14)))
                       : ListView.builder(controller: scrollController, reverse: true, itemCount: s.comments.length,
                           itemBuilder: (context, index) => _CommentTile(comment: s.comments[s.comments.length - 1 - index])),
             ),

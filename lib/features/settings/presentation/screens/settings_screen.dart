@@ -31,7 +31,7 @@ class SettingsScreen extends ConsumerWidget {
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         title: Text(
-          'Settings',
+          'Paramètres',
           style: GoogleFonts.sora(
             color: AppColors.blanc,
             fontWeight: FontWeight.w700,
@@ -63,16 +63,16 @@ class SettingsScreen extends ConsumerWidget {
         children: [
           // ── Compte ──
           _SettingsSection(
-            title: 'ACCOUNT',
+            title: 'COMPTE',
             items: [
               _SettingsItem(
                 icon: Icons.person_outline,
-                label: 'Edit profile',
+                label: 'Modifier le profil',
                 onTap: () => context.push('/edit-profile'),
               ),
               _SettingsItem(
                 icon: Icons.lock_outline,
-                label: 'Change password',
+                label: 'Changer le mot de passe',
                 onTap: () => context.push('/change-password'),
               ),
             ],
@@ -81,26 +81,26 @@ class SettingsScreen extends ConsumerWidget {
           // ── Pro: Business ──
           if (isPro)
             _SettingsSection(
-              title: 'BUSINESS',
+              title: 'ENTREPRISE',
               items: [
                 _SettingsItem(
                   icon: Icons.build_outlined,
-                  label: 'Manage services',
+                  label: 'Gérer les services',
                   onTap: () => context.push('/pro/services'),
                 ),
                 _SettingsItem(
                   icon: Icons.schedule_outlined,
-                  label: 'Availability',
+                  label: 'Disponibilité',
                   onTap: () => context.push('/pro/availability'),
                 ),
                 _SettingsItem(
                   icon: Icons.qr_code,
-                  label: 'My QR Code',
+                  label: 'Mon code QR',
                   onTap: () => context.push('/pro/qr-code'),
                 ),
                 _SettingsItem(
                   icon: Icons.celebration_outlined,
-                  label: 'My events',
+                  label: 'Mes événements',
                   onTap: () => context.push('/pro/events'),
                 ),
               ],
@@ -109,24 +109,24 @@ class SettingsScreen extends ConsumerWidget {
           // ── Pro: Réservations ──
           if (isPro)
             _SettingsSection(
-              title: 'BOOKINGS',
+              title: 'RÉSERVATIONS',
               items: [
                 _SettingsItem(
                   icon: Icons.event_note_outlined,
-                  label: 'Cancellation policy',
-                  subtitle: 'Refund rules & timelines',
+                  label: 'Politique d\'annulation',
+                  subtitle: 'Règles et délais de remboursement',
                   onTap: () => context.push('/pro/settings/cancellation'),
                 ),
                 _SettingsItem(
                   icon: Icons.account_balance_wallet_outlined,
-                  label: 'Deposit settings',
-                  subtitle: 'Configure deposit percentage',
+                  label: 'Paramètres d\'acompte',
+                  subtitle: 'Configurer le pourcentage d\'acompte',
                   onTap: () => context.push('/pro/settings/deposit'),
                 ),
                 _SettingsItem(
                   icon: Icons.percent_outlined,
                   label: 'Commissions',
-                  subtitle: 'Bookings ${(cfg.commissionBookings * 100).round()}% · Events ${(cfg.commissionEvents * 100).round()}% · Fee \$${cfg.serviceFeeClient.toStringAsFixed(2)}',
+                  subtitle: 'Réservations ${(cfg.commissionBookings * 100).round()}% · Événements ${(cfg.commissionEvents * 100).round()}% · Frais \$${cfg.serviceFeeClient.toStringAsFixed(2)}',
                   onTap: () => context.push('/pro/settings/commissions'),
                 ),
               ],
@@ -135,17 +135,17 @@ class SettingsScreen extends ConsumerWidget {
           // ── Pro: Paiements ──
           if (isPro)
             _SettingsSection(
-              title: 'PAYMENTS',
+              title: 'PAIEMENTS',
               items: [
                 _SettingsItem(
                   icon: Icons.account_balance_outlined,
                   label: 'Stripe Connect',
-                  subtitle: 'Configure payouts',
+                  subtitle: 'Configurer les paiements',
                   onTap: () => context.push('/pro/stripe-connect'),
                 ),
                 _SettingsItem(
                   icon: Icons.bar_chart_rounded,
-                  label: 'Revenue & Stats',
+                  label: 'Revenus & Stats',
                   onTap: () => context.push('/pro/revenue'),
                 ),
               ],
@@ -157,12 +157,12 @@ class SettingsScreen extends ConsumerWidget {
             items: [
               _SettingsItem(
                 icon: Icons.notifications_outlined,
-                label: 'History',
+                label: 'Historique',
                 onTap: () => context.push('/notifications'),
               ),
               _SettingsItem(
                 icon: Icons.tune,
-                label: 'Preferences',
+                label: 'Préférences',
                 onTap: () => context.push('/notification-settings'),
               ),
             ],
@@ -170,17 +170,17 @@ class SettingsScreen extends ConsumerWidget {
 
           // ── Preferences ──
           _SettingsSection(
-            title: 'PREFERENCES',
+            title: 'PRÉFÉRENCES',
             items: [
               _SettingsItem(
                 icon: Icons.language_outlined,
-                label: 'Language',
+                label: 'Langue',
                 onTap: () => context.push('/language-settings'),
               ),
               if (isPro)
                 _SettingsItem(
                   icon: Icons.star_outline,
-                  label: 'My Reviews',
+                  label: 'Mes avis',
                   onTap: () => context.push('/review'),
                 ),
             ],
@@ -192,7 +192,7 @@ class SettingsScreen extends ConsumerWidget {
             items: [
               _SettingsItem(
                 icon: Icons.email_outlined,
-                label: 'Contact us',
+                label: 'Nous contacter',
                 onTap: () => launchUrl(
                   Uri.parse('https://getspotbook.app/support#contact'),
                   mode: LaunchMode.externalApplication,
@@ -203,11 +203,11 @@ class SettingsScreen extends ConsumerWidget {
 
           // ── Légal ──
           _SettingsSection(
-            title: 'LEGAL',
+            title: 'LÉGAL',
             items: [
               _SettingsItem(
                 icon: Icons.description_outlined,
-                label: 'Terms of service',
+                label: 'Conditions d\'utilisation',
                 onTap: () => launchUrl(
                   Uri.parse('https://getspotbook.app/terms'),
                   mode: LaunchMode.externalApplication,
@@ -215,7 +215,7 @@ class SettingsScreen extends ConsumerWidget {
               ),
               _SettingsItem(
                 icon: Icons.privacy_tip_outlined,
-                label: 'Privacy policy',
+                label: 'Politique de confidentialité',
                 onTap: () => launchUrl(
                   Uri.parse('https://getspotbook.app/privacy'),
                   mode: LaunchMode.externalApplication,
@@ -240,14 +240,14 @@ class SettingsScreen extends ConsumerWidget {
                       borderRadius: BorderRadius.circular(16),
                     ),
                     title: Text(
-                      'Log out?',
+                      'Déconnexion ?',
                       style: GoogleFonts.dmSans(
                         color: AppColors.blanc,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
                     content: Text(
-                      'You will be redirected to the login screen.',
+                      'Vous serez redirigé vers l\'écran de connexion.',
                       style: GoogleFonts.dmSans(
                         color: AppColors.gris,
                         fontSize: 14,
@@ -257,7 +257,7 @@ class SettingsScreen extends ConsumerWidget {
                       TextButton(
                         onPressed: () => Navigator.of(ctx).pop(false),
                         child: Text(
-                          'Cancel',
+                          'Annuler',
                           style: GoogleFonts.dmSans(
                             color: AppColors.gris,
                           ),
@@ -266,7 +266,7 @@ class SettingsScreen extends ConsumerWidget {
                       TextButton(
                         onPressed: () => Navigator.of(ctx).pop(true),
                         child: Text(
-                          'Log out',
+                          'Déconnexion',
                           style: GoogleFonts.dmSans(
                             color: AppColors.error,
                             fontWeight: FontWeight.w600,
@@ -294,7 +294,7 @@ class SettingsScreen extends ConsumerWidget {
                 ),
                 child: Center(
                   child: Text(
-                    'Log out',
+                    'Déconnexion',
                     style: GoogleFonts.dmSans(
                       color: AppColors.error,
                       fontSize: 16,
@@ -313,7 +313,7 @@ class SettingsScreen extends ConsumerWidget {
             child: GestureDetector(
               onTap: () => context.push('/delete-account'),
               child: Text(
-                'Delete my account',
+                'Supprimer mon compte',
                 style: GoogleFonts.dmSans(
                   color: AppColors.gris,
                   fontSize: 14,

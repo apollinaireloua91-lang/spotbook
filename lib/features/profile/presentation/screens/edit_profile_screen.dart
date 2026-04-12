@@ -224,7 +224,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
       if (mounted) {
         setState(() => _isUploadingAvatar = false);
         showSpotbookSnackBar(context,
-            message: 'Photo upload error', type: SnackType.error);
+            message: 'Erreur de téléchargement de la photo', type: SnackType.error);
       }
     }
   }
@@ -258,7 +258,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
 
       if (!mounted) return;
       showSpotbookSnackBar(context,
-          message: 'Profile updated', type: SnackType.success);
+          message: 'Profil mis à jour', type: SnackType.success);
       context.pop();
     } catch (e) {
       if (!mounted) return;
@@ -287,7 +287,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         title: Text(
-          'Edit profile',
+          'Modifier le profil',
           style: GoogleFonts.sora(
             color: AppColors.blanc,
             fontWeight: FontWeight.w700,
@@ -378,7 +378,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
               const SizedBox(height: 8),
               Center(
                 child: Text(
-                  'Change photo',
+                  'Changer la photo',
                   style: GoogleFonts.dmSans(
                     color: AppColors.violetClair,
                     fontSize: 13,
@@ -390,12 +390,12 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
               const SizedBox(height: 24),
 
               // ─── Name ───
-              _buildTextField('Display name', _nameCtrl),
+              _buildTextField('Nom affiché', _nameCtrl),
 
               const SizedBox(height: 16),
 
               // ─── Username with uniqueness check ───
-              _buildLabel('Username'),
+              _buildLabel('Nom d\'utilisateur'),
               const SizedBox(height: 8),
               TextField(
                 controller: _usernameCtrl,
@@ -472,7 +472,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                 maxLength: 160,
                 style: TextStyle(color: AppColors.blanc, fontSize: 15),
                 decoration: InputDecoration(
-                  hintText: 'Describe yourself in a few words...',
+                  hintText: 'Décrivez-vous en quelques mots...',
                   hintStyle: TextStyle(
                     color: AppColors.gris.withAlpha(120),
                     fontSize: 14,
@@ -502,12 +502,12 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
               const SizedBox(height: 16),
 
               // ─── Address with Google Places autocomplete ───
-              _buildLabel('Location'),
+              _buildLabel('Localisation'),
               const SizedBox(height: 8),
               AddressAutocompleteField(
                 controller: _addressCtrl,
                 label: '',
-                hint: 'Your city or address',
+                hint: 'Votre ville ou adresse',
                 icon: Icons.location_on_outlined,
                 fillColor: AppColors.surface,
               ),
@@ -516,7 +516,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
               if (s.isPro) ...[
                 const SizedBox(height: 32),
                 Text(
-                  'SOCIAL LINKS',
+                  'LIENS SOCIAUX',
                   style: GoogleFonts.sora(
                     color: AppColors.gris,
                     fontSize: 11,
@@ -526,7 +526,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  'Paste a link and the platform will be auto-detected.',
+                  'Collez un lien, la plateforme sera détectée automatiquement.',
                   style: GoogleFonts.dmSans(
                     color: AppColors.gris,
                     fontSize: 12,
@@ -545,7 +545,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
               const SizedBox(height: 32),
 
               SpotbookButton.primary(
-                label: 'Save',
+                label: 'Enregistrer',
                 onPressed: _save,
                 isLoading: s.isSaving,
               ),

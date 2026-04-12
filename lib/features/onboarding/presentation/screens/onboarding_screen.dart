@@ -19,16 +19,16 @@ class _PageText {
 
 const _pageTexts = [
   _PageText(
-    'Discover talented pros',
-    'Find the best professionals near you.\nWatch their work, read reviews, book instantly.',
+    'Découvrez des pros talentueux',
+    'Trouvez les meilleurs professionnels près de chez vous.\nRegardez leur travail, lisez les avis, réservez instantanément.',
   ),
   _PageText(
-    'Book in one tap',
-    'Pick a service, choose a time,\nconfirm your booking instantly.',
+    'Réservez en un clic',
+    'Choisissez un service, sélectionnez un créneau,\nconfirmez votre réservation instantanément.',
   ),
   _PageText(
-    'Grow your business',
-    'Manage bookings, track revenue,\nand reach new clients every day.',
+    'Développez votre activité',
+    'Gérez vos réservations, suivez vos revenus\net atteignez de nouveaux clients chaque jour.',
   ),
 ];
 
@@ -251,7 +251,7 @@ class _BottomOverlay extends StatelessWidget {
                 TextButton(
                   onPressed: onSkip,
                   child: Text(
-                    'Skip',
+                    'Passer',
                     style: GoogleFonts.dmSans(
                       color: AppColors.gris,
                       fontSize: 14,
@@ -281,7 +281,7 @@ class _BottomOverlay extends StatelessWidget {
                     child: AnimatedSwitcher(
                       duration: const Duration(milliseconds: 200),
                       child: Text(
-                        page < 2 ? 'Next' : 'Get Started',
+                        page < 2 ? 'Suivant' : 'Commencer',
                         key: ValueKey(page < 2),
                         style: GoogleFonts.dmSans(
                           color: AppColors.blanc,
@@ -735,7 +735,7 @@ class _BookPageState extends State<_BookPage>
 
           // Time slots
           Text(
-            'Today',
+            'Aujourd\'hui',
             style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 10),
           ),
           const SizedBox(height: 8),
@@ -760,7 +760,7 @@ class _BookPageState extends State<_BookPage>
               borderRadius: BorderRadius.circular(12),
             ),
             child: Text(
-              'Book Now',
+              'Réserver',
               textAlign: TextAlign.center,
               style: GoogleFonts.dmSans(
                 color: AppColors.blanc,
@@ -941,14 +941,14 @@ class _GrowPageState extends State<_GrowPage>
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          'Revenue',
+                          'Revenus',
                           style: GoogleFonts.dmSans(
                             color: AppColors.gris,
                             fontSize: 13,
                           ),
                         ),
                         Text(
-                          'This month',
+                          'Ce mois-ci',
                           style: GoogleFonts.dmSans(
                             color: AppColors.grisInactif,
                             fontSize: 11,
@@ -990,17 +990,17 @@ class _GrowPageState extends State<_GrowPage>
                       children: [
                         _MiniStat(
                           value: '24',
-                          label: 'Bookings',
+                          label: 'Réservations',
                           color: AppColors.violet,
                         ),
                         _MiniStat(
                           value: '4.8',
-                          label: 'Rating',
+                          label: 'Note',
                           color: AppColors.ratingAmber,
                         ),
                         _MiniStat(
                           value: '156',
-                          label: 'Followers',
+                          label: 'Abonnés',
                           color: AppColors.rose,
                         ),
                       ],

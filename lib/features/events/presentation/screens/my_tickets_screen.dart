@@ -247,7 +247,7 @@ class _TicketCard extends StatelessWidget {
       'used' => (AppColors.gris, 'Used'),
       'valid' => (AppColors.success, 'Valid'),
       'refunded' => (AppColors.warning, 'Refunded'),
-      'cancelled' => (AppColors.error, 'Cancelled'),
+      'cancelled' => (AppColors.error, 'Annulé'),
       _ => (AppColors.success, 'Valid'),
     };
 

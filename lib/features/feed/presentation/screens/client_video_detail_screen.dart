@@ -449,7 +449,7 @@ class _CommentsSheetState extends ConsumerState<_CommentsSheet> {
               data: (comments) {
                 if (comments.isEmpty) {
                   return Center(
-                    child: Text('No comments',
+                    child: Text('Aucun commentaire',
                         style: GoogleFonts.dmSans(color: AppColors.gris)),
                   );
                 }

@@ -157,10 +157,10 @@ Color categoryColor(String category) {
   if (key.contains('nail') || key.contains('manu')) return const Color(0xFFE91E90);
   if (key.contains('mass')) return const Color(0xFFEC4899);
   if (key.contains('esth') || key.contains('beauté') || key.contains('bien')) return AppColors.rose;
-  if (key.contains('coach') || key.contains('fit')) return const Color(0xFF22C55E);
+  if (key.contains('coach') || key.contains('fit')) return AppColors.success;
   if (key.contains('photo') || key.contains('vidéa')) return AppColors.violet;
-  if (key.contains('traiteur') || key.contains('cuisine') || key.contains('chef')) return const Color(0xFFFF8C42);
-  if (key.contains('tattoo') || key.contains('tatou')) return const Color(0xFFEF4444);
+  if (key.contains('traiteur') || key.contains('cuisine') || key.contains('chef')) return AppColors.catering;
+  if (key.contains('tattoo') || key.contains('tatou')) return AppColors.error;
   if (key.contains('dj') || key.contains('musiq')) return const Color(0xFF8B5CF6);
   if (key.contains('plomb')) return const Color(0xFF3B82F6);
   if (key.contains('electr')) return const Color(0xFFEAB308);

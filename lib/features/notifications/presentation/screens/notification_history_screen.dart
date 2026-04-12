@@ -67,7 +67,7 @@ class NotificationHistoryScreen extends ConsumerWidget {
                     children: [
                       Icon(Icons.notifications_off_outlined, color: AppColors.gris, size: 48),
                       const SizedBox(height: 12),
-                      Text('No notifications',
+                      Text('Aucune notification',
                           style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 15)),
                     ],
                   ),

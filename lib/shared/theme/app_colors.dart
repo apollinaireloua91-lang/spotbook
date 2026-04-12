@@ -140,6 +140,15 @@ abstract final class AppColors {
   static const Color starGoldLight = Color(0xFFFFE066);
   static const Color ratingAmber = Color(0xFFFFB800);
 
+  // ─── Dashboard gradient ends ───
+  static const Color successLight2 = Color(0xFF34D399);
+  static const Color accentCyan = Color(0xFF00A3CC);
+  static const Color violetPastel = Color(0xFFB794F4);
+
+  // ─── Profile header gradient (fallback when no cover image) ───
+  static const Color profileHeaderStart = Color(0xFF2A1A50);
+  static const Color profileHeaderEnd = Color(0xFF1A1030);
+
   // ─── Info ───
   static const Color infoBlue = Color(0xFF42A5F5);
   static const Color locationBlue = Color(0xFF007AFF);

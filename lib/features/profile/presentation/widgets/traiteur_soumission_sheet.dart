@@ -52,23 +52,23 @@ class _SoumissionSheetState extends State<_SoumissionSheet> {
   bool _loadingForfaits = true;
 
   static const _eventTypes = [
-    'Wedding',
-    'Birthday',
-    'Corporate',
+    'Mariage',
+    'Anniversaire',
+    'Corporatif',
     'Baby shower',
     'Graduation',
     'Gala',
-    'Other',
+    'Autre',
   ];
 
   static const _dietaryOptions = [
     '🥩 Standard',
-    '🥬 Vegetarian',
-    '🌱 Vegan',
-    '🚫 Gluten-free',
-    '🥜 Nut-free',
+    '🥬 Végétarien',
+    '🌱 Végane',
+    '🚫 Sans gluten',
+    '🥜 Sans noix',
     '🐟 Halal',
-    '✡️ Kosher',
+    '✡️ Casher',
   ];
 
   double get _forfaitPrice => _selectedForfait?.pricePerPerson ?? 0;
@@ -116,7 +116,7 @@ class _SoumissionSheetState extends State<_SoumissionSheet> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           backgroundColor: AppColors.error,
-          content: Text('Please enter the number of guests',
+          content: Text('Veuillez entrer le nombre d\'invités',
               style: TextStyle(color: AppColors.blanc)),
         ),
       );
@@ -154,7 +154,7 @@ class _SoumissionSheetState extends State<_SoumissionSheet> {
           SnackBar(
             backgroundColor: AppColors.success,
             content: Text(
-              'Quote request sent! Response in 24-48h.',
+              'Demande de devis envoyée ! Réponse sous 24-48h.',
               style: TextStyle(color: AppColors.blanc),
             ),
           ),
@@ -206,7 +206,7 @@ class _SoumissionSheetState extends State<_SoumissionSheet> {
             child: Row(
               children: [
                 Text(
-                  '📋 Request a Quote',
+                  '📋 Demander un devis',
                   style: GoogleFonts.dmSans(
                     fontSize: 16,
                     fontWeight: FontWeight.w700,
@@ -228,7 +228,7 @@ class _SoumissionSheetState extends State<_SoumissionSheet> {
               padding: EdgeInsets.fromLTRB(20, 16, 20, 20 + bottomInset),
               children: [
                 // Event type
-                _buildLabel('Event type'),
+                _buildLabel('Type d\'événement'),
                 const SizedBox(height: 6),
                 _buildDropdown(
                   value: _eventType,
@@ -239,11 +239,11 @@ class _SoumissionSheetState extends State<_SoumissionSheet> {
                 const SizedBox(height: 16),
 
                 // Guest count
-                _buildLabel('Number of guests'),
+                _buildLabel('Nombre d\'invités'),
                 const SizedBox(height: 6),
                 _buildTextField(
                   controller: _guestsCtrl,
-                  hint: 'E.g. 50',
+                  hint: 'Ex. 50',
                   keyboardType: TextInputType.number,
                   onChanged: (_) => setState(() {}),
                 ),
@@ -258,26 +258,26 @@ class _SoumissionSheetState extends State<_SoumissionSheet> {
                 const SizedBox(height: 16),
 
                 // Time
-                _buildLabel('Time'),
+                _buildLabel('Heure'),
                 const SizedBox(height: 6),
                 _buildTimePicker(),
 
                 const SizedBox(height: 16),
 
                 // Location
-                _buildLabel('Location'),
+                _buildLabel('Lieu'),
                 const SizedBox(height: 6),
                 AddressAutocompleteField(
                   controller: _locationCtrl,
                   label: '',
-                  hint: 'Address or venue',
+                  hint: 'Adresse ou lieu',
                   fillColor: AppColors.fond,
                 ),
 
                 const SizedBox(height: 16),
 
                 // Package (dynamic from catering_forfaits)
-                _buildLabel('Package'),
+                _buildLabel('Forfait'),
                 const SizedBox(height: 6),
                 if (_loadingForfaits)
                   const Padding(
@@ -303,7 +303,7 @@ class _SoumissionSheetState extends State<_SoumissionSheet> {
                       border: Border.all(color: AppColors.border),
                     ),
                     child: Text(
-                      'No packages available — custom quote',
+                      'Aucun forfait disponible — devis personnalisé',
                       style: GoogleFonts.dmSans(
                         fontSize: 13,
                         color: AppColors.grisInactif,
@@ -320,14 +320,14 @@ class _SoumissionSheetState extends State<_SoumissionSheet> {
                 const SizedBox(height: 6),
                 _buildTextField(
                   controller: _budgetCtrl,
-                  hint: 'E.g. \$2,000',
+                  hint: 'Ex. 2 000 \$',
                   keyboardType: TextInputType.number,
                 ),
 
                 const SizedBox(height: 16),
 
                 // Dietary preferences
-                _buildLabel('Dietary preferences'),
+                _buildLabel('Préférences alimentaires'),
                 const SizedBox(height: 8),
                 _DietaryChips(
                   options: _dietaryOptions,
@@ -350,7 +350,7 @@ class _SoumissionSheetState extends State<_SoumissionSheet> {
                 const SizedBox(height: 6),
                 _buildTextField(
                   controller: _notesCtrl,
-                  hint: 'Details, theme, special requests...',
+                  hint: 'Détails, thème, demandes spéciales...',
                   maxLines: 3,
                 ),
 
@@ -392,7 +392,7 @@ class _SoumissionSheetState extends State<_SoumissionSheet> {
                               ),
                             )
                           : Text(
-                              'Submit Quote Request',
+                              'Envoyer la demande de devis',
                               style: GoogleFonts.dmSans(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w700,
@@ -717,12 +717,12 @@ class _DepositPreview extends StatelessWidget {
       ),
       child: Column(
         children: [
-          _PreviewLine(label: 'Package', value: forfaitName),
+          _PreviewLine(label: 'Forfait', value: forfaitName),
           const SizedBox(height: 6),
-          _PreviewLine(label: 'Guests', value: '$guestCount people'),
+          _PreviewLine(label: 'Invités', value: '$guestCount personnes'),
           const SizedBox(height: 6),
           _PreviewLine(
-            label: 'Estimated total',
+            label: 'Total estimé',
             value: '\$${totalEstimate.toStringAsFixed(0)}',
           ),
           const SizedBox(height: 8),
@@ -732,7 +732,7 @@ class _DepositPreview extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Deposit 30%',
+                'Acompte 30%',
                 style: GoogleFonts.dmSans(
                   fontSize: 12,
                   fontWeight: FontWeight.w600,

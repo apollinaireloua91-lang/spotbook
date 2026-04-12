@@ -186,7 +186,7 @@ class _SocialLinkBottomSheetState extends State<SocialLinkBottomSheet> {
           SocialPlatformBrandIcon(platform: p, size: 32),
           const SizedBox(height: 12),
           Text(
-            'Link ${p.label}',
+            'Lier ${p.label}',
             style: TextStyle(
               color: AppColors.blanc,
               fontSize: 18,
@@ -195,7 +195,7 @@ class _SocialLinkBottomSheetState extends State<SocialLinkBottomSheet> {
           ),
           const SizedBox(height: 6),
           Text(
-            'Paste your ${p.label} profile link',
+            'Collez le lien de votre profil ${p.label}',
             style: TextStyle(color: AppColors.gris, fontSize: 13),
           ),
           const SizedBox(height: 20),
@@ -246,7 +246,7 @@ class _SocialLinkBottomSheetState extends State<SocialLinkBottomSheet> {
                     ),
                   ),
                   child: Text(
-                    'Cancel',
+                    'Annuler',
                     style: TextStyle(color: AppColors.gris, fontSize: 14),
                   ),
                 ),
@@ -270,7 +270,7 @@ class _SocialLinkBottomSheetState extends State<SocialLinkBottomSheet> {
                     elevation: 0,
                   ),
                   child: const Text(
-                    'Save',
+                    'Enregistrer',
                     style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
                   ),
                 ),
@@ -318,7 +318,7 @@ class AddSocialPlatformSheet extends StatelessWidget {
           ),
           const SizedBox(height: 20),
           Text(
-            'ADD A NETWORK',
+            'AJOUTER UN RÉSEAU',
             style: TextStyle(
               color: AppColors.gris,
               fontSize: 11,
@@ -331,7 +331,7 @@ class AddSocialPlatformSheet extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 24),
               child: Text(
-                'All networks have been added.',
+                'Tous les réseaux ont été ajoutés.',
                 style: TextStyle(color: AppColors.gris, fontSize: 13),
               ),
             )

@@ -59,7 +59,7 @@ class _ProviderPublicVideoScreenState extends State<ProviderPublicVideoScreen> {
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         leading: Semantics(
-          label: 'Back',
+          label: 'Retour',
           child: IconButton(
             icon: Container(
               padding: const EdgeInsets.all(8),

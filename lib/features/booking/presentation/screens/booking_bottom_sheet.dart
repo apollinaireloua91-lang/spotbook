@@ -35,28 +35,28 @@ Future<void> showBookingSheet(
 const _stepLabels = [
   'Service',
   'Date',
-  'Time',
-  'Summary',
-  'Payment',
-  'Confirmed',
+  'Heure',
+  'Résumé',
+  'Paiement',
+  'Confirmé',
 ];
 
 const _months = [
-  'January',
-  'February',
-  'March',
-  'April',
-  'May',
-  'June',
-  'July',
-  'August',
-  'September',
-  'October',
-  'November',
-  'December',
+  'Janvier',
+  'Février',
+  'Mars',
+  'Avril',
+  'Mai',
+  'Juin',
+  'Juillet',
+  'Août',
+  'Septembre',
+  'Octobre',
+  'Novembre',
+  'Décembre',
 ];
 
-const _daysShort = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+const _daysShort = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
 
 // ─── Main sheet ──────────────────────────────────────────
 
@@ -423,15 +423,15 @@ class _Step1Services extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const _StepHeader(
-          title: 'Choose a service',
-          subtitle: 'Select the desired service',
+          title: 'Choisir un service',
+          subtitle: 'Sélectionnez le service souhaité',
         ),
         if (state.isLoading)
           const _ShimmerList()
         else if (state.services.isEmpty)
           _EmptyState(
             icon: Icons.content_cut,
-            message: 'No services available',
+            message: 'Aucun service disponible',
           )
         else
           ListView.separated(
@@ -503,7 +503,7 @@ class _Step1Services extends ConsumerWidget {
                       style: GoogleFonts.dmSans(color: AppColors.blanc),
                       textCapitalization: TextCapitalization.characters,
                       decoration: InputDecoration(
-                        hintText: 'Enter a code',
+                        hintText: 'Entrer un code',
                         hintStyle: GoogleFonts.dmSans(color: AppColors.gris),
                         filled: true,
                         fillColor: AppColors.surfaceAlt,
@@ -540,7 +540,7 @@ class _Step1Services extends ConsumerWidget {
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Text(
-                        state.promoApplied ? 'Applied ✓' : 'Apply',
+                        state.promoApplied ? 'Appliqué ✓' : 'Appliquer',
                         style: GoogleFonts.dmSans(
                           color: state.promoApplied
                               ? AppColors.success
@@ -779,8 +779,8 @@ class _Step2CalendarState extends ConsumerState<_Step2Calendar> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _StepHeader(
-          title: 'Choose a date',
-          subtitle: 'Available days are highlighted',
+          title: 'Choisir une date',
+          subtitle: 'Les jours disponibles sont mis en évidence',
           onBack: () =>
               ref.read(bookingFlowProvider.notifier).previousStep(),
         ),
@@ -951,7 +951,7 @@ class _Step3Slots extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _StepHeader(
-          title: 'Choose a time slot',
+          title: 'Choisir un créneau',
           subtitle: dateLabel,
           onBack: () =>
               ref.read(bookingFlowProvider.notifier).previousStep(),
@@ -987,7 +987,7 @@ class _Step3Slots extends ConsumerWidget {
         else if (state.timeSlots.isEmpty)
           _EmptyState(
             icon: Icons.event_busy,
-            message: 'No slots available for this date',
+            message: 'Aucun créneau disponible pour cette date',
           )
         else
           GridView.builder(
@@ -1086,8 +1086,8 @@ class _Step4Summary extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _StepHeader(
-          title: 'Summary',
-          subtitle: 'Review your booking details',
+          title: 'Résumé',
+          subtitle: 'Vérifiez les détails de votre réservation',
           onBack: () =>
               ref.read(bookingFlowProvider.notifier).previousStep(),
         ),
@@ -1396,10 +1396,10 @@ class _Step5Payment extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _StepHeader(
-          title: 'Payment',
+          title: 'Paiement',
           subtitle: (() {
             final fee = (ref.read(appConfigProvider).value ?? AppConfig.fallback).serviceFeeClient;
-            return 'Pay now: ${(state.depositPrice + fee).toStringAsFixed(2)} CA\$';
+            return 'À payer maintenant : ${(state.depositPrice + fee).toStringAsFixed(2)} CA\$';
           })(),
           onBack: () =>
               ref.read(bookingFlowProvider.notifier).previousStep(),
@@ -1478,7 +1478,7 @@ class _Step5Payment extends ConsumerWidget {
               return Column(
                 children: [
                   _PriceRow(
-                    label: 'Service total',
+                    label: 'Total du service',
                     value: '${state.totalPrice.toStringAsFixed(2)} CA\$',
                   ),
                   const SizedBox(height: 6),
@@ -1666,7 +1666,7 @@ class _Step6Confirmation extends StatelessWidget {
         ),
         const SizedBox(height: 20),
         Text(
-          'Booking confirmed!',
+          'Réservation confirmée !',
           style: GoogleFonts.sora(
             color: AppColors.blanc,
             fontSize: 22,
@@ -1694,7 +1694,7 @@ class _Step6Confirmation extends StatelessWidget {
           child: Column(
             children: [
               Text(
-                'Booking code',
+                'Code de réservation',
                 style: GoogleFonts.dmSans(
                   color: AppColors.blanc.withAlpha(200),
                   fontSize: 12,
@@ -1798,7 +1798,7 @@ class _Step6Confirmation extends StatelessWidget {
                 Icon(Icons.calendar_today, color: AppColors.blanc, size: 16),
                 const SizedBox(width: 8),
                 Text(
-                  'Add to calendar',
+                  'Ajouter au calendrier',
                   style: GoogleFonts.dmSans(
                     color: AppColors.blanc,
                     fontSize: 15,
@@ -1812,7 +1812,7 @@ class _Step6Confirmation extends StatelessWidget {
         const SizedBox(height: 12),
 
         _CtaButton(
-          label: 'Close',
+          label: 'Fermer',
           onPressed: () => Navigator.of(context).pop(),
         ),
       ],

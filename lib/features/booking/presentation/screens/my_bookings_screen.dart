@@ -97,7 +97,7 @@ class _MyBookingsScreenState extends ConsumerState<MyBookingsScreen>
           ),
         ),
         title: Text(
-          'My Bookings',
+          'Mes réservations',
           style: GoogleFonts.sora(
             color: AppColors.blanc,
             fontSize: 20,
@@ -134,7 +134,7 @@ class _MyBookingsScreenState extends ConsumerState<MyBookingsScreen>
                   ),
                   const SizedBox(width: 4),
                   Text(
-                    'Filter',
+                    'Filtrer',
                     style: GoogleFonts.dmSans(
                       color: _filter.isActive
                           ? AppColors.violet
@@ -169,7 +169,7 @@ class _MyBookingsScreenState extends ConsumerState<MyBookingsScreen>
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Text('Upcoming'),
+                  const Text('À venir'),
                   if (bookingsState.upcoming.isNotEmpty) ...[
                     const SizedBox(width: 6),
                     Container(
@@ -194,12 +194,12 @@ class _MyBookingsScreenState extends ConsumerState<MyBookingsScreen>
                 ],
               ),
             ),
-            const Tab(text: 'Past'),
+            const Tab(text: 'Passés'),
             Tab(
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Text('Tickets'),
+                  const Text('Billets'),
                   if (ticketsState.tickets.isNotEmpty) ...[
                     const SizedBox(width: 6),
                     Container(
@@ -283,9 +283,9 @@ class _UpcomingTab extends StatelessWidget {
       return _EmptyBookingsState(
         onRefresh: onRefresh,
         icon: Icons.calendar_month_outlined,
-        title: 'No upcoming bookings',
-        subtitle: 'Book a service to see\nyour appointments here',
-        actionLabel: 'Discover Pros',
+        title: 'Aucune réservation à venir',
+        subtitle: 'Réservez un service pour voir\nvos rendez-vous ici',
+        actionLabel: 'Découvrir des pros',
         onAction: () => GoRouter.of(context).go('/client/discover'),
       );
     }
@@ -335,8 +335,8 @@ class _PastTab extends ConsumerWidget {
       return _EmptyBookingsState(
         onRefresh: onRefresh,
         icon: Icons.history_rounded,
-        title: 'No past bookings',
-        subtitle: 'Your completed appointments\nwill appear here',
+        title: 'Aucune réservation passée',
+        subtitle: 'Vos rendez-vous terminés\napparaîtront ici',
       );
     }
 
@@ -403,10 +403,10 @@ class _TicketsTab extends StatelessWidget {
       return _EmptyBookingsState(
         onRefresh: onRefresh,
         icon: Icons.confirmation_number_outlined,
-        title: 'No tickets yet',
-        subtitle: 'Discover events and buy tickets\nto find them here',
+        title: 'Aucun billet',
+        subtitle: 'Découvrez des événements et achetez\ndes billets pour les retrouver ici',
         accentColor: AppColors.rose,
-        actionLabel: 'Browse events',
+        actionLabel: 'Parcourir les événements',
         onAction: () => GoRouter.of(context).go('/client/discover'),
       );
     }

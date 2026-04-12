@@ -225,7 +225,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
     if (current == 0) {
       if (!_step1Key.currentState!.validate()) return;
       if (_passwordCtrl.text != _confirmCtrl.text) {
-        _showError('Passwords do not match.');
+        _showError('Les mots de passe ne correspondent pas.');
         return;
       }
     } else if (current == 1) {
@@ -314,7 +314,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
               child: Row(
                 children: [
                   Semantics(
-                    label: 'Back',
+                    label: 'Retour',
                     child: IconButton(
                       onPressed: _prevStep,
                       icon: Container(
@@ -330,7 +330,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                   ),
                   const Spacer(),
                   Text(
-                    'Step ${s.currentStep + 1}/$_totalSteps',
+                    'Étape ${s.currentStep + 1}/$_totalSteps',
                     style: GoogleFonts.dmSans(
                       color: AppColors.gris,
                       fontSize: 13,
@@ -378,11 +378,11 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                 onTap: () => context.go('/login'),
                 child: RichText(
                   text: TextSpan(
-                    text: 'Already have an account? ',
+                    text: 'Déjà un compte ? ',
                     style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 14),
                     children: [
                       TextSpan(
-                        text: 'Sign in',
+                        text: 'Se connecter',
                         style: GoogleFonts.dmSans(
                           color: AppColors.violetClair,
                           fontWeight: FontWeight.w600,
@@ -430,14 +430,14 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
           onNext: _nextStep,
         ),
         _Step3Categories(
-          title: 'What are you interested in?',
+          title: 'Qu\'est-ce qui vous intéresse ?',
           subtitle:
-              'Select categories to personalize your feed.',
+              'Sélectionnez des catégories pour personnaliser votre feed.',
           selectedCategories: s.selectedCategories,
           onToggle: ref.read(_signUpProvider.notifier).toggleCategory,
           onSubmit: _submit,
           isLoading: s.isLoading,
-          buttonLabel: 'Create my account',
+          buttonLabel: 'Créer mon compte',
         ),
       ];
     } else {
@@ -471,14 +471,14 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
           onNext: _nextStep,
         ),
         _Step3Categories(
-          title: 'What services do you offer?',
+          title: 'Quels services offrez-vous ?',
           subtitle:
-              'Select the categories of your services.',
+              'Sélectionnez les catégories de vos services.',
           selectedCategories: s.selectedCategories,
           onToggle: ref.read(_signUpProvider.notifier).toggleCategory,
           onSubmit: _nextStep,
           isLoading: false,
-          buttonLabel: 'Next',
+          buttonLabel: 'Suivant',
         ),
         _Step4ProPhoto(
           onSubmit: _submit,
@@ -530,7 +530,7 @@ class _Step1EmailPassword extends StatelessWidget {
           children: [
             const SizedBox(height: 28),
             Text(
-              'Create your account',
+              'Créer votre compte',
               style: GoogleFonts.sora(
                 color: AppColors.blanc,
                 fontSize: 26,
@@ -540,7 +540,7 @@ class _Step1EmailPassword extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              'Join the Spotbook community.',
+              'Rejoignez la communauté Spotbook.',
               style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 15),
             ),
             const SizedBox(height: 28),
@@ -566,7 +566,7 @@ class _Step1EmailPassword extends StatelessWidget {
                         size: 24, color: AppColors.fond),
                     const SizedBox(width: 10),
                     Text(
-                      'Sign in with Google',
+                      'Se connecter avec Google',
                       style: GoogleFonts.dmSans(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
@@ -591,7 +591,7 @@ class _Step1EmailPassword extends StatelessWidget {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content: const Text(
-                                  'Apple Sign In — coming soon (v1.1)'),
+                                  'Apple Sign In — bientôt disponible (v1.1)'),
                               backgroundColor: AppColors.surface,
                               behavior: SnackBarBehavior.floating,
                               shape: RoundedRectangleBorder(
@@ -614,7 +614,7 @@ class _Step1EmailPassword extends StatelessWidget {
                           size: 24, color: AppColors.blanc),
                       const SizedBox(width: 10),
                       Text(
-                        'Continue with Apple',
+                        'Continuer avec Apple',
                         style: GoogleFonts.dmSans(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
@@ -637,7 +637,7 @@ class _Step1EmailPassword extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: Text(
-                    'or',
+                    'ou',
                     style: GoogleFonts.dmSans(
                         color: AppColors.gris.withAlpha(180), fontSize: 13),
                   ),
@@ -651,20 +651,20 @@ class _Step1EmailPassword extends StatelessWidget {
 
             _SignUpField(
               controller: emailCtrl,
-              label: 'Email address',
+              label: 'Adresse e-mail',
               hint: 'name@example.com',
               icon: Icons.mail_outline_rounded,
               keyboardType: TextInputType.emailAddress,
               validator: (v) {
-                if (v == null || v.isEmpty) return 'Required';
-                if (!v.contains('@')) return 'Invalid email';
+                if (v == null || v.isEmpty) return 'Requis';
+                if (!v.contains('@')) return 'E-mail invalide';
                 return null;
               },
             ),
             const SizedBox(height: 16),
             _SignUpField(
               controller: passwordCtrl,
-              label: 'Password',
+              label: 'Mot de passe',
               hint: '••••••••',
               icon: Icons.lock_outline_rounded,
               obscureText: obscurePassword,
@@ -679,14 +679,14 @@ class _Step1EmailPassword extends StatelessWidget {
                 ),
               ),
               validator: (v) {
-                if (v == null || v.length < 6) return 'Min. 6 characters';
+                if (v == null || v.length < 6) return 'Min. 6 caractères';
                 return null;
               },
             ),
             const SizedBox(height: 16),
             _SignUpField(
               controller: confirmCtrl,
-              label: 'Confirm password',
+              label: 'Confirmer le mot de passe',
               hint: '••••••••',
               icon: Icons.lock_outline_rounded,
               obscureText: obscureConfirm,
@@ -702,12 +702,12 @@ class _Step1EmailPassword extends StatelessWidget {
                 ),
               ),
               validator: (v) {
-                if (v == null || v.isEmpty) return 'Required';
+                if (v == null || v.isEmpty) return 'Requis';
                 return null;
               },
             ),
             const SizedBox(height: 28),
-            _StepButton(label: 'Next', onPressed: onNext),
+            _StepButton(label: 'Suivant', onPressed: onNext),
           ],
         ),
       ),
@@ -745,7 +745,7 @@ class _Step2ClientProfile extends StatelessWidget {
           children: [
             const SizedBox(height: 28),
             Text(
-              'Your information',
+              'Vos informations',
               style: GoogleFonts.sora(
                 color: AppColors.blanc,
                 fontSize: 26,
@@ -755,37 +755,37 @@ class _Step2ClientProfile extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              'How would you like to be known?',
+              'Comment souhaitez-vous être connu ?',
               style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 15),
             ),
             const SizedBox(height: 28),
             _SignUpField(
               controller: nameCtrl,
-              label: 'Full name',
+              label: 'Nom complet',
               hint: 'John Doe',
               icon: Icons.person_outline_rounded,
-              validator: (v) => (v == null || v.isEmpty) ? 'Required' : null,
+              validator: (v) => (v == null || v.isEmpty) ? 'Requis' : null,
             ),
             const SizedBox(height: 16),
             _SignUpField(
               controller: usernameCtrl,
-              label: 'Username',
+              label: 'Nom d\'utilisateur',
               hint: '@johndoe',
               icon: Icons.alternate_email_rounded,
               textInputAction: TextInputAction.done,
-              validator: (v) => (v == null || v.isEmpty) ? 'Required' : null,
+              validator: (v) => (v == null || v.isEmpty) ? 'Requis' : null,
             ),
             const SizedBox(height: 16),
             AddressAutocompleteField(
               controller: addressCtrl,
-              label: 'Address',
-              hint: 'Start typing your address...',
+              label: 'Adresse',
+              hint: 'Commencez à taper votre adresse...',
               icon: Icons.location_on_outlined,
               fillColor: AppColors.surface,
               onPlaceSelected: onPlaceSelected,
             ),
             const SizedBox(height: 28),
-            _StepButton(label: 'Next', onPressed: onNext),
+            _StepButton(label: 'Suivant', onPressed: onNext),
           ],
         ),
       ),
@@ -825,7 +825,7 @@ class _Step2ProProfile extends StatelessWidget {
           children: [
             const SizedBox(height: 28),
             Text(
-              'Your Pro profile',
+              'Votre profil Pro',
               style: GoogleFonts.sora(
                 color: AppColors.blanc,
                 fontSize: 26,
@@ -835,46 +835,46 @@ class _Step2ProProfile extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              'Introduce yourself to your future clients.',
+              'Présentez-vous à vos futurs clients.',
               style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 15),
             ),
             const SizedBox(height: 28),
             _SignUpField(
               controller: nameCtrl,
-              label: 'Full name',
+              label: 'Nom complet',
               hint: 'John Doe',
               icon: Icons.person_outline_rounded,
-              validator: (v) => (v == null || v.isEmpty) ? 'Required' : null,
+              validator: (v) => (v == null || v.isEmpty) ? 'Requis' : null,
             ),
             const SizedBox(height: 16),
             _SignUpField(
               controller: businessCtrl,
-              label: 'Business name',
+              label: 'Nom de l\'entreprise',
               hint: 'Doe Studio',
               icon: Icons.store_outlined,
-              validator: (v) => (v == null || v.isEmpty) ? 'Required' : null,
+              validator: (v) => (v == null || v.isEmpty) ? 'Requis' : null,
             ),
             const SizedBox(height: 16),
             _SignUpField(
               controller: phoneCtrl,
-              label: 'Phone number',
+              label: 'Numéro de téléphone',
               hint: '+1 (555) 000-0000',
               icon: Icons.phone_outlined,
               keyboardType: TextInputType.phone,
               textInputAction: TextInputAction.done,
-              validator: (v) => (v == null || v.isEmpty) ? 'Required' : null,
+              validator: (v) => (v == null || v.isEmpty) ? 'Requis' : null,
             ),
             const SizedBox(height: 16),
             AddressAutocompleteField(
               controller: addressCtrl,
-              label: 'Business address',
-              hint: 'Start typing your address…',
+              label: 'Adresse de l\'entreprise',
+              hint: 'Commencez à taper votre adresse…',
               icon: Icons.location_on_outlined,
               fillColor: AppColors.surfaceAuth,
               onPlaceSelected: onPlaceSelected,
             ),
             const SizedBox(height: 28),
-            _StepButton(label: 'Next', onPressed: onNext),
+            _StepButton(label: 'Suivant', onPressed: onNext),
           ],
         ),
       ),
@@ -1075,7 +1075,7 @@ class _Step4ProPhotoState extends State<_Step4ProPhoto> {
         children: [
           const SizedBox(height: 28),
           Text(
-            'Profile photo',
+            'Photo de profil',
             style: GoogleFonts.sora(
               color: AppColors.blanc,
               fontSize: 26,
@@ -1085,7 +1085,7 @@ class _Step4ProPhotoState extends State<_Step4ProPhoto> {
           ),
           const SizedBox(height: 8),
           Text(
-            'Add a photo to build trust with your clients.',
+            'Ajoutez une photo pour inspirer confiance à vos clients.',
             style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 15),
           ),
           const SizedBox(height: 40),
@@ -1123,7 +1123,7 @@ class _Step4ProPhotoState extends State<_Step4ProPhoto> {
                                   color: AppColors.gris, size: 36),
                               const SizedBox(height: 8),
                               Text(
-                                'Add',
+                                'Ajouter',
                                 style: GoogleFonts.dmSans(
                                     color: AppColors.gris, fontSize: 13),
                               ),
@@ -1156,7 +1156,7 @@ class _Step4ProPhotoState extends State<_Step4ProPhoto> {
           const SizedBox(height: 40),
 
           _StepButton(
-            label: 'Create my account',
+            label: 'Créer mon compte',
             onPressed: widget.onSubmit,
             isLoading: widget.isLoading,
           ),
@@ -1165,7 +1165,7 @@ class _Step4ProPhotoState extends State<_Step4ProPhoto> {
             child: GestureDetector(
               onTap: widget.onSkip,
               child: Text(
-                'Skip for now',
+                'Passer pour le moment',
                 style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 14),
               ),
             ),
