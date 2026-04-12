@@ -72,6 +72,7 @@ class ProSchedulingRepository {
     String? depositType,
     double? depositValue,
   }) async {
+    await _supabase.auth.refreshSession();
     final uid = _uid;
     if (uid == null) throw Exception('Non connecté');
 

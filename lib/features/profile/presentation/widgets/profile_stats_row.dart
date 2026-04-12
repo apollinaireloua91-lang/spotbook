@@ -34,25 +34,25 @@ class ProfileStatsRow extends StatelessWidget {
           children: [
             _StatItem(
                 value: totalRdv,
-                label: 'Bookings',
+                label: 'RDV',
                 icon: Icons.calendar_today_rounded,
                 color: AppColors.violet),
             _Divider(),
             _StatItem(
                 value: totalFollowing,
-                label: 'Following',
+                label: 'Abonnements',
                 icon: Icons.people_outline_rounded,
                 color: AppColors.rose),
             _Divider(),
             _StatItem(
                 value: totalEvents,
-                label: 'Events',
+                label: 'Événements',
                 icon: Icons.confirmation_number_outlined,
                 color: AppColors.violetClair),
             _Divider(),
             _StatItem(
                 value: totalReviews,
-                label: 'Reviews',
+                label: 'Avis',
                 icon: Icons.star_outline_rounded,
                 color: AppColors.starGold),
           ],

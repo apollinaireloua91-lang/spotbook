@@ -113,7 +113,7 @@ class _BackButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Semantics(
-      label: 'Back',
+      label: 'Retour',
       child: IconButton(
         icon: Container(
           padding: const EdgeInsets.all(8),
@@ -224,7 +224,7 @@ class _PremiumProfileScaffoldState
                 contentPadding: EdgeInsets.zero,
                 leading:
                     Icon(Icons.flag_outlined, color: AppColors.blanc),
-                title: Text('Report',
+                title: Text('Signaler',
                     style: GoogleFonts.dmSans(color: AppColors.blanc)),
                 onTap: () {
                   Navigator.of(ctx).pop();
@@ -235,7 +235,7 @@ class _PremiumProfileScaffoldState
               ListTile(
                 contentPadding: EdgeInsets.zero,
                 leading: Icon(Icons.block, color: AppColors.error),
-                title: Text('Block',
+                title: Text('Bloquer',
                     style: GoogleFonts.dmSans(color: AppColors.error)),
                 onTap: () {
                   Navigator.of(ctx).pop();
@@ -297,11 +297,11 @@ class _PremiumProfileScaffoldState
                           fontSize: 13,
                         ),
                         tabs: [
-                          const Tab(text: 'Videos'),
+                          const Tab(text: 'Vidéos'),
                           const Tab(text: 'Services'),
                           if (isTraiteur) const Tab(text: 'Menu'),
-                          const Tab(text: 'Reviews'),
-                          const Tab(text: 'Events'),
+                          const Tab(text: 'Avis'),
+                          const Tab(text: 'Événements'),
                         ],
                       ),
                     ),
@@ -572,33 +572,56 @@ class _PremiumProfileScaffoldState
               // ─── Stats row ───
               _StatsRow(proId: p.id, reviewsCount: p.reviewsCount),
 
-              // ─── Social links — prominent card ───
+              // ─── Social links — prominent trust card ───
               if (p.socialConnections.isNotEmpty) ...[
                 const SizedBox(height: 16),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: Container(
                     width: double.infinity,
-                    padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+                    padding: const EdgeInsets.all(2),
                     decoration: BoxDecoration(
-                      color: AppColors.surface,
-                      borderRadius: BorderRadius.circular(14),
-                      border: Border.all(color: AppColors.border, width: 0.5),
+                      borderRadius: BorderRadius.circular(16),
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          AppColors.violet.withAlpha(80),
+                          AppColors.rose.withAlpha(60),
+                          AppColors.violet.withAlpha(40),
+                        ],
+                      ),
                     ),
-                    child: Column(
-                      children: [
-                        Text(
-                          'My socials',
-                          style: GoogleFonts.dmSans(
-                            color: AppColors.gris,
-                            fontSize: 11,
-                            fontWeight: FontWeight.w600,
-                            letterSpacing: 0.6,
+                    child: Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+                      decoration: BoxDecoration(
+                        color: AppColors.surface,
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      child: Column(
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.verified_outlined,
+                                  color: AppColors.violetClair, size: 14),
+                              const SizedBox(width: 6),
+                              Text(
+                                'Réseaux sociaux',
+                                style: GoogleFonts.dmSans(
+                                  color: AppColors.violetClair,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w700,
+                                  letterSpacing: 0.3,
+                                ),
+                              ),
+                            ],
                           ),
-                        ),
-                        const SizedBox(height: 12),
-                        SocialLinksRow(connections: p.socialConnections),
-                      ],
+                          const SizedBox(height: 14),
+                          SocialLinksRow(connections: p.socialConnections),
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -633,7 +656,7 @@ class _PremiumProfileScaffoldState
                     // Follow
                     Expanded(
                       child: _ActionButton(
-                        label: _isFollowed ? 'Following' : 'Follow',
+                        label: _isFollowed ? 'Abonné' : 'Suivre',
                         icon: _isFollowed
                             ? Icons.check_rounded
                             : Icons.person_add_outlined,
@@ -799,11 +822,11 @@ class _StatsRow extends ConsumerWidget {
       ),
       child: Row(
         children: [
-          _StatItem(value: '$videosCount', label: 'Videos'),
+          _StatItem(value: '$videosCount', label: 'Vidéos'),
           _statDivider(),
-          _StatItem(value: '$reviewsCount', label: 'Reviews'),
+          _StatItem(value: '$reviewsCount', label: 'Avis'),
           _statDivider(),
-          const _StatItem(value: '—', label: 'Bookings'),
+          const _StatItem(value: '—', label: 'RDV'),
         ],
       ),
     );
@@ -935,7 +958,7 @@ class _BookButton extends StatelessWidget {
                 color: AppColors.blanc, size: 16),
             const SizedBox(width: 8),
             Text(
-              'Book',
+              'Réserver',
               style: GoogleFonts.dmSans(
                 color: AppColors.blanc,
                 fontSize: 14,
@@ -994,7 +1017,7 @@ class _PersistentBookingBar extends StatelessWidget {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      'Available services',
+                      'Services disponibles',
                       style: GoogleFonts.dmSans(
                         color: AppColors.gris.withAlpha(180),
                         fontSize: 12,
@@ -1021,7 +1044,7 @@ class _PersistentBookingBar extends StatelessWidget {
                     ],
                   ),
                   child: Text(
-                    'Book',
+                    'Réserver',
                     style: GoogleFonts.dmSans(
                       color: AppColors.blanc,
                       fontSize: 15,

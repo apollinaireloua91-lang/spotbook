@@ -63,6 +63,7 @@ class EventRepository {
     String? address,
     int totalCapacity = 0,
   }) async {
+    await _supabase.auth.refreshSession();
     final uid = currentUserId;
     if (uid == null) throw Exception('Not authenticated');
 

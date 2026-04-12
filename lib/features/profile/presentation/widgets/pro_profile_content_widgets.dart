@@ -147,7 +147,7 @@ class ProServiceCard extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           SpotbookButton.primary(
-            label: 'Book',
+            label: 'Réserver',
             onPressed: () {
               HapticFeedback.mediumImpact();
               showBookingSheet(

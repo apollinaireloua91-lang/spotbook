@@ -165,7 +165,7 @@ class _ProfileHeroState extends State<ProfileHero>
               Icon(Icons.diamond_outlined, color: AppColors.violetClair, size: 13),
               const SizedBox(width: 5),
               Text(
-                'Spotbook Member',
+                'Membre Spotbook',
                 style: GoogleFonts.dmSans(
                   color: AppColors.violetClair,
                   fontSize: 11,
@@ -192,7 +192,7 @@ class _ProfileHeroState extends State<ProfileHero>
                   ),
                 )
               : Text(
-                  'Tap to add a bio',
+                  'Ajoutez votre bio',
                   style: GoogleFonts.dmSans(
                     color: AppColors.grisInactif,
                     fontSize: 13,

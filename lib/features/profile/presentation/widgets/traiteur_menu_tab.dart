@@ -31,7 +31,7 @@ class TraiteurMenuTab extends StatelessWidget {
               const Text('\uD83C\uDF7D', style: TextStyle(fontSize: 48)),
               const SizedBox(height: 16),
               Text(
-                'No menu available',
+                'Aucun menu disponible',
                 style: GoogleFonts.dmSans(
                   color: AppColors.gris,
                   fontSize: 16,
