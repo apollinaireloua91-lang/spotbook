@@ -153,27 +153,34 @@ class _ClientPostPageState extends State<ClientPostPage> {
             ),
           ),
 
-          // ─── Play/Pause — small 36px top-LEFT ───
+          // ─── Play/Pause — tappable 42px circle top-LEFT ───
           if (_showPlayPauseIcon || _isPaused)
             Positioned(
-              top: MediaQuery.paddingOf(context).top + 56,
+              top: MediaQuery.paddingOf(context).top + 12,
               left: 16,
-              child: AnimatedOpacity(
-                opacity: _showPlayPauseIcon ? 1.0 : (_isPaused ? 0.5 : 0.0),
-                duration: const Duration(milliseconds: 200),
-                child: Container(
-                  width: 36,
-                  height: 36,
-                  decoration: BoxDecoration(
-                    color: Colors.black.withAlpha(102), // 40% opacity
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Icon(
-                    _isPaused
-                        ? Icons.play_arrow_rounded
-                        : Icons.pause_rounded,
-                    color: Colors.white,
-                    size: 20,
+              child: GestureDetector(
+                onTap: _onSingleTap,
+                child: AnimatedOpacity(
+                  opacity: _showPlayPauseIcon ? 1.0 : 0.7,
+                  duration: const Duration(milliseconds: 300),
+                  child: Container(
+                    width: 42,
+                    height: 42,
+                    decoration: BoxDecoration(
+                      color: Colors.black.withAlpha(110),
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: Colors.white.withAlpha(40),
+                        width: 0.5,
+                      ),
+                    ),
+                    child: Icon(
+                      _isPaused
+                          ? Icons.play_arrow_rounded
+                          : Icons.pause_rounded,
+                      color: Colors.white,
+                      size: 22,
+                    ),
                   ),
                 ),
               ),

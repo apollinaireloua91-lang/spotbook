@@ -74,7 +74,7 @@ class ProShell extends StatelessWidget {
               onTap: () => _goBranch(3),
             ),
             _ProNavItem(
-              label: 'Profile',
+              label: 'Profil',
               icon: Icons.person_outline,
               activeIcon: Icons.person,
               selected: currentIndex == 4,

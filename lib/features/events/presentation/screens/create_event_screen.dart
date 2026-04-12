@@ -11,6 +11,7 @@ import 'package:intl/intl.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../data/event_notifier.dart';
 import '../../data/event_repository.dart';
+import 'pro_my_events_screen.dart';
 
 // ═════════════════════════════════════════════════════════════════════════════
 // STATE
@@ -104,6 +105,7 @@ class _CreateNotifier extends Notifier<_CreateState> {
       }
 
       ref.invalidate(eventsProvider);
+      ref.invalidate(proEventsByProIdProvider);
       state = state.copyWith(isCreating: false);
     } catch (_) {
       state = state.copyWith(isCreating: false);

@@ -67,7 +67,7 @@ class ProCalendarHubScreen extends ConsumerWidget {
                               label: 'Disponibilités',
                               onTap: () {
                                 HapticFeedback.lightImpact();
-                                context.push('/pro/profile/availability');
+                                context.push('/pro/availability');
                               },
                             ),
                           ),
@@ -78,7 +78,7 @@ class ProCalendarHubScreen extends ConsumerWidget {
                               label: 'Services & tarifs',
                               onTap: () {
                                 HapticFeedback.lightImpact();
-                                context.push('/pro/profile/services');
+                                context.push('/pro/services');
                               },
                             ),
                           ),
@@ -86,13 +86,32 @@ class ProCalendarHubScreen extends ConsumerWidget {
                       ),
                     ),
                     const SizedBox(height: 12),
-                    SpotbookButton.outlined(
-                      label: 'Create an event',
-                      icon: Icons.event_outlined,
-                      onPressed: () {
-                        HapticFeedback.lightImpact();
-                        context.push('/create-event');
-                      },
+                    IntrinsicHeight(
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: _HubActionCard(
+                              icon: Icons.event_outlined,
+                              label: 'Créer événement',
+                              onTap: () {
+                                HapticFeedback.lightImpact();
+                                context.push('/create-event');
+                              },
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: _HubActionCard(
+                              icon: Icons.qr_code_scanner_rounded,
+                              label: 'Scanner QR',
+                              onTap: () {
+                                HapticFeedback.lightImpact();
+                                context.push('/pro/scanner-picker');
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),

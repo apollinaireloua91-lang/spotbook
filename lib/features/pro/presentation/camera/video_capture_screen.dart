@@ -124,7 +124,7 @@ class _VideoCaptureScreenState extends State<VideoCaptureScreen> {
                 ),
                 const SizedBox(height: 10),
                 Text(
-                  'Pick a video from your gallery to showcase your service. Max 5 minutes.',
+                  'Pick a video from your gallery to showcase your service. Max 2 minutes.',
                   style: GoogleFonts.dmSans(
                     color: AppColors.gris,
                     fontSize: 14,

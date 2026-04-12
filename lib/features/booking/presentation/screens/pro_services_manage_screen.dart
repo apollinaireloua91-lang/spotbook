@@ -474,11 +474,21 @@ class ProServicesManageScreen extends ConsumerWidget {
                       isLoading: ref.read(proServicesNotifierProvider).saving,
                       onPressed: () async {
                         final name = nameCtrl.text.trim();
-                        if (name.length < 2) return;
+                        if (name.length < 2) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Le nom du service doit faire au moins 2 caractères')),
+                          );
+                          return;
+                        }
                         final price = double.tryParse(
                           priceCtrl.text.replaceAll(',', '.'),
                         );
-                        if (price == null || price <= 0) return;
+                        if (price == null || price <= 0) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Veuillez entrer un prix valide')),
+                          );
+                          return;
+                        }
 
                         // Resolve deposit value.
                         final isDeposit = paymentMode == 'deposit';
@@ -494,7 +504,12 @@ class ProServicesManageScreen extends ConsumerWidget {
                             depValue = double.tryParse(
                               fixedAmountCtrl.text.replaceAll(',', '.'),
                             );
-                            if (depValue == null || depValue <= 0) return;
+                            if (depValue == null || depValue <= 0) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text('Veuillez entrer un montant d\'acompte valide')),
+                              );
+                              return;
+                            }
                             legacyPct = (depValue / price).clamp(0.10, 1.0);
                           }
                         }
@@ -528,7 +543,19 @@ class ProServicesManageScreen extends ConsumerWidget {
                                 depositType: depType,
                                 depositValue: depValue,
                               );
-                        if (ok && context.mounted) context.pop();
+                        if (context.mounted) {
+                          if (ok) {
+                            context.pop();
+                          } else {
+                            final err = ref.read(proServicesNotifierProvider).error;
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(err ?? 'Failed to save service'),
+                                backgroundColor: AppColors.error,
+                              ),
+                            );
+                          }
+                        }
                       },
                     ),
                     const SizedBox(height: 8),
