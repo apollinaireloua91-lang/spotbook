@@ -43,7 +43,7 @@ class _SearchHeaderState extends State<SearchHeader> {
           Row(
             children: [
               Text(
-                'Discover',
+                'Découvrir',
                 style: GoogleFonts.dmSans(
                   fontSize: 20,
                   fontWeight: FontWeight.w700,
@@ -150,7 +150,7 @@ class _SearchHeaderState extends State<SearchHeader> {
                                   MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
-                                  'Filters',
+                                  'Filtres',
                                   style: GoogleFonts.dmSans(
                                     fontSize: 16,
                                     fontWeight: FontWeight.w700,
@@ -180,7 +180,7 @@ class _SearchHeaderState extends State<SearchHeader> {
                               padding: const EdgeInsets.all(16),
                               children: [
                                 // Distance
-                                Text('Maximum distance',
+                                Text('Distance maximale',
                                     style: GoogleFonts.dmSans(
                                         fontSize: 12,
                                         fontWeight: FontWeight.w600,
@@ -210,7 +210,7 @@ class _SearchHeaderState extends State<SearchHeader> {
                                 ),
                                 const SizedBox(height: 20),
                                 // Note minimum
-                                Text('Minimum rating',
+                                Text('Note minimale',
                                     style: GoogleFonts.dmSans(
                                         fontSize: 12,
                                         fontWeight: FontWeight.w600,
@@ -241,7 +241,7 @@ class _SearchHeaderState extends State<SearchHeader> {
                                 ),
                                 const SizedBox(height: 20),
                                 // Prix
-                                Text('Price range',
+                                Text('Gamme de prix',
                                     style: GoogleFonts.dmSans(
                                         fontSize: 12,
                                         fontWeight: FontWeight.w600,
@@ -271,7 +271,7 @@ class _SearchHeaderState extends State<SearchHeader> {
                                 ),
                                 const SizedBox(height: 20),
                                 // Disponibilité
-                                Text('Availability',
+                                Text('Disponibilité',
                                     style: GoogleFonts.dmSans(
                                         fontSize: 12,
                                         fontWeight: FontWeight.w600,
@@ -280,9 +280,9 @@ class _SearchHeaderState extends State<SearchHeader> {
                                 Wrap(
                                   spacing: 8,
                                   children: [
-                                    'Online now',
+                                    'En ligne',
                                     'Dispo aujourd\'hui',
-                                    'Available this week',
+                                    'Dispo cette semaine',
                                   ]
                                       .map((label) => Container(
                                             padding: const EdgeInsets.symmetric(
@@ -317,7 +317,7 @@ class _SearchHeaderState extends State<SearchHeader> {
                                           borderRadius:
                                               BorderRadius.circular(14)),
                                     ),
-                                    child: Text('Apply filters',
+                                    child: Text('Appliquer',
                                         style: GoogleFonts.dmSans(
                                             color: AppColors.blanc,
                                             fontWeight: FontWeight.w700,
@@ -400,7 +400,7 @@ class _ViewModeToggle extends StatelessWidget {
                     Expanded(
                       child: Center(
                         child: Text(
-                          'Map',
+                          'Carte',
                           style: GoogleFonts.dmSans(
                             fontSize: 11,
                             fontWeight: FontWeight.w600,
@@ -414,7 +414,7 @@ class _ViewModeToggle extends StatelessWidget {
                     Expanded(
                       child: Center(
                         child: Text(
-                          'List',
+                          'Liste',
                           style: GoogleFonts.dmSans(
                             fontSize: 11,
                             fontWeight: FontWeight.w600,

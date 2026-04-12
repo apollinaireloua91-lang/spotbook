@@ -38,34 +38,25 @@ class ProListCard extends StatelessWidget {
                 height: 52,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(14),
-                  gradient: pro.avatarUrl == null
-                      ? LinearGradient(
-                          colors: [catColor, catColor.withValues(alpha: 0.6)],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        )
-                      : null,
+                  gradient: LinearGradient(
+                    colors: [catColor, catColor.withValues(alpha: 0.6)],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
                 ),
-                child: pro.avatarUrl != null
+                child: pro.avatarUrl != null && pro.avatarUrl!.isNotEmpty
                     ? ClipRRect(
                         borderRadius: BorderRadius.circular(14),
                         child: CachedNetworkImage(
                           imageUrl: pro.avatarUrl!,
                           fit: BoxFit.cover,
+                          width: 52,
+                          height: 52,
+                          placeholder: (_, __) => _ProInitial(name: pro.name),
+                          errorWidget: (_, __, ___) => _ProInitial(name: pro.name),
                         ),
                       )
-                    : Center(
-                        child: Text(
-                          pro.name.isNotEmpty
-                              ? pro.name[0].toUpperCase()
-                              : '?',
-                          style: GoogleFonts.sora(
-                            fontSize: 22,
-                            fontWeight: FontWeight.w700,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
+                    : _ProInitial(name: pro.name),
               ),
               const SizedBox(width: 12),
 
@@ -148,6 +139,25 @@ class ProListCard extends StatelessWidget {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class _ProInitial extends StatelessWidget {
+  const _ProInitial({required this.name});
+  final String name;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Text(
+        name.isNotEmpty ? name[0].toUpperCase() : '?',
+        style: GoogleFonts.sora(
+          fontSize: 22,
+          fontWeight: FontWeight.w700,
+          color: Colors.white,
         ),
       ),
     );
