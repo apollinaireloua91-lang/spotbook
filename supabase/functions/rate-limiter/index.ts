@@ -7,7 +7,7 @@ import {
   securityHeaders,
 } from "../_shared/security.ts";
 
-const VALID_TYPES = ["login", "signup", "otp", "payment"];
+const VALID_TYPES = ["login", "signup", "otp", "payment", "upload", "booking"];
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -47,7 +47,7 @@ serve(async (req) => {
     }
 
     const result = await checkRateLimit({
-      scope: type as "login" | "signup" | "otp" | "payment",
+      scope: type as "login" | "signup" | "otp" | "payment" | "upload" | "booking",
       key,
     });
 

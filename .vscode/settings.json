@@ -1,6 +1,0 @@
-{
-  "deno.enable": false,
-  "deno.enablePaths": ["supabase/functions"],
-  "deno.unstable": ["bare-node-builtins"],
-  "deno.importMap": "supabase/functions/import_map.json"
-}

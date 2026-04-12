@@ -49,15 +49,16 @@ class AuthRepository {
     double? latitude,
     double? longitude,
   }) async {
-    final limiter = await _supabase.functions.invoke(
-      'rate-limiter',
-      body: {'scope': 'signup', 'identifier': email.toLowerCase()},
-    );
-    if (limiter.status == 429) {
-      final message =
-          (limiter.data as Map<String, dynamic>?)?['message'] as String? ??
-              'Too many attempts. Try again later.';
-      throw AuthException(message);
+    try {
+      await _supabase.functions.invoke(
+        'rate-limiter',
+        body: {'type': 'signup', 'email': email.toLowerCase()},
+      );
+    } on FunctionException catch (e) {
+      if (e.status == 429) {
+        throw AuthException('Too many attempts. Try again later.');
+      }
+      // Non-429 rate-limiter errors are non-critical — proceed with signup
     }
 
     try {
@@ -88,15 +89,15 @@ class AuthRepository {
     required String password,
   }) async {
     try {
-      final limiter = await _supabase.functions.invoke(
-        'rate-limiter',
-        body: {'scope': 'login', 'identifier': email.toLowerCase()},
-      );
-      if (limiter.status == 429) {
-        final message =
-            (limiter.data as Map<String, dynamic>?)?['message'] as String? ??
-                'Too many attempts. Try again later.';
-        throw AuthException(message);
+      try {
+        await _supabase.functions.invoke(
+          'rate-limiter',
+          body: {'type': 'login', 'email': email.toLowerCase()},
+        );
+      } on FunctionException catch (e) {
+        if (e.status == 429) {
+          throw AuthException('Too many attempts. Try again later.');
+        }
       }
 
       final response = await _supabase.auth.signInWithPassword(
@@ -177,15 +178,15 @@ class AuthRepository {
   }
 
   Future<void> resetPassword(String email) async {
-    final limiter = await _supabase.functions.invoke(
-      'rate-limiter',
-      body: {'scope': 'otp', 'identifier': email.toLowerCase()},
-    );
-    if (limiter.status == 429) {
-      final message = (limiter.data as Map<String, dynamic>?)?['message']
-              as String? ??
-          'Too many attempts. Try again later.';
-      throw AuthException(message);
+    try {
+      await _supabase.functions.invoke(
+        'rate-limiter',
+        body: {'type': 'otp', 'email': email.toLowerCase()},
+      );
+    } on FunctionException catch (e) {
+      if (e.status == 429) {
+        throw AuthException('Too many attempts. Try again later.');
+      }
     }
     await _supabase.auth.resetPasswordForEmail(
       email,
@@ -314,15 +315,15 @@ class AuthRepository {
   }
 
   Future<void> signInWithMagicLink(String email) async {
-    final limiter = await _supabase.functions.invoke(
-      'rate-limiter',
-      body: {'scope': 'otp', 'identifier': email.toLowerCase()},
-    );
-    if (limiter.status == 429) {
-      final message = (limiter.data as Map<String, dynamic>?)?['message']
-              as String? ??
-          'Too many attempts. Try again later.';
-      throw AuthException(message);
+    try {
+      await _supabase.functions.invoke(
+        'rate-limiter',
+        body: {'type': 'otp', 'email': email.toLowerCase()},
+      );
+    } on FunctionException catch (e) {
+      if (e.status == 429) {
+        throw AuthException('Too many attempts. Try again later.');
+      }
     }
     await _supabase.auth.signInWithOtp(
       email: email,

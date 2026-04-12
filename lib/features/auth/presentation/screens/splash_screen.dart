@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 import 'package:video_player/video_player.dart';
 
 import '../../../../shared/theme/app_colors.dart';
@@ -69,10 +68,8 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
       final repo = ref.read(authRepositoryProvider);
 
       if (!repo.hasActiveSession) {
-        final box = Hive.box('settings');
-        final seen = box.get('onboarding_seen', defaultValue: false) == true;
         if (!mounted) return;
-        context.go(seen ? '/login' : '/onboarding');
+        context.go('/onboarding');
         return;
       }
 

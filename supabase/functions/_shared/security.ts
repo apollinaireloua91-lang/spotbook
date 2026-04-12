@@ -96,7 +96,7 @@ export function getClientIp(req: Request) {
 }
 
 type RateLimitInput = {
-  scope: "login" | "signup" | "otp" | "payment" | "upload";
+  scope: "login" | "signup" | "otp" | "payment" | "upload" | "booking";
   key: string;
 };
 
@@ -107,6 +107,7 @@ const LIMITS: Record<RateLimitInput["scope"], { max: number; windowMs: number }>
     otp: { max: 3, windowMs: 10 * 60 * 1000 },
     payment: { max: 3, windowMs: 60 * 60 * 1000 },
     upload: { max: 20, windowMs: 60 * 60 * 1000 },
+    booking: { max: 5, windowMs: 60 * 1000 },
   };
 
 export async function checkRateLimit(input: RateLimitInput) {
