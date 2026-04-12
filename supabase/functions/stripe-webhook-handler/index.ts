@@ -155,6 +155,7 @@ serve(async (req) => {
             body: `Votre achat de ${quantity} billet(s) pour ${eventTitle} est confirmé.`,
             resource_id: eventId,
             data: { ticket_type_id: ticketTypeId, quantity },
+            idempotency_key: `${event.id}:ticket_purchased:${userId}`,
           });
 
           // Notify pro/organizer
@@ -166,6 +167,7 @@ serve(async (req) => {
               body: `${quantity} billet(s) vendu(s) pour ${eventTitle}.`,
               resource_id: eventId,
               data: { ticket_type_id: ticketTypeId, quantity, buyer_id: userId },
+              idempotency_key: `${event.id}:ticket_sold:${eventData.pro_id}`,
             });
           }
 
@@ -252,6 +254,7 @@ serve(async (req) => {
               title: "Réservation confirmée",
               body: `Votre réservation ${booking.booking_code} est confirmée.`,
               resource_id: bookingId,
+              idempotency_key: `${event.id}:booking_confirmed:${booking.client_id}`,
             },
             {
               user_id: booking.pro_id,
@@ -259,6 +262,7 @@ serve(async (req) => {
               title: "Nouveau RDV",
               body: `Nouvelle réservation ${booking.booking_code} reçue.`,
               resource_id: bookingId,
+              idempotency_key: `${event.id}:new_booking:${booking.pro_id}`,
             },
           ]);
 
@@ -277,14 +281,14 @@ serve(async (req) => {
               time: slot?.start_time ?? "",
               bookingCode: booking.booking_code,
               amount: booking.deposit_amount
-                ? (Number(booking.deposit_amount) / 100).toFixed(2)
+                ? Number(booking.deposit_amount).toFixed(2)
                 : "",
             });
 
             // Payment receipt email
             await sendEmail("payment_receipt", clientEmail, {
               amount: booking.deposit_amount
-                ? (Number(booking.deposit_amount) / 100).toFixed(2)
+                ? Number(booking.deposit_amount).toFixed(2)
                 : "0",
               currency: pi.currency?.toUpperCase() ?? "CAD",
               description: `Acompte — ${service?.name ?? "Réservation"}`,
@@ -337,6 +341,7 @@ serve(async (req) => {
             title: "Paiement échoué",
             body: `Le paiement pour ${booking.booking_code} a échoué. Le créneau a été libéré.`,
             resource_id: bookingId,
+            idempotency_key: `${event.id}:payment_failed:${booking.client_id}`,
           });
         }
         break;
@@ -378,6 +383,7 @@ serve(async (req) => {
             title: "Remboursement effectué",
             body: `Le remboursement pour ${booking.booking_code} a été traité.`,
             resource_id: booking.id,
+            idempotency_key: `${event.id}:refund_completed:${booking.client_id}`,
           });
 
           // Email — booking cancelled with refund
@@ -390,7 +396,7 @@ serve(async (req) => {
               serviceName: refundService?.name ?? "Service",
               bookingCode: booking.booking_code,
               refundAmount: booking.deposit_amount
-                ? (Number(booking.deposit_amount) / 100).toFixed(2)
+                ? Number(booking.deposit_amount).toFixed(2)
                 : undefined,
             });
           }

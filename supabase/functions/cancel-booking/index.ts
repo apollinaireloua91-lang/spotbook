@@ -42,10 +42,10 @@ serve(async (req) => {
       return jsonResponse({ error: "bookingId doit être un UUID valide" }, 400);
     }
 
-    // Fetch booking
+    // Fetch booking with service cancellation policy
     const { data: booking, error: bErr } = await supabase
       .from("bookings")
-      .select("*, time_slots(*)")
+      .select("*, time_slots(*), services(cancellation_policy)")
       .eq("id", bookingId)
       .single();
     if (bErr || !booking) {
@@ -73,59 +73,73 @@ serve(async (req) => {
     const hoursUntil =
       (slotDate.getTime() - Date.now()) / (1000 * 60 * 60);
 
-    let newStatus: string;
+    // Determine cancellation policy: flexible (>12h), moderate (>24h / 50%), strict (no refund)
+    const policy = (booking.services as Record<string, unknown> | null)?.cancellation_policy as string ?? "flexible";
 
-    if (hoursUntil > 48) {
-      // Full refund via Stripe
-      const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") ?? "", {
-        apiVersion: "2023-10-16",
+    let newStatus: string;
+    let refundAmount = 0;
+
+    const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") ?? "", {
+      apiVersion: "2023-10-16",
+    });
+
+    if (policy === "strict") {
+      // Strict: no refund regardless of timing
+      newStatus = "cancelled_no_refund";
+      refundAmount = 0;
+    } else if (policy === "moderate") {
+      if (hoursUntil > 24) {
+        // Moderate >24h: full refund
+        newStatus = "cancelled_full_refund";
+        refundAmount = booking.deposit_amount;
+      } else {
+        // Moderate ≤24h: 50% kept by pro
+        newStatus = "cancelled_partial_refund";
+        refundAmount = Math.round(booking.deposit_amount * 0.5 * 100) / 100;
+      }
+    } else {
+      // Flexible (default): >12h = full refund, ≤12h = no refund
+      if (hoursUntil > 12) {
+        newStatus = "cancelled_full_refund";
+        refundAmount = booking.deposit_amount;
+      } else {
+        newStatus = "cancelled_no_refund";
+        refundAmount = 0;
+      }
+    }
+
+    // Process refund via Stripe if applicable
+    if (refundAmount > 0 && booking.stripe_payment_intent_id) {
+      const refundAmountCents = Math.round(refundAmount * 100);
+      await stripe.refunds.create({
+        payment_intent: booking.stripe_payment_intent_id,
+        amount: refundAmountCents,
       });
 
-      if (booking.stripe_payment_intent_id) {
-        await stripe.refunds.create({
-          payment_intent: booking.stripe_payment_intent_id,
+      // Transfer Reversal to reclaim pro payout
+      if (booking.transfer_id) {
+        await stripe.transfers.createReversal(booking.transfer_id, {
+          amount: refundAmountCents,
         });
-
-        // Transfer Reversal to reclaim pro payout
-        if (booking.transfer_id) {
-          await stripe.transfers.createReversal(booking.transfer_id);
-        }
       }
 
-      newStatus = "cancelled_full_refund";
-      await supabase
-        .from("bookings")
-        .update({
-          status: newStatus,
-          refund_amount: booking.deposit_amount,
-          refund_status: "refunded",
-        })
-        .eq("id", bookingId);
       await supabase.rpc("log_audit_action", {
         p_user_id: user.id,
         p_action: "refund_initiated",
         p_resource_type: "booking",
         p_resource_id: bookingId,
-        p_metadata: { refund_amount: booking.deposit_amount },
+        p_metadata: { refund_amount: refundAmount, policy },
       });
-      await supabase.rpc("log_audit_action", {
-        p_user_id: user.id,
-        p_action: "refund_completed",
-        p_resource_type: "booking",
-        p_resource_id: bookingId,
-      });
-    } else {
-      // No refund — pro keeps deposit
-      newStatus = "cancelled_no_refund";
-      await supabase
-        .from("bookings")
-        .update({
-          status: newStatus,
-          refund_amount: 0,
-          refund_status: "no_refund",
-        })
-        .eq("id", bookingId);
     }
+
+    await supabase
+      .from("bookings")
+      .update({
+        status: newStatus,
+        refund_amount: refundAmount,
+        refund_status: refundAmount > 0 ? "refunded" : "no_refund",
+      })
+      .eq("id", bookingId);
     await supabase.rpc("log_audit_action", {
       p_user_id: user.id,
       p_action: "booking_cancelled",

@@ -67,7 +67,7 @@ serve(async (req) => {
       apiVersion: "2023-10-16",
     });
 
-    const commissionRate = pro.commission_rate ?? 0.12;
+    const commissionRate = pro.commission_rate ?? 0.18;
     const proAmount = booking.deposit_amount * (1 - commissionRate);
     if (!isValidAmount(Number(proAmount))) {
       return jsonResponse({ error: "amount invalide" }, 400, undefined, req);

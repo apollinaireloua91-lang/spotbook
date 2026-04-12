@@ -135,7 +135,7 @@ serve(async (req) => {
         400
       );
     }
-    const commissionRate = pro?.commission_rate ?? 0.12;
+    const commissionRate = pro?.commission_rate ?? 0.18;
     const applicationFee = Math.round(amountCents * commissionRate);
 
     const paymentIntentParams: Record<string, unknown> = {

@@ -82,24 +82,32 @@ class NotificationRepository {
     final uid = _uid;
     if (uid == null) return;
 
-    await _supabase
-        .from('users')
-        .update({'fcm_token': token})
-        .eq('id', uid);
+    try {
+      await _supabase
+          .from('users')
+          .update({'fcm_token': token})
+          .eq('id', uid);
+    } catch (_) {
+      // Silently fail — will retry on next app launch.
+    }
   }
 
   Future<int> getUnreadCount() async {
     final uid = _uid;
     if (uid == null) return 0;
 
-    final result = await _supabase
-        .from('notifications')
-        .select()
-        .eq('user_id', uid)
-        .eq('is_read', false)
-        .count(CountOption.exact);
+    try {
+      final result = await _supabase
+          .from('notifications')
+          .select()
+          .eq('user_id', uid)
+          .eq('is_read', false)
+          .count(CountOption.exact);
 
-    return result.count;
+      return result.count;
+    } catch (_) {
+      return 0;
+    }
   }
 
   /// Returns unread counts grouped by type category for Pro notification dots.

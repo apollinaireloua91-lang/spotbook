@@ -219,7 +219,7 @@ class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
                 leading: Icon(Icons.flag_outlined, color: AppColors.blanc),
                 title: Text('Report', style: TextStyle(color: AppColors.blanc)),
                 onTap: () {
-                  Navigator.of(ctx).pop();
+                  ctx.pop();
                   showReportSheet(
                     context,
                     targetId: widget.video.id,
@@ -232,7 +232,7 @@ class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
                 leading: Icon(Icons.block, color: AppColors.error),
                 title: Text('Block this pro', style: TextStyle(color: AppColors.error)),
                 onTap: () {
-                  Navigator.of(ctx).pop();
+                  ctx.pop();
                   showBlockConfirmDialog(
                     context,
                     ref: ref,
@@ -474,7 +474,7 @@ class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
                                     width: 18,
                                     height: 18,
                                     decoration: BoxDecoration(
-                                      color: const Color(0xFF8039C5),
+                                      color: AppColors.violet,
                                       shape: BoxShape.circle,
                                       border: Border.all(
                                           color: Colors.white, width: 2),
@@ -514,7 +514,7 @@ class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
                             : Icons.bookmark_outline,
                         label: '',
                         color: widget.video.isSaved
-                            ? const Color(0xFF8039C5)
+                            ? AppColors.violet
                             : Colors.white,
                         onTap: _toggleSave,
                       ),

@@ -284,7 +284,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
     if (_isClient) {
       context.go('/complete-profile');
     } else {
-      context.go('/pro/dashboard');
+      context.go('/pro/business-details');
     }
   }
 

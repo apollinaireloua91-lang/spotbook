@@ -116,7 +116,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       case 'client':
         context.go('/client/feed');
       case 'pro':
-        context.go('/pro/dashboard');
+        context.go('/pro/feed');
       default:
         context.go('/select-account-type');
     }

@@ -43,7 +43,6 @@ DO $$ BEGIN
       FOR INSERT
       WITH CHECK (
         auth.role() = 'service_role'::text
-        OR auth.uid() IS NOT NULL
       );
   END IF;
 END $$;
