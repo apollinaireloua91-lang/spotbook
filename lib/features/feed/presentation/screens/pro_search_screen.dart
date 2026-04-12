@@ -287,7 +287,7 @@ class _ProPopularCard extends StatelessWidget {
                           )
                         : null,
                   ),
-                  child: pro.avatarUrl != null
+                  child: pro.avatarUrl != null && pro.avatarUrl!.isNotEmpty
                       ? ClipRRect(
                           borderRadius: BorderRadius.circular(14),
                           child: CachedNetworkImage(
@@ -295,18 +295,11 @@ class _ProPopularCard extends StatelessWidget {
                             fit: BoxFit.cover,
                             width: 48,
                             height: 48,
+                            placeholder: (_, __) => _ProInitial(name: pro.displayName),
+                            errorWidget: (_, __, ___) => _ProInitial(name: pro.displayName),
                           ),
                         )
-                      : Center(
-                          child: Text(
-                            pro.displayName[0].toUpperCase(),
-                            style: GoogleFonts.sora(
-                              fontSize: 20,
-                              fontWeight: FontWeight.w700,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
+                      : _ProInitial(name: pro.displayName),
                 ),
               ),
             ),
@@ -354,6 +347,25 @@ class _ProPopularCard extends StatelessWidget {
                 ),
               ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _ProInitial extends StatelessWidget {
+  const _ProInitial({required this.name});
+  final String name;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Text(
+        name.isNotEmpty ? name[0].toUpperCase() : '?',
+        style: GoogleFonts.sora(
+          fontSize: 20,
+          fontWeight: FontWeight.w700,
+          color: Colors.white,
         ),
       ),
     );
@@ -463,10 +475,10 @@ final _trendingEventsProvider = FutureProvider.autoDispose<List<Map<String, dyna
 
 final _trendingPostsProvider = FutureProvider.autoDispose<List<Map<String, dynamic>>>((ref) async {
   final data = await Supabase.instance.client
-      .from('posts')
+      .from('videos')
       .select('''
-        id, title, thumbnail_url, views_count, likes_count, created_at,
-        profiles_pro!pro_id(display_name, category)
+        id, title, thumbnail_url, cloudflare_thumbnail_url, views_count, likes_count, created_at,
+        users!pro_id(full_name, avatar_url, profiles_pro(business_name, category))
       ''')
       .eq('status', 'approved')
       .order('created_at', ascending: false)
@@ -659,12 +671,14 @@ class _InspirationVideoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final thumb = post['thumbnail_url'] as String?;
+    final thumb = (post['cloudflare_thumbnail_url'] as String?)
+        ?? (post['thumbnail_url'] as String?);
     final title = post['title'] as String? ?? '';
     final views = post['views_count'] as int? ?? 0;
     final likes = post['likes_count'] as int? ?? 0;
-    final pro = post['profiles_pro'] as Map<String, dynamic>?;
-    final category = pro?['category'] as String? ?? '';
+    final user = post['users'] as Map<String, dynamic>?;
+    final profilesPro = user?['profiles_pro'] as Map<String, dynamic>?;
+    final category = profilesPro?['category'] as String? ?? '';
 
     return GestureDetector(
       onTap: () => context.push('/pro/feed'),
