@@ -758,229 +758,1145 @@ abstract class AppLocalizations {
   /// **'Track added: {track}'**
   String spotifySheetTrackAdded(String track);
 
-  // ── Common ──
+  /// No description provided for @a11yBack.
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
   String get a11yBack;
+
+  /// No description provided for @buttonContinue.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
   String get buttonContinue;
+
+  /// No description provided for @buttonNext.
+  ///
+  /// In en, this message translates to:
+  /// **'Next'**
   String get buttonNext;
-  String get fieldRequired;
 
-  // ── Auth: Login ──
-  String get authWelcomeBack;
-  String get authLoginSubtitle;
-  String get authEmailHint;
-  String get authErrorEmptyFields;
-  String get authErrorEnterEmail;
-  String get authMagicLinkSent;
-  String get authMagicLinkSending;
-  String get authMagicLink;
-  String get authForgotPassword;
-  String get authOrContinueWith;
-  String get authContinueApple;
-  String get authAppleComingSoon;
-  String get authNoAccountPrefix;
-
-  // ── Auth: Account Type Selection ──
-  String get authWelcomeTitle;
-  String get authSelectAccountType;
-  String get authRoleClient;
-  String get authRoleClientSubtitle;
-  String get authRoleClientDescription;
-  String get authRolePro;
-  String get authRoleProSubtitle;
-  String get authRoleProDescription;
-  String get authAlreadyHaveAccount;
-
-  // ── Auth: Forgot / Reset Password ──
-  String get authForgotPasswordTitle;
-  String get authForgotPasswordSubtitle;
-  String get authEmailRequired;
-  String get authEmailInvalid;
-  String get authErrorTooManyAttempts;
-  String get authErrorGenericEmail;
-  String get authResetPassword;
-  String get authRememberPassword;
-  String get fieldEmail;
-  String get authEmailSent;
-  String get authCheckInbox;
-  String get authCheckSpam;
-  String get authResending;
-  String get authResendLink;
-  String get authBackToLogin;
-  String get authResetLinkResent;
-  String get authNewPasswordTitle;
-  String get authNewPasswordSubtitle;
-  String get authNewPasswordHint;
-  String get authMinPassword;
-  String get authConfirmPasswordHint;
-  String get authPasswordMismatch;
-  String get authPasswordUpdated;
-  String get authUpdatePassword;
-
-  // ── Auth: Sign Up ──
-  String authStepLabel(int current, int total);
-  String get authPasswordsDontMatch;
-  String get authWhatInterests;
-  String get authSelectCategoriesForFeed;
-  String get authCreateMyAccount;
-  String get authWhatServicesOffer;
-  String get authSelectServiceCategories;
-  String get authSignInWithGoogle;
-  String get authCreateAccountTitle;
-  String get authJoinCommunity;
-  String get fieldFullName;
-  String get fieldFullNameHint;
-  String get fieldUsername;
-  String get fieldAddress;
-  String get fieldAddressHint;
-  String get authYourInfo;
-  String get authHowKnown;
-  String get authYourProProfile;
-  String get authPresentYourself;
-  String get authMinSixChars;
-  String get fieldConfirmPassword;
-
-  // ── Complete Profile ──
-  String get completeProfileUploadFailed;
-  String get completeProfileSaveFailed;
-  String get completeProfileAccountCreated;
-  String get completeProfileTitle;
-  String get completeProfileSubtitle;
-  String get completeProfileBioHint;
+  /// No description provided for @skipForNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip for now'**
   String get skipForNow;
 
-  // ── Location Permission ──
-  String get locationPermTitle;
-  String get locationPermSubtitle;
-  String get locationPermAllow;
+  /// No description provided for @notNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Not now'**
   String get notNow;
-  String get locationPermPrivacy;
 
-  // ── Client Interest Categories ──
+  /// No description provided for @fieldRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'This field is required'**
+  String get fieldRequired;
+
+  /// No description provided for @fieldEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get fieldEmail;
+
+  /// No description provided for @fieldFullName.
+  ///
+  /// In en, this message translates to:
+  /// **'Full name'**
+  String get fieldFullName;
+
+  /// No description provided for @fieldFullNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'John Doe'**
+  String get fieldFullNameHint;
+
+  /// No description provided for @fieldUsername.
+  ///
+  /// In en, this message translates to:
+  /// **'Username'**
+  String get fieldUsername;
+
+  /// No description provided for @fieldAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'Address'**
+  String get fieldAddress;
+
+  /// No description provided for @fieldAddressHint.
+  ///
+  /// In en, this message translates to:
+  /// **'123 Main St, City'**
+  String get fieldAddressHint;
+
+  /// No description provided for @fieldConfirmPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm password'**
+  String get fieldConfirmPassword;
+
+  /// No description provided for @authWelcomeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome to Spotbook'**
+  String get authWelcomeTitle;
+
+  /// No description provided for @authSelectAccountType.
+  ///
+  /// In en, this message translates to:
+  /// **'Select your account type'**
+  String get authSelectAccountType;
+
+  /// No description provided for @authRoleClient.
+  ///
+  /// In en, this message translates to:
+  /// **'Client'**
+  String get authRoleClient;
+
+  /// No description provided for @authRoleClientSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Find & book services'**
+  String get authRoleClientSubtitle;
+
+  /// No description provided for @authRoleClientDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Discover professionals, book appointments, and attend events near you.'**
+  String get authRoleClientDescription;
+
+  /// No description provided for @authRolePro.
+  ///
+  /// In en, this message translates to:
+  /// **'Professional'**
+  String get authRolePro;
+
+  /// No description provided for @authRoleProSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Grow your business'**
+  String get authRoleProSubtitle;
+
+  /// No description provided for @authRoleProDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Showcase your work, manage bookings, and reach new clients.'**
+  String get authRoleProDescription;
+
+  /// No description provided for @authAlreadyHaveAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Already have an account? Log in'**
+  String get authAlreadyHaveAccount;
+
+  /// No description provided for @authWelcomeBack.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome back'**
+  String get authWelcomeBack;
+
+  /// No description provided for @authLoginSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to your account'**
+  String get authLoginSubtitle;
+
+  /// No description provided for @authEmailHint.
+  ///
+  /// In en, this message translates to:
+  /// **'your@email.com'**
+  String get authEmailHint;
+
+  /// No description provided for @authForgotPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Forgot password?'**
+  String get authForgotPassword;
+
+  /// No description provided for @authOrContinueWith.
+  ///
+  /// In en, this message translates to:
+  /// **'or continue with'**
+  String get authOrContinueWith;
+
+  /// No description provided for @authContinueApple.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue with Apple'**
+  String get authContinueApple;
+
+  /// No description provided for @authAppleComingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Apple Sign In coming soon'**
+  String get authAppleComingSoon;
+
+  /// No description provided for @authNoAccountPrefix.
+  ///
+  /// In en, this message translates to:
+  /// **'No account? Sign up'**
+  String get authNoAccountPrefix;
+
+  /// No description provided for @authErrorEmptyFields.
+  ///
+  /// In en, this message translates to:
+  /// **'Please fill in all fields'**
+  String get authErrorEmptyFields;
+
+  /// No description provided for @authErrorEnterEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter your email'**
+  String get authErrorEnterEmail;
+
+  /// No description provided for @authMagicLinkSent.
+  ///
+  /// In en, this message translates to:
+  /// **'Magic link sent! Check your email.'**
+  String get authMagicLinkSent;
+
+  /// No description provided for @authMagicLinkSending.
+  ///
+  /// In en, this message translates to:
+  /// **'Sending...'**
+  String get authMagicLinkSending;
+
+  /// No description provided for @authMagicLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Send magic link'**
+  String get authMagicLink;
+
+  /// No description provided for @authEmailRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Email is required'**
+  String get authEmailRequired;
+
+  /// No description provided for @authEmailInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a valid email'**
+  String get authEmailInvalid;
+
+  /// No description provided for @authForgotPasswordTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Forgot password'**
+  String get authForgotPasswordTitle;
+
+  /// No description provided for @authForgotPasswordSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your email and we\'ll send you a reset link.'**
+  String get authForgotPasswordSubtitle;
+
+  /// No description provided for @authResetPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset password'**
+  String get authResetPassword;
+
+  /// No description provided for @authRememberPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Remember your password? Log in'**
+  String get authRememberPassword;
+
+  /// No description provided for @authResetLinkResent.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset link resent'**
+  String get authResetLinkResent;
+
+  /// No description provided for @authEmailSent.
+  ///
+  /// In en, this message translates to:
+  /// **'Email sent!'**
+  String get authEmailSent;
+
+  /// No description provided for @authCheckInbox.
+  ///
+  /// In en, this message translates to:
+  /// **'Check your inbox for the reset link.'**
+  String get authCheckInbox;
+
+  /// No description provided for @authCheckSpam.
+  ///
+  /// In en, this message translates to:
+  /// **'Don\'t forget to check your spam folder.'**
+  String get authCheckSpam;
+
+  /// No description provided for @authResending.
+  ///
+  /// In en, this message translates to:
+  /// **'Resending...'**
+  String get authResending;
+
+  /// No description provided for @authResendLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Resend link'**
+  String get authResendLink;
+
+  /// No description provided for @authBackToLogin.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to login'**
+  String get authBackToLogin;
+
+  /// No description provided for @authPasswordUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Password updated successfully'**
+  String get authPasswordUpdated;
+
+  /// No description provided for @authNewPasswordTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New password'**
+  String get authNewPasswordTitle;
+
+  /// No description provided for @authNewPasswordSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your new password below.'**
+  String get authNewPasswordSubtitle;
+
+  /// No description provided for @authNewPasswordHint.
+  ///
+  /// In en, this message translates to:
+  /// **'New password'**
+  String get authNewPasswordHint;
+
+  /// No description provided for @authMinPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Password must be at least 6 characters'**
+  String get authMinPassword;
+
+  /// No description provided for @authConfirmPasswordHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm new password'**
+  String get authConfirmPasswordHint;
+
+  /// No description provided for @authPasswordMismatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Passwords do not match'**
+  String get authPasswordMismatch;
+
+  /// No description provided for @authUpdatePassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Update password'**
+  String get authUpdatePassword;
+
+  /// No description provided for @authPasswordsDontMatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Passwords don\'t match'**
+  String get authPasswordsDontMatch;
+
+  /// No description provided for @authMinSixChars.
+  ///
+  /// In en, this message translates to:
+  /// **'Minimum 6 characters'**
+  String get authMinSixChars;
+
+  /// No description provided for @authSignInWithGoogle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in with Google'**
+  String get authSignInWithGoogle;
+
+  /// No description provided for @authCreateAccountTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Create your account'**
+  String get authCreateAccountTitle;
+
+  /// No description provided for @authJoinCommunity.
+  ///
+  /// In en, this message translates to:
+  /// **'Join the Spotbook community'**
+  String get authJoinCommunity;
+
+  /// No description provided for @authCreateMyAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Create my account'**
+  String get authCreateMyAccount;
+
+  /// No description provided for @authYourInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Your information'**
+  String get authYourInfo;
+
+  /// No description provided for @authHowKnown.
+  ///
+  /// In en, this message translates to:
+  /// **'Tell us a bit about yourself'**
+  String get authHowKnown;
+
+  /// No description provided for @authYourProProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Your professional profile'**
+  String get authYourProProfile;
+
+  /// No description provided for @authPresentYourself.
+  ///
+  /// In en, this message translates to:
+  /// **'Present yourself to your future clients'**
+  String get authPresentYourself;
+
+  /// No description provided for @authWhatInterests.
+  ///
+  /// In en, this message translates to:
+  /// **'What interests you?'**
+  String get authWhatInterests;
+
+  /// No description provided for @authSelectCategoriesForFeed.
+  ///
+  /// In en, this message translates to:
+  /// **'Select categories to personalize your feed'**
+  String get authSelectCategoriesForFeed;
+
+  /// No description provided for @authWhatServicesOffer.
+  ///
+  /// In en, this message translates to:
+  /// **'What services do you offer?'**
+  String get authWhatServicesOffer;
+
+  /// No description provided for @authSelectServiceCategories.
+  ///
+  /// In en, this message translates to:
+  /// **'Select your service categories'**
+  String get authSelectServiceCategories;
+
+  /// No description provided for @authStepLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Step {current} of {total}'**
+  String authStepLabel(int current, int total);
+
+  /// No description provided for @categoriesLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load categories'**
   String get categoriesLoadFailed;
 
-  // ── Client Interest Goals ──
-  String get goalsTitle;
-  String get goalsSubtitle;
+  /// No description provided for @goalDiscoverTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Discover services'**
   String get goalDiscoverTitle;
+
+  /// No description provided for @goalDiscoverDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Find the best professionals near you'**
   String get goalDiscoverDesc;
+
+  /// No description provided for @goalBookTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Book appointments'**
   String get goalBookTitle;
+
+  /// No description provided for @goalBookDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Schedule services quickly and easily'**
   String get goalBookDesc;
+
+  /// No description provided for @goalEventsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Attend events'**
   String get goalEventsTitle;
+
+  /// No description provided for @goalEventsDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Discover and buy tickets for local events'**
   String get goalEventsDesc;
+
+  /// No description provided for @goalPricesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Compare prices'**
   String get goalPricesTitle;
+
+  /// No description provided for @goalPricesDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Find the best deals for the services you need'**
   String get goalPricesDesc;
 
-  // ── Pro Interest Categories ──
+  /// No description provided for @goalsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'What are your goals?'**
+  String get goalsTitle;
+
+  /// No description provided for @goalsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Help us personalize your experience'**
+  String get goalsSubtitle;
+
+  /// No description provided for @completeProfileUploadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to upload photo'**
+  String get completeProfileUploadFailed;
+
+  /// No description provided for @completeProfileSaveFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to save profile'**
+  String get completeProfileSaveFailed;
+
+  /// No description provided for @completeProfileAccountCreated.
+  ///
+  /// In en, this message translates to:
+  /// **'Account created!'**
+  String get completeProfileAccountCreated;
+
+  /// No description provided for @completeProfileTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete your profile'**
+  String get completeProfileTitle;
+
+  /// No description provided for @completeProfileSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a photo and your name to get started.'**
+  String get completeProfileSubtitle;
+
+  /// No description provided for @completeProfileBioHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Tell us about yourself...'**
+  String get completeProfileBioHint;
+
+  /// No description provided for @locationPermTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable location'**
+  String get locationPermTitle;
+
+  /// No description provided for @locationPermSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Find professionals and events near you.'**
+  String get locationPermSubtitle;
+
+  /// No description provided for @locationPermAllow.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow location access'**
+  String get locationPermAllow;
+
+  /// No description provided for @locationPermPrivacy.
+  ///
+  /// In en, this message translates to:
+  /// **'Your location is never shared publicly.'**
+  String get locationPermPrivacy;
+
+  /// No description provided for @proExpertiseTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your expertise'**
   String get proExpertiseTitle;
+
+  /// No description provided for @proExpertiseSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Select the categories that match your services'**
   String get proExpertiseSubtitle;
 
-  // ── Pro Verification ──
-  String get verificationUploadFailed;
-  String get verificationIdRequired;
-  String get proSetupTitle;
-  String get verificationInProgress;
-  String get actionRequired;
-  String get phoneRequired;
-  String get mobileNumber;
-  String get phoneNumberHint;
-  String get verificationSmsHint;
-  String get smsComingSoon;
-  String get sendCode;
-  String get idRequired;
-  String get idUploadDescription;
-  String get tapToUpload;
-  String get uploadFormats;
-  String get idSecurityNote;
-  String get submitDocuments;
-  String get helpComingSoon;
-  String get stepOf;
+  /// No description provided for @becomeProNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Business name is required'**
+  String get becomeProNameRequired;
 
-  // ── Stripe Connect ──
+  /// No description provided for @becomeProCategoryRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select a category'**
+  String get becomeProCategoryRequired;
+
+  /// No description provided for @becomeProAddressRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Address is required'**
+  String get becomeProAddressRequired;
+
+  /// No description provided for @becomeProTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Become a Pro'**
+  String get becomeProTitle;
+
+  /// No description provided for @becomeProStep1Title.
+  ///
+  /// In en, this message translates to:
+  /// **'Your business'**
+  String get becomeProStep1Title;
+
+  /// No description provided for @becomeProStep1Subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Tell us about your activity'**
+  String get becomeProStep1Subtitle;
+
+  /// No description provided for @becomeProBusinessName.
+  ///
+  /// In en, this message translates to:
+  /// **'Business name'**
+  String get becomeProBusinessName;
+
+  /// No description provided for @becomeProBusinessHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. John\'s Barbershop'**
+  String get becomeProBusinessHint;
+
+  /// No description provided for @becomeProCategoryHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a category'**
+  String get becomeProCategoryHint;
+
+  /// No description provided for @becomeProCategoryLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Category'**
+  String get becomeProCategoryLabel;
+
+  /// No description provided for @becomeProPhoneLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone number'**
+  String get becomeProPhoneLabel;
+
+  /// No description provided for @becomeProPhoneHint.
+  ///
+  /// In en, this message translates to:
+  /// **'+1 555 000 0000'**
+  String get becomeProPhoneHint;
+
+  /// No description provided for @becomeProStep2Title.
+  ///
+  /// In en, this message translates to:
+  /// **'Your location'**
+  String get becomeProStep2Title;
+
+  /// No description provided for @becomeProStep2Subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Where are you based?'**
+  String get becomeProStep2Subtitle;
+
+  /// No description provided for @becomeProAddressLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Business address'**
+  String get becomeProAddressLabel;
+
+  /// No description provided for @becomeProAddressHint.
+  ///
+  /// In en, this message translates to:
+  /// **'123 Main St, City'**
+  String get becomeProAddressHint;
+
+  /// No description provided for @becomeProStep3Title.
+  ///
+  /// In en, this message translates to:
+  /// **'Preview'**
+  String get becomeProStep3Title;
+
+  /// No description provided for @becomeProStep3Subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Here\'s how your profile will look'**
+  String get becomeProStep3Subtitle;
+
+  /// No description provided for @becomeProYourProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Your profile'**
+  String get becomeProYourProfile;
+
+  /// No description provided for @becomeProInfoBox.
+  ///
+  /// In en, this message translates to:
+  /// **'You can edit this information anytime from your settings.'**
+  String get becomeProInfoBox;
+
+  /// No description provided for @becomeProActivate.
+  ///
+  /// In en, this message translates to:
+  /// **'Activate my Pro account'**
+  String get becomeProActivate;
+
+  /// No description provided for @bizConfigInProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Setup in progress'**
+  String get bizConfigInProgress;
+
+  /// No description provided for @bizYourBusiness.
+  ///
+  /// In en, this message translates to:
+  /// **'Your business'**
+  String get bizYourBusiness;
+
+  /// No description provided for @bizSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Configure your professional profile'**
+  String get bizSubtitle;
+
+  /// No description provided for @bizBusinessName.
+  ///
+  /// In en, this message translates to:
+  /// **'Business name'**
+  String get bizBusinessName;
+
+  /// No description provided for @bizBusinessHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Studio Glow'**
+  String get bizBusinessHint;
+
+  /// No description provided for @bizCategoryHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a category'**
+  String get bizCategoryHint;
+
+  /// No description provided for @bizCategoryLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Category'**
+  String get bizCategoryLabel;
+
+  /// No description provided for @bizAddressLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Address'**
+  String get bizAddressLabel;
+
+  /// No description provided for @bizAddressHint.
+  ///
+  /// In en, this message translates to:
+  /// **'123 Main St, City'**
+  String get bizAddressHint;
+
+  /// No description provided for @stripePaymentsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Payments'**
   String get stripePaymentsTitle;
+
+  /// No description provided for @stripeOpenDashboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Open Stripe Dashboard'**
   String get stripeOpenDashboard;
+
+  /// No description provided for @stripeFinishSetup.
+  ///
+  /// In en, this message translates to:
+  /// **'Finish setup'**
   String get stripeFinishSetup;
+
+  /// No description provided for @stripeConnectBank.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect your bank'**
   String get stripeConnectBank;
+
+  /// No description provided for @stripeHowItWorks.
+  ///
+  /// In en, this message translates to:
+  /// **'How it works'**
   String get stripeHowItWorks;
+
+  /// No description provided for @stripeStep1Title.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect your bank'**
   String get stripeStep1Title;
+
+  /// No description provided for @stripeStep1Desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Link your bank account securely via Stripe.'**
   String get stripeStep1Desc;
+
+  /// No description provided for @stripeStep2Title.
+  ///
+  /// In en, this message translates to:
+  /// **'Receive bookings'**
   String get stripeStep2Title;
+
+  /// No description provided for @stripeStep2Desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Clients pay when they book. Funds are held securely.'**
   String get stripeStep2Desc;
+
+  /// No description provided for @stripeStep3Title.
+  ///
+  /// In en, this message translates to:
+  /// **'Get paid'**
   String get stripeStep3Title;
+
+  /// No description provided for @stripeStep3Desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Payouts are sent automatically to your bank account.'**
   String get stripeStep3Desc;
+
+  /// No description provided for @stripeFeesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Fees'**
   String get stripeFeesTitle;
+
+  /// No description provided for @stripeFeeBooking.
+  ///
+  /// In en, this message translates to:
+  /// **'Booking commission'**
   String get stripeFeeBooking;
+
+  /// No description provided for @stripeFeeBookingSub.
+  ///
+  /// In en, this message translates to:
+  /// **'18% per booking'**
   String get stripeFeeBookingSub;
+
+  /// No description provided for @stripeFeeEvent.
+  ///
+  /// In en, this message translates to:
+  /// **'Event commission'**
   String get stripeFeeEvent;
+
+  /// No description provided for @stripeFeeEventSub.
+  ///
+  /// In en, this message translates to:
+  /// **'12% per ticket sold'**
   String get stripeFeeEventSub;
+
+  /// No description provided for @stripeFeeService.
+  ///
+  /// In en, this message translates to:
+  /// **'Service fee'**
   String get stripeFeeService;
+
+  /// No description provided for @stripeFeeServiceSub.
+  ///
+  /// In en, this message translates to:
+  /// **'\$2.50 per booking (charged to client)'**
   String get stripeFeeServiceSub;
+
+  /// No description provided for @stripeNoMonthlyFees.
+  ///
+  /// In en, this message translates to:
+  /// **'No monthly fees — you only pay when you earn.'**
   String get stripeNoMonthlyFees;
+
+  /// No description provided for @stripeSecurityTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Security & Trust'**
   String get stripeSecurityTitle;
+
+  /// No description provided for @stripeTrustSsl.
+  ///
+  /// In en, this message translates to:
+  /// **'SSL encryption'**
   String get stripeTrustSsl;
+
+  /// No description provided for @stripeTrustSslSub.
+  ///
+  /// In en, this message translates to:
+  /// **'All data is encrypted end-to-end.'**
   String get stripeTrustSslSub;
+
+  /// No description provided for @stripeTrustPowered.
+  ///
+  /// In en, this message translates to:
+  /// **'Powered by Stripe'**
   String get stripeTrustPowered;
+
+  /// No description provided for @stripeTrustPoweredSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Trusted by millions of businesses worldwide.'**
   String get stripeTrustPoweredSub;
+
+  /// No description provided for @stripeTrustFast.
+  ///
+  /// In en, this message translates to:
+  /// **'Fast payouts'**
   String get stripeTrustFast;
+
+  /// No description provided for @stripeTrustFastSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Receive your earnings within 2–7 business days.'**
   String get stripeTrustFastSub;
+
+  /// No description provided for @stripeFaqTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Frequently asked questions'**
   String get stripeFaqTitle;
+
+  /// No description provided for @stripeFaqWhenPaid.
+  ///
+  /// In en, this message translates to:
+  /// **'When do I get paid?'**
   String get stripeFaqWhenPaid;
+
+  /// No description provided for @stripeFaqWhenPaidAnswer.
+  ///
+  /// In en, this message translates to:
+  /// **'Payouts are processed automatically 2–7 days after the service is completed.'**
   String get stripeFaqWhenPaidAnswer;
+
+  /// No description provided for @stripeFaqCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'What if a client cancels?'**
   String get stripeFaqCancel;
+
+  /// No description provided for @stripeFaqCancelAnswer.
+  ///
+  /// In en, this message translates to:
+  /// **'Refund policies depend on your cancellation settings (flexible, moderate, or strict).'**
   String get stripeFaqCancelAnswer;
+
+  /// No description provided for @stripeFaqDeposit.
+  ///
+  /// In en, this message translates to:
+  /// **'How do deposits work?'**
   String get stripeFaqDeposit;
+
+  /// No description provided for @stripeFaqDepositAnswer.
+  ///
+  /// In en, this message translates to:
+  /// **'You can require a deposit (10–30%) when clients book. The rest is collected later.'**
   String get stripeFaqDepositAnswer;
+
+  /// No description provided for @stripeNeedHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Need help? Contact support'**
   String get stripeNeedHelp;
+
+  /// No description provided for @stripeHeroActiveTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Payments active'**
   String get stripeHeroActiveTitle;
+
+  /// No description provided for @stripeHeroActiveSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Your account is fully set up and ready to receive payments.'**
   String get stripeHeroActiveSub;
+
+  /// No description provided for @stripeHeroPendingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Verification pending'**
   String get stripeHeroPendingTitle;
+
+  /// No description provided for @stripeHeroPendingSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Stripe is reviewing your information. This usually takes 1–2 days.'**
   String get stripeHeroPendingSub;
+
+  /// No description provided for @stripeHeroConnectTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Set up payments'**
   String get stripeHeroConnectTitle;
+
+  /// No description provided for @stripeHeroConnectSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect your bank account to start receiving payments from clients.'**
   String get stripeHeroConnectSub;
+
+  /// No description provided for @stripeSetupProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Setup progress'**
   String get stripeSetupProgress;
+
+  /// No description provided for @stripeDetailsSubmitted.
+  ///
+  /// In en, this message translates to:
+  /// **'Details submitted'**
   String get stripeDetailsSubmitted;
+
+  /// No description provided for @stripeDetailsSubmittedSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Your business information has been submitted.'**
   String get stripeDetailsSubmittedSub;
+
+  /// No description provided for @stripeChargesEnabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Charges enabled'**
   String get stripeChargesEnabled;
+
+  /// No description provided for @stripeChargesEnabledSub.
+  ///
+  /// In en, this message translates to:
+  /// **'You can accept payments from clients.'**
   String get stripeChargesEnabledSub;
+
+  /// No description provided for @stripePayoutsEnabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Payouts enabled'**
   String get stripePayoutsEnabled;
+
+  /// No description provided for @stripePayoutsEnabledSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Funds will be transferred to your bank account.'**
   String get stripePayoutsEnabledSub;
 
-  // ── Become Pro Setup ──
-  String get becomeProTitle;
-  String get becomeProStep1Title;
-  String get becomeProStep1Subtitle;
-  String get becomeProBusinessName;
-  String get becomeProBusinessHint;
-  String get becomeProCategoryLabel;
-  String get becomeProCategoryHint;
-  String get becomeProPhoneLabel;
-  String get becomeProPhoneHint;
-  String get becomeProStep2Title;
-  String get becomeProStep2Subtitle;
-  String get becomeProAddressLabel;
-  String get becomeProAddressHint;
-  String get becomeProStep3Title;
-  String get becomeProStep3Subtitle;
-  String get becomeProYourProfile;
-  String get becomeProInfoBox;
-  String get becomeProActivate;
-  String get becomeProNameRequired;
-  String get becomeProCategoryRequired;
-  String get becomeProAddressRequired;
-  String get becomeProAllFieldsRequired;
-  String get becomeProSelectAddress;
+  /// No description provided for @verificationUploadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to upload document'**
+  String get verificationUploadFailed;
 
-  // ── Pro Business Details ──
-  String get bizConfigInProgress;
-  String get bizYourBusiness;
-  String get bizSubtitle;
-  String get bizBusinessName;
-  String get bizBusinessHint;
-  String get bizCategoryLabel;
-  String get bizCategoryHint;
-  String get bizAddressLabel;
-  String get bizAddressHint;
-  String get bizRequiredFieldsError;
-  String get bizSelectAddressError;
+  /// No description provided for @verificationIdRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'ID document is required'**
+  String get verificationIdRequired;
+
+  /// No description provided for @stepOf.
+  ///
+  /// In en, this message translates to:
+  /// **'Step'**
+  String get stepOf;
+
+  /// No description provided for @helpComingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Help coming soon'**
+  String get helpComingSoon;
+
+  /// No description provided for @proSetupTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Pro setup'**
+  String get proSetupTitle;
+
+  /// No description provided for @verificationInProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Verification in progress'**
+  String get verificationInProgress;
+
+  /// No description provided for @actionRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Action required'**
+  String get actionRequired;
+
+  /// No description provided for @phoneRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone number is required'**
+  String get phoneRequired;
+
+  /// No description provided for @mobileNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Mobile number'**
+  String get mobileNumber;
+
+  /// No description provided for @phoneNumberHint.
+  ///
+  /// In en, this message translates to:
+  /// **'+1 555 000 0000'**
+  String get phoneNumberHint;
+
+  /// No description provided for @verificationSmsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'We\'ll send a verification code to this number.'**
+  String get verificationSmsHint;
+
+  /// No description provided for @smsComingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'SMS verification coming soon'**
+  String get smsComingSoon;
+
+  /// No description provided for @sendCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Send code'**
+  String get sendCode;
+
+  /// No description provided for @idRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'ID required'**
+  String get idRequired;
+
+  /// No description provided for @idUploadDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload a valid government-issued ID for verification.'**
+  String get idUploadDescription;
+
+  /// No description provided for @tapToUpload.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to upload'**
+  String get tapToUpload;
+
+  /// No description provided for @uploadFormats.
+  ///
+  /// In en, this message translates to:
+  /// **'JPG, PNG or PDF (max 10 MB)'**
+  String get uploadFormats;
+
+  /// No description provided for @idSecurityNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Your ID is securely stored and only used for verification.'**
+  String get idSecurityNote;
+
+  /// No description provided for @submitDocuments.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit documents'**
+  String get submitDocuments;
 }
 
 class _AppLocalizationsDelegate

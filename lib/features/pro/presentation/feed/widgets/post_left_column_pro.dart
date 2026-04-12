@@ -1,17 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../../shared/theme/app_colors.dart';
 import '../../../../feed/domain/video_model.dart';
 import 'booking_strip.dart';
 import 'catering_strip.dart';
 import 'event_strip.dart';
 
 /// Left column + bottom overlay for ProFeedScreen.
-/// Premium layout: Pro name + PRO badge, video title, CTA strip.
+/// Premium layout: Book CTA → Pro name + PRO badge → video title → CTA strip.
 class PostLeftColumnPro extends StatelessWidget {
-  const PostLeftColumnPro({super.key, required this.video});
+  const PostLeftColumnPro({
+    super.key,
+    required this.video,
+    this.onBook,
+  });
 
   final VideoModel video;
+
+  /// When non-null, the "Réserver" CTA pill is shown (hidden on own posts).
+  final VoidCallback? onBook;
 
   @override
   Widget build(BuildContext context) {
@@ -21,6 +30,49 @@ class PostLeftColumnPro extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
+        // ── Réserver CTA (viewing another Pro's post) ──
+        if (onBook != null) ...[
+          GestureDetector(
+            onTap: () {
+              HapticFeedback.lightImpact();
+              onBook!();
+            },
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              decoration: BoxDecoration(
+                gradient: AppColors.gradientAccent,
+                borderRadius: BorderRadius.circular(24),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.violet.withAlpha(100),
+                    blurRadius: 18,
+                    offset: const Offset(0, 5),
+                    spreadRadius: -2,
+                  ),
+                ],
+              ),
+              child: const Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.calendar_today_rounded,
+                      color: Colors.white, size: 14),
+                  SizedBox(width: 8),
+                  Text(
+                    'Réserver',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 0.3,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 12),
+        ],
+
         // ── Pro name + PRO badge ──
         GestureDetector(
           onTap: () => context.push('/pro/${v.proId}'),

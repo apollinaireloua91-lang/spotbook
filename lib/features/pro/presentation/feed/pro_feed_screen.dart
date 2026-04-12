@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/widgets/spotbook_loading_shimmer.dart';
@@ -75,6 +77,8 @@ class _ProFeedBody extends StatelessWidget {
       child: BlocBuilder<ProFeedCubit, ProFeedState>(
         builder: (context, state) {
           final cubit = context.read<ProFeedCubit>();
+          final currentUid =
+              Supabase.instance.client.auth.currentUser?.id;
           return Scaffold(
             backgroundColor: AppColors.fond,
             extendBodyBehindAppBar: true,
@@ -97,6 +101,7 @@ class _ProFeedBody extends StatelessWidget {
                       onPageChanged: cubit.setCurrentIndex,
                       itemBuilder: (context, index) {
                         final video = state.videos[index];
+                        final isOwnPost = video.proId == currentUid;
                         return VideoFeedItem(
                           video: video,
                           isActive: index == state.currentIndex,
@@ -107,10 +112,15 @@ class _ProFeedBody extends StatelessWidget {
                           onToggleLike: cubit.toggleLike,
                           onToggleSave: cubit.toggleSave,
                           onToggleFollow: cubit.toggleFollow,
-                          // Pro feed: full left column (name + badge + caption + CTA + music)
-                          bottomOverlayOverride:
-                              PostLeftColumnPro(video: video),
-                          // Pro feed: custom right column without Comment button
+                          // Pro feed: left column with Book CTA (hidden on own posts)
+                          bottomOverlayOverride: PostLeftColumnPro(
+                            video: video,
+                            onBook: isOwnPost
+                                ? null
+                                : () => context
+                                    .push('/pro/${video.proId}'),
+                          ),
+                          // Pro feed: enhanced right column without Comment button
                           rightColumnOverride: PostRightColumnPro(
                             video: video,
                             onToggleLike: () =>
