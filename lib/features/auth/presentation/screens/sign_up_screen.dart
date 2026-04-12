@@ -282,7 +282,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
 
   void _navigateToHome() {
     if (_isClient) {
-      context.go('/client/interests');
+      context.go('/complete-profile');
     } else {
       context.go('/pro/dashboard');
     }

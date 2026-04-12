@@ -211,7 +211,7 @@ class ClientInterestCategoriesScreen extends ConsumerWidget {
                   onPressed: selected.isNotEmpty
                       ? () {
                           HapticFeedback.mediumImpact();
-                          context.go('/client/goals');
+                          context.go('/client/location');
                         }
                       : null,
                   style: ElevatedButton.styleFrom(
@@ -234,7 +234,7 @@ class ClientInterestCategoriesScreen extends ConsumerWidget {
             const SizedBox(height: 12),
             Center(
               child: GestureDetector(
-                onTap: () => context.go('/client/goals'),
+                onTap: () => context.go('/client/location'),
                 child: Text(
                   'Skip for now',
                   style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 14),

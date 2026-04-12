@@ -67,7 +67,7 @@ serve(async (req) => {
     }
 
     const secret = Deno.env.get("QR_SIGNING_SECRET") ?? "";
-    if (!secret || secret.length < 16) {
+    if (!secret || secret.length < 32) {
       console.error("QR_SIGNING_SECRET manquant ou trop court");
       return jsonResponse({ error: "server_misconfigured" }, 500, undefined, req);
     }

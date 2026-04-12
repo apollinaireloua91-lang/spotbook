@@ -167,8 +167,7 @@ serve(async (req) => {
 
     const idempotencyKey =
       typeof body.idempotencyKey === "string" &&
-        body.idempotencyKey.length > 8 &&
-        body.idempotencyKey.length < 200
+        /^[a-zA-Z0-9_-]{16,128}$/.test(body.idempotencyKey)
         ? body.idempotencyKey
         : crypto.randomUUID();
 

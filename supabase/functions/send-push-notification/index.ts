@@ -108,16 +108,6 @@ serve(async (req) => {
       .single();
 
     if (!notificationTypeEnabled(prefs as Record<string, unknown> | null, type)) {
-      await supabase.from("notifications").insert({
-        user_id: userId,
-        title: sanitizeText(title),
-        body: sanitizeText(body),
-        type,
-        data: data ?? {},
-        is_read: false,
-        push_sent: false,
-      });
-
       return jsonResponse(
         {
           success: true,

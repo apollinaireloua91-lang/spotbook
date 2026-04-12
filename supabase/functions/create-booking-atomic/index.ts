@@ -2,6 +2,7 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
 import Stripe from "https://esm.sh/stripe@14.14.0?target=deno";
 import {
+  getClientIp,
   isValidAmount,
   isValidUuid,
   jsonResponse,
@@ -49,6 +50,27 @@ serve(async (req) => {
     } = await authClient.auth.getUser();
     if (!user) {
       return jsonResponse({ error: "unauthorized" }, 401);
+    }
+
+    // Rate limit — max 5 booking attempts per minute per user
+    const fingerprint = `${user.id}:${getClientIp(req)}`;
+    const rateLimitResp = await fetch(
+      `${Deno.env.get("SUPABASE_URL")}/functions/v1/rate-limiter`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          type: "booking",
+          cardFingerprint: fingerprint,
+        }),
+      },
+    );
+    if (rateLimitResp.status === 429) {
+      const rlData = await rateLimitResp.json();
+      return jsonResponse({ error: rlData.error }, 429);
     }
 
     const { slotId, serviceId, promoCodeId } = await req.json();

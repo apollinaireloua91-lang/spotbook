@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:go_router/go_router.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../core/animations/premium_transitions.dart';
 
@@ -77,8 +78,59 @@ import '../features/payment/presentation/screens/payment_receipt_screen.dart';
 import 'client_shell.dart';
 import 'pro_shell.dart';
 
+/// Routes that don't require authentication.
+const _publicPaths = <String>{
+  '/',
+  '/onboarding',
+  '/login',
+  '/select-account-type',
+  '/signup/client',
+  '/signup/pro',
+  '/forgot-password',
+  '/forgot-password-confirmation',
+  '/reset-password',
+};
+
 final appRouter = GoRouter(
   initialLocation: '/',
+  redirect: (context, state) {
+    final session = Supabase.instance.client.auth.currentSession;
+    final path = state.matchedLocation;
+
+    // Allow public routes without a session.
+    if (_publicPaths.contains(path)) {
+      // If user IS authenticated and tries to visit login/signup → redirect.
+      if (session != null && (path == '/login' || path.startsWith('/signup'))) {
+        final role = Supabase.instance.client.auth.currentUser
+                ?.userMetadata?['role'] as String?;
+        return role == 'pro' ? '/pro/feed' : '/client/feed';
+      }
+      return null;
+    }
+
+    // Onboarding post-signup paths (complete-profile, interests, location, etc.)
+    // are allowed if there's a session even though profile may be incomplete.
+    final onboardingPaths = <String>{
+      '/complete-profile',
+      '/client/interests',
+      '/client/goals',
+      '/client/location',
+      '/pro/business-details',
+      '/pro/verification',
+      '/pro/stripe-connect',
+      '/pro/interests',
+      '/become-pro',
+    };
+    if (onboardingPaths.contains(path)) {
+      if (session == null) return '/login';
+      return null;
+    }
+
+    // All other routes require an active session.
+    if (session == null) return '/login';
+
+    return null; // Allow navigation.
+  },
   routes: [
     GoRoute(
       path: '/',
