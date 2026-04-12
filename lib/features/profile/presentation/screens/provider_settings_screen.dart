@@ -294,6 +294,13 @@ class _SettingsBody extends ConsumerWidget {
           child: Column(
             children: [
               _Tile(
+                label: 'Soumissions',
+                value: '',
+                showChevron: true,
+                onTap: () => context.push('/pro/soumissions'),
+              ),
+              Divider(color: AppColors.border, height: 1),
+              _Tile(
                 label: 'Codes Promo',
                 value: '',
                 showChevron: true,
@@ -301,7 +308,7 @@ class _SettingsBody extends ConsumerWidget {
               ),
               Divider(color: AppColors.border, height: 1),
               _Tile(
-                label: 'My QR Code',
+                label: 'Mon code QR',
                 value: '',
                 showChevron: true,
                 onTap: () => context.push('/pro/profile/qr-code'),
@@ -389,7 +396,7 @@ class _SettingsBody extends ConsumerWidget {
               ),
               Divider(color: AppColors.border, height: 1),
               _Tile(
-                label: 'Terms of service',
+                label: 'Conditions d\'utilisation',
                 value: '',
                 showChevron: true,
                 onTap: () => launchUrl(
@@ -399,7 +406,7 @@ class _SettingsBody extends ConsumerWidget {
               ),
               Divider(color: AppColors.border, height: 1),
               _Tile(
-                label: 'Privacy policy',
+                label: 'Politique de confidentialité',
                 value: '',
                 showChevron: true,
                 onTap: () => launchUrl(
@@ -1014,18 +1021,18 @@ class _PolicyDescription extends StatelessWidget {
     final (icon, text) = switch (policy) {
       'moderate' => (
         Icons.schedule_outlined,
-        'Clients can cancel up to 24 hours before the appointment for a full refund. '
-            'Within 24h, 50% of the deposit is kept.',
+        'Les clients peuvent annuler jusqu\'à 24 heures avant le rendez-vous pour un remboursement complet. '
+            'En deçà de 24h, 50% de l\'acompte est conservé.',
       ),
       'strict' => (
         Icons.lock_outline,
-        'No refund once the booking is confirmed. The full deposit is kept '
-            'regardless of when the client cancels.',
+        'Aucun remboursement une fois la réservation confirmée. La totalité de l\'acompte est conservée '
+            'quel que soit le moment où le client annule.',
       ),
       _ => (
         Icons.check_circle_outline,
-        'Clients can cancel up to 12 hours before the appointment for a full refund. '
-            'Within 12h, the deposit is kept.',
+        'Les clients peuvent annuler jusqu\'à 12 heures avant le rendez-vous pour un remboursement complet. '
+            'En deçà de 12h, l\'acompte est conservé.',
       ),
     };
 
@@ -1073,7 +1080,7 @@ class _CommissionBreakdown extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Commission rates',
+            'Taux de commission',
             style: GoogleFonts.sora(
               color: AppColors.blanc,
               fontSize: 13,
@@ -1082,26 +1089,26 @@ class _CommissionBreakdown extends StatelessWidget {
           ),
           const SizedBox(height: 10),
           _CommissionLine(
-            label: 'Bookings & Catering',
+            label: 'Réservations & Traiteur',
             value: '18%',
             icon: Icons.calendar_today_outlined,
           ),
           const SizedBox(height: 6),
           _CommissionLine(
-            label: 'Event tickets',
+            label: 'Billets d\'événements',
             value: '12%',
             icon: Icons.confirmation_number_outlined,
           ),
           const SizedBox(height: 6),
           _CommissionLine(
-            label: 'Client service fee',
-            value: '\$2.50 / booking',
+            label: 'Frais de service client',
+            value: '\$2.50 / réservation',
             icon: Icons.person_outline,
           ),
           const SizedBox(height: 10),
           Text(
-            'Commission is deducted automatically before payout. '
-            'The client service fee is charged to the client, not to you.',
+            'La commission est déduite automatiquement avant le versement. '
+            'Les frais de service client sont facturés au client, pas à vous.',
             style: GoogleFonts.dmSans(
               color: AppColors.gris,
               fontSize: 11,

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../../shared/theme/app_colors.dart';
+
 final categoryRepositoryProvider = Provider<CategoryRepository>((ref) {
   return CategoryRepository(supabase: Supabase.instance.client);
 });
@@ -38,19 +40,19 @@ class ProCategory {
 
   /// Parse gradient colors from hex strings (#RRGGBB)
   Color get startColor {
-    if (gradientStart == null) return const Color(0xFF8039C5);
+    if (gradientStart == null) return AppColors.violet;
     return _parseHex(gradientStart!);
   }
 
   Color get endColor {
-    if (gradientEnd == null) return const Color(0xFFA78BFA);
+    if (gradientEnd == null) return AppColors.violetClair;
     return _parseHex(gradientEnd!);
   }
 
   static Color _parseHex(String hex) {
     final clean = hex.replaceAll('#', '');
     if (clean.length == 6) return Color(int.parse('FF$clean', radix: 16));
-    return const Color(0xFF8039C5);
+    return AppColors.violet;
   }
 
   static const _labelIconMap = <String, IconData>{
@@ -193,7 +195,83 @@ class ProCategory {
 
     // Coaching & Other
     'coaching': Icons.psychology_outlined,
+    'coaching de vie': Icons.lightbulb_outlined,
+    'coach de vie': Icons.lightbulb_outlined,
     'autre service': Icons.storefront_outlined,
+
+    // Santé extra
+    'chiropraticien': Icons.accessibility_new_outlined,
+    'acupuncteur': Icons.push_pin_outlined,
+    'reflexologue': Icons.spa_outlined,
+
+    // Restauration extra
+    'chocolatier / confiseur': Icons.cake_outlined,
+    'food truck': Icons.local_shipping_outlined,
+    'cuisine du monde': Icons.public_outlined,
+    'cuisine maison / plats à emporter': Icons.restaurant_outlined,
+    'jus naturels / smoothies': Icons.local_cafe_outlined,
+
+    // Métiers manuels extra
+    'vitrier': Icons.window_outlined,
+    'ferblantier': Icons.build_outlined,
+    'excavation / terrassement': Icons.landscape_outlined,
+    'isolation / insonorisation': Icons.house_outlined,
+    'pisciniste / spa': Icons.pool_outlined,
+
+    // Automobile extra
+    'vitres teintées': Icons.remove_red_eye_outlined,
+    'pneus / alignement': Icons.tire_repair_outlined,
+
+    // Services pro extra
+    'courtier en assurance': Icons.shield_outlined,
+    'fiscaliste': Icons.receipt_long_outlined,
+    'importateur / dédouanement': Icons.inventory_2_outlined,
+
+    // Événementiel extra
+    'magicien / illusionniste': Icons.auto_awesome_outlined,
+    'humoriste / stand-up': Icons.sentiment_very_satisfied_outlined,
+    'maître de cérémonie': Icons.record_voice_over_outlined,
+
+    // Éducation extra
+    'professeur de danse': Icons.directions_walk_outlined,
+    'professeur d\'art / dessin': Icons.palette_outlined,
+
+    // Services domicile extra
+    'aide aux personnes âgées': Icons.elderly_outlined,
+    'jardinage': Icons.yard_outlined,
+    'repassage / blanchisserie': Icons.iron_outlined,
+    'concierge / majordome': Icons.vpn_key_outlined,
+
+    // Tech extra
+    'réseau / wifi / fibre': Icons.wifi_outlined,
+    'réparation console de jeux': Icons.sports_esports_outlined,
+
+    // Mode extra
+    'cordonnier': Icons.shopping_bag_outlined,
+    'maroquinier': Icons.work_outline,
+    'broderie / personnalisation': Icons.auto_fix_high_outlined,
+    'imprimeur / sérigraphie': Icons.print_outlined,
+
+    // Transport
+    'chauffeur privé': Icons.directions_car_outlined,
+    'taxi': Icons.local_taxi_outlined,
+    'transport de marchandises': Icons.local_shipping_outlined,
+    'déménageur longue distance': Icons.local_shipping_outlined,
+
+    // Services informels
+    'coiffure à domicile': Icons.content_cut,
+    'tressage / braids': Icons.face_retouching_natural,
+    'henné / body art': Icons.brush_outlined,
+    'couture africaine': Icons.checkroom_outlined,
+    'vendeur ambulant': Icons.shopping_cart_outlined,
+    'réparation électroménager': Icons.electrical_services_outlined,
+    'astrologue / voyance': Icons.auto_awesome_outlined,
+    'photographe mobile': Icons.camera_alt_outlined,
+    'dj mobile / sono': Icons.speaker_outlined,
+    'lavage à pression': Icons.water_drop_outlined,
+    'peinture artistique / murales': Icons.palette_outlined,
+    'réparation vélo': Icons.pedal_bike_outlined,
+    'microblading / sourcils': Icons.edit_outlined,
 
     // Legacy fallback labels
     'jardinier': Icons.park_outlined,
@@ -219,26 +297,83 @@ class CategoryRepository {
   final SupabaseClient _supabase;
 
   static const _fallback = [
+    // Beauté & Soins
     ProCategory(label: 'Coiffure', groupName: 'Beauté & Soins', emoji: '✂️', slug: 'coiffure'),
     ProCategory(label: 'Barbier', groupName: 'Beauté & Soins', emoji: '💈', slug: 'barbier'),
-    ProCategory(label: 'Esthétique', groupName: 'Beauté & Soins', emoji: '✨', slug: 'esthetique'),
-    ProCategory(label: 'Massage', groupName: 'Bien-être', emoji: '💆', slug: 'massage'),
-    ProCategory(label: 'Fitness', groupName: 'Bien-être', emoji: '🏋️', slug: 'fitness'),
-    ProCategory(label: 'Photographie', groupName: 'Créatif', emoji: '📸', slug: 'photographe'),
-    ProCategory(label: 'Tatouage', groupName: 'Créatif', emoji: '🎨', slug: 'tatouage'),
+    ProCategory(label: 'Esthétique / Soins visage', groupName: 'Beauté & Soins', emoji: '✨', slug: 'esthetique'),
     ProCategory(label: 'Maquillage', groupName: 'Beauté & Soins', emoji: '💄', slug: 'maquillage'),
-    ProCategory(label: 'Musique / DJ', groupName: 'Créatif', emoji: '🎧', slug: 'dj'),
-    ProCategory(label: 'Cuisine', groupName: 'Restauration', emoji: '🍽️', slug: 'traiteur'),
-    ProCategory(label: 'Coaching', groupName: 'Bien-être', emoji: '🧠', slug: 'coaching'),
-    ProCategory(label: 'Événementiel', groupName: 'Services', emoji: '🎊', slug: 'evenementiel'),
+    ProCategory(label: 'Nail Art / Manucure', groupName: 'Beauté & Soins', emoji: '💅', slug: 'nail-art'),
+    ProCategory(label: 'Extensions de cils', groupName: 'Beauté & Soins', emoji: '👁️', slug: 'extensions-cils'),
+    ProCategory(label: 'Soins capillaires / Tresses', groupName: 'Beauté & Soins', emoji: '💇', slug: 'soins-capillaires'),
+    ProCategory(label: 'Tatouage', groupName: 'Beauté & Soins', emoji: '🎨', slug: 'tatouage'),
+    ProCategory(label: 'Piercing', groupName: 'Beauté & Soins', emoji: '💎', slug: 'piercing'),
+    ProCategory(label: 'Microblading / Sourcils', groupName: 'Beauté & Soins', emoji: '✏️', slug: 'microblading'),
+    // Bien-être & Santé
+    ProCategory(label: 'Massage thérapeutique', groupName: 'Bien-être & Santé', emoji: '💆', slug: 'massage'),
+    ProCategory(label: 'Coach sportif', groupName: 'Bien-être & Santé', emoji: '🏋️', slug: 'coach-sportif'),
+    ProCategory(label: 'Yoga / Méditation', groupName: 'Bien-être & Santé', emoji: '🧘', slug: 'yoga'),
+    ProCategory(label: 'Nutritionniste', groupName: 'Bien-être & Santé', emoji: '🥗', slug: 'nutritionniste'),
+    ProCategory(label: 'Psychologue / Thérapeute', groupName: 'Bien-être & Santé', emoji: '🧠', slug: 'psychologue'),
+    ProCategory(label: 'Coach de vie', groupName: 'Bien-être & Santé', emoji: '💡', slug: 'coaching-vie'),
+    // Restauration
+    ProCategory(label: 'Traiteur / Chef privé', groupName: 'Restauration', emoji: '👨‍🍳', slug: 'traiteur'),
+    ProCategory(label: 'Pâtissier / Gâteaux sur mesure', groupName: 'Restauration', emoji: '🎂', slug: 'patissier'),
+    ProCategory(label: 'Boulanger artisanal', groupName: 'Restauration', emoji: '🍞', slug: 'boulanger'),
+    ProCategory(label: 'Meal prep / Repas santé', groupName: 'Restauration', emoji: '🥘', slug: 'meal-prep'),
+    ProCategory(label: 'Bartender / Mixologue', groupName: 'Restauration', emoji: '🍸', slug: 'bartender'),
+    ProCategory(label: 'Food truck', groupName: 'Restauration', emoji: '🚚', slug: 'food-truck'),
+    // Métiers manuels
     ProCategory(label: 'Plombier', groupName: 'Métiers manuels', emoji: '🔧', slug: 'plombier'),
     ProCategory(label: 'Électricien', groupName: 'Métiers manuels', emoji: '⚡', slug: 'electricien'),
-    ProCategory(label: 'Comptable', groupName: 'Services pro', emoji: '📊', slug: 'comptable'),
-    ProCategory(label: 'Avocat', groupName: 'Services pro', emoji: '⚖️', slug: 'avocat'),
-    ProCategory(label: 'Développeur', groupName: 'Services pro', emoji: '💻', slug: 'developpeur'),
-    ProCategory(label: 'Graphiste', groupName: 'Services pro', emoji: '🎨', slug: 'graphiste'),
-    ProCategory(label: 'Nail Art', groupName: 'Beauté & Soins', emoji: '💅', slug: 'nail-art'),
-    ProCategory(label: 'Mécanicien', groupName: 'Automobile', emoji: '🔧', slug: 'mecanicien'),
+    ProCategory(label: 'Peintre en bâtiment', groupName: 'Métiers manuels', emoji: '🖌️', slug: 'peintre-batiment'),
+    ProCategory(label: 'Menuisier / Ébéniste', groupName: 'Métiers manuels', emoji: '🪚', slug: 'menuisier'),
+    ProCategory(label: 'Construction / Rénovation', groupName: 'Métiers manuels', emoji: '🏗️', slug: 'construction'),
+    ProCategory(label: 'Paysagiste / Entretien terrain', groupName: 'Métiers manuels', emoji: '🌳', slug: 'paysagiste'),
+    ProCategory(label: 'Homme à tout faire', groupName: 'Métiers manuels', emoji: '🛠️', slug: 'homme-a-tout-faire'),
+    // Automobile
+    ProCategory(label: 'Mécanicien automobile', groupName: 'Automobile', emoji: '🔧', slug: 'mecanicien'),
+    ProCategory(label: 'Lavage auto / Detailing', groupName: 'Automobile', emoji: '🧽', slug: 'lavage-auto'),
+    ProCategory(label: 'Débosselage / Carrosserie', groupName: 'Automobile', emoji: '🚗', slug: 'debosselage'),
+    // Services pro
+    ProCategory(label: 'Comptable / CPA', groupName: 'Services pro', emoji: '📊', slug: 'comptable'),
+    ProCategory(label: 'Avocat / Notaire', groupName: 'Services pro', emoji: '⚖️', slug: 'avocat'),
+    ProCategory(label: 'Développeur / Programmeur', groupName: 'Services pro', emoji: '💻', slug: 'developpeur'),
+    ProCategory(label: 'Graphiste / Designer', groupName: 'Services pro', emoji: '🎨', slug: 'graphiste'),
+    ProCategory(label: 'Photographe', groupName: 'Services pro', emoji: '📸', slug: 'photographe'),
+    ProCategory(label: 'Vidéaste / Monteur vidéo', groupName: 'Services pro', emoji: '🎬', slug: 'videaste'),
+    ProCategory(label: 'Marketing / Réseaux sociaux', groupName: 'Services pro', emoji: '📱', slug: 'marketing'),
+    ProCategory(label: 'Architecte / Design intérieur', groupName: 'Services pro', emoji: '📐', slug: 'architecte'),
+    // Événementiel
+    ProCategory(label: 'DJ / Musique', groupName: 'Événementiel', emoji: '🎧', slug: 'dj'),
+    ProCategory(label: 'Animateur / MC', groupName: 'Événementiel', emoji: '🎤', slug: 'animateur'),
+    ProCategory(label: 'Wedding planner', groupName: 'Événementiel', emoji: '💒', slug: 'wedding-planner'),
+    ProCategory(label: 'Fleuriste', groupName: 'Événementiel', emoji: '💐', slug: 'fleuriste'),
+    ProCategory(label: 'Décorateur événementiel', groupName: 'Événementiel', emoji: '🎀', slug: 'decorateur'),
+    // Éducation
+    ProCategory(label: 'Tuteur / Professeur privé', groupName: 'Éducation', emoji: '📚', slug: 'tuteur'),
+    ProCategory(label: 'Professeur de danse', groupName: 'Éducation', emoji: '💃', slug: 'prof-danse'),
+    ProCategory(label: 'Moniteur auto-école', groupName: 'Éducation', emoji: '🚗', slug: 'moniteur-auto'),
+    // Services domicile
+    ProCategory(label: 'Ménage / Entretien ménager', groupName: 'Services domicile', emoji: '🧹', slug: 'menage'),
+    ProCategory(label: 'Déménagement', groupName: 'Services domicile', emoji: '📦', slug: 'demenagement'),
+    ProCategory(label: 'Garde enfants / Nanny', groupName: 'Services domicile', emoji: '👶', slug: 'garde-enfants'),
+    ProCategory(label: 'Jardinage', groupName: 'Services domicile', emoji: '🌻', slug: 'jardinage'),
+    // Tech
+    ProCategory(label: 'Réparation téléphone', groupName: 'Tech', emoji: '📱', slug: 'reparation-telephone'),
+    ProCategory(label: 'Réparation ordinateur', groupName: 'Tech', emoji: '💻', slug: 'reparation-ordinateur'),
+    // Mode & Artisanat
+    ProCategory(label: 'Couturier / Retouches', groupName: 'Mode & Artisanat', emoji: '🧵', slug: 'couturier'),
+    ProCategory(label: 'Styliste / Personal shopper', groupName: 'Mode & Artisanat', emoji: '👗', slug: 'styliste'),
+    // Transport
+    ProCategory(label: 'Chauffeur privé', groupName: 'Transport', emoji: '🚘', slug: 'chauffeur-prive'),
+    // Services informels
+    ProCategory(label: 'Tressage / Braids', groupName: 'Services informels', emoji: '🪢', slug: 'tressage'),
+    ProCategory(label: 'Cuisine maison / Plats à emporter', groupName: 'Services informels', emoji: '🍲', slug: 'cuisine-maison'),
+    ProCategory(label: 'Henné / Body art', groupName: 'Services informels', emoji: '🤲', slug: 'henna'),
+    ProCategory(label: 'Couture africaine', groupName: 'Services informels', emoji: '🪡', slug: 'couture-africaine'),
+    ProCategory(label: 'Lavage à pression', groupName: 'Services informels', emoji: '💧', slug: 'lavage-pression'),
+    // Autre
+    ProCategory(label: 'Autre service', groupName: 'Autre', emoji: '📌', slug: 'autre'),
   ];
 
   Future<List<ProCategory>> fetchCategories() async {

@@ -1,0 +1,176 @@
+-- ============================================================
+-- EXPAND PRO CATEGORIES — Formal + Informal professions
+-- Spotbook — April 2026
+-- ============================================================
+-- Upsert: if slug already exists, update the row; otherwise insert.
+
+INSERT INTO pro_categories (slug, name_fr, emoji, group_name, sort_order, is_active)
+VALUES
+  -- ═══ Beauté & Soins ═══
+  ('coiffure',              'Coiffure',                    '✂️',  'Beauté & Soins',    10, true),
+  ('barbier',               'Barbier',                     '💈',  'Beauté & Soins',    11, true),
+  ('esthetique',            'Esthétique / Soins visage',   '✨',  'Beauté & Soins',    12, true),
+  ('maquillage',            'Maquillage',                  '💄',  'Beauté & Soins',    13, true),
+  ('nail-art',              'Nail Art / Manucure',         '💅',  'Beauté & Soins',    14, true),
+  ('extensions-cils',       'Extensions de cils',          '👁️',  'Beauté & Soins',    15, true),
+  ('epilation',             'Épilation',                   '🪒',  'Beauté & Soins',    16, true),
+  ('soins-capillaires',     'Soins capillaires / Tresses', '💇',  'Beauté & Soins',    17, true),
+  ('tatouage',              'Tatouage',                    '🎨',  'Beauté & Soins',    18, true),
+  ('piercing',              'Piercing',                    '💎',  'Beauté & Soins',    19, true),
+  ('microblading',          'Microblading / Sourcils',     '✏️',  'Beauté & Soins',    20, true),
+
+  -- ═══ Bien-être & Santé ═══
+  ('massage',               'Massage thérapeutique',       '💆',  'Bien-être & Santé', 30, true),
+  ('coach-sportif',         'Coach sportif',               '🏋️',  'Bien-être & Santé', 31, true),
+  ('yoga',                  'Yoga / Méditation',           '🧘',  'Bien-être & Santé', 32, true),
+  ('nutritionniste',        'Nutritionniste',              '🥗',  'Bien-être & Santé', 33, true),
+  ('physiotherapeute',      'Physiothérapeute',            '🦴',  'Bien-être & Santé', 34, true),
+  ('osteopathe',            'Ostéopathe',                  '🤲',  'Bien-être & Santé', 35, true),
+  ('psychologue',           'Psychologue / Thérapeute',    '🧠',  'Bien-être & Santé', 36, true),
+  ('naturopathe',           'Naturopathe',                 '🌿',  'Bien-être & Santé', 37, true),
+  ('kinesitherapeute',      'Kinésithérapeute',            '🏃',  'Bien-être & Santé', 38, true),
+  ('dentiste',              'Dentiste',                    '🦷',  'Bien-être & Santé', 39, true),
+  ('veterinaire',           'Vétérinaire',                 '🐾',  'Bien-être & Santé', 40, true),
+  ('chiropraticien',        'Chiropraticien',              '🔄',  'Bien-être & Santé', 41, true),
+  ('acupuncteur',           'Acupuncteur',                 '📍',  'Bien-être & Santé', 42, true),
+  ('reflexologue',          'Réflexologue',                '🦶',  'Bien-être & Santé', 43, true),
+  ('coaching-vie',          'Coach de vie',                '💡',  'Bien-être & Santé', 44, true),
+
+  -- ═══ Restauration & Alimentation ═══
+  ('traiteur',              'Traiteur / Chef privé',       '👨‍🍳', 'Restauration',      50, true),
+  ('patissier',             'Pâtissier / Gâteaux sur mesure','🎂','Restauration',      51, true),
+  ('boulanger',             'Boulanger artisanal',         '🍞',  'Restauration',      52, true),
+  ('meal-prep',             'Meal prep / Repas santé',     '🥘',  'Restauration',      53, true),
+  ('bartender',             'Bartender / Mixologue',       '🍸',  'Restauration',      54, true),
+  ('chocolatier',           'Chocolatier / Confiseur',     '🍫',  'Restauration',      55, true),
+  ('food-truck',            'Food truck',                  '🚚',  'Restauration',      56, true),
+  ('cuisine-monde',         'Cuisine du monde',            '🌍',  'Restauration',      57, true),
+
+  -- ═══ Métiers manuels & Construction ═══
+  ('plombier',              'Plombier',                    '🔧',  'Métiers manuels',   60, true),
+  ('electricien',           'Électricien',                 '⚡',  'Métiers manuels',   61, true),
+  ('peintre-batiment',      'Peintre en bâtiment',         '🖌️',  'Métiers manuels',   62, true),
+  ('menuisier',             'Menuisier / Ébéniste',        '🪚',  'Métiers manuels',   63, true),
+  ('construction',          'Construction / Rénovation',   '🏗️',  'Métiers manuels',   64, true),
+  ('carreleur',             'Carreleur / Céramique',       '🔲',  'Métiers manuels',   65, true),
+  ('couvreur',              'Couvreur / Toiture',          '🏠',  'Métiers manuels',   66, true),
+  ('soudeur',               'Soudeur',                     '🔥',  'Métiers manuels',   67, true),
+  ('maconnerie',            'Maçonnerie',                  '🧱',  'Métiers manuels',   68, true),
+  ('chauffage-clim',        'Chauffage / Climatisation',   '❄️',  'Métiers manuels',   69, true),
+  ('paysagiste',            'Paysagiste / Entretien terrain','🌳','Métiers manuels',   70, true),
+  ('deneigement',           'Déneigement',                 '❄️',  'Métiers manuels',   71, true),
+  ('serrurier',             'Serrurier',                   '🔐',  'Métiers manuels',   72, true),
+  ('homme-a-tout-faire',    'Homme à tout faire',          '🛠️',  'Métiers manuels',   73, true),
+  ('vitrier',               'Vitrier',                     '🪟',  'Métiers manuels',   74, true),
+  ('ferblantier',           'Ferblantier',                 '🔩',  'Métiers manuels',   75, true),
+  ('excavation',            'Excavation / Terrassement',   '🚜',  'Métiers manuels',   76, true),
+  ('isolation',             'Isolation / Insonorisation',  '🧤',  'Métiers manuels',   77, true),
+  ('pisciniste',            'Pisciniste / Spa',            '🏊',  'Métiers manuels',   78, true),
+
+  -- ═══ Automobile ═══
+  ('mecanicien',            'Mécanicien automobile',       '🔧',  'Automobile',        80, true),
+  ('debosselage',           'Débosselage / Carrosserie',   '🚗',  'Automobile',        81, true),
+  ('remorquage',            'Remorquage / Dépannage',      '🚛',  'Automobile',        82, true),
+  ('lavage-auto',           'Lavage auto / Detailing',     '🧽',  'Automobile',        83, true),
+  ('vitres-teintees',       'Vitres teintées',             '🕶️',  'Automobile',        84, true),
+  ('pneus',                 'Pneus / Alignement',          '🛞',  'Automobile',        85, true),
+
+  -- ═══ Services professionnels ═══
+  ('comptable',             'Comptable / CPA',             '📊',  'Services pro',      90, true),
+  ('avocat',                'Avocat / Notaire',            '⚖️',  'Services pro',      91, true),
+  ('developpeur',           'Développeur / Programmeur',   '💻',  'Services pro',      92, true),
+  ('graphiste',             'Graphiste / Designer',        '🎨',  'Services pro',      93, true),
+  ('marketing',             'Marketing / Réseaux sociaux', '📱',  'Services pro',      94, true),
+  ('photographe',           'Photographe',                 '📸',  'Services pro',      95, true),
+  ('videaste',              'Vidéaste / Monteur vidéo',    '🎬',  'Services pro',      96, true),
+  ('traducteur',            'Traducteur / Interprète',     '🌐',  'Services pro',      97, true),
+  ('consultant',            'Consultant / Coach business', '💼',  'Services pro',      98, true),
+  ('agent-immobilier',      'Agent immobilier / Courtier', '🏡',  'Services pro',      99, true),
+  ('redacteur',             'Rédacteur / Copywriter',      '✍️',  'Services pro',     100, true),
+  ('architecte',            'Architecte / Design intérieur','📐', 'Services pro',     101, true),
+  ('assureur',              'Courtier en assurance',       '🛡️',  'Services pro',     102, true),
+  ('fiscaliste',            'Fiscaliste',                  '📋',  'Services pro',     103, true),
+  ('importateur',           'Importateur / Dédouanement',  '📦',  'Services pro',     104, true),
+
+  -- ═══ Événementiel ═══
+  ('dj',                    'DJ / Musique',                '🎧',  'Événementiel',     110, true),
+  ('animateur',             'Animateur / MC',              '🎤',  'Événementiel',     111, true),
+  ('decorateur',            'Décorateur événementiel',     '🎀',  'Événementiel',     112, true),
+  ('wedding-planner',       'Wedding planner',             '💒',  'Événementiel',     113, true),
+  ('planificateur',         'Planificateur événements',    '📅',  'Événementiel',     114, true),
+  ('fleuriste',             'Fleuriste',                   '💐',  'Événementiel',     115, true),
+  ('musicien',              'Musicien / Groupe live',      '🎵',  'Événementiel',     116, true),
+  ('location-equipement',   'Location équipement (son, lumière)','🔊','Événementiel', 117, true),
+  ('magicien',              'Magicien / Illusionniste',    '🎩',  'Événementiel',     118, true),
+  ('humoriste',             'Humoriste / Stand-up',        '😂',  'Événementiel',     119, true),
+  ('maitre-ceremonie',      'Maître de cérémonie',         '🎙️',  'Événementiel',     120, true),
+
+  -- ═══ Éducation & Formation ═══
+  ('tuteur',                'Tuteur / Professeur privé',   '📚',  'Éducation',        130, true),
+  ('prof-musique',          'Professeur de musique',       '🎹',  'Éducation',        131, true),
+  ('prof-langues',          'Professeur de langues',       '🗣️',  'Éducation',        132, true),
+  ('moniteur-auto',         'Moniteur auto-école',         '🚗',  'Éducation',        133, true),
+  ('formateur',             'Formateur professionnel',     '🎓',  'Éducation',        134, true),
+  ('prof-danse',            'Professeur de danse',         '💃',  'Éducation',        135, true),
+  ('prof-art',              'Professeur d''art / Dessin',  '🎨',  'Éducation',        136, true),
+
+  -- ═══ Services à domicile ═══
+  ('menage',                'Ménage / Entretien ménager',  '🧹',  'Services domicile', 140, true),
+  ('demenagement',          'Déménagement',                '📦',  'Services domicile', 141, true),
+  ('garde-enfants',         'Garde enfants / Nanny',       '👶',  'Services domicile', 142, true),
+  ('garde-animaux',         'Garde animaux / Dog walker',  '🐕',  'Services domicile', 143, true),
+  ('livraison',             'Livraison / Coursier',        '🛵',  'Services domicile', 144, true),
+  ('home-organizer',        'Home organizer / Rangement',  '🏠',  'Services domicile', 145, true),
+  ('aide-personne-agee',    'Aide aux personnes âgées',    '🤝',  'Services domicile', 146, true),
+  ('jardinage',             'Jardinage',                   '🌻',  'Services domicile', 147, true),
+  ('repassage',             'Repassage / Blanchisserie',   '👔',  'Services domicile', 148, true),
+  ('concierge',             'Concierge / Majordome',       '🔑',  'Services domicile', 149, true),
+
+  -- ═══ Tech & Réparation ═══
+  ('reparation-telephone',  'Réparation téléphone',        '📱',  'Tech',             150, true),
+  ('reparation-ordinateur', 'Réparation ordinateur',       '💻',  'Tech',             151, true),
+  ('installation-tv',       'Installation TV / Home cinéma','📺', 'Tech',             152, true),
+  ('camera-securite',       'Caméra de sécurité / Domotique','📹','Tech',             153, true),
+  ('reseau-wifi',           'Réseau / WiFi / Fibre',       '📶',  'Tech',             154, true),
+  ('console-jeux',          'Réparation console de jeux',  '🎮',  'Tech',             155, true),
+
+  -- ═══ Mode & Artisanat ═══
+  ('couturier',             'Couturier / Retouches',       '🧵',  'Mode & Artisanat', 160, true),
+  ('styliste',              'Styliste / Personal shopper', '👗',  'Mode & Artisanat', 161, true),
+  ('bijoutier',             'Bijoutier artisanal',         '💍',  'Mode & Artisanat', 162, true),
+  ('cordonnier',            'Cordonnier',                  '👞',  'Mode & Artisanat', 163, true),
+  ('maroquinier',           'Maroquinier',                 '👜',  'Mode & Artisanat', 164, true),
+  ('broderie',              'Broderie / Personnalisation', '🪡',  'Mode & Artisanat', 165, true),
+  ('imprimeur',             'Imprimeur / Sérigraphie',     '🖨️',  'Mode & Artisanat', 166, true),
+
+  -- ═══ Transport ═══
+  ('chauffeur-prive',       'Chauffeur privé',             '🚘',  'Transport',        170, true),
+  ('taxi',                  'Taxi',                        '🚕',  'Transport',        171, true),
+  ('transport-marchandise', 'Transport de marchandises',   '🚚',  'Transport',        172, true),
+  ('demenageur-longue-dist','Déménageur longue distance',  '🏘️',  'Transport',        173, true),
+
+  -- ═══ Services informels ═══
+  ('coiffure-domicile',     'Coiffure à domicile',         '✂️',  'Services informels',180, true),
+  ('tressage',              'Tressage / Braids',           '🪢',  'Services informels',181, true),
+  ('henna',                 'Henné / Body art',            '🤲',  'Services informels',182, true),
+  ('couture-africaine',     'Couture africaine',           '🪡',  'Services informels',183, true),
+  ('cuisine-maison',        'Cuisine maison / Plats à emporter','🍲','Services informels',184, true),
+  ('jus-naturels',          'Jus naturels / Smoothies',    '🥤',  'Services informels',185, true),
+  ('vendeur-ambulant',      'Vendeur ambulant',            '🛒',  'Services informels',186, true),
+  ('reparation-electromenager','Réparation électroménager','🔌',  'Services informels',187, true),
+  ('astrologue',            'Astrologue / Voyance',        '🔮',  'Services informels',188, true),
+  ('photographe-mobile',    'Photographe mobile',          '📷',  'Services informels',189, true),
+  ('dj-mobile',             'DJ mobile / Sono',            '🔊',  'Services informels',190, true),
+  ('lavage-pression',       'Lavage à pression',           '💧',  'Services informels',191, true),
+  ('peinture-artistique',   'Peinture artistique / Murales','🖼️', 'Services informels',192, true),
+  ('reparation-velo',       'Réparation vélo',             '🚲',  'Services informels',193, true),
+
+  -- ═══ Autre ═══
+  ('autre',                 'Autre service',               '📌',  'Autre',            999, true)
+
+ON CONFLICT (slug) DO UPDATE SET
+  name_fr    = EXCLUDED.name_fr,
+  emoji      = EXCLUDED.emoji,
+  group_name = EXCLUDED.group_name,
+  sort_order = EXCLUDED.sort_order,
+  is_active  = EXCLUDED.is_active;

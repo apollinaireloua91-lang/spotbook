@@ -75,6 +75,8 @@ import '../features/events/presentation/screens/client_events_discovery_screen.d
 import '../features/favorites/presentation/screens/saved_posts_screen.dart';
 import '../features/settings/presentation/screens/language_settings_screen.dart';
 import '../features/payment/presentation/screens/payment_receipt_screen.dart';
+import '../features/soumission/presentation/screens/soumissions_list_screen.dart';
+import '../features/soumission/presentation/screens/create_soumission_screen.dart';
 import 'client_shell.dart';
 import 'pro_shell.dart';
 
@@ -437,6 +439,23 @@ final appRouter = GoRouter(
         child: const UploadVideoScreen(),
       ),
     ),
+
+    // ── Soumissions (quotes) ──
+    GoRoute(
+      path: '/pro/soumissions',
+      pageBuilder: (context, state) => premiumPage(
+        state: state,
+        child: const SoumissionsListScreen(),
+      ),
+    ),
+    GoRoute(
+      path: '/pro/soumissions/create',
+      pageBuilder: (context, state) => premiumSlideUpPage(
+        state: state,
+        child: const CreateSoumissionScreen(),
+      ),
+    ),
+
     GoRoute(
       path: '/chat/:conversationId',
       pageBuilder: (context, state) {
