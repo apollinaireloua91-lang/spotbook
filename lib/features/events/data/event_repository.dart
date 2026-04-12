@@ -91,7 +91,11 @@ class EventRepository {
   }
 
   Future<String> uploadCover(String eventId, Uint8List bytes) async {
-    final path = '$eventId/cover.jpg';
+    final uid = currentUserId;
+    if (uid == null) throw Exception('Non connecté');
+
+    // RLS policy requires first folder = auth.uid()
+    final path = '$uid/$eventId.jpg';
     await _supabase.storage
         .from('event-covers')
         .uploadBinary(path, bytes, fileOptions: const FileOptions(upsert: true));

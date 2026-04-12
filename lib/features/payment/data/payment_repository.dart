@@ -33,11 +33,10 @@ class PaymentRepository {
   /// Calls stripe-connect-onboarding edge function to get the Stripe
   /// Account Link URL for Express onboarding.
   Future<String> createStripeConnectLink() async {
-    await _ensureFreshSession();
+    await _supabase.auth.refreshSession();
 
     final res = await _supabase.functions.invoke(
       'stripe-connect-onboarding',
-      method: HttpMethod.post,
       body: {},
     );
     if (res.status != 200) {
@@ -55,11 +54,10 @@ class PaymentRepository {
   /// Calls stripe-connect-dashboard to get the pro's Stripe status + URL.
   /// Returns {status, detailsSubmitted, chargesEnabled, payoutsEnabled, url}.
   Future<Map<String, dynamic>> getStripeConnectStatus() async {
-    await _ensureFreshSession();
+    await _supabase.auth.refreshSession();
 
     final res = await _supabase.functions.invoke(
       'stripe-connect-dashboard',
-      method: HttpMethod.post,
       body: {},
     );
     if (res.status != 200) {
@@ -67,20 +65,6 @@ class PaymentRepository {
       throw Exception(err ?? 'Failed to fetch status');
     }
     return res.data as Map<String, dynamic>;
-  }
-
-  /// Refreshes the session. If the refresh token is also expired,
-  /// this throws so the caller can redirect to login.
-  Future<void> _ensureFreshSession() async {
-    final session = _supabase.auth.currentSession;
-    if (session == null) {
-      throw Exception('Session expired — please log in again');
-    }
-    try {
-      await _supabase.auth.refreshSession();
-    } catch (e) {
-      throw Exception('Session expired — please log in again');
-    }
   }
 
   /// Calls stripe-create-catering-intent edge function to get a clientSecret
