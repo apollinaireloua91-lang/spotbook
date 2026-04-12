@@ -103,9 +103,9 @@ class CancellationPolicyScreen extends StatelessWidget {
             const SizedBox(height: 16),
 
             // Rule 1 — More than 48h
-            const _PolicyRule(
+            _PolicyRule(
               icon: Icons.check_circle,
-              iconColor: Color(0xFF22C55E),
+              iconColor: AppColors.success,
               title: 'More than 48 hours before',
               subtitle: 'Full refund to client',
               description:
@@ -114,9 +114,9 @@ class CancellationPolicyScreen extends StatelessWidget {
             const _TimelineLine(),
 
             // Rule 2 — Between 24h and 48h
-            const _PolicyRule(
+            _PolicyRule(
               icon: Icons.warning_amber_rounded,
-              iconColor: Color(0xFFFFBB33),
+              iconColor: AppColors.warning,
               title: 'Between 24h and 48h before',
               subtitle: '50% of deposit retained',
               description:
@@ -125,9 +125,9 @@ class CancellationPolicyScreen extends StatelessWidget {
             const _TimelineLine(),
 
             // Rule 3 — Less than 24h
-            const _PolicyRule(
+            _PolicyRule(
               icon: Icons.block,
-              iconColor: Color(0xFFEF4444),
+              iconColor: AppColors.error,
               title: 'Less than 24 hours before',
               subtitle: '100% of deposit retained',
               description:
@@ -138,7 +138,7 @@ class CancellationPolicyScreen extends StatelessWidget {
             // Rule 4 — No show
             _PolicyRule(
               icon: Icons.person_off,
-              iconColor: const Color(0xFFEF4444).withAlpha(200),
+              iconColor: AppColors.error.withAlpha(200),
               title: 'No-show',
               subtitle: '100% of deposit retained',
               description:

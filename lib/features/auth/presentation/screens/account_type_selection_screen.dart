@@ -1,30 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../shared/theme/app_colors.dart';
 
-class AccountTypeSelectionScreen extends StatefulWidget {
+class _RoleNotifier extends Notifier<String?> {
+  @override
+  String? build() => null;
+  void select(String role) => state = role;
+}
+
+final _selectedRoleProvider =
+    NotifierProvider<_RoleNotifier, String?>(_RoleNotifier.new);
+
+class AccountTypeSelectionScreen extends ConsumerWidget {
   const AccountTypeSelectionScreen({super.key});
 
   @override
-  State<AccountTypeSelectionScreen> createState() =>
-      _AccountTypeSelectionScreenState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final selectedRole = ref.watch(_selectedRoleProvider);
 
-class _AccountTypeSelectionScreenState
-    extends State<AccountTypeSelectionScreen> {
-  String? _selectedRole;
+    void confirm() {
+      if (selectedRole == null) return;
+      HapticFeedback.mediumImpact();
+      context.go('/signup/$selectedRole');
+    }
 
-  void _confirm() {
-    if (_selectedRole == null) return;
-    HapticFeedback.mediumImpact();
-    context.go('/signup/$_selectedRole');
-  }
-
-  @override
-  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.fond,
       body: SafeArea(
@@ -58,11 +61,11 @@ class _AccountTypeSelectionScreenState
                 title: 'Client',
                 subtitle: 'I\'m looking for professionals',
                 description: 'Discover, book, attend',
-                isSelected: _selectedRole == 'client',
+                isSelected: selectedRole == 'client',
                 gradientColors: [AppColors.violet, AppColors.violetClair],
                 onTap: () {
                   HapticFeedback.selectionClick();
-                  setState(() => _selectedRole = 'client');
+                  ref.read(_selectedRoleProvider.notifier).select('client');
                 },
               ),
               const SizedBox(height: 16),
@@ -73,11 +76,11 @@ class _AccountTypeSelectionScreenState
                 title: 'Professional',
                 subtitle: 'I offer my services',
                 description: 'Publish, manage, earn',
-                isSelected: _selectedRole == 'pro',
+                isSelected: selectedRole == 'pro',
                 gradientColors: [AppColors.rose, AppColors.roseClair],
                 onTap: () {
                   HapticFeedback.selectionClick();
-                  setState(() => _selectedRole = 'pro');
+                  ref.read(_selectedRoleProvider.notifier).select('pro');
                 },
               ),
 
@@ -90,7 +93,7 @@ class _AccountTypeSelectionScreenState
                 child: DecoratedBox(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(14),
-                    gradient: _selectedRole != null
+                    gradient: selectedRole != null
                         ? AppColors.gradientAccent
                         : LinearGradient(colors: [
                             AppColors.violet.withAlpha(60),
@@ -98,7 +101,7 @@ class _AccountTypeSelectionScreenState
                           ]),
                   ),
                   child: ElevatedButton(
-                    onPressed: _selectedRole != null ? _confirm : null,
+                    onPressed: selectedRole != null ? confirm : null,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.transparent,
                       shadowColor: Colors.transparent,

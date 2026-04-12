@@ -8,6 +8,48 @@ import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/widgets/spotbook_button.dart';
 import '../../data/auth_repository.dart';
 
+// ─── State ───
+
+class _ForgotPwState {
+  const _ForgotPwState({this.isLoading = false, this.errorMessage});
+  final bool isLoading;
+  final String? errorMessage;
+
+  _ForgotPwState copyWith({bool? isLoading, String? errorMessage, bool clearError = false}) =>
+      _ForgotPwState(
+        isLoading: isLoading ?? this.isLoading,
+        errorMessage: clearError ? null : (errorMessage ?? this.errorMessage),
+      );
+}
+
+class _ForgotPwNotifier extends Notifier<_ForgotPwState> {
+  @override
+  _ForgotPwState build() => const _ForgotPwState();
+
+  Future<bool> submit(String email) async {
+    state = state.copyWith(isLoading: true, clearError: true);
+    try {
+      await ref.read(authRepositoryProvider).resetPassword(email);
+      state = state.copyWith(isLoading: false);
+      return true;
+    } catch (e) {
+      final msg = e.toString();
+      state = state.copyWith(
+        isLoading: false,
+        errorMessage: msg.contains('rate')
+            ? 'Too many attempts. Please try again in a few minutes.'
+            : 'An error occurred. Please check your email.',
+      );
+      return false;
+    }
+  }
+}
+
+final _forgotPwProvider =
+    NotifierProvider<_ForgotPwNotifier, _ForgotPwState>(_ForgotPwNotifier.new);
+
+// ─── Screen ───
+
 class ForgotPasswordScreen extends ConsumerStatefulWidget {
   const ForgotPasswordScreen({super.key});
 
@@ -19,8 +61,6 @@ class ForgotPasswordScreen extends ConsumerStatefulWidget {
 class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
   final _emailCtrl = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-  bool _isLoading = false;
-  String? _errorMessage;
 
   @override
   void dispose() {
@@ -32,32 +72,18 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
     if (!(_formKey.currentState?.validate() ?? false)) return;
 
     HapticFeedback.mediumImpact();
-    setState(() {
-      _isLoading = true;
-      _errorMessage = null;
-    });
+    final success =
+        await ref.read(_forgotPwProvider.notifier).submit(_emailCtrl.text.trim());
 
-    try {
-      await ref
-          .read(authRepositoryProvider)
-          .resetPassword(_emailCtrl.text.trim());
-
-      if (!mounted) return;
+    if (success && mounted) {
       context.go('/forgot-password-confirmation', extra: _emailCtrl.text.trim());
-    } catch (e) {
-      if (!mounted) return;
-      final msg = e.toString();
-      setState(() {
-        _isLoading = false;
-        _errorMessage = msg.contains('rate')
-            ? 'Too many attempts. Please try again in a few minutes.'
-            : 'An error occurred. Please check your email.';
-      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final s = ref.watch(_forgotPwProvider);
+
     return Scaffold(
       backgroundColor: AppColors.fond,
       appBar: AppBar(
@@ -164,10 +190,10 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                   ),
                 ),
 
-                if (_errorMessage != null) ...[
+                if (s.errorMessage != null) ...[
                   const SizedBox(height: 12),
                   Text(
-                    _errorMessage!,
+                    s.errorMessage!,
                     style: GoogleFonts.dmSans(
                         color: AppColors.error, fontSize: 13),
                   ),
@@ -179,8 +205,8 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                 SpotbookButton(
                   label: 'Reset password',
                   variant: SpotbookButtonVariant.primary,
-                  isLoading: _isLoading,
-                  onPressed: _isLoading ? null : _submit,
+                  isLoading: s.isLoading,
+                  onPressed: s.isLoading ? null : _submit,
                 ),
 
                 const SizedBox(height: 32),
