@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/widgets/confetti_overlay.dart';
 
@@ -80,6 +81,7 @@ class _ReviewSheetState extends State<ReviewSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     final bottomPadding = MediaQuery.viewInsetsOf(context).bottom;
 
     return Stack(
@@ -107,7 +109,7 @@ class _ReviewSheetState extends State<ReviewSheet> {
 
               // Title
               Text(
-                'Laisser un avis',
+                l.leaveReview,
                 style: TextStyle(
                   color: AppColors.blanc,
                   fontSize: 18,
@@ -158,7 +160,7 @@ class _ReviewSheetState extends State<ReviewSheet> {
                   fontSize: 14,
                 ),
                 decoration: InputDecoration(
-                  hintText: 'Partagez votre expérience...',
+                  hintText: l.shareYourExperience,
                   hintStyle: TextStyle(
                     color: AppColors.gris.withAlpha(150),
                   ),
@@ -209,7 +211,7 @@ class _ReviewSheetState extends State<ReviewSheet> {
                             ),
                           )
                         : Text(
-                            'Publier l\'avis',
+                            l.publishReview,
                             style: TextStyle(
                               color: AppColors.blanc,
                               fontSize: 15,

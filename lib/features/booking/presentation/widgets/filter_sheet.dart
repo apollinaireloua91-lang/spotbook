@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
 
 /// Filter configuration for bookings.
@@ -77,12 +78,12 @@ class _FilterSheetState extends State<FilterSheet> {
   DateTime? _dateTo;
   late final TextEditingController _proNameController;
 
-  static final _statusOptions = [
-    ('confirmed', 'Confirmé', AppColors.success),
-    ('pending_payment', 'En attente', AppColors.violetClair),
-    ('completed', 'Terminé', AppColors.gris),
-    ('cancelled_full_refund', 'Remboursé', AppColors.error),
-    ('cancelled_no_refund', 'Annulé', AppColors.error),
+  static List<(String, String, Color)> _statusOptions(AppLocalizations l) => [
+    ('confirmed', l.confirmed, AppColors.success),
+    ('pending_payment', l.pending, AppColors.violetClair),
+    ('completed', l.markAsDone, AppColors.gris),
+    ('cancelled_full_refund', l.cancel, AppColors.error),
+    ('cancelled_no_refund', l.cancel, AppColors.error),
   ];
 
   @override
@@ -157,6 +158,7 @@ class _FilterSheetState extends State<FilterSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     final bottomPadding = MediaQuery.viewInsetsOf(context).bottom;
 
     return Container(
@@ -187,7 +189,7 @@ class _FilterSheetState extends State<FilterSheet> {
           Row(
             children: [
               Text(
-                'Filtrer',
+                l.filterLabel,
                 style: TextStyle(
                   color: AppColors.blanc,
                   fontSize: 18,
@@ -198,7 +200,7 @@ class _FilterSheetState extends State<FilterSheet> {
               GestureDetector(
                 onTap: _reset,
                 child: Text(
-                  'Réinitialiser',
+                  l.resetFilters,
                   style: TextStyle(
                     color: AppColors.violetClair,
                     fontSize: 13,
@@ -213,7 +215,7 @@ class _FilterSheetState extends State<FilterSheet> {
 
           // Status chips
           Text(
-            'STATUT',
+            l.statusLabel,
             style: TextStyle(
               color: AppColors.gris,
               fontSize: 11,
@@ -225,7 +227,7 @@ class _FilterSheetState extends State<FilterSheet> {
           Wrap(
             spacing: 8,
             runSpacing: 8,
-            children: _statusOptions.map((option) {
+            children: _statusOptions(l).map((option) {
               final (value, label, color) = option;
               final isActive = _statuses.contains(value);
               return GestureDetector(
@@ -269,7 +271,7 @@ class _FilterSheetState extends State<FilterSheet> {
 
           // Date range
           Text(
-            'PÉRIODE',
+            l.periodLabel,
             style: TextStyle(
               color: AppColors.gris,
               fontSize: 11,
@@ -282,7 +284,7 @@ class _FilterSheetState extends State<FilterSheet> {
             children: [
               Expanded(
                 child: _DatePickerButton(
-                  label: 'Depuis',
+                  label: l.dateFrom,
                   date: _dateFrom,
                   onTap: () => _pickDate(isFrom: true),
                   onClear: () => setState(() => _dateFrom = null),
@@ -291,7 +293,7 @@ class _FilterSheetState extends State<FilterSheet> {
               const SizedBox(width: 12),
               Expanded(
                 child: _DatePickerButton(
-                  label: 'Jusqu\'à',
+                  label: l.dateTo,
                   date: _dateTo,
                   onTap: () => _pickDate(isFrom: false),
                   onClear: () => setState(() => _dateTo = null),
@@ -304,7 +306,7 @@ class _FilterSheetState extends State<FilterSheet> {
 
           // Pro name search
           Text(
-            'PROFESSIONNEL',
+            l.professionalLabel,
             style: TextStyle(
               color: AppColors.gris,
               fontSize: 11,
@@ -317,7 +319,7 @@ class _FilterSheetState extends State<FilterSheet> {
             controller: _proNameController,
             style: TextStyle(color: AppColors.blanc, fontSize: 14),
             decoration: InputDecoration(
-              hintText: 'Rechercher un pro...',
+              hintText: l.searchProHint,
               hintStyle: TextStyle(color: AppColors.gris.withAlpha(150)),
               prefixIcon: Icon(
                 Icons.search,
@@ -359,7 +361,7 @@ class _FilterSheetState extends State<FilterSheet> {
               ),
               child: Center(
                 child: Text(
-                  'Appliquer les filtres',
+                  l.applyTheFilters,
                   style: TextStyle(
                     color: AppColors.blanc,
                     fontSize: 15,

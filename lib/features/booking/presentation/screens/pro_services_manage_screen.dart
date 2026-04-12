@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/widgets/spotbook_button.dart';
 import '../../../../shared/widgets/spotbook_card.dart';
@@ -152,6 +153,7 @@ class ProServicesManageScreen extends ConsumerWidget {
     WidgetRef ref,
     ServiceModel? existing,
   ) async {
+    final l = AppLocalizations.of(context)!;
     final nameCtrl = TextEditingController(text: existing?.name ?? '');
     final descCtrl = TextEditingController(text: existing?.description ?? '');
     final priceCtrl = TextEditingController(
@@ -228,13 +230,13 @@ class ProServicesManageScreen extends ConsumerWidget {
                     const SizedBox(height: 20),
                     SpotbookTextField(
                       controller: nameCtrl,
-                      label: 'Nom',
+                      label: l.serviceName,
                       hint: 'Ex. Massage suédois 60 min',
                     ),
                     const SizedBox(height: 12),
                     SpotbookTextField(
                       controller: descCtrl,
-                      label: 'Description (optionnel)',
+                      label: l.descriptionOptional,
                       hint: 'Détails pour le client',
                       maxLines: 3,
                     ),
@@ -244,7 +246,7 @@ class ProServicesManageScreen extends ConsumerWidget {
                         Expanded(
                           child: SpotbookTextField(
                             controller: priceCtrl,
-                            label: 'Tarif (CAD)',
+                            label: l.priceCad,
                             hint: '80.00',
                             keyboardType: const TextInputType.numberWithOptions(
                                 decimal: true),
@@ -311,14 +313,14 @@ class ProServicesManageScreen extends ConsumerWidget {
                     ),
                     const SizedBox(height: 8),
                     _PaymentModeRadio(
-                      label: 'Paiement intégral',
+                      label: l.fullPayment,
                       subtitle: 'Le client paie le montant total en ligne',
                       selected: paymentMode == 'full',
                       onTap: () => setModal(() => paymentMode = 'full'),
                     ),
                     const SizedBox(height: 8),
                     _PaymentModeRadio(
-                      label: 'Acompte + solde sur place',
+                      label: l.depositPlusSurplace,
                       subtitle: 'Le client paie un acompte en ligne, le reste au rendez-vous',
                       selected: paymentMode == 'deposit',
                       onTap: () => setModal(() => paymentMode = 'deposit'),
@@ -422,7 +424,7 @@ class ProServicesManageScreen extends ConsumerWidget {
                       ] else ...[
                         SpotbookTextField(
                           controller: fixedAmountCtrl,
-                          label: 'Montant de l\'acompte (CAD)',
+                          label: l.depositAmountCad,
                           hint: '100.00',
                           keyboardType: const TextInputType.numberWithOptions(
                               decimal: true),
@@ -476,7 +478,7 @@ class ProServicesManageScreen extends ConsumerWidget {
                         final name = nameCtrl.text.trim();
                         if (name.length < 2) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Le nom du service doit faire au moins 2 caractères')),
+                            SnackBar(content: Text(l.serviceNameMinChars)),
                           );
                           return;
                         }
@@ -485,7 +487,7 @@ class ProServicesManageScreen extends ConsumerWidget {
                         );
                         if (price == null || price <= 0) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Veuillez entrer un prix valide')),
+                            SnackBar(content: Text(l.invalidPrice)),
                           );
                           return;
                         }
@@ -506,7 +508,7 @@ class ProServicesManageScreen extends ConsumerWidget {
                             );
                             if (depValue == null || depValue <= 0) {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('Veuillez entrer un montant d\'acompte valide')),
+                                SnackBar(content: Text(l.invalidDepositAmount)),
                               );
                               return;
                             }
@@ -560,7 +562,7 @@ class ProServicesManageScreen extends ConsumerWidget {
                     ),
                     const SizedBox(height: 8),
                     SpotbookButton.outlined(
-                      label: 'Annuler',
+                      label: l.cancel,
                       onPressed: () => context.pop(),
                     ),
                   ],
@@ -649,8 +651,9 @@ class _ServiceTile extends StatelessWidget {
   final VoidCallback onEdit;
   final VoidCallback onToggle;
 
-  String get _depositLabel {
-    if (!service.isDepositMode) return 'Paiement intégral';
+  String _depositLabel(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
+    if (!service.isDepositMode) return l.fullPayment;
     if (service.depositType == 'fixed') {
       return 'Acompte ${service.depositValue?.toStringAsFixed(0) ?? '—'} \$';
     }
@@ -680,7 +683,7 @@ class _ServiceTile extends StatelessWidget {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        '${service.durationMinutes} min · $priceLabel · $_depositLabel',
+                        '${service.durationMinutes} min · $priceLabel · ${_depositLabel(context)}',
                         style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 13),
                       ),
                     ],

@@ -1548,4 +1548,220 @@ class AppLocalizationsFr extends AppLocalizations {
   String get dayOff => 'Jour de congé';
   @override
   String get addRule => 'Ajouter la règle';
+
+  // ── My Bookings / Reservation Card / Review Sheet ──
+  @override
+  String get bookAgain => 'Réserver à nouveau';
+  @override
+  String get filterLabel => 'Filtrer';
+  @override
+  String get tabUpcoming => 'À venir';
+  @override
+  String get tabPast => 'Passés';
+  @override
+  String get tabTickets => 'Billets';
+  @override
+  String get noUpcomingBookings => 'Aucune réservation à venir';
+  @override
+  String get noUpcomingBookingsSubtitle => 'Réservez un service pour voir\nvos rendez-vous ici';
+  @override
+  String get discoverPros => 'Découvrir des pros';
+  @override
+  String get noPastBookings => 'Aucune réservation passée';
+  @override
+  String get noPastBookingsSubtitle => 'Vos rendez-vous terminés\napparaîtront ici';
+  @override
+  String get noTicketsYet => 'Aucun billet';
+  @override
+  String get noTicketsSubtitle => 'Découvrez des événements et achetez\ndes billets pour les retrouver ici';
+  @override
+  String get browseEvents => 'Parcourir les événements';
+  @override
+  String get publishReview => 'Publier l\'avis';
+  @override
+  String get shareYourExperience => 'Partagez votre expérience...';
+  @override
+  String get resetFilters => 'Réinitialiser';
+  @override
+  String get statusLabel => 'STATUT';
+  @override
+  String get periodLabel => 'PÉRIODE';
+  @override
+  String get professionalLabel => 'PROFESSIONNEL';
+  @override
+  String get dateFrom => 'Depuis';
+  @override
+  String get dateTo => 'Jusqu\'à';
+  @override
+  String get searchProHint => 'Rechercher un pro...';
+  @override
+  String get applyTheFilters => 'Appliquer les filtres';
+
+  // ── Dashboard / Revenue extras ──
+  @override
+  String get greetingMorning => 'Bonjour';
+  @override
+  String get greetingAfternoon => 'Bon après-midi';
+  @override
+  String get greetingEvening => 'Bonsoir';
+  @override
+  String get manageServices => 'Gérer\nservices';
+  @override
+  String get revenueAndStats => 'Revenus\n& Stats';
+  @override
+  String get myEventsLabel => 'Mes\névénements';
+  @override
+  String get viewAll => 'Voir tout';
+  @override
+  String get noUpcomingAppointments => 'Aucun rendez-vous à venir';
+  @override
+  String get upcomingAppointmentsHint => 'Vos prochains rendez-vous apparaîtront ici';
+  @override
+  String get dashboardLoadError => 'Impossible de charger le tableau de bord';
+  @override
+  String get depositsCollected => 'Acomptes encaissés (confirmés + terminés), hors frais Stripe.';
+  @override
+  String get totalPeriod => 'Total sur la période';
+  @override
+  String get withdraw => 'Retirer';
+  @override
+  String get perDay => 'Par jour';
+  @override
+  String get transactions => 'Transactions';
+  @override
+  String get noTransactionsPeriod => 'Aucune transaction sur cette période';
+
+  // ── Booking flow extras ──
+  @override
+  String get stepService => 'Service';
+  @override
+  String get stepDate => 'Date';
+  @override
+  String get stepTime => 'Heure';
+  @override
+  String get stepSummary => 'Résumé';
+  @override
+  String get stepPayment => 'Paiement';
+  @override
+  String get stepConfirmed => 'Confirmé';
+  @override
+  String get chooseAService => 'Choisir un service';
+  @override
+  String get chooseAServiceSubtitle => 'Sélectionnez le service souhaité';
+  @override
+  String get subtotal => 'Sous-total';
+  @override
+  String get depositPercent => 'Acompte (30%)';
+  @override
+  String get serviceFee => 'Frais de service';
+  @override
+  String get promoLabel => 'Promo';
+
+  // ── Booking flow extras (batch 2) ──
+  @override
+  String get chooseADate => 'Choisir une date';
+  @override
+  String get availableDaysHint => 'Les jours disponibles sont mis en évidence';
+  @override
+  String get chooseASlot => 'Choisir un créneau';
+  @override
+  String get noSlotsForDate => 'Aucun créneau disponible pour cette date';
+  @override
+  String get summarySubtitle => 'Vérifiez les détails de votre réservation';
+  @override
+  String get durationLabel => 'Durée';
+  @override
+  String get payNowLabel => 'À payer maintenant';
+  @override
+  String get remainingOnDay => 'Solde le jour du RDV';
+  @override
+  String get promoCodeTitle => 'Code promo';
+  @override
+  String get enterCodeHint => 'Entrer un code';
+  @override
+  String get promoApplied => 'Appliqué';
+  @override
+  String get applyPromo => 'Appliquer';
+  @override
+  String get selectedLabel => 'Sélectionné';
+  @override
+  String get payButtonPrefix => 'Payer';
+  @override
+  String get paymentSubtitlePrefix => 'À payer maintenant :';
+  @override
+  String get creditCard => 'Carte bancaire';
+  @override
+  String get secured => 'Sécurisé';
+  @override
+  String get totalService => 'Total du service';
+  @override
+  String get remainingBalanceOnSite => 'Solde restant (sur place)';
+  @override
+  String get paymentFailed => 'Paiement échoué';
+  @override
+  String get bookingConfirmedTitle => 'Réservation confirmée !';
+  @override
+  String get bookingConfirmedSubtitle => 'Votre RDV est bien enregistré';
+  @override
+  String get bookingCodeLabel => 'Code de réservation';
+  @override
+  String get close => 'Fermer';
+
+  // ── Dashboard section headers ──
+  @override
+  String get quickActionsHeader => 'ACTIONS RAPIDES';
+  @override
+  String get upcomingBookingsHeader => 'PROCHAINS RENDEZ-VOUS';
+  @override
+  String get nextEventHeader => 'PROCHAIN ÉVÉNEMENT';
+
+  // ── Availability screen extras ──
+  @override
+  String get calendarAndAvailability => 'Calendrier & disponibilités';
+  @override
+  String get availabilityRulesHint => 'Les règles ci-dessous servent à générer tes créneaux réservables (comme sur le serveur Spotbook). Après modification, lance une synchronisation pour mettre à jour les 14 prochains jours.';
+  @override
+  String get syncing => 'Synchronisation...';
+  @override
+  String get generateSlots => 'Générer les créneaux (14 jours)';
+  @override
+  String get addRuleFirst => 'Ajoute d\'abord au moins une règle hebdomadaire.';
+  @override
+  String get slotsUpdated => 'créneaux mis à jour.';
+  @override
+  String get weeklyRulesHeader => 'RÈGLES HEBDOMADAIRES';
+  @override
+  String get noRulesHint => 'Aucun créneau. Ajoutez au moins une règle (ex. Lun 9h–17h, créneaux de 60 min).';
+  @override
+  String get slotsPreviewHeader => 'APERÇU DES CRÉNEAUX';
+  @override
+  String get choose => 'Choisir';
+  @override
+  String get noSlotsForDay => 'Aucun créneau pour ce jour. Lancez « Générer les créneaux » ou choisissez une autre date.';
+  @override
+  String get newTimeSlot => 'Nouvelle plage horaire';
+  @override
+  String get startLabel => 'Début';
+  @override
+  String get endLabel => 'Fin';
+  @override
+  String get slotDurationLabel => 'Durée d\'un créneau';
+  @override
+  String get openForBooking => 'Ouvert à la réservation';
+  @override
+  String get closedException => 'Fermé (exception)';
+  @override
+  String get sunday => 'Dimanche';
+  @override
+  String get monday => 'Lundi';
+  @override
+  String get tuesday => 'Mardi';
+  @override
+  String get wednesday => 'Mercredi';
+  @override
+  String get thursday => 'Jeudi';
+  @override
+  String get friday => 'Vendredi';
+  @override
+  String get saturday => 'Samedi';
 }

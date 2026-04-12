@@ -1532,4 +1532,220 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dayOff => 'Day off';
   @override
   String get addRule => 'Add rule';
+
+  // ── My Bookings / Reservation Card / Review Sheet ──
+  @override
+  String get bookAgain => 'Book again';
+  @override
+  String get filterLabel => 'Filter';
+  @override
+  String get tabUpcoming => 'Upcoming';
+  @override
+  String get tabPast => 'Past';
+  @override
+  String get tabTickets => 'Tickets';
+  @override
+  String get noUpcomingBookings => 'No upcoming bookings';
+  @override
+  String get noUpcomingBookingsSubtitle => 'Book a service to see\nyour appointments here';
+  @override
+  String get discoverPros => 'Discover pros';
+  @override
+  String get noPastBookings => 'No past bookings';
+  @override
+  String get noPastBookingsSubtitle => 'Your completed appointments\nwill appear here';
+  @override
+  String get noTicketsYet => 'No tickets';
+  @override
+  String get noTicketsSubtitle => 'Discover events and buy\ntickets to find them here';
+  @override
+  String get browseEvents => 'Browse events';
+  @override
+  String get publishReview => 'Publish review';
+  @override
+  String get shareYourExperience => 'Share your experience...';
+  @override
+  String get resetFilters => 'Reset';
+  @override
+  String get statusLabel => 'STATUS';
+  @override
+  String get periodLabel => 'PERIOD';
+  @override
+  String get professionalLabel => 'PROFESSIONAL';
+  @override
+  String get dateFrom => 'From';
+  @override
+  String get dateTo => 'Until';
+  @override
+  String get searchProHint => 'Search a pro...';
+  @override
+  String get applyTheFilters => 'Apply filters';
+
+  // ── Dashboard / Revenue extras ──
+  @override
+  String get greetingMorning => 'Good morning';
+  @override
+  String get greetingAfternoon => 'Good afternoon';
+  @override
+  String get greetingEvening => 'Good evening';
+  @override
+  String get manageServices => 'Manage\nservices';
+  @override
+  String get revenueAndStats => 'Revenue\n& Stats';
+  @override
+  String get myEventsLabel => 'My\nevents';
+  @override
+  String get viewAll => 'View all';
+  @override
+  String get noUpcomingAppointments => 'No upcoming appointments';
+  @override
+  String get upcomingAppointmentsHint => 'Your next appointments will appear here';
+  @override
+  String get dashboardLoadError => 'Could not load dashboard';
+  @override
+  String get depositsCollected => 'Deposits collected (confirmed + completed), excluding Stripe fees.';
+  @override
+  String get totalPeriod => 'Total for the period';
+  @override
+  String get withdraw => 'Withdraw';
+  @override
+  String get perDay => 'Per day';
+  @override
+  String get transactions => 'Transactions';
+  @override
+  String get noTransactionsPeriod => 'No transactions for this period';
+
+  // ── Booking flow extras ──
+  @override
+  String get stepService => 'Service';
+  @override
+  String get stepDate => 'Date';
+  @override
+  String get stepTime => 'Time';
+  @override
+  String get stepSummary => 'Summary';
+  @override
+  String get stepPayment => 'Payment';
+  @override
+  String get stepConfirmed => 'Confirmed';
+  @override
+  String get chooseAService => 'Choose a service';
+  @override
+  String get chooseAServiceSubtitle => 'Select the desired service';
+  @override
+  String get subtotal => 'Subtotal';
+  @override
+  String get depositPercent => 'Deposit (30%)';
+  @override
+  String get serviceFee => 'Service fee';
+  @override
+  String get promoLabel => 'Promo';
+
+  // ── Booking flow extras (batch 2) ──
+  @override
+  String get chooseADate => 'Choose a date';
+  @override
+  String get availableDaysHint => 'Available days are highlighted';
+  @override
+  String get chooseASlot => 'Choose a time slot';
+  @override
+  String get noSlotsForDate => 'No time slots available for this date';
+  @override
+  String get summarySubtitle => 'Review your booking details';
+  @override
+  String get durationLabel => 'Duration';
+  @override
+  String get payNowLabel => 'To pay now';
+  @override
+  String get remainingOnDay => 'Balance on appointment day';
+  @override
+  String get promoCodeTitle => 'Promo code';
+  @override
+  String get enterCodeHint => 'Enter a code';
+  @override
+  String get promoApplied => 'Applied';
+  @override
+  String get applyPromo => 'Apply';
+  @override
+  String get selectedLabel => 'Selected';
+  @override
+  String get payButtonPrefix => 'Pay';
+  @override
+  String get paymentSubtitlePrefix => 'To pay now:';
+  @override
+  String get creditCard => 'Credit card';
+  @override
+  String get secured => 'Secured';
+  @override
+  String get totalService => 'Service total';
+  @override
+  String get remainingBalanceOnSite => 'Remaining balance (on site)';
+  @override
+  String get paymentFailed => 'Payment failed';
+  @override
+  String get bookingConfirmedTitle => 'Booking confirmed!';
+  @override
+  String get bookingConfirmedSubtitle => 'Your appointment is registered';
+  @override
+  String get bookingCodeLabel => 'Booking code';
+  @override
+  String get close => 'Close';
+
+  // ── Dashboard section headers ──
+  @override
+  String get quickActionsHeader => 'QUICK ACTIONS';
+  @override
+  String get upcomingBookingsHeader => 'UPCOMING APPOINTMENTS';
+  @override
+  String get nextEventHeader => 'NEXT EVENT';
+
+  // ── Availability screen extras ──
+  @override
+  String get calendarAndAvailability => 'Calendar & availability';
+  @override
+  String get availabilityRulesHint => 'The rules below generate your bookable time slots (as on the Spotbook server). After changes, run a sync to update the next 14 days.';
+  @override
+  String get syncing => 'Syncing...';
+  @override
+  String get generateSlots => 'Generate slots (14 days)';
+  @override
+  String get addRuleFirst => 'Add at least one weekly rule first.';
+  @override
+  String get slotsUpdated => 'slots updated.';
+  @override
+  String get weeklyRulesHeader => 'WEEKLY RULES';
+  @override
+  String get noRulesHint => 'No time slots. Add at least one rule (e.g. Mon 9am-5pm, 60 min slots).';
+  @override
+  String get slotsPreviewHeader => 'SLOTS PREVIEW';
+  @override
+  String get choose => 'Choose';
+  @override
+  String get noSlotsForDay => 'No slots for this day. Run "Generate slots" or pick another date.';
+  @override
+  String get newTimeSlot => 'New time slot';
+  @override
+  String get startLabel => 'Start';
+  @override
+  String get endLabel => 'End';
+  @override
+  String get slotDurationLabel => 'Slot duration';
+  @override
+  String get openForBooking => 'Open for booking';
+  @override
+  String get closedException => 'Closed (exception)';
+  @override
+  String get sunday => 'Sunday';
+  @override
+  String get monday => 'Monday';
+  @override
+  String get tuesday => 'Tuesday';
+  @override
+  String get wednesday => 'Wednesday';
+  @override
+  String get thursday => 'Thursday';
+  @override
+  String get friday => 'Friday';
+  @override
+  String get saturday => 'Saturday';
 }

@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../data/booking_notifier.dart';
 
@@ -14,6 +15,7 @@ class BookingCancellationScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l = AppLocalizations.of(context)!;
     final state = ref.watch(clientBookingsProvider);
 
     return Scaffold(
@@ -23,7 +25,7 @@ class BookingCancellationScreen extends ConsumerWidget {
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         leading: Semantics(
-          label: 'Retour',
+          label: l.a11yBack,
           child: IconButton(
             icon: Container(
               padding: const EdgeInsets.all(8),
@@ -38,7 +40,7 @@ class BookingCancellationScreen extends ConsumerWidget {
           ),
         ),
         title: Text(
-          'Annuler la réservation',
+          l.confirmCancellation,
           style: GoogleFonts.sora(color: AppColors.blanc, fontWeight: FontWeight.bold, fontSize: 17),
         ),
         centerTitle: true,
@@ -125,7 +127,7 @@ class BookingCancellationScreen extends ConsumerWidget {
                         child: CircularProgressIndicator(
                             color: AppColors.blanc, strokeWidth: 2),
                       )
-                    : Text('Confirmer l\'annulation',
+                    : Text(l.confirmCancellation,
                         style: GoogleFonts.dmSans(fontWeight: FontWeight.bold)),
               ),
             ),
@@ -141,7 +143,7 @@ class BookingCancellationScreen extends ConsumerWidget {
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12)),
                 ),
-                child: Text('Retour', style: GoogleFonts.dmSans()),
+                child: Text(l.back, style: GoogleFonts.dmSans()),
               ),
             ),
           ],

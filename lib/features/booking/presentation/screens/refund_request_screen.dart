@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/widgets/spotbook_button.dart';
 import '../../data/booking_repository.dart';
@@ -69,6 +70,7 @@ class _RefundRequestScreenState extends ConsumerState<RefundRequestScreen> {
   Future<void> _submitRefund() async {
     final booking = _booking;
     if (booking == null) return;
+    final l = AppLocalizations.of(context)!;
 
     HapticFeedback.mediumImpact();
 
@@ -78,7 +80,7 @@ class _RefundRequestScreenState extends ConsumerState<RefundRequestScreen> {
         backgroundColor: AppColors.surface,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text(
-          'Confirmer l\'annulation ?',
+          l.confirmCancellation,
           style: GoogleFonts.sora(color: AppColors.blanc, fontWeight: FontWeight.w700),
         ),
         content: Text(
@@ -91,11 +93,11 @@ class _RefundRequestScreenState extends ConsumerState<RefundRequestScreen> {
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
             child:
-                Text('Non', style: GoogleFonts.dmSans(color: AppColors.gris)),
+                Text(l.noCancel, style: GoogleFonts.dmSans(color: AppColors.gris)),
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: Text('Oui, annuler',
+            child: Text(l.yesCancel,
                 style: GoogleFonts.dmSans(color: AppColors.error, fontWeight: FontWeight.w600)),
           ),
         ],
@@ -134,7 +136,7 @@ class _RefundRequestScreenState extends ConsumerState<RefundRequestScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             backgroundColor: AppColors.error,
-            content: Text('Une erreur est survenue. Veuillez réessayer.',
+            content: Text(l.refundErrorRetry,
                 style: GoogleFonts.dmSans(color: AppColors.blanc)),
           ),
         );
@@ -144,6 +146,7 @@ class _RefundRequestScreenState extends ConsumerState<RefundRequestScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: AppColors.fond,
       appBar: AppBar(
@@ -151,7 +154,7 @@ class _RefundRequestScreenState extends ConsumerState<RefundRequestScreen> {
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         leading: Semantics(
-          label: 'Retour',
+          label: l.a11yBack,
           child: IconButton(
             icon: Container(
               padding: const EdgeInsets.all(8),
@@ -168,7 +171,7 @@ class _RefundRequestScreenState extends ConsumerState<RefundRequestScreen> {
             },
           ),
         ),
-        title: Text('Demande de remboursement',
+        title: Text(l.refundRequestTitle,
             style: GoogleFonts.sora(
                 color: AppColors.blanc, fontWeight: FontWeight.w700)),
         centerTitle: true,
@@ -179,13 +182,14 @@ class _RefundRequestScreenState extends ConsumerState<RefundRequestScreen> {
                   CircularProgressIndicator(color: AppColors.violet))
           : _booking == null
               ? Center(
-                  child: Text('Réservation introuvable',
+                  child: Text(l.bookingNotFound,
                       style: GoogleFonts.dmSans(color: AppColors.gris)))
               : _buildContent(_booking!),
     );
   }
 
   Widget _buildContent(BookingModel booking) {
+    final l = AppLocalizations.of(context)!;
     final hoursUntil = _hoursUntilBooking(booking);
     final isFullRefund = hoursUntil > 48;
     final currencyFormat = NumberFormat.currency(
@@ -232,7 +236,7 @@ class _RefundRequestScreenState extends ConsumerState<RefundRequestScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text('Montant payé',
+                    Text(l.amountPaid,
                         style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 14)),
                     Text(
                       currencyFormat.format(booking.depositAmount),
@@ -353,7 +357,7 @@ class _RefundRequestScreenState extends ConsumerState<RefundRequestScreen> {
             maxLength: 500,
             style: GoogleFonts.dmSans(color: AppColors.blanc, fontSize: 14),
             decoration: InputDecoration(
-              hintText: 'Pourquoi souhaitez-vous annuler ?',
+              hintText: l.cancelReasonHint,
               hintStyle: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 13),
               filled: true,
               fillColor: AppColors.surface,

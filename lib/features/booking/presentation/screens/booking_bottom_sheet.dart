@@ -8,7 +8,10 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
 import 'package:shimmer/shimmer.dart';
 
+import 'package:intl/intl.dart';
+
 import '../../../../core/services/app_config_provider.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/utils/analytics_service.dart';
 import '../../../../shared/widgets/confetti_overlay.dart';
@@ -32,31 +35,31 @@ Future<void> showBookingSheet(
 }
 
 // ─── Step labels ─────────────────────────────────────────
-const _stepLabels = [
-  'Service',
-  'Date',
-  'Heure',
-  'Résumé',
-  'Paiement',
-  'Confirmé',
-];
+List<String> _stepLabels(AppLocalizations l) => [
+      l.stepService,
+      l.stepDate,
+      l.stepTime,
+      l.stepSummary,
+      l.stepPayment,
+      l.stepConfirmed,
+    ];
 
-const _months = [
-  'Janvier',
-  'Février',
-  'Mars',
-  'Avril',
-  'Mai',
-  'Juin',
-  'Juillet',
-  'Août',
-  'Septembre',
-  'Octobre',
-  'Novembre',
-  'Décembre',
-];
+/// Localized month names via intl DateFormat.
+List<String> _localizedMonths(String locale) {
+  return List.generate(12, (i) {
+    final d = DateTime(2024, i + 1);
+    return DateFormat.MMMM(locale).format(d);
+  });
+}
 
-const _daysShort = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
+/// Localized short day names (Mon..Sun) via intl DateFormat.
+List<String> _localizedDaysShort(String locale) {
+  // 2024-01-01 is a Monday
+  return List.generate(7, (i) {
+    final d = DateTime(2024, 1, 1 + i);
+    return DateFormat.E(locale).format(d);
+  });
+}
 
 // ─── Main sheet ──────────────────────────────────────────
 
@@ -171,6 +174,8 @@ class _StepIndicator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
+    final labels = _stepLabels(l);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       child: Row(
@@ -197,7 +202,7 @@ class _StepIndicator extends StatelessWidget {
                   ),
                   const SizedBox(height: 6),
                   Text(
-                    _stepLabels[i],
+                    labels[i],
                     style: GoogleFonts.dmSans(
                       color: isActive || isDone
                           ? AppColors.blanc
@@ -419,19 +424,20 @@ class _Step1Services extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l = AppLocalizations.of(context)!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const _StepHeader(
-          title: 'Choisir un service',
-          subtitle: 'Sélectionnez le service souhaité',
+        _StepHeader(
+          title: l.chooseAService,
+          subtitle: l.chooseAServiceSubtitle,
         ),
         if (state.isLoading)
           const _ShimmerList()
         else if (state.services.isEmpty)
           _EmptyState(
             icon: Icons.content_cut,
-            message: 'Aucun service disponible',
+            message: l.noServicesAvailable,
           )
         else
           ListView.separated(
@@ -485,7 +491,7 @@ class _Step1Services extends ConsumerWidget {
                       color: AppColors.violetClair, size: 18),
                   const SizedBox(width: 8),
                   Text(
-                    'Code promo',
+                    l.promoCodeTitle,
                     style: GoogleFonts.sora(
                       color: AppColors.blanc,
                       fontSize: 15,
@@ -503,7 +509,7 @@ class _Step1Services extends ConsumerWidget {
                       style: GoogleFonts.dmSans(color: AppColors.blanc),
                       textCapitalization: TextCapitalization.characters,
                       decoration: InputDecoration(
-                        hintText: 'Entrer un code',
+                        hintText: l.enterCodeHint,
                         hintStyle: GoogleFonts.dmSans(color: AppColors.gris),
                         filled: true,
                         fillColor: AppColors.surfaceAlt,
@@ -540,7 +546,7 @@ class _Step1Services extends ConsumerWidget {
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Text(
-                        state.promoApplied ? 'Appliqué ✓' : 'Appliquer',
+                        state.promoApplied ? '${l.promoApplied} ✓' : l.applyPromo,
                         style: GoogleFonts.dmSans(
                           color: state.promoApplied
                               ? AppColors.success
@@ -584,7 +590,7 @@ class _Step1Services extends ConsumerWidget {
 
         const SizedBox(height: 28),
         _CtaButton(
-          label: 'Continuer',
+          label: l.continueLabel,
           onPressed: state.selectedService != null ? onNext : null,
         ),
       ],
@@ -704,7 +710,7 @@ class _ServiceTile extends StatelessWidget {
                       borderRadius: BorderRadius.circular(6),
                     ),
                     child: Text(
-                      'Sélectionné',
+                      AppLocalizations.of(context)!.selectedLabel,
                       style: GoogleFonts.dmSans(
                         color: AppColors.violetClair,
                         fontSize: 10,
@@ -769,6 +775,10 @@ class _Step2CalendarState extends ConsumerState<_Step2Calendar> {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
+    final locale = Localizations.localeOf(context).languageCode;
+    final months = _localizedMonths(locale);
+    final daysShort = _localizedDaysShort(locale);
     final now = DateTime.now();
     final daysInMonth = DateUtils.getDaysInMonth(_year, _month);
     final firstWeekday = DateTime(_year, _month, 1).weekday; // 1=Mon
@@ -779,8 +789,8 @@ class _Step2CalendarState extends ConsumerState<_Step2Calendar> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _StepHeader(
-          title: 'Choisir une date',
-          subtitle: 'Les jours disponibles sont mis en évidence',
+          title: l.chooseADate,
+          subtitle: l.availableDaysHint,
           onBack: () =>
               ref.read(bookingFlowProvider.notifier).previousStep(),
         ),
@@ -806,7 +816,7 @@ class _Step2CalendarState extends ConsumerState<_Step2Calendar> {
                   onPressed: canGoPrev ? _previousMonth : null,
                 ),
                 Text(
-                  '${_months[_month - 1]} $_year',
+                  '${months[_month - 1]} $_year',
                   style: GoogleFonts.sora(
                     color: AppColors.blanc,
                     fontSize: 16,
@@ -824,7 +834,7 @@ class _Step2CalendarState extends ConsumerState<_Step2Calendar> {
 
           // Day of week labels
           Row(
-            children: _daysShort
+            children: daysShort
                 .map(
                   (d) => Expanded(
                     child: Center(
@@ -931,7 +941,10 @@ class _Step3Slots extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // Format selected date in French
+    final l = AppLocalizations.of(context)!;
+    final locale = Localizations.localeOf(context).languageCode;
+    final months = _localizedMonths(locale);
+    // Format selected date with locale
     String dateLabel = state.selectedDate ?? '';
     if (state.selectedDate != null) {
       try {
@@ -942,7 +955,7 @@ class _Step3Slots extends ConsumerWidget {
           int.parse(parts[2]),
         );
         final day = d.day;
-        final month = _months[d.month - 1];
+        final month = months[d.month - 1];
         dateLabel = '$day $month';
       } catch (_) {}
     }
@@ -951,7 +964,7 @@ class _Step3Slots extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _StepHeader(
-          title: 'Choisir un créneau',
+          title: l.chooseASlot,
           subtitle: dateLabel,
           onBack: () =>
               ref.read(bookingFlowProvider.notifier).previousStep(),
@@ -987,7 +1000,7 @@ class _Step3Slots extends ConsumerWidget {
         else if (state.timeSlots.isEmpty)
           _EmptyState(
             icon: Icons.event_busy,
-            message: 'Aucun créneau disponible pour cette date',
+            message: l.noSlotsForDate,
           )
         else
           GridView.builder(
@@ -1068,6 +1081,9 @@ class _Step4Summary extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l = AppLocalizations.of(context)!;
+    final locale = Localizations.localeOf(context).languageCode;
+    final months = _localizedMonths(locale);
     // Format date nicely
     String dateDisplay = state.selectedDate ?? '';
     if (state.selectedDate != null) {
@@ -1078,7 +1094,7 @@ class _Step4Summary extends ConsumerWidget {
           int.parse(parts[1]),
           int.parse(parts[2]),
         );
-        dateDisplay = '${d.day} ${_months[d.month - 1]} ${d.year}';
+        dateDisplay = '${d.day} ${months[d.month - 1]} ${d.year}';
       } catch (_) {}
     }
 
@@ -1086,8 +1102,8 @@ class _Step4Summary extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _StepHeader(
-          title: 'Résumé',
-          subtitle: 'Vérifiez les détails de votre réservation',
+          title: l.stepSummary,
+          subtitle: l.summarySubtitle,
           onBack: () =>
               ref.read(bookingFlowProvider.notifier).previousStep(),
         ),
@@ -1171,25 +1187,25 @@ class _Step4Summary extends ConsumerWidget {
             children: [
               _DetailRow(
                 icon: Icons.content_cut,
-                label: 'Service',
+                label: l.stepService,
                 value: state.selectedService?.name ?? '',
               ),
               Divider(color: AppColors.border, height: 20),
               _DetailRow(
                 icon: Icons.calendar_today,
-                label: 'Date',
+                label: l.stepDate,
                 value: dateDisplay,
               ),
               Divider(color: AppColors.border, height: 20),
               _DetailRow(
                 icon: Icons.schedule,
-                label: 'Heure',
+                label: l.stepTime,
                 value: state.selectedSlot?.startTime.substring(0, 5) ?? '',
               ),
               Divider(color: AppColors.border, height: 20),
               _DetailRow(
                 icon: Icons.timelapse,
-                label: 'Durée',
+                label: l.durationLabel,
                 value: '${state.selectedService?.durationMinutes ?? 0} min',
               ),
             ],
@@ -1231,18 +1247,18 @@ class _Step4Summary extends ConsumerWidget {
                   ),
                   const SizedBox(height: 4),
                   _PriceRow(
-                    label: 'Sous-total',
+                    label: l.subtotal,
                     value: '${state.totalPrice.toStringAsFixed(2)} CA\$',
                   ),
                 ],
                 Divider(color: AppColors.border, height: 20),
                 _PriceRow(
-                  label: 'Acompte (30%)',
+                  label: l.depositPercent,
                   value: '${depositAmount.toStringAsFixed(2)} CA\$',
                 ),
                 const SizedBox(height: 8),
                 _PriceRow(
-                  label: 'Frais de service',
+                  label: l.serviceFee,
                   value: '${serviceFee.toStringAsFixed(2)} CA\$',
                 ),
                 Divider(color: AppColors.border, height: 20),
@@ -1250,7 +1266,7 @@ class _Step4Summary extends ConsumerWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      'À payer maintenant',
+                      l.payNowLabel,
                       style: GoogleFonts.dmSans(
                         color: AppColors.blanc,
                         fontSize: 15,
@@ -1283,7 +1299,7 @@ class _Step4Summary extends ConsumerWidget {
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
-                          'Solde le jour du RDV : ${remainingAmount.toStringAsFixed(2)} CA\$',
+                          '${l.remainingOnDay} : ${remainingAmount.toStringAsFixed(2)} CA\$',
                           style: GoogleFonts.dmSans(
                             color: AppColors.violetClair,
                             fontSize: 13,
@@ -1306,7 +1322,7 @@ class _Step4Summary extends ConsumerWidget {
           final clientPaysNow =
               state.depositPrice + appConfig.serviceFeeClient;
           return _CtaButton(
-            label: 'Payer ${clientPaysNow.toStringAsFixed(2)} CA\$',
+            label: '${l.payButtonPrefix} ${clientPaysNow.toStringAsFixed(2)} CA\$',
             onPressed: () =>
                 ref.read(bookingFlowProvider.notifier).nextStep(),
           );
@@ -1392,14 +1408,15 @@ class _Step5Payment extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l = AppLocalizations.of(context)!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _StepHeader(
-          title: 'Paiement',
+          title: l.stepPayment,
           subtitle: (() {
             final fee = (ref.read(appConfigProvider).value ?? AppConfig.fallback).serviceFeeClient;
-            return 'À payer maintenant : ${(state.depositPrice + fee).toStringAsFixed(2)} CA\$';
+            return '${l.paymentSubtitlePrefix} ${(state.depositPrice + fee).toStringAsFixed(2)} CA\$';
           })(),
           onBack: () =>
               ref.read(bookingFlowProvider.notifier).previousStep(),
@@ -1422,7 +1439,7 @@ class _Step5Payment extends ConsumerWidget {
                       color: AppColors.violetClair, size: 18),
                   const SizedBox(width: 8),
                   Text(
-                    'Carte bancaire',
+                    l.creditCard,
                     style: GoogleFonts.sora(
                       color: AppColors.blanc,
                       fontSize: 15,
@@ -1434,7 +1451,7 @@ class _Step5Payment extends ConsumerWidget {
                       color: AppColors.gris.withAlpha(120), size: 14),
                   const SizedBox(width: 4),
                   Text(
-                    'Sécurisé',
+                    l.secured,
                     style: GoogleFonts.dmSans(
                       color: AppColors.gris.withAlpha(120),
                       fontSize: 11,
@@ -1478,23 +1495,23 @@ class _Step5Payment extends ConsumerWidget {
               return Column(
                 children: [
                   _PriceRow(
-                    label: 'Total du service',
+                    label: l.totalService,
                     value: '${state.totalPrice.toStringAsFixed(2)} CA\$',
                   ),
                   const SizedBox(height: 6),
                   _PriceRow(
-                    label: 'Acompte (30%)',
+                    label: l.depositPercent,
                     value: '${state.depositPrice.toStringAsFixed(2)} CA\$',
                     valueColor: AppColors.violetClair,
                   ),
                   const SizedBox(height: 6),
                   _PriceRow(
-                    label: 'Frais de service',
+                    label: l.serviceFee,
                     value: '${serviceFee.toStringAsFixed(2)} CA\$',
                   ),
                   const SizedBox(height: 6),
                   _PriceRow(
-                    label: 'Solde restant (sur place)',
+                    label: l.remainingBalanceOnSite,
                     value:
                         '${(state.totalPrice - state.depositPrice).toStringAsFixed(2)} CA\$',
                   ),
@@ -1533,7 +1550,7 @@ class _Step5Payment extends ConsumerWidget {
         _CtaButton(
           label: (() {
             final fee = (ref.read(appConfigProvider).value ?? AppConfig.fallback).serviceFeeClient;
-            return 'Payer ${(state.depositPrice + fee).toStringAsFixed(2)} CA\$';
+            return '${l.payButtonPrefix} ${(state.depositPrice + fee).toStringAsFixed(2)} CA\$';
           })(),
           isLoading: state.isCreating || state.isPaying,
           onPressed: (state.isCreating || state.isPaying)
@@ -1591,7 +1608,7 @@ class _Step5Payment extends ConsumerWidget {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Text(
-                          e.error.localizedMessage ?? 'Paiement échoué',
+                          e.error.localizedMessage ?? l.paymentFailed,
                         ),
                         backgroundColor: AppColors.error,
                       ),
@@ -1619,6 +1636,9 @@ class _Step6Confirmation extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
+    final locale = Localizations.localeOf(context).languageCode;
+    final months = _localizedMonths(locale);
     final bookingCode =
         state.bookingResult?['bookingCode'] as String? ?? 'SPT-XXXXXXXX';
 
@@ -1632,7 +1652,7 @@ class _Step6Confirmation extends StatelessWidget {
           int.parse(parts[1]),
           int.parse(parts[2]),
         );
-        dateDisplay = '${d.day} ${_months[d.month - 1]} ${d.year}';
+        dateDisplay = '${d.day} ${months[d.month - 1]} ${d.year}';
       } catch (_) {
         dateDisplay = state.selectedDate!;
       }
@@ -1666,7 +1686,7 @@ class _Step6Confirmation extends StatelessWidget {
         ),
         const SizedBox(height: 20),
         Text(
-          'Réservation confirmée !',
+          l.bookingConfirmedTitle,
           style: GoogleFonts.sora(
             color: AppColors.blanc,
             fontSize: 22,
@@ -1675,7 +1695,7 @@ class _Step6Confirmation extends StatelessWidget {
         ),
         const SizedBox(height: 8),
         Text(
-          'Votre RDV est bien enregistré',
+          l.bookingConfirmedSubtitle,
           style: GoogleFonts.dmSans(
             color: AppColors.gris.withAlpha(180),
             fontSize: 14,
@@ -1694,7 +1714,7 @@ class _Step6Confirmation extends StatelessWidget {
           child: Column(
             children: [
               Text(
-                'Code de réservation',
+                l.bookingCodeLabel,
                 style: GoogleFonts.dmSans(
                   color: AppColors.blanc.withAlpha(200),
                   fontSize: 12,
@@ -1729,25 +1749,25 @@ class _Step6Confirmation extends StatelessWidget {
             children: [
               _DetailRow(
                 icon: Icons.content_cut,
-                label: 'Service',
+                label: l.stepService,
                 value: state.selectedService?.name ?? '',
               ),
               const SizedBox(height: 10),
               _DetailRow(
                 icon: Icons.person,
-                label: 'Pro',
+                label: l.pro,
                 value: proProfile.businessName,
               ),
               const SizedBox(height: 10),
               _DetailRow(
                 icon: Icons.calendar_today,
-                label: 'Date',
+                label: l.stepDate,
                 value: dateDisplay,
               ),
               const SizedBox(height: 10),
               _DetailRow(
                 icon: Icons.schedule,
-                label: 'Heure',
+                label: l.stepTime,
                 value:
                     state.selectedSlot?.startTime.substring(0, 5) ?? '',
               ),
@@ -1798,7 +1818,7 @@ class _Step6Confirmation extends StatelessWidget {
                 Icon(Icons.calendar_today, color: AppColors.blanc, size: 16),
                 const SizedBox(width: 8),
                 Text(
-                  'Ajouter au calendrier',
+                  l.addToCalendar,
                   style: GoogleFonts.dmSans(
                     color: AppColors.blanc,
                     fontSize: 15,
@@ -1812,7 +1832,7 @@ class _Step6Confirmation extends StatelessWidget {
         const SizedBox(height: 12),
 
         _CtaButton(
-          label: 'Fermer',
+          label: l.close,
           onPressed: () => Navigator.of(context).pop(),
         ),
       ],

@@ -7,6 +7,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../core/services/app_config_provider.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/widgets/spotbook_button.dart';
 import '../../../../shared/widgets/spotbook_loading_shimmer.dart';
@@ -115,6 +116,7 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
   }
 
   Future<void> _markCompleted(BookingModel booking) async {
+    final l = AppLocalizations.of(context)!;
     HapticFeedback.mediumImpact();
     final ok = await showDialog<bool>(
       context: context,
@@ -122,21 +124,21 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
         backgroundColor: AppColors.surface,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text(
-          'Marquer comme terminé ?',
+          l.markAsDoneTitle,
           style: TextStyle(color: AppColors.blanc),
         ),
         content: Text(
-          'Le client pourra laisser un avis. Cette action confirme que la prestation a eu lieu.',
+          l.markAsDoneMessage,
           style: TextStyle(color: AppColors.gris, height: 1.4),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: Text('Annuler', style: TextStyle(color: AppColors.gris)),
+            child: Text(l.cancel, style: TextStyle(color: AppColors.gris)),
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: Text('Confirmer', style: TextStyle(color: AppColors.blanc)),
+            child: Text(l.confirm, style: TextStyle(color: AppColors.blanc)),
           ),
         ],
       ),
@@ -154,7 +156,7 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
           SnackBar(
             backgroundColor: AppColors.surface,
             content: Text(
-              'Rendez-vous marqué comme terminé',
+              l.appointmentMarkedDone,
               style: TextStyle(color: AppColors.blanc),
             ),
           ),
@@ -178,6 +180,7 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
   }
 
   Future<void> _markRemainingPaid(BookingModel booking) async {
+    final l = AppLocalizations.of(context)!;
     HapticFeedback.mediumImpact();
     final ok = await showDialog<bool>(
       context: context,
@@ -185,21 +188,21 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
         backgroundColor: AppColors.surface,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text(
-          'Confirmer le paiement du solde ?',
+          l.confirmBalanceTitle,
           style: TextStyle(color: AppColors.blanc),
         ),
         content: Text(
-          'Vous confirmez avoir reçu ${(booking.remainingAmount ?? 0).toStringAsFixed(2)} ${booking.currency} sur place.',
+          l.confirmBalanceMessage((booking.remainingAmount ?? 0).toStringAsFixed(2), booking.currency),
           style: TextStyle(color: AppColors.gris, height: 1.4),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: Text('Annuler', style: TextStyle(color: AppColors.gris)),
+            child: Text(l.cancel, style: TextStyle(color: AppColors.gris)),
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: Text('Confirmer', style: TextStyle(color: AppColors.blanc)),
+            child: Text(l.confirm, style: TextStyle(color: AppColors.blanc)),
           ),
         ],
       ),
@@ -216,7 +219,7 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
           SnackBar(
             backgroundColor: AppColors.surface,
             content: Text(
-              'Solde marqué comme payé',
+              l.balanceMarkedPaid,
               style: TextStyle(color: AppColors.blanc),
             ),
           ),
@@ -240,6 +243,7 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
   }
 
   Future<void> _proAcceptBooking(BookingModel booking) async {
+    final l = AppLocalizations.of(context)!;
     HapticFeedback.mediumImpact();
     setState(() => _actionBusy = true);
     try {
@@ -252,7 +256,7 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
           SnackBar(
             backgroundColor: AppColors.surface,
             content: Text(
-              'Réservation acceptée',
+              l.bookingAccepted,
               style: TextStyle(color: AppColors.blanc),
             ),
           ),
@@ -282,6 +286,7 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     final async = ref.watch(bookingDetailProvider(widget.bookingId));
     final uid = Supabase.instance.client.auth.currentUser?.id;
 
@@ -296,7 +301,7 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
         data: (booking) {
           if (booking == null) {
             return _ErrorScaffold(
-              message: 'Réservation introuvable',
+              message: l.bookingNotFound,
               onBack: () => context.pop(),
             );
           }
@@ -304,7 +309,7 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
           final isClientViewer = uid == booking.clientId;
           if (!isProViewer && !isClientViewer) {
             return _ErrorScaffold(
-              message: 'Accès refusé',
+              message: l.accessDenied,
               onBack: () => context.pop(),
             );
           }
@@ -359,7 +364,7 @@ class _ErrorScaffold extends StatelessWidget {
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         leading: Semantics(
-          label: 'Retour',
+          label: AppLocalizations.of(context)!.a11yBack,
           child: IconButton(
             icon: Container(
               padding: const EdgeInsets.all(8),
@@ -418,6 +423,7 @@ class _DetailBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     final banner = _StatusBanner(status: booking.status);
     final name = isProViewer
         ? (booking.clientName ?? 'Client')
@@ -433,7 +439,7 @@ class _DetailBody extends StatelessWidget {
           surfaceTintColor: Colors.transparent,
           elevation: 0,
           leading: Semantics(
-            label: 'Retour',
+            label: l.a11yBack,
             child: IconButton(
               icon: Container(
                 padding: const EdgeInsets.all(8),
@@ -452,7 +458,7 @@ class _DetailBody extends StatelessWidget {
             ),
           ),
           title: Text(
-            'Détails du RDV',
+            l.appointmentDetails,
             style: GoogleFonts.sora(
               color: AppColors.blanc,
               fontWeight: FontWeight.w700,
@@ -474,7 +480,7 @@ class _DetailBody extends StatelessWidget {
                 PopupMenuItem<String>(
                   value: 'report',
                   child: Text(
-                    'Signaler cette réservation',
+                    l.reportBooking,
                     style: GoogleFonts.dmSans(color: AppColors.blanc),
                   ),
                 ),
@@ -523,21 +529,22 @@ class _StatusBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     final (Color bg, Color fg, String label) = switch (status) {
       'confirmed' => (
           AppColors.success.withValues(alpha: 0.12),
           AppColors.success,
-          'Confirmé',
+          l.confirmed,
         ),
       'pending_payment' => (
           AppColors.warning.withValues(alpha: 0.12),
           AppColors.warning,
-          'Paiement en attente',
+          l.paymentPending,
         ),
       'completed' => (
           AppColors.gris.withValues(alpha: 0.15),
           AppColors.grisClair,
-          'Terminé',
+          l.markAsDone,
         ),
       'cancelled_full_refund' => (
           AppColors.error.withValues(alpha: 0.12),
@@ -547,7 +554,7 @@ class _StatusBanner extends StatelessWidget {
       'cancelled_no_refund' => (
           AppColors.error.withValues(alpha: 0.12),
           AppColors.error,
-          'Annulé',
+          l.cancel,
         ),
       _ => (
           AppColors.surfaceAlt,
@@ -652,6 +659,7 @@ class _InfoSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     final start = booking.slotStartTime != null && booking.slotStartTime!.length >= 5
         ? booking.slotStartTime!.substring(0, 5)
         : '—';
@@ -665,9 +673,9 @@ class _InfoSection extends StatelessWidget {
     final netEst = booking.depositAmount - commission;
 
     final remainingStatusLabel = switch (booking.remainingPaymentStatus) {
-      'paid_on_site' => 'Payé',
-      'waived' => 'Annulé',
-      _ => 'En attente',
+      'paid_on_site' => l.confirmed,
+      'waived' => l.cancel,
+      _ => l.statusPending,
     };
     final remainingStatusColor = switch (booking.remainingPaymentStatus) {
       'paid_on_site' => AppColors.success,
@@ -698,17 +706,17 @@ class _InfoSection extends StatelessWidget {
           _rowWithBadge(
             Icons.account_balance_wallet_outlined,
             isProViewer
-                ? 'Acompte reçu en ligne'
-                : 'Acompte payé en ligne',
+                ? l.depositReceivedOnline
+                : l.depositPaidOnline,
             '${booking.depositAmount.toStringAsFixed(2)} ${booking.currency}',
-            badgeLabel: 'Payé',
+            badgeLabel: l.confirmed,
             badgeColor: AppColors.success,
           ),
           _rowWithBadge(
             Icons.storefront_outlined,
             isProViewer
-                ? 'Solde à encaisser sur place'
-                : 'Solde à payer sur place',
+                ? l.balanceToCollectOnSite
+                : l.balanceToPayOnSite,
             '${(booking.remainingAmount ?? 0).toStringAsFixed(2)} ${booking.currency}',
             badgeLabel: remainingStatusLabel,
             badgeColor: remainingStatusColor,
@@ -716,7 +724,7 @@ class _InfoSection extends StatelessWidget {
           if (isProViewer && (booking.status == 'confirmed' || booking.status == 'completed')) ...[
             const SizedBox(height: 8),
             Text(
-              'Commission est. $commissionPct% sur l\'acompte : ${commission.toStringAsFixed(2)} ${booking.currency} · Net approx. : ${netEst.toStringAsFixed(2)} ${booking.currency}',
+              l.commissionEstimate('$commissionPct', commission.toStringAsFixed(2), booking.currency, netEst.toStringAsFixed(2)),
               style: TextStyle(
                 color: AppColors.gris,
                 fontSize: 12,
@@ -724,7 +732,7 @@ class _InfoSection extends StatelessWidget {
               ),
             ),
             Text(
-              'Solde sur place : ${(booking.remainingAmount ?? 0).toStringAsFixed(2)} ${booking.currency} (sans commission)',
+              l.balanceOnSite((booking.remainingAmount ?? 0).toStringAsFixed(2), booking.currency),
               style: TextStyle(
                 color: AppColors.gris,
                 fontSize: 12,
@@ -735,15 +743,15 @@ class _InfoSection extends StatelessWidget {
         ] else ...[
           _rowWithBadge(
             Icons.account_balance_wallet_outlined,
-            'Paiement en ligne',
+            l.depositPaidOnline,
             '${booking.depositAmount.toStringAsFixed(2)} ${booking.currency}',
-            badgeLabel: 'Payé',
+            badgeLabel: l.confirmed,
             badgeColor: AppColors.success,
           ),
           if (isProViewer && (booking.status == 'confirmed' || booking.status == 'completed')) ...[
             const SizedBox(height: 8),
             Text(
-              'Commission est. $commissionPct% : ${commission.toStringAsFixed(2)} ${booking.currency} · Net approx. : ${netEst.toStringAsFixed(2)} ${booking.currency}',
+              l.commissionEstimate('$commissionPct', commission.toStringAsFixed(2), booking.currency, netEst.toStringAsFixed(2)),
               style: TextStyle(
                 color: AppColors.gris,
                 fontSize: 12,
@@ -903,6 +911,7 @@ class _Actions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     final canChat = booking.status == 'confirmed' ||
         booking.status == 'completed';
 
@@ -914,13 +923,13 @@ class _Actions extends StatelessWidget {
               onProAccept != null &&
               onProDecline != null) ...[
             SpotbookButton.primary(
-              label: 'Accepter la réservation',
+              label: l.acceptBooking,
               isLoading: busy,
               onPressed: busy ? null : onProAccept,
             ),
             const SizedBox(height: 12),
             SpotbookButton.outlined(
-              label: 'Refuser',
+              label: l.decline,
               isLoading: busy,
               onPressed: busy ? null : onProDecline,
             ),
@@ -928,7 +937,7 @@ class _Actions extends StatelessWidget {
           ],
           if (booking.status == 'confirmed') ...[
             SpotbookButton.primary(
-              label: 'Marquer comme terminé',
+              label: l.markAsDone,
               isLoading: busy,
               onPressed: busy ? null : onMarkCompleted,
             ),
@@ -1035,11 +1044,11 @@ class _StatusTimeline extends StatelessWidget {
   const _StatusTimeline({required this.booking});
   final BookingModel booking;
 
-  static const _steps = [
-    ('pending_payment', 'Créé', Icons.receipt_long_outlined),
-    ('pending', 'Payé', Icons.payments_outlined),
-    ('confirmed', 'Confirmé', Icons.check_circle_outline),
-    ('completed', 'Terminé', Icons.done_all),
+  static List<(String, String, IconData)> _steps(AppLocalizations l) => [
+    ('pending_payment', l.statusPending, Icons.receipt_long_outlined),
+    ('pending', l.statusPending, Icons.payments_outlined),
+    ('confirmed', l.confirmed, Icons.check_circle_outline),
+    ('completed', l.markAsDone, Icons.done_all),
   ];
 
   int _currentIndex() {
@@ -1055,6 +1064,8 @@ class _StatusTimeline extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
+    final steps = _steps(l);
     final current = _currentIndex();
     final isCancelled = booking.status.startsWith('cancelled');
 
@@ -1077,11 +1088,11 @@ class _StatusTimeline extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
-          ...List.generate(_steps.length, (i) {
-            final (_, label, icon) = _steps[i];
+          ...List.generate(steps.length, (i) {
+            final (_, label, icon) = steps[i];
             final isReached = !isCancelled && i <= current;
             final isActive = !isCancelled && i == current;
-            final isLast = i == _steps.length - 1;
+            final isLast = i == steps.length - 1;
 
             return Column(
               children: [

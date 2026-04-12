@@ -2209,6 +2209,120 @@ abstract class AppLocalizations {
   String get parameters;
   String get dayOff;
   String get addRule;
+
+  // ── My Bookings / Reservation Card / Review Sheet ──
+  String get bookAgain;
+  String get filterLabel;
+  String get tabUpcoming;
+  String get tabPast;
+  String get tabTickets;
+  String get noUpcomingBookings;
+  String get noUpcomingBookingsSubtitle;
+  String get discoverPros;
+  String get noPastBookings;
+  String get noPastBookingsSubtitle;
+  String get noTicketsYet;
+  String get noTicketsSubtitle;
+  String get browseEvents;
+  String get publishReview;
+  String get shareYourExperience;
+  String get resetFilters;
+  String get statusLabel;
+  String get periodLabel;
+  String get professionalLabel;
+  String get dateFrom;
+  String get dateTo;
+  String get searchProHint;
+  String get applyTheFilters;
+
+  // ── Dashboard / Revenue extras ──
+  String get greetingMorning;
+  String get greetingAfternoon;
+  String get greetingEvening;
+  String get manageServices;
+  String get revenueAndStats;
+  String get myEventsLabel;
+  String get viewAll;
+  String get noUpcomingAppointments;
+  String get upcomingAppointmentsHint;
+  String get dashboardLoadError;
+  String get depositsCollected;
+  String get totalPeriod;
+  String get withdraw;
+  String get perDay;
+  String get transactions;
+  String get noTransactionsPeriod;
+
+  // ── Booking flow extras ──
+  String get stepService;
+  String get stepDate;
+  String get stepTime;
+  String get stepSummary;
+  String get stepPayment;
+  String get stepConfirmed;
+  String get chooseAService;
+  String get chooseAServiceSubtitle;
+  String get subtotal;
+  String get depositPercent;
+  String get serviceFee;
+  String get promoLabel;
+
+  // ── Booking flow extras (batch 2) ──
+  String get chooseADate;
+  String get availableDaysHint;
+  String get chooseASlot;
+  String get noSlotsForDate;
+  String get summarySubtitle;
+  String get durationLabel;
+  String get payNowLabel;
+  String get remainingOnDay;
+  String get promoCodeTitle;
+  String get enterCodeHint;
+  String get promoApplied;
+  String get applyPromo;
+  String get selectedLabel;
+  String get payButtonPrefix;
+  String get paymentSubtitlePrefix;
+  String get creditCard;
+  String get secured;
+  String get totalService;
+  String get remainingBalanceOnSite;
+  String get paymentFailed;
+  String get bookingConfirmedTitle;
+  String get bookingConfirmedSubtitle;
+  String get bookingCodeLabel;
+  String get close;
+
+  // ── Dashboard section headers ──
+  String get quickActionsHeader;
+  String get upcomingBookingsHeader;
+  String get nextEventHeader;
+
+  // ── Availability screen extras ──
+  String get calendarAndAvailability;
+  String get availabilityRulesHint;
+  String get syncing;
+  String get generateSlots;
+  String get addRuleFirst;
+  String get slotsUpdated;
+  String get weeklyRulesHeader;
+  String get noRulesHint;
+  String get slotsPreviewHeader;
+  String get choose;
+  String get noSlotsForDay;
+  String get newTimeSlot;
+  String get startLabel;
+  String get endLabel;
+  String get slotDurationLabel;
+  String get openForBooking;
+  String get closedException;
+  String get sunday;
+  String get monday;
+  String get tuesday;
+  String get wednesday;
+  String get thursday;
+  String get friday;
+  String get saturday;
 }
 
 class _AppLocalizationsDelegate

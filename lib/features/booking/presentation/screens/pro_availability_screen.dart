@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/widgets/spotbook_app_bar.dart';
 import '../../../../shared/widgets/spotbook_button.dart';
@@ -17,18 +18,20 @@ import '../notifiers/pro_scheduling_notifiers.dart';
 class ProAvailabilityScreen extends ConsumerWidget {
   const ProAvailabilityScreen({super.key});
 
-  static const _jsDays = [
-    'Dimanche',
-    'Lundi',
-    'Mardi',
-    'Mercredi',
-    'Jeudi',
-    'Vendredi',
-    'Samedi',
+  static List<String> _jsDays(AppLocalizations l) => [
+    l.sunday,
+    l.monday,
+    l.tuesday,
+    l.wednesday,
+    l.thursday,
+    l.friday,
+    l.saturday,
   ];
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l = AppLocalizations.of(context)!;
+    final dayNames = _jsDays(l);
     final state = ref.watch(proAvailabilityNotifierProvider);
     final notifier = ref.read(proAvailabilityNotifierProvider.notifier);
     final dateLabel = state.selectedDate != null
@@ -37,7 +40,7 @@ class ProAvailabilityScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: AppColors.fond,
-      appBar: const SpotbookAppBar(title: 'Calendrier & disponibilités'),
+      appBar: SpotbookAppBar(title: l.calendarAndAvailability),
       floatingActionButton: FloatingActionButton(
         backgroundColor: AppColors.blanc,
         foregroundColor: AppColors.fond,
@@ -57,8 +60,7 @@ class ProAvailabilityScreen extends ConsumerWidget {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     Text(
-                      'Les règles ci-dessous servent à générer tes créneaux réservables (comme sur le serveur Spotbook). '
-                      'Après modification, lance une synchronisation pour mettre à jour les 14 prochains jours.',
+                      l.availabilityRulesHint,
                       style: GoogleFonts.dmSans(
                         color: AppColors.gris.withValues(alpha: 0.95),
                         fontSize: 13,
@@ -68,8 +70,8 @@ class ProAvailabilityScreen extends ConsumerWidget {
                     const SizedBox(height: 16),
                     SpotbookButton.primary(
                       label: state.syncing
-                          ? 'Synchronisation...'
-                          : 'Générer les créneaux (14 jours)',
+                          ? l.syncing
+                          : l.generateSlots,
                       isLoading: state.syncing,
                       onPressed: state.syncing
                           ? null
@@ -83,8 +85,8 @@ class ProAvailabilityScreen extends ConsumerWidget {
                                   SnackBar(
                                     content: Text(
                                       n == 0
-                                          ? 'Ajoute d\'abord au moins une règle hebdomadaire.'
-                                          : '$n créneaux mis à jour.',
+                                          ? l.addRuleFirst
+                                          : '$n ${l.slotsUpdated}',
                                     ),
                                     backgroundColor: AppColors.surface,
                                     behavior: SnackBarBehavior.floating,
@@ -111,7 +113,7 @@ class ProAvailabilityScreen extends ConsumerWidget {
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(20, 20, 20, 8),
                 child: Text(
-                  'RÈGLES HEBDOMADAIRES',
+                  l.weeklyRulesHeader,
                   style: GoogleFonts.sora(
                     color: AppColors.gris,
                     fontSize: 11,
@@ -131,7 +133,7 @@ class ProAvailabilityScreen extends ConsumerWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: SpotbookCard(
                     child: Text(
-                      'Aucun créneau. Ajoutez au moins une règle (ex. Lun 9h–17h, créneaux de 60 min).',
+                      l.noRulesHint,
                       style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 14),
                     ),
                   ),
@@ -153,7 +155,7 @@ class ProAvailabilityScreen extends ConsumerWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  _jsDays[r.dayOfWeek],
+                                  dayNames[r.dayOfWeek],
                                   style: GoogleFonts.sora(
                                     color: AppColors.blanc,
                                     fontWeight: FontWeight.w600,
@@ -192,7 +194,7 @@ class ProAvailabilityScreen extends ConsumerWidget {
                   children: [
                     Expanded(
                       child: Text(
-                        'APERÇU DES CRÉNEAUX',
+                        l.slotsPreviewHeader,
                         style: GoogleFonts.sora(
                           color: AppColors.gris,
                           fontSize: 11,
@@ -231,7 +233,7 @@ class ProAvailabilityScreen extends ConsumerWidget {
                             },
                       icon: const Icon(Icons.calendar_month, size: 18),
                       label: Text(
-                        dateLabel.isEmpty ? 'Choisir' : dateLabel,
+                        dateLabel.isEmpty ? l.choose : dateLabel,
                         style: GoogleFonts.dmSans(fontSize: 13),
                       ),
                     ),
@@ -244,7 +246,7 @@ class ProAvailabilityScreen extends ConsumerWidget {
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: Text(
-                    'Aucun créneau pour ce jour. Lancez « Générer les créneaux » ou choisissez une autre date.',
+                    l.noSlotsForDay,
                     style: GoogleFonts.dmSans(
                       color: AppColors.gris.withValues(alpha: 0.9),
                       fontSize: 13,
@@ -290,6 +292,8 @@ class ProAvailabilityScreen extends ConsumerWidget {
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       builder: (ctx) {
+        final l = AppLocalizations.of(ctx)!;
+        final dayNames = _jsDays(l);
         return Padding(
           padding: EdgeInsets.only(
             left: 20,
@@ -343,7 +347,7 @@ class ProAvailabilityScreen extends ConsumerWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      'Nouvelle plage horaire',
+                      l.newTimeSlot,
                       style: GoogleFonts.sora(
                         color: AppColors.blanc,
                         fontSize: 18,
@@ -367,7 +371,7 @@ class ProAvailabilityScreen extends ConsumerWidget {
                           items: List.generate(7, (i) {
                             return DropdownMenuItem(
                               value: i,
-                              child: Text(_jsDays[i]),
+                              child: Text(dayNames[i]),
                             );
                           }),
                           onChanged: (v) {
@@ -387,7 +391,7 @@ class ProAvailabilityScreen extends ConsumerWidget {
                               side: BorderSide(color: AppColors.border),
                             ),
                             child: Text(
-                              'Début ${start.format(context)}',
+                              '${l.startLabel} ${start.format(context)}',
                             ),
                           ),
                         ),
@@ -400,7 +404,7 @@ class ProAvailabilityScreen extends ConsumerWidget {
                               side: BorderSide(color: AppColors.border),
                             ),
                             child: Text(
-                              'Fin ${end.format(context)}',
+                              '${l.endLabel} ${end.format(context)}',
                             ),
                           ),
                         ),
@@ -408,7 +412,7 @@ class ProAvailabilityScreen extends ConsumerWidget {
                     ),
                     const SizedBox(height: 12),
                     Text(
-                      'Durée d\'un créneau',
+                      l.slotDurationLabel,
                       style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 12),
                     ),
                     const SizedBox(height: 8),
@@ -439,7 +443,7 @@ class ProAvailabilityScreen extends ConsumerWidget {
                     ),
                     const SizedBox(height: 24),
                     SpotbookButton.primary(
-                      label: 'Ajouter la règle',
+                      label: AppLocalizations.of(context)!.addRule,
                       onPressed: () async {
                         final startM = start.hour * 60 + start.minute;
                         final endM = end.hour * 60 + end.minute;
@@ -458,7 +462,7 @@ class ProAvailabilityScreen extends ConsumerWidget {
                     ),
                     const SizedBox(height: 8),
                     SpotbookButton.outlined(
-                      label: 'Annuler',
+                      label: AppLocalizations.of(context)!.cancel,
                       onPressed: () => context.pop(),
                     ),
                   ],
@@ -497,7 +501,7 @@ class _SlotRow extends StatelessWidget {
           ),
         ),
         subtitle: Text(
-          slot.isAvailable ? 'Ouvert à la réservation' : 'Fermé (exception)',
+          slot.isAvailable ? AppLocalizations.of(context)!.openForBooking : AppLocalizations.of(context)!.closedException,
           style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 12),
         ),
         value: slot.isAvailable,

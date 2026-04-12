@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shimmer/shimmer.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/theme/theme_mode_notifier.dart';
 import '../../../../shared/widgets/animated_counter.dart';
@@ -80,15 +81,16 @@ class _PremiumGreetingHeader extends StatelessWidget {
   final String? name;
   final String? avatarUrl;
 
-  String get _greeting {
+  String _greeting(AppLocalizations l) {
     final hour = DateTime.now().hour;
-    if (hour < 12) return 'Bonjour';
-    if (hour < 18) return 'Bon après-midi';
-    return 'Bonsoir';
+    if (hour < 12) return l.greetingMorning;
+    if (hour < 18) return l.greetingAfternoon;
+    return l.greetingEvening;
   }
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Row(
@@ -117,7 +119,7 @@ class _PremiumGreetingHeader extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  _greeting,
+                  _greeting(l),
                   style: GoogleFonts.dmSans(
                     fontSize: 14,
                     fontWeight: FontWeight.w400,
@@ -191,6 +193,7 @@ class _PremiumStatsRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     final revenue =
         ((stats['total_revenue'] as num?)?.toDouble() ?? 0).toStringAsFixed(0);
     final bookings = stats['total_bookings'] ?? 0;
@@ -207,7 +210,7 @@ class _PremiumStatsRow extends StatelessWidget {
           _PremiumStatCard(
             icon: Icons.attach_money_rounded,
             gradientColors: [AppColors.success, AppColors.successLight2],
-            label: 'Revenus',
+            label: l.revenue,
             numericValue: int.tryParse(revenue),
             valueSuffix: ' CA\$',
             subtitle: revenueChange != null
@@ -220,14 +223,14 @@ class _PremiumStatsRow extends StatelessWidget {
           _PremiumStatCard(
             icon: Icons.calendar_today_rounded,
             gradientColors: [AppColors.violet, AppColors.violetClair],
-            label: 'Réservations',
+            label: l.reservations,
             numericValue: bookings as int?,
           ),
           const SizedBox(width: 12),
           _PremiumStatCard(
             icon: Icons.star_rounded,
             gradientColors: [AppColors.warning, AppColors.starGold],
-            label: 'Note moy.',
+            label: l.avgRating,
             displayValue: rating,
             subtitle: '$reviewCount avis',
           ),
@@ -235,7 +238,7 @@ class _PremiumStatsRow extends StatelessWidget {
           _PremiumStatCard(
             icon: Icons.confirmation_number_outlined,
             gradientColors: [AppColors.rose, AppColors.roseClair],
-            label: 'Billets vendus',
+            label: l.ticketsSold,
             numericValue: ticketsSold,
           ),
         ],
@@ -347,6 +350,7 @@ class _PremiumQuickActions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Column(
@@ -364,7 +368,7 @@ class _PremiumQuickActions extends StatelessWidget {
               ),
               const SizedBox(width: 8),
               Text(
-                'ACTIONS RAPIDES',
+                l.quickActionsHeader,
                 style: GoogleFonts.sora(
                   fontSize: 11,
                   fontWeight: FontWeight.w600,
@@ -379,21 +383,21 @@ class _PremiumQuickActions extends StatelessWidget {
             children: [
               _PremiumActionButton(
                 icon: Icons.event,
-                label: 'Créer\névénement',
+                label: l.createEvent,
                 gradientColors: [AppColors.violet, AppColors.violetClair],
                 onTap: () => context.push('/create-event'),
               ),
               const SizedBox(width: 10),
               _PremiumActionButton(
                 icon: Icons.qr_code_scanner,
-                label: 'Scanner\nbillet',
+                label: l.scanTicket,
                 gradientColors: [AppColors.rose, AppColors.roseClair],
                 onTap: () => context.push('/pro/scanner-picker'),
               ),
               const SizedBox(width: 10),
               _PremiumActionButton(
                 icon: Icons.calendar_month,
-                label: 'Voir\ncalendrier',
+                label: l.viewCalendar,
                 gradientColors: [AppColors.accent, AppColors.accentCyan],
                 onTap: () => context.push('/pro/rdv'),
               ),
@@ -404,21 +408,21 @@ class _PremiumQuickActions extends StatelessWidget {
             children: [
               _PremiumActionButton(
                 icon: Icons.build_outlined,
-                label: 'Gérer\nservices',
+                label: l.manageServices,
                 gradientColors: [AppColors.violetClair, AppColors.violetPastel],
                 onTap: () => context.push('/pro/services'),
               ),
               const SizedBox(width: 10),
               _PremiumActionButton(
                 icon: Icons.bar_chart_rounded,
-                label: 'Revenus\n& Stats',
+                label: l.revenueAndStats,
                 gradientColors: [AppColors.success, AppColors.successLight2],
                 onTap: () => context.push('/pro/revenue'),
               ),
               const SizedBox(width: 10),
               _PremiumActionButton(
                 icon: Icons.celebration,
-                label: 'Mes\névénements',
+                label: l.myEventsLabel,
                 gradientColors: [AppColors.warning, AppColors.starGold],
                 onTap: () => context.push('/pro/events'),
               ),
@@ -554,7 +558,7 @@ class _UpcomingBookingsSection extends StatelessWidget {
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
-                  'PROCHAINS RENDEZ-VOUS',
+                  AppLocalizations.of(context)!.upcomingBookingsHeader,
                   style: GoogleFonts.sora(
                     fontSize: 11,
                     fontWeight: FontWeight.w600,
@@ -567,7 +571,7 @@ class _UpcomingBookingsSection extends StatelessWidget {
                 GestureDetector(
                   onTap: () => context.push('/pro/rdv'),
                   child: Text(
-                    'Voir tout',
+                    AppLocalizations.of(context)!.viewAll,
                     style: GoogleFonts.dmSans(
                       fontSize: 13,
                       fontWeight: FontWeight.w500,
@@ -600,7 +604,7 @@ class _UpcomingBookingsSection extends StatelessWidget {
                     ),
                     const SizedBox(height: 12),
                     Text(
-                      'Aucun rendez-vous à venir',
+                      AppLocalizations.of(context)!.noUpcomingAppointments,
                       style: GoogleFonts.dmSans(
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
@@ -609,7 +613,7 @@ class _UpcomingBookingsSection extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'Vos prochains rendez-vous apparaîtront ici',
+                      AppLocalizations.of(context)!.upcomingAppointmentsHint,
                       style: GoogleFonts.dmSans(
                         fontSize: 12,
                         color: AppColors.grisInactif,
@@ -654,16 +658,16 @@ class _PremiumBookingTile extends StatelessWidget {
     }
   }
 
-  String get _statusLabel {
+  String _statusLabel(AppLocalizations l) {
     switch (booking.status) {
       case 'confirmed':
-        return 'Confirmé';
+        return l.confirmed;
       case 'pending':
-        return 'En attente';
+        return l.pending;
       case 'completed':
-        return 'Terminé';
+        return l.markAsDone;
       case 'cancelled':
-        return 'Annulé';
+        return l.cancel;
       default:
         return booking.status;
     }
@@ -671,6 +675,7 @@ class _PremiumBookingTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     return GestureDetector(
       onTap: () => context.push('/booking/${booking.id}'),
       child: Container(
@@ -778,7 +783,7 @@ class _PremiumBookingTile extends StatelessWidget {
                               ),
                             ),
                             child: Text(
-                              _statusLabel,
+                              _statusLabel(l),
                               style: GoogleFonts.dmSans(
                                 fontSize: 10,
                                 fontWeight: FontWeight.w600,
@@ -837,7 +842,7 @@ class _PremiumNextEventCard extends StatelessWidget {
               ),
               const SizedBox(width: 8),
               Text(
-                'PROCHAIN ÉVÉNEMENT',
+                AppLocalizations.of(context)!.nextEventHeader,
                 style: GoogleFonts.sora(
                   fontSize: 11,
                   fontWeight: FontWeight.w600,
@@ -1149,6 +1154,7 @@ class _ErrorView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: AppColors.fond,
       body: Center(
@@ -1168,7 +1174,7 @@ class _ErrorView extends StatelessWidget {
               ),
               const SizedBox(height: 20),
               Text(
-                'Impossible de charger le tableau de bord',
+                l.dashboardLoadError,
                 textAlign: TextAlign.center,
                 style: GoogleFonts.sora(
                   fontSize: 16,
@@ -1199,7 +1205,7 @@ class _ErrorView extends StatelessWidget {
                       onRetry();
                     },
                     icon: const Icon(Icons.refresh, size: 18),
-                    label: const Text('Réessayer'),
+                    label: Text(l.retry),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.transparent,
                       shadowColor: Colors.transparent,

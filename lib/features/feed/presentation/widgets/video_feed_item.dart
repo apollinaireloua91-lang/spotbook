@@ -73,7 +73,6 @@ class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
   bool _viewCounted = false;
 
   bool _isPlaying = false;
-  bool _showPlayPauseIcon = false;
 
   @override
   void initState() {
@@ -132,10 +131,6 @@ class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
         _controller!.play();
         _isPlaying = true;
       }
-      _showPlayPauseIcon = true;
-    });
-    Future.delayed(const Duration(milliseconds: 800), () {
-      if (mounted) setState(() => _showPlayPauseIcon = false);
     });
   }
 
@@ -542,24 +537,24 @@ class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
                 ),
           ),
 
-          // ─── Play/Pause button — top-left corner ───
-          if (_showPlayPauseIcon || (!_isPlaying && widget.isActive))
+          // ─── Play/Pause button — always visible, under top bar ───
+          if (widget.isActive)
             Positioned(
-              top: MediaQuery.of(context).padding.top + 12,
+              top: MediaQuery.of(context).padding.top + 56,
               left: 16,
               child: GestureDetector(
                 onTap: _togglePlayPause,
                 child: AnimatedOpacity(
-                  opacity: _showPlayPauseIcon ? 1.0 : 0.7,
-                  duration: const Duration(milliseconds: 300),
+                  opacity: 1.0,
+                  duration: const Duration(milliseconds: 200),
                   child: Container(
-                    width: 42,
-                    height: 42,
+                    width: 38,
+                    height: 38,
                     decoration: BoxDecoration(
-                      color: Colors.black.withAlpha(110),
+                      color: Colors.black.withAlpha(100),
                       shape: BoxShape.circle,
                       border: Border.all(
-                        color: Colors.white.withAlpha(40),
+                        color: Colors.white.withAlpha(50),
                         width: 0.5,
                       ),
                     ),
@@ -568,7 +563,7 @@ class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
                           ? Icons.pause_rounded
                           : Icons.play_arrow_rounded,
                       color: Colors.white,
-                      size: 22,
+                      size: 20,
                     ),
                   ),
                 ),

@@ -9,6 +9,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../core/services/app_config_provider.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/theme/app_typography.dart';
 import '../../../../shared/theme/theme_mode_notifier.dart';
@@ -307,6 +308,7 @@ class _ProRdvScreenState extends ConsumerState<ProRdvScreen>
   }
 
   Future<void> _confirmBooking(String bookingId) async {
+    final l = AppLocalizations.of(context)!;
     HapticFeedback.mediumImpact();
     try {
       await ref.read(bookingRepositoryProvider).proConfirmBooking(bookingId);
@@ -315,7 +317,7 @@ class _ProRdvScreenState extends ConsumerState<ProRdvScreen>
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             backgroundColor: AppColors.surface,
-            content: Text('Réservation confirmée',
+            content: Text(l.bookingConfirmed,
                 style: TextStyle(color: AppColors.blanc)),
           ),
         );
@@ -334,6 +336,7 @@ class _ProRdvScreenState extends ConsumerState<ProRdvScreen>
   }
 
   Future<void> _completeBooking(String bookingId) async {
+    final l = AppLocalizations.of(context)!;
     HapticFeedback.mediumImpact();
     try {
       await ref
@@ -344,7 +347,7 @@ class _ProRdvScreenState extends ConsumerState<ProRdvScreen>
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             backgroundColor: AppColors.surface,
-            content: Text('Rendez-vous marqué comme terminé',
+            content: Text(l.appointmentMarkedDone,
                 style: TextStyle(color: AppColors.blanc)),
           ),
         );
@@ -417,6 +420,7 @@ class _StatsRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     final cards = [
       _StatData(
         value: todayCount,
@@ -426,19 +430,19 @@ class _StatsRow extends StatelessWidget {
       _StatData(
         value: confirmedCount,
         color: AppColors.success,
-        label: 'Confirmés',
+        label: l.confirmed,
         meta: '/ $todayCount total',
       ),
       _StatData(
         value: pendingCount,
         color: AppColors.catering,
-        label: 'En attente',
+        label: l.pending,
         meta: 'à confirmer',
       ),
       _StatData(
         value: monthCount,
         color: AppColors.rose,
-        label: 'Ce mois',
+        label: l.thisMonth,
       ),
     ];
 
@@ -775,11 +779,11 @@ class _TimeSlotCard extends StatelessWidget {
         _ => AppColors.rose,
       };
 
-  String get _statusLabel => switch (booking.status) {
-        'confirmed' => '✓ Confirmé',
-        'pending_payment' || 'pending' => '⏳ En attente',
-        'completed' => '✓ Terminé',
-        _ => 'Annulé',
+  String _statusLabel(AppLocalizations l) => switch (booking.status) {
+        'confirmed' => '✓ ${l.confirmed}',
+        'pending_payment' || 'pending' => '⏳ ${l.pending}',
+        'completed' => '✓ ${l.markAsDone}',
+        _ => l.cancel,
       };
 
   Color get _badgeBg => switch (booking.status) {
@@ -799,6 +803,7 @@ class _TimeSlotCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     final time = booking.slotStartTime != null &&
             booking.slotStartTime!.length >= 5
         ? booking.slotStartTime!.substring(0, 5)
@@ -894,7 +899,7 @@ class _TimeSlotCard extends StatelessWidget {
                                     borderRadius: BorderRadius.circular(6),
                                   ),
                                   child: Text(
-                                    _statusLabel,
+                                    _statusLabel(l),
                                     style: GoogleFonts.dmSans(
                                       fontSize: 9,
                                       fontWeight: FontWeight.w600,
@@ -981,7 +986,7 @@ class _TimeSlotCard extends StatelessWidget {
                                     ),
                                     child: Text(
                                       booking.isRemainingPaid
-                                          ? 'Solde payé'
+                                          ? l.balanceMarkedPaid
                                           : 'Dû \$${(booking.remainingAmount ?? 0).toStringAsFixed(0)}',
                                       style: GoogleFonts.dmSans(
                                         fontSize: 8,
@@ -1004,7 +1009,7 @@ class _TimeSlotCard extends StatelessWidget {
                                 children: [
                                   if (onConfirm != null)
                                     _SlotAction(
-                                      label: 'Confirmer',
+                                      label: l.confirm,
                                       color: AppColors.success,
                                       onTap: onConfirm!,
                                     ),
@@ -1012,14 +1017,14 @@ class _TimeSlotCard extends StatelessWidget {
                                     const SizedBox(width: 6),
                                   if (onDecline != null)
                                     _SlotAction(
-                                      label: 'Refuser',
+                                      label: l.decline,
                                       color: AppColors.error,
                                       outlined: true,
                                       onTap: onDecline!,
                                     ),
                                   if (onComplete != null)
                                     _SlotAction(
-                                      label: 'Terminer',
+                                      label: l.markAsDone,
                                       color: AppColors.violet,
                                       onTap: onComplete!,
                                     ),
@@ -1147,6 +1152,7 @@ class _EmptyDayState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     final label = DateFormat('EEEE d MMMM', 'fr_CA').format(date);
     return Container(
       padding: const EdgeInsets.all(24),
@@ -1164,7 +1170,7 @@ class _EmptyDayState extends StatelessWidget {
               color: AppColors.grisInactif, size: 32),
           const SizedBox(height: 10),
           Text(
-            'Aucune réservation le $label',
+            l.noBookingsOn(label),
             textAlign: TextAlign.center,
             style: GoogleFonts.dmSans(
               fontSize: 13,
@@ -1229,6 +1235,7 @@ class _RevenueSectionState extends State<_RevenueSection>
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     final maxAmount = widget.weekData
         .map((d) => d.amount)
         .fold<double>(0, (a, b) => math.max(a, b));
@@ -1240,7 +1247,7 @@ class _RevenueSectionState extends State<_RevenueSection>
         Row(
           children: [
             Text(
-              '💰 Revenus',
+              '💰 ${l.revenue}',
               style: GoogleFonts.sora(
                 fontSize: 13,
                 fontWeight: FontWeight.w700,
@@ -1256,7 +1263,7 @@ class _RevenueSectionState extends State<_RevenueSection>
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Text(
-                'Cette semaine',
+                l.thisWeek,
                 style: GoogleFonts.dmSans(
                   fontSize: 10,
                   color: AppColors.gris,

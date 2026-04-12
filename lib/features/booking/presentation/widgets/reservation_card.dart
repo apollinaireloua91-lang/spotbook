@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../domain/booking_models.dart';
 
@@ -35,32 +36,32 @@ LinearGradient _categoryGradient(String? category) {
 }
 
 /// Status badge configuration.
-({Color bg, Color fg, String label}) _statusStyle(String status) {
+({Color bg, Color fg, String label}) _statusStyle(String status, AppLocalizations l) {
   switch (status) {
     case 'confirmed':
       return (
         bg: AppColors.success.withAlpha(38),
         fg: AppColors.success,
-        label: '✓ Confirmé',
+        label: '✓ ${l.confirmed}',
       );
     case 'pending_payment':
       return (
         bg: AppColors.violet.withAlpha(38),
         fg: AppColors.violetClair,
-        label: '⏳ En attente',
+        label: '⏳ ${l.pending}',
       );
     case 'completed':
       return (
         bg: AppColors.gris.withAlpha(38),
         fg: AppColors.gris,
-        label: '✓ Terminé',
+        label: '✓ ${l.markAsDone}',
       );
     case 'cancelled_full_refund':
     case 'cancelled_no_refund':
       return (
         bg: AppColors.error.withAlpha(38),
         fg: AppColors.error,
-        label: '✗ Annulé',
+        label: '✗ ${l.cancel}',
       );
     default:
       return (
@@ -148,8 +149,9 @@ class _ReservationCardState extends State<ReservationCard>
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     final b = widget.booking;
-    final status = _statusStyle(b.status);
+    final status = _statusStyle(b.status, l);
 
     return AnimatedBuilder(
       animation: _controller,
@@ -319,7 +321,7 @@ class _ReservationCardState extends State<ReservationCard>
                   children: [
                     Expanded(
                       child: _ActionButton(
-                        label: 'Annuler',
+                        label: l.cancel,
                         bgColor: AppColors.rose.withAlpha(30),
                         textColor: AppColors.roseClair,
                         onTap: widget.onCancel ?? () {
@@ -347,7 +349,7 @@ class _ReservationCardState extends State<ReservationCard>
                   children: [
                     Expanded(
                       child: _ActionButton(
-                        label: '⭐ Laisser un avis',
+                        label: '⭐ ${l.leaveReview}',
                         bgColor: AppColors.violet.withAlpha(20),
                         textColor: AppColors.violetClair,
                         onTap: widget.onReview ?? () {
@@ -363,7 +365,7 @@ class _ReservationCardState extends State<ReservationCard>
                     const SizedBox(width: 10),
                     Expanded(
                       child: _ActionButton(
-                        label: '🔄 Réserver à nouveau',
+                        label: '🔄 ${l.bookAgain}',
                         bgColor: AppColors.surface,
                         textColor: AppColors.blanc,
                         borderColor: AppColors.border,

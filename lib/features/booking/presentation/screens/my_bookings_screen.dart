@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/widgets/spotbook_loading_shimmer.dart';
 import '../../../events/data/event_notifier.dart';
@@ -73,6 +74,7 @@ class _MyBookingsScreenState extends ConsumerState<MyBookingsScreen>
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     final bookingsState = ref.watch(clientBookingsProvider);
     final ticketsState = ref.watch(userTicketsProvider);
 
@@ -97,7 +99,7 @@ class _MyBookingsScreenState extends ConsumerState<MyBookingsScreen>
           ),
         ),
         title: Text(
-          'Mes réservations',
+          l.myBookings,
           style: GoogleFonts.sora(
             color: AppColors.blanc,
             fontSize: 20,
@@ -134,7 +136,7 @@ class _MyBookingsScreenState extends ConsumerState<MyBookingsScreen>
                   ),
                   const SizedBox(width: 4),
                   Text(
-                    'Filtrer',
+                    l.filterLabel,
                     style: GoogleFonts.dmSans(
                       color: _filter.isActive
                           ? AppColors.violet
@@ -169,7 +171,7 @@ class _MyBookingsScreenState extends ConsumerState<MyBookingsScreen>
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Text('À venir'),
+                  Text(l.tabUpcoming),
                   if (bookingsState.upcoming.isNotEmpty) ...[
                     const SizedBox(width: 6),
                     Container(
@@ -194,12 +196,12 @@ class _MyBookingsScreenState extends ConsumerState<MyBookingsScreen>
                 ],
               ),
             ),
-            const Tab(text: 'Passés'),
+            Tab(text: l.tabPast),
             Tab(
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Text('Billets'),
+                  Text(l.tabTickets),
                   if (ticketsState.tickets.isNotEmpty) ...[
                     const SizedBox(width: 6),
                     Container(
@@ -280,12 +282,13 @@ class _UpcomingTab extends StatelessWidget {
     }
 
     if (bookings.isEmpty) {
+      final l = AppLocalizations.of(context)!;
       return _EmptyBookingsState(
         onRefresh: onRefresh,
         icon: Icons.calendar_month_outlined,
-        title: 'Aucune réservation à venir',
-        subtitle: 'Réservez un service pour voir\nvos rendez-vous ici',
-        actionLabel: 'Découvrir des pros',
+        title: l.noUpcomingBookings,
+        subtitle: l.noUpcomingBookingsSubtitle,
+        actionLabel: l.discoverPros,
         onAction: () => GoRouter.of(context).go('/client/discover'),
       );
     }
@@ -332,11 +335,12 @@ class _PastTab extends ConsumerWidget {
 
     // Include cancelled bookings in "past" view
     if (bookings.isEmpty) {
+      final l = AppLocalizations.of(context)!;
       return _EmptyBookingsState(
         onRefresh: onRefresh,
         icon: Icons.history_rounded,
-        title: 'Aucune réservation passée',
-        subtitle: 'Vos rendez-vous terminés\napparaîtront ici',
+        title: l.noPastBookings,
+        subtitle: l.noPastBookingsSubtitle,
       );
     }
 
@@ -400,13 +404,14 @@ class _TicketsTab extends StatelessWidget {
     }
 
     if (tickets.isEmpty) {
+      final l = AppLocalizations.of(context)!;
       return _EmptyBookingsState(
         onRefresh: onRefresh,
         icon: Icons.confirmation_number_outlined,
-        title: 'Aucun billet',
-        subtitle: 'Découvrez des événements et achetez\ndes billets pour les retrouver ici',
+        title: l.noTicketsYet,
+        subtitle: l.noTicketsSubtitle,
         accentColor: AppColors.rose,
-        actionLabel: 'Parcourir les événements',
+        actionLabel: l.browseEvents,
         onAction: () => GoRouter.of(context).go('/client/discover'),
       );
     }

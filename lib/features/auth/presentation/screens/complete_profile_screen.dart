@@ -157,7 +157,7 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen>
 
   void _navigateNext() {
     final role = ref.read(_profileProvider.notifier).userRole ?? 'client';
-    context.go(role == 'pro' ? '/pro/business-details' : '/client/interests');
+    context.go(role == 'pro' ? '/pro/business-details' : '/client/feed');
   }
 
   @override

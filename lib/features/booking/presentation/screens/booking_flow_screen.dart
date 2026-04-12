@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/widgets/spotbook_loading_shimmer.dart';
 import '../../../profile/data/profile_repository.dart';
@@ -51,6 +52,7 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     final proAsync = ref.watch(_bookingProProvider(widget.providerId));
 
     return proAsync.when(
@@ -65,7 +67,7 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
           surfaceTintColor: Colors.transparent,
           elevation: 0,
           leading: Semantics(
-            label: 'Retour',
+            label: l.a11yBack,
             child: IconButton(
               icon: Container(
                 padding: const EdgeInsets.all(8),
@@ -90,7 +92,7 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
                     color: AppColors.gris, size: 48),
                 const SizedBox(height: 16),
                 Text(
-                  'Impossible de charger le profil',
+                  l.bookingNotFound,
                   style: GoogleFonts.sora(
                     color: AppColors.blanc,
                     fontSize: 16,
@@ -120,7 +122,7 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
                       border: Border.all(color: AppColors.border),
                     ),
                     child: Text(
-                      'Réessayer',
+                      l.retry,
                       style: GoogleFonts.dmSans(
                         color: AppColors.blanc,
                         fontWeight: FontWeight.w600,

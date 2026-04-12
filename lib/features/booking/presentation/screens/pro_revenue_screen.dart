@@ -9,6 +9,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../core/services/app_config_provider.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/widgets/spotbook_loading_shimmer.dart';
 import '../../data/booking_notifier.dart';
@@ -28,6 +29,7 @@ class _ProRevenueScreenState extends ConsumerState<ProRevenueScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     final chartAsync = ref.watch(proRevenueDailyProvider(_periodDays));
     final txAsync = ref.watch(proTransactionsProvider(_periodDays));
     final config = ref.watch(appConfigProvider).value ?? AppConfig.fallback;
@@ -54,7 +56,7 @@ class _ProRevenueScreenState extends ConsumerState<ProRevenueScreen> {
           },
         ),
         title: Text(
-          'Revenus',
+          l.revenue,
           style: GoogleFonts.sora(
             color: AppColors.blanc,
             fontWeight: FontWeight.w700,
@@ -106,7 +108,7 @@ class _ProRevenueScreenState extends ConsumerState<ProRevenueScreen> {
               padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
               children: [
                 Text(
-                  'Acomptes encaissés (confirmés + terminés), hors frais Stripe.',
+                  l.depositsCollected,
                   style: GoogleFonts.dmSans(
                       color: AppColors.gris,
                       fontSize: 13,
@@ -117,25 +119,25 @@ class _ProRevenueScreenState extends ConsumerState<ProRevenueScreen> {
                 Row(
                   children: [
                     _PeriodChip(
-                      label: '7 j',
+                      label: l.periodSevenDays,
                       selected: _periodDays == 7,
                       onTap: () => setState(() => _periodDays = 7),
                     ),
                     const SizedBox(width: 8),
                     _PeriodChip(
-                      label: '30 j',
+                      label: l.periodThirtyDays,
                       selected: _periodDays == 30,
                       onTap: () => setState(() => _periodDays = 30),
                     ),
                     const SizedBox(width: 8),
                     _PeriodChip(
-                      label: '90 j',
+                      label: l.periodNinetyDays,
                       selected: _periodDays == 90,
                       onTap: () => setState(() => _periodDays = 90),
                     ),
                     const SizedBox(width: 8),
                     _PeriodChip(
-                      label: '1 an',
+                      label: l.periodOneYear,
                       selected: _periodDays == 365,
                       onTap: () => setState(() => _periodDays = 365),
                     ),
@@ -156,7 +158,7 @@ class _ProRevenueScreenState extends ConsumerState<ProRevenueScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Total sur la période',
+                        l.totalPeriod,
                         style: GoogleFonts.dmSans(
                             color: AppColors.gris, fontSize: 13),
                       ),
@@ -181,7 +183,7 @@ class _ProRevenueScreenState extends ConsumerState<ProRevenueScreen> {
                           icon: const Icon(
                               Icons.account_balance_outlined,
                               size: 18),
-                          label: Text('Retirer',
+                          label: Text(l.withdraw,
                               style: GoogleFonts.dmSans(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 15)),
@@ -200,7 +202,7 @@ class _ProRevenueScreenState extends ConsumerState<ProRevenueScreen> {
                 const SizedBox(height: 24),
                 // Chart
                 Text(
-                  'Par jour',
+                  l.perDay,
                   style: GoogleFonts.sora(
                     color: AppColors.blanc,
                     fontSize: 16,
@@ -343,7 +345,7 @@ class _ProRevenueScreenState extends ConsumerState<ProRevenueScreen> {
                 const SizedBox(height: 28),
                 // Transaction list header
                 Text(
-                  'Transactions',
+                  l.transactions,
                   style: GoogleFonts.sora(
                     color: AppColors.blanc,
                     fontSize: 16,
@@ -368,7 +370,7 @@ class _ProRevenueScreenState extends ConsumerState<ProRevenueScreen> {
                         padding: const EdgeInsets.symmetric(vertical: 24),
                         child: Center(
                           child: Text(
-                              'Aucune transaction sur cette période',
+                              l.noTransactionsPeriod,
                               style: GoogleFonts.dmSans(
                                   color: AppColors.gris,
                                   fontSize: 14)),
@@ -409,6 +411,7 @@ class _TransactionRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     final gross = booking.depositAmount;
     final commission = gross * commissionRate;
     final net = gross - commission;
@@ -453,16 +456,16 @@ class _TransactionRow extends StatelessWidget {
           Row(
             children: [
               _AmountLabel(
-                  label: 'Brut',
+                  label: l.grossRevenue,
                   value: '${gross.toStringAsFixed(2)} \$'),
               const SizedBox(width: 16),
               _AmountLabel(
-                  label: 'Commission',
+                  label: l.commission,
                   value: '-${commission.toStringAsFixed(2)} \$',
                   color: AppColors.rose),
               const SizedBox(width: 16),
               _AmountLabel(
-                  label: 'Net',
+                  label: l.netRevenue,
                   value: '${net.toStringAsFixed(2)} \$',
                   color: AppColors.success),
             ],

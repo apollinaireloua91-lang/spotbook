@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/widgets/spotbook_app_bar.dart';
 import '../../../../shared/widgets/spotbook_avatar.dart';
@@ -153,11 +154,12 @@ class _ProviderClientsListScreenState
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     final clientsAsync = ref.watch(_proClientsProvider);
 
     return Scaffold(
       backgroundColor: AppColors.fond,
-      appBar: const SpotbookAppBar(title: 'Mes clients'),
+      appBar: SpotbookAppBar(title: l.myClients),
       body: clientsAsync.when(
         loading: () => Center(
             child: CircularProgressIndicator(color: AppColors.violet)),
@@ -179,7 +181,7 @@ class _ProviderClientsListScreenState
                   style: GoogleFonts.dmSans(
                       color: AppColors.blanc, fontSize: 14),
                   decoration: InputDecoration(
-                    hintText: 'Rechercher un client...',
+                    hintText: l.searchClientHint,
                     hintStyle: TextStyle(
                         color: AppColors.gris.withAlpha(128)),
                     prefixIcon: Icon(Icons.search,
@@ -202,21 +204,21 @@ class _ProviderClientsListScreenState
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   children: [
                     _SortChip(
-                      label: 'Plus récent',
+                      label: l.mostRecent,
                       selected: _sort == _SortBy.mostRecent,
                       onTap: () => setState(
                           () => _sort = _SortBy.mostRecent),
                     ),
                     const SizedBox(width: 8),
                     _SortChip(
-                      label: 'Plus de RDV',
+                      label: l.mostBookings,
                       selected: _sort == _SortBy.mostBookings,
                       onTap: () => setState(
                           () => _sort = _SortBy.mostBookings),
                     ),
                     const SizedBox(width: 8),
                     _SortChip(
-                      label: 'Plus dépensé',
+                      label: l.mostSpent,
                       selected: _sort == _SortBy.highestSpend,
                       onTap: () => setState(
                           () => _sort = _SortBy.highestSpend),
@@ -235,7 +237,7 @@ class _ProviderClientsListScreenState
                             Icon(Icons.people_outline,
                                 color: AppColors.gris, size: 48),
                             const SizedBox(height: 12),
-                            Text('Aucun client',
+                            Text(l.noClients,
                                 style: GoogleFonts.dmSans(
                                     color: AppColors.gris,
                                     fontSize: 15)),

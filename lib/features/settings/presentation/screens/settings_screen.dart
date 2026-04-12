@@ -124,6 +124,12 @@ class SettingsScreen extends ConsumerWidget {
                   onTap: () => context.push('/pro/settings/deposit'),
                 ),
                 _SettingsItem(
+                  icon: Icons.request_quote_outlined,
+                  label: 'Soumissions',
+                  subtitle: 'Gérer les demandes de soumission',
+                  onTap: () => context.push('/pro/soumissions'),
+                ),
+                _SettingsItem(
                   icon: Icons.percent_outlined,
                   label: 'Commissions',
                   subtitle: 'Réservations ${(cfg.commissionBookings * 100).round()}% · Événements ${(cfg.commissionEvents * 100).round()}% · Frais \$${cfg.serviceFeeClient.toStringAsFixed(2)}',
