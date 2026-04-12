@@ -1,0 +1,790 @@
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+
+import '../../../../shared/theme/app_colors.dart';
+import '../../../../shared/widgets/address_autocomplete_field.dart';
+import '../../../catering/data/catering_repository.dart';
+import '../../../catering/domain/catering_models.dart';
+
+// ═════════════════════════════════════════════════════════════════════════════
+// CATERING QUOTE REQUEST — English, dynamic forfaits from catering_forfaits
+// ═════════════════════════════════════════════════════════════════════════════
+
+/// Opens the catering quote request form.
+void showTraiteurSoumissionSheet(BuildContext context, {required String proId}) {
+  HapticFeedback.mediumImpact();
+  showModalBottomSheet<void>(
+    context: context,
+    isScrollControlled: true,
+    backgroundColor: Colors.transparent,
+    builder: (ctx) => _SoumissionSheet(proId: proId),
+  );
+}
+
+class _SoumissionSheet extends StatefulWidget {
+  const _SoumissionSheet({required this.proId});
+
+  final String proId;
+
+  @override
+  State<_SoumissionSheet> createState() => _SoumissionSheetState();
+}
+
+class _SoumissionSheetState extends State<_SoumissionSheet> {
+  final _guestsCtrl = TextEditingController();
+  final _budgetCtrl = TextEditingController();
+  final _locationCtrl = TextEditingController();
+  final _notesCtrl = TextEditingController();
+
+  late final CateringRepository _repo;
+
+  String _eventType = 'Wedding';
+  DateTime _date = DateTime.now().add(const Duration(days: 14));
+  TimeOfDay _time = const TimeOfDay(hour: 18, minute: 0);
+  final Set<String> _dietaryPrefs = {};
+  bool _isSubmitting = false;
+
+  // Dynamic forfaits loaded from Supabase
+  List<CateringForfait> _forfaits = [];
+  CateringForfait? _selectedForfait;
+  bool _loadingForfaits = true;
+
+  static const _eventTypes = [
+    'Wedding',
+    'Birthday',
+    'Corporate',
+    'Baby shower',
+    'Graduation',
+    'Gala',
+    'Other',
+  ];
+
+  static const _dietaryOptions = [
+    '🥩 Standard',
+    '🥬 Vegetarian',
+    '🌱 Vegan',
+    '🚫 Gluten-free',
+    '🥜 Nut-free',
+    '🐟 Halal',
+    '✡️ Kosher',
+  ];
+
+  double get _forfaitPrice => _selectedForfait?.pricePerPerson ?? 0;
+
+  int get _guestCount => int.tryParse(_guestsCtrl.text) ?? 0;
+
+  double get _totalEstimate => _forfaitPrice * _guestCount;
+
+  double get _depositAmount =>
+      (_totalEstimate * 0.30 * 100).roundToDouble() / 100;
+
+  @override
+  void initState() {
+    super.initState();
+    _repo = CateringRepository(Supabase.instance.client);
+    _loadForfaits();
+  }
+
+  Future<void> _loadForfaits() async {
+    try {
+      final forfaits = await _repo.getForfaits(widget.proId);
+      if (mounted) {
+        setState(() {
+          _forfaits = forfaits;
+          if (forfaits.isNotEmpty) _selectedForfait = forfaits.first;
+          _loadingForfaits = false;
+        });
+      }
+    } catch (_) {
+      if (mounted) setState(() => _loadingForfaits = false);
+    }
+  }
+
+  @override
+  void dispose() {
+    _guestsCtrl.dispose();
+    _budgetCtrl.dispose();
+    _locationCtrl.dispose();
+    _notesCtrl.dispose();
+    super.dispose();
+  }
+
+  Future<void> _submit() async {
+    if (_guestCount <= 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: AppColors.error,
+          content: Text('Please enter the number of guests',
+              style: TextStyle(color: AppColors.blanc)),
+        ),
+      );
+      return;
+    }
+
+    setState(() => _isSubmitting = true);
+    HapticFeedback.mediumImpact();
+
+    try {
+      final userId = Supabase.instance.client.auth.currentUser?.id;
+      final timeStr =
+          '${_time.hour.toString().padLeft(2, '0')}:${_time.minute.toString().padLeft(2, '0')}';
+
+      await _repo.submitQuote(
+        proId: widget.proId,
+        clientId: userId ?? '',
+        eventType: _eventType,
+        guestCount: _guestCount,
+        eventDate: _date,
+        eventTime: timeStr,
+        location: _locationCtrl.text,
+        forfaitId: _selectedForfait?.id,
+        forfaitName: _selectedForfait?.name,
+        budget: double.tryParse(_budgetCtrl.text),
+        dietaryPrefs: _dietaryPrefs.toList(),
+        notes: _notesCtrl.text,
+        estimatedTotal: _totalEstimate,
+        depositAmount: _depositAmount,
+      );
+
+      if (mounted) {
+        Navigator.of(context).pop();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            backgroundColor: AppColors.success,
+            content: Text(
+              'Quote request sent! Response in 24-48h.',
+              style: TextStyle(color: AppColors.blanc),
+            ),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            backgroundColor: AppColors.error,
+            content: Text('Error: $e',
+                style: TextStyle(color: AppColors.blanc)),
+          ),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isSubmitting = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final bottomInset = MediaQuery.viewInsetsOf(context).bottom;
+
+    return Container(
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.sizeOf(context).height * 0.85,
+      ),
+      decoration: BoxDecoration(
+        color: AppColors.fond,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Handle
+          Container(
+            margin: const EdgeInsets.only(top: 10),
+            width: 40,
+            height: 4,
+            decoration: BoxDecoration(
+              color: AppColors.border,
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+          // Header
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 16, 12, 0),
+            child: Row(
+              children: [
+                Text(
+                  '📋 Request a Quote',
+                  style: GoogleFonts.dmSans(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.blanc,
+                  ),
+                ),
+                const Spacer(),
+                IconButton(
+                  icon: Icon(Icons.close,
+                      color: AppColors.gris, size: 20),
+                  onPressed: () => Navigator.of(context).pop(),
+                ),
+              ],
+            ),
+          ),
+          // Scrollable form
+          Expanded(
+            child: ListView(
+              padding: EdgeInsets.fromLTRB(20, 16, 20, 20 + bottomInset),
+              children: [
+                // Event type
+                _buildLabel('Event type'),
+                const SizedBox(height: 6),
+                _buildDropdown(
+                  value: _eventType,
+                  items: _eventTypes,
+                  onChanged: (v) => setState(() => _eventType = v!),
+                ),
+
+                const SizedBox(height: 16),
+
+                // Guest count
+                _buildLabel('Number of guests'),
+                const SizedBox(height: 6),
+                _buildTextField(
+                  controller: _guestsCtrl,
+                  hint: 'E.g. 50',
+                  keyboardType: TextInputType.number,
+                  onChanged: (_) => setState(() {}),
+                ),
+
+                const SizedBox(height: 16),
+
+                // Date
+                _buildLabel('Date'),
+                const SizedBox(height: 6),
+                _buildDatePicker(),
+
+                const SizedBox(height: 16),
+
+                // Time
+                _buildLabel('Time'),
+                const SizedBox(height: 6),
+                _buildTimePicker(),
+
+                const SizedBox(height: 16),
+
+                // Location
+                _buildLabel('Location'),
+                const SizedBox(height: 6),
+                AddressAutocompleteField(
+                  controller: _locationCtrl,
+                  label: '',
+                  hint: 'Address or venue',
+                  fillColor: AppColors.fond,
+                ),
+
+                const SizedBox(height: 16),
+
+                // Package (dynamic from catering_forfaits)
+                _buildLabel('Package'),
+                const SizedBox(height: 6),
+                if (_loadingForfaits)
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 8),
+                    child: Center(
+                      child: SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(
+                          color: AppColors.catering,
+                          strokeWidth: 2,
+                        ),
+                      ),
+                    ),
+                  )
+                else if (_forfaits.isEmpty)
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 14, vertical: 12),
+                    decoration: BoxDecoration(
+                      color: AppColors.fond,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: AppColors.border),
+                    ),
+                    child: Text(
+                      'No packages available — custom quote',
+                      style: GoogleFonts.dmSans(
+                        fontSize: 13,
+                        color: AppColors.grisInactif,
+                      ),
+                    ),
+                  )
+                else
+                  _buildForfaitDropdown(),
+
+                const SizedBox(height: 16),
+
+                // Budget
+                _buildLabel('Budget'),
+                const SizedBox(height: 6),
+                _buildTextField(
+                  controller: _budgetCtrl,
+                  hint: 'E.g. \$2,000',
+                  keyboardType: TextInputType.number,
+                ),
+
+                const SizedBox(height: 16),
+
+                // Dietary preferences
+                _buildLabel('Dietary preferences'),
+                const SizedBox(height: 8),
+                _DietaryChips(
+                  options: _dietaryOptions,
+                  selected: _dietaryPrefs,
+                  onToggle: (opt) {
+                    setState(() {
+                      if (_dietaryPrefs.contains(opt)) {
+                        _dietaryPrefs.remove(opt);
+                      } else {
+                        _dietaryPrefs.add(opt);
+                      }
+                    });
+                  },
+                ),
+
+                const SizedBox(height: 16),
+
+                // Notes
+                _buildLabel('Notes'),
+                const SizedBox(height: 6),
+                _buildTextField(
+                  controller: _notesCtrl,
+                  hint: 'Details, theme, special requests...',
+                  maxLines: 3,
+                ),
+
+                const SizedBox(height: 20),
+
+                // Deposit preview
+                if (_guestCount > 0 && _forfaitPrice > 0)
+                  _DepositPreview(
+                    forfaitName: _selectedForfait?.name ?? '',
+                    guestCount: _guestCount,
+                    totalEstimate: _totalEstimate,
+                    depositAmount: _depositAmount,
+                  ),
+
+                const SizedBox(height: 20),
+
+                // Submit button
+                GestureDetector(
+                  onTap: _isSubmitting ? null : _submit,
+                  child: Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        begin: Alignment(-0.5, -0.5),
+                        end: Alignment(0.5, 0.5),
+                        colors: [AppColors.catering, AppColors.cateringDark],
+                      ),
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    child: Center(
+                      child: _isSubmitting
+                          ? SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(
+                                color: AppColors.blanc,
+                                strokeWidth: 2,
+                              ),
+                            )
+                          : Text(
+                              'Submit Quote Request',
+                              style: GoogleFonts.dmSans(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w700,
+                                color: AppColors.blanc,
+                              ),
+                            ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ── Form helpers ──
+
+  Widget _buildLabel(String text) {
+    return Text(
+      text,
+      style: GoogleFonts.dmSans(
+        fontSize: 11,
+        fontWeight: FontWeight.w600,
+        color: AppColors.gris,
+      ),
+    );
+  }
+
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String hint,
+    TextInputType? keyboardType,
+    int maxLines = 1,
+    ValueChanged<String>? onChanged,
+  }) {
+    return TextField(
+      controller: controller,
+      keyboardType: keyboardType,
+      maxLines: maxLines,
+      style: GoogleFonts.dmSans(
+        fontSize: 13,
+        color: AppColors.blanc,
+      ),
+      onChanged: onChanged,
+      decoration: InputDecoration(
+        hintText: hint,
+        hintStyle: GoogleFonts.dmSans(
+          fontSize: 13,
+          color: AppColors.grisInactif,
+        ),
+        filled: true,
+        fillColor: AppColors.fond,
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: AppColors.border),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: AppColors.border),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: AppColors.catering),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDropdown({
+    required String value,
+    required List<String> items,
+    required ValueChanged<String?> onChanged,
+  }) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14),
+      decoration: BoxDecoration(
+        color: AppColors.fond,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppColors.border),
+      ),
+      child: DropdownButtonHideUnderline(
+        child: DropdownButton<String>(
+          value: value,
+          isExpanded: true,
+          dropdownColor: AppColors.surface,
+          icon: Icon(Icons.keyboard_arrow_down,
+              color: AppColors.gris, size: 20),
+          style: GoogleFonts.dmSans(
+            fontSize: 13,
+            color: AppColors.blanc,
+          ),
+          items: items
+              .map((e) => DropdownMenuItem(value: e, child: Text(e)))
+              .toList(),
+          onChanged: onChanged,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildForfaitDropdown() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14),
+      decoration: BoxDecoration(
+        color: AppColors.fond,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppColors.border),
+      ),
+      child: DropdownButtonHideUnderline(
+        child: DropdownButton<String>(
+          value: _selectedForfait?.id,
+          isExpanded: true,
+          dropdownColor: AppColors.surface,
+          icon: Icon(Icons.keyboard_arrow_down,
+              color: AppColors.gris, size: 20),
+          style: GoogleFonts.dmSans(
+            fontSize: 13,
+            color: AppColors.blanc,
+          ),
+          items: _forfaits.map((f) {
+            return DropdownMenuItem(
+              value: f.id,
+              child: Text(
+                '${f.name} — \$${f.pricePerPerson.toStringAsFixed(0)}/pers.',
+              ),
+            );
+          }).toList(),
+          onChanged: (id) {
+            setState(() {
+              _selectedForfait =
+                  _forfaits.firstWhere((f) => f.id == id);
+            });
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDatePicker() {
+    final label =
+        '${_date.day.toString().padLeft(2, '0')}/${_date.month.toString().padLeft(2, '0')}/${_date.year}';
+    return GestureDetector(
+      onTap: () async {
+        final picked = await showDatePicker(
+          context: context,
+          initialDate: _date,
+          firstDate: DateTime.now(),
+          lastDate: DateTime.now().add(const Duration(days: 365)),
+          builder: (ctx, child) {
+            return Theme(
+              data: Theme.of(ctx).copyWith(
+                colorScheme: ColorScheme.dark(
+                  primary: AppColors.catering,
+                  surface: AppColors.surface,
+                ),
+              ),
+              child: child!,
+            );
+          },
+        );
+        if (picked != null) setState(() => _date = picked);
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        decoration: BoxDecoration(
+          color: AppColors.fond,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: AppColors.border),
+        ),
+        child: Row(
+          children: [
+            Icon(Icons.calendar_today,
+                size: 16, color: AppColors.gris),
+            const SizedBox(width: 10),
+            Text(
+              label,
+              style: GoogleFonts.dmSans(
+                fontSize: 13,
+                color: AppColors.blanc,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTimePicker() {
+    final label =
+        '${_time.hour.toString().padLeft(2, '0')}:${_time.minute.toString().padLeft(2, '0')}';
+    return GestureDetector(
+      onTap: () async {
+        final picked = await showTimePicker(
+          context: context,
+          initialTime: _time,
+          builder: (ctx, child) {
+            return Theme(
+              data: Theme.of(ctx).copyWith(
+                colorScheme: ColorScheme.dark(
+                  primary: AppColors.catering,
+                  surface: AppColors.surface,
+                ),
+              ),
+              child: child!,
+            );
+          },
+        );
+        if (picked != null) setState(() => _time = picked);
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        decoration: BoxDecoration(
+          color: AppColors.fond,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: AppColors.border),
+        ),
+        child: Row(
+          children: [
+            Icon(Icons.schedule, size: 16, color: AppColors.gris),
+            const SizedBox(width: 10),
+            Text(
+              label,
+              style: GoogleFonts.dmSans(
+                fontSize: 13,
+                color: AppColors.blanc,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ═════════════════════════════════════════════════════════════════════════════
+// DIETARY CHIPS — multi-select toggle
+// ═════════════════════════════════════════════════════════════════════════════
+
+class _DietaryChips extends StatelessWidget {
+  const _DietaryChips({
+    required this.options,
+    required this.selected,
+    required this.onToggle,
+  });
+
+  final List<String> options;
+  final Set<String> selected;
+  final ValueChanged<String> onToggle;
+
+  @override
+  Widget build(BuildContext context) {
+    return Wrap(
+      spacing: 6,
+      runSpacing: 6,
+      children: options.map((opt) {
+        final isSelected = selected.contains(opt);
+        return GestureDetector(
+          onTap: () {
+            HapticFeedback.selectionClick();
+            onToggle(opt);
+          },
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 150),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+            decoration: BoxDecoration(
+              color: isSelected
+                  ? AppColors.catering.withAlpha(38)
+                  : Colors.transparent,
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(
+                color: isSelected
+                    ? AppColors.catering.withAlpha(102)
+                    : AppColors.border,
+              ),
+            ),
+            child: Text(
+              opt,
+              style: GoogleFonts.dmSans(
+                fontSize: 11,
+                color: isSelected ? AppColors.cateringLight : AppColors.gris,
+                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+              ),
+            ),
+          ),
+        );
+      }).toList(),
+    );
+  }
+}
+
+// ═════════════════════════════════════════════════════════════════════════════
+// DEPOSIT PREVIEW — real-time calculation
+// ═════════════════════════════════════════════════════════════════════════════
+
+class _DepositPreview extends StatelessWidget {
+  const _DepositPreview({
+    required this.forfaitName,
+    required this.guestCount,
+    required this.totalEstimate,
+    required this.depositAmount,
+  });
+
+  final String forfaitName;
+  final int guestCount;
+  final double totalEstimate;
+  final double depositAmount;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: AppColors.catering.withAlpha(15),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(
+          color: AppColors.catering.withAlpha(51),
+        ),
+      ),
+      child: Column(
+        children: [
+          _PreviewLine(label: 'Package', value: forfaitName),
+          const SizedBox(height: 6),
+          _PreviewLine(label: 'Guests', value: '$guestCount people'),
+          const SizedBox(height: 6),
+          _PreviewLine(
+            label: 'Estimated total',
+            value: '\$${totalEstimate.toStringAsFixed(0)}',
+          ),
+          const SizedBox(height: 8),
+          Container(height: 1, color: AppColors.catering.withAlpha(38)),
+          const SizedBox(height: 8),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Deposit 30%',
+                style: GoogleFonts.dmSans(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.blanc,
+                ),
+              ),
+              AnimatedSwitcher(
+                duration: const Duration(milliseconds: 200),
+                child: Text(
+                  '\$${depositAmount.toStringAsFixed(0)}',
+                  key: ValueKey(depositAmount),
+                  style: GoogleFonts.dmSans(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.catering,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _PreviewLine extends StatelessWidget {
+  const _PreviewLine({required this.label, required this.value});
+
+  final String label;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          label,
+          style: GoogleFonts.dmSans(
+            fontSize: 11,
+            color: AppColors.gris,
+          ),
+        ),
+        Text(
+          value,
+          style: GoogleFonts.dmSans(
+            fontSize: 11,
+            color: AppColors.blanc,
+          ),
+        ),
+      ],
+    );
+  }
+}

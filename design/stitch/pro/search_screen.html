@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Provider Search</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#2badee",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101c22", 
+                        "surface-dark": "#233c48",   
+                        "text-secondary": "#92b7c9", 
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans", "sans-serif"],
+                        "body": ["Plus Jakarta Sans", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>.no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }.no-scrollbar {
+            -ms-overflow-style: none;scrollbar-width: none;}
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display antialiased text-slate-900 dark:text-white min-h-screen pb-24">
+<header class="sticky top-0 z-10 bg-background-light dark:bg-background-dark/95 backdrop-blur-md pt-4 pb-2 px-4 transition-all shadow-sm dark:shadow-slate-900/10">
+<div class="mb-4">
+<label class="flex flex-col w-full">
+<div class="flex w-full items-center rounded-2xl bg-white dark:bg-surface-dark h-12 shadow-sm dark:shadow-none border border-slate-200 dark:border-slate-700/50 transition-all focus-within:ring-2 focus-within:ring-primary/50">
+<div class="text-slate-400 dark:text-text-secondary flex items-center justify-center pl-4 pr-2">
+<span class="material-symbols-outlined text-[24px]">search</span>
+</div>
+<input class="w-full bg-transparent text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-text-secondary border-none focus:ring-0 text-base font-normal h-full rounded-r-2xl" placeholder="Search Name, Service, City..." value=""/>
+<div class="pr-3 text-slate-400 dark:text-text-secondary">
+<span class="material-symbols-outlined text-[20px]">tune</span>
+</div>
+</div>
+</label>
+</div>
+<div class="flex gap-2 overflow-x-auto no-scrollbar pb-2">
+<button class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-full bg-primary px-4 shadow-sm shadow-primary/20">
+<span class="text-white text-sm font-medium">All</span>
+</button>
+<button class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-full bg-white dark:bg-surface-dark px-4 border border-slate-200 dark:border-transparent active:opacity-80">
+<span class="text-slate-700 dark:text-white text-sm font-medium">Nearby</span>
+</button>
+<button class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-full bg-white dark:bg-surface-dark px-4 border border-slate-200 dark:border-transparent active:opacity-80">
+<span class="text-slate-700 dark:text-white text-sm font-medium">Top Rated</span>
+</button>
+<button class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-full bg-white dark:bg-surface-dark px-4 border border-slate-200 dark:border-transparent active:opacity-80">
+<span class="text-slate-700 dark:text-white text-sm font-medium">Available Today</span>
+</button>
+</div>
+</header>
+<main class="px-4 pt-2 space-y-8">
+<section>
+<div class="flex items-center justify-between mb-3 px-1">
+<h3 class="text-slate-900 dark:text-white text-lg font-bold">Explore by City</h3>
+</div>
+<div class="flex overflow-x-auto gap-3 no-scrollbar pb-1 -mx-4 px-4">
+<button class="relative shrink-0 w-32 h-20 rounded-2xl overflow-hidden group">
+<div class="absolute inset-0 bg-gradient-to-br from-blue-500 to-indigo-600 group-hover:scale-110 transition-transform duration-500"></div>
+<div class="absolute inset-0 bg-black/10"></div>
+<span class="absolute bottom-2 left-3 text-white font-bold text-sm">New York</span>
+<span class="absolute top-2 right-2 text-white/80 text-[10px] font-medium bg-white/20 backdrop-blur-sm px-1.5 py-0.5 rounded">120+</span>
+</button>
+<button class="relative shrink-0 w-32 h-20 rounded-2xl overflow-hidden group">
+<div class="absolute inset-0 bg-gradient-to-br from-orange-400 to-pink-500 group-hover:scale-110 transition-transform duration-500"></div>
+<div class="absolute inset-0 bg-black/10"></div>
+<span class="absolute bottom-2 left-3 text-white font-bold text-sm">Los Angeles</span>
+<span class="absolute top-2 right-2 text-white/80 text-[10px] font-medium bg-white/20 backdrop-blur-sm px-1.5 py-0.5 rounded">85+</span>
+</button>
+<button class="relative shrink-0 w-32 h-20 rounded-2xl overflow-hidden group">
+<div class="absolute inset-0 bg-gradient-to-br from-emerald-400 to-teal-600 group-hover:scale-110 transition-transform duration-500"></div>
+<div class="absolute inset-0 bg-black/10"></div>
+<span class="absolute bottom-2 left-3 text-white font-bold text-sm">Chicago</span>
+<span class="absolute top-2 right-2 text-white/80 text-[10px] font-medium bg-white/20 backdrop-blur-sm px-1.5 py-0.5 rounded">60+</span>
+</button>
+<button class="relative shrink-0 w-32 h-20 rounded-2xl overflow-hidden group">
+<div class="absolute inset-0 bg-gradient-to-br from-purple-500 to-fuchsia-600 group-hover:scale-110 transition-transform duration-500"></div>
+<div class="absolute inset-0 bg-black/10"></div>
+<span class="absolute bottom-2 left-3 text-white font-bold text-sm">Miami</span>
+<span class="absolute top-2 right-2 text-white/80 text-[10px] font-medium bg-white/20 backdrop-blur-sm px-1.5 py-0.5 rounded">45+</span>
+</button>
+</div>
+</section>
+<section>
+<div class="flex items-center justify-between mb-3 px-1">
+<h3 class="text-slate-900 dark:text-white text-lg font-bold">Top Services</h3>
+<a class="text-primary text-sm font-semibold" href="#">View All</a>
+</div>
+<div class="grid grid-cols-4 gap-3">
+<div class="flex flex-col items-center gap-2">
+<div class="w-14 h-14 rounded-2xl bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center text-blue-600 dark:text-blue-400 shadow-sm border border-blue-100 dark:border-blue-500/20 active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-[24px]">videocam</span>
+</div>
+<span class="text-xs font-medium text-slate-700 dark:text-slate-300">Video</span>
+</div>
+<div class="flex flex-col items-center gap-2">
+<div class="w-14 h-14 rounded-2xl bg-purple-50 dark:bg-purple-500/10 flex items-center justify-center text-purple-600 dark:text-purple-400 shadow-sm border border-purple-100 dark:border-purple-500/20 active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-[24px]">camera_alt</span>
+</div>
+<span class="text-xs font-medium text-slate-700 dark:text-slate-300">Photo</span>
+</div>
+<div class="flex flex-col items-center gap-2">
+<div class="w-14 h-14 rounded-2xl bg-pink-50 dark:bg-pink-500/10 flex items-center justify-center text-pink-600 dark:text-pink-400 shadow-sm border border-pink-100 dark:border-pink-500/20 active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-[24px]">brush</span>
+</div>
+<span class="text-xs font-medium text-slate-700 dark:text-slate-300">Design</span>
+</div>
+<div class="flex flex-col items-center gap-2">
+<div class="w-14 h-14 rounded-2xl bg-amber-50 dark:bg-amber-500/10 flex items-center justify-center text-amber-600 dark:text-amber-400 shadow-sm border border-amber-100 dark:border-amber-500/20 active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-[24px]">mic</span>
+</div>
+<span class="text-xs font-medium text-slate-700 dark:text-slate-300">Audio</span>
+</div>
+</div>
+</section>
+<section>
+<div class="flex items-center justify-between mb-3 px-1">
+<h3 class="text-slate-900 dark:text-white text-lg font-bold">Top Providers</h3>
+<a class="text-primary text-sm font-semibold" href="#">See All</a>
+</div>
+<div class="flex flex-col gap-3">
+<div class="flex items-center gap-3 bg-white dark:bg-surface-dark/50 border border-slate-100 dark:border-none p-3 rounded-2xl shadow-sm">
+<div class="relative shrink-0">
+<div class="bg-center bg-no-repeat bg-cover rounded-full h-14 w-14" data-alt="Portrait of Sarah Jenkins, a professional videographer" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAvZsdcqeZEPfBOAeIIRbWmVv-nBzH2GaioKKXHckmIRVnIgTqdFAjcSO8Jh8kSLtrHzXUYDYq0umm26ZR-LqXt6uJPc5SRC_0gBb1b7tPBC23zsY3sTN99r0IebknlUldp-ooRuO8suYnrVpSc4aCWXy9cbMQhwi4aiuYaXoNUqS8foYhszITk7wAbC3LjBhgMjiEcHQk4ZJ4ZegOCwu18eMkUoIhyg-strNK2tfdPF9Ih4-ss5WstMXVD3-far-hgfrRJ7Q9EnOI");'></div>
+<div class="absolute bottom-0 right-0 h-3.5 w-3.5 bg-green-500 border-2 border-white dark:border-surface-dark rounded-full"></div>
+<div class="absolute -top-1 -right-1 bg-primary text-white rounded-full p-[2px] shadow-sm">
+<span class="material-symbols-outlined text-[12px] block">play_arrow</span>
+</div>
+</div>
+<div class="flex flex-col flex-1 min-w-0">
+<div class="flex items-center gap-1">
+<p class="text-slate-900 dark:text-white text-base font-semibold truncate">Sarah Jenkins</p>
+<span class="material-symbols-outlined text-[14px] text-primary" title="Verified">verified</span>
+</div>
+<p class="text-slate-500 dark:text-text-secondary text-sm truncate">Videographer • New York</p>
+<div class="flex items-center gap-1 mt-0.5">
+<span class="material-symbols-outlined text-[14px] text-yellow-400 fill-current">star</span>
+<p class="text-slate-700 dark:text-slate-300 text-xs font-medium">4.9 <span class="text-slate-400 dark:text-slate-500">(120)</span></p>
+</div>
+</div>
+<button class="h-9 px-4 rounded-full bg-primary/10 text-primary hover:bg-primary hover:text-white text-sm font-semibold transition-colors">
+                    Connect
+                </button>
+</div>
+<div class="flex items-center gap-3 bg-white dark:bg-surface-dark/50 border border-slate-100 dark:border-none p-3 rounded-2xl shadow-sm">
+<div class="relative shrink-0">
+<div class="bg-center bg-no-repeat bg-cover rounded-full h-14 w-14" data-alt="Portrait of Michael Chen, a sound engineer" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBQBj3VicriWyhfDmLQe70MkMS7LTnaqCTVkSCH1fPehmkDir2ZxLe03V-JuAp7zouTeQGm4QmQ-Aw_QuWIADu9pV5sdwy_lTAYYE7MglFHImceMQv8Nn4kY1JPoRQ5Q6z9QUpTxgc7YBCdXjAh6I_n-HFUkvNSkBARz4T1Y0w5uOUsTquvHoev5NlLHx0XgTZFBU0D6uDWlXl5zB9D0mRtcYIO47QffWc8tEssN9PstTjpCsDrc_SeXaz8Qd6FksHQAZGRHQBzWKA");'></div>
+</div>
+<div class="flex flex-col flex-1 min-w-0">
+<div class="flex items-center gap-1">
+<p class="text-slate-900 dark:text-white text-base font-semibold truncate">Michael Chen</p>
+</div>
+<p class="text-slate-500 dark:text-text-secondary text-sm truncate">Sound Engineer • Brooklyn</p>
+<div class="flex items-center gap-1 mt-0.5">
+<span class="material-symbols-outlined text-[14px] text-yellow-400 fill-current">star</span>
+<p class="text-slate-700 dark:text-slate-300 text-xs font-medium">5.0 <span class="text-slate-400 dark:text-slate-500">(45)</span></p>
+</div>
+</div>
+<button class="h-9 px-4 rounded-full bg-primary text-white shadow-lg shadow-primary/25 text-sm font-semibold transition-colors">
+                    Book
+                </button>
+</div>
+<div class="flex items-center gap-3 bg-white dark:bg-surface-dark/50 border border-slate-100 dark:border-none p-3 rounded-2xl shadow-sm">
+<div class="relative shrink-0">
+<div class="bg-center bg-no-repeat bg-cover rounded-full h-14 w-14" data-alt="Portrait of Jessica Lee, a creative director" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDMl0BMt5iLqlST1S4oWH1wFtxcguFNC7LOdvQOFlxD1i7Xfp9e0iClEA5-Q1s-nkMBFCuQdbe8vs71ARfqFCIVwjQB499rauBUMsWNXhFp9RqTaXeVgbK6uWexuW3bGc0KhIT-1Z1mn1tlF55ct3o2FbJxjl0BclJAb77lXYYB-QF8ySwSKvKvro9Uzdfqu4islcv_45D1cz0k6SB5xt60oZRbbjb-dqWGU6W5yWVMau-VaUdicpchj0VwG7Un8LcnAgkHyYIGecg");'></div>
+<div class="absolute bottom-0 right-0 h-3.5 w-3.5 bg-green-500 border-2 border-white dark:border-surface-dark rounded-full"></div>
+</div>
+<div class="flex flex-col flex-1 min-w-0">
+<div class="flex items-center gap-1">
+<p class="text-slate-900 dark:text-white text-base font-semibold truncate">Jessica Lee</p>
+</div>
+<p class="text-slate-500 dark:text-text-secondary text-sm truncate">Creative Director • Remote</p>
+<div class="flex items-center gap-1 mt-0.5">
+<span class="material-symbols-outlined text-[14px] text-yellow-400 fill-current">star</span>
+<p class="text-slate-700 dark:text-slate-300 text-xs font-medium">4.8 <span class="text-slate-400 dark:text-slate-500">(89)</span></p>
+</div>
+</div>
+<button class="h-9 px-4 rounded-full bg-primary/10 text-primary hover:bg-primary hover:text-white text-sm font-semibold transition-colors">
+                    Connect
+                </button>
+</div>
+</div>
+</section>
+<section>
+<div class="flex items-center justify-between mb-3 px-1">
+<h3 class="text-slate-900 dark:text-white text-lg font-bold">Upcoming Events</h3>
+<a class="text-primary text-sm font-semibold" href="#">View Map</a>
+</div>
+<div class="flex overflow-x-auto gap-4 pb-4 no-scrollbar -mx-4 px-4">
+<div class="shrink-0 w-72 bg-white dark:bg-surface-dark rounded-[1.5rem] overflow-hidden border border-slate-100 dark:border-none shadow-md">
+<div class="h-32 bg-cover bg-center relative" data-alt="Crowd at a networking event with stage lighting" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuC5A6ZB8ub5zyt-ICZPq2tizQExAFWYsXwhWz-VGBTK86pN7JE96rNys0uzHP2EiKLMDxTZvdGQnqX86gdAGp9vMlFJY17GzS2hTnDcJUGcDx_MItGZPLn7saDi7hJ-91WPvCCfzENHKJScMPwZycyEcgtg6hpWF03mXL60eWXhSRwsFMdKvPlfI9dlS5JEWzyKwC_MyLL8iBagfAefRpglGjSqbJUKhqEbGYTNPJQpGzz72K1EoSjUqBnh414q3cAbiTZ-DzsoPTE");'>
+<div class="absolute top-3 right-3 bg-black/60 backdrop-blur-sm px-2 py-1 rounded-lg text-white text-xs font-bold">
+                        $45
+                    </div>
+<div class="absolute bottom-3 left-3 bg-white/90 dark:bg-black/70 backdrop-blur-md px-2 py-1 rounded-md text-slate-900 dark:text-white text-xs font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">location_on</span> NYC
+                    </div>
+</div>
+<div class="p-4">
+<p class="text-primary text-xs font-bold uppercase tracking-wider mb-1">Oct 24 • 6:00 PM</p>
+<h4 class="text-slate-900 dark:text-white font-bold text-lg leading-tight mb-2 truncate">Creator Summit 2024</h4>
+<div class="flex items-center justify-between mt-3">
+<div class="flex -space-x-2">
+<img alt="attendee" class="w-6 h-6 rounded-full border border-white dark:border-surface-dark" data-alt="attendee avatar 1" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDaTgrFw0DJXD98D0wnKQRbfmt-NnZ1m6qtNcqmtI98LTqKP4OiOkf2LoJ7Rxcae-TlP9fZfwuoIJFxQAzM-jzTHPnZFj74UzqG6fiwpIxKNEGDIwa-I-EcL5tlN1LcDwgu8P2SEsiATBwAy5L2Yw6rC-jQe5IGvWCCfqdY56qz7kk8oxNdKrh4D3FikjwnyiMSfw75RdVPqP5LIg3NuPqhbQ49P_omq47D-PKDm_NYkQgladLE10l6STFnqVOkIaldAE9B-RFjoek"/>
+<img alt="attendee" class="w-6 h-6 rounded-full border border-white dark:border-surface-dark" data-alt="attendee avatar 2" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDc5IDhResJmtM5KyPjYoyzy1JDrUDt_hhACTTmwSt9UJTOOsa5e9781UwBoxzGJMGw2eP3ylJ-ZdM7Y2o3u2nqNcMJaJ_z3nfP30YTPHWPyKTubrivMCLgAR5o3hszm1qPZasD1iIRiuCpTfpGIpquo0B4-svAXrQl4ViHa4F0URzsScZouxtOkmfFCm_OTTssbm3BCRGdSkrToSSRS0S-0iuO13iDcvwAu2kyOSuQNpNcgsusfuE4HNIVrmgogOMmpoNv7jNYc3I"/>
+<div class="w-6 h-6 rounded-full border border-white dark:border-surface-dark bg-slate-100 dark:bg-slate-700 text-[8px] flex items-center justify-center font-bold text-slate-500 dark:text-slate-300">+24</div>
+</div>
+<button class="text-primary hover:text-blue-400 font-semibold text-sm">Details</button>
+</div>
+</div>
+</div>
+<div class="shrink-0 w-72 bg-white dark:bg-surface-dark rounded-[1.5rem] overflow-hidden border border-slate-100 dark:border-none shadow-md">
+<div class="h-32 bg-cover bg-center relative" data-alt="Hands working on a laptop at a workshop table" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuD4t4_frIaQYaD3a-Uc3iqt0JUE2CqNnpWhKY7I_SimRzNAzjCPBU0shvVxP5CsgM6gPe3UvWeYxD-ISOlneQsWUnV5TJYQeuOYtMXcZB_t0FRf1noimOX_Jr8amu2efpuKY0dfcMrfwlxssoKg3CPAIp_1yyt7SKzLyxdX1ZxQjbRQr40HtbBZn8jsq4JD0WAZQt0acE_MllP3PxwOR78CQYvgS4kpAmfzdGdN-vxuYXbXvPpUNByERaLijPgmTo8FW3iZPacfXew");'>
+<div class="absolute top-3 right-3 bg-green-500/90 backdrop-blur-sm px-2 py-1 rounded-lg text-white text-xs font-bold">
+                        FREE
+                    </div>
+<div class="absolute bottom-3 left-3 bg-white/90 dark:bg-black/70 backdrop-blur-md px-2 py-1 rounded-md text-slate-900 dark:text-white text-xs font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">location_on</span> Online
+                    </div>
+</div>
+<div class="p-4">
+<p class="text-primary text-xs font-bold uppercase tracking-wider mb-1">Nov 02 • 10:00 AM</p>
+<h4 class="text-slate-900 dark:text-white font-bold text-lg leading-tight mb-2 truncate">Video Editing Masterclass</h4>
+<div class="flex items-center justify-between mt-3">
+<div class="flex -space-x-2">
+<img alt="attendee" class="w-6 h-6 rounded-full border border-white dark:border-surface-dark" data-alt="attendee avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAOKjI3e1MPoCNU9sVOBc5woS7UVCoE3vhQS3rWzdqpqxuLana8_X6BDiI43lYSKpalLQdakD3eFkgAvRuF6oX5DxfW9eKEgUuBA3Kz3og7Ej6SQyvrAT8Erfef8SnnHb8HFaTPpRvv18qLx_oL6wpQRQSPOD0JAQG7W8zolZGox57XpkHV-bJ-aEgM0JPYj2peZ0QVRaBy-8kN9o1GCxOWk7F5YV9CDAsxRpXjLuwUkSd-PD_Xh---N9I3RyhgxTgjskUCmeOeyBE"/>
+<div class="w-6 h-6 rounded-full border border-white dark:border-surface-dark bg-slate-100 dark:bg-slate-700 text-[8px] flex items-center justify-center font-bold text-slate-500 dark:text-slate-300">+120</div>
+</div>
+<button class="text-primary hover:text-blue-400 font-semibold text-sm">Details</button>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<div class="fixed bottom-24 right-4 z-20">
+<button class="flex items-center justify-center w-12 h-12 bg-surface-dark dark:bg-white text-white dark:text-background-dark rounded-full shadow-lg hover:scale-105 transition-transform">
+<span class="material-symbols-outlined">map</span>
+</button>
+</div>
+<nav class="fixed bottom-0 w-full bg-white dark:bg-background-dark/95 backdrop-blur border-t border-slate-200 dark:border-surface-dark/50 pb-safe pt-2 z-30">
+<div class="flex justify-between items-end h-16 px-4 pb-2">
+<a class="flex flex-col items-center justify-center w-14 gap-1 group" href="#">
+<span class="material-symbols-outlined text-slate-400 dark:text-slate-500 group-hover:text-primary transition-colors">home</span>
+<span class="text-[10px] font-medium text-slate-400 dark:text-slate-500 group-hover:text-primary transition-colors">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center w-14 gap-1 group" href="#">
+<span class="material-symbols-outlined text-primary fill-current">search</span>
+<span class="text-[10px] font-medium text-primary">Search</span>
+</a>
+<div class="relative -top-5">
+<button class="w-14 h-14 bg-primary rounded-full flex items-center justify-center shadow-lg shadow-primary/30 border-4 border-background-light dark:border-background-dark active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-white text-[28px]">photo_camera</span>
+</button>
+<span class="absolute -bottom-4 left-1/2 -translate-x-1/2 text-[10px] font-medium text-slate-400 dark:text-slate-500">Camera</span>
+</div>
+<a class="flex flex-col items-center justify-center w-14 gap-1 group" href="#">
+<span class="material-symbols-outlined text-slate-400 dark:text-slate-500 group-hover:text-primary transition-colors">calendar_month</span>
+<span class="text-[10px] font-medium text-slate-400 dark:text-slate-500 group-hover:text-primary transition-colors">Bookings</span>
+</a>
+<a class="flex flex-col items-center justify-center w-14 gap-1 group" href="#">
+<span class="material-symbols-outlined text-slate-400 dark:text-slate-500 group-hover:text-primary transition-colors">person</span>
+<span class="text-[10px] font-medium text-slate-400 dark:text-slate-500 group-hover:text-primary transition-colors">Profile</span>
+</a>
+</div>
+<div class="h-4"></div>
+</nav>
+
+</body></html>

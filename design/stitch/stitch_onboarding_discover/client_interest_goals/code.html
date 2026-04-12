@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Onboarding - Goals</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#2badee",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101c22",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .custom-radio:checked + .radio-tile {
+            border-color: #2badee;
+            background-color: rgba(43, 173, 238, 0.1);
+        }
+        .custom-radio:checked + .radio-tile .radio-check {
+            background-color: #2badee;
+            border-color: #2badee;
+        }
+        .custom-radio:checked + .radio-tile .radio-inner-dot {
+            opacity: 1;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-gray-900 dark:text-white antialiased">
+<div class="relative flex h-screen w-full flex-col overflow-hidden max-w-[430px] mx-auto border-x border-gray-200 dark:border-gray-800">
+<!-- Top Navigation -->
+<div class="flex items-center bg-background-light dark:bg-background-dark p-4 pb-2 justify-between sticky top-0 z-10">
+<div class="text-gray-900 dark:text-white flex size-12 shrink-0 items-center cursor-pointer">
+<span class="material-symbols-outlined">arrow_back</span>
+</div>
+<h2 class="text-gray-900 dark:text-white text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center pr-12">Onboarding</h2>
+</div>
+<!-- Progress Indicator -->
+<div class="flex flex-col gap-3 p-4">
+<div class="flex gap-6 justify-between">
+<p class="text-gray-600 dark:text-gray-300 text-sm font-medium leading-normal">Step 2 of 2</p>
+<p class="text-primary text-sm font-bold leading-normal">90%</p>
+</div>
+<div class="rounded-full bg-gray-200 dark:bg-gray-700 h-2 overflow-hidden">
+<div class="h-full bg-primary" style="width: 90%;"></div>
+</div>
+</div>
+<!-- Scrollable Content -->
+<div class="flex-1 overflow-y-auto px-4 pb-32">
+<h1 class="text-gray-900 dark:text-white tracking-tight text-[32px] font-extrabold leading-tight pt-6 pb-2">
+                What's your goal today?
+            </h1>
+<p class="text-gray-500 dark:text-gray-400 text-base font-normal leading-relaxed pb-8">
+                Tell us what you're looking for so we can tailor your experience and find the best matches.
+            </p>
+<!-- Selection Options -->
+<div class="flex flex-col gap-4">
+<!-- Option 1 -->
+<label class="relative cursor-pointer">
+<input checked="" class="sr-only custom-radio" name="goal" type="radio"/>
+<div class="radio-tile flex items-center gap-4 rounded-xl border-2 border-gray-200 dark:border-gray-700 p-4 transition-all duration-200 hover:border-primary/50">
+<div class="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+<span class="material-symbols-outlined">trending_up</span>
+</div>
+<div class="flex grow flex-col">
+<p class="text-gray-900 dark:text-white text-base font-semibold">Discover new trends</p>
+<p class="text-gray-500 dark:text-gray-400 text-sm">Explore the latest videos and styles</p>
+</div>
+<div class="radio-check size-6 rounded-full border-2 border-gray-300 dark:border-gray-600 flex items-center justify-center">
+<div class="radio-inner-dot size-2.5 rounded-full bg-white opacity-0 transition-opacity duration-200"></div>
+</div>
+</div>
+</label>
+<!-- Option 2 -->
+<label class="relative cursor-pointer">
+<input class="sr-only custom-radio" name="goal" type="radio"/>
+<div class="radio-tile flex items-center gap-4 rounded-xl border-2 border-gray-200 dark:border-gray-700 p-4 transition-all duration-200 hover:border-primary/50">
+<div class="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+<span class="material-symbols-outlined">person_pin_circle</span>
+</div>
+<div class="flex grow flex-col">
+<p class="text-gray-900 dark:text-white text-base font-semibold">Book a nearby pro</p>
+<p class="text-gray-500 dark:text-gray-400 text-sm">Find and schedule professional services</p>
+</div>
+<div class="radio-check size-6 rounded-full border-2 border-gray-300 dark:border-gray-600 flex items-center justify-center">
+<div class="radio-inner-dot size-2.5 rounded-full bg-white opacity-0 transition-opacity duration-200"></div>
+</div>
+</div>
+</label>
+<!-- Option 3 -->
+<label class="relative cursor-pointer">
+<input class="sr-only custom-radio" name="goal" type="radio"/>
+<div class="radio-tile flex items-center gap-4 rounded-xl border-2 border-gray-200 dark:border-gray-700 p-4 transition-all duration-200 hover:border-primary/50">
+<div class="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+<span class="material-symbols-outlined">confirmation_number</span>
+</div>
+<div class="flex grow flex-col">
+<p class="text-gray-900 dark:text-white text-base font-semibold">Attend local events</p>
+<p class="text-gray-500 dark:text-gray-400 text-sm">Get tickets for upcoming gatherings</p>
+</div>
+<div class="radio-check size-6 rounded-full border-2 border-gray-300 dark:border-gray-600 flex items-center justify-center">
+<div class="radio-inner-dot size-2.5 rounded-full bg-white opacity-0 transition-opacity duration-200"></div>
+</div>
+</div>
+</label>
+<!-- Option 4 -->
+<label class="relative cursor-pointer">
+<input class="sr-only custom-radio" name="goal" type="radio"/>
+<div class="radio-tile flex items-center gap-4 rounded-xl border-2 border-gray-200 dark:border-gray-700 p-4 transition-all duration-200 hover:border-primary/50">
+<div class="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+<span class="material-symbols-outlined">payments</span>
+</div>
+<div class="flex grow flex-col">
+<p class="text-gray-900 dark:text-white text-base font-semibold">Compare service prices</p>
+<p class="text-gray-500 dark:text-gray-400 text-sm">Find the best value for your needs</p>
+</div>
+<div class="radio-check size-6 rounded-full border-2 border-gray-300 dark:border-gray-600 flex items-center justify-center">
+<div class="radio-inner-dot size-2.5 rounded-full bg-white opacity-0 transition-opacity duration-200"></div>
+</div>
+</div>
+</label>
+</div>
+</div>
+<!-- Footer / Bottom Navigation -->
+<div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-background-light via-background-light dark:from-background-dark dark:via-background-dark pt-10 pb-8 flex flex-col gap-4">
+<button class="w-full bg-primary hover:bg-primary/90 text-white font-bold py-4 rounded-xl shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2">
+                Finish Setup
+                <span class="material-symbols-outlined text-[20px]">check_circle</span>
+</button>
+<!-- iOS Home Indicator Spacing -->
+<div class="h-4"></div>
+</div>
+</div>
+</body></html>

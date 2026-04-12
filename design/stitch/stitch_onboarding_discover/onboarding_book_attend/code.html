@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Onboarding: Book &amp; Attend</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Theme Configuration -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#2badee",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101c22",
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display antialiased transition-colors duration-200">
+<div class="relative flex h-full min-h-screen w-full flex-col overflow-x-hidden justify-between">
+<!-- Top Navigation / Skip -->
+<div class="flex items-center p-6 justify-end w-full absolute top-0 z-10">
+<button class="flex items-center justify-end group">
+<p class="text-slate-500 dark:text-[#92b7c9] text-base font-bold leading-normal tracking-[0.015em] transition-colors group-hover:text-primary">Skip</p>
+</button>
+</div>
+<!-- Main Content Area -->
+<div class="flex flex-col items-center justify-center flex-grow w-full max-w-md mx-auto px-6 mt-16 mb-4">
+<!-- Illustration Area -->
+<div class="w-full @container mb-8">
+<div class="w-full aspect-[4/3] rounded-xl overflow-hidden bg-white/50 dark:bg-[#111c22] border border-slate-200 dark:border-slate-800 relative flex items-center justify-center p-8">
+<!-- Abstract representation of booking/calendar using gradient and placeholder -->
+<div class="absolute inset-0 bg-gradient-to-tr from-primary/5 via-transparent to-primary/10"></div>
+<div class="w-full h-full bg-contain bg-center bg-no-repeat drop-shadow-2xl opacity-90" data-alt="Illustration of a calendar booking date selection" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuC_p-axqZwXl98usUv-sTK61fxgg_x9FBJrGvcWtfshJsnaxxKJdEt6pJ_nXxheKj_p77tO7KFJf5ywN9anUPqciL7jPyukEPkdDxFodeuODZ53eJbS7DN2ksYz-BDzJrJWJHo49lkwYEO6glZRrqdzl8cUCBsFxOZNq7xiCJcX2_BLgXnl0dE6n9HRywht4QAJHXmhLUDpooz2C5vhUcxrt_dY3mojpXBAxO7-Oxt89hIrhSlIqS_IrdeA_qy2JCnDz28BcrnhkQM");'>
+</div>
+</div>
+</div>
+<!-- Typography -->
+<div class="flex flex-col items-center text-center space-y-3">
+<h1 class="text-[#111c22] dark:text-white tracking-tight text-[32px] font-bold leading-tight">
+                    Book Services &amp; Events
+                </h1>
+<p class="text-slate-600 dark:text-slate-300 text-base font-normal leading-relaxed max-w-[320px]">
+                    Connect with experts for 1:1 sessions or secure your spot at live workshops and events directly through the app.
+                </p>
+</div>
+</div>
+<!-- Bottom Navigation Area -->
+<div class="flex flex-col items-center w-full px-6 pb-10 gap-8">
+<!-- Page Indicators -->
+<div class="flex flex-row items-center justify-center gap-3">
+<!-- Inactive -->
+<div class="h-2 w-2 rounded-full bg-slate-300 dark:bg-[#325567]"></div>
+<!-- Active -->
+<div class="h-2 w-8 rounded-full bg-primary transition-all duration-300"></div>
+<!-- Inactive -->
+<div class="h-2 w-2 rounded-full bg-slate-300 dark:bg-[#325567]"></div>
+</div>
+<!-- Next Button -->
+<button class="w-full h-14 bg-primary hover:bg-primary/90 active:scale-[0.98] transition-all rounded-full flex items-center justify-center text-white text-lg font-bold shadow-lg shadow-primary/25">
+<span class="mr-2">Next</span>
+<span class="material-symbols-outlined text-[20px] font-bold">arrow_forward</span>
+</button>
+</div>
+</div>
+</body></html>

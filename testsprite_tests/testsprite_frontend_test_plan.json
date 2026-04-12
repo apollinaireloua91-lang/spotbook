@@ -1,0 +1,2696 @@
+[
+  {
+    "id": "TC001",
+    "title": "Splash screen is shown on app launch",
+    "description": "Verifies that the app shows the splash screen on initial load at the entry route.",
+    "category": "Splash & Auth Routing",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to \"/\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify page title contains \"Spotbook\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"Splash\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC002",
+    "title": "Onboarding advances through slides",
+    "description": "Verifies that the onboarding screen allows progressing through the onboarding slides end-to-end.",
+    "category": "Splash & Auth Routing",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to \"/onboarding\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"Onboarding\" is visible"
+      },
+      {
+        "type": "action",
+        "description": "Click on \"Next\""
+      },
+      {
+        "type": "action",
+        "description": "Click on \"Next\""
+      },
+      {
+        "type": "action",
+        "description": "Click on \"Get started\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/account-type\""
+      }
+    ]
+  },
+  {
+    "id": "TC003",
+    "title": "Account type selection screen loads and both roles are visible",
+    "description": "Verifies that the role selection page renders and the user can see Client and Pro options.",
+    "category": "Splash & Auth Routing",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to \"/account-type\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"Account type\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Client\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Pro\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC004",
+    "title": "Login screen loads with email/password inputs",
+    "description": "Verifies that the login page is reachable and shows an email/password form (non-OAuth path).",
+    "category": "Splash & Auth Routing",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to \"/login\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"Login\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"Email\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"Password\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"Log in\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC005",
+    "title": "Login fails with invalid credentials and stays on login screen",
+    "description": "Verifies that incorrect email/password shows a visible error and does not navigate into authenticated routes.",
+    "category": "Splash & Auth Routing",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to \"/login\""
+      },
+      {
+        "type": "action",
+        "description": "Type \"not-a-user@example.com\" into \"Email\""
+      },
+      {
+        "type": "action",
+        "description": "Type \"wrong-password\" into \"Password\""
+      },
+      {
+        "type": "action",
+        "description": "Click on \"Log in\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"Login\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Invalid\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC006",
+    "title": "Client user can log in and is routed to client feed",
+    "description": "Verifies that a valid client account is redirected into the client role shell after authentication.",
+    "category": "Splash & Auth Routing",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to \"/login\""
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_USER}}\" into \"Email\""
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_PASSWORD}}\" into \"Password\""
+      },
+      {
+        "type": "action",
+        "description": "Click on \"Log in\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/client/feed\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"Feed\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC007",
+    "title": "Pro user can log in and is routed to pro dashboard",
+    "description": "Verifies that a valid pro account is redirected into the pro role shell after authentication.",
+    "category": "Splash & Auth Routing",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to \"/login\""
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_USER}}\" into \"Email\""
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_PASSWORD}}\" into \"Password\""
+      },
+      {
+        "type": "action",
+        "description": "Click on \"Log in\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/pro/dashboard\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"Dashboard\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC008",
+    "title": "Get Started from first onboarding slide routes to Account Type selection",
+    "description": "Verifies that tapping Get Started completes onboarding and navigates to the account type selection screen.",
+    "category": "Onboarding (first-launch)",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /onboarding"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Get Started\" is visible"
+      },
+      {
+        "type": "action",
+        "description": "Click on \"Get Started\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/account-type\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Client\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Pro\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC009",
+    "title": "Sign up as Client with valid credentials completes and routes to Complete Profile",
+    "description": "Verifies the happy-path client registration flow from role selection through successful signup and navigation to the complete profile screen.",
+    "category": "User Sign Up",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to \"/account-type\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Client\" is visible"
+      },
+      {
+        "type": "action",
+        "description": "Click on \"Client\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/signup\""
+      },
+      {
+        "type": "action",
+        "description": "Type \"newclient_test_01@example.com\" into the \"Email\" field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"ValidPass!234\" into the \"Password\" field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"ValidPass!234\" into the \"Confirm password\" field"
+      },
+      {
+        "type": "action",
+        "description": "Click on the \"Sign up\" button"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/complete-profile\""
+      }
+    ]
+  },
+  {
+    "id": "TC010",
+    "title": "Sign up as Pro with valid credentials completes and routes to Complete Profile",
+    "description": "Verifies the happy-path pro registration flow from role selection through successful signup and navigation to the complete profile screen.",
+    "category": "User Sign Up",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to \"/account-type\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Pro\" is visible"
+      },
+      {
+        "type": "action",
+        "description": "Click on \"Pro\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/signup\""
+      },
+      {
+        "type": "action",
+        "description": "Type \"newpro_test_01@example.com\" into the \"Email\" field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"ValidPass!234\" into the \"Password\" field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"ValidPass!234\" into the \"Confirm password\" field"
+      },
+      {
+        "type": "action",
+        "description": "Click on the \"Sign up\" button"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/complete-profile\""
+      }
+    ]
+  },
+  {
+    "id": "TC011",
+    "title": "Sign up shows inline validation for invalid email format",
+    "description": "Verifies that an invalid email triggers visible validation messaging and the user remains on the signup screen.",
+    "category": "User Sign Up",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to \"/signup\""
+      },
+      {
+        "type": "action",
+        "description": "Type \"not-an-email\" into the \"Email\" field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"ValidPass!234\" into the \"Password\" field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"ValidPass!234\" into the \"Confirm password\" field"
+      },
+      {
+        "type": "action",
+        "description": "Click on the \"Sign up\" button"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"email\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/signup\""
+      }
+    ]
+  },
+  {
+    "id": "TC012",
+    "title": "Sign up shows inline validation for weak/invalid password",
+    "description": "Verifies that an invalid password triggers visible validation messaging and the user remains on the signup screen.",
+    "category": "User Sign Up",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to \"/signup\""
+      },
+      {
+        "type": "action",
+        "description": "Type \"weakpass_test_01@example.com\" into the \"Email\" field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"123\" into the \"Password\" field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"123\" into the \"Confirm password\" field"
+      },
+      {
+        "type": "action",
+        "description": "Click on the \"Sign up\" button"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"password\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/signup\""
+      }
+    ]
+  },
+  {
+    "id": "TC013",
+    "title": "Sign up blocks when password and confirm password do not match",
+    "description": "Verifies that mismatched passwords show a visible error and prevent navigation away from the signup screen.",
+    "category": "User Sign Up",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to \"/signup\""
+      },
+      {
+        "type": "action",
+        "description": "Type \"mismatch_test_01@example.com\" into the \"Email\" field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"ValidPass!234\" into the \"Password\" field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"ValidPass!235\" into the \"Confirm password\" field"
+      },
+      {
+        "type": "action",
+        "description": "Click on the \"Sign up\" button"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"match\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/signup\""
+      }
+    ]
+  },
+  {
+    "id": "TC014",
+    "title": "Role selection persists into signup context (Client)",
+    "description": "Verifies that selecting Client role leads into the signup screen and the UI indicates the chosen role before submission.",
+    "category": "User Sign Up",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to \"/account-type\""
+      },
+      {
+        "type": "action",
+        "description": "Click on \"Client\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/signup\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Client\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC015",
+    "title": "Role selection persists into signup context (Pro)",
+    "description": "Verifies that selecting Pro role leads into the signup screen and the UI indicates the chosen role before submission.",
+    "category": "User Sign Up",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to \"/account-type\""
+      },
+      {
+        "type": "action",
+        "description": "Click on \"Pro\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/signup\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Pro\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC016",
+    "title": "Email/password login routes Client user to client feed",
+    "description": "Verifies that a user can log in with valid email/password and lands on the client feed experience.",
+    "category": "User Login (Email/Password & Google OAuth)",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Login\" is visible"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_USER}}\" into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_PASSWORD}}\" into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Click on \"Log in\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/client/feed\""
+      }
+    ]
+  },
+  {
+    "id": "TC017",
+    "title": "Invalid password shows error and user can retry successfully",
+    "description": "Verifies the invalid-credentials-error appears and a user can retry login without leaving the page.",
+    "category": "User Login (Email/Password & Google OAuth)",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Type \"fake.user@example.com\" into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"WrongPassword123!\" into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Click on \"Log in\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Invalid credentials\" is visible"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_USER}}\" into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_PASSWORD}}\" into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Click on \"Log in\""
+      }
+    ]
+  },
+  {
+    "id": "TC018",
+    "title": "Login form blocks submission when email is empty",
+    "description": "Verifies the login form prevents submission and shows a visible validation message when email is missing.",
+    "category": "User Login (Email/Password & Google OAuth)",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_PASSWORD}}\" into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Click on \"Log in\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Email\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"required\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC019",
+    "title": "Login form blocks submission when password is empty",
+    "description": "Verifies the login form prevents submission and shows a visible validation message when password is missing.",
+    "category": "User Login (Email/Password & Google OAuth)",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_USER}}\" into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Click on \"Log in\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Password\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"required\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC020",
+    "title": "Password field can be submitted via Enter key to log in",
+    "description": "Verifies that pressing Enter from the password field submits the login form and navigates to the post-login destination.",
+    "category": "User Login (Email/Password & Google OAuth)",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_USER}}\" into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_PASSWORD}}\" into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Press \"Enter\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/client/feed\""
+      }
+    ]
+  },
+  {
+    "id": "TC021",
+    "title": "Navigate from Login to Sign Up screen",
+    "description": "Verifies that the user can move from the login screen to the sign up screen using an in-page control.",
+    "category": "User Login (Email/Password & Google OAuth)",
+    "priority": "Low",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Login\" is visible"
+      },
+      {
+        "type": "action",
+        "description": "Click on \"Sign up\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/signup\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Sign up\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC022",
+    "title": "Client completes profile successfully and continues to interest selection",
+    "description": "Verifies a logged-in Client can submit complete profile details and is routed to the Client interests screen.",
+    "category": "Complete Profile",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_USER}}\" into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_PASSWORD}}\" into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Click on the \"Log in\" button"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /complete-profile"
+      },
+      {
+        "type": "action",
+        "description": "Type \"Test Client\" into the display name field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"Just exploring services.\" into the bio field"
+      },
+      {
+        "type": "action",
+        "description": "Click on the \"Continue\" or \"Save\" button"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/client/interests\""
+      }
+    ]
+  },
+  {
+    "id": "TC023",
+    "title": "Pro completes profile successfully and continues to business details",
+    "description": "Verifies a logged-in Pro can submit complete profile details and is routed to the Pro business details screen.",
+    "category": "Complete Profile",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_USER}}\" into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_PASSWORD}}\" into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Click on the \"Log in\" button"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /complete-profile"
+      },
+      {
+        "type": "action",
+        "description": "Type \"Test Pro\" into the display name field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"Professional services provider.\" into the bio field"
+      },
+      {
+        "type": "action",
+        "description": "Click on the \"Continue\" or \"Save\" button"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/pro/business-details\""
+      }
+    ]
+  },
+  {
+    "id": "TC024",
+    "title": "Validation error when display name is missing",
+    "description": "Verifies the user cannot proceed when required profile fields are missing and field-level validation is shown.",
+    "category": "Complete Profile",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_USER}}\" into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_PASSWORD}}\" into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Click on the \"Log in\" button"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /complete-profile"
+      },
+      {
+        "type": "action",
+        "description": "Type \"\" into the display name field"
+      },
+      {
+        "type": "action",
+        "description": "Click on the \"Continue\" or \"Save\" button"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Display name\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"required\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC025",
+    "title": "Validation error when bio exceeds allowed length (if enforced)",
+    "description": "Verifies that an overly long bio triggers a visible validation message and prevents continuing.",
+    "category": "Complete Profile",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_USER}}\" into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_PASSWORD}}\" into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Click on the \"Log in\" button"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /complete-profile"
+      },
+      {
+        "type": "action",
+        "description": "Type \"Test User\" into the display name field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\" into the bio field"
+      },
+      {
+        "type": "action",
+        "description": "Click on the \"Continue\" or \"Save\" button"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Bio\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"too long\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC026",
+    "title": "User can remain on Complete Profile after server-side validation failure",
+    "description": "Verifies that when submission fails, the user stays on the Complete Profile screen and does not navigate forward.",
+    "category": "Complete Profile",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_USER}}\" into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_PASSWORD}}\" into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Click on the \"Log in\" button"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /complete-profile"
+      },
+      {
+        "type": "action",
+        "description": "Type \"!@#\" into the display name field"
+      },
+      {
+        "type": "action",
+        "description": "Click on the \"Continue\" or \"Save\" button"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/complete-profile\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"error\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC027",
+    "title": "Profile form retains entered values after a visible validation error",
+    "description": "Verifies that when a validation message is shown, previously typed values remain visible so the user can correct fields without re-entering everything.",
+    "category": "Complete Profile",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_USER}}\" into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_PASSWORD}}\" into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Click on the \"Log in\" button"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /complete-profile"
+      },
+      {
+        "type": "action",
+        "description": "Type \"Persistent Name\" into the display name field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"\" into the bio field"
+      },
+      {
+        "type": "action",
+        "description": "Click on the \"Continue\" or \"Save\" button"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Persistent Name\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/complete-profile\""
+      }
+    ]
+  },
+  {
+    "id": "TC028",
+    "title": "Cancel/back action does not complete onboarding (if available)",
+    "description": "Verifies that using a visible back/cancel control does not submit the profile and the user remains in an onboarding-related screen.",
+    "category": "Complete Profile",
+    "priority": "Low",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_USER}}\" into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_PASSWORD}}\" into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Click on the \"Log in\" button"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /complete-profile"
+      },
+      {
+        "type": "action",
+        "description": "Click on the \"Back\" or \"Cancel\" button"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/complete-profile\""
+      }
+    ]
+  },
+  {
+    "id": "TC029",
+    "title": "Client feed loads and shows videos from the vertical feed",
+    "description": "Verifies the client can open the feed and see the vertical video feed UI with content loaded.",
+    "category": "Video Feed (Client & Pro feed screens)",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_USER}}\" into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_PASSWORD}}\" into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Click on the \"Log in\" button"
+      },
+      {
+        "type": "action",
+        "description": "Click on the \"Feed\" tab or navigation item to open the feed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/client/feed\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"Vertical video feed\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"Like button\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC030",
+    "title": "Pro feed loads and shows videos from the vertical feed",
+    "description": "Verifies the pro can open the feed and see the vertical video feed UI with content loaded.",
+    "category": "Video Feed (Client & Pro feed screens)",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_USER}}\" into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_PASSWORD}}\" into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Click on the \"Log in\" button"
+      },
+      {
+        "type": "action",
+        "description": "Click on the \"Feed\" tab or navigation item to open the feed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/pro/feed\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"Vertical video feed\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"Like button\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC031",
+    "title": "Like a video from the feed updates the like state",
+    "description": "Verifies tapping Like on a feed video updates the UI to the liked state and reflects a higher like count or active indicator.",
+    "category": "Video Feed (Client & Pro feed screens)",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_USER}}\" into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_PASSWORD}}\" into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Click on the \"Log in\" button"
+      },
+      {
+        "type": "action",
+        "description": "Click on the \"Feed\" tab or navigation item to open the feed"
+      },
+      {
+        "type": "action",
+        "description": "Click on the \"Like\" button on the currently visible video"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"Liked state indicator for Like button\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"Like animation/heart overlay\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC032",
+    "title": "Open comments from a feed video and view the comments UI",
+    "description": "Verifies the comments entry point works from the feed and the comments UI becomes visible.",
+    "category": "Video Feed (Client & Pro feed screens)",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_USER}}\" into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_PASSWORD}}\" into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Click on the \"Log in\" button"
+      },
+      {
+        "type": "action",
+        "description": "Click on the \"Feed\" tab or navigation item to open the feed"
+      },
+      {
+        "type": "action",
+        "description": "Click on the \"Comment\" button on the currently visible video"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"Comments panel\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"Add a comment\" input field is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC033",
+    "title": "Use the share action from a feed video (in-app share UI only)",
+    "description": "Verifies the share entry point opens an in-app share sheet/dialog without relying on native OS dialogs.",
+    "category": "Video Feed (Client & Pro feed screens)",
+    "priority": "Low",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_USER}}\" into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_PASSWORD}}\" into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Click on the \"Log in\" button"
+      },
+      {
+        "type": "action",
+        "description": "Click on the \"Feed\" tab or navigation item to open the feed"
+      },
+      {
+        "type": "action",
+        "description": "Click on the \"Share\" button on the currently visible video"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"Share sheet\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"Share options list\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC034",
+    "title": "Book action is available from a feed video",
+    "description": "Verifies the feed video UI includes a booking call-to-action and that tapping it opens a booking-related UI entry point (without requiring a specific booking route).",
+    "category": "Video Feed (Client & Pro feed screens)",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_USER}}\" into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_PASSWORD}}\" into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Click on the \"Log in\" button"
+      },
+      {
+        "type": "action",
+        "description": "Click on the \"Feed\" tab or navigation item to open the feed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"Book\" button is visible"
+      },
+      {
+        "type": "action",
+        "description": "Click on the \"Book\" button"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"Booking\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC035",
+    "title": "Feed supports pagination by loading more videos as the user scrolls",
+    "description": "Verifies the feed continues loading additional content when scrolling down the vertical feed.",
+    "category": "Video Feed (Client & Pro feed screens)",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_USER}}\" into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_PASSWORD}}\" into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Click on the \"Log in\" button"
+      },
+      {
+        "type": "action",
+        "description": "Click on the \"Feed\" tab or navigation item to open the feed"
+      },
+      {
+        "type": "action",
+        "description": "Scroll to the bottom of the feed list"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"Loading more\" indicator or \"Loading\" spinner is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"Next video\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC036",
+    "title": "Search for pros using the discover search bar (basic happy path)",
+    "description": "Verifies a logged-in user can search in Discover and see matching professional profiles in results.",
+    "category": "Discover & Search",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_USER}}\" into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_PASSWORD}}\" into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Click on the \"Log in\" button"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/client\""
+      },
+      {
+        "type": "action",
+        "description": "Click on \"Discover\" in the app navigation"
+      },
+      {
+        "type": "action",
+        "description": "Type \"hair\" into the search bar"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"Search results\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC037",
+    "title": "Filter discover results by selecting a single category chip",
+    "description": "Verifies category filter chips can be selected and results update accordingly.",
+    "category": "Discover & Search",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_USER}}\" into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_PASSWORD}}\" into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Click on the \"Log in\" button"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/client\""
+      },
+      {
+        "type": "action",
+        "description": "Click on \"Discover\" in the app navigation"
+      },
+      {
+        "type": "action",
+        "description": "Click on a category filter chip (for example, \"Beauty\" or the first visible chip)"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"Search results\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC038",
+    "title": "Combine search text with a category filter",
+    "description": "Verifies users can apply both a search query and a category filter and still see results rendered.",
+    "category": "Discover & Search",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_USER}}\" into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_PASSWORD}}\" into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Click on the \"Log in\" button"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/client\""
+      },
+      {
+        "type": "action",
+        "description": "Click on \"Discover\" in the app navigation"
+      },
+      {
+        "type": "action",
+        "description": "Type \"nail\" into the search bar"
+      },
+      {
+        "type": "action",
+        "description": "Click on a category filter chip (choose any visible chip)"
+      }
+    ]
+  },
+  {
+    "id": "TC039",
+    "title": "Open a pro profile from discover results",
+    "description": "Verifies a user can tap a pro in the results grid and reach the pro profile details view.",
+    "category": "Discover & Search",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_USER}}\" into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_PASSWORD}}\" into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Click on the \"Log in\" button"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/client\""
+      },
+      {
+        "type": "action",
+        "description": "Click on \"Discover\" in the app navigation"
+      },
+      {
+        "type": "action",
+        "description": "Click on a pro profile card in the results grid (choose the first visible result)"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"Pro profile\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC040",
+    "title": "View services list for a pro after opening their profile",
+    "description": "Verifies that opening a pro profile shows their services list in the booking sheet/section.",
+    "category": "Discover & Search",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_USER}}\" into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_PASSWORD}}\" into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Click on the \"Log in\" button"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/client\""
+      },
+      {
+        "type": "action",
+        "description": "Click on \"Discover\" in the app navigation"
+      },
+      {
+        "type": "action",
+        "description": "Click on a pro profile card in the results grid (choose the first visible result)"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"Services\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC041",
+    "title": "Search for a nonsense term shows an empty state (no results)",
+    "description": "Verifies the UI handles a query with no matches by showing a no-results message or empty state.",
+    "category": "Discover & Search",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_USER}}\" into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_PASSWORD}}\" into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Click on the \"Log in\" button"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/client\""
+      },
+      {
+        "type": "action",
+        "description": "Click on \"Discover\" in the app navigation"
+      },
+      {
+        "type": "action",
+        "description": "Type \"zzzzqwerty-no-match-123\" into the search bar"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"No results\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC042",
+    "title": "Client can view Bookings screen after successful login",
+    "description": "Verifies a logged-in user can reach the Client Bookings list screen and see core UI elements.",
+    "category": "Bookings Management & Booking Flow",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_USER}}\" into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_PASSWORD}}\" into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Log in\" button"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/client\""
+      },
+      {
+        "type": "action",
+        "description": "Click on \"Bookings\" in the bottom navigation"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/client/bookings\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Bookings\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC043",
+    "title": "Client bookings list shows expected sections (Upcoming/Past)",
+    "description": "Verifies the bookings list UI renders the key tabs/sections for managing bookings.",
+    "category": "Bookings Management & Booking Flow",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_USER}}\" into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_PASSWORD}}\" into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Log in\" button"
+      },
+      {
+        "type": "action",
+        "description": "Click on \"Bookings\" in the bottom navigation"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Upcoming\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Past\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"Bookings list\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC044",
+    "title": "Client can switch between Upcoming and Past bookings views",
+    "description": "Verifies the user can toggle bookings filters and the view updates accordingly.",
+    "category": "Bookings Management & Booking Flow",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_USER}}\" into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_PASSWORD}}\" into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Log in\" button"
+      },
+      {
+        "type": "action",
+        "description": "Click on \"Bookings\" in the bottom navigation"
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Past\" tab"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"Past bookings list\" is visible"
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Upcoming\" tab"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"Upcoming bookings list\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC045",
+    "title": "Client can navigate from Profile to Bookings",
+    "description": "Verifies bookings access from the profile area (alternate navigation path).",
+    "category": "Bookings Management & Booking Flow",
+    "priority": "Low",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_USER}}\" into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_PASSWORD}}\" into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Log in\" button"
+      },
+      {
+        "type": "action",
+        "description": "Click on \"Profile\" in the bottom navigation"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/client/profile\""
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Bookings\" option on the Profile screen"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/client/bookings\""
+      }
+    ]
+  },
+  {
+    "id": "TC046",
+    "title": "Bookings screen remains accessible after navigating away and back",
+    "description": "Verifies the bookings screen can be revisited reliably within the same authenticated session.",
+    "category": "Bookings Management & Booking Flow",
+    "priority": "Low",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_USER}}\" into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_PASSWORD}}\" into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Log in\" button"
+      },
+      {
+        "type": "action",
+        "description": "Click on \"Bookings\" in the bottom navigation"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/client/bookings\""
+      },
+      {
+        "type": "action",
+        "description": "Click on \"Discover\" in the bottom navigation"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/client/discover\""
+      },
+      {
+        "type": "action",
+        "description": "Click on \"Bookings\" in the bottom navigation"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/client/bookings\""
+      }
+    ]
+  },
+  {
+    "id": "TC047",
+    "title": "Cancel an upcoming booking and see it reflected in My Bookings list",
+    "description": "Verifies a client can cancel an upcoming booking and the bookings list reflects the cancelled state.",
+    "category": "Bookings Cancellation",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_USER}}\" into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_PASSWORD}}\" into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Log in\" button"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/client\""
+      },
+      {
+        "type": "action",
+        "description": "Click on the \"Bookings\" tab or menu item"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/client/bookings\""
+      },
+      {
+        "type": "action",
+        "description": "Click on the first booking in the \"Upcoming\" list"
+      }
+    ]
+  },
+  {
+    "id": "TC048",
+    "title": "Cancel from booking details and confirm status shows cancelled",
+    "description": "Verifies cancellation from a booking detail view results in a visible cancelled status confirmation.",
+    "category": "Bookings Cancellation",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_USER}}\" into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_PASSWORD}}\" into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Log in\" button"
+      },
+      {
+        "type": "action",
+        "description": "Click on the \"Bookings\" tab or menu item"
+      },
+      {
+        "type": "action",
+        "description": "Click on the first booking in the \"Upcoming\" list"
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Cancel booking\" button"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Cancelled\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC049",
+    "title": "Cancellation within 24 hours shows partial refund policy message",
+    "description": "Verifies that cancelling within 24 hours shows the server-provided policy message about deposit refund.",
+    "category": "Bookings Cancellation",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_USER}}\" into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_PASSWORD}}\" into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Log in\" button"
+      },
+      {
+        "type": "action",
+        "description": "Click on the \"Bookings\" tab or menu item"
+      },
+      {
+        "type": "action",
+        "description": "Click on an upcoming booking that indicates it is within 24 hours of the appointment time"
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Cancel booking\" button"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"No refund of deposit due to policy\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC050",
+    "title": "Cancelled booking appears under Past or Cancelled section in My Bookings",
+    "description": "Verifies a cancelled booking is not shown as active upcoming and is visible in a past/cancelled area of the bookings list.",
+    "category": "Bookings Cancellation",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_USER}}\" into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_PASSWORD}}\" into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Log in\" button"
+      },
+      {
+        "type": "action",
+        "description": "Click on the \"Bookings\" tab or menu item"
+      },
+      {
+        "type": "action",
+        "description": "Click on the \"Past\" tab (or \"Cancelled\" tab if present)"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Cancelled\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Upcoming\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC051",
+    "title": "Invalid booking cancellation shows 'Booking not found' error and support option",
+    "description": "Verifies an invalid cancellation attempt shows a 'Booking not found' message and provides a way to contact support.",
+    "category": "Bookings Cancellation",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_USER}}\" into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_PASSWORD}}\" into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Log in\" button"
+      },
+      {
+        "type": "action",
+        "description": "Click on the \"Bookings\" tab or menu item"
+      },
+      {
+        "type": "action",
+        "description": "Click on an upcoming booking and open its cancellation flow (for example, by clicking \"Cancel booking\")"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Booking not found\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"Contact support\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC052",
+    "title": "User can dismiss cancellation error and remain on bookings screen",
+    "description": "Verifies that after a cancellation error, the user can close the message and continue using the bookings screen.",
+    "category": "Bookings Cancellation",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_USER}}\" into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_PASSWORD}}\" into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Log in\" button"
+      },
+      {
+        "type": "action",
+        "description": "Click on the \"Bookings\" tab or menu item"
+      },
+      {
+        "type": "action",
+        "description": "Click on an upcoming booking and open its cancellation flow (for example, by clicking \"Cancel booking\")"
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Close\" button on the error message (or \"OK\" if present)"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/client/bookings\""
+      }
+    ]
+  },
+  {
+    "id": "TC053",
+    "title": "Login then open a static authenticated page to confirm session is established",
+    "description": "Verifies that email/password login works and the user lands in an authenticated area.",
+    "category": "Event Details & Ticket Purchase",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to \"/login\""
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_USER}}\" into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_PASSWORD}}\" into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Click on the \"Log in\" button"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/client/feed\""
+      }
+    ]
+  },
+  {
+    "id": "TC054",
+    "title": "Login then access Create Event screen (entry route exists)",
+    "description": "Verifies the authenticated user can reach the create event screen from a logged-in session.",
+    "category": "Event Details & Ticket Purchase",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to \"/login\""
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_USER}}\" into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_PASSWORD}}\" into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Click on the \"Log in\" button"
+      },
+      {
+        "type": "action",
+        "description": "Click on the \"Create Event\" button or link"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/create-event\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Create\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC055",
+    "title": "Login then verify ticket-related area is reachable from profile",
+    "description": "Verifies the user can navigate to their profile where tickets are typically accessible after purchase.",
+    "category": "Event Details & Ticket Purchase",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to \"/login\""
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_USER}}\" into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_PASSWORD}}\" into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Click on the \"Log in\" button"
+      },
+      {
+        "type": "action",
+        "description": "Click on the \"Profile\" tab or menu item"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/client/profile\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Tickets\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC056",
+    "title": "Invalid login blocks access to authenticated event purchase journey entry points",
+    "description": "Verifies that invalid credentials do not log the user in, preventing access to authenticated ticket purchase routes.",
+    "category": "Event Details & Ticket Purchase",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to \"/login\""
+      },
+      {
+        "type": "action",
+        "description": "Type \"invalid.user@example.com\" into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"WrongPassword123!\" into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Click on the \"Log in\" button"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Invalid\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/login\""
+      }
+    ]
+  },
+  {
+    "id": "TC057",
+    "title": "Login then open Notifications to ensure post-purchase messages area is available",
+    "description": "Verifies the user can reach notification history (often used for ticket/payment updates) after login.",
+    "category": "Event Details & Ticket Purchase",
+    "priority": "Low",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to \"/login\""
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_USER}}\" into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_PASSWORD}}\" into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Click on the \"Log in\" button"
+      },
+      {
+        "type": "action",
+        "description": "Click on the \"Notifications\" icon or menu item"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/notifications\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Notifications\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC058",
+    "title": "View client profile and default tab content renders",
+    "description": "Verifies an authenticated client can open the Client Profile screen and see core profile info and tab navigation.",
+    "category": "Client Profile",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_USER}}\" into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_PASSWORD}}\" into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Click on \"Log in\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/client\""
+      },
+      {
+        "type": "action",
+        "description": "Click on \"Profile\" in the app navigation"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Favorites\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"Edit Profile\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC059",
+    "title": "Switch between Favorites, Bookings History, and Tickets tabs",
+    "description": "Verifies the user can switch profile tabs and the selected tab content area updates visibly.",
+    "category": "Client Profile",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_USER}}\" into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_PASSWORD}}\" into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Click on \"Log in\""
+      },
+      {
+        "type": "action",
+        "description": "Click on \"Profile\" in the app navigation"
+      },
+      {
+        "type": "action",
+        "description": "Click on the \"Bookings History\" tab"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Bookings History\" is visible"
+      },
+      {
+        "type": "action",
+        "description": "Click on the \"Tickets\" tab"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Tickets\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC060",
+    "title": "Open Edit Profile from Client Profile screen",
+    "description": "Verifies the Edit Profile button navigates to the edit profile screen.",
+    "category": "Client Profile",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_USER}}\" into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_PASSWORD}}\" into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Click on \"Log in\""
+      },
+      {
+        "type": "action",
+        "description": "Click on \"Profile\" in the app navigation"
+      },
+      {
+        "type": "action",
+        "description": "Click on \"Edit Profile\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/edit-profile\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Edit Profile\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC061",
+    "title": "Update profile fields and verify updated values appear on profile",
+    "description": "Verifies a client can save changes (display name, city, bio) and see the updated values reflected on the Client Profile screen.",
+    "category": "Client Profile",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_USER}}\" into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_PASSWORD}}\" into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Click on \"Log in\""
+      },
+      {
+        "type": "action",
+        "description": "Click on \"Profile\" in the app navigation"
+      },
+      {
+        "type": "action",
+        "description": "Click on \"Edit Profile\""
+      },
+      {
+        "type": "action",
+        "description": "Type \"Test User Display\" into the display name field"
+      },
+      {
+        "type": "action",
+        "description": "Click on \"Save\""
+      }
+    ]
+  },
+  {
+    "id": "TC062",
+    "title": "Edit city and verify change is shown on profile info",
+    "description": "Verifies updating the city field persists and is visible on the Client Profile screen.",
+    "category": "Client Profile",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_USER}}\" into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_PASSWORD}}\" into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Click on \"Log in\""
+      },
+      {
+        "type": "action",
+        "description": "Click on \"Profile\" in the app navigation"
+      },
+      {
+        "type": "action",
+        "description": "Click on \"Edit Profile\""
+      },
+      {
+        "type": "action",
+        "description": "Type \"Test City\" into the city field"
+      },
+      {
+        "type": "action",
+        "description": "Click on \"Save\""
+      }
+    ]
+  },
+  {
+    "id": "TC063",
+    "title": "Edit bio and verify change is shown on profile info",
+    "description": "Verifies updating the bio field persists and is visible on the Client Profile screen.",
+    "category": "Client Profile",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_USER}}\" into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_PASSWORD}}\" into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Click on \"Log in\""
+      },
+      {
+        "type": "action",
+        "description": "Click on \"Profile\" in the app navigation"
+      },
+      {
+        "type": "action",
+        "description": "Click on \"Edit Profile\""
+      },
+      {
+        "type": "action",
+        "description": "Type \"This is a short test bio.\" into the bio field"
+      },
+      {
+        "type": "action",
+        "description": "Click on \"Save\""
+      }
+    ]
+  },
+  {
+    "id": "TC064",
+    "title": "Cancel out of Edit Profile without saving",
+    "description": "Verifies leaving the edit screen via a cancel/back control does not apply changes to the visible profile info.",
+    "category": "Client Profile",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_USER}}\" into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_PASSWORD}}\" into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Click on \"Log in\""
+      },
+      {
+        "type": "action",
+        "description": "Click on \"Profile\" in the app navigation"
+      },
+      {
+        "type": "action",
+        "description": "Click on \"Edit Profile\""
+      },
+      {
+        "type": "action",
+        "description": "Type \"Unsaved Name\" into the display name field"
+      },
+      {
+        "type": "action",
+        "description": "Click on \"Cancel\""
+      }
+    ]
+  },
+  {
+    "id": "TC065",
+    "title": "Update notification preferences and see confirmation on Settings",
+    "description": "Verifies a signed-in user can toggle notification preferences and the UI reflects the updated state.",
+    "category": "Settings & Sign Out",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_USER}}\" into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_PASSWORD}}\" into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Log in\" button"
+      },
+      {
+        "type": "action",
+        "description": "Click on \"Settings\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify page title contains \"Settings\""
+      },
+      {
+        "type": "action",
+        "description": "Click the notification preference toggle (any one visible toggle)"
+      }
+    ]
+  },
+  {
+    "id": "TC066",
+    "title": "Notification preferences persist after leaving and returning to Settings",
+    "description": "Verifies notification preference toggles remain in the chosen state after navigating away and back.",
+    "category": "Settings & Sign Out",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_USER}}\" into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_PASSWORD}}\" into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Log in\" button"
+      },
+      {
+        "type": "action",
+        "description": "Click on \"Settings\""
+      },
+      {
+        "type": "action",
+        "description": "Click the notification preference toggle (any one visible toggle)"
+      },
+      {
+        "type": "action",
+        "description": "Click on \"Favorites\""
+      },
+      {
+        "type": "action",
+        "description": "Click on \"Settings\""
+      }
+    ]
+  },
+  {
+    "id": "TC067",
+    "title": "Sign out from Settings navigates to Login",
+    "description": "Verifies the user can sign out and is taken to the login screen.",
+    "category": "Settings & Sign Out",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_USER}}\" into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_PASSWORD}}\" into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Log in\" button"
+      },
+      {
+        "type": "action",
+        "description": "Click on \"Settings\""
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Sign out\" button"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/login\""
+      }
+    ]
+  },
+  {
+    "id": "TC068",
+    "title": "After sign out, user can log in again successfully",
+    "description": "Verifies the app returns to a usable state after signing out by allowing a fresh login.",
+    "category": "Settings & Sign Out",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_USER}}\" into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_PASSWORD}}\" into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Log in\" button"
+      },
+      {
+        "type": "action",
+        "description": "Click on \"Settings\""
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Sign out\" button"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify URL contains \"/login\""
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_USER}}\" into the email field"
+      }
+    ]
+  },
+  {
+    "id": "TC069",
+    "title": "Settings screen renders core sections for a signed-in user",
+    "description": "Verifies the Settings screen loads and shows key controls like notification preferences and sign out.",
+    "category": "Settings & Sign Out",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_USER}}\" into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_PASSWORD}}\" into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Log in\" button"
+      },
+      {
+        "type": "action",
+        "description": "Click on \"Settings\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify page title contains \"Settings\""
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"Sign out\" is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text \"Notifications\" is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC070",
+    "title": "Notification preferences can be toggled multiple times without breaking UI",
+    "description": "Verifies repeated toggling works and the control remains interactive and visible.",
+    "category": "Settings & Sign Out",
+    "priority": "Low",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_USER}}\" into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Type \"{{LOGIN_PASSWORD}}\" into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Click the \"Log in\" button"
+      },
+      {
+        "type": "action",
+        "description": "Click on \"Settings\""
+      },
+      {
+        "type": "action",
+        "description": "Click the notification preference toggle (any one visible toggle)"
+      },
+      {
+        "type": "action",
+        "description": "Click the same notification preference toggle again"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify element \"Sign out\" is visible"
+      }
+    ]
+  }
+]

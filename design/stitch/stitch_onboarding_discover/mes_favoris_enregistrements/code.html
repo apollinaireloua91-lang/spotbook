@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Spotbook - Favorites</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#2badee",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#080810",
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 antialiased font-display">
+<div class="relative flex min-h-screen w-full flex-col overflow-x-hidden">
+<!-- Header -->
+<header class="sticky top-0 z-50 flex items-center bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md p-4 justify-between border-b border-slate-200 dark:border-slate-800">
+<div class="flex size-10 shrink-0 items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+<span class="material-symbols-outlined">arrow_back</span>
+</div>
+<h2 class="text-lg font-bold leading-tight tracking-tight flex-1 text-center">My Favorites</h2>
+<div class="flex w-10 items-center justify-end">
+<button class="flex size-10 items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+<span class="material-symbols-outlined">search</span>
+</button>
+</div>
+</header>
+<!-- Tabs -->
+<nav class="sticky top-[73px] z-40 bg-background-light dark:bg-background-dark px-4 pt-2">
+<div class="flex border-b border-slate-200 dark:border-slate-800 justify-between">
+<a class="flex flex-col items-center justify-center border-b-2 border-primary text-primary pb-3 pt-4 flex-1" href="#">
+<p class="text-sm font-bold leading-normal tracking-wide">Providers</p>
+</a>
+<a class="flex flex-col items-center justify-center border-b-2 border-transparent text-slate-500 dark:text-slate-400 pb-3 pt-4 flex-1 hover:text-slate-900 dark:hover:text-slate-100 transition-colors" href="#">
+<p class="text-sm font-bold leading-normal tracking-wide">Videos</p>
+</a>
+</div>
+</nav>
+<main class="flex-1 pb-24">
+<!-- Providers Section -->
+<section class="p-4">
+<div class="flex items-center justify-between mb-4">
+<h3 class="text-lg font-bold leading-tight tracking-tight">Saved Providers</h3>
+<span class="text-xs font-medium text-slate-500">12 total</span>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<!-- Provider Card 1 -->
+<div class="flex flex-col gap-3 group">
+<div class="relative w-full aspect-square overflow-hidden rounded-xl bg-slate-200 dark:bg-slate-800">
+<div class="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-110" data-alt="Female professional doctor in medical office setting" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCk-X11QsGivHEDUndEfRt9uf22WTo0XAr_gVRTfn9W1JIFM1NkZAdbVE9XB0Am8_fZg2npJvUuUtIl4vYHk6cInyeABBVgT3ilKHAHeqf9HzW68e6iCbzHzXaj04HkAyvLuFo9CiBJ3f1sjDBeHpCrERN47X2HF8Ri3CaPHxYjiTcpEGTfelYz72RILBoNkDWDW5PvcbQWEWh7NCNarPNbKD8D5UpkKc9ZBF93LuO06oSFzhPE9Abqm7p21m9tuYWe3ihJ9_dOC8Y");'></div>
+<div class="absolute top-2 right-2">
+<button class="size-8 flex items-center justify-center rounded-full bg-white/20 backdrop-blur-md text-primary">
+<span class="material-symbols-outlined text-[20px] fill-1">heart_check</span>
+</button>
+</div>
+</div>
+<div class="px-1">
+<p class="text-slate-900 dark:text-slate-100 text-base font-bold leading-tight">Dr. Sarah Jenkins</p>
+<p class="text-slate-500 dark:text-slate-400 text-sm font-medium mt-1 flex items-center gap-1">
+<span class="material-symbols-outlined text-primary text-[16px] fill-1">star</span>
+                                4.9 <span class="text-[10px] opacity-60">(120)</span>
+</p>
+<button class="mt-3 w-full py-2 bg-primary/10 hover:bg-primary text-primary hover:text-white text-xs font-bold rounded transition-all duration-300">
+                                Book Now
+                            </button>
+</div>
+</div>
+<!-- Provider Card 2 -->
+<div class="flex flex-col gap-3 group">
+<div class="relative w-full aspect-square overflow-hidden rounded-xl bg-slate-200 dark:bg-slate-800">
+<div class="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-110" data-alt="Athletic trainer working in a modern gym facility" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuB0IW61AJBJuo0uy2BJvgn6W04M4wgKEaOcSYxjkcOO5THt71K_RQPR_2AeORXzeTuYGHU-cX4uqxE-bg0NVNYuDmcRQAF1dfZ7FbUPFwNHMY1qvEb0dZ92UuV1bu1eEaIERiuESgBcSb8Q30MPZwGfmW7ttznfgP_E_724PgVVxpar2Rtkfaz2VOJil0fzqirzxNyYTRsvkNtysj4Jz1qJZLwfRq49IrQSBRfBBy_YX1Co54qRnrFcO1zC4NtCWAJr1pPGrFfw-TA");'></div>
+<div class="absolute top-2 right-2">
+<button class="size-8 flex items-center justify-center rounded-full bg-white/20 backdrop-blur-md text-primary">
+<span class="material-symbols-outlined text-[20px] fill-1">heart_check</span>
+</button>
+</div>
+</div>
+<div class="px-1">
+<p class="text-slate-900 dark:text-slate-100 text-base font-bold leading-tight">Elite Training Hub</p>
+<p class="text-slate-500 dark:text-slate-400 text-sm font-medium mt-1 flex items-center gap-1">
+<span class="material-symbols-outlined text-primary text-[16px] fill-1">star</span>
+                                4.8 <span class="text-[10px] opacity-60">(85)</span>
+</p>
+<button class="mt-3 w-full py-2 bg-primary/10 hover:bg-primary text-primary hover:text-white text-xs font-bold rounded transition-all duration-300">
+                                Book Now
+                            </button>
+</div>
+</div>
+</div>
+</section>
+<!-- Video Clips Section -->
+<section class="p-4">
+<div class="flex items-center justify-between mb-4 pt-2">
+<h3 class="text-lg font-bold leading-tight tracking-tight">Saved Videos</h3>
+<span class="text-xs font-medium text-slate-500">View All</span>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<!-- Video Card 1 -->
+<div class="flex flex-col gap-2 group cursor-pointer">
+<div class="relative w-full aspect-[9/16] overflow-hidden rounded-xl bg-slate-200 dark:bg-slate-800">
+<div class="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-110" data-alt="Yoga practitioner performing a balanced pose outdoors" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAnA2IPh0_eMWchUELAc2E9wO8HgkzT3DBY0SN55yUkodxQT3Lq3ObfWTrtjz0SDeV3XJN-zK3zF8_Kvs8BAH6q03sahnkel4qMFF1IYcyVRHuQANvC0bedMjSQz6a5HdjdapoCFtX6ahTLJ2Blx8EK7voiNEWoEwfd-VnRLMIUOAybC4isCVeJB_pXwtJCS27ViUJpGQPn3IJQZjnfxFw5G_qVBKWGW9-Nhz07fcBlLFaX9UxoJHtAJbr6U5sssO26DzWL4er5aKw");'></div>
+<div class="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors"></div>
+<div class="absolute bottom-3 left-3 flex items-center gap-2">
+<span class="material-symbols-outlined text-white text-xl">play_circle</span>
+<span class="text-white text-xs font-medium">1:20</span>
+</div>
+</div>
+<p class="text-slate-900 dark:text-slate-100 text-sm font-semibold truncate px-1">Morning Mobility Flow</p>
+</div>
+<!-- Video Card 2 -->
+<div class="flex flex-col gap-2 group cursor-pointer">
+<div class="relative w-full aspect-[9/16] overflow-hidden rounded-xl bg-slate-200 dark:bg-slate-800">
+<div class="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-110" data-alt="Close up of weightlifting equipment in a gym" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDt2cDZnF780hKhyLaLQlHsgFj9pEPDicl5jw4n_qGm6kG0RaplCwCs9Cb84UUi7ggBzkW9SmGJttXB9thsfyMmUnuDAUlydZTn8_Qx9ljwIYwqqJiPBepoNlNiwtImAIi_VrWNZ9vQhvDaWLxBcNrp5HJVK44EtDBXWiiFaaorUU_MauDUSpQhItZgFi2pCWLpZfCoNfXXrXgFzzj5FBZLMjkbmkdW7Z0ZH81dBvOioz-bqxWqGO0job5VLtGyPe3iSirNR2Iqxiw");'></div>
+<div class="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors"></div>
+<div class="absolute bottom-3 left-3 flex items-center gap-2">
+<span class="material-symbols-outlined text-white text-xl">play_circle</span>
+<span class="text-white text-xs font-medium">0:45</span>
+</div>
+</div>
+<p class="text-slate-900 dark:text-slate-100 text-sm font-semibold truncate px-1">HIIT Core Blast</p>
+</div>
+</div>
+</section>
+</main>
+<!-- Bottom Navigation -->
+<nav class="fixed bottom-0 left-0 right-0 z-50 border-t border-slate-200 dark:border-slate-800 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-lg px-4 pb-6 pt-2">
+<div class="flex max-w-md mx-auto items-end justify-between">
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-slate-500 dark:text-slate-400 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">home</span>
+<p class="text-[10px] font-bold uppercase tracking-wider">Home</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-slate-500 dark:text-slate-400 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">search</span>
+<p class="text-[10px] font-bold uppercase tracking-wider">Explore</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-primary" href="#">
+<span class="material-symbols-outlined fill-1">favorite</span>
+<p class="text-[10px] font-bold uppercase tracking-wider">Favorites</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-slate-500 dark:text-slate-400 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">person</span>
+<p class="text-[10px] font-bold uppercase tracking-wider">Profile</p>
+</a>
+</div>
+</nav>
+</div>
+</body></html>

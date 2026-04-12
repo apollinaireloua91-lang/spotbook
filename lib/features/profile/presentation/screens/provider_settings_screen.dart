@@ -1,0 +1,1236 @@
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:url_launcher/url_launcher.dart';
+
+import '../../../../l10n/app_localizations.dart';
+import '../../../../shared/locale/app_locale_notifier.dart';
+import '../../../../shared/theme/app_colors.dart';
+import '../../../../shared/widgets/spotbook_bottom_sheet.dart';
+import '../../../../shared/widgets/spotbook_button.dart';
+import '../../../../shared/widgets/spotbook_card.dart';
+import '../../../../shared/widgets/spotbook_loading_shimmer.dart';
+import '../../../auth/data/auth_repository.dart';
+import '../../../feed/data/spotify_link_notifier.dart';
+import '../../../feed/data/spotify_oauth_service.dart';
+import '../../../feed/data/spotify_repository.dart';
+import '../../data/provider_settings_repository.dart';
+import '../notifiers/pro_settings_notifier.dart';
+
+/// Paramètres Pro : navigation, formulaires légers et persistance via [ProSettingsNotifier].
+class ProviderSettingsScreen extends ConsumerWidget {
+  const ProviderSettingsScreen({super.key});
+
+  static const _advanceHours = [2, 6, 12, 24, 48];
+  static const _gapMinutes = [0, 15, 30, 60];
+  static const _policies = ['flexible', 'moderate', 'strict'];
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
+    final async = ref.watch(proSettingsProvider);
+
+    return Scaffold(
+      backgroundColor: AppColors.fond,
+      appBar: AppBar(
+        backgroundColor: AppColors.fond,
+        surfaceTintColor: Colors.transparent,
+        elevation: 0,
+        leading: Semantics(
+          label: 'Back',
+          child: IconButton(
+            icon: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: AppColors.surface,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: AppColors.border, width: 0.5),
+              ),
+              child: Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
+            ),
+            onPressed: () => context.pop(),
+          ),
+        ),
+        title: Text(
+          l10n.proSettingsTitle,
+          style: GoogleFonts.sora(
+            color: AppColors.blanc,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        centerTitle: true,
+      ),
+      body: async.when(
+        data: (data) => _SettingsBody(data: data),
+        loading: () => const Padding(
+          padding: EdgeInsets.all(20),
+          child: SpotbookLoadingShimmer.card(),
+        ),
+        error: (e, _) => Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Text(
+              e.toString(),
+              textAlign: TextAlign.center,
+              style: GoogleFonts.dmSans(color: AppColors.gris),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _SettingsBody extends ConsumerWidget {
+  const _SettingsBody({required this.data});
+
+  final ProSettingsSnapshot data;
+
+  void _savedToast(BuildContext context, AppLocalizations l10n) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(l10n.proSettingsSavedToast),
+        backgroundColor: AppColors.success,
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
+    final locale = ref.watch(appLocaleProvider);
+
+    Future<void> patchSettings(Map<String, dynamic> p) async {
+      try {
+        await ref.read(proSettingsProvider.notifier).patchSettings(p);
+        if (context.mounted) _savedToast(context, l10n);
+      } catch (e) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(e.toString()),
+              backgroundColor: AppColors.error,
+            ),
+          );
+        }
+      }
+    }
+
+    Future<void> patchPro(Map<String, dynamic> p) async {
+      try {
+        await ref.read(proSettingsProvider.notifier).patchProfilePro(p);
+        if (context.mounted) _savedToast(context, l10n);
+      } catch (e) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(e.toString()),
+              backgroundColor: AppColors.error,
+            ),
+          );
+        }
+      }
+    }
+
+    return ListView(
+      padding: const EdgeInsets.fromLTRB(20, 8, 20, 40),
+      children: [
+        _SectionTitle(text: l10n.proSettingsSectionAccount),
+        SpotbookCard(
+          child: Column(
+            children: [
+              _Tile(
+                label: l10n.email,
+                value: data.email.isEmpty ? '—' : data.email,
+                onTap: () => _showEmailSheet(context, ref, l10n),
+              ),
+              Divider(color: AppColors.border, height: 1),
+              _Tile(
+                label: l10n.proSettingsPhone,
+                value: data.phone?.isNotEmpty == true ? data.phone! : '—',
+                onTap: () => _showPhoneSheet(context, ref, l10n),
+              ),
+              Divider(color: AppColors.border, height: 1),
+              _Tile(
+                label: l10n.proSettingsChangePassword,
+                value: '',
+                showChevron: true,
+                onTap: () =>
+                    context.push('/pro/profile/settings/change-password'),
+              ),
+            ],
+          ),
+        ),
+        _SectionTitle(text: l10n.proSettingsSectionBusiness),
+        SpotbookCard(
+          child: Column(
+            children: [
+              _Tile(
+                label: l10n.proSettingsBusinessProfile,
+                value: '',
+                showChevron: true,
+                onTap: () => context.push('/pro/profile/edit'),
+              ),
+              Divider(color: AppColors.border, height: 1),
+              _Tile(
+                label: l10n.proSettingsWorkAddress,
+                value: '',
+                showChevron: true,
+                onTap: () => context.push('/pro/profile/edit'),
+              ),
+            ],
+          ),
+        ),
+        _SectionTitle(text: l10n.proSettingsSectionBookings),
+        SpotbookCard(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              _DropdownRow<String>(
+                label: l10n.proSettingsCancellationPolicy,
+                value: ProviderSettingsScreen._policies
+                        .contains(data.cancellationPolicy)
+                    ? data.cancellationPolicy
+                    : 'flexible',
+                items: ProviderSettingsScreen._policies,
+                display: (v) => switch (v) {
+                  'moderate' => l10n.proSettingsPolicyModerate,
+                  'strict' => l10n.proSettingsPolicyStrict,
+                  _ => l10n.proSettingsPolicyFlexible,
+                },
+                onChanged: (v) {
+                  if (v == null) return;
+                  HapticFeedback.selectionClick();
+                  patchSettings({'cancellation_policy': v});
+                },
+              ),
+              const SizedBox(height: 8),
+              _PolicyDescription(
+                policy: ProviderSettingsScreen._policies
+                        .contains(data.cancellationPolicy)
+                    ? data.cancellationPolicy
+                    : 'flexible',
+              ),
+              Divider(color: AppColors.border, height: 24),
+              _DropdownRow<int>(
+                label: l10n.proSettingsMinAdvance,
+                value: ProviderSettingsScreen._advanceHours
+                        .contains(data.minAdvanceHours)
+                    ? data.minAdvanceHours
+                    : 24,
+                items: ProviderSettingsScreen._advanceHours,
+                display: (h) =>
+                    '$h${l10n.proSettingsHoursShort}',
+                onChanged: (v) {
+                  if (v == null) return;
+                  HapticFeedback.selectionClick();
+                  patchSettings({'min_advance_hours': v});
+                },
+              ),
+              Divider(color: AppColors.border, height: 24),
+              _DropdownRow<int>(
+                label: l10n.proSettingsMinGap,
+                value: ProviderSettingsScreen._gapMinutes
+                        .contains(data.minGapMinutes)
+                    ? data.minGapMinutes
+                    : 0,
+                items: ProviderSettingsScreen._gapMinutes,
+                display: (m) => m == 0
+                    ? '0 ${l10n.proSettingsMinutesShort}'
+                    : '$m ${l10n.proSettingsMinutesShort}',
+                onChanged: (v) {
+                  if (v == null) return;
+                  HapticFeedback.selectionClick();
+                  patchSettings({'min_gap_minutes': v});
+                },
+              ),
+              Divider(color: AppColors.border, height: 24),
+              _MaxBookingsField(
+                value: data.maxBookingsPerDay,
+                label: l10n.proSettingsMaxPerDay,
+                onSave: (n) => patchSettings({'max_bookings_per_day': n}),
+              ),
+            ],
+          ),
+        ),
+        _SectionTitle(text: l10n.proSettingsSectionPayments),
+        SpotbookCard(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              _StripeBlock(
+                data: data,
+                onRefresh: () =>
+                    ref.read(proSettingsProvider.notifier).refresh(),
+              ),
+              const SizedBox(height: 12),
+              SpotbookButton.outlined(
+                label: l10n.proSettingsPayoutHistory,
+                onPressed: () => context.push('/pro/payouts'),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                l10n.proSettingsPaymentsInfo,
+                style: GoogleFonts.dmSans(
+                  color: AppColors.gris,
+                  fontSize: 13,
+                  height: 1.45,
+                ),
+              ),
+              const SizedBox(height: 12),
+              _CommissionBreakdown(),
+            ],
+          ),
+        ),
+        _SectionTitle(text: l10n.proSettingsSectionSpotify),
+        SpotbookCard(
+          child: _SpotifyProSettingsBlock(),
+        ),
+        _SectionTitle(text: 'Outils Pro'),
+        SpotbookCard(
+          child: Column(
+            children: [
+              _Tile(
+                label: 'Codes Promo',
+                value: '',
+                showChevron: true,
+                onTap: () => context.push('/pro/profile/promo-codes'),
+              ),
+              Divider(color: AppColors.border, height: 1),
+              _Tile(
+                label: 'My QR Code',
+                value: '',
+                showChevron: true,
+                onTap: () => context.push('/pro/profile/qr-code'),
+              ),
+              Divider(color: AppColors.border, height: 1),
+              _Tile(
+                label: 'Analytiques',
+                value: '',
+                showChevron: true,
+                onTap: () => context.push('/pro/analytics'),
+              ),
+            ],
+          ),
+        ),
+        _SectionTitle(text: l10n.proSettingsSectionNotifications),
+        SpotbookCard(
+          child: _Tile(
+            label: l10n.proSettingsNotifSettings,
+            value: '',
+            showChevron: true,
+            onTap: () => context.push('/pro/profile/notifications-settings'),
+          ),
+        ),
+        _SectionTitle(text: l10n.proSettingsSectionPrivacy),
+        SpotbookCard(
+          child: Column(
+            children: [
+              SwitchListTile(
+                contentPadding: EdgeInsets.zero,
+                title: Text(
+                  l10n.proSettingsProfilePublic,
+                  style: GoogleFonts.dmSans(color: AppColors.blanc),
+                ),
+                value: data.isPublic,
+                activeThumbColor: AppColors.blanc,
+                activeTrackColor: AppColors.gris,
+                onChanged: (v) {
+                  HapticFeedback.selectionClick();
+                  patchPro({'is_public': v});
+                },
+              ),
+              SwitchListTile(
+                contentPadding: EdgeInsets.zero,
+                title: Text(
+                  l10n.proSettingsSearchVisible,
+                  style: GoogleFonts.dmSans(color: AppColors.blanc),
+                ),
+                value: data.searchVisible,
+                activeThumbColor: AppColors.blanc,
+                activeTrackColor: AppColors.gris,
+                onChanged: (v) {
+                  HapticFeedback.selectionClick();
+                  patchPro({'search_visible': v});
+                },
+              ),
+            ],
+          ),
+        ),
+        _SectionTitle(text: l10n.proSettingsSectionLanguage),
+        SpotbookCard(
+          child: _Tile(
+            label: l10n.proSettingsLanguage,
+            value: locale.languageCode == 'en'
+                ? l10n.proSettingsLangEnglish
+                : l10n.proSettingsLangFrench,
+            showChevron: true,
+            onTap: () {
+              HapticFeedback.selectionClick();
+              context.push('/pro/profile/settings/language');
+            },
+          ),
+        ),
+        _SectionTitle(text: l10n.proSettingsSectionHelp),
+        SpotbookCard(
+          child: Column(
+            children: [
+              _Tile(
+                label: l10n.proSettingsContactSupport,
+                value: '',
+                showChevron: true,
+                onTap: () => launchUrl(
+                  Uri.parse('https://getspotbook.app/support#contact'),
+                  mode: LaunchMode.externalApplication,
+                ),
+              ),
+              Divider(color: AppColors.border, height: 1),
+              _Tile(
+                label: 'Terms of service',
+                value: '',
+                showChevron: true,
+                onTap: () => launchUrl(
+                  Uri.parse('https://getspotbook.app/terms'),
+                  mode: LaunchMode.externalApplication,
+                ),
+              ),
+              Divider(color: AppColors.border, height: 1),
+              _Tile(
+                label: 'Privacy policy',
+                value: '',
+                showChevron: true,
+                onTap: () => launchUrl(
+                  Uri.parse('https://getspotbook.app/privacy'),
+                  mode: LaunchMode.externalApplication,
+                ),
+              ),
+            ],
+          ),
+        ),
+        _SectionTitle(text: l10n.proSettingsDangerZone),
+        SpotbookCard(
+          child: Column(
+            children: [
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                title: Text(
+                  l10n.proSettingsSignOut,
+                  style: GoogleFonts.dmSans(
+                    color: AppColors.blanc,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                onTap: () => _confirmSignOut(context, ref, l10n),
+              ),
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                title: Text(
+                  l10n.proSettingsDeleteAccount,
+                  style: GoogleFonts.dmSans(
+                    color: AppColors.error,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                onTap: () => context.push('/delete-account'),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Future<void> _showEmailSheet(
+    BuildContext context,
+    WidgetRef ref,
+    AppLocalizations l10n,
+  ) async {
+    final ctrl = TextEditingController(text: data.email);
+    await showSpotbookBottomSheet<void>(
+      context: context,
+      title: l10n.proSettingsModifyEmailTitle,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            TextField(
+              controller: ctrl,
+              keyboardType: TextInputType.emailAddress,
+              style: GoogleFonts.dmSans(color: AppColors.blanc),
+              decoration: InputDecoration(
+                labelText: l10n.email,
+                labelStyle: TextStyle(color: AppColors.gris),
+                enabledBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: AppColors.border),
+                ),
+                focusedBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: AppColors.blanc),
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            SpotbookButton.primary(
+              label: l10n.save,
+              onPressed: () async {
+                final nav = Navigator.of(context);
+                final messenger = ScaffoldMessenger.of(context);
+                try {
+                  await ref
+                      .read(authRepositoryProvider)
+                      .updateEmail(ctrl.text.trim());
+                  await ref.read(proSettingsProvider.notifier).refresh();
+                  if (!context.mounted) return;
+                  nav.pop();
+                  messenger.showSnackBar(
+                    SnackBar(
+                      content: Text(l10n.proSettingsSavedToast),
+                      backgroundColor: AppColors.success,
+                    ),
+                  );
+                } catch (e) {
+                  if (!context.mounted) return;
+                  messenger.showSnackBar(
+                    SnackBar(
+                      content: Text(e.toString()),
+                      backgroundColor: AppColors.error,
+                    ),
+                  );
+                }
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+    ctrl.dispose();
+  }
+
+  Future<void> _showPhoneSheet(
+    BuildContext context,
+    WidgetRef ref,
+    AppLocalizations l10n,
+  ) async {
+    final ctrl = TextEditingController(text: data.phone ?? '');
+    await showSpotbookBottomSheet<void>(
+      context: context,
+      title: l10n.proSettingsModifyPhoneTitle,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            TextField(
+              controller: ctrl,
+              keyboardType: TextInputType.phone,
+              style: GoogleFonts.dmSans(color: AppColors.blanc),
+              decoration: InputDecoration(
+                labelText: l10n.proSettingsPhone,
+                labelStyle: TextStyle(color: AppColors.gris),
+                enabledBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: AppColors.border),
+                ),
+                focusedBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: AppColors.blanc),
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            SpotbookButton.primary(
+              label: l10n.save,
+              onPressed: () async {
+                final nav = Navigator.of(context);
+                final messenger = ScaffoldMessenger.of(context);
+                try {
+                  await ref
+                      .read(providerSettingsRepositoryProvider)
+                      .updatePhone(ctrl.text.trim());
+                  await ref.read(proSettingsProvider.notifier).refresh();
+                  if (!context.mounted) return;
+                  nav.pop();
+                  messenger.showSnackBar(
+                    SnackBar(
+                      content: Text(l10n.proSettingsSavedToast),
+                      backgroundColor: AppColors.success,
+                    ),
+                  );
+                } catch (e) {
+                  if (!context.mounted) return;
+                  messenger.showSnackBar(
+                    SnackBar(
+                      content: Text(e.toString()),
+                      backgroundColor: AppColors.error,
+                    ),
+                  );
+                }
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+    ctrl.dispose();
+  }
+
+  Future<void> _confirmSignOut(
+    BuildContext context,
+    WidgetRef ref,
+    AppLocalizations l10n,
+  ) async {
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AppColors.surface,
+        title: Text(
+          l10n.proSettingsSignOutTitle,
+          style: GoogleFonts.sora(color: AppColors.blanc),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(l10n.cancel,
+                style: GoogleFonts.dmSans(color: AppColors.gris)),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(l10n.proSettingsSignOutConfirm,
+                style: GoogleFonts.dmSans(color: AppColors.blanc)),
+          ),
+        ],
+      ),
+    );
+    if (ok == true && context.mounted) {
+      HapticFeedback.mediumImpact();
+      try {
+        await ref.read(authRepositoryProvider).signOut();
+      } catch (e) {
+        debugPrint('[pro_settings] signOut error ignored: $e');
+      }
+      if (context.mounted) context.go('/login');
+    }
+  }
+}
+
+/// Connexion OAuth Spotify (top titres + recherche enrichie sur le feed pro).
+class _SpotifyProSettingsBlock extends ConsumerStatefulWidget {
+  const _SpotifyProSettingsBlock();
+
+  @override
+  ConsumerState<_SpotifyProSettingsBlock> createState() =>
+      _SpotifyProSettingsBlockState();
+}
+
+class _SpotifyProSettingsBlockState extends ConsumerState<_SpotifyProSettingsBlock> {
+  bool _busy = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final link = ref.watch(spotifyLinkProvider);
+    final oauth = ref.watch(spotifyOAuthServiceProvider);
+
+    return link.when(
+      loading: () => Padding(
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        child: Center(
+          child: SizedBox(
+            width: 24,
+            height: 24,
+            child: CircularProgressIndicator(
+              strokeWidth: 2,
+              color: AppColors.blanc,
+            ),
+          ),
+        ),
+      ),
+      error: (_, __) => Padding(
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        child: Text(
+          l10n.error,
+          style: GoogleFonts.dmSans(color: AppColors.gris),
+        ),
+      ),
+      data: (info) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Row(
+              children: [
+                Icon(
+                  Icons.music_note,
+                  color: info.linked
+                      ? AppColors.spotifyGreen
+                      : AppColors.gris,
+                  size: 22,
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    l10n.proSettingsSpotifyTitle,
+                    style: GoogleFonts.sora(
+                      color: AppColors.blanc,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 15,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Text(
+              l10n.proSettingsSpotifyHint,
+              style: GoogleFonts.dmSans(
+                color: AppColors.gris,
+                fontSize: 13,
+                height: 1.4,
+              ),
+            ),
+            if (info.linked) ...[
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  const Icon(Icons.check_circle,
+                      color: AppColors.spotifyGreen, size: 18),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      l10n.proSettingsSpotifyLinked,
+                      style: GoogleFonts.dmSans(
+                        color: AppColors.blanc,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+            const SizedBox(height: 16),
+            if (info.linked)
+              SpotbookButton.outlined(
+                label: l10n.proSettingsSpotifyDisconnect,
+                isLoading: _busy,
+                onPressed: _busy
+                    ? null
+                    : () async {
+                        setState(() => _busy = true);
+                        HapticFeedback.mediumImpact();
+                        final messenger = ScaffoldMessenger.of(context);
+                        try {
+                          await ref
+                              .read(spotifyRepositoryProvider)
+                              .disconnect();
+                          await ref
+                              .read(spotifyLinkProvider.notifier)
+                              .refresh();
+                          if (context.mounted) {
+                            messenger.showSnackBar(
+                              SnackBar(
+                                content: Text(l10n.proSettingsSavedToast),
+                                backgroundColor: AppColors.success,
+                              ),
+                            );
+                          }
+                        } catch (e) {
+                          if (context.mounted) {
+                            messenger.showSnackBar(
+                              SnackBar(
+                                content: Text(e.toString()),
+                                backgroundColor: AppColors.error,
+                              ),
+                            );
+                          }
+                        } finally {
+                          if (mounted) setState(() => _busy = false);
+                        }
+                      },
+              )
+            else
+              SpotbookButton.primary(
+                label: l10n.proSettingsSpotifyConnect,
+                isLoading: _busy,
+                onPressed: _busy
+                    ? null
+                    : () async {
+                        if (!oauth.isConfigured) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content:
+                                  Text(l10n.proSettingsSpotifyMissingClientId),
+                              backgroundColor: AppColors.error,
+                            ),
+                          );
+                          return;
+                        }
+                        setState(() => _busy = true);
+                        HapticFeedback.mediumImpact();
+                        final messenger = ScaffoldMessenger.of(context);
+                        try {
+                          final code = await oauth.authorizeInteractive();
+                          await ref
+                              .read(spotifyRepositoryProvider)
+                              .exchangeOAuthCode(code);
+                          await ref
+                              .read(spotifyLinkProvider.notifier)
+                              .refresh();
+                          if (context.mounted) {
+                            messenger.showSnackBar(
+                              SnackBar(
+                                content: Text(l10n.proSettingsSavedToast),
+                                backgroundColor: AppColors.success,
+                              ),
+                            );
+                          }
+                        } catch (e) {
+                          if (context.mounted) {
+                            messenger.showSnackBar(
+                              SnackBar(
+                                content: Text(e.toString()),
+                                backgroundColor: AppColors.error,
+                              ),
+                            );
+                          }
+                        } finally {
+                          if (mounted) setState(() => _busy = false);
+                        }
+                      },
+              ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+class _SectionTitle extends StatelessWidget {
+  const _SectionTitle({required this.text});
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 24, bottom: 8),
+      child: Text(
+        text,
+        style: GoogleFonts.sora(
+          color: AppColors.gris,
+          fontSize: 11,
+          fontWeight: FontWeight.w600,
+          letterSpacing: 1.2,
+        ),
+      ),
+    );
+  }
+}
+
+class _Tile extends StatelessWidget {
+  const _Tile({
+    required this.label,
+    required this.value,
+    required this.onTap,
+    this.showChevron = false,
+  });
+
+  final String label;
+  final String value;
+  final VoidCallback onTap;
+  final bool showChevron;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      contentPadding: EdgeInsets.zero,
+      onTap: onTap,
+      title: Text(
+        label,
+        style: GoogleFonts.dmSans(
+          color: AppColors.blanc,
+          fontWeight: FontWeight.w500,
+        ),
+      ),
+      subtitle: value.isNotEmpty
+          ? Text(
+              value,
+              style: GoogleFonts.dmSans(color: AppColors.gris),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            )
+          : null,
+      trailing: showChevron
+          ? Icon(Icons.chevron_right, color: AppColors.gris)
+          : Icon(Icons.edit_outlined,
+              color: AppColors.gris, size: 20),
+    );
+  }
+}
+
+class _DropdownRow<T> extends StatelessWidget {
+  const _DropdownRow({
+    required this.label,
+    required this.value,
+    required this.items,
+    required this.display,
+    required this.onChanged,
+  });
+
+  final String label;
+  final T value;
+  final List<T> items;
+  final String Function(T) display;
+  final ValueChanged<T?> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: GoogleFonts.dmSans(
+            color: AppColors.gris,
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+            letterSpacing: 0.5,
+          ),
+        ),
+        const SizedBox(height: 8),
+        DropdownButton<T>(
+          value: value,
+          isExpanded: true,
+          dropdownColor: AppColors.surfaceAlt,
+          style: GoogleFonts.dmSans(color: AppColors.blanc, fontSize: 15),
+          underline: const SizedBox(),
+          items: items
+              .map(
+                (e) => DropdownMenuItem(
+                  value: e,
+                  child: Text(display(e)),
+                ),
+              )
+              .toList(),
+          onChanged: onChanged,
+        ),
+      ],
+    );
+  }
+}
+
+class _MaxBookingsField extends StatefulWidget {
+  const _MaxBookingsField({
+    required this.value,
+    required this.label,
+    required this.onSave,
+  });
+
+  final int value;
+  final String label;
+  final Future<void> Function(int) onSave;
+
+  @override
+  State<_MaxBookingsField> createState() => _MaxBookingsFieldState();
+}
+
+class _MaxBookingsFieldState extends State<_MaxBookingsField> {
+  late final TextEditingController _c =
+      TextEditingController(text: '${widget.value}');
+
+  @override
+  void didUpdateWidget(covariant _MaxBookingsField oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.value != widget.value &&
+        int.tryParse(_c.text) != widget.value) {
+      _c.text = '${widget.value}';
+    }
+  }
+
+  @override
+  void dispose() {
+    _c.dispose();
+    super.dispose();
+  }
+
+  Future<void> _commit() async {
+    final n = int.tryParse(_c.text.trim());
+    if (n == null || n < 1 || n > 100) return;
+    HapticFeedback.selectionClick();
+    await widget.onSave(n);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          widget.label,
+          style: GoogleFonts.dmSans(
+            color: AppColors.gris,
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+            letterSpacing: 0.5,
+          ),
+        ),
+        const SizedBox(height: 8),
+        TextField(
+          controller: _c,
+          keyboardType: TextInputType.number,
+          style: GoogleFonts.dmSans(color: AppColors.blanc),
+          decoration: InputDecoration(
+            filled: true,
+            fillColor: AppColors.surfaceAlt,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(14),
+              borderSide: BorderSide(color: AppColors.border),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(14),
+              borderSide: BorderSide(color: AppColors.border),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(14),
+              borderSide: BorderSide(color: AppColors.blanc),
+            ),
+          ),
+          onEditingComplete: _commit,
+          onSubmitted: (_) => _commit(),
+        ),
+      ],
+    );
+  }
+}
+
+class _PolicyDescription extends StatelessWidget {
+  const _PolicyDescription({required this.policy});
+
+  final String policy;
+
+  @override
+  Widget build(BuildContext context) {
+    final (icon, text) = switch (policy) {
+      'moderate' => (
+        Icons.schedule_outlined,
+        'Clients can cancel up to 24 hours before the appointment for a full refund. '
+            'Within 24h, 50% of the deposit is kept.',
+      ),
+      'strict' => (
+        Icons.lock_outline,
+        'No refund once the booking is confirmed. The full deposit is kept '
+            'regardless of when the client cancels.',
+      ),
+      _ => (
+        Icons.check_circle_outline,
+        'Clients can cancel up to 12 hours before the appointment for a full refund. '
+            'Within 12h, the deposit is kept.',
+      ),
+    };
+
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: AppColors.violet.withAlpha(12),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: AppColors.violet.withAlpha(30)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, color: AppColors.violetClair, size: 18),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              text,
+              style: GoogleFonts.dmSans(
+                color: AppColors.gris,
+                fontSize: 12,
+                height: 1.5,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _CommissionBreakdown extends StatelessWidget {
+  const _CommissionBreakdown();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: AppColors.surfaceAlt,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppColors.border),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Commission rates',
+            style: GoogleFonts.sora(
+              color: AppColors.blanc,
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: 10),
+          _CommissionLine(
+            label: 'Bookings & Catering',
+            value: '18%',
+            icon: Icons.calendar_today_outlined,
+          ),
+          const SizedBox(height: 6),
+          _CommissionLine(
+            label: 'Event tickets',
+            value: '12%',
+            icon: Icons.confirmation_number_outlined,
+          ),
+          const SizedBox(height: 6),
+          _CommissionLine(
+            label: 'Client service fee',
+            value: '\$2.50 / booking',
+            icon: Icons.person_outline,
+          ),
+          const SizedBox(height: 10),
+          Text(
+            'Commission is deducted automatically before payout. '
+            'The client service fee is charged to the client, not to you.',
+            style: GoogleFonts.dmSans(
+              color: AppColors.gris,
+              fontSize: 11,
+              height: 1.45,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _CommissionLine extends StatelessWidget {
+  const _CommissionLine({
+    required this.label,
+    required this.value,
+    required this.icon,
+  });
+
+  final String label;
+  final String value;
+  final IconData icon;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Icon(icon, color: AppColors.violetClair, size: 16),
+        const SizedBox(width: 8),
+        Expanded(
+          child: Text(
+            label,
+            style: GoogleFonts.dmSans(
+              color: AppColors.blanc,
+              fontSize: 13,
+            ),
+          ),
+        ),
+        Text(
+          value,
+          style: GoogleFonts.dmSans(
+            color: AppColors.violetClair,
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _StripeBlock extends ConsumerStatefulWidget {
+  const _StripeBlock({
+    required this.data,
+    required this.onRefresh,
+  });
+
+  final ProSettingsSnapshot data;
+  final Future<void> Function() onRefresh;
+
+  @override
+  ConsumerState<_StripeBlock> createState() => _StripeBlockState();
+}
+
+class _StripeBlockState extends ConsumerState<_StripeBlock> {
+  bool _opening = false;
+
+  String _statusLine(AppLocalizations l10n) {
+    final d = widget.data;
+    if (d.stripeOnboarded) {
+      final last = d.stripePayoutLast4;
+      if (last != null && last.isNotEmpty) {
+        return '${l10n.proSettingsStripeActive} · ${l10n.proSettingsBankEnding} ·••• $last';
+      }
+      return l10n.proSettingsStripeActive;
+    }
+    if (d.stripeAccountId != null && d.stripeAccountId!.isNotEmpty) {
+      return l10n.proSettingsStripeVerifying;
+    }
+    return l10n.proSettingsStripeNotConfigured;
+  }
+
+  Future<void> _openConnect(BuildContext context) async {
+    if (_opening) return;
+    setState(() => _opening = true);
+    final router = GoRouter.of(context);
+    try {
+      final url =
+          await ref.read(providerSettingsRepositoryProvider).fetchStripeConnectOnboardingUrl();
+      if (!mounted) return;
+      if (url != null && await canLaunchUrl(Uri.parse(url))) {
+        await launchUrl(
+          Uri.parse(url),
+          mode: LaunchMode.inAppWebView,
+        );
+      } else {
+        router.push('/pro/stripe-setup');
+      }
+      await widget.onRefresh();
+    } finally {
+      if (mounted) setState(() => _opening = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final configured = widget.data.stripeOnboarded;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text(
+          _statusLine(l10n),
+          style: GoogleFonts.dmSans(
+            color: AppColors.blanc,
+            fontSize: 14,
+            height: 1.4,
+          ),
+        ),
+        if (!configured) ...[
+          const SizedBox(height: 12),
+          SpotbookButton.primary(
+            label: l10n.proSettingsStripeConfigure,
+            isLoading: _opening,
+            onPressed: _opening ? null : () => _openConnect(context),
+          ),
+        ],
+      ],
+    );
+  }
+}

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="fr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#00D4FF",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#080810",
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen flex flex-col">
+<div class="relative flex h-auto min-h-screen w-full flex-col bg-background-light dark:bg-background-dark overflow-x-hidden max-w-md mx-auto">
+<div class="flex items-center p-4 pb-2 justify-between">
+<button class="text-slate-900 dark:text-slate-100 flex size-12 shrink-0 items-center justify-start focus:outline-none">
+<span class="material-symbols-outlined">close</span>
+</button>
+<h2 class="text-slate-900 dark:text-slate-100 text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center pr-12">Avis</h2>
+</div>
+<div class="flex p-6 @container">
+<div class="flex w-full flex-col gap-6 items-center">
+<div class="flex gap-4 flex-col items-center">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full h-32 w-32 ring-4 ring-primary/20" data-alt="Professional barber portrait smiling in studio" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuC7hn8ZIRxm9Qb9zGYPey9nBOxqpaSaHgJcDirspxWbxPCNt6HhBP4c1e8PJg8-wOBJvp-K-1FXwxiAyfh5adUOEqPih9ZovZhtoiI6ZHxl5T5foAs3S1QGtaQldJwnga7oCtSoE4oXBdEL3cqokMCfiAJD9EcJvwvggk3vikPOkL-7UljW2KOcmjw1g5GDkV9i7IzZkiMUF6fIZcAWLCfVXqok6iA8xLwfa0mIVEg3y-mBKMJuKNOeThwwym5n2CPYohr_OnLxBaY");'>
+</div>
+<div class="flex flex-col items-center justify-center space-y-1">
+<p class="text-slate-900 dark:text-slate-100 text-2xl font-bold leading-tight tracking-tight text-center">Jean Dupont</p>
+<p class="text-primary font-medium text-base leading-normal text-center">Coupe Homme &amp; Barbe</p>
+<p class="text-slate-500 dark:text-slate-400 text-sm font-normal leading-normal text-center">15 Octobre 2023</p>
+</div>
+</div>
+</div>
+</div>
+<div class="flex flex-col items-center px-4 py-4 space-y-4">
+<h4 class="text-slate-700 dark:text-slate-300 text-base font-semibold leading-normal tracking-wide text-center uppercase text-xs">Quelle note donneriez-vous ?</h4>
+<div class="flex justify-center gap-2 w-full max-w-sm">
+<button class="flex flex-col items-center group">
+<span class="material-symbols-outlined text-yellow-400 !text-5xl fill-1">star</span>
+</button>
+<button class="flex flex-col items-center group">
+<span class="material-symbols-outlined text-yellow-400 !text-5xl fill-1">star</span>
+</button>
+<button class="flex flex-col items-center group">
+<span class="material-symbols-outlined text-yellow-400 !text-5xl fill-1">star</span>
+</button>
+<button class="flex flex-col items-center group">
+<span class="material-symbols-outlined text-yellow-400 !text-5xl fill-1">star</span>
+</button>
+<button class="flex flex-col items-center group">
+<span class="material-symbols-outlined text-slate-300 dark:text-slate-700 !text-5xl">star</span>
+</button>
+</div>
+</div>
+<div class="flex flex-col gap-4 px-6 py-4">
+<label class="flex flex-col w-full">
+<p class="text-slate-700 dark:text-slate-300 text-sm font-medium leading-normal pb-3">Votre avis</p>
+<textarea class="form-input flex w-full rounded-2xl text-slate-900 dark:text-slate-100 focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/50 min-h-[160px] placeholder:text-slate-400 dark:placeholder:text-slate-600 p-4 text-base font-normal leading-relaxed transition-all" placeholder="Partagez votre expérience..."></textarea>
+</label>
+</div>
+<div class="mt-auto flex flex-col gap-3 px-6 py-8">
+<button class="flex w-full items-center justify-center rounded-xl bg-primary px-4 py-4 text-slate-900 text-base font-bold transition-transform active:scale-95">
+                Publier l'avis
+            </button>
+<button class="flex w-full items-center justify-center rounded-xl bg-slate-200 dark:bg-slate-800/50 px-4 py-4 text-slate-600 dark:text-slate-400 text-base font-semibold transition-colors hover:bg-slate-300 dark:hover:bg-slate-800">
+                Plus tard
+            </button>
+</div>
+</div>
+</body></html>
