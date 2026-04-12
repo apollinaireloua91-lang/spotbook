@@ -46,7 +46,6 @@ class _BizNotifier extends Notifier<_BizState> {
 
   Future<void> submit({
     required String businessName,
-    required String bio,
   }) async {
     final cat = state.selectedCategory;
     final place = state.placeDetails;
@@ -54,7 +53,7 @@ class _BizNotifier extends Notifier<_BizState> {
       throw Exception('Veuillez remplir les champs obligatoires');
     }
     if (place == null) {
-      throw Exception('Please select an address');
+      throw Exception('Veuillez sélectionner une adresse');
     }
     state = state.copyWith(isLoading: true);
     try {
@@ -62,7 +61,6 @@ class _BizNotifier extends Notifier<_BizState> {
             businessName: businessName.trim(),
             category: cat,
             city: place.city,
-            bio: bio.trim(),
             address: place.address,
             latitude: place.latitude,
             longitude: place.longitude,
@@ -91,13 +89,11 @@ class _ProBusinessDetailsScreenState
     extends ConsumerState<ProBusinessDetailsScreen> {
   final _businessNameCtrl = TextEditingController();
   final _addressCtrl = TextEditingController();
-  final _bioCtrl = TextEditingController();
 
   @override
   void dispose() {
     _businessNameCtrl.dispose();
     _addressCtrl.dispose();
-    _bioCtrl.dispose();
     super.dispose();
   }
 
@@ -105,10 +101,9 @@ class _ProBusinessDetailsScreenState
     try {
       await ref.read(_bizProvider.notifier).submit(
             businessName: _businessNameCtrl.text,
-            bio: _bioCtrl.text,
           );
       if (!mounted) return;
-      context.go('/pro/verification');
+      context.go('/pro/feed');
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -138,7 +133,13 @@ class _ProBusinessDetailsScreenState
         leading: Semantics(
           label: 'Retour',
           child: IconButton(
-            onPressed: () => context.pop(),
+            onPressed: () {
+              if (context.canPop()) {
+                context.pop();
+              } else {
+                context.go('/pro/feed');
+              }
+            },
             icon: Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
@@ -157,14 +158,6 @@ class _ProBusinessDetailsScreenState
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(children: [
-                _dot(active: true),
-                const SizedBox(width: 6),
-                _dot(active: false),
-                const SizedBox(width: 6),
-                _dot(active: false),
-              ]),
-              const SizedBox(height: 16),
               Container(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
@@ -183,7 +176,7 @@ class _ProBusinessDetailsScreenState
               ),
               const SizedBox(height: 16),
               Text(
-                'Business details',
+                'Votre entreprise',
                 style: GoogleFonts.sora(
                   color: AppColors.blanc,
                   fontSize: 28,
@@ -192,15 +185,15 @@ class _ProBusinessDetailsScreenState
               ),
               const SizedBox(height: 8),
               Text(
-                'Step 1: Tell us about your services so clients can easily find you.',
+                'Parlez-nous de vos services pour que les clients puissent vous trouver facilement.',
                 style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 14),
               ),
               const SizedBox(height: 32),
 
-              // Business name
+              // Nom d'entreprise
               _field(
                 controller: _businessNameCtrl,
-                label: 'Business name',
+                label: 'Nom de l\'entreprise',
                 hint: 'ex. Luxe Hair Studio',
                 icon: Icons.business,
               ),
@@ -212,7 +205,7 @@ class _ProBusinessDetailsScreenState
                     ? s.selectedCategory
                     : null,
                 hint: Text(
-                  'Select your category',
+                  'Choisir une catégorie',
                   style: TextStyle(color: AppColors.gris),
                 ),
                 dropdownColor: AppColors.surfaceAuth,
@@ -222,7 +215,7 @@ class _ProBusinessDetailsScreenState
                   color: AppColors.gris,
                 ),
                 decoration: InputDecoration(
-                  labelText: 'Service category',
+                  labelText: 'Catégorie de service',
                   labelStyle: TextStyle(color: AppColors.gris),
                   prefixIcon: Icon(Icons.star_outline,
                       color: AppColors.gris, size: 20),
@@ -240,11 +233,11 @@ class _ProBusinessDetailsScreenState
               ),
               const SizedBox(height: 16),
 
-              // Address autocomplete with lat/lng extraction
+              // Adresse avec autocomplétion
               AddressAutocompleteField(
                 controller: _addressCtrl,
-                label: 'Business address',
-                hint: 'Start typing your address...',
+                label: 'Adresse de l\'entreprise',
+                hint: 'Commencez à taper votre adresse...',
                 icon: Icons.pin_drop_outlined,
                 fillColor: AppColors.surfaceAuth,
                 onPlaceSelected: (place) {
@@ -268,31 +261,6 @@ class _ProBusinessDetailsScreenState
                     ),
                   ]),
                 ),
-              const SizedBox(height: 16),
-
-              // Bio
-              TextField(
-                controller: _bioCtrl,
-                style: TextStyle(color: AppColors.blanc),
-                maxLines: 4,
-                maxLength: 300,
-                decoration: InputDecoration(
-                  labelText: 'Professional bio',
-                  hintText:
-                      'Briefly describe your experience and what makes your services unique...',
-                  labelStyle: TextStyle(color: AppColors.gris),
-                  hintStyle: TextStyle(color: AppColors.gris.withAlpha(128)),
-                  prefixIcon: Icon(Icons.text_fields,
-                      color: AppColors.gris, size: 20),
-                  filled: true,
-                  fillColor: AppColors.surfaceAuth,
-                  counterStyle: TextStyle(color: AppColors.gris),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide.none,
-                  ),
-                ),
-              ),
               const SizedBox(height: 24),
 
               // Submit
@@ -315,7 +283,7 @@ class _ProBusinessDetailsScreenState
                               strokeWidth: 2, color: AppColors.fond),
                         )
                       : Text(
-                          'Continue \u2192',
+                          'Continuer →',
                           style: GoogleFonts.dmSans(
                               fontSize: 16, fontWeight: FontWeight.w600),
                         ),
@@ -328,15 +296,6 @@ class _ProBusinessDetailsScreenState
       ),
     );
   }
-
-  Widget _dot({required bool active}) => Container(
-        width: 8,
-        height: 8,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: active ? AppColors.accent : AppColors.gris.withAlpha(77),
-        ),
-      );
 
   Widget _field({
     required TextEditingController controller,

@@ -19,7 +19,6 @@ import '../features/auth/presentation/screens/login_screen.dart';
 import '../features/auth/presentation/screens/permission_location_screen.dart';
 import '../features/auth/presentation/screens/pro_interest_categories_screen.dart';
 import '../features/auth/presentation/screens/pro_business_details_screen.dart';
-import '../features/auth/presentation/screens/pro_verification_screen.dart';
 import '../features/auth/presentation/screens/sign_up_screen.dart';
 import '../features/auth/presentation/screens/splash_screen.dart';
 import '../features/auth/presentation/screens/stripe_connect_screen.dart';
@@ -118,8 +117,6 @@ final appRouter = GoRouter(
       '/client/goals',
       '/client/location',
       '/pro/business-details',
-      '/pro/verification',
-      '/pro/stripe-connect',
       '/pro/interests',
       '/become-pro',
     };
@@ -208,10 +205,6 @@ final appRouter = GoRouter(
     GoRoute(
       path: '/pro/business-details',
       builder: (context, state) => const ProBusinessDetailsScreen(),
-    ),
-    GoRoute(
-      path: '/pro/verification',
-      builder: (context, state) => const ProVerificationScreen(),
     ),
     GoRoute(
       path: '/pro/stripe-connect',

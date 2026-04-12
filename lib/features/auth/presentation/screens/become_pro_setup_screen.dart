@@ -60,15 +60,14 @@ class _BecomeProNotifier extends Notifier<_BecomeProState> {
   Future<void> submit({
     required String businessName,
     required String phone,
-    required String bio,
   }) async {
     final cat = state.selectedCategory;
     final place = state.placeDetails;
     if (businessName.trim().isEmpty || cat == null) {
-      throw Exception('Please fill in all required fields');
+      throw Exception('Veuillez remplir tous les champs obligatoires');
     }
     if (place == null) {
-      throw Exception('Please select a business address');
+      throw Exception('Veuillez sélectionner une adresse');
     }
 
     state = state.copyWith(isLoading: true);
@@ -78,7 +77,6 @@ class _BecomeProNotifier extends Notifier<_BecomeProState> {
             businessName: businessName.trim(),
             category: cat,
             city: place.city,
-            bio: bio.trim(),
             address: place.address,
             latitude: place.latitude,
             longitude: place.longitude,
@@ -121,7 +119,6 @@ class _BecomeProSetupScreenState extends ConsumerState<BecomeProSetupScreen> {
   final _businessNameCtrl = TextEditingController();
   final _phoneCtrl = TextEditingController();
   final _addressCtrl = TextEditingController();
-  final _bioCtrl = TextEditingController();
 
   static const _totalSteps = 3;
 
@@ -131,7 +128,6 @@ class _BecomeProSetupScreenState extends ConsumerState<BecomeProSetupScreen> {
     _businessNameCtrl.dispose();
     _phoneCtrl.dispose();
     _addressCtrl.dispose();
-    _bioCtrl.dispose();
     super.dispose();
   }
 
@@ -149,16 +145,16 @@ class _BecomeProSetupScreenState extends ConsumerState<BecomeProSetupScreen> {
     // Validate current step before advancing
     if (s.step == 0) {
       if (_businessNameCtrl.text.trim().isEmpty) {
-        _showError('Please enter your business name');
+        _showError('Veuillez entrer le nom de votre entreprise');
         return;
       }
       if (s.selectedCategory == null) {
-        _showError('Please select a category');
+        _showError('Veuillez choisir une catégorie');
         return;
       }
     } else if (s.step == 1) {
       if (s.placeDetails == null) {
-        _showError('Please select your business address');
+        _showError('Veuillez sélectionner votre adresse');
         return;
       }
     }
@@ -182,7 +178,6 @@ class _BecomeProSetupScreenState extends ConsumerState<BecomeProSetupScreen> {
       await ref.read(_becomeProProvider.notifier).submit(
             businessName: _businessNameCtrl.text,
             phone: _phoneCtrl.text,
-            bio: _bioCtrl.text,
           );
       if (!mounted) return;
       context.go('/pro/feed');
@@ -225,7 +220,7 @@ class _BecomeProSetupScreenState extends ConsumerState<BecomeProSetupScreen> {
           ),
         ),
         title: Text(
-          'Become Pro',
+          'Devenir Pro',
           style: GoogleFonts.sora(
             fontSize: 16,
             fontWeight: FontWeight.w600,
@@ -272,8 +267,7 @@ class _BecomeProSetupScreenState extends ConsumerState<BecomeProSetupScreen> {
                     addressCtrl: _addressCtrl,
                     onNext: _nextStep,
                   ),
-                  _StepBioConfirm(
-                    bioCtrl: _bioCtrl,
+                  _StepConfirm(
                     businessName: _businessNameCtrl,
                     onSubmit: _submit,
                   ),
@@ -318,7 +312,7 @@ class _StepBusinessInfo extends ConsumerWidget {
         children: [
           const SizedBox(height: 16),
           Text(
-            'Your business',
+            'Votre entreprise',
             style: GoogleFonts.sora(
               color: AppColors.blanc,
               fontSize: 24,
@@ -328,7 +322,7 @@ class _StepBusinessInfo extends ConsumerWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            'Tell us about your services so clients can easily find you.',
+            'Parlez-nous de vos services pour que les clients puissent vous trouver.',
             style: GoogleFonts.dmSans(
               color: AppColors.gris,
               fontSize: 14,
@@ -340,7 +334,7 @@ class _StepBusinessInfo extends ConsumerWidget {
           // Business name
           _field(
             controller: businessNameCtrl,
-            label: 'Business name',
+            label: 'Nom de l\'entreprise',
             hint: 'ex. Luxe Hair Studio',
             icon: Icons.business,
           ),
@@ -352,7 +346,7 @@ class _StepBusinessInfo extends ConsumerWidget {
                 ? s.selectedCategory
                 : null,
             hint: Text(
-              'Select your category',
+              'Choisir une catégorie',
               style: TextStyle(color: AppColors.gris.withAlpha(180)),
             ),
             dropdownColor: AppColors.surfaceAuth,
@@ -362,7 +356,7 @@ class _StepBusinessInfo extends ConsumerWidget {
               color: AppColors.gris,
             ),
             decoration: InputDecoration(
-              labelText: 'Service category',
+              labelText: 'Catégorie de service',
               labelStyle: TextStyle(color: AppColors.gris),
               prefixIcon: Icon(Icons.star_outline,
                   color: AppColors.gris, size: 20),
@@ -383,7 +377,7 @@ class _StepBusinessInfo extends ConsumerWidget {
           // Phone
           _field(
             controller: phoneCtrl,
-            label: 'Phone number',
+            label: 'Numéro de téléphone',
             hint: '+1 514 000 0000',
             icon: Icons.phone_outlined,
             keyboardType: TextInputType.phone,
@@ -403,7 +397,7 @@ class _StepBusinessInfo extends ConsumerWidget {
                     borderRadius: BorderRadius.circular(12)),
               ),
               child: Text(
-                'Continue',
+                'Continuer',
                 style: GoogleFonts.dmSans(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
@@ -441,7 +435,7 @@ class _StepAddress extends ConsumerWidget {
         children: [
           const SizedBox(height: 16),
           Text(
-            'Business address',
+            'Adresse de l\'entreprise',
             style: GoogleFonts.sora(
               color: AppColors.blanc,
               fontSize: 24,
@@ -451,7 +445,7 @@ class _StepAddress extends ConsumerWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            'Where are you located? Clients nearby will find you more easily.',
+            'Où êtes-vous situé ? Les clients à proximité vous trouveront plus facilement.',
             style: GoogleFonts.dmSans(
               color: AppColors.gris,
               fontSize: 14,
@@ -462,8 +456,8 @@ class _StepAddress extends ConsumerWidget {
 
           AddressAutocompleteField(
             controller: addressCtrl,
-            label: 'Business address',
-            hint: 'Start typing your address...',
+            label: 'Adresse de l\'entreprise',
+            hint: 'Commencez à taper votre adresse...',
             icon: Icons.pin_drop_outlined,
             fillColor: AppColors.surfaceAuth,
             onPlaceSelected: (place) => n.setPlace(place),
@@ -514,7 +508,7 @@ class _StepAddress extends ConsumerWidget {
                     borderRadius: BorderRadius.circular(12)),
               ),
               child: Text(
-                'Continue',
+                'Continuer',
                 style: GoogleFonts.dmSans(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
@@ -529,16 +523,14 @@ class _StepAddress extends ConsumerWidget {
   }
 }
 
-// ─── Step 3: Bio + Confirm ──────────────────────────────────────────────────
+// ─── Step 3: Confirm ────────────────────────────────────────────────────────
 
-class _StepBioConfirm extends ConsumerWidget {
-  const _StepBioConfirm({
-    required this.bioCtrl,
+class _StepConfirm extends ConsumerWidget {
+  const _StepConfirm({
     required this.businessName,
     required this.onSubmit,
   });
 
-  final TextEditingController bioCtrl;
   final TextEditingController businessName;
   final Future<void> Function() onSubmit;
 
@@ -553,7 +545,7 @@ class _StepBioConfirm extends ConsumerWidget {
         children: [
           const SizedBox(height: 16),
           Text(
-            'Almost there!',
+            'Presque terminé !',
             style: GoogleFonts.sora(
               color: AppColors.blanc,
               fontSize: 24,
@@ -563,7 +555,7 @@ class _StepBioConfirm extends ConsumerWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            'Add a short bio to introduce yourself to potential clients.',
+            'Vérifiez vos informations avant d\'activer votre compte Pro.',
             style: GoogleFonts.dmSans(
               color: AppColors.gris,
               fontSize: 14,
@@ -571,32 +563,6 @@ class _StepBioConfirm extends ConsumerWidget {
             ),
           ),
           const SizedBox(height: 28),
-
-          // Bio
-          TextField(
-            controller: bioCtrl,
-            style: TextStyle(color: AppColors.blanc),
-            maxLines: 4,
-            maxLength: 300,
-            decoration: InputDecoration(
-              labelText: 'Professional bio',
-              hintText:
-                  'Briefly describe your experience and what makes your services unique...',
-              labelStyle: TextStyle(color: AppColors.gris),
-              hintStyle: TextStyle(color: AppColors.gris.withAlpha(128)),
-              prefixIcon: Icon(Icons.text_fields,
-                  color: AppColors.gris, size: 20),
-              filled: true,
-              fillColor: AppColors.surfaceAuth,
-              counterStyle: TextStyle(color: AppColors.gris),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide.none,
-              ),
-            ),
-          ),
-
-          const SizedBox(height: 24),
 
           // Summary card
           Container(
@@ -611,7 +577,7 @@ class _StepBioConfirm extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Your Pro profile',
+                  'Votre profil Pro',
                   style: GoogleFonts.sora(
                     color: AppColors.blanc,
                     fontSize: 14,
@@ -645,7 +611,7 @@ class _StepBioConfirm extends ConsumerWidget {
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
-                    'Your existing bookings and favorites will be preserved. You can set up services and availability from your Pro dashboard.',
+                    'Vos réservations et favoris existants seront conservés. Vous pourrez configurer vos services et disponibilités depuis votre tableau de bord Pro.',
                     style: GoogleFonts.dmSans(
                       color: AppColors.gris.withAlpha(204),
                       fontSize: 12,
@@ -697,7 +663,7 @@ class _StepBioConfirm extends ConsumerWidget {
                         ),
                       )
                     : Text(
-                        'Activate my Pro account',
+                        'Activer mon compte Pro',
                         style: GoogleFonts.dmSans(
                           fontSize: 17,
                           fontWeight: FontWeight.w700,

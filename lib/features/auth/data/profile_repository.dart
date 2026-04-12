@@ -19,7 +19,6 @@ class ProfileRepository {
     required String businessName,
     required String category,
     required String city,
-    required String bio,
     String? address,
     double? latitude,
     double? longitude,
@@ -31,7 +30,6 @@ class ProfileRepository {
       'business_name': businessName,
       'category': category,
       'city': city,
-      'bio': bio,
       if (latitude != null) 'latitude': latitude,
       if (longitude != null) 'longitude': longitude,
     });
