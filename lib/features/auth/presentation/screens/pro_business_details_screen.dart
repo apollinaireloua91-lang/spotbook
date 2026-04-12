@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/widgets/address_autocomplete_field.dart';
 import '../../data/category_repository.dart';
@@ -115,6 +116,7 @@ class _ProBusinessDetailsScreenState
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     final s = ref.watch(_bizProvider);
     final n = ref.read(_bizProvider.notifier);
     final categoriesAsync = ref.watch(proCategoriesProvider);
@@ -131,7 +133,7 @@ class _ProBusinessDetailsScreenState
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         leading: Semantics(
-          label: 'Retour',
+          label: l.a11yBack,
           child: IconButton(
             onPressed: () {
               if (context.canPop()) {
@@ -166,7 +168,7 @@ class _ProBusinessDetailsScreenState
                   color: AppColors.accent.withAlpha(26),
                 ),
                 child: Text(
-                  '● CONFIGURATION EN COURS',
+                  l.bizConfigInProgress,
                   style: GoogleFonts.dmSans(
                     color: AppColors.accent,
                     fontSize: 11,
@@ -176,7 +178,7 @@ class _ProBusinessDetailsScreenState
               ),
               const SizedBox(height: 16),
               Text(
-                'Votre entreprise',
+                l.bizYourBusiness,
                 style: GoogleFonts.sora(
                   color: AppColors.blanc,
                   fontSize: 28,
@@ -185,7 +187,7 @@ class _ProBusinessDetailsScreenState
               ),
               const SizedBox(height: 8),
               Text(
-                'Parlez-nous de vos services pour que les clients puissent vous trouver facilement.',
+                l.bizSubtitle,
                 style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 14),
               ),
               const SizedBox(height: 32),
@@ -193,8 +195,8 @@ class _ProBusinessDetailsScreenState
               // Nom d'entreprise
               _field(
                 controller: _businessNameCtrl,
-                label: 'Nom de l\'entreprise',
-                hint: 'ex. Luxe Hair Studio',
+                label: l.bizBusinessName,
+                hint: l.bizBusinessHint,
                 icon: Icons.business,
               ),
               const SizedBox(height: 16),
@@ -205,7 +207,7 @@ class _ProBusinessDetailsScreenState
                     ? s.selectedCategory
                     : null,
                 hint: Text(
-                  'Choisir une catégorie',
+                  l.bizCategoryHint,
                   style: TextStyle(color: AppColors.gris),
                 ),
                 dropdownColor: AppColors.surfaceAuth,
@@ -215,7 +217,7 @@ class _ProBusinessDetailsScreenState
                   color: AppColors.gris,
                 ),
                 decoration: InputDecoration(
-                  labelText: 'Catégorie de service',
+                  labelText: l.bizCategoryLabel,
                   labelStyle: TextStyle(color: AppColors.gris),
                   prefixIcon: Icon(Icons.star_outline,
                       color: AppColors.gris, size: 20),
@@ -236,8 +238,8 @@ class _ProBusinessDetailsScreenState
               // Adresse avec autocomplétion
               AddressAutocompleteField(
                 controller: _addressCtrl,
-                label: 'Adresse de l\'entreprise',
-                hint: 'Commencez à taper votre adresse...',
+                label: l.bizAddressLabel,
+                hint: l.bizAddressHint,
                 icon: Icons.pin_drop_outlined,
                 fillColor: AppColors.surfaceAuth,
                 onPlaceSelected: (place) {
@@ -283,7 +285,7 @@ class _ProBusinessDetailsScreenState
                               strokeWidth: 2, color: AppColors.fond),
                         )
                       : Text(
-                          'Continuer →',
+                          '${l.buttonContinue} \u2192',
                           style: GoogleFonts.dmSans(
                               fontSize: 16, fontWeight: FontWeight.w600),
                         ),

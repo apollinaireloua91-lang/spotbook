@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/widgets/address_autocomplete_field.dart';
 import '../../data/auth_repository.dart';
@@ -140,21 +141,22 @@ class _BecomeProSetupScreenState extends ConsumerState<BecomeProSetupScreen> {
   }
 
   void _nextStep() {
+    final l = AppLocalizations.of(context)!;
     final s = ref.read(_becomeProProvider);
 
     // Validate current step before advancing
     if (s.step == 0) {
       if (_businessNameCtrl.text.trim().isEmpty) {
-        _showError('Veuillez entrer le nom de votre entreprise');
+        _showError(l.becomeProNameRequired);
         return;
       }
       if (s.selectedCategory == null) {
-        _showError('Veuillez choisir une catégorie');
+        _showError(l.becomeProCategoryRequired);
         return;
       }
     } else if (s.step == 1) {
       if (s.placeDetails == null) {
-        _showError('Veuillez sélectionner votre adresse');
+        _showError(l.becomeProAddressRequired);
         return;
       }
     }
@@ -196,6 +198,7 @@ class _BecomeProSetupScreenState extends ConsumerState<BecomeProSetupScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     final s = ref.watch(_becomeProProvider);
 
     return Scaffold(
@@ -205,7 +208,7 @@ class _BecomeProSetupScreenState extends ConsumerState<BecomeProSetupScreen> {
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         leading: Semantics(
-          label: 'Retour',
+          label: l.a11yBack,
           child: IconButton(
             onPressed: _prevStep,
             icon: Container(
@@ -220,7 +223,7 @@ class _BecomeProSetupScreenState extends ConsumerState<BecomeProSetupScreen> {
           ),
         ),
         title: Text(
-          'Devenir Pro',
+          l.becomeProTitle,
           style: GoogleFonts.sora(
             fontSize: 16,
             fontWeight: FontWeight.w600,
@@ -296,6 +299,7 @@ class _StepBusinessInfo extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l = AppLocalizations.of(context)!;
     final s = ref.watch(_becomeProProvider);
     final n = ref.read(_becomeProProvider.notifier);
     final categoriesAsync = ref.watch(proCategoriesProvider);
@@ -312,7 +316,7 @@ class _StepBusinessInfo extends ConsumerWidget {
         children: [
           const SizedBox(height: 16),
           Text(
-            'Votre entreprise',
+            l.becomeProStep1Title,
             style: GoogleFonts.sora(
               color: AppColors.blanc,
               fontSize: 24,
@@ -322,7 +326,7 @@ class _StepBusinessInfo extends ConsumerWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            'Parlez-nous de vos services pour que les clients puissent vous trouver.',
+            l.becomeProStep1Subtitle,
             style: GoogleFonts.dmSans(
               color: AppColors.gris,
               fontSize: 14,
@@ -334,8 +338,8 @@ class _StepBusinessInfo extends ConsumerWidget {
           // Business name
           _field(
             controller: businessNameCtrl,
-            label: 'Nom de l\'entreprise',
-            hint: 'ex. Luxe Hair Studio',
+            label: l.becomeProBusinessName,
+            hint: l.becomeProBusinessHint,
             icon: Icons.business,
           ),
           const SizedBox(height: 16),
@@ -346,7 +350,7 @@ class _StepBusinessInfo extends ConsumerWidget {
                 ? s.selectedCategory
                 : null,
             hint: Text(
-              'Choisir une catégorie',
+              l.becomeProCategoryHint,
               style: TextStyle(color: AppColors.gris.withAlpha(180)),
             ),
             dropdownColor: AppColors.surfaceAuth,
@@ -356,7 +360,7 @@ class _StepBusinessInfo extends ConsumerWidget {
               color: AppColors.gris,
             ),
             decoration: InputDecoration(
-              labelText: 'Catégorie de service',
+              labelText: l.becomeProCategoryLabel,
               labelStyle: TextStyle(color: AppColors.gris),
               prefixIcon: Icon(Icons.star_outline,
                   color: AppColors.gris, size: 20),
@@ -377,8 +381,8 @@ class _StepBusinessInfo extends ConsumerWidget {
           // Phone
           _field(
             controller: phoneCtrl,
-            label: 'Numéro de téléphone',
-            hint: '+1 514 000 0000',
+            label: l.becomeProPhoneLabel,
+            hint: l.becomeProPhoneHint,
             icon: Icons.phone_outlined,
             keyboardType: TextInputType.phone,
           ),
@@ -397,7 +401,7 @@ class _StepBusinessInfo extends ConsumerWidget {
                     borderRadius: BorderRadius.circular(12)),
               ),
               child: Text(
-                'Continuer',
+                l.buttonContinue,
                 style: GoogleFonts.dmSans(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
@@ -425,6 +429,7 @@ class _StepAddress extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l = AppLocalizations.of(context)!;
     final s = ref.watch(_becomeProProvider);
     final n = ref.read(_becomeProProvider.notifier);
 
@@ -435,7 +440,7 @@ class _StepAddress extends ConsumerWidget {
         children: [
           const SizedBox(height: 16),
           Text(
-            'Adresse de l\'entreprise',
+            l.becomeProStep2Title,
             style: GoogleFonts.sora(
               color: AppColors.blanc,
               fontSize: 24,
@@ -445,7 +450,7 @@ class _StepAddress extends ConsumerWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            'Où êtes-vous situé ? Les clients à proximité vous trouveront plus facilement.',
+            l.becomeProStep2Subtitle,
             style: GoogleFonts.dmSans(
               color: AppColors.gris,
               fontSize: 14,
@@ -456,8 +461,8 @@ class _StepAddress extends ConsumerWidget {
 
           AddressAutocompleteField(
             controller: addressCtrl,
-            label: 'Adresse de l\'entreprise',
-            hint: 'Commencez à taper votre adresse...',
+            label: l.becomeProAddressLabel,
+            hint: l.becomeProAddressHint,
             icon: Icons.pin_drop_outlined,
             fillColor: AppColors.surfaceAuth,
             onPlaceSelected: (place) => n.setPlace(place),
@@ -508,7 +513,7 @@ class _StepAddress extends ConsumerWidget {
                     borderRadius: BorderRadius.circular(12)),
               ),
               child: Text(
-                'Continuer',
+                l.buttonContinue,
                 style: GoogleFonts.dmSans(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
@@ -536,6 +541,7 @@ class _StepConfirm extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l = AppLocalizations.of(context)!;
     final s = ref.watch(_becomeProProvider);
 
     return SingleChildScrollView(
@@ -545,7 +551,7 @@ class _StepConfirm extends ConsumerWidget {
         children: [
           const SizedBox(height: 16),
           Text(
-            'Presque terminé !',
+            l.becomeProStep3Title,
             style: GoogleFonts.sora(
               color: AppColors.blanc,
               fontSize: 24,
@@ -555,7 +561,7 @@ class _StepConfirm extends ConsumerWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            'Vérifiez vos informations avant d\'activer votre compte Pro.',
+            l.becomeProStep3Subtitle,
             style: GoogleFonts.dmSans(
               color: AppColors.gris,
               fontSize: 14,
@@ -577,7 +583,7 @@ class _StepConfirm extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Votre profil Pro',
+                  l.becomeProYourProfile,
                   style: GoogleFonts.sora(
                     color: AppColors.blanc,
                     fontSize: 14,
@@ -611,7 +617,7 @@ class _StepConfirm extends ConsumerWidget {
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
-                    'Vos réservations et favoris existants seront conservés. Vous pourrez configurer vos services et disponibilités depuis votre tableau de bord Pro.',
+                    l.becomeProInfoBox,
                     style: GoogleFonts.dmSans(
                       color: AppColors.gris.withAlpha(204),
                       fontSize: 12,
@@ -663,7 +669,7 @@ class _StepConfirm extends ConsumerWidget {
                         ),
                       )
                     : Text(
-                        'Activer mon compte Pro',
+                        l.becomeProActivate,
                         style: GoogleFonts.dmSans(
                           fontSize: 17,
                           fontWeight: FontWeight.w700,

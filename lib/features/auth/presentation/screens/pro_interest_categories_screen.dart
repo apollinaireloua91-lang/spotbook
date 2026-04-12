@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../data/category_repository.dart';
 
@@ -33,6 +34,7 @@ class ProInterestCategoriesScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l = AppLocalizations.of(context)!;
     final selected = ref.watch(_proInterestProvider);
     final notifier = ref.read(_proInterestProvider.notifier);
     final categoriesAsync = ref.watch(proCategoriesProvider);
@@ -50,7 +52,7 @@ class ProInterestCategoriesScreen extends ConsumerWidget {
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         leading: Semantics(
-          label: 'Retour',
+          label: l.a11yBack,
           child: IconButton(
             onPressed: () => context.pop(),
             icon: Container(
@@ -71,7 +73,7 @@ class ProInterestCategoriesScreen extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'What do you do?',
+              l.proExpertiseTitle,
               style: GoogleFonts.sora(
                 color: AppColors.blanc,
                 fontSize: 24,
@@ -81,7 +83,7 @@ class ProInterestCategoriesScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              'Select your areas of expertise so clients can easily find you.',
+              l.proExpertiseSubtitle,
               style: GoogleFonts.dmSans(
                 color: AppColors.gris,
                 fontSize: 14,
@@ -201,7 +203,7 @@ class ProInterestCategoriesScreen extends ConsumerWidget {
                     ),
                   ),
                   child: Text(
-                    'Continue',
+                    l.buttonContinue,
                     style: GoogleFonts.dmSans(fontSize: 17, fontWeight: FontWeight.w600),
                   ),
                 ),

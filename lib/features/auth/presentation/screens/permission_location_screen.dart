@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../data/profile_repository.dart';
 
@@ -22,6 +23,7 @@ class PermissionLocationScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l = AppLocalizations.of(context)!;
     final bottomPadding = MediaQuery.of(context).padding.bottom;
 
     return Scaffold(
@@ -31,7 +33,7 @@ class PermissionLocationScreen extends ConsumerWidget {
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         leading: Semantics(
-          label: 'Retour',
+          label: l.a11yBack,
           child: IconButton(
             onPressed: () => context.go('/client/goals'),
             icon: Container(
@@ -64,7 +66,7 @@ class PermissionLocationScreen extends ConsumerWidget {
                       color: AppColors.violet.withAlpha(25),
                     ),
                     child: Text(
-                      'ÉTAPE 3/3',
+                      l.authStepLabel(3, 3),
                       style: GoogleFonts.dmSans(
                         color: AppColors.violet,
                         fontSize: 11,
@@ -131,7 +133,7 @@ class PermissionLocationScreen extends ConsumerWidget {
 
               // Title
               Text(
-                'Activer la localisation',
+                l.locationPermTitle,
                 style: GoogleFonts.sora(
                   color: AppColors.blanc,
                   fontSize: 24,
@@ -141,7 +143,7 @@ class PermissionLocationScreen extends ConsumerWidget {
               ),
               const SizedBox(height: 12),
               Text(
-                'Découvrez les meilleurs professionnels près de vous en activant les services de localisation.',
+                l.locationPermSubtitle,
                 textAlign: TextAlign.center,
                 style: GoogleFonts.dmSans(
                   color: AppColors.gris,
@@ -180,7 +182,7 @@ class PermissionLocationScreen extends ConsumerWidget {
                     ),
                     icon: const Icon(Icons.pin_drop, size: 20),
                     label: Text(
-                      'Autoriser la localisation',
+                      l.locationPermAllow,
                       style: GoogleFonts.dmSans(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
@@ -198,7 +200,7 @@ class PermissionLocationScreen extends ConsumerWidget {
                 child: TextButton(
                   onPressed: () => context.go('/client/feed'),
                   child: Text(
-                    'Pas maintenant',
+                    l.notNow,
                     style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 15),
                   ),
                 ),
@@ -221,7 +223,7 @@ class PermissionLocationScreen extends ConsumerWidget {
                     Icon(Icons.lock, color: AppColors.violet, size: 16),
                     const SizedBox(width: 8),
                     Text(
-                      'Vos données sont sécurisées et privées',
+                      l.locationPermPrivacy,
                       style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 12),
                     ),
                   ],

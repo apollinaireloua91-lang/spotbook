@@ -4,10 +4,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
 
 class _Goal {
-  const _Goal({
+  _Goal({
     required this.icon,
     required this.title,
     required this.description,
@@ -17,27 +18,11 @@ class _Goal {
   final String description;
 }
 
-const _goals = [
-  _Goal(
-    icon: Icons.trending_up,
-    title: 'Découvrir les tendances',
-    description: 'Explorez les dernières vidéos et styles tendance',
-  ),
-  _Goal(
-    icon: Icons.pin_drop,
-    title: 'Réserver un pro près de toi',
-    description: 'Trouvez et réservez un service près de vous',
-  ),
-  _Goal(
-    icon: Icons.confirmation_number_outlined,
-    title: 'Participer à des événements',
-    description: 'Achetez des billets pour les événements à venir',
-  ),
-  _Goal(
-    icon: Icons.attach_money,
-    title: 'Comparer les prix',
-    description: 'Trouvez le meilleur rapport qualité-prix',
-  ),
+List<_Goal> _getGoals(AppLocalizations l) => [
+  _Goal(icon: Icons.trending_up, title: l.goalDiscoverTitle, description: l.goalDiscoverDesc),
+  _Goal(icon: Icons.pin_drop, title: l.goalBookTitle, description: l.goalBookDesc),
+  _Goal(icon: Icons.confirmation_number_outlined, title: l.goalEventsTitle, description: l.goalEventsDesc),
+  _Goal(icon: Icons.attach_money, title: l.goalPricesTitle, description: l.goalPricesDesc),
 ];
 
 class _GoalNotifier extends Notifier<int?> {
@@ -56,6 +41,8 @@ class ClientInterestGoalsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l = AppLocalizations.of(context)!;
+    final goals = _getGoals(l);
     final selectedIndex = ref.watch(_selectedGoalProvider);
     final bottomPadding = MediaQuery.of(context).padding.bottom;
 
@@ -66,7 +53,7 @@ class ClientInterestGoalsScreen extends ConsumerWidget {
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         leading: Semantics(
-          label: 'Retour',
+          label: l.a11yBack,
           child: IconButton(
             onPressed: () => context.go('/client/interests'),
             icon: Container(
@@ -99,7 +86,7 @@ class ClientInterestGoalsScreen extends ConsumerWidget {
                     color: AppColors.violet.withAlpha(25),
                   ),
                   child: Text(
-                    'ÉTAPE 2/3',
+                    l.authStepLabel(2, 3),
                     style: GoogleFonts.dmSans(
                       color: AppColors.violet,
                       fontSize: 11,
@@ -124,7 +111,7 @@ class ClientInterestGoalsScreen extends ConsumerWidget {
 
             // Title
             Text(
-              'Quel est votre objectif ?',
+              l.goalsTitle,
               style: GoogleFonts.sora(
                 color: AppColors.blanc,
                 fontSize: 24,
@@ -134,7 +121,7 @@ class ClientInterestGoalsScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              'Dites-nous ce que vous recherchez pour personnaliser votre expérience.',
+              l.goalsSubtitle,
               style: GoogleFonts.dmSans(
                 color: AppColors.gris,
                 fontSize: 14,
@@ -147,10 +134,10 @@ class ClientInterestGoalsScreen extends ConsumerWidget {
             Expanded(
               child: ListView.separated(
                 padding: EdgeInsets.zero,
-                itemCount: _goals.length,
+                itemCount: goals.length,
                 separatorBuilder: (_, __) => const SizedBox(height: 12),
                 itemBuilder: (context, index) {
-                  final goal = _goals[index];
+                  final goal = goals[index];
                   final isSelected = selectedIndex == index;
                   return GestureDetector(
                     onTap: () {
@@ -266,7 +253,7 @@ class ClientInterestGoalsScreen extends ConsumerWidget {
                     ),
                   ),
                   child: Text(
-                    'Continuer',
+                    l.buttonContinue,
                     style: GoogleFonts.dmSans(
                       fontSize: 17,
                       fontWeight: FontWeight.w600,
@@ -280,7 +267,7 @@ class ClientInterestGoalsScreen extends ConsumerWidget {
               child: GestureDetector(
                 onTap: () => context.go('/client/location'),
                 child: Text(
-                  'Passer pour le moment',
+                  l.skipForNow,
                   style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 14),
                 ),
               ),

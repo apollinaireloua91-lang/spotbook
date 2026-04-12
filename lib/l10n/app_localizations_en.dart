@@ -424,4 +424,147 @@ class AppLocalizationsEn extends AppLocalizations {
   @override String get authPresentYourself => 'Introduce yourself to future clients.';
   @override String get authMinSixChars => 'Min. 6 characters';
   @override String get fieldConfirmPassword => 'Confirm password';
+
+  // ── Complete Profile ──
+  @override String get completeProfileUploadFailed => 'Upload failed';
+  @override String get completeProfileSaveFailed => 'Save failed';
+  @override String get completeProfileAccountCreated => 'Account created!';
+  @override String get completeProfileTitle => 'Complete your profile';
+  @override String get completeProfileSubtitle => 'Add a photo and a bio so pros know who they\'re working with.';
+  @override String get completeProfileBioHint => 'Bio — tell us a little about yourself...';
+  @override String get skipForNow => 'Skip for now';
+
+  // ── Location Permission ──
+  @override String get locationPermTitle => 'Enable location';
+  @override String get locationPermSubtitle => 'Discover the best professionals near you by enabling location services.';
+  @override String get locationPermAllow => 'Allow location';
+  @override String get notNow => 'Not now';
+  @override String get locationPermPrivacy => 'Your data is secure and private';
+
+  // ── Client Interest Categories ──
+  @override String get categoriesLoadFailed => 'Failed to load categories';
+
+  // ── Client Interest Goals ──
+  @override String get goalsTitle => 'What\'s your goal?';
+  @override String get goalsSubtitle => 'Tell us what you\'re looking for to personalize your experience.';
+  @override String get goalDiscoverTitle => 'Discover trends';
+  @override String get goalDiscoverDesc => 'Explore the latest trending videos and styles';
+  @override String get goalBookTitle => 'Book a pro near you';
+  @override String get goalBookDesc => 'Find and book a service near you';
+  @override String get goalEventsTitle => 'Attend events';
+  @override String get goalEventsDesc => 'Buy tickets for upcoming events';
+  @override String get goalPricesTitle => 'Compare prices';
+  @override String get goalPricesDesc => 'Find the best value for money';
+
+  // ── Pro Interest Categories ──
+  @override String get proExpertiseTitle => 'What do you do?';
+  @override String get proExpertiseSubtitle => 'Select your areas of expertise so clients can easily find you.';
+
+  // ── Pro Verification ──
+  @override String get verificationUploadFailed => 'Upload failed';
+  @override String get verificationIdRequired => 'Please upload your ID';
+  @override String get proSetupTitle => 'Pro Setup';
+  @override String get verificationInProgress => '● Verification in progress';
+  @override String get actionRequired => 'Action required';
+  @override String get phoneRequired => 'Phone number (required)';
+  @override String get mobileNumber => 'Mobile number';
+  @override String get phoneNumberHint => 'Phone number';
+  @override String get verificationSmsHint => 'We will send a 6-digit code to verify this number.';
+  @override String get smsComingSoon => 'SMS verification coming soon';
+  @override String get sendCode => 'Send code';
+  @override String get idRequired => 'ID document (required)';
+  @override String get idUploadDescription => 'Please upload a clear photo of your official ID (driver\'s license, passport or national ID card) to activate your Pro account.';
+  @override String get tapToUpload => 'Tap to upload front and back';
+  @override String get uploadFormats => 'SVG, PNG, JPG or PDF (MAX. 5 MB)';
+  @override String get idSecurityNote => 'Your ID is encrypted and securely stored. We use this information only to verify your identity. It will never be shared publicly.';
+  @override String get submitDocuments => 'Submit documents';
+  @override String get helpComingSoon => 'Help coming soon';
+  @override String get stepOf => 'STEP 2 OF 2';
+
+  // ── Stripe Connect ──
+  @override String get stripePaymentsTitle => 'Payments';
+  @override String get stripeOpenDashboard => 'Open Stripe dashboard';
+  @override String get stripeFinishSetup => 'Finish setup';
+  @override String get stripeConnectBank => 'Connect a bank account';
+  @override String get stripeHowItWorks => 'How it works';
+  @override String get stripeStep1Title => 'Connect your bank';
+  @override String get stripeStep1Desc => 'Securely link your bank account via Stripe, our payment partner. Your bank details are never stored on Spotbook.';
+  @override String get stripeStep2Title => 'Receive bookings';
+  @override String get stripeStep2Desc => 'Clients pay a deposit when they book your services. You set the deposit amount (up to 30%) for each service.';
+  @override String get stripeStep3Title => 'Get paid automatically';
+  @override String get stripeStep3Desc => 'After each confirmed appointment, the deposit is automatically transferred to your bank account within 2 to 7 business days.';
+  @override String get stripeFeesTitle => 'Fees and commissions';
+  @override String get stripeFeeBooking => 'Booking commission';
+  @override String get stripeFeeBookingSub => 'On the total service price';
+  @override String get stripeFeeEvent => 'Event commission';
+  @override String get stripeFeeEventSub => 'On each ticket sold';
+  @override String get stripeFeeService => 'Client service fee';
+  @override String get stripeFeeServiceSub => 'Paid by the client, not you';
+  @override String get stripeNoMonthlyFees => 'No monthly fees, no hidden costs. You only pay a commission when you earn.';
+  @override String get stripeSecurityTitle => 'Security and trust';
+  @override String get stripeTrustSsl => 'SSL encrypted transactions';
+  @override String get stripeTrustSslSub => 'End-to-end encryption compliant with PCI-DSS';
+  @override String get stripeTrustPowered => 'Powered by Stripe';
+  @override String get stripeTrustPoweredSub => 'Used by millions of businesses worldwide, including Shopify, Uber and Amazon';
+  @override String get stripeTrustFast => 'Fast transfers';
+  @override String get stripeTrustFastSub => 'Funds arrive in your bank account within 2 to 7 business days';
+  @override String get stripeFaqTitle => 'Frequently asked questions';
+  @override String get stripeFaqWhenPaid => 'When do I get paid?';
+  @override String get stripeFaqWhenPaidAnswer => 'After each confirmed appointment, the deposit (minus the commission) is automatically transferred to your bank account. Transfers arrive within 2 to 7 business days.';
+  @override String get stripeFaqCancel => 'What happens if a client cancels?';
+  @override String get stripeFaqCancelAnswer => 'If the client cancels more than 48 hours before the appointment, the deposit is refunded. Within 48 hours, you keep the deposit.';
+  @override String get stripeFaqDeposit => 'Can I change the deposit amount?';
+  @override String get stripeFaqDepositAnswer => 'Yes! Go to your service settings and adjust the deposit percentage (up to 30%) or set a fixed amount for each service individually.';
+  @override String get stripeNeedHelp => 'Need help? Contact support';
+  @override String get stripeHeroActiveTitle => 'All set!';
+  @override String get stripeHeroActiveSub => 'Your account is active and ready to receive client payments.';
+  @override String get stripeHeroPendingTitle => 'Almost done!';
+  @override String get stripeHeroPendingSub => 'Complete your Stripe setup to start receiving payments. It only takes a few minutes.';
+  @override String get stripeHeroConnectTitle => 'Start getting paid';
+  @override String get stripeHeroConnectSub => 'Connect your bank account to receive payments when clients book your services.';
+  @override String get stripeSetupProgress => 'Setup progress';
+  @override String get stripeDetailsSubmitted => 'Account details submitted';
+  @override String get stripeDetailsSubmittedSub => 'Identity and business information';
+  @override String get stripeChargesEnabled => 'Payments enabled';
+  @override String get stripeChargesEnabledSub => 'You can accept client payments';
+  @override String get stripePayoutsEnabled => 'Payouts enabled';
+  @override String get stripePayoutsEnabledSub => 'Money can be sent to your bank account';
+
+  // ── Become Pro Setup ──
+  @override String get becomeProTitle => 'Become Pro';
+  @override String get becomeProStep1Title => 'Your business';
+  @override String get becomeProStep1Subtitle => 'Tell us about your services so clients can find you.';
+  @override String get becomeProBusinessName => 'Business name';
+  @override String get becomeProBusinessHint => 'e.g. Luxe Hair Studio';
+  @override String get becomeProCategoryLabel => 'Service category';
+  @override String get becomeProCategoryHint => 'Choose a category';
+  @override String get becomeProPhoneLabel => 'Phone number';
+  @override String get becomeProPhoneHint => '+1 514 000 0000';
+  @override String get becomeProStep2Title => 'Business address';
+  @override String get becomeProStep2Subtitle => 'Where are you located? Nearby clients will find you more easily.';
+  @override String get becomeProAddressLabel => 'Business address';
+  @override String get becomeProAddressHint => 'Start typing your address...';
+  @override String get becomeProStep3Title => 'Almost done!';
+  @override String get becomeProStep3Subtitle => 'Review your information before activating your Pro account.';
+  @override String get becomeProYourProfile => 'Your Pro profile';
+  @override String get becomeProInfoBox => 'Your existing bookings and favorites will be kept. You can configure your services and availability from your Pro dashboard.';
+  @override String get becomeProActivate => 'Activate my Pro account';
+  @override String get becomeProNameRequired => 'Please enter your business name';
+  @override String get becomeProCategoryRequired => 'Please choose a category';
+  @override String get becomeProAddressRequired => 'Please select your address';
+  @override String get becomeProAllFieldsRequired => 'Please fill in all required fields';
+  @override String get becomeProSelectAddress => 'Please select an address';
+
+  // ── Pro Business Details ──
+  @override String get bizConfigInProgress => '● SETUP IN PROGRESS';
+  @override String get bizYourBusiness => 'Your business';
+  @override String get bizSubtitle => 'Tell us about your services so clients can find you easily.';
+  @override String get bizBusinessName => 'Business name';
+  @override String get bizBusinessHint => 'e.g. Luxe Hair Studio';
+  @override String get bizCategoryLabel => 'Service category';
+  @override String get bizCategoryHint => 'Choose a category';
+  @override String get bizAddressLabel => 'Business address';
+  @override String get bizAddressHint => 'Start typing your address...';
+  @override String get bizRequiredFieldsError => 'Please fill in all required fields';
+  @override String get bizSelectAddressError => 'Please select an address';
 }

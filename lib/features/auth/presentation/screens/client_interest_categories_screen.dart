@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../data/category_repository.dart';
 import '../../data/client_interest_categories_notifier.dart';
@@ -13,6 +14,7 @@ class ClientInterestCategoriesScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l = AppLocalizations.of(context)!;
     final selected = ref.watch(clientInterestCategoriesProvider);
     final notifier = ref.read(clientInterestCategoriesProvider.notifier);
     final bottomPadding = MediaQuery.of(context).padding.bottom;
@@ -30,7 +32,7 @@ class ClientInterestCategoriesScreen extends ConsumerWidget {
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         leading: Semantics(
-          label: 'Retour',
+          label: l.a11yBack,
           child: IconButton(
             onPressed: () => context.go('/client/feed'),
             icon: Container(
@@ -61,7 +63,7 @@ class ClientInterestCategoriesScreen extends ConsumerWidget {
                     color: AppColors.violet.withAlpha(25),
                   ),
                   child: Text(
-                    'STEP 1/3',
+                    l.authStepLabel(1, 3),
                     style: GoogleFonts.dmSans(
                       color: AppColors.violet,
                       fontSize: 11,
@@ -86,7 +88,7 @@ class ClientInterestCategoriesScreen extends ConsumerWidget {
 
             // Title
             Text(
-              'What are you interested in?',
+              l.authWhatInterests,
               style: GoogleFonts.sora(
                 color: AppColors.blanc,
                 fontSize: 24,
@@ -96,7 +98,7 @@ class ClientInterestCategoriesScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              'Select categories you\'re interested in to personalize your feed.',
+              l.authSelectCategoriesForFeed,
               style: GoogleFonts.dmSans(
                 color: AppColors.gris,
                 fontSize: 14,
@@ -113,7 +115,7 @@ class ClientInterestCategoriesScreen extends ConsumerWidget {
                 ),
                 error: (_, __) => Center(
                   child: Text(
-                    'Failed to load categories',
+                    l.categoriesLoadFailed,
                     style: GoogleFonts.dmSans(color: AppColors.gris),
                   ),
                 ),
@@ -225,7 +227,7 @@ class ClientInterestCategoriesScreen extends ConsumerWidget {
                     ),
                   ),
                   child: Text(
-                    'Continue',
+                    l.buttonContinue,
                     style: GoogleFonts.dmSans(fontSize: 17, fontWeight: FontWeight.w600),
                   ),
                 ),
@@ -236,7 +238,7 @@ class ClientInterestCategoriesScreen extends ConsumerWidget {
               child: GestureDetector(
                 onTap: () => context.go('/client/location'),
                 child: Text(
-                  'Skip for now',
+                  l.skipForNow,
                   style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 14),
                 ),
               ),

@@ -838,6 +838,149 @@ abstract class AppLocalizations {
   String get authPresentYourself;
   String get authMinSixChars;
   String get fieldConfirmPassword;
+
+  // ── Complete Profile ──
+  String get completeProfileUploadFailed;
+  String get completeProfileSaveFailed;
+  String get completeProfileAccountCreated;
+  String get completeProfileTitle;
+  String get completeProfileSubtitle;
+  String get completeProfileBioHint;
+  String get skipForNow;
+
+  // ── Location Permission ──
+  String get locationPermTitle;
+  String get locationPermSubtitle;
+  String get locationPermAllow;
+  String get notNow;
+  String get locationPermPrivacy;
+
+  // ── Client Interest Categories ──
+  String get categoriesLoadFailed;
+
+  // ── Client Interest Goals ──
+  String get goalsTitle;
+  String get goalsSubtitle;
+  String get goalDiscoverTitle;
+  String get goalDiscoverDesc;
+  String get goalBookTitle;
+  String get goalBookDesc;
+  String get goalEventsTitle;
+  String get goalEventsDesc;
+  String get goalPricesTitle;
+  String get goalPricesDesc;
+
+  // ── Pro Interest Categories ──
+  String get proExpertiseTitle;
+  String get proExpertiseSubtitle;
+
+  // ── Pro Verification ──
+  String get verificationUploadFailed;
+  String get verificationIdRequired;
+  String get proSetupTitle;
+  String get verificationInProgress;
+  String get actionRequired;
+  String get phoneRequired;
+  String get mobileNumber;
+  String get phoneNumberHint;
+  String get verificationSmsHint;
+  String get smsComingSoon;
+  String get sendCode;
+  String get idRequired;
+  String get idUploadDescription;
+  String get tapToUpload;
+  String get uploadFormats;
+  String get idSecurityNote;
+  String get submitDocuments;
+  String get helpComingSoon;
+  String get stepOf;
+
+  // ── Stripe Connect ──
+  String get stripePaymentsTitle;
+  String get stripeOpenDashboard;
+  String get stripeFinishSetup;
+  String get stripeConnectBank;
+  String get stripeHowItWorks;
+  String get stripeStep1Title;
+  String get stripeStep1Desc;
+  String get stripeStep2Title;
+  String get stripeStep2Desc;
+  String get stripeStep3Title;
+  String get stripeStep3Desc;
+  String get stripeFeesTitle;
+  String get stripeFeeBooking;
+  String get stripeFeeBookingSub;
+  String get stripeFeeEvent;
+  String get stripeFeeEventSub;
+  String get stripeFeeService;
+  String get stripeFeeServiceSub;
+  String get stripeNoMonthlyFees;
+  String get stripeSecurityTitle;
+  String get stripeTrustSsl;
+  String get stripeTrustSslSub;
+  String get stripeTrustPowered;
+  String get stripeTrustPoweredSub;
+  String get stripeTrustFast;
+  String get stripeTrustFastSub;
+  String get stripeFaqTitle;
+  String get stripeFaqWhenPaid;
+  String get stripeFaqWhenPaidAnswer;
+  String get stripeFaqCancel;
+  String get stripeFaqCancelAnswer;
+  String get stripeFaqDeposit;
+  String get stripeFaqDepositAnswer;
+  String get stripeNeedHelp;
+  String get stripeHeroActiveTitle;
+  String get stripeHeroActiveSub;
+  String get stripeHeroPendingTitle;
+  String get stripeHeroPendingSub;
+  String get stripeHeroConnectTitle;
+  String get stripeHeroConnectSub;
+  String get stripeSetupProgress;
+  String get stripeDetailsSubmitted;
+  String get stripeDetailsSubmittedSub;
+  String get stripeChargesEnabled;
+  String get stripeChargesEnabledSub;
+  String get stripePayoutsEnabled;
+  String get stripePayoutsEnabledSub;
+
+  // ── Become Pro Setup ──
+  String get becomeProTitle;
+  String get becomeProStep1Title;
+  String get becomeProStep1Subtitle;
+  String get becomeProBusinessName;
+  String get becomeProBusinessHint;
+  String get becomeProCategoryLabel;
+  String get becomeProCategoryHint;
+  String get becomeProPhoneLabel;
+  String get becomeProPhoneHint;
+  String get becomeProStep2Title;
+  String get becomeProStep2Subtitle;
+  String get becomeProAddressLabel;
+  String get becomeProAddressHint;
+  String get becomeProStep3Title;
+  String get becomeProStep3Subtitle;
+  String get becomeProYourProfile;
+  String get becomeProInfoBox;
+  String get becomeProActivate;
+  String get becomeProNameRequired;
+  String get becomeProCategoryRequired;
+  String get becomeProAddressRequired;
+  String get becomeProAllFieldsRequired;
+  String get becomeProSelectAddress;
+
+  // ── Pro Business Details ──
+  String get bizConfigInProgress;
+  String get bizYourBusiness;
+  String get bizSubtitle;
+  String get bizBusinessName;
+  String get bizBusinessHint;
+  String get bizCategoryLabel;
+  String get bizCategoryHint;
+  String get bizAddressLabel;
+  String get bizAddressHint;
+  String get bizRequiredFieldsError;
+  String get bizSelectAddressError;
 }
 
 class _AppLocalizationsDelegate

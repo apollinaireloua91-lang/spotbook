@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../features/payment/data/payment_repository.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
 
 // ═════════════════════════════════════════════════════════════════════════════
@@ -115,6 +116,7 @@ class _StripeConnectScreenState extends ConsumerState<StripeConnectScreen>
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     final bool isActive = _status == 'active';
 
     return Scaffold(
@@ -124,7 +126,7 @@ class _StripeConnectScreenState extends ConsumerState<StripeConnectScreen>
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         leading: Semantics(
-          label: 'Retour',
+          label: l.a11yBack,
           child: IconButton(
             onPressed: () => context.pop(),
             icon: Container(
@@ -140,7 +142,7 @@ class _StripeConnectScreenState extends ConsumerState<StripeConnectScreen>
           ),
         ),
         title: Text(
-          'Paiements',
+          l.stripePaymentsTitle,
           style: GoogleFonts.sora(
             color: AppColors.blanc,
             fontSize: 17,
@@ -212,10 +214,10 @@ class _StripeConnectScreenState extends ConsumerState<StripeConnectScreen>
                               )
                             : Text(
                                 isActive
-                                    ? 'Ouvrir le tableau de bord Stripe'
+                                    ? l.stripeOpenDashboard
                                     : _status == 'pending'
-                                        ? 'Terminer la configuration'
-                                        : 'Connecter un compte bancaire',
+                                        ? l.stripeFinishSetup
+                                        : l.stripeConnectBank,
                                 style: GoogleFonts.dmSans(
                                   fontSize: 15,
                                   fontWeight: FontWeight.w600,
@@ -239,30 +241,27 @@ class _StripeConnectScreenState extends ConsumerState<StripeConnectScreen>
                   // ── How it works section ──
                   _SectionHeader(
                     icon: Icons.auto_awesome_rounded,
-                    title: 'Comment ça marche',
+                    title: l.stripeHowItWorks,
                   ),
                   const SizedBox(height: 16),
 
                   _StepTile(
                     number: '1',
                     icon: Icons.account_balance_rounded,
-                    title: 'Connectez votre banque',
-                    subtitle:
-                        'Liez votre compte bancaire en toute sécurité via Stripe, notre partenaire de paiement. Vos coordonnées bancaires ne sont jamais stockées sur Spotbook.',
+                    title: l.stripeStep1Title,
+                    subtitle: l.stripeStep1Desc,
                   ),
                   _StepTile(
                     number: '2',
                     icon: Icons.calendar_month_rounded,
-                    title: 'Recevez des réservations',
-                    subtitle:
-                        'Les clients versent un acompte lorsqu\'ils réservent vos services. Vous définissez le montant de l\'acompte (jusqu\'à 30 %) pour chaque service.',
+                    title: l.stripeStep2Title,
+                    subtitle: l.stripeStep2Desc,
                   ),
                   _StepTile(
                     number: '3',
                     icon: Icons.payments_rounded,
-                    title: 'Soyez payé automatiquement',
-                    subtitle:
-                        'Après chaque rendez-vous confirmé, l\'acompte est automatiquement transféré sur votre compte bancaire sous 2 à 7 jours ouvrables.',
+                    title: l.stripeStep3Title,
+                    subtitle: l.stripeStep3Desc,
                     isLast: true,
                   ),
 
@@ -271,26 +270,26 @@ class _StripeConnectScreenState extends ConsumerState<StripeConnectScreen>
                   // ── Fees breakdown ──
                   _SectionHeader(
                     icon: Icons.receipt_long_rounded,
-                    title: 'Frais et commissions',
+                    title: l.stripeFeesTitle,
                   ),
                   const SizedBox(height: 14),
 
                   _FeeCard(
                     items: [
                       _FeeItem(
-                        label: 'Commission réservation',
+                        label: l.stripeFeeBooking,
                         value: '18%',
-                        subtitle: 'Sur le prix total du service',
+                        subtitle: l.stripeFeeBookingSub,
                       ),
                       _FeeItem(
-                        label: 'Commission événement',
+                        label: l.stripeFeeEvent,
                         value: '12%',
-                        subtitle: 'Sur chaque billet vendu',
+                        subtitle: l.stripeFeeEventSub,
                       ),
                       _FeeItem(
-                        label: 'Frais de service client',
+                        label: l.stripeFeeService,
                         value: '\$2.50',
-                        subtitle: 'Payé par le client, pas par vous',
+                        subtitle: l.stripeFeeServiceSub,
                       ),
                     ],
                   ),
@@ -312,7 +311,7 @@ class _StripeConnectScreenState extends ConsumerState<StripeConnectScreen>
                         const SizedBox(width: 10),
                         Expanded(
                           child: Text(
-                            'Aucun frais mensuel, aucun coût caché. Vous ne payez une commission que lorsque vous gagnez.',
+                            l.stripeNoMonthlyFees,
                             style: GoogleFonts.dmSans(
                               color: AppColors.success,
                               fontSize: 12,
@@ -329,28 +328,26 @@ class _StripeConnectScreenState extends ConsumerState<StripeConnectScreen>
                   // ── Security trust badges ──
                   _SectionHeader(
                     icon: Icons.shield_rounded,
-                    title: 'Sécurité et confiance',
+                    title: l.stripeSecurityTitle,
                   ),
                   const SizedBox(height: 14),
 
                   _TrustBadge(
                     icon: Icons.lock_rounded,
-                    title: 'Transactions chiffrées SSL',
-                    subtitle: 'Chiffrement de bout en bout conforme PCI-DSS',
+                    title: l.stripeTrustSsl,
+                    subtitle: l.stripeTrustSslSub,
                   ),
                   const SizedBox(height: 10),
                   _TrustBadge(
                     icon: Icons.verified_rounded,
-                    title: 'Propulsé par Stripe',
-                    subtitle:
-                        'Utilisé par des millions d\'entreprises dans le monde entier, dont Shopify, Uber et Amazon',
+                    title: l.stripeTrustPowered,
+                    subtitle: l.stripeTrustPoweredSub,
                   ),
                   const SizedBox(height: 10),
                   _TrustBadge(
                     icon: Icons.speed_rounded,
-                    title: 'Virements rapides',
-                    subtitle:
-                        'Les fonds arrivent sur votre compte bancaire sous 2 à 7 jours ouvrables',
+                    title: l.stripeTrustFast,
+                    subtitle: l.stripeTrustFastSub,
                   ),
 
                   const SizedBox(height: 32),
@@ -358,24 +355,21 @@ class _StripeConnectScreenState extends ConsumerState<StripeConnectScreen>
                   // ── FAQ section ──
                   _SectionHeader(
                     icon: Icons.help_outline_rounded,
-                    title: 'Questions fréquentes',
+                    title: l.stripeFaqTitle,
                   ),
                   const SizedBox(height: 14),
 
                   _FAQItem(
-                    question: 'Quand suis-je payé ?',
-                    answer:
-                        'Après chaque rendez-vous confirmé, l\'acompte (moins la commission) est automatiquement transféré sur votre compte bancaire. Les virements arrivent sous 2 à 7 jours ouvrables.',
+                    question: l.stripeFaqWhenPaid,
+                    answer: l.stripeFaqWhenPaidAnswer,
                   ),
                   _FAQItem(
-                    question: 'Que se passe-t-il si un client annule ?',
-                    answer:
-                        'Si le client annule plus de 48 heures avant le rendez-vous, l\'acompte est remboursé. Dans les 48 heures, vous conservez l\'acompte.',
+                    question: l.stripeFaqCancel,
+                    answer: l.stripeFaqCancelAnswer,
                   ),
                   _FAQItem(
-                    question: 'Puis-je modifier le montant de l\'acompte ?',
-                    answer:
-                        'Oui ! Allez dans les paramètres de vos services et ajustez le pourcentage d\'acompte (jusqu\'à 30 %) ou définissez un montant fixe pour chaque service individuellement.',
+                    question: l.stripeFaqDeposit,
+                    answer: l.stripeFaqDepositAnswer,
                   ),
 
                   const SizedBox(height: 24),
@@ -395,7 +389,7 @@ class _StripeConnectScreenState extends ConsumerState<StripeConnectScreen>
                               color: AppColors.violet, size: 16),
                           const SizedBox(width: 6),
                           Text(
-                            'Besoin d\'aide ? Contacter le support',
+                            l.stripeNeedHelp,
                             style: GoogleFonts.dmSans(
                               color: AppColors.violet,
                               fontSize: 13,
@@ -423,6 +417,7 @@ class _HeroBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     final bool isActive = status == 'active';
     final bool isPending = status == 'pending';
 
@@ -431,18 +426,16 @@ class _HeroBanner extends StatelessWidget {
     final IconData icon;
 
     if (isActive) {
-      title = 'Tout est prêt !';
-      subtitle = 'Votre compte est actif et prêt à recevoir les paiements des clients.';
+      title = l.stripeHeroActiveTitle;
+      subtitle = l.stripeHeroActiveSub;
       icon = Icons.check_circle_rounded;
     } else if (isPending) {
-      title = 'Presque terminé !';
-      subtitle =
-          'Complétez votre configuration Stripe pour commencer à recevoir des paiements. Cela ne prend que quelques minutes.';
+      title = l.stripeHeroPendingTitle;
+      subtitle = l.stripeHeroPendingSub;
       icon = Icons.hourglass_top_rounded;
     } else {
-      title = 'Commencez à être payé';
-      subtitle =
-          'Connectez votre compte bancaire pour recevoir les paiements lorsque les clients réservent vos services.';
+      title = l.stripeHeroConnectTitle;
+      subtitle = l.stripeHeroConnectSub;
       icon = Icons.account_balance_wallet_rounded;
     }
 
@@ -534,6 +527,7 @@ class _StatusCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     final bool isActive = status == 'active';
     final bool isPending = status == 'pending';
 
@@ -555,7 +549,7 @@ class _StatusCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Progression de la configuration',
+            l.stripeSetupProgress,
             style: GoogleFonts.sora(
               color: AppColors.blanc,
               fontSize: 14,
@@ -564,20 +558,20 @@ class _StatusCard extends StatelessWidget {
           ),
           const SizedBox(height: 14),
           _CheckItem(
-            label: 'Informations du compte soumises',
-            subtitle: 'Identité et informations professionnelles',
+            label: l.stripeDetailsSubmitted,
+            subtitle: l.stripeDetailsSubmittedSub,
             done: detailsSubmitted,
           ),
           const SizedBox(height: 10),
           _CheckItem(
-            label: 'Paiements activés',
-            subtitle: 'Vous pouvez accepter les paiements des clients',
+            label: l.stripeChargesEnabled,
+            subtitle: l.stripeChargesEnabledSub,
             done: chargesEnabled,
           ),
           const SizedBox(height: 10),
           _CheckItem(
-            label: 'Virements activés',
-            subtitle: 'L\'argent peut être envoyé sur votre compte bancaire',
+            label: l.stripePayoutsEnabled,
+            subtitle: l.stripePayoutsEnabledSub,
             done: payoutsEnabled,
           ),
         ],
