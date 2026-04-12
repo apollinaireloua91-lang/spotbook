@@ -349,5 +349,174 @@
   "dateFrom": "From",
   "dateTo": "Until",
   "searchProHint": "Search a pro...",
-  "applyTheFilters": "Apply filters"
+  "applyTheFilters": "Apply filters",
+
+  "tonight": "Tonight",
+  "thisWeekend": "This weekend",
+  "thisMonth": "This month",
+  "noEventsFound": "No events found",
+  "sellingFast": "Selling fast",
+  "soldOut": "Sold out",
+  "eventsTitle": "Events",
+  "coverImage": "Cover Image",
+  "coverImageSubtitle": "This is the first thing attendees will see",
+  "eventDetails": "Event Details",
+  "eventDetailsSubtitle": "Name your event and tell people what it's about",
+  "whenQuestion": "When?",
+  "whenSubtitle": "Set the date and start time",
+  "whereQuestion": "Where?",
+  "whereSubtitle": "Let guests know the location and time details",
+  "ticketsAndPricing": "Tickets & Pricing",
+  "ticketsAndPricingSubtitle": "Define your ticket types, pricing, and availability",
+  "titleAndLocationRequired": "Title and location are required",
+  "participants": "participants",
+  "noAttendees": "No attendees",
+  "searchParticipantHint": "Search a participant...",
+  "loadingText": "Loading...",
+  "eventLabel": "Event",
+  "salesProgress": "Sales progress",
+  "ticketsScanned": "Tickets scanned",
+  "ticketTypes": "Ticket types",
+  "scanTickets": "Scan tickets",
+  "manageEvent": "Manage event",
+  "shareTicket": "Share ticket",
+  "addToCalendar": "Add to Calendar",
+  "scanAnotherTicket": "Scan another ticket",
+  "scannerQr": "QR Scanner",
+  "waitlistTitle": "Waitlist",
+  "youAreRegistered": "You are registered!",
+  "ticketsSoldOut": "Tickets sold out",
+  "waitlistNotifyMessage": "You will be notified if a ticket becomes available for \"{eventTitle}\". You will have 30 minutes to confirm.",
+  "@waitlistNotifyMessage": {
+    "placeholders": {
+      "eventTitle": { "type": "String" }
+    }
+  },
+  "waitlistJoinMessage": "Join the waitlist to get notified if a ticket becomes available.",
+  "joinWaitlist": "Join the waitlist",
+  "ticketValidated": "Ticket validated!",
+  "alreadyScanned": "Already scanned",
+  "alreadyScannedAt": "Already scanned at {time}",
+  "@alreadyScannedAt": {
+    "placeholders": {
+      "time": { "type": "String" }
+    }
+  },
+  "invalidTicket": "Invalid ticket",
+  "ticketValidatedSuccess": "This ticket has been scanned successfully.",
+  "alreadyUsed": "This ticket has already been used.",
+  "ticketCouldNotBeValidated": "This ticket could not be validated.",
+  "backToEvents": "Back to events",
+  "filterByStatus": "Filter by status",
+  "searchEventHint": "Search an event...",
+  "online": "Online",
+  "inactive": "Inactive",
+  "ticketsSoldCount": "{sold} / {total}",
+  "@ticketsSoldCount": {
+    "placeholders": {
+      "sold": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "ticketsSold": "Tickets sold",
+  "createEvent": "Create Event",
+  "errorPrefix": "Error",
+  "back": "Back",
+  "allLabel": "All",
+  "fromPrice": "From ${price}",
+  "@fromPrice": {
+    "placeholders": {
+      "price": { "type": "String" }
+    }
+  },
+  "freeLabel": "Free",
+  "changeLabel": "Change",
+  "tapToUploadCover": "Tap to upload cover",
+  "recommendedSize": "Recommended: 1200 x 630px",
+  "eventTitleLabel": "Event Title",
+  "eventTitleHint": "e.g. Summer Jazz Workshop",
+  "descriptionLabel": "Description",
+  "eventDescriptionHint": "Describe the agenda, what attendees will learn, etc.",
+  "startTimeLabel": "Start time",
+  "venueNameLabel": "Venue Name",
+  "venueNameHint": "e.g. Grand Convention Center",
+  "addressLabel": "Address",
+  "searchLocationHint": "Search a location",
+  "addLabel": "Add",
+  "noTicketTypesYet": "No ticket types yet",
+  "tapToAddFirstTicket": "Tap to add your first ticket tier",
+  "ticketTierIndex": "Ticket Tier {index}",
+  "@ticketTierIndex": {
+    "placeholders": {
+      "index": { "type": "int" }
+    }
+  },
+  "ticketNameLabel": "TICKET NAME",
+  "ticketNameHint": "e.g. General Admission",
+  "priceLabel": "PRICE",
+  "quantityLabel": "QUANTITY",
+  "publishEventLabel": "Publish Event",
+  "soldLabel": "Sold",
+  "scannedLabel": "Scanned",
+  "remainingLabel": "Remaining",
+  "revenueLabel": "Revenue",
+  "spotsRemaining": "{count} spots remaining",
+  "@spotsRemaining": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "publishedLabel": "Published",
+  "draftLabel": "Draft",
+  "editAction": "Edit",
+  "pageAction": "Page",
+  "salesAction": "Sales",
+  "allEventsFilter": "All",
+  "publishedEventsFilter": "Published",
+  "draftsEventsFilter": "Drafts",
+  "pastEventsFilter": "Past",
+  "noEventsCreated": "No events created",
+  "noEventsWithFilter": "No {filter} events",
+  "@noEventsWithFilter": {
+    "placeholders": {
+      "filter": { "type": "String" }
+    }
+  },
+  "createFirstEventHint": "Create your first event\nto start selling tickets.",
+  "notSignedIn": "Not signed in",
+  "noEvents": "No events",
+  "myEventsLabel": "My events",
+  "scanTicketTitle": "Scan a ticket",
+  "openingCamera": "Opening camera...",
+  "chooseEventScanHint": "Choose the event, then scan QR codes from tickets with the camera.",
+  "dateToConfirm": "Date to confirm",
+  "myTicketsTitle": "My Tickets",
+  "upcomingCount": "Upcoming ({count})",
+  "@upcomingCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "pastCount": "Past ({count})",
+  "@pastCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "noUpcomingTickets": "No upcoming tickets",
+  "upcomingTicketsHint": "Your upcoming events will appear here.",
+  "noPastTickets": "No past tickets",
+  "pastTicketsHint": "Your past events will appear here.",
+  "statusUsed": "Used",
+  "statusValid": "Valid",
+  "statusRefunded": "Refunded",
+  "statusCancelled": "Cancelled",
+  "scannedProgress": "{scanned} / {total} scanned",
+  "@scannedProgress": {
+    "placeholders": {
+      "scanned": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "invalidQrCode": "This QR code is not a valid Spotbook ticket."
 }

@@ -1919,6 +1919,7 @@ abstract class AppLocalizations {
   String get videoTooLong;
   String get videoPublished;
   String get publishAService;
+  String get publishEventLabel;
   String videoSelectedDuration(String duration);
   String get tapToChange;
   String get selectVideoMax;
@@ -2323,6 +2324,68 @@ abstract class AppLocalizations {
   String get thursday;
   String get friday;
   String get saturday;
+
+  // ── Missing keys (batch addition) ──
+  String get addLabel;
+  String get addressLabel;
+  String get allEventsFilter;
+  String get allLabel;
+  String get changeLabel;
+  String get chooseEventScanHint;
+  String get createFirstEventHint;
+  String get dateToConfirm;
+  String get descriptionLabel;
+  String get draftLabel;
+  String get draftsEventsFilter;
+  String get editAction;
+  String get eventDescriptionHint;
+  String get eventTitleHint;
+  String get eventTitleLabel;
+  String get freeLabel;
+  String get myTicketsTitle;
+  String get noEvents;
+  String get noEventsCreated;
+  String get noPastTickets;
+  String get noTicketTypesYet;
+  String get noUpcomingTickets;
+  String get notSignedIn;
+  String get openingCamera;
+  String get pageAction;
+  String get pastEventsFilter;
+  String get pastTicketsHint;
+  String get priceLabel;
+  String get publishedEventsFilter;
+  String get publishedLabel;
+  String get quantityLabel;
+  String get recommendedSize;
+  String get remainingLabel;
+  String get revenueLabel;
+  String get salesAction;
+  String get scanTicketTitle;
+  String get scannedLabel;
+  String get searchLocationHint;
+  String get soldLabel;
+  String get startTimeLabel;
+  String get statusCancelled;
+  String get statusRefunded;
+  String get statusUsed;
+  String get statusValid;
+  String get tapToAddFirstTicket;
+  String get tapToUploadCover;
+  String get ticketNameHint;
+  String get ticketNameLabel;
+  String get ticketsAndPricingSubtitle;
+  String get invalidQrCode;
+  String get upcomingTicketsHint;
+  String get venueNameHint;
+  String get venueNameLabel;
+  String fromPrice(String price);
+  String noEventsWithFilter(String filter);
+  String pastCount(int count);
+  String scannedProgress(int scanned, int total);
+  String spotsRemaining(int count);
+  String ticketTierIndex(int index);
+  String upcomingCount(int count);
 }
 
 class _AppLocalizationsDelegate

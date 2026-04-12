@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../../profile/data/profile_repository.dart';
 import '../../data/event_repository.dart';
@@ -19,13 +20,14 @@ class ProMyEventsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l = AppLocalizations.of(context)!;
     final uid = ref.watch(profileRepositoryProvider).currentUserId;
 
     if (uid == null) {
       return Scaffold(
         backgroundColor: AppColors.fond,
         body: Center(
-          child: Text('Not signed in', style: GoogleFonts.dmSans(color: AppColors.gris)),
+          child: Text(l.notSignedIn, style: GoogleFonts.dmSans(color: AppColors.gris)),
         ),
       );
     }
@@ -40,7 +42,7 @@ class ProMyEventsScreen extends ConsumerWidget {
         surfaceTintColor: Colors.transparent,
         scrolledUnderElevation: 0,
         title: Text(
-          'Mes événements',
+          l.myEventsLabel,
           style: GoogleFonts.sora(
             color: AppColors.blanc,
             fontWeight: FontWeight.w600,
@@ -62,14 +64,14 @@ class ProMyEventsScreen extends ConsumerWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    'Aucun événement',
+                    l.noEvents,
                     style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 15),
                   ),
                   const SizedBox(height: 16),
                   TextButton(
                     onPressed: () => context.push('/create-event'),
                     child: Text(
-                      'Create an event',
+                      l.createEvent,
                       style: GoogleFonts.dmSans(color: AppColors.blanc),
                     ),
                   ),

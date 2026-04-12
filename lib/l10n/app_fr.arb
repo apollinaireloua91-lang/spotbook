@@ -349,5 +349,174 @@
   "dateFrom": "Depuis",
   "dateTo": "Jusqu'à",
   "searchProHint": "Rechercher un pro...",
-  "applyTheFilters": "Appliquer les filtres"
+  "applyTheFilters": "Appliquer les filtres",
+
+  "tonight": "Ce soir",
+  "thisWeekend": "Ce weekend",
+  "thisMonth": "Ce mois",
+  "noEventsFound": "Aucun événement trouvé",
+  "sellingFast": "Se vend vite",
+  "soldOut": "Épuisé",
+  "eventsTitle": "Événements",
+  "coverImage": "Image de couverture",
+  "coverImageSubtitle": "C'est la première chose que les participants verront",
+  "eventDetails": "Détails de l'événement",
+  "eventDetailsSubtitle": "Nommez votre événement et décrivez-le",
+  "whenQuestion": "Quand ?",
+  "whenSubtitle": "Définissez la date et l'heure de début",
+  "whereQuestion": "Où ?",
+  "whereSubtitle": "Indiquez le lieu et les détails horaires",
+  "ticketsAndPricing": "Billets et tarifs",
+  "ticketsAndPricingSubtitle": "Définissez vos types de billets, tarifs et disponibilités",
+  "titleAndLocationRequired": "Le titre et le lieu sont requis",
+  "participants": "participants",
+  "noAttendees": "Aucun participant",
+  "searchParticipantHint": "Rechercher un participant...",
+  "loadingText": "Chargement...",
+  "eventLabel": "Événement",
+  "salesProgress": "Progression des ventes",
+  "ticketsScanned": "Billets scannés",
+  "ticketTypes": "Types de billets",
+  "scanTickets": "Scanner les billets",
+  "manageEvent": "Gérer l'événement",
+  "shareTicket": "Partager le billet",
+  "addToCalendar": "Ajouter au calendrier",
+  "scanAnotherTicket": "Scanner un autre billet",
+  "scannerQr": "Scanner QR",
+  "waitlistTitle": "Liste d'attente",
+  "youAreRegistered": "Vous êtes inscrit !",
+  "ticketsSoldOut": "Billets épuisés",
+  "waitlistNotifyMessage": "Vous serez notifié si un billet devient disponible pour « {eventTitle} ». Vous aurez 30 minutes pour confirmer.",
+  "@waitlistNotifyMessage": {
+    "placeholders": {
+      "eventTitle": { "type": "String" }
+    }
+  },
+  "waitlistJoinMessage": "Rejoignez la liste d'attente pour être notifié si un billet devient disponible.",
+  "joinWaitlist": "Rejoindre la liste d'attente",
+  "ticketValidated": "Billet validé !",
+  "alreadyScanned": "Déjà scanné",
+  "alreadyScannedAt": "Déjà scanné à {time}",
+  "@alreadyScannedAt": {
+    "placeholders": {
+      "time": { "type": "String" }
+    }
+  },
+  "invalidTicket": "Billet invalide",
+  "ticketValidatedSuccess": "Ce billet a été scanné avec succès.",
+  "alreadyUsed": "Ce billet a déjà été utilisé.",
+  "ticketCouldNotBeValidated": "Ce billet n'a pas pu être validé.",
+  "backToEvents": "Retour aux événements",
+  "filterByStatus": "Filtrer par statut",
+  "searchEventHint": "Rechercher un événement...",
+  "online": "En ligne",
+  "inactive": "Inactif",
+  "ticketsSoldCount": "{sold} / {total}",
+  "@ticketsSoldCount": {
+    "placeholders": {
+      "sold": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "ticketsSold": "Billets vendus",
+  "createEvent": "Créer un événement",
+  "errorPrefix": "Erreur",
+  "back": "Retour",
+  "allLabel": "Tous",
+  "fromPrice": "Dès {price} $",
+  "@fromPrice": {
+    "placeholders": {
+      "price": { "type": "String" }
+    }
+  },
+  "freeLabel": "Gratuit",
+  "changeLabel": "Changer",
+  "tapToUploadCover": "Appuyez pour ajouter une couverture",
+  "recommendedSize": "Recommandé : 1200 x 630px",
+  "eventTitleLabel": "Titre de l'événement",
+  "eventTitleHint": "ex. Atelier Jazz d'été",
+  "descriptionLabel": "Description",
+  "eventDescriptionHint": "Décrivez le programme, ce que les participants apprendront, etc.",
+  "startTimeLabel": "Heure de début",
+  "venueNameLabel": "Nom du lieu",
+  "venueNameHint": "ex. Centre de congrès",
+  "addressLabel": "Adresse",
+  "searchLocationHint": "Rechercher un lieu",
+  "addLabel": "Ajouter",
+  "noTicketTypesYet": "Aucun type de billet",
+  "tapToAddFirstTicket": "Appuyez pour ajouter votre premier billet",
+  "ticketTierIndex": "Billet niveau {index}",
+  "@ticketTierIndex": {
+    "placeholders": {
+      "index": { "type": "int" }
+    }
+  },
+  "ticketNameLabel": "NOM DU BILLET",
+  "ticketNameHint": "ex. Entrée générale",
+  "priceLabel": "PRIX",
+  "quantityLabel": "QUANTITÉ",
+  "publishEventLabel": "Publier l'événement",
+  "soldLabel": "Vendus",
+  "scannedLabel": "Scannés",
+  "remainingLabel": "Restants",
+  "revenueLabel": "Revenus",
+  "spotsRemaining": "{count} places restantes",
+  "@spotsRemaining": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "publishedLabel": "Publié",
+  "draftLabel": "Brouillon",
+  "editAction": "Modifier",
+  "pageAction": "Page",
+  "salesAction": "Ventes",
+  "allEventsFilter": "Tous",
+  "publishedEventsFilter": "Publiés",
+  "draftsEventsFilter": "Brouillons",
+  "pastEventsFilter": "Passés",
+  "noEventsCreated": "Aucun événement créé",
+  "noEventsWithFilter": "Aucun événement {filter}",
+  "@noEventsWithFilter": {
+    "placeholders": {
+      "filter": { "type": "String" }
+    }
+  },
+  "createFirstEventHint": "Créez votre premier événement\npour commencer à vendre des billets.",
+  "notSignedIn": "Non connecté",
+  "noEvents": "Aucun événement",
+  "myEventsLabel": "Mes événements",
+  "scanTicketTitle": "Scanner un billet",
+  "openingCamera": "Ouverture de la caméra...",
+  "chooseEventScanHint": "Choisis l\u2019événement concerné, puis scanne les QR des billets avec la caméra.",
+  "dateToConfirm": "Date à confirmer",
+  "myTicketsTitle": "Mes billets",
+  "upcomingCount": "À venir ({count})",
+  "@upcomingCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "pastCount": "Passés ({count})",
+  "@pastCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "noUpcomingTickets": "Aucun billet à venir",
+  "upcomingTicketsHint": "Vos événements à venir apparaîtront ici.",
+  "noPastTickets": "Aucun billet passé",
+  "pastTicketsHint": "Vos événements passés apparaîtront ici.",
+  "statusUsed": "Utilisé",
+  "statusValid": "Valide",
+  "statusRefunded": "Remboursé",
+  "statusCancelled": "Annulé",
+  "scannedProgress": "{scanned} / {total} scannés",
+  "@scannedProgress": {
+    "placeholders": {
+      "scanned": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "invalidQrCode": "Ce QR code n'est pas un billet Spotbook valide."
 }

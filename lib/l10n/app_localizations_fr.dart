@@ -996,6 +996,8 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get publishAService => 'Publier un service';
   @override
+  String get publishEventLabel => 'Publier l\'événement';
+  @override
   String videoSelectedDuration(String duration) => 'Vidéo sélectionnée (${duration}s)';
   @override
   String get tapToChange => 'Appuyez pour changer';
@@ -1764,4 +1766,128 @@ class AppLocalizationsFr extends AppLocalizations {
   String get friday => 'Vendredi';
   @override
   String get saturday => 'Samedi';
+
+  // ── Missing keys added ──
+  @override
+  String get addLabel => 'Ajouter';
+  @override
+  String get allEventsFilter => 'Tous';
+  @override
+  String get allLabel => 'Tout';
+  @override
+  String get changeLabel => 'Modifier';
+  @override
+  String get chooseEventScanHint => 'Sélectionnez un événement à scanner';
+  @override
+  String get createFirstEventHint => 'Créez votre premier événement';
+  @override
+  String get descriptionLabel => 'Description';
+  @override
+  String get draftLabel => 'Brouillon';
+  @override
+  String get draftsEventsFilter => 'Brouillons';
+  @override
+  String get editAction => 'Modifier';
+  @override
+  String get eventDescriptionHint => 'Décrivez votre événement...';
+  @override
+  String get eventTitleHint => 'Nom de l\'événement';
+  @override
+  String get eventTitleLabel => 'Titre de l\'événement';
+  @override
+  String get freeLabel => 'Gratuit';
+  @override
+  String get invalidQrCode => 'Code QR invalide';
+  @override
+  String get myTicketsTitle => 'Mes billets';
+  @override
+  String get noEvents => 'Aucun événement';
+  @override
+  String get noEventsCreated => 'Aucun événement créé';
+  @override
+  String get noPastTickets => 'Aucun billet passé';
+  @override
+  String get noTicketTypesYet => 'Aucun type de billet ajouté';
+  @override
+  String get noUpcomingTickets => 'Aucun billet à venir';
+  @override
+  String get notSignedIn => 'Non connecté';
+  @override
+  String get openingCamera => 'Ouverture de la caméra...';
+  @override
+  String get pageAction => 'Page';
+  @override
+  String get pastEventsFilter => 'Passés';
+  @override
+  String get pastTicketsHint => 'Vos billets passés apparaîtront ici';
+  @override
+  String get priceLabel => 'Prix';
+  @override
+  String get publishedEventsFilter => 'Publiés';
+  @override
+  String get publishedLabel => 'Publié';
+  @override
+  String get quantityLabel => 'Quantité';
+  @override
+  String get recommendedSize => 'Taille recommandée';
+  @override
+  String get remainingLabel => 'Restant';
+  @override
+  String get revenueLabel => 'Revenus';
+  @override
+  String get salesAction => 'Ventes';
+  @override
+  String get scanTicketTitle => 'Scanner les billets';
+  @override
+  String get scannedLabel => 'Scanné';
+  @override
+  String get searchLocationHint => 'Rechercher un lieu...';
+  @override
+  String get soldLabel => 'Vendu';
+  @override
+  String get startTimeLabel => 'Heure de début';
+  @override
+  String get statusCancelled => 'Annulé';
+  @override
+  String get statusRefunded => 'Remboursé';
+  @override
+  String get statusUsed => 'Utilisé';
+  @override
+  String get statusValid => 'Valide';
+  @override
+  String get tapToAddFirstTicket => 'Appuyez pour ajouter un type de billet';
+  @override
+  String get tapToUploadCover => 'Appuyez pour ajouter une image de couverture';
+  @override
+  String get ticketNameHint => 'Ex: VIP, Standard...';
+  @override
+  String get ticketNameLabel => 'Nom du billet';
+  @override
+  String get ticketsAndPricingSubtitle => 'Billets et tarification';
+  @override
+  String get upcomingTicketsHint => 'Vos billets à venir apparaîtront ici';
+  @override
+  String get addressLabel => 'Adresse';
+  @override
+  String get dateToConfirm => 'Date à confirmer';
+  @override
+  String get venueNameHint => 'Nom du lieu';
+  @override
+  String get venueNameLabel => 'Lieu';
+
+  // ── Methods ──
+  @override
+  String fromPrice(String price) => 'À partir de \$$price';
+  @override
+  String noEventsWithFilter(String filter) => 'Aucun événement $filter';
+  @override
+  String pastCount(int count) => 'Passés ($count)';
+  @override
+  String scannedProgress(int scanned, int total) => '$scanned / $total scanné(s)';
+  @override
+  String spotsRemaining(int count) => '$count place(s) restante(s)';
+  @override
+  String ticketTierIndex(int index) => 'Billet #$index';
+  @override
+  String upcomingCount(int count) => 'À venir ($count)';
 }

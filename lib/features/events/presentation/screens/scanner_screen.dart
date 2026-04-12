@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../data/event_repository.dart';
 
@@ -154,6 +155,7 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     final state = ref.watch(_scannerProvider);
     final result = state.lastResult;
 
@@ -164,15 +166,15 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> {
     if (result != null) {
       if (result.valid) {
         overlayColor = AppColors.success.withValues(alpha: 0.3);
-        overlayText = 'Ticket validated!';
+        overlayText = l.ticketValidated;
         overlayIcon = Icons.check_circle;
       } else if (result.reason == 'already_used') {
         overlayColor = AppColors.warning.withValues(alpha: 0.3);
-        overlayText = 'Already scanned${result.scannedAt != null ? ' at ${result.scannedAt}' : ''}';
+        overlayText = result.scannedAt != null ? l.alreadyScannedAt(result.scannedAt!) : l.alreadyScanned;
         overlayIcon = Icons.warning_amber;
       } else {
         overlayColor = AppColors.error.withValues(alpha: 0.3);
-        overlayText = 'Invalid ticket';
+        overlayText = l.invalidTicket;
         overlayIcon = Icons.cancel;
       }
     }
@@ -184,7 +186,7 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> {
         elevation: 0,
         surfaceTintColor: Colors.transparent,
         leading: Semantics(
-          label: 'Back',
+          label: l.a11yBack,
           child: IconButton(
             icon: Container(
               padding: const EdgeInsets.all(8),
@@ -201,7 +203,7 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> {
             },
           ),
         ),
-        title: Text('Scanner QR',
+        title: Text(l.scannerQr,
             style: GoogleFonts.sora(color: AppColors.blanc, fontWeight: FontWeight.bold)),
         centerTitle: true,
       ),
@@ -218,7 +220,7 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> {
                 Icon(Icons.confirmation_number, color: AppColors.blanc, size: 18),
                 const SizedBox(width: 8),
                 Text(
-                  '${state.scannedCount} / ${state.totalSold} scanned',
+                  l.scannedProgress(state.scannedCount, state.totalSold),
                   style: GoogleFonts.dmSans(color: AppColors.blanc, fontSize: 16, fontWeight: FontWeight.w600),
                 ),
               ],

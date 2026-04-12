@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/widgets/spotbook_app_bar.dart';
 import '../../../../shared/widgets/spotbook_avatar.dart';
@@ -120,11 +121,12 @@ class _ProviderAttendeesListScreenState
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     final dataAsync = ref.watch(_attendeesProvider(widget.eventId));
 
     return Scaffold(
       backgroundColor: AppColors.fond,
-      appBar: const SpotbookAppBar(title: 'Participants'),
+      appBar: SpotbookAppBar(title: l.participants),
       body: dataAsync.when(
         loading: () => Center(
             child: CircularProgressIndicator(color: AppColors.violet)),
@@ -164,7 +166,7 @@ class _ProviderAttendeesListScreenState
                       ),
                     ),
                     const SizedBox(height: 4),
-                    Text('participants',
+                    Text(l.participants,
                         style: GoogleFonts.dmSans(
                             color: AppColors.gris, fontSize: 14)),
                     const SizedBox(height: 12),
@@ -172,13 +174,13 @@ class _ProviderAttendeesListScreenState
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         _StatItem(
-                            label: 'Vendus',
+                            label: l.soldLabel,
                             value: '${data.totalSold}'),
                         _StatItem(
-                            label: 'Scannés',
+                            label: l.scannedLabel,
                             value: '${data.totalScanned}'),
                         _StatItem(
-                            label: 'Restants',
+                            label: l.remainingLabel,
                             value:
                                 '${data.totalCapacity - data.totalSold}'),
                       ],
@@ -195,7 +197,7 @@ class _ProviderAttendeesListScreenState
                   style: GoogleFonts.dmSans(
                       color: AppColors.blanc, fontSize: 14),
                   decoration: InputDecoration(
-                    hintText: 'Rechercher un participant...',
+                    hintText: l.searchParticipantHint,
                     hintStyle: GoogleFonts.dmSans(
                         color: AppColors.gris.withAlpha(128)),
                     prefixIcon: Icon(Icons.search,
@@ -214,7 +216,7 @@ class _ProviderAttendeesListScreenState
               Expanded(
                 child: filtered.isEmpty
                     ? Center(
-                        child: Text('No attendees',
+                        child: Text(l.noAttendees,
                             style: GoogleFonts.dmSans(
                                 color: AppColors.gris, fontSize: 15)),
                       )

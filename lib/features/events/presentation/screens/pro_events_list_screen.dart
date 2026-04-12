@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/widgets/spotbook_card.dart';
 import '../../data/event_notifier.dart';
@@ -30,8 +31,16 @@ class _ProEventsListScreenState extends ConsumerState<ProEventsListScreen> {
     super.dispose();
   }
 
+  String _filterLabel(_Filter f, AppLocalizations l) => switch (f) {
+        _Filter.all => l.allEventsFilter,
+        _Filter.published => l.publishedEventsFilter,
+        _Filter.draft => l.draftsEventsFilter,
+        _Filter.past => l.pastEventsFilter,
+      };
+
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     final async = ref.watch(proEventsProvider);
 
     return Scaffold(
@@ -51,7 +60,7 @@ class _ProEventsListScreenState extends ConsumerState<ProEventsListScreen> {
                 children: [
                   Expanded(
                     child: Text(
-                      'Mes événements',
+                      l.myEventsLabel,
                       style: GoogleFonts.sora(
                         color: AppColors.blanc,
                         fontSize: 26,
@@ -75,14 +84,14 @@ class _ProEventsListScreenState extends ConsumerState<ProEventsListScreen> {
                               const SizedBox(height: 12),
                               Container(width: 40, height: 4, decoration: BoxDecoration(color: AppColors.gris, borderRadius: BorderRadius.circular(2))),
                               const SizedBox(height: 16),
-                              Text('Filtrer par statut', style: GoogleFonts.sora(color: AppColors.blanc, fontSize: 16, fontWeight: FontWeight.w600)),
+                              Text(l.filterByStatus, style: GoogleFonts.sora(color: AppColors.blanc, fontSize: 16, fontWeight: FontWeight.w600)),
                               const SizedBox(height: 12),
                               ..._Filter.values.map((f) => ListTile(
                                 leading: Icon(
                                   _filter == f ? Icons.radio_button_checked : Icons.radio_button_off,
                                   color: _filter == f ? AppColors.violet : AppColors.gris,
                                 ),
-                                title: Text(f.label, style: GoogleFonts.dmSans(color: AppColors.blanc)),
+                                title: Text(_filterLabel(f, l), style: GoogleFonts.dmSans(color: AppColors.blanc)),
                                 onTap: () {
                                   setState(() => _filter = f);
                                   Navigator.pop(context);
@@ -123,7 +132,7 @@ class _ProEventsListScreenState extends ConsumerState<ProEventsListScreen> {
                               controller: _searchCtrl,
                               style: GoogleFonts.dmSans(color: AppColors.blanc, fontSize: 14),
                               decoration: InputDecoration(
-                                hintText: 'Rechercher un événement...',
+                                hintText: l.searchEventHint,
                                 hintStyle: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 14),
                                 border: InputBorder.none,
                                 isDense: true,
@@ -146,7 +155,7 @@ class _ProEventsListScreenState extends ConsumerState<ProEventsListScreen> {
                           .map((f) => Padding(
                                 padding: const EdgeInsets.only(right: 8),
                                 child: _FilterChip(
-                                  label: f.label,
+                                  label: _filterLabel(f, l),
                                   selected: _filter == f,
                                   onTap: () => setState(() => _filter = f),
                                 ),
@@ -211,7 +220,7 @@ class _EventCard extends StatelessWidget {
   const _EventCard({required this.event});
   final EventModel event;
 
-  String _statusLabel() => event.isActive ? 'Publié' : 'Brouillon';
+  String _statusLabel(AppLocalizations l) => event.isActive ? l.publishedLabel : l.draftLabel;
 
   Color _statusColor() =>
       event.isActive ? AppColors.success : AppColors.gris;
@@ -228,6 +237,7 @@ class _EventCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     final sold = _ticketsSold();
     final cap = _totalCapacity();
 
@@ -258,7 +268,7 @@ class _EventCard extends StatelessWidget {
                   top: 12,
                   left: 12,
                   child: _StatusBadge(
-                    label: _statusLabel(),
+                    label: _statusLabel(l),
                     color: _statusColor(),
                     live: false,
                   ),
@@ -274,7 +284,7 @@ class _EventCard extends StatelessWidget {
                   Row(
                     children: [
                       _StatusBadge(
-                        label: _statusLabel(),
+                        label: _statusLabel(l),
                         color: _statusColor(),
                         live: false,
                       ),
@@ -307,19 +317,19 @@ class _EventCard extends StatelessWidget {
                   children: [
                     _ActionBtn(
                       icon: Icons.edit_outlined,
-                      label: 'Modifier',
+                      label: l.editAction,
                       onTap: () => context.push('/event/${event.id}'),
                     ),
                     const SizedBox(width: 8),
                     _ActionBtn(
                       icon: Icons.visibility_outlined,
-                      label: 'Page',
+                      label: l.pageAction,
                       onTap: () => context.go('/event/${event.id}'),
                     ),
                     const SizedBox(width: 8),
                     _ActionBtn(
                       icon: Icons.bar_chart_outlined,
-                      label: 'Ventes',
+                      label: l.salesAction,
                       onTap: () => context.push('/event/${event.id}'),
                     ),
                   ],
@@ -353,6 +363,7 @@ class _StatsRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     final pct = (totalTickets != null && totalTickets! > 0)
         ? (ticketsSold ?? 0) / totalTickets!
         : 0.0;
@@ -380,7 +391,7 @@ class _StatsRow extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    'Billets vendus',
+                    l.ticketsSold,
                     style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 10),
                   ),
                   const SizedBox(height: 4),
@@ -413,7 +424,7 @@ class _StatsRow extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  'Revenus',
+                  l.revenueLabel,
                   style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 10),
                 ),
               ],
@@ -515,8 +526,17 @@ class _EmptyState extends StatelessWidget {
   const _EmptyState({required this.filter});
   final _Filter filter;
 
+  String _filterLabel(_Filter f, AppLocalizations l) => switch (f) {
+        _Filter.all => l.allEventsFilter,
+        _Filter.published => l.publishedEventsFilter,
+        _Filter.draft => l.draftsEventsFilter,
+        _Filter.past => l.pastEventsFilter,
+      };
+
   @override
-  Widget build(BuildContext context) => Center(
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
+    return Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -528,8 +548,8 @@ class _EmptyState extends StatelessWidget {
             const SizedBox(height: 16),
             Text(
               filter == _Filter.all
-                  ? 'Aucun événement créé'
-                  : 'Aucun événement ${filter.label.toLowerCase()}',
+                  ? l.noEventsCreated
+                  : l.noEventsWithFilter(_filterLabel(filter, l).toLowerCase()),
               style: GoogleFonts.sora(
                 color: AppColors.blanc,
                 fontSize: 16,
@@ -538,7 +558,7 @@ class _EmptyState extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              'Créez votre premier événement\npour commencer à vendre des billets.',
+              l.createFirstEventHint,
               textAlign: TextAlign.center,
               style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 13),
             ),
@@ -546,27 +566,19 @@ class _EmptyState extends StatelessWidget {
             TextButton(
               onPressed: () => context.go('/create-event'),
               child: Text(
-                'Créer un événement',
+                l.createEvent,
                 style: GoogleFonts.dmSans(color: AppColors.blanc, fontSize: 14),
               ),
             ),
           ],
         ),
       );
+  }
 }
 
 // ─── Filter enum ──────────────────────────────────────────────────────────────
 
 enum _Filter { all, published, draft, past }
-
-extension on _Filter {
-  String get label => switch (this) {
-        _Filter.all => 'Tous',
-        _Filter.published => 'Publiés',
-        _Filter.draft => 'Brouillons',
-        _Filter.past => 'Passés',
-      };
-}
 
 // ─── Filter chip ──────────────────────────────────────────────────────────────
 

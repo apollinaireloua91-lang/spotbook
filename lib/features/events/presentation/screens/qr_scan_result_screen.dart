@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
 import 'scanner_screen.dart';
 
@@ -20,6 +21,7 @@ class QrScanResultScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     Color bgColor;
     Color iconColor;
     IconData icon;
@@ -30,24 +32,24 @@ class QrScanResultScreen extends StatelessWidget {
       bgColor = AppColors.success;
       iconColor = AppColors.success;
       icon = Icons.check_circle;
-      title = 'Billet validé !';
-      subtitle = 'Ce billet a été scanné avec succès.';
+      title = l.ticketValidated;
+      subtitle = l.ticketValidatedSuccess;
     } else if (result.reason == 'already_used') {
       bgColor = AppColors.warning;
       iconColor = AppColors.warning;
       icon = Icons.warning_amber_rounded;
-      title = 'Déjà scanné';
+      title = l.alreadyScanned;
       subtitle = result.scannedAt != null
-          ? 'Ce billet a déjà été scanné à ${result.scannedAt}.'
-          : 'Ce billet a déjà été utilisé.';
+          ? l.alreadyScannedAt(result.scannedAt!)
+          : l.alreadyUsed;
     } else {
       bgColor = AppColors.error;
       iconColor = AppColors.error;
       icon = Icons.cancel;
-      title = 'Billet invalide';
+      title = l.invalidTicket;
       subtitle = result.reason == 'invalid_format'
-          ? 'Le QR code n\'est pas un billet Spotbook valide.'
-          : 'Ce billet n\'a pas pu être validé.';
+          ? l.invalidQrCode
+          : l.ticketCouldNotBeValidated;
     }
 
     return Scaffold(
@@ -119,7 +121,7 @@ class QrScanResultScreen extends StatelessWidget {
                     context.pop();
                   },
                   icon: const Icon(Icons.qr_code_scanner, size: 20),
-                  label: Text('Scan another ticket',
+                  label: Text(l.scanAnotherTicket,
                       style: GoogleFonts.dmSans(
                           fontWeight: FontWeight.bold, fontSize: 16)),
                   style: ElevatedButton.styleFrom(
@@ -141,7 +143,7 @@ class QrScanResultScreen extends StatelessWidget {
                     context.go('/pro/events');
                   },
                   child: Text(
-                    'Retour aux événements',
+                    l.backToEvents,
                     style: GoogleFonts.dmSans(
                         color: AppColors.gris,
                         fontSize: 14,

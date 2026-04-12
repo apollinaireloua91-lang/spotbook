@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../data/event_notifier.dart';
 import '../../domain/event_models.dart';
@@ -37,6 +38,7 @@ class _MyTicketsScreenState extends ConsumerState<MyTicketsScreen>
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     final state = ref.watch(userTicketsProvider);
     final now = DateTime.now();
 
@@ -63,7 +65,7 @@ class _MyTicketsScreenState extends ConsumerState<MyTicketsScreen>
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         leading: Semantics(
-          label: 'Back',
+          label: l.a11yBack,
           child: IconButton(
             icon: Container(
               padding: const EdgeInsets.all(8),
@@ -82,7 +84,7 @@ class _MyTicketsScreenState extends ConsumerState<MyTicketsScreen>
           ),
         ),
         title: Text(
-          'My Tickets',
+          l.myTicketsTitle,
           style: GoogleFonts.sora(
             color: AppColors.blanc,
             fontWeight: FontWeight.w700,
@@ -119,8 +121,8 @@ class _MyTicketsScreenState extends ConsumerState<MyTicketsScreen>
                 fontSize: 13,
               ),
               tabs: [
-                Tab(text: 'Upcoming (${upcoming.length})'),
-                Tab(text: 'Past (${past.length})'),
+                Tab(text: l.upcomingCount(upcoming.length)),
+                Tab(text: l.pastCount(past.length)),
               ],
             ),
           ),
@@ -135,16 +137,16 @@ class _MyTicketsScreenState extends ConsumerState<MyTicketsScreen>
                 _TicketList(
                   tickets: upcoming,
                   emptyIcon: Icons.confirmation_number_outlined,
-                  emptyLabel: 'No upcoming tickets',
-                  emptySubLabel: 'Your upcoming events will appear here.',
+                  emptyLabel: l.noUpcomingTickets,
+                  emptySubLabel: l.upcomingTicketsHint,
                   onRefresh: () =>
                       ref.read(userTicketsProvider.notifier).refresh(),
                 ),
                 _TicketList(
                   tickets: past,
                   emptyIcon: Icons.history,
-                  emptyLabel: 'No past tickets',
-                  emptySubLabel: 'Your past events will appear here.',
+                  emptyLabel: l.noPastTickets,
+                  emptySubLabel: l.pastTicketsHint,
                   onRefresh: () =>
                       ref.read(userTicketsProvider.notifier).refresh(),
                 ),
@@ -239,16 +241,17 @@ class _TicketCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     final dateFmt = ticket.eventDate != null
         ? DateFormat('EEE, MMM d · HH:mm').format(ticket.eventDate!)
         : null;
 
     final (statusColor, statusLabel) = switch (ticket.status) {
-      'used' => (AppColors.gris, 'Used'),
-      'valid' => (AppColors.success, 'Valid'),
-      'refunded' => (AppColors.warning, 'Refunded'),
-      'cancelled' => (AppColors.error, 'Annulé'),
-      _ => (AppColors.success, 'Valid'),
+      'used' => (AppColors.gris, l.statusUsed),
+      'valid' => (AppColors.success, l.statusValid),
+      'refunded' => (AppColors.warning, l.statusRefunded),
+      'cancelled' => (AppColors.error, l.statusCancelled),
+      _ => (AppColors.success, l.statusValid),
     };
 
     return GestureDetector(
@@ -289,7 +292,7 @@ class _TicketCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      ticket.eventTitle ?? 'Event',
+                      ticket.eventTitle ?? l.eventLabel,
                       style: GoogleFonts.dmSans(
                         color: AppColors.blanc,
                         fontWeight: FontWeight.w600,

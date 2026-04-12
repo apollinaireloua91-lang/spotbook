@@ -8,6 +8,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../data/event_notifier.dart';
 import '../../data/event_repository.dart';
@@ -201,9 +202,10 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
     final location = _locationCtrl.text.trim();
 
     if (title.isEmpty || location.isEmpty) {
+      final l = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('Title and location are required'),
+          content: Text(l.titleAndLocationRequired),
           backgroundColor: AppColors.error,
         ),
       );
@@ -245,6 +247,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     final s = ref.watch(_createProvider);
     final bottomPad = MediaQuery.paddingOf(context).bottom;
 
@@ -259,7 +262,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
             surfaceTintColor: Colors.transparent,
             elevation: 0,
             leading: Semantics(
-              label: 'Back',
+              label: l.a11yBack,
               child: IconButton(
                 icon: Container(
                   padding: const EdgeInsets.all(8),
@@ -278,7 +281,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
               ),
             ),
             title: Text(
-              'Create Event',
+              l.createEvent,
               style: GoogleFonts.sora(
                 color: AppColors.blanc,
                 fontWeight: FontWeight.w700,
@@ -290,7 +293,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
               TextButton(
                 onPressed: () => context.pop(),
                 child: Text(
-                  'Annuler',
+                  l.cancel,
                   style: GoogleFonts.dmSans(
                     color: AppColors.gris,
                     fontSize: 14,
@@ -308,8 +311,8 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                 // SECTION 1 — Cover Image
                 // ════════════════════════════════════════════════════════
                 _SectionHeader(
-                  title: 'Cover Image',
-                  subtitle: 'This is the first thing attendees will see',
+                  title: l.coverImage,
+                  subtitle: l.coverImageSubtitle,
                 ),
                 const SizedBox(height: 14),
                 _CoverImagePicker(
@@ -322,22 +325,22 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                 // SECTION 2 — Event Details
                 // ════════════════════════════════════════════════════════
                 _SectionHeader(
-                  title: 'Event Details',
-                  subtitle: 'Name your event and tell people what it\'s about',
+                  title: l.eventDetails,
+                  subtitle: l.eventDetailsSubtitle,
                 ),
                 const SizedBox(height: 14),
                 _PremiumField(
                   controller: _titleCtrl,
-                  label: 'Event Title',
-                  hint: 'e.g. Summer Jazz Workshop',
+                  label: l.eventTitleLabel,
+                  hint: l.eventTitleHint,
                   icon: Icons.celebration_outlined,
                   isRequired: true,
                 ),
                 const SizedBox(height: 12),
                 _PremiumField(
                   controller: _descCtrl,
-                  label: 'Description',
-                  hint: 'Describe the agenda, what attendees will learn, etc.',
+                  label: l.descriptionLabel,
+                  hint: l.eventDescriptionHint,
                   icon: Icons.notes_outlined,
                   maxLines: 4,
                 ),
@@ -347,8 +350,8 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                 // SECTION 3 — Date & Time
                 // ════════════════════════════════════════════════════════
                 _SectionHeader(
-                  title: 'When?',
-                  subtitle: 'Set the date and start time',
+                  title: l.whenQuestion,
+                  subtitle: l.whenSubtitle,
                 ),
                 const SizedBox(height: 14),
                 Row(
@@ -368,7 +371,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                       child: _DateTimeTile(
                         icon: Icons.access_time_outlined,
                         label: _formatTime(_selectedTime),
-                        sublabel: 'Start time',
+                        sublabel: l.startTimeLabel,
                         onTap: _pickTime,
                       ),
                     ),
@@ -380,22 +383,22 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                 // SECTION 4 — Location
                 // ════════════════════════════════════════════════════════
                 _SectionHeader(
-                  title: 'Where?',
-                  subtitle: 'Let guests know the location and time details',
+                  title: l.whereQuestion,
+                  subtitle: l.whereSubtitle,
                 ),
                 const SizedBox(height: 14),
                 _PremiumField(
                   controller: _locationCtrl,
-                  label: 'Venue Name',
-                  hint: 'e.g. Grand Convention Center',
+                  label: l.venueNameLabel,
+                  hint: l.venueNameHint,
                   icon: Icons.location_on_outlined,
                   isRequired: true,
                 ),
                 const SizedBox(height: 12),
                 _PremiumField(
                   controller: _addressCtrl,
-                  label: 'Address',
-                  hint: 'Rechercher un lieu',
+                  label: l.addressLabel,
+                  hint: l.searchLocationHint,
                   icon: Icons.pin_drop_outlined,
                 ),
                 const SizedBox(height: 32),
@@ -404,9 +407,9 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                 // SECTION 5 — Tickets
                 // ════════════════════════════════════════════════════════
                 _SectionHeader(
-                  title: 'Tickets & Pricing',
+                  title: l.ticketsAndPricing,
                   subtitle:
-                      'Define your ticket types, pricing, and availability',
+                      l.ticketsAndPricingSubtitle,
                   trailing: s.ticketTypes.length < 5
                       ? GestureDetector(
                           onTap: () {
@@ -431,7 +434,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                                     color: AppColors.violet, size: 16),
                                 const SizedBox(width: 4),
                                 Text(
-                                  'Add',
+                                  l.addLabel,
                                   style: GoogleFonts.dmSans(
                                     color: AppColors.violet,
                                     fontSize: 13,
@@ -553,6 +556,7 @@ class _CoverImagePicker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     return GestureDetector(
       onTap: onTap,
       child: AnimatedContainer(
@@ -621,7 +625,7 @@ class _CoverImagePicker extends StatelessWidget {
                           Icon(Icons.edit, size: 14, color: AppColors.blanc),
                           const SizedBox(width: 4),
                           Text(
-                            'Change',
+                            l.changeLabel,
                             style: GoogleFonts.dmSans(
                               color: AppColors.blanc,
                               fontSize: 12,
@@ -648,7 +652,7 @@ class _CoverImagePicker extends StatelessWidget {
                   ),
                   const SizedBox(height: 12),
                   Text(
-                    'Tap to upload cover',
+                    l.tapToUploadCover,
                     style: GoogleFonts.dmSans(
                       color: AppColors.blanc,
                       fontSize: 14,
@@ -657,7 +661,7 @@ class _CoverImagePicker extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    'Recommended: 1200 x 630px',
+                    l.recommendedSize,
                     style: GoogleFonts.dmSans(
                       color: AppColors.gris,
                       fontSize: 12,
@@ -841,6 +845,7 @@ class _EmptyTicketsPlaceholder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     return GestureDetector(
       onTap: onAdd,
       child: Container(
@@ -866,7 +871,7 @@ class _EmptyTicketsPlaceholder extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             Text(
-              'No ticket types yet',
+              l.noTicketTypesYet,
               style: GoogleFonts.dmSans(
                 color: AppColors.blanc,
                 fontSize: 15,
@@ -875,7 +880,7 @@ class _EmptyTicketsPlaceholder extends StatelessWidget {
             ),
             const SizedBox(height: 4),
             Text(
-              'Tap to add your first ticket tier',
+              l.tapToAddFirstTicket,
               style: GoogleFonts.dmSans(
                 color: AppColors.gris,
                 fontSize: 13,
@@ -905,6 +910,7 @@ class _TicketTypeCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -930,7 +936,7 @@ class _TicketTypeCard extends StatelessWidget {
               const SizedBox(width: 10),
               Expanded(
                 child: Text(
-                  'Ticket Tier ${index + 1}',
+                  l.ticketTierIndex(index + 1),
                   style: GoogleFonts.sora(
                     color: AppColors.blanc,
                     fontSize: 14,
@@ -962,8 +968,8 @@ class _TicketTypeCard extends StatelessWidget {
 
           // Ticket name
           _MiniField(
-            label: 'TICKET NAME',
-            hint: 'e.g. General Admission',
+            label: l.ticketNameLabel,
+            hint: l.ticketNameHint,
             onChanged: (v) => onUpdate(v, null, null),
           ),
           const SizedBox(height: 12),
@@ -973,7 +979,7 @@ class _TicketTypeCard extends StatelessWidget {
             children: [
               Expanded(
                 child: _MiniField(
-                  label: 'PRICE',
+                  label: l.priceLabel,
                   hint: '\$ 0.00',
                   keyboardType: TextInputType.number,
                   onChanged: (v) => onUpdate(null, double.tryParse(v), null),
@@ -982,7 +988,7 @@ class _TicketTypeCard extends StatelessWidget {
               const SizedBox(width: 12),
               Expanded(
                 child: _MiniField(
-                  label: 'QUANTITY',
+                  label: l.quantityLabel,
                   hint: '0',
                   keyboardType: TextInputType.number,
                   onChanged: (v) => onUpdate(null, null, int.tryParse(v)),
@@ -1070,6 +1076,7 @@ class _PublishButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     return GestureDetector(
       onTap: isCreating ? null : () {
         HapticFeedback.mediumImpact();
@@ -1107,7 +1114,7 @@ class _PublishButton extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      'Publish Event',
+                      l.publishEventLabel,
                       style: GoogleFonts.sora(
                         color: AppColors.textOnPrimary,
                         fontSize: 16,

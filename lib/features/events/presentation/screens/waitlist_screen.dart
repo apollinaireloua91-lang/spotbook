@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../data/event_repository.dart';
 
@@ -49,6 +50,7 @@ class WaitlistScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l = AppLocalizations.of(context)!;
     final state = ref.watch(_waitlistProvider);
 
     return Scaffold(
@@ -58,7 +60,7 @@ class WaitlistScreen extends ConsumerWidget {
         elevation: 0,
         surfaceTintColor: Colors.transparent,
         leading: Semantics(
-          label: 'Back',
+          label: l.a11yBack,
           child: IconButton(
             icon: Container(
               padding: const EdgeInsets.all(8),
@@ -75,7 +77,7 @@ class WaitlistScreen extends ConsumerWidget {
             },
           ),
         ),
-        title: Text('Liste d\'attente',
+        title: Text(l.waitlistTitle,
             style: GoogleFonts.sora(color: AppColors.blanc, fontWeight: FontWeight.bold)),
         centerTitle: true,
       ),
@@ -91,15 +93,15 @@ class WaitlistScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 24),
             Text(
-              state.joined ? 'You are registered!' : 'Tickets sold out',
+              state.joined ? l.youAreRegistered : l.ticketsSoldOut,
               style: GoogleFonts.sora(color: AppColors.blanc, fontSize: 22, fontWeight: FontWeight.bold),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 12),
             Text(
               state.joined
-                  ? 'You will be notified if a ticket becomes available for "$eventTitle". You will have 30 minutes to confirm.'
-                  : 'Join the waitlist to get notified if a ticket becomes available.',
+                  ? l.waitlistNotifyMessage(eventTitle)
+                  : l.waitlistJoinMessage,
               style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 15, height: 1.5),
               textAlign: TextAlign.center,
             ),
@@ -127,7 +129,7 @@ class WaitlistScreen extends ConsumerWidget {
                   ),
                   child: state.isJoining
                       ? SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: AppColors.gris, strokeWidth: 2))
-                      : Text('Join the waitlist',
+                      : Text(l.joinWaitlist,
                           style: GoogleFonts.dmSans(fontWeight: FontWeight.bold, fontSize: 16)),
                 ),
               ),
@@ -144,7 +146,7 @@ class WaitlistScreen extends ConsumerWidget {
                     side: BorderSide(color: AppColors.border),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
-                  child: Text('Retour',
+                  child: Text(l.back,
                       style: GoogleFonts.dmSans(color: AppColors.blanc, fontWeight: FontWeight.w600, fontSize: 16)),
                 ),
               ),

@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/widgets/spotbook_app_bar.dart';
 import '../../data/event_notifier.dart';
@@ -78,12 +79,13 @@ class _ClientEventsDiscoveryScreenState
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     final eventsState = ref.watch(eventsProvider);
 
     return Scaffold(
       backgroundColor: AppColors.fond,
-      appBar: const SpotbookAppBar(
-        title: 'Events',
+      appBar: SpotbookAppBar(
+        title: l.eventsTitle,
         showBack: true,
       ),
       body: Column(
@@ -96,28 +98,28 @@ class _ClientEventsDiscoveryScreenState
               padding: const EdgeInsets.symmetric(horizontal: 16),
               children: [
                 _FilterChip(
-                  label: 'All',
+                  label: l.allLabel,
                   selected: _dateFilter == _DateFilter.all,
                   onTap: () =>
                       setState(() => _dateFilter = _DateFilter.all),
                 ),
                 const SizedBox(width: 8),
                 _FilterChip(
-                  label: 'Ce soir',
+                  label: l.tonight,
                   selected: _dateFilter == _DateFilter.tonight,
                   onTap: () => setState(
                       () => _dateFilter = _DateFilter.tonight),
                 ),
                 const SizedBox(width: 8),
                 _FilterChip(
-                  label: 'Ce weekend',
+                  label: l.thisWeekend,
                   selected: _dateFilter == _DateFilter.weekend,
                   onTap: () => setState(
                       () => _dateFilter = _DateFilter.weekend),
                 ),
                 const SizedBox(width: 8),
                 _FilterChip(
-                  label: 'Ce mois',
+                  label: l.thisMonth,
                   selected: _dateFilter == _DateFilter.month,
                   onTap: () =>
                       setState(() => _dateFilter = _DateFilter.month),
@@ -167,7 +169,7 @@ class _ClientEventsDiscoveryScreenState
                             Icon(Icons.event_busy,
                                 color: AppColors.gris, size: 48),
                             const SizedBox(height: 12),
-                            Text('Aucun événement trouvé',
+                            Text(l.noEventsFound,
                                 style: GoogleFonts.dmSans(
                                     color: AppColors.gris,
                                     fontSize: 15)),
@@ -248,6 +250,7 @@ class _EventCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     final dateFmt = event.eventDate != null
         ? DateFormat('dd MMM yyyy · HH:mm', 'fr_FR')
             .format(event.eventDate!)
@@ -306,8 +309,8 @@ class _EventCard extends StatelessWidget {
                       ),
                       child: Text(
                         event.minPrice > 0
-                            ? 'Dès ${event.minPrice.toStringAsFixed(0)} \$'
-                            : 'Gratuit',
+                            ? l.fromPrice(event.minPrice.toStringAsFixed(0))
+                            : l.freeLabel,
                         style: GoogleFonts.dmSans(
                           color: AppColors.blanc,
                           fontWeight: FontWeight.bold,
@@ -334,7 +337,7 @@ class _EventCard extends StatelessWidget {
                             Icon(Icons.local_fire_department,
                                 color: AppColors.blanc, size: 14),
                             const SizedBox(width: 4),
-                            Text('Se vend vite',
+                            Text(l.sellingFast,
                                 style: GoogleFonts.dmSans(
                                     color: AppColors.blanc,
                                     fontWeight: FontWeight.bold,
@@ -404,7 +407,7 @@ class _EventCard extends StatelessWidget {
                         color: AppColors.error.withAlpha(30),
                         borderRadius: BorderRadius.circular(6),
                       ),
-                      child: Text('Sold out',
+                      child: Text(l.soldOut,
                           style: GoogleFonts.dmSans(
                               color: AppColors.error,
                               fontWeight: FontWeight.w600,

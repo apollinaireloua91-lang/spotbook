@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/widgets/empty_state.dart';
 import '../../../../shared/widgets/spotbook_loading_shimmer.dart';
@@ -37,6 +38,7 @@ class _ProScannerEventPickerScreenState
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     final async = ref.watch(proEventsProvider);
 
     return Scaffold(
@@ -46,7 +48,7 @@ class _ProScannerEventPickerScreenState
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         leading: Semantics(
-          label: 'Retour',
+          label: l.a11yBack,
           child: IconButton(
             icon: Container(
               padding: const EdgeInsets.all(8),
@@ -64,7 +66,7 @@ class _ProScannerEventPickerScreenState
           ),
         ),
         title: Text(
-          'Scanner un billet',
+          l.scanTicketTitle,
           style: GoogleFonts.sora(
             color: AppColors.blanc,
             fontWeight: FontWeight.w700,
@@ -105,7 +107,7 @@ class _ProScannerEventPickerScreenState
                   CircularProgressIndicator(color: AppColors.blanc),
                   const SizedBox(height: 16),
                   Text(
-                    'Ouverture de la caméra...',
+                    l.openingCamera,
                     style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 14),
                   ),
                 ],
@@ -122,7 +124,7 @@ class _ProScannerEventPickerScreenState
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 4),
                   child: Text(
-                    "Choisis l\u2019événement concerné, puis scanne les QR des billets avec la caméra.",
+                    l.chooseEventScanHint,
                     style: GoogleFonts.dmSans(
                       color: AppColors.gris.withValues(alpha: 0.95),
                       fontSize: 13,
@@ -134,7 +136,7 @@ class _ProScannerEventPickerScreenState
               final e = events[i - 1];
               final dateStr = e.eventDate != null
                   ? DateFormat('EEE d MMM · HH:mm').format(e.eventDate!.toLocal())
-                  : 'Date à confirmer';
+                  : l.dateToConfirm;
 
               return Material(
                 color: AppColors.surface,

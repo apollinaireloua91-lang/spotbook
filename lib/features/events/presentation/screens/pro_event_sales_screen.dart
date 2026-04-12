@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/widgets/spotbook_button.dart';
 import '../../data/event_repository.dart';
@@ -59,6 +60,7 @@ class ProEventSalesScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l = AppLocalizations.of(context)!;
     final async = ref.watch(_eventSalesProvider(eventId));
 
     return Scaffold(
@@ -68,7 +70,7 @@ class ProEventSalesScreen extends ConsumerWidget {
         elevation: 0,
         surfaceTintColor: Colors.transparent,
         leading: Semantics(
-          label: 'Back',
+          label: l.a11yBack,
           child: IconButton(
             icon: Container(
               padding: const EdgeInsets.all(8),
@@ -91,9 +93,9 @@ class ProEventSalesScreen extends ConsumerWidget {
                 fontSize: 17),
             overflow: TextOverflow.ellipsis,
           ),
-          loading: () => Text('Chargement...',
+          loading: () => Text(l.loadingText,
               style: GoogleFonts.dmSans(color: AppColors.gris)),
-          error: (_, __) => Text('Événement',
+          error: (_, __) => Text(l.eventLabel,
               style: GoogleFonts.sora(color: AppColors.blanc)),
         ),
         centerTitle: true,
@@ -110,7 +112,7 @@ class ProEventSalesScreen extends ConsumerWidget {
         error: (e, _) => Center(
           child: Padding(
             padding: const EdgeInsets.all(24),
-            child: Text('Erreur : $e',
+            child: Text('${l.errorPrefix} : $e',
                 style: GoogleFonts.dmSans(color: AppColors.error),
                 textAlign: TextAlign.center),
           ),
@@ -139,6 +141,7 @@ class _Body extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     final date = data.event.eventDate;
     final dateStr = date != null
         ? '${date.day.toString().padLeft(2, '0')}/'
@@ -179,7 +182,7 @@ class _Body extends StatelessWidget {
                 ),
               ),
               child: Text(
-                data.event.isActive ? 'En ligne' : 'Inactif',
+                data.event.isActive ? l.online : l.inactive,
                 style: GoogleFonts.dmSans(
                   color: data.event.isActive
                       ? AppColors.success
@@ -196,7 +199,7 @@ class _Body extends StatelessWidget {
               children: [
                 Expanded(
                   child: _StatCard(
-                    label: 'Revenus',
+                    label: l.revenueLabel,
                     value: '${data.revenue.toStringAsFixed(0)} CA\$',
                     icon: Icons.payments_outlined,
                   ),
@@ -204,7 +207,7 @@ class _Body extends StatelessWidget {
                 const SizedBox(width: 12),
                 Expanded(
                   child: _StatCard(
-                    label: 'Tickets sold',
+                    label: l.ticketsSold,
                     value: '${data.totalSold} / ${data.totalCapacity}',
                     icon: Icons.confirmation_number_outlined,
                   ),
@@ -221,7 +224,7 @@ class _Body extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('Sales progress',
+                      Text(l.salesProgress,
                           style: GoogleFonts.dmSans(
                               color: AppColors.blanc,
                               fontSize: 13,
@@ -247,7 +250,7 @@ class _Body extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    '${data.totalCapacity - data.totalSold} spots remaining',
+                    l.spotsRemaining(data.totalCapacity - data.totalSold),
                     style: GoogleFonts.dmSans(
                         color: AppColors.gris, fontSize: 12),
                   ),
@@ -264,7 +267,7 @@ class _Body extends StatelessWidget {
                       color: AppColors.gris, size: 20),
                   const SizedBox(width: 12),
                   Expanded(
-                    child: Text('Tickets scanned',
+                    child: Text(l.ticketsScanned,
                         style: GoogleFonts.dmSans(
                             color: AppColors.blanc, fontSize: 14)),
                   ),
@@ -283,7 +286,7 @@ class _Body extends StatelessWidget {
               Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  'Ticket types',
+                  l.ticketTypes,
                   style: GoogleFonts.sora(
                       color: AppColors.blanc,
                       fontSize: 15,
@@ -335,13 +338,13 @@ class _Body extends StatelessWidget {
 
             // Action buttons
             SpotbookButton.primary(
-              label: 'Scan tickets',
+              label: l.scanTickets,
               icon: Icons.qr_code_scanner,
               onPressed: () => context.push('/scanner/$eventId'),
             ),
             const SizedBox(height: 10),
             SpotbookButton.secondary(
-              label: 'Manage event',
+              label: l.manageEvent,
               icon: Icons.settings_outlined,
               onPressed: () => context.push('/pro/events'),
             ),
