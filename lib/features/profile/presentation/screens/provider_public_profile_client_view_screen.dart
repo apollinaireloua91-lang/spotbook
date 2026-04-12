@@ -21,6 +21,20 @@ import '../widgets/share_profile_modal.dart';
 import '../widgets/social_badge_widget.dart';
 import '../widgets/traiteur_soumission_sheet.dart';
 
+String _socialLabel(String platform) {
+  return switch (platform.toLowerCase()) {
+    'instagram' => 'Instagram',
+    'tiktok' => 'TikTok',
+    'youtube' => 'YouTube',
+    'twitter' || 'x' => 'X',
+    'snapchat' => 'Snapchat',
+    'facebook' => 'Facebook',
+    'pinterest' => 'Pinterest',
+    'spotify' => 'Spotify',
+    _ => platform,
+  };
+}
+
 /// Pro public profile seen by clients — premium design with social links,
 /// video grid, services, reviews, and events tabs.
 class ProviderPublicProfileClientViewScreen extends StatefulWidget {
@@ -50,6 +64,7 @@ class _ProviderPublicProfileClientViewScreenState
 
   static String _shareUrl(String providerId) =>
       'https://spotbook.app/client/provider/$providerId';
+
 
   Future<void> _openSocial(ProviderSocialLink link) async {
     final uri = _socialUri(link.platform, link.handle);
@@ -397,33 +412,98 @@ class _ReadyBody extends StatelessWidget {
                       ),
                     ],
 
-                    // ── SOCIAL ICONS ROW ──
+                    // ── SOCIAL ICONS — PROMINENT SECTION ──
                     if (p.socialLinks.isNotEmpty) ...[
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 20),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 24),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            for (int i = 0;
-                                i < p.socialLinks.length;
-                                i++) ...[
-                              if (i > 0) const SizedBox(width: 12),
-                              GestureDetector(
-                                onTap: () {
-                                  HapticFeedback.lightImpact();
-                                  onOpenSocial(p.socialLinks[i]);
-                                },
-                                child: SocialIcon(
-                                  platform: p.socialLinks[i].platform,
-                                  size: 40,
+                        child: Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+                          decoration: BoxDecoration(
+                            color: AppColors.surface,
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(color: AppColors.border, width: 0.5),
+                          ),
+                          child: Column(
+                            children: [
+                              Text(
+                                'Follow me',
+                                style: GoogleFonts.dmSans(
+                                  color: AppColors.gris,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                  letterSpacing: 0.8,
                                 ),
                               ),
+                              const SizedBox(height: 14),
+                              Wrap(
+                                spacing: 16,
+                                runSpacing: 12,
+                                alignment: WrapAlignment.center,
+                                children: [
+                                  for (final link in p.socialLinks)
+                                    GestureDetector(
+                                      onTap: () {
+                                        HapticFeedback.lightImpact();
+                                        onOpenSocial(link);
+                                      },
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          SocialIcon(
+                                            platform: link.platform,
+                                            size: 48,
+                                          ),
+                                          const SizedBox(height: 6),
+                                          Text(
+                                            _socialLabel(link.platform),
+                                            style: GoogleFonts.dmSans(
+                                              color: AppColors.gris,
+                                              fontSize: 11,
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                ],
+                              ),
                             ],
-                          ],
+                          ),
                         ),
                       ),
                     ],
+
+                    // ── TRUST BADGES ──
+                    const SizedBox(height: 16),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 24),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          _TrustBadge(
+                            icon: Icons.verified_user_outlined,
+                            label: p.isVerified ? 'Verified' : 'Active',
+                            color: p.isVerified ? AppColors.success : AppColors.violet,
+                          ),
+                          const SizedBox(width: 10),
+                          _TrustBadge(
+                            icon: Icons.flash_on_rounded,
+                            label: 'Fast reply',
+                            color: AppColors.warning,
+                          ),
+                          if (p.bookingsCompleted > 0) ...[
+                            const SizedBox(width: 10),
+                            _TrustBadge(
+                              icon: Icons.workspace_premium_outlined,
+                              label: '${p.bookingsCompleted}+ done',
+                              color: AppColors.rose,
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
                     const SizedBox(height: 20),
 
                     // ── FOLLOW BUTTON ──
@@ -450,9 +530,8 @@ class _ReadyBody extends StatelessWidget {
                           ),
                           const SizedBox(width: 10),
                           Expanded(
-                            child: _ActionButton(
-                              label: 'Book',
-                              color: AppColors.violet,
+                            child: _GradientActionButton(
+                              label: 'Book now',
                               icon: Icons.calendar_today_rounded,
                               onTap: onBook,
                             ),
@@ -870,6 +949,47 @@ class _StatCell extends StatelessWidget {
   }
 }
 
+// ─── Trust Badge ───────────────────────────────────────────────────────────
+
+class _TrustBadge extends StatelessWidget {
+  const _TrustBadge({
+    required this.icon,
+    required this.label,
+    required this.color,
+  });
+
+  final IconData icon;
+  final String label;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: color.withAlpha(18),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: color.withAlpha(40), width: 0.5),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, color: color, size: 14),
+          const SizedBox(width: 5),
+          Text(
+            label,
+            style: GoogleFonts.dmSans(
+              color: color,
+              fontSize: 11,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 // ─── Follow Button ──────────────────────────────────────────────────────────
 
 class _FollowButton extends StatelessWidget {
@@ -916,9 +1036,17 @@ class _FollowButton extends StatelessWidget {
             width: double.infinity,
             height: 46,
             decoration: BoxDecoration(
-              color: followed ? AppColors.surfaceAlt : AppColors.surface,
+              gradient: followed ? null : AppColors.gradientAccent,
+              color: followed ? AppColors.surfaceAlt : null,
               borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: AppColors.border, width: 0.5),
+              border: followed ? Border.all(color: AppColors.border, width: 0.5) : null,
+              boxShadow: followed ? null : [
+                BoxShadow(
+                  color: AppColors.violet.withAlpha(60),
+                  blurRadius: 12,
+                  offset: const Offset(0, 4),
+                ),
+              ],
             ),
             child: Center(
               child: busy
@@ -1007,6 +1135,60 @@ class _ActionButton extends StatelessWidget {
               label,
               style: GoogleFonts.dmSans(
                 color: textColor,
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ─── Gradient Action Button (Book now) ─────────────────────────────────────
+
+class _GradientActionButton extends StatelessWidget {
+  const _GradientActionButton({
+    required this.label,
+    required this.icon,
+    required this.onTap,
+  });
+
+  final String label;
+  final IconData icon;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        HapticFeedback.mediumImpact();
+        onTap();
+      },
+      child: Container(
+        width: double.infinity,
+        height: 52,
+        decoration: BoxDecoration(
+          gradient: AppColors.gradientAccent,
+          borderRadius: BorderRadius.circular(14),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.violet.withAlpha(50),
+              blurRadius: 12,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, color: Colors.white, size: 18),
+            const SizedBox(width: 8),
+            Text(
+              label,
+              style: GoogleFonts.dmSans(
+                color: Colors.white,
                 fontSize: 16,
                 fontWeight: FontWeight.w700,
               ),

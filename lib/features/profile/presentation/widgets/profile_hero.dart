@@ -117,15 +117,15 @@ class _ProfileHeroState extends State<ProfileHero>
 
         const SizedBox(height: 14),
 
-        // Name — Clash Display substitute (DM Sans bold)
+        // Name — Sora bold
         Text(
           p.fullName,
           textAlign: TextAlign.center,
-          style: GoogleFonts.dmSans(
+          style: GoogleFonts.sora(
             color: AppColors.blanc,
             fontSize: 22,
             fontWeight: FontWeight.w800,
-            letterSpacing: -0.3,
+            letterSpacing: 0.2,
           ),
         ),
 
@@ -149,6 +149,32 @@ class _ProfileHeroState extends State<ProfileHero>
             ),
           );
         }),
+
+        // Member badge
+        const SizedBox(height: 8),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+          decoration: BoxDecoration(
+            color: AppColors.violet.withAlpha(18),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: AppColors.violet.withAlpha(40), width: 0.5),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.diamond_outlined, color: AppColors.violetClair, size: 13),
+              const SizedBox(width: 5),
+              Text(
+                'Spotbook Member',
+                style: GoogleFonts.dmSans(
+                  color: AppColors.violetClair,
+                  fontSize: 11,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+        ),
 
         // Bio
         Padding(

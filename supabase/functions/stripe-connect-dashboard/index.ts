@@ -99,14 +99,12 @@ serve(async (req) => {
       url = loginLink.url;
     } else {
       // Not fully onboarded → generate AccountLink to complete onboarding
-      const webBase =
-        Deno.env.get("SPOTBOOK_WEB_BASE_URL")?.replace(/\/$/, "") ||
-        "https://getspotbook.app";
+      const deepLink = "app.spotbook://stripe-connect-callback";
 
       const accountLink = await stripe.accountLinks.create({
         account: profile.stripe_account_id,
-        refresh_url: `${webBase}/pro/stripe-connect?refresh=true`,
-        return_url: `${webBase}/pro/stripe-connect?success=true`,
+        refresh_url: `${deepLink}?refresh=true`,
+        return_url: `${deepLink}?success=true`,
         type: "account_onboarding",
       });
       url = accountLink.url;

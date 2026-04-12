@@ -91,17 +91,33 @@ class SocialBadgeWidget extends StatelessWidget {
 
 /// A row of tappable social icons for the public profile.
 class SocialLinksRow extends StatelessWidget {
-  const SocialLinksRow({super.key, required this.connections});
+  const SocialLinksRow({super.key, required this.connections, this.showLabels = true});
 
   final List<dynamic> connections;
+  final bool showLabels;
+
+  static String _platformLabel(String platform) {
+    return switch (platform.toLowerCase()) {
+      'instagram' => 'Instagram',
+      'tiktok' => 'TikTok',
+      'youtube' => 'YouTube',
+      'twitter' || 'x' => 'X',
+      'snapchat' => 'Snapchat',
+      'facebook' => 'Facebook',
+      'pinterest' => 'Pinterest',
+      'spotify' => 'Spotify',
+      _ => platform,
+    };
+  }
 
   @override
   Widget build(BuildContext context) {
     if (connections.isEmpty) return const SizedBox.shrink();
 
     return Wrap(
-      spacing: 8,
-      runSpacing: 8,
+      spacing: 16,
+      runSpacing: 10,
+      alignment: WrapAlignment.center,
       children: connections.map((conn) {
         final platform = conn.platform as String;
         final handle = conn.handle as String;
@@ -112,7 +128,23 @@ class SocialLinksRow extends StatelessWidget {
                 handle.startsWith('http') ? handle : 'https://$handle';
             launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
           },
-          child: SocialIcon(platform: platform),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SocialIcon(platform: platform, size: 44),
+              if (showLabels) ...[
+                const SizedBox(height: 4),
+                Text(
+                  _platformLabel(platform),
+                  style: TextStyle(
+                    color: AppColors.gris,
+                    fontSize: 10,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ],
+          ),
         );
       }).toList(),
     );

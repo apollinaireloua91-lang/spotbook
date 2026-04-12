@@ -577,7 +577,56 @@ class _Step1EmailPassword extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 12),
+
+            // Apple button (iOS only)
+            if (Platform.isIOS)
+              SizedBox(
+                width: double.infinity,
+                height: 56,
+                child: OutlinedButton(
+                  onPressed: isLoading
+                      ? null
+                      : () {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: const Text(
+                                  'Apple Sign In — coming soon (v1.1)'),
+                              backgroundColor: AppColors.surface,
+                              behavior: SnackBarBehavior.floating,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12)),
+                            ),
+                          );
+                        },
+                  style: OutlinedButton.styleFrom(
+                    backgroundColor: AppColors.surface,
+                    foregroundColor: AppColors.blanc,
+                    side: BorderSide(color: AppColors.border),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.apple_rounded,
+                          size: 24, color: AppColors.blanc),
+                      const SizedBox(width: 10),
+                      Text(
+                        'Continue with Apple',
+                        style: GoogleFonts.dmSans(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.blanc,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            if (Platform.isIOS) const SizedBox(height: 12),
+            const SizedBox(height: 12),
 
             // Divider
             Row(
@@ -891,10 +940,10 @@ class _Step3Categories extends ConsumerWidget {
             child: GridView.builder(
               padding: EdgeInsets.zero,
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                crossAxisSpacing: 12,
-                mainAxisSpacing: 12,
-                childAspectRatio: 1.4,
+                crossAxisCount: 3,
+                crossAxisSpacing: 10,
+                mainAxisSpacing: 10,
+                childAspectRatio: 0.95,
               ),
               itemCount: categories.length,
               itemBuilder: (context, index) {
@@ -924,19 +973,30 @@ class _Step3Categories extends ConsumerWidget {
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Text(
-                                cat.emoji ?? '',
-                                style: const TextStyle(fontSize: 26),
-                              ),
+                              if (cat.emoji != null && cat.emoji!.isNotEmpty)
+                                Text(
+                                  cat.emoji!,
+                                  style: const TextStyle(fontSize: 26),
+                                )
+                              else
+                                Icon(
+                                  cat.icon,
+                                  color: isSelected
+                                      ? AppColors.violet
+                                      : AppColors.gris,
+                                  size: 28,
+                                ),
                               const SizedBox(height: 6),
                               Text(
                                 cat.label,
                                 textAlign: TextAlign.center,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
                                 style: GoogleFonts.dmSans(
                                   color: isSelected
                                       ? AppColors.blanc
                                       : AppColors.grisClair,
-                                  fontSize: 13,
+                                  fontSize: 12,
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),

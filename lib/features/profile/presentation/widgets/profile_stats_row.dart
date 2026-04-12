@@ -35,22 +35,26 @@ class ProfileStatsRow extends StatelessWidget {
             _StatItem(
                 value: totalRdv,
                 label: 'Bookings',
+                icon: Icons.calendar_today_rounded,
                 color: AppColors.violet),
             _Divider(),
             _StatItem(
                 value: totalFollowing,
                 label: 'Following',
-                color: AppColors.violet),
+                icon: Icons.people_outline_rounded,
+                color: AppColors.rose),
             _Divider(),
             _StatItem(
                 value: totalEvents,
                 label: 'Events',
-                color: AppColors.violet),
+                icon: Icons.confirmation_number_outlined,
+                color: AppColors.violetClair),
             _Divider(),
             _StatItem(
                 value: totalReviews,
                 label: 'Reviews',
-                color: AppColors.violet),
+                icon: Icons.star_outline_rounded,
+                color: AppColors.starGold),
           ],
         ),
       ),
@@ -63,11 +67,13 @@ class _StatItem extends StatelessWidget {
     required this.value,
     required this.label,
     required this.color,
+    this.icon,
   });
 
   final int value;
   final String label;
   final Color color;
+  final IconData? icon;
 
   @override
   Widget build(BuildContext context) {
@@ -75,16 +81,20 @@ class _StatItem extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
+          if (icon != null) ...[
+            Icon(icon, color: color.withAlpha(120), size: 16),
+            const SizedBox(height: 4),
+          ],
           AnimatedCounter(
             value: value,
             style: GoogleFonts.dmSans(
-              color: color,
+              color: AppColors.blanc,
               fontSize: 20,
               fontWeight: FontWeight.w800,
             ),
             duration: const Duration(milliseconds: 600),
           ),
-          const SizedBox(height: 4),
+          const SizedBox(height: 2),
           Text(
             label,
             style: GoogleFonts.dmSans(

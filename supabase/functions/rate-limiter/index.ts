@@ -7,22 +7,29 @@ import {
   securityHeaders,
 } from "../_shared/security.ts";
 
+const VALID_TYPES = ["login", "signup", "otp", "payment"];
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: securityHeaders });
   }
 
   try {
-    const { type, email, cardFingerprint } = await req.json();
-    if (!type || !["login", "otp", "payment"].includes(type)) {
+    const body = await req.json();
+    // Accept both naming conventions: type/email OR scope/identifier
+    const type = body.type ?? body.scope;
+    const email = body.email ?? body.identifier;
+    const { cardFingerprint } = body;
+
+    if (!type || !VALID_TYPES.includes(type)) {
       return jsonResponse(
-        { error: "type must be one of login|otp|payment" },
+        { error: `type must be one of ${VALID_TYPES.join("|")}` },
         400
       );
     }
 
     let key = "";
-    if (type === "login") {
+    if (type === "login" || type === "signup") {
       key = getClientIp(req);
     } else if (type === "otp") {
       if (!email || !isValidEmail(String(email))) {
@@ -40,7 +47,7 @@ serve(async (req) => {
     }
 
     const result = await checkRateLimit({
-      scope: type as "login" | "otp" | "payment",
+      scope: type as "login" | "signup" | "otp" | "payment",
       key,
     });
 
@@ -48,6 +55,7 @@ serve(async (req) => {
       return jsonResponse(
         {
           error: `Trop de tentatives. Réessaie dans ${result.retryInMinutes} minutes.`,
+          message: `Trop de tentatives. Réessaie dans ${result.retryInMinutes} minutes.`,
         },
         429
       );

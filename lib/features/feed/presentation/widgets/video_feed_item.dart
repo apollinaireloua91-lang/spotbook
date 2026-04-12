@@ -542,39 +542,35 @@ class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
                 ),
           ),
 
-          // ─── Play/Pause overlay icon ───
-          if (_showPlayPauseIcon)
-            Center(
-              child: Container(
-                width: 64,
-                height: 64,
-                decoration: BoxDecoration(
-                  color: Colors.black.withAlpha(100),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  _isPlaying
-                      ? Icons.play_arrow_rounded
-                      : Icons.pause_rounded,
-                  color: AppColors.textOnVideo,
-                  size: 36,
-                ),
-              ),
-            ),
-          // Permanent pause icon when paused
-          if (!_isPlaying && !_showPlayPauseIcon && widget.isActive)
-            Center(
-              child: Container(
-                width: 56,
-                height: 56,
-                decoration: BoxDecoration(
-                  color: Colors.black.withAlpha(77),
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(
-                  Icons.play_arrow_rounded,
-                  color: AppColors.textOnVideo,
-                  size: 32,
+          // ─── Play/Pause button — top-left corner ───
+          if (_showPlayPauseIcon || (!_isPlaying && widget.isActive))
+            Positioned(
+              top: MediaQuery.of(context).padding.top + 12,
+              left: 16,
+              child: GestureDetector(
+                onTap: _togglePlayPause,
+                child: AnimatedOpacity(
+                  opacity: _showPlayPauseIcon ? 1.0 : 0.7,
+                  duration: const Duration(milliseconds: 300),
+                  child: Container(
+                    width: 42,
+                    height: 42,
+                    decoration: BoxDecoration(
+                      color: Colors.black.withAlpha(110),
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: Colors.white.withAlpha(40),
+                        width: 0.5,
+                      ),
+                    ),
+                    child: Icon(
+                      _isPlaying
+                          ? Icons.pause_rounded
+                          : Icons.play_arrow_rounded,
+                      color: Colors.white,
+                      size: 22,
+                    ),
+                  ),
                 ),
               ),
             ),

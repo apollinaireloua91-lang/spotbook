@@ -37,9 +37,6 @@ class AuthRepository {
 
   Stream<AuthState> get authStateStream => _supabase.auth.onAuthStateChange;
 
-  // TODO(security): Add rate limiting on signUp to prevent brute-force
-  // registration attacks. Consider Supabase Edge Function middleware or
-  // per-IP throttling before v1.1 launch.
   Future<AuthResponse> signUpWithEmail({
     required String email,
     required String password,
@@ -52,6 +49,17 @@ class AuthRepository {
     double? latitude,
     double? longitude,
   }) async {
+    final limiter = await _supabase.functions.invoke(
+      'rate-limiter',
+      body: {'scope': 'signup', 'identifier': email.toLowerCase()},
+    );
+    if (limiter.status == 429) {
+      final message =
+          (limiter.data as Map<String, dynamic>?)?['message'] as String? ??
+              'Too many attempts. Try again later.';
+      throw AuthException(message);
+    }
+
     try {
       return await _supabase.auth.signUp(
         email: email,

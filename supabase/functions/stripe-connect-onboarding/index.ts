@@ -8,10 +8,7 @@ if (!stripeSecret) {
   throw new Error("Missing STRIPE_SECRET_KEY");
 }
 
-const stripe = new Stripe(stripeSecret, {
-  apiVersion: "2023-10-16",
-  httpClient: Stripe.createFetchHttpClient(),
-});
+const stripe = new Stripe(stripeSecret, { apiVersion: "2023-10-16" });
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -106,14 +103,12 @@ serve(async (req) => {
       );
     }
 
-    const webBase =
-      Deno.env.get("SPOTBOOK_WEB_BASE_URL")?.replace(/\/$/, "") ||
-      "https://getspotbook.app";
+    const deepLink = "app.spotbook://stripe-connect-callback";
 
     const accountLink = await stripe.accountLinks.create({
       account: accountId,
-      refresh_url: `${webBase}/pro/stripe-connect?refresh=true`,
-      return_url: `${webBase}/pro/stripe-connect?success=true`,
+      refresh_url: `${deepLink}?refresh=true`,
+      return_url: `${deepLink}?success=true`,
       type: "account_onboarding",
     });
 

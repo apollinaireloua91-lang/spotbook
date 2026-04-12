@@ -313,18 +313,87 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
   }
 
   Widget _buildResults(DiscoverState s) {
-    // Prioritize provider results if available
-    if (s.nearbyProviders.isNotEmpty) {
-      return _ProvidersGrid(providers: s.nearbyProviders);
+    final hasProviders = s.nearbyProviders.isNotEmpty;
+    final hasVideos = s.results != null && s.results!.isNotEmpty;
+
+    if (!hasProviders && !hasVideos) {
+      return _EmptyState(
+        hasQuery: s.activeQuery != null && s.activeQuery!.isNotEmpty,
+      );
     }
-    // Fall back to video results
-    if (s.results != null && s.results!.isNotEmpty) {
-      return _VideosGrid(videos: s.results!);
+
+    // Default: show videos grid (all pro videos)
+    // When searching: show providers on top + videos below
+    if (hasProviders && s.activeQuery != null) {
+      return CustomScrollView(
+        slivers: [
+          SliverPadding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            sliver: SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: Text(
+                  'Pros',
+                  style: GoogleFonts.sora(
+                    color: AppColors.blanc,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+            ),
+          ),
+          SliverPadding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            sliver: SliverGrid(
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: 12,
+                mainAxisSpacing: 12,
+                childAspectRatio: 0.75,
+              ),
+              delegate: SliverChildBuilderDelegate(
+                (_, i) => _ProviderCard(provider: s.nearbyProviders[i]),
+                childCount: s.nearbyProviders.length.clamp(0, 4),
+              ),
+            ),
+          ),
+          if (hasVideos) ...[
+            SliverPadding(
+              padding: const EdgeInsets.fromLTRB(16, 20, 16, 8),
+              sliver: SliverToBoxAdapter(
+                child: Text(
+                  'Vidéos',
+                  style: GoogleFonts.sora(
+                    color: AppColors.blanc,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+            ),
+            SliverPadding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              sliver: SliverGrid(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 12,
+                  mainAxisSpacing: 12,
+                  childAspectRatio: 0.65,
+                ),
+                delegate: SliverChildBuilderDelegate(
+                  (_, i) => _VideoCard(video: s.results![i]),
+                  childCount: s.results!.length,
+                ),
+              ),
+            ),
+          ],
+        ],
+      );
     }
-    // Empty state
-    return _EmptyState(
-      hasQuery: s.activeQuery != null && s.activeQuery!.isNotEmpty,
-    );
+
+    // Default: videos grid (all pro published videos)
+    return _VideosGrid(videos: s.results ?? []);
   }
 }
 

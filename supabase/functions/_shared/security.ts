@@ -96,13 +96,14 @@ export function getClientIp(req: Request) {
 }
 
 type RateLimitInput = {
-  scope: "login" | "otp" | "payment" | "upload";
+  scope: "login" | "signup" | "otp" | "payment" | "upload";
   key: string;
 };
 
 const LIMITS: Record<RateLimitInput["scope"], { max: number; windowMs: number }> =
   {
     login: { max: 5, windowMs: 15 * 60 * 1000 },
+    signup: { max: 3, windowMs: 30 * 60 * 1000 },
     otp: { max: 3, windowMs: 10 * 60 * 1000 },
     payment: { max: 3, windowMs: 60 * 60 * 1000 },
     upload: { max: 20, windowMs: 60 * 60 * 1000 },

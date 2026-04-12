@@ -336,19 +336,27 @@ class _FavProAvatar extends StatelessWidget {
         child: Column(
           children: [
             Container(
+              padding: const EdgeInsets.all(2),
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                border: Border.all(color: AppColors.violet, width: 2),
+                gradient: AppColors.gradientAccent,
               ),
-              child: CircleAvatar(
-                radius: 28,
-                backgroundColor: AppColors.surfaceAlt,
-                backgroundImage: pro.avatarUrl != null
-                    ? CachedNetworkImageProvider(pro.avatarUrl!)
-                    : null,
-                child: pro.avatarUrl == null
-                    ? Icon(Icons.person, size: 24, color: AppColors.gris)
-                    : null,
+              child: Container(
+                padding: const EdgeInsets.all(2),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: AppColors.fond,
+                ),
+                child: CircleAvatar(
+                  radius: 26,
+                  backgroundColor: AppColors.surfaceAlt,
+                  backgroundImage: pro.avatarUrl != null
+                      ? CachedNetworkImageProvider(pro.avatarUrl!)
+                      : null,
+                  child: pro.avatarUrl == null
+                      ? Icon(Icons.person, size: 22, color: AppColors.gris)
+                      : null,
+                ),
               ),
             ),
             const SizedBox(height: 6),
@@ -606,7 +614,7 @@ class _SpecialActionsSection extends ConsumerWidget {
       child: Column(
         children: [
           const SizedBox(height: 16),
-          // Become Pro — highlight style
+          // Become Pro — gradient style
           GestureDetector(
             onTap: () {
               HapticFeedback.lightImpact();
@@ -616,23 +624,30 @@ class _SpecialActionsSection extends ConsumerWidget {
               width: double.infinity,
               padding: const EdgeInsets.symmetric(vertical: 16),
               decoration: BoxDecoration(
-                color: AppColors.highlight,
+                gradient: AppColors.gradientAccent,
                 borderRadius: BorderRadius.circular(14),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.violet.withAlpha(40),
+                    blurRadius: 12,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
               ),
               child: Center(
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Icon(
-                      Icons.star_rounded,
-                      color: AppColors.violet,
+                      Icons.rocket_launch_rounded,
+                      color: Colors.white,
                       size: 18,
                     ),
                     const SizedBox(width: 8),
                     Text(
-                      'Become Pro',
+                      'Become a Pro',
                       style: GoogleFonts.dmSans(
-                        color: AppColors.violet,
+                        color: Colors.white,
                         fontSize: 15,
                         fontWeight: FontWeight.w700,
                       ),

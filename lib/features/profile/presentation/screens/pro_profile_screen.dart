@@ -572,10 +572,36 @@ class _PremiumProfileScaffoldState
               // ─── Stats row ───
               _StatsRow(proId: p.id, reviewsCount: p.reviewsCount),
 
-              // ─── Social links ───
+              // ─── Social links — prominent card ───
               if (p.socialConnections.isNotEmpty) ...[
                 const SizedBox(height: 16),
-                SocialLinksRow(connections: p.socialConnections),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+                    decoration: BoxDecoration(
+                      color: AppColors.surface,
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(color: AppColors.border, width: 0.5),
+                    ),
+                    child: Column(
+                      children: [
+                        Text(
+                          'My socials',
+                          style: GoogleFonts.dmSans(
+                            color: AppColors.gris,
+                            fontSize: 11,
+                            fontWeight: FontWeight.w600,
+                            letterSpacing: 0.6,
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        SocialLinksRow(connections: p.socialConnections),
+                      ],
+                    ),
+                  ),
+                ),
               ],
 
               // ─── Bio ───
