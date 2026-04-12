@@ -312,8 +312,6 @@ final appRouter = GoRouter(
         ),
       ],
     ),
-
-    // ─── Routes Pro (sub-screens) — premium transitions ───
     GoRoute(
       path: '/pro/services',
       pageBuilder: (context, state) => premiumPage(

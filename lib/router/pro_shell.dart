@@ -5,6 +5,8 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../shared/theme/app_colors.dart';
 
+/// Pro Shell — 5 tabs:
+///   Feed | Dashboard | Recherche | RDV | Profil
 class ProShell extends StatelessWidget {
   const ProShell({super.key, required this.navigationShell});
 
@@ -21,7 +23,7 @@ class ProShell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bottomInset = MediaQuery.paddingOf(context).bottom;
-    final currentIndex = navigationShell.currentIndex;
+    final current = navigationShell.currentIndex;
 
     return Scaffold(
       extendBody: true,
@@ -45,39 +47,44 @@ class ProShell extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
+            // 0 — Feed
             _ProNavItem(
               label: 'Feed',
               icon: Icons.play_circle_outline,
               activeIcon: Icons.play_circle_filled,
-              selected: currentIndex == 0,
+              selected: current == 0,
               onTap: () => _goBranch(0),
             ),
+            // 1 — Dashboard
             _ProNavItem(
               label: 'Dashboard',
-              icon: Icons.space_dashboard_outlined,
-              activeIcon: Icons.space_dashboard,
-              selected: currentIndex == 1,
+              icon: Icons.dashboard_outlined,
+              activeIcon: Icons.dashboard,
+              selected: current == 1,
               onTap: () => _goBranch(1),
             ),
+            // 2 — Recherche
             _ProNavItem(
-              label: 'Search',
+              label: 'Recherche',
               icon: Icons.search_outlined,
               activeIcon: Icons.search,
-              selected: currentIndex == 2,
+              selected: current == 2,
               onTap: () => _goBranch(2),
             ),
+            // 3 — RDV
             _ProNavItem(
               label: 'RDV',
               icon: Icons.calendar_today_outlined,
               activeIcon: Icons.calendar_today,
-              selected: currentIndex == 3,
+              selected: current == 3,
               onTap: () => _goBranch(3),
             ),
+            // 4 — Profil
             _ProNavItem(
               label: 'Profil',
               icon: Icons.person_outline,
               activeIcon: Icons.person,
-              selected: currentIndex == 4,
+              selected: current == 4,
               onTap: () => _goBranch(4),
             ),
           ],
@@ -86,6 +93,10 @@ class ProShell extends StatelessWidget {
     );
   }
 }
+
+// ═════════════════════════════════════════════════════════════════════════════
+// Nav item — dot indicator + glow
+// ═════════════════════════════════════════════════════════════════════════════
 
 class _ProNavItem extends StatelessWidget {
   const _ProNavItem({
