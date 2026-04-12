@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
 
 class ShareBottomSheet extends StatelessWidget {
@@ -10,6 +11,7 @@ class ShareBottomSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     return Container(
       decoration: BoxDecoration(
         color: AppColors.surface,
@@ -31,7 +33,7 @@ class ShareBottomSheet extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             Text(
-              'Share',
+              l.share,
               style: TextStyle(
                 color: AppColors.blanc,
                 fontSize: 16,
@@ -46,7 +48,7 @@ class ShareBottomSheet extends StatelessWidget {
                 children: [
                   _ShareOption(
                     icon: Icons.message,
-                    label: 'Messages',
+                    label: l.shareMessages,
                     color: AppColors.blanc,
                     bgColor: AppColors.surfaceAlt,
                     onTap: () => Navigator.of(context).pop(),
@@ -67,13 +69,13 @@ class ShareBottomSheet extends StatelessWidget {
                   ),
                   _ShareOption(
                     icon: Icons.link,
-                    label: 'Copy',
+                    label: l.shareCopy,
                     color: AppColors.blanc,
                     bgColor: AppColors.surfaceAlt,
                     onTap: () {
                       HapticFeedback.mediumImpact();
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Link copied')),
+                        SnackBar(content: Text(l.linkCopied)),
                       );
                       Navigator.of(context).pop();
                     },

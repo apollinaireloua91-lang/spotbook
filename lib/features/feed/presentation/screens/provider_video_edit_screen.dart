@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/widgets/spotbook_app_bar.dart';
 
@@ -114,6 +115,7 @@ class _ProviderVideoEditScreenState extends State<ProviderVideoEditScreen> {
   }
 
   void _showTextOverlayDialog() {
+    final l = AppLocalizations.of(context)!;
     _textCtrl.text = _overlayText ?? '';
     showDialog(
       context: context,
@@ -121,14 +123,14 @@ class _ProviderVideoEditScreenState extends State<ProviderVideoEditScreen> {
         backgroundColor: AppColors.surface,
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20)),
-        title: Text('Add text',
+        title: Text(l.addTextTitle,
             style: GoogleFonts.sora(color: AppColors.blanc, fontWeight: FontWeight.w600)),
         content: TextField(
           controller: _textCtrl,
           style: GoogleFonts.dmSans(color: AppColors.blanc),
           maxLength: 50,
           decoration: InputDecoration(
-            hintText: 'Your text...',
+            hintText: l.yourTextHint,
             hintStyle: GoogleFonts.dmSans(color: AppColors.gris.withAlpha(128)),
             counterStyle: GoogleFonts.dmSans(color: AppColors.gris),
             filled: true,
@@ -145,7 +147,7 @@ class _ProviderVideoEditScreenState extends State<ProviderVideoEditScreen> {
               setState(() => _overlayText = null);
               Navigator.pop(ctx);
             },
-            child: Text('Delete',
+            child: Text(l.delete,
                 style: GoogleFonts.dmSans(color: AppColors.gris)),
           ),
           TextButton(
@@ -154,7 +156,7 @@ class _ProviderVideoEditScreenState extends State<ProviderVideoEditScreen> {
               setState(() => _overlayText = text.isEmpty ? null : text);
               Navigator.pop(ctx);
             },
-            child: Text('OK',
+            child: Text(l.ok,
                 style: GoogleFonts.dmSans(color: AppColors.blanc, fontWeight: FontWeight.w600)),
           ),
         ],
@@ -179,14 +181,15 @@ class _ProviderVideoEditScreenState extends State<ProviderVideoEditScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: AppColors.fond,
       appBar: SpotbookAppBar(
-        title: 'Modifier la vidéo',
+        title: l.editVideoTitle,
         actions: [
           TextButton(
             onPressed: _onNext,
-            child: Text('Suivant',
+            child: Text(l.nextLabel,
                 style: GoogleFonts.dmSans(
                     color: AppColors.violet,
                     fontWeight: FontWeight.w700,
@@ -309,13 +312,13 @@ class _ProviderVideoEditScreenState extends State<ProviderVideoEditScreen> {
               children: [
                 _ToolButton(
                   icon: Icons.text_fields,
-                  label: 'Text',
+                  label: l.textTool,
                   isActive: _overlayText != null,
                   onTap: _showTextOverlayDialog,
                 ),
                 _ToolButton(
                   icon: Icons.tune,
-                  label: 'Filters',
+                  label: l.filtersTool,
                   isActive: _selectedFilter > 0,
                   onTap: () {
                     HapticFeedback.selectionClick();

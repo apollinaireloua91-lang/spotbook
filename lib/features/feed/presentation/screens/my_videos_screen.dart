@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../data/my_videos_notifier.dart';
 import '../../domain/video_model.dart';
@@ -12,15 +13,16 @@ class MyVideosScreen extends ConsumerWidget {
   const MyVideosScreen({super.key});
 
   Future<void> _delete(BuildContext context, WidgetRef ref, String videoId) async {
+    final l = AppLocalizations.of(context)!;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: AppColors.surface,
-        title: Text('Supprimer la vidéo ?', style: GoogleFonts.sora(color: AppColors.blanc, fontWeight: FontWeight.w600)),
-        content: Text('This action is irreversible.', style: GoogleFonts.dmSans(color: AppColors.gris)),
+        title: Text(l.deleteVideoTitle, style: GoogleFonts.sora(color: AppColors.blanc, fontWeight: FontWeight.w600)),
+        content: Text(l.deleteVideoConfirm, style: GoogleFonts.dmSans(color: AppColors.gris)),
         actions: [
-          TextButton(onPressed: () => ctx.pop(false), child: Text('Annuler', style: GoogleFonts.dmSans(color: AppColors.gris))),
-          TextButton(onPressed: () => ctx.pop(true), child: Text('Supprimer', style: GoogleFonts.dmSans(color: AppColors.error))),
+          TextButton(onPressed: () => ctx.pop(false), child: Text(l.cancel, style: GoogleFonts.dmSans(color: AppColors.gris))),
+          TextButton(onPressed: () => ctx.pop(true), child: Text(l.delete, style: GoogleFonts.dmSans(color: AppColors.error))),
         ],
       ),
     );
@@ -31,6 +33,7 @@ class MyVideosScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l = AppLocalizations.of(context)!;
     final videos = ref.watch(myVideosProvider);
 
     return Scaffold(
@@ -40,7 +43,7 @@ class MyVideosScreen extends ConsumerWidget {
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         leading: Semantics(
-          label: 'Back',
+          label: l.a11yBack,
           child: IconButton(
             icon: Container(
               padding: const EdgeInsets.all(8),
@@ -60,7 +63,7 @@ class MyVideosScreen extends ConsumerWidget {
       body: videos == null
           ? Center(child: CircularProgressIndicator(color: AppColors.blanc))
           : videos.isEmpty
-              ? Center(child: Text('No videos yet', style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 15)))
+              ? Center(child: Text(l.noVideosYet, style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 15)))
               : ListView.builder(
                   padding: const EdgeInsets.all(16), itemCount: videos.length,
                   itemBuilder: (context, index) {
@@ -97,7 +100,7 @@ class _VideoCard extends StatelessWidget {
           ]),
           if (video.status == 'rejected' && video.rejectionReason != null) ...[
             const SizedBox(height: 6),
-            Text('Reason: ${video.rejectionReason}', style: GoogleFonts.dmSans(color: AppColors.error, fontSize: 12)),
+            Text(AppLocalizations.of(context)!.videoReason(video.rejectionReason!), style: GoogleFonts.dmSans(color: AppColors.error, fontSize: 12)),
           ],
           const SizedBox(height: 8),
           Row(children: [
@@ -118,10 +121,11 @@ class _StatusBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     final (Color bg, Color fg, String label) = switch (status) {
-      'approved' => (AppColors.success.withAlpha(26), AppColors.success, 'Published'),
-      'rejected' => (AppColors.error.withAlpha(26), AppColors.error, 'Rejected'),
-      'flagged' => (AppColors.warning.withAlpha(26), AppColors.warning, 'Flagged'),
+      'approved' => (AppColors.success.withAlpha(26), AppColors.success, l.videoStatusPublished),
+      'rejected' => (AppColors.error.withAlpha(26), AppColors.error, l.videoStatusRejected),
+      'flagged' => (AppColors.warning.withAlpha(26), AppColors.warning, l.videoStatusFlagged),
       _ => (AppColors.gris.withAlpha(26), AppColors.gris, status),
     };
     return Container(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4), decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(8)),

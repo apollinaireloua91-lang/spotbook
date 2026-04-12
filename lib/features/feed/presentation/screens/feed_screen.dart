@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/theme/app_typography.dart';
 import '../../../notifications/data/notification_notifier.dart';
@@ -162,12 +163,12 @@ class _FeedTabPill extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           _TabItem(
-            label: 'Découvrir',
+            label: AppLocalizations.of(context)!.feedDiscover,
             isActive: activeTab == FeedTab.discover,
             onTap: () => onTap(FeedTab.discover),
           ),
           _TabItem(
-            label: 'Abonnements',
+            label: AppLocalizations.of(context)!.feedFollowing,
             isActive: activeTab == FeedTab.following,
             onTap: () => onTap(FeedTab.following),
           ),

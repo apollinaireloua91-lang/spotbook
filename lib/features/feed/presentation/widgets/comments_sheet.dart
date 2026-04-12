@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../data/comments_notifier.dart';
 import '../../domain/video_model.dart';
@@ -42,6 +43,7 @@ class _CommentsSheetState extends ConsumerState<CommentsSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     final s = ref.watch(commentsProvider);
 
     return DraggableScrollableSheet(
@@ -57,7 +59,7 @@ class _CommentsSheetState extends ConsumerState<CommentsSheet> {
               child: s.isLoading
                   ? Center(child: CircularProgressIndicator(color: AppColors.blanc))
                   : s.comments.isEmpty
-                      ? Center(child: Text('Aucun commentaire', style: TextStyle(color: AppColors.gris, fontSize: 14)))
+                      ? Center(child: Text(l.noComments, style: TextStyle(color: AppColors.gris, fontSize: 14)))
                       : ListView.builder(controller: scrollController, reverse: true, itemCount: s.comments.length,
                           itemBuilder: (context, index) => _CommentTile(comment: s.comments[s.comments.length - 1 - index])),
             ),
@@ -66,7 +68,7 @@ class _CommentsSheetState extends ConsumerState<CommentsSheet> {
               padding: EdgeInsets.only(left: 16, right: 8, bottom: MediaQuery.of(context).viewInsets.bottom + 8, top: 8),
               child: Row(children: [
                 Expanded(child: TextField(controller: _textCtrl, style: TextStyle(color: AppColors.blanc, fontSize: 14),
-                  decoration: InputDecoration(hintText: 'Add a comment...', hintStyle: TextStyle(color: AppColors.gris), filled: true, fillColor: AppColors.surfaceAlt, border: OutlineInputBorder(borderRadius: BorderRadius.circular(24), borderSide: BorderSide.none), contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10)))),
+                  decoration: InputDecoration(hintText: l.addCommentHint, hintStyle: TextStyle(color: AppColors.gris), filled: true, fillColor: AppColors.surfaceAlt, border: OutlineInputBorder(borderRadius: BorderRadius.circular(24), borderSide: BorderSide.none), contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10)))),
                 IconButton(onPressed: _sendComment, icon: Icon(Icons.send, color: AppColors.accent, size: 22)),
               ]),
             ),

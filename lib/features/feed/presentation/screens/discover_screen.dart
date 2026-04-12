@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shimmer/shimmer.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/utils/analytics_service.dart';
 import '../../../auth/data/category_repository.dart';
@@ -61,6 +62,7 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     final s = ref.watch(discoverProvider);
     final n = ref.read(discoverProvider.notifier);
 
@@ -95,7 +97,7 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
                         fontSize: 14,
                       ),
                       decoration: InputDecoration(
-                        hintText: 'Rechercher un professionnel...',
+                        hintText: l.searchProfessionalHint,
                         hintStyle: GoogleFonts.dmSans(
                           color: AppColors.gris,
                           fontSize: 14,

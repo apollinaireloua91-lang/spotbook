@@ -1897,6 +1897,318 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Submit documents'**
   String get submitDocuments;
+
+  // ── Feed ──
+  String get feedDiscover;
+  String get feedFollowing;
+  String get searchProfessionalHint;
+  String get noComments;
+  String get addCommentHint;
+  String get shareMessages;
+  String get shareCopy;
+  String get linkCopied;
+  String get noVideosYet;
+  String get deleteVideoTitle;
+  String get deleteVideoConfirm;
+  String get videoStatusPublished;
+  String get videoStatusRejected;
+  String get videoStatusFlagged;
+  String videoReason(String reason);
+  String noResultsFor(String query);
+  String get noProfessionalsAvailable;
+  String get videoTooLong;
+  String get videoPublished;
+  String get publishAService;
+  String videoSelectedDuration(String duration);
+  String get tapToChange;
+  String get selectVideoMax;
+  String get titleRequired;
+  String get titleHint;
+  String get descriptionRequired;
+  String get descriptionHint;
+  String get hashtagsLabel;
+  String get hashtagsHint;
+  String get selectCategoryRequired;
+  String publishingProgress(int percent);
+  String get publishMyService;
+  String get addTextTitle;
+  String get yourTextHint;
+  String get editVideoTitle;
+  String get nextLabel;
+  String get textTool;
+  String get filtersTool;
+  String get ok;
+
+  // ── Booking ──
+  String get confirmCancellation;
+  String get markAsDoneTitle;
+  String get markAsDoneMessage;
+  String get confirmBalanceTitle;
+  String confirmBalanceMessage(String amount, String currency);
+  String get balanceMarkedPaid;
+  String get bookingAccepted;
+  String get bookingNotFound;
+  String get accessDenied;
+  String get appointmentDetails;
+  String get reportBooking;
+  String get paymentPending;
+  String get statusPending;
+  String get depositReceivedOnline;
+  String get depositPaidOnline;
+  String get balanceToCollectOnSite;
+  String get balanceToPayOnSite;
+  String commissionEstimate(String pct, String commission, String currency, String net);
+  String balanceOnSite(String amount, String currency);
+  String get acceptBooking;
+  String get markAsDone;
+  String get confirmed;
+  String get pending;
+  String get thisMonth;
+  String get bookingConfirmed;
+  String get appointmentMarkedDone;
+  String noBookingsOn(String label);
+  String get thisWeek;
+  String get revenue;
+  String get reservations;
+  String get avgRating;
+  String get ticketsSold;
+  String get createEvent;
+  String get scanTicket;
+  String get viewCalendar;
+  String get periodSevenDays;
+  String get periodThirtyDays;
+  String get periodNinetyDays;
+  String get periodOneYear;
+  String get grossRevenue;
+  String get commission;
+  String get netRevenue;
+  String get serviceName;
+  String get descriptionOptional;
+  String get priceCad;
+  String get fullPayment;
+  String get depositPlusSurplace;
+  String get depositAmountCad;
+  String get serviceNameMinChars;
+  String get invalidPrice;
+  String get invalidDepositAmount;
+  String get myClients;
+  String get searchClientHint;
+  String get mostRecent;
+  String get mostBookings;
+  String get mostSpent;
+  String get noClients;
+  String get refundRequestTitle;
+  String get cancelReasonHint;
+  String get amountPaid;
+  String get noCancel;
+  String get yesCancel;
+  String get refundErrorRetry;
+  String get back;
+  String get continueLabel;
+
+  // ── Events ──
+  String get tonight;
+  String get thisWeekend;
+  String get noEventsFound;
+  String get sellingFast;
+  String get soldOut;
+  String get eventsTitle;
+  String get coverImage;
+  String get coverImageSubtitle;
+  String get eventDetails;
+  String get eventDetailsSubtitle;
+  String get whenQuestion;
+  String get whenSubtitle;
+  String get whereQuestion;
+  String get whereSubtitle;
+  String get ticketsAndPricing;
+  String get titleAndLocationRequired;
+  String get participants;
+  String get noAttendees;
+  String get searchParticipantHint;
+  String get loadingText;
+  String get eventLabel;
+  String get salesProgress;
+  String get ticketsScanned;
+  String get ticketTypes;
+  String get scanTickets;
+  String get manageEvent;
+  String get shareTicket;
+  String get addToCalendar;
+  String get scanAnotherTicket;
+  String get scannerQr;
+  String get waitlistTitle;
+  String get youAreRegistered;
+  String get ticketsSoldOut;
+  String waitlistNotifyMessage(String eventTitle);
+  String get waitlistJoinMessage;
+  String get joinWaitlist;
+  String get ticketValidated;
+  String get alreadyScanned;
+  String alreadyScannedAt(String time);
+  String get invalidTicket;
+  String get ticketValidatedSuccess;
+  String get alreadyUsed;
+  String get ticketCouldNotBeValidated;
+  String get backToEvents;
+  String get filterByStatus;
+  String get searchEventHint;
+  String get online;
+  String get inactive;
+  String ticketsSoldCount(int sold, int total);
+
+  // ── Profile ──
+  String get profileNotFound;
+  String get errorPrefix;
+  String get reportLabel;
+  String get blockLabel;
+  String get loadingError;
+  String get noVideos;
+  String get noServicesAvailable;
+  String get noReviews;
+  String get noUpcomingEvents;
+  String get notConnected;
+  String get linkCopiedClipboard;
+  String get removeFromFavorites;
+  String get noLabel;
+  String get yesLabel;
+  String get savedPosts;
+  String get describeYourselfHint;
+  String get appointmentsLabel;
+  String get subscriptions;
+  String get eventsLabel;
+  String get reviewsLabel;
+  String get bookNow;
+  String get shareProfile;
+  String get copyLink;
+  String get sms;
+  String get moreOptions;
+
+  // ── Settings ──
+  String get deleteAccountTitle;
+  String get deleteAccountIrreversible;
+  String get deleteAccountWarning;
+  String get deleteAccountConfirm;
+  String get deleteForever;
+  String get depositSettingsError;
+  String depositPercentLabel(int pct);
+  String get doneLabel;
+  String get serviceBookingsCommission;
+  String get eventTicketsCommission;
+  String get cateringDepositsCommission;
+
+  // ── Notifications ──
+  String get markAllRead;
+  String get noNotifications;
+  String get notifAppointments;
+  String get notifReminders;
+  String get notifRemindersDesc;
+  String get notifUpdates;
+  String get notifUpdatesDesc;
+  String get notifCommunication;
+  String get notifMessages;
+  String get notifMessagesDesc;
+  String get notifReviewRequests;
+  String get notifReviewRequestsDesc;
+  String get notifEventsSection;
+  String get notifWaitlist;
+  String get notifWaitlistDesc;
+  String get notifOther;
+  String get notifMarketing;
+  String get notifMarketingDesc;
+
+  // ── Reviews ──
+  String get reviewsReceived;
+  String get allReviews;
+  String get noReviewsYet;
+  String get thankYouReview;
+  String get reviewHelpsOthers;
+  String get leaveReview;
+  String get howWasAppointment;
+  String get shareExperienceHint;
+  String get sendReview;
+
+  // ── Moderation ──
+  String get blockUserTitle;
+  String get userBlocked;
+  String get blockedUsers;
+  String get noBlockedUsers;
+  String get unblock;
+  String get reportTitle;
+  String get reportReasonQuestion;
+  String get reportSent;
+  String get sendReport;
+  String get reportContextHint;
+
+  // ── Promo ──
+  String get yourCode;
+  String get codeCopied;
+  String get referrals;
+  String get creditsEarned;
+  String get deactivatePromoCode;
+  String get promoCodeLabel;
+  String get promoDiscountLabel;
+  String get promoMaxUsesLabel;
+  String get promoExpiresLabel;
+
+  // ── Camera ──
+  String videoLoadError(String error);
+  String get videoPublishedSuccess;
+  String get noneFilter;
+
+  // ── Soumission ──
+  String get addAtLeastOneItem;
+  String get soumissionCreated;
+  String get createSoumission;
+  String get soumissionDescription;
+  String get soumissionQty;
+  String get soumissionUnitPrice;
+
+  // ── Search ──
+  String get nearYou;
+  String get maxDistance;
+  String get minRating;
+  String get priceRange;
+  String get availability;
+  String get applyFilters;
+  String distanceKm(int km);
+  String ratingPlus(String rating);
+  String get searchBarberHint;
+
+  // ── Favorites ──
+  String get noFavorites;
+
+  // ── Onboarding ──
+  String get onboardingBookings;
+  String get onboardingRating;
+  String get onboardingFollowers;
+
+  // ── Payment ──
+  String get paymentReceipt;
+  String get bookingNotFoundShort;
+
+  // ── Shared ──
+  String get consentDecline;
+  String get consentAccept;
+  String get emptyMessages;
+  String get emptyMessagesSubtitle;
+  String get emptyEvents;
+  String get emptyBookings;
+  String get emptyBookingsSubtitle;
+  String get emptyVideos;
+  String get emptyVideosSubtitle;
+  String get emptyFavorites;
+  String get emptyFavoritesSubtitle;
+  String get chatSearchHint;
+  String get chatMessageHint;
+  String get enterGuestCount;
+
+  // ── Availability ──
+  String get weeklySchedule;
+  String get blockedDates;
+  String get parameters;
+  String get dayOff;
+  String get addRule;
 }
 
 class _AppLocalizationsDelegate

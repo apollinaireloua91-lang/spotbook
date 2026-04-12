@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/widgets/spotbook_avatar.dart';
 import '../../../../shared/widgets/spotbook_button.dart';
@@ -53,6 +54,7 @@ class _DiscoverSearchResultsScreenState
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     final s = ref.watch(discoverProvider);
     final n = ref.read(discoverProvider.notifier);
 
@@ -68,7 +70,7 @@ class _DiscoverSearchResultsScreenState
               child: Row(
                 children: [
                   Semantics(
-                    label: 'Back',
+                    label: l.a11yBack,
                     child: IconButton(
                       icon: Container(
                         padding: const EdgeInsets.all(8),
@@ -92,7 +94,7 @@ class _DiscoverSearchResultsScreenState
                       style: GoogleFonts.dmSans(
                           color: AppColors.blanc, fontSize: 14),
                       decoration: InputDecoration(
-                        hintText: 'Rechercher un professionnel...',
+                        hintText: l.searchProfessionalHint,
                         hintStyle: GoogleFonts.dmSans(
                             color: AppColors.gris, fontSize: 14),
                         prefixIcon: Icon(Icons.search,
@@ -288,6 +290,7 @@ class _EmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     return ListView(
       physics: const AlwaysScrollableScrollPhysics(),
       children: [
@@ -308,8 +311,8 @@ class _EmptyState extends StatelessWidget {
                 hasError
                     ? 'Connection error.\nPull to retry.'
                     : (query != null && query!.isNotEmpty
-                        ? 'Aucun résultat pour\n« $query »'
-                        : 'No professionals available.\nPull to refresh.'),
+                        ? l.noResultsFor(query!)
+                        : l.noProfessionalsAvailable),
                 textAlign: TextAlign.center,
                 style: GoogleFonts.dmSans(
                   color: AppColors.gris,
@@ -320,7 +323,7 @@ class _EmptyState extends StatelessWidget {
               if (hasError) ...[
                 const SizedBox(height: 24),
                 SpotbookButton.secondary(
-                  label: 'Retry',
+                  label: l.retry,
                   onPressed: onRetry,
                   width: 140,
                 ),
@@ -343,6 +346,7 @@ class _ProviderCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     return Material(
       color: AppColors.fond,
       borderRadius: BorderRadius.circular(16),
@@ -450,7 +454,7 @@ class _ProviderCard extends StatelessWidget {
 
               // Book button
               SpotbookButton.outlined(
-                label: 'Book',
+                label: l.book,
                 onPressed: () {
                   HapticFeedback.lightImpact();
                   context.push('/client/provider/${pro.id}');
