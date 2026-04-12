@@ -218,10 +218,10 @@ class _PanelContentState extends State<_PanelContent>
                                       pro.name.isNotEmpty
                                           ? pro.name[0].toUpperCase()
                                           : '?',
-                                      style: GoogleFonts.dmSans(
-                                        fontSize: 20,
+                                      style: GoogleFonts.sora(
+                                        fontSize: 22,
                                         fontWeight: FontWeight.w700,
-                                        color: AppColors.blanc,
+                                        color: Colors.white,
                                       ),
                                     ),
                                   ),

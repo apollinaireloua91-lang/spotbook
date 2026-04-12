@@ -143,28 +143,6 @@ class _ProSearchScreenState extends ConsumerState<ProSearchScreen> {
                 ),
               )
             else ...[
-              // ── Tendances (hashtags) ──
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 24, 20, 0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Trending',
-                        style: GoogleFonts.sora(
-                          color: AppColors.blanc,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      const _TrendingHashtags(),
-                    ],
-                  ),
-                ),
-              ),
-
               // ── Pros populaires près de toi ──
               SliverToBoxAdapter(
                 child: Padding(
@@ -206,52 +184,6 @@ class _ProSearchScreenState extends ConsumerState<ProSearchScreen> {
             ],
           ],
         ),
-      ),
-    );
-  }
-}
-
-// ═════════════════════════════════════════════════════════════════════════════
-// TRENDING HASHTAGS — horizontal scroll pills
-// ═════════════════════════════════════════════════════════════════════════════
-
-class _TrendingHashtags extends StatelessWidget {
-  const _TrendingHashtags();
-
-  static const _hashtags = [
-    '#barbier', '#nailart', '#coach', '#fade', '#mtl',
-    '#beaute', '#tatouage', '#photoshoot', '#fitness', '#makeup',
-  ];
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      height: 34,
-      child: ListView.separated(
-        scrollDirection: Axis.horizontal,
-        itemCount: _hashtags.length,
-        separatorBuilder: (_, __) => const SizedBox(width: 8),
-        itemBuilder: (context, i) {
-          return Container(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
-            decoration: BoxDecoration(
-              color: AppColors.surface,
-              borderRadius: BorderRadius.circular(17),
-              border: Border.all(
-                color: AppColors.violet.withAlpha(77), // ~0.3
-                width: 1,
-              ),
-            ),
-            child: Text(
-              _hashtags[i],
-              style: GoogleFonts.dmSans(
-                color: AppColors.violetClair,
-                fontSize: 12,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          );
-        },
       ),
     );
   }
@@ -339,21 +271,42 @@ class _ProPopularCard extends StatelessWidget {
                 ),
               ),
               child: Center(
-                child: CircleAvatar(
-                  radius: 24,
-                  backgroundColor: AppColors.fond,
-                  backgroundImage: pro.avatarUrl != null
-                      ? CachedNetworkImageProvider(pro.avatarUrl!)
-                      : null,
-                  child: pro.avatarUrl == null
-                      ? Text(
-                          pro.displayName[0].toUpperCase(),
-                          style: GoogleFonts.dmSans(
-                            color: AppColors.blanc,
-                            fontWeight: FontWeight.w700,
+                child: Container(
+                  width: 48,
+                  height: 48,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(14),
+                    gradient: pro.avatarUrl == null
+                        ? LinearGradient(
+                            colors: [
+                              AppColors.violet,
+                              AppColors.violet.withAlpha(153),
+                            ],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          )
+                        : null,
+                  ),
+                  child: pro.avatarUrl != null
+                      ? ClipRRect(
+                          borderRadius: BorderRadius.circular(14),
+                          child: CachedNetworkImage(
+                            imageUrl: pro.avatarUrl!,
+                            fit: BoxFit.cover,
+                            width: 48,
+                            height: 48,
                           ),
                         )
-                      : null,
+                      : Center(
+                          child: Text(
+                            pro.displayName[0].toUpperCase(),
+                            style: GoogleFonts.sora(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
                 ),
               ),
             ),
@@ -892,21 +845,42 @@ class _ProSearchCard extends StatelessWidget {
         ),
         child: Row(
           children: [
-            CircleAvatar(
-              radius: 24,
-              backgroundColor: AppColors.surfaceAlt,
-              backgroundImage: result.avatarUrl != null
-                  ? CachedNetworkImageProvider(result.avatarUrl!)
-                  : null,
-              child: result.avatarUrl == null
-                  ? Text(
-                      result.displayName[0].toUpperCase(),
-                      style: GoogleFonts.dmSans(
-                        color: AppColors.blanc,
-                        fontWeight: FontWeight.w700,
+            Container(
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(14),
+                gradient: result.avatarUrl == null
+                    ? LinearGradient(
+                        colors: [
+                          AppColors.violet,
+                          AppColors.violet.withAlpha(153),
+                        ],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      )
+                    : null,
+              ),
+              child: result.avatarUrl != null
+                  ? ClipRRect(
+                      borderRadius: BorderRadius.circular(14),
+                      child: CachedNetworkImage(
+                        imageUrl: result.avatarUrl!,
+                        fit: BoxFit.cover,
+                        width: 48,
+                        height: 48,
                       ),
                     )
-                  : null,
+                  : Center(
+                      child: Text(
+                        result.displayName[0].toUpperCase(),
+                        style: GoogleFonts.sora(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
             ),
             const SizedBox(width: 14),
             Expanded(

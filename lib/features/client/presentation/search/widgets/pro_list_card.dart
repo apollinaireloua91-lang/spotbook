@@ -38,11 +38,13 @@ class ProListCard extends StatelessWidget {
                 height: 52,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(14),
-                  gradient: LinearGradient(
-                    colors: [catColor, catColor.withValues(alpha: 0.6)],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
+                  gradient: pro.avatarUrl == null
+                      ? LinearGradient(
+                          colors: [catColor, catColor.withValues(alpha: 0.6)],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        )
+                      : null,
                 ),
                 child: pro.avatarUrl != null
                     ? ClipRRect(
@@ -57,10 +59,10 @@ class ProListCard extends StatelessWidget {
                           pro.name.isNotEmpty
                               ? pro.name[0].toUpperCase()
                               : '?',
-                          style: GoogleFonts.dmSans(
-                            fontSize: 20,
+                          style: GoogleFonts.sora(
+                            fontSize: 22,
                             fontWeight: FontWeight.w700,
-                            color: AppColors.blanc,
+                            color: Colors.white,
                           ),
                         ),
                       ),

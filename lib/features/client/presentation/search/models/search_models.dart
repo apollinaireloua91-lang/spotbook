@@ -19,6 +19,7 @@ class ProSearchResult {
     required this.online,
     this.avatarUrl,
     this.services = const [],
+    this.hasRealCoords = false,
   });
 
   final String id;
@@ -34,6 +35,7 @@ class ProSearchResult {
   final bool online;
   final String? avatarUrl;
   final List<ProService> services;
+  final bool hasRealCoords;
 
   ProSearchResult copyWith({
     String? id,
@@ -49,6 +51,7 @@ class ProSearchResult {
     bool? online,
     String? avatarUrl,
     List<ProService>? services,
+    bool? hasRealCoords,
   }) {
     return ProSearchResult(
       id: id ?? this.id,
@@ -64,6 +67,7 @@ class ProSearchResult {
       online: online ?? this.online,
       avatarUrl: avatarUrl ?? this.avatarUrl,
       services: services ?? this.services,
+      hasRealCoords: hasRealCoords ?? this.hasRealCoords,
     );
   }
 }

@@ -175,8 +175,15 @@ class ClientSearchCubit extends Cubit<ClientSearchState> {
         final p = Map<String, dynamic>.from(raw as Map);
         final id = p['id'] as String;
         final u = (p['users'] as Map<String, dynamic>?) ?? {};
-        final lat = (u['latitude'] as num?)?.toDouble() ?? _defaultLat;
-        final lng = (u['longitude'] as num?)?.toDouble() ?? _defaultLng;
+        // Use real GPS coordinates from users table, or from profiles_pro
+        final rawLat = (u['latitude'] as num?)?.toDouble() ??
+            (p['latitude'] as num?)?.toDouble();
+        final rawLng = (u['longitude'] as num?)?.toDouble() ??
+            (p['longitude'] as num?)?.toDouble();
+        final hasReal = rawLat != null && rawLng != null;
+        final lat = rawLat ?? _defaultLat;
+        final lng = rawLng ?? _defaultLng;
+
         final services = servicesMap[id] ?? [];
         final prices = services.map((s) => s.price).toList()..sort();
         final priceRange = prices.isEmpty
@@ -196,11 +203,14 @@ class ClientSearchCubit extends Cubit<ClientSearchState> {
           lng: lng,
           rating: (p['rating_average'] as num?)?.toDouble() ?? 0,
           reviews: (p['review_count'] as int?) ?? 0,
-          distKm: _haversineKm(userLat, userLng, lat, lng),
+          distKm: hasReal
+              ? _haversineKm(userLat, userLng, lat, lng)
+              : 0,
           priceRange: priceRange,
           online: false,
           avatarUrl: u['avatar_url'] as String?,
           services: services,
+          hasRealCoords: hasReal,
         );
       }).toList()
         ..sort((a, b) => a.distKm.compareTo(b.distKm));
@@ -402,7 +412,11 @@ class ClientSearchCubit extends Cubit<ClientSearchState> {
     final uLng = state.userLng ?? _defaultLng;
 
     var filtered = _allPros.map((p) {
-      return p.copyWith(distKm: _haversineKm(uLat, uLng, p.lat, p.lng));
+      return p.copyWith(
+        distKm: p.hasRealCoords
+            ? _haversineKm(uLat, uLng, p.lat, p.lng)
+            : 0,
+      );
     }).toList();
 
     // Category filter

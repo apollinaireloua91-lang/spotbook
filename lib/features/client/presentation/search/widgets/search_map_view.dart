@@ -140,7 +140,11 @@ class _SearchMapViewState extends State<SearchMapView> {
   // ── Build marker icons (cached by category) ────────────────────────
 
   void _buildProMarkerIcons(List<ProSearchResult> pros) {
-    final categories = pros.take(_kMaxMarkers).map((p) => p.category).toSet();
+    final categories = pros
+        .where((p) => p.hasRealCoords)
+        .take(_kMaxMarkers)
+        .map((p) => p.category)
+        .toSet();
     for (final cat in categories) {
       if (_markerIcons.containsKey(cat)) continue;
       _createSmallDotMarker(categoryColor(cat)).then((icon) {
@@ -154,23 +158,38 @@ class _SearchMapViewState extends State<SearchMapView> {
   void _fitCameraToPros(
       List<ProSearchResult> pros, double? uLat, double? uLng) {
     final ctrl = _mapController;
-    if (ctrl == null || pros.isEmpty) return;
+    if (ctrl == null) return;
 
-    if (pros.length == 1) {
+    // Only consider pros with real GPS coordinates for camera bounds
+    final geolocated =
+        pros.where((p) => p.hasRealCoords).take(_kMaxMarkers).toList();
+
+    if (geolocated.isEmpty) {
+      // No pro has real coords — center on user or default
       ctrl.animateCamera(
         CameraUpdate.newLatLngZoom(
-          LatLng(pros.first.lat, pros.first.lng),
+          LatLng(uLat ?? 45.5100, uLng ?? -73.5700),
+          12,
+        ),
+      );
+      return;
+    }
+
+    if (geolocated.length == 1) {
+      ctrl.animateCamera(
+        CameraUpdate.newLatLngZoom(
+          LatLng(geolocated.first.lat, geolocated.first.lng),
           14,
         ),
       );
       return;
     }
 
-    var minLat = pros.first.lat;
-    var maxLat = pros.first.lat;
-    var minLng = pros.first.lng;
-    var maxLng = pros.first.lng;
-    for (final p in pros.take(_kMaxMarkers)) {
+    var minLat = geolocated.first.lat;
+    var maxLat = geolocated.first.lat;
+    var minLng = geolocated.first.lng;
+    var maxLng = geolocated.first.lng;
+    for (final p in geolocated) {
       minLat = math.min(minLat, p.lat);
       maxLat = math.max(maxLat, p.lat);
       minLng = math.min(minLng, p.lng);
@@ -221,8 +240,9 @@ class _SearchMapViewState extends State<SearchMapView> {
           ));
         }
 
-        // Pro markers — tiny colored dots
+        // Pro markers — tiny colored dots (only for pros with real GPS)
         for (final pro in state.pros.take(_kMaxMarkers)) {
+          if (!pro.hasRealCoords) continue;
           markers.add(Marker(
             markerId: MarkerId(pro.id),
             position: LatLng(pro.lat, pro.lng),
