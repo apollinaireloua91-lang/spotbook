@@ -4,24 +4,42 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../../shared/theme/app_colors.dart';
 import '../cubit/client_search_cubit.dart';
-import 'event_search_card.dart';
 import 'pro_list_card.dart';
 
-final _clientTrendingPostsProvider =
+// ── Trending videos from all pros ──
+final _clientTrendingVideosProvider =
     FutureProvider.autoDispose<List<Map<String, dynamic>>>((ref) async {
   final data = await Supabase.instance.client
-      .from('posts')
+      .from('videos')
       .select('''
-        id, title, thumbnail_url, views_count, likes_count, created_at,
-        profiles_pro!pro_id(display_name, category)
+        id, title, thumbnail_url, cloudflare_thumbnail_url, views_count, likes_count, created_at,
+        users!pro_id(full_name, avatar_url, profiles_pro(business_name, category))
       ''')
       .eq('status', 'approved')
       .order('created_at', ascending: false)
       .limit(12);
+  return (data as List).cast<Map<String, dynamic>>();
+});
+
+// ── Trending events (active + future) ──
+final _clientTrendingEventsProvider =
+    FutureProvider.autoDispose<List<Map<String, dynamic>>>((ref) async {
+  final data = await Supabase.instance.client
+      .from('events')
+      .select('''
+        id, title, event_date, start_time, location, cover_url, total_capacity,
+        users!pro_id(full_name, avatar_url, profiles_pro(business_name)),
+        ticket_types(price, quantity, sold_count)
+      ''')
+      .eq('is_active', true)
+      .gte('event_date', DateTime.now().toIso8601String().split('T').first)
+      .order('event_date', ascending: true)
+      .limit(10);
   return (data as List).cast<Map<String, dynamic>>();
 });
 
@@ -55,46 +73,16 @@ class _SearchListViewState extends State<SearchListView>
   Widget build(BuildContext context) {
     return BlocBuilder<ClientSearchCubit, ClientSearchState>(
       builder: (context, state) {
-        if (state.pros.isEmpty && state.events.isEmpty) {
-          return Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  Icons.search_off,
-                  size: 48,
-                  color: AppColors.grisInactif,
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  'No results',
-                  style: GoogleFonts.dmSans(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.gris,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  'Try another search or category',
-                  style: GoogleFonts.dmSans(
-                    fontSize: 12,
-                    color: AppColors.grisInactif,
-                  ),
-                ),
-              ],
-            ),
-          );
-        }
+        // Show trending content even when no search results
+        final hasSearchResults = state.pros.isNotEmpty || state.events.isNotEmpty;
+        final isSearching = state.query.isNotEmpty;
 
         return ListView(
           padding: const EdgeInsets.only(top: 8, bottom: 100),
           children: [
-            // ── Section: Près de toi ──
+            // ── Section: Pros près de toi ──
             if (state.pros.isNotEmpty) ...[
-              _SectionTitle(
-                title: 'Near you \uD83D\uDCCD',
-              ),
+              const _SectionTitle(title: 'Près de toi'),
               const SizedBox(height: 8),
               ...List.generate(state.pros.length, (index) {
                 final delay = (index * 0.08).clamp(0.0, 0.6);
@@ -119,33 +107,42 @@ class _SearchListViewState extends State<SearchListView>
               }),
             ],
 
-            // ── Section: Événements à venir ──
-            if (state.events.isNotEmpty) ...[
-              const SizedBox(height: 20),
-              _SectionTitle(
-                title: 'Upcoming events \uD83C\uDF89',
-              ),
-              const SizedBox(height: 8),
-              SizedBox(
-                height: 160,
-                child: ListView.separated(
-                  scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  itemCount: state.events.length,
-                  separatorBuilder: (_, __) => const SizedBox(width: 10),
-                  itemBuilder: (context, index) {
-                    return EventSearchCard(
-                      event: state.events[index],
-                      onTap: () => context.push(
-                        '/event/${state.events[index].id}',
+            // ── Empty search state ──
+            if (isSearching && !hasSearchResults)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 32),
+                child: Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.search_off, size: 48, color: AppColors.grisInactif),
+                      const SizedBox(height: 12),
+                      Text(
+                        'Aucun résultat',
+                        style: GoogleFonts.dmSans(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.gris,
+                        ),
                       ),
-                    );
-                  },
+                      const SizedBox(height: 4),
+                      Text(
+                        'Essaie une autre recherche ou catégorie',
+                        style: GoogleFonts.dmSans(
+                          fontSize: 12,
+                          color: AppColors.grisInactif,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ],
 
-            // ── Section: Videos ──
+            // ── Section: Événements tendance ──
+            const SizedBox(height: 20),
+            const _TrendingEventsSection(),
+
+            // ── Section: Vidéos ──
             const SizedBox(height: 20),
             const _ClientVideosSection(),
           ],
@@ -155,7 +152,245 @@ class _SearchListViewState extends State<SearchListView>
   }
 }
 
-// ─── Videos Section (Riverpod Consumer inside Bloc tree) ────────────
+// ═════════════════════════════════════════════════════════════════════════════
+// TRENDING EVENTS SECTION — horizontal cards with cover images
+// ═════════════════════════════════════════════════════════════════════════════
+
+class _TrendingEventsSection extends ConsumerWidget {
+  const _TrendingEventsSection();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final events = ref.watch(_clientTrendingEventsProvider);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
+          child: Row(
+            children: [
+              Icon(Icons.local_fire_department, color: AppColors.rose, size: 18),
+              const SizedBox(width: 8),
+              Text(
+                'Événements tendance',
+                style: GoogleFonts.sora(
+                  color: AppColors.blanc,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 12),
+        SizedBox(
+          height: 180,
+          child: events.when(
+            loading: () => ListView.separated(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              itemCount: 4,
+              separatorBuilder: (_, __) => const SizedBox(width: 12),
+              itemBuilder: (_, __) => Container(
+                width: 240,
+                decoration: BoxDecoration(
+                  color: AppColors.surface,
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: AppColors.border, width: 0.5),
+                ),
+              ),
+            ),
+            error: (_, __) => Center(
+              child: Text(
+                'Impossible de charger les événements',
+                style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 13),
+              ),
+            ),
+            data: (list) {
+              if (list.isEmpty) {
+                return Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(24),
+                    child: Text(
+                      'Aucun événement à venir',
+                      style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 13),
+                    ),
+                  ),
+                );
+              }
+              return ListView.separated(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                itemCount: list.length,
+                separatorBuilder: (_, __) => const SizedBox(width: 12),
+                itemBuilder: (context, index) {
+                  return _TrendingEventCard(event: list[index]);
+                },
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _TrendingEventCard extends StatelessWidget {
+  const _TrendingEventCard({required this.event});
+
+  final Map<String, dynamic> event;
+
+  @override
+  Widget build(BuildContext context) {
+    final title = event['title'] as String? ?? '';
+    final dateStr = event['event_date'] as String? ?? '';
+    final location = event['location'] as String? ?? '';
+    final coverUrl = event['cover_url'] as String?;
+    final eventId = event['id'] as String;
+    final user = event['users'] as Map<String, dynamic>?;
+    final proName = user?['full_name'] as String? ?? '';
+    final ticketTypes = event['ticket_types'] as List? ?? [];
+
+    // Calculate lowest price
+    double? lowestPrice;
+    for (final tt in ticketTypes) {
+      final price = (tt['price'] as num?)?.toDouble();
+      if (price != null && (lowestPrice == null || price < lowestPrice)) {
+        lowestPrice = price;
+      }
+    }
+
+    // Format date
+    String formattedDate = dateStr;
+    try {
+      final dt = DateTime.parse(dateStr);
+      formattedDate = DateFormat('d MMM yyyy', 'fr_FR').format(dt);
+    } catch (_) {}
+
+    return GestureDetector(
+      onTap: () => context.push('/event/$eventId'),
+      child: Container(
+        width: 240,
+        decoration: BoxDecoration(
+          color: AppColors.surface,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: AppColors.border, width: 0.5),
+          boxShadow: AppColors.cardShadow,
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Cover image or gradient
+            SizedBox(
+              height: 100,
+              width: double.infinity,
+              child: coverUrl != null && coverUrl.isNotEmpty
+                  ? CachedNetworkImage(
+                      imageUrl: coverUrl,
+                      fit: BoxFit.cover,
+                      errorWidget: (_, __, ___) => Container(
+                        decoration: BoxDecoration(gradient: AppColors.gradientAccent),
+                      ),
+                    )
+                  : Container(
+                      decoration: BoxDecoration(gradient: AppColors.gradientAccent),
+                      child: Center(
+                        child: Icon(Icons.event, color: Colors.white.withAlpha(100), size: 32),
+                      ),
+                    ),
+            ),
+
+            // Info
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(10, 8, 10, 8),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: GoogleFonts.sora(
+                        color: AppColors.blanc,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        Icon(Icons.calendar_today, size: 10, color: AppColors.gris),
+                        const SizedBox(width: 4),
+                        Text(
+                          formattedDate,
+                          style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 11),
+                        ),
+                        if (location.isNotEmpty) ...[
+                          const SizedBox(width: 8),
+                          Icon(Icons.location_on_outlined, size: 10, color: AppColors.gris),
+                          const SizedBox(width: 2),
+                          Expanded(
+                            child: Text(
+                              location,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 11),
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                    const Spacer(),
+                    Row(
+                      children: [
+                        if (proName.isNotEmpty)
+                          Expanded(
+                            child: Text(
+                              proName,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: GoogleFonts.dmSans(
+                                color: AppColors.violetClair,
+                                fontSize: 11,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                        if (lowestPrice != null)
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                            decoration: BoxDecoration(
+                              color: AppColors.violet.withAlpha(30),
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: Text(
+                              'Dès ${lowestPrice.toInt()}\$',
+                              style: GoogleFonts.dmSans(
+                                color: AppColors.violet,
+                                fontSize: 11,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ═════════════════════════════════════════════════════════════════════════════
+// VIDEOS SECTION — grid of all pro videos
+// ═════════════════════════════════════════════════════════════════════════════
 
 class _ClientVideosSection extends ConsumerStatefulWidget {
   const _ClientVideosSection();
@@ -186,9 +421,9 @@ class _ClientVideosSectionState extends ConsumerState<_ClientVideosSection>
 
   @override
   Widget build(BuildContext context) {
-    final posts = ref.watch(_clientTrendingPostsProvider);
+    final videos = ref.watch(_clientTrendingVideosProvider);
 
-    posts.whenData((_) {
+    videos.whenData((_) {
       if (!_staggerCtrl.isAnimating && _staggerCtrl.value == 0) {
         _staggerCtrl.forward();
       }
@@ -208,7 +443,7 @@ class _ClientVideosSectionState extends ConsumerState<_ClientVideosSection>
                       color: AppColors.violetClair, size: 18),
                   const SizedBox(width: 8),
                   Text(
-                    'Videos',
+                    'Vidéos',
                     style: GoogleFonts.sora(
                       color: AppColors.blanc,
                       fontSize: 16,
@@ -220,7 +455,7 @@ class _ClientVideosSectionState extends ConsumerState<_ClientVideosSection>
               GestureDetector(
                 onTap: () => context.push('/client/feed'),
                 child: Text(
-                  'See all',
+                  'Voir tout',
                   style: GoogleFonts.dmSans(
                     color: AppColors.violet,
                     fontWeight: FontWeight.w600,
@@ -234,15 +469,14 @@ class _ClientVideosSectionState extends ConsumerState<_ClientVideosSection>
         const SizedBox(height: 12),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: posts.when(
+          child: videos.when(
             loading: () => _buildShimmerGrid(),
             error: (_, __) => Center(
               child: Padding(
                 padding: const EdgeInsets.all(24),
                 child: Text(
-                  'Unable to load videos',
-                  style:
-                      GoogleFonts.dmSans(color: AppColors.gris, fontSize: 13),
+                  'Impossible de charger les vidéos',
+                  style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 13),
                 ),
               ),
             ),
@@ -286,7 +520,7 @@ class _ClientVideosSectionState extends ConsumerState<_ClientVideosSection>
     );
   }
 
-  Widget _buildVideoGrid(List<Map<String, dynamic>> posts) {
+  Widget _buildVideoGrid(List<Map<String, dynamic>> videos) {
     return GridView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
@@ -296,9 +530,9 @@ class _ClientVideosSectionState extends ConsumerState<_ClientVideosSection>
         crossAxisSpacing: 10,
         childAspectRatio: 0.7,
       ),
-      itemCount: posts.length,
+      itemCount: videos.length,
       itemBuilder: (context, index) {
-        final post = posts[index];
+        final video = videos[index];
         final delay = index * 80;
 
         return AnimatedBuilder(
@@ -318,7 +552,7 @@ class _ClientVideosSectionState extends ConsumerState<_ClientVideosSection>
               ),
             );
           },
-          child: _ClientVideoCard(post: post),
+          child: _ClientVideoCard(video: video),
         );
       },
     );
@@ -328,18 +562,20 @@ class _ClientVideosSectionState extends ConsumerState<_ClientVideosSection>
 // ── Single video card ──
 
 class _ClientVideoCard extends StatelessWidget {
-  const _ClientVideoCard({required this.post});
+  const _ClientVideoCard({required this.video});
 
-  final Map<String, dynamic> post;
+  final Map<String, dynamic> video;
 
   @override
   Widget build(BuildContext context) {
-    final thumb = post['thumbnail_url'] as String?;
-    final title = post['title'] as String? ?? '';
-    final views = post['views_count'] as int? ?? 0;
-    final likes = post['likes_count'] as int? ?? 0;
-    final pro = post['profiles_pro'] as Map<String, dynamic>?;
-    final category = pro?['category'] as String? ?? '';
+    final thumb = (video['cloudflare_thumbnail_url'] as String?)
+        ?? (video['thumbnail_url'] as String?);
+    final title = video['title'] as String? ?? '';
+    final views = video['views_count'] as int? ?? 0;
+    final likes = video['likes_count'] as int? ?? 0;
+    final user = video['users'] as Map<String, dynamic>?;
+    final profilesPro = user?['profiles_pro'] as Map<String, dynamic>?;
+    final category = profilesPro?['category'] as String? ?? '';
 
     return GestureDetector(
       onTap: () => context.push('/client/feed'),
@@ -398,8 +634,7 @@ class _ClientVideoCard extends StatelessWidget {
                     color: AppColors.textOnPrimary,
                     shape: BoxShape.circle,
                   ),
-                  child:
-                      Icon(Icons.play_arrow, color: AppColors.violet, size: 16),
+                  child: Icon(Icons.play_arrow, color: AppColors.violet, size: 16),
                 ),
               ),
 
