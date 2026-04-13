@@ -1,4 +1,7 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -6,23 +9,22 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../shared/theme/app_colors.dart';
+import '../../../../shared/theme/app_typography.dart';
 import '../../../../shared/theme/theme_mode_notifier.dart';
-import '../../../../shared/widgets/spotbook_loading_shimmer.dart';
+import '../../../feed/data/feed_play_state.dart';
 import '../../../feed/data/video_repository.dart';
 import '../../../feed/presentation/widgets/video_feed_item.dart';
 import '../../../notifications/data/notification_repository.dart';
 import 'cubit/pro_feed_cubit.dart';
 import 'widgets/post_left_column_pro.dart';
 import 'widgets/post_right_column_pro.dart';
-import 'widgets/pro_top_bar.dart';
+import 'widgets/pro_notif_sheets.dart';
 
-/// Pro feed screen — TikTok-style vertical video feed.
+/// Pro feed screen — mirrors the client feed structure.
 ///
-/// Key differences from ClientFeedScreen:
-/// - No tabs (Découvrir / Abonnements) — shows all approved videos
-/// - ProTopBar with 4 notification buttons (bell, calendar, tickets, messages)
-/// - Right column: Like + Save + Share + Spotify (NO Comment button)
-/// - Premium play/pause controls always visible on screen
+/// Same premium glassmorphism top bar + persistent play/pause button.
+/// Pro-specific: 4 notification buttons (bell, calendar, tickets, messages),
+/// no Discover/Following tabs, no Comment button on videos.
 class ProFeedScreen extends ConsumerStatefulWidget {
   const ProFeedScreen({super.key});
 
@@ -41,10 +43,9 @@ class _ProFeedScreenState extends ConsumerState<ProFeedScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Watch theme to rebuild accent colors when dark mode toggles
     ref.watch(themeModeProvider);
     return BlocProvider(
-      create: (context) => ProFeedCubit(
+      create: (_) => ProFeedCubit(
         videoRepository: ref.read(videoRepositoryProvider),
         notificationRepository: ref.read(notificationRepositoryProvider),
       ),
@@ -53,13 +54,20 @@ class _ProFeedScreenState extends ConsumerState<ProFeedScreen> {
   }
 }
 
-class _ProFeedBody extends StatelessWidget {
+// ═════════════════════════════════════════════════════════════════════════════
+// FEED BODY — same layout as client FeedScreen
+// ═════════════════════════════════════════════════════════════════════════════
+
+class _ProFeedBody extends ConsumerWidget {
   const _ProFeedBody({required this.pageController});
 
   final PageController pageController;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final topPad = MediaQuery.of(context).padding.top;
+    final isPlaying = ref.watch(feedPlayStateProvider);
+
     return BlocListener<ProFeedCubit, ProFeedState>(
       listenWhen: (p, c) => c.error != null && c.error != p.error,
       listener: (context, state) {
@@ -83,84 +91,394 @@ class _ProFeedBody extends StatelessWidget {
           final cubit = context.read<ProFeedCubit>();
           final currentUid =
               Supabase.instance.client.auth.currentUser?.id;
+
+          // ── Loading state ──
+          if (state.isLoading) {
+            return Scaffold(
+              backgroundColor: Colors.black,
+              body: Center(
+                child: SizedBox(
+                  width: 32,
+                  height: 32,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2.5,
+                    color: AppColors.violet,
+                  ),
+                ),
+              ),
+            );
+          }
+
+          // ── Empty state ──
+          if (state.videos.isEmpty) {
+            return Scaffold(
+              backgroundColor: Colors.black,
+              body: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      width: 80,
+                      height: 80,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: AppColors.violet.withAlpha(20),
+                        border: Border.all(
+                          color: AppColors.violet.withAlpha(40),
+                        ),
+                      ),
+                      child: Icon(Icons.play_circle_outline_rounded,
+                          size: 40,
+                          color: AppColors.violet.withAlpha(180)),
+                    ),
+                    const SizedBox(height: 20),
+                    Text('Aucune vidéo',
+                        style: GoogleFonts.sora(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600)),
+                    const SizedBox(height: 8),
+                    Text(
+                        'Les vidéos des professionnels\napparaîtront ici',
+                        textAlign: TextAlign.center,
+                        style: GoogleFonts.dmSans(
+                            color: Colors.white.withAlpha(120),
+                            fontSize: 14)),
+                    const SizedBox(height: 28),
+                    GestureDetector(
+                      onTap: cubit.refresh,
+                      child: Container(
+                        width: 160,
+                        height: 44,
+                        decoration: BoxDecoration(
+                          gradient: AppColors.gradientAccent,
+                          borderRadius: BorderRadius.circular(22),
+                          boxShadow: AppColors.primaryButtonShadow,
+                        ),
+                        child: Center(
+                          child: Text('Actualiser',
+                              style: GoogleFonts.dmSans(
+                                  color: Colors.white,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w700)),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }
+
+          // ── Main feed ──
           return Scaffold(
-            // Video feed is always dark regardless of theme
             backgroundColor: Colors.black,
             extendBodyBehindAppBar: true,
             body: Stack(
               children: [
-                // ── Content ──
-                if (state.isLoading)
-                  const SpotbookLoadingShimmer.feed()
-                else if (state.videos.isEmpty)
-                  _ProFeedEmptyState(onRetry: cubit.refresh)
-                else
-                  RefreshIndicator(
-                    onRefresh: cubit.refresh,
-                    color: AppColors.violet,
-                    backgroundColor: const Color(0xFF121218),
-                    child: PageView.builder(
-                      controller: pageController,
-                      scrollDirection: Axis.vertical,
-                      itemCount: state.videos.length,
-                      onPageChanged: cubit.setCurrentIndex,
-                      itemBuilder: (context, index) {
-                        final video = state.videos[index];
-                        final isOwnPost = video.proId == currentUid;
-                        return VideoFeedItem(
-                          video: video,
-                          isActive: index == state.currentIndex,
-                          onLikeToggled: (liked) =>
-                              cubit.toggleLike(index, liked),
-                          index: index,
-                          useLocalHeartAnimation: true,
-                          onToggleLike: cubit.toggleLike,
-                          onToggleSave: cubit.toggleSave,
-                          onToggleFollow: cubit.toggleFollow,
-                          // Pro feed: left column with Book CTA (hidden on own posts)
-                          bottomOverlayOverride: PostLeftColumnPro(
-                            video: video,
-                            onBook: isOwnPost
-                                ? null
-                                : () => context
-                                    .push('/pro/${video.proId}'),
-                          ),
-                          // Pro feed: enhanced right column without Comment button
-                          rightColumnOverride: PostRightColumnPro(
-                            video: video,
-                            onToggleLike: () =>
-                                cubit.toggleLike(index, !video.isLiked),
-                            onToggleSave: () =>
-                                cubit.toggleSave(index, !video.isSaved),
-                            onToggleFollow: () =>
-                                cubit.toggleFollow(
-                                    index, !video.isFollowed),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
+                // ─── Video PageView ───
+                PageView.builder(
+                  controller: pageController,
+                  scrollDirection: Axis.vertical,
+                  itemCount: state.videos.length,
+                  onPageChanged: (i) {
+                    cubit.setCurrentIndex(i);
+                    ref.read(feedPlayStateProvider.notifier).set(true);
+                  },
+                  itemBuilder: (context, index) {
+                    final video = state.videos[index];
+                    final isOwnPost = video.proId == currentUid;
+                    return VideoFeedItem(
+                      video: video,
+                      isActive: index == state.currentIndex,
+                      onLikeToggled: (liked) =>
+                          cubit.toggleLike(index, liked),
+                      index: index,
+                      useLocalHeartAnimation: true,
+                      onToggleLike: cubit.toggleLike,
+                      onToggleSave: cubit.toggleSave,
+                      onToggleFollow: cubit.toggleFollow,
+                      bottomOverlayOverride: PostLeftColumnPro(
+                        video: video,
+                        onBook: isOwnPost
+                            ? null
+                            : () =>
+                                context.push('/pro/${video.proId}'),
+                      ),
+                      rightColumnOverride: PostRightColumnPro(
+                        video: video,
+                        onToggleLike: () =>
+                            cubit.toggleLike(index, !video.isLiked),
+                        onToggleSave: () =>
+                            cubit.toggleSave(index, !video.isSaved),
+                        onToggleFollow: () => cubit.toggleFollow(
+                            index, !video.isFollowed),
+                      ),
+                    );
+                  },
+                ),
 
-                // ── Top bar (always on top) ──
-                const Positioned(
+                // ─── Premium Top Bar — Glassmorphism (same as client feed) ───
+                Positioned(
                   top: 0,
                   left: 0,
                   right: 0,
-                  child: ProTopBar(),
-                ),
+                  child: ClipRect(
+                    child: BackdropFilter(
+                      filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+                      child: Container(
+                        padding: EdgeInsets.only(
+                            top: topPad + 10,
+                            left: 16,
+                            right: 16,
+                            bottom: 14),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [
+                              Colors.black.withAlpha(140),
+                              Colors.black.withAlpha(40),
+                              Colors.transparent,
+                            ],
+                            stops: const [0.0, 0.6, 1.0],
+                          ),
+                        ),
+                        child: Row(
+                          children: [
+                            // Spotbook logo — premium with subtle glow
+                            Text(
+                              'Spotbook',
+                              style: AppTypography.spotbookLogo(
+                                      onVideoBackground: true)
+                                  .copyWith(
+                                fontSize: 20,
+                                letterSpacing: -0.8,
+                                shadows: [
+                                  const Shadow(
+                                    color: AppColors.shadowTextLight,
+                                    blurRadius: 12,
+                                    offset: Offset(0, 1),
+                                  ),
+                                  Shadow(
+                                    color:
+                                        AppColors.violet.withAlpha(40),
+                                    blurRadius: 24,
+                                  ),
+                                ],
+                              ),
+                            ),
 
-                // ── Video progress indicator — thin premium line ──
-                if (!state.isLoading && state.videos.isNotEmpty)
-                  Positioned(
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    child: _PremiumVideoProgress(
-                      currentIndex: state.currentIndex,
-                      totalCount: state.videos.length,
+                            const Spacer(),
+
+                            // ── 4 Pro notification buttons ──
+                            BlocBuilder<ProFeedCubit, ProFeedState>(
+                              buildWhen: (p, c) =>
+                                  p.unreadNotif != c.unreadNotif ||
+                                  p.unreadRdv != c.unreadRdv ||
+                                  p.unreadTickets !=
+                                      c.unreadTickets ||
+                                  p.unreadMessages !=
+                                      c.unreadMessages,
+                              builder: (context, s) {
+                                return Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    _ProNotifButton(
+                                      icon: Icons
+                                          .notifications_outlined,
+                                      hasUnread:
+                                          s.unreadNotif > 0,
+                                      dotColor: AppColors.rose,
+                                      onTap: () => _openSheet(
+                                          context,
+                                          const ProActivitySheet()),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    _ProNotifButton(
+                                      icon: Icons
+                                          .calendar_today_outlined,
+                                      hasUnread: s.unreadRdv > 0,
+                                      dotColor:
+                                          AppColors.violetClair,
+                                      onTap: () => _openSheet(
+                                          context,
+                                          const ProRdvSheet()),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    _ProNotifButton(
+                                      icon: Icons
+                                          .confirmation_number_outlined,
+                                      hasUnread:
+                                          s.unreadTickets > 0,
+                                      dotColor: AppColors.rose,
+                                      onTap: () => _openSheet(
+                                          context,
+                                          const ProTicketsSheet()),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    _ProNotifButton(
+                                      icon: Icons
+                                          .chat_bubble_outline_rounded,
+                                      hasUnread:
+                                          s.unreadMessages > 0,
+                                      dotColor: AppColors.success,
+                                      onTap: () => _openSheet(
+                                          context,
+                                          const ProMessagesSheet()),
+                                    ),
+                                  ],
+                                );
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                   ),
+                ),
+
+                // ─── Persistent Play/Pause — top left, below top bar ───
+                Positioned(
+                  top: topPad + 62,
+                  left: 16,
+                  child: _PremiumPlayPauseButton(
+                    isPlaying: isPlaying,
+                    onTap: () {
+                      HapticFeedback.lightImpact();
+                      ref.read(feedPlayStateProvider.notifier).toggle();
+                    },
+                  ),
+                ),
+
+                // ── Video progress indicator ──
+                Positioned(
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  child: _PremiumVideoProgress(
+                    currentIndex: state.currentIndex,
+                    totalCount: state.videos.length,
+                  ),
+                ),
               ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  void _openSheet(BuildContext context, Widget sheet) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => sheet,
+    );
+  }
+}
+
+// ═════════════════════════════════════════════════════════════════════════════
+// PLAY/PAUSE BUTTON — persistent, glassmorphism (same as client feed)
+// ═════════════════════════════════════════════════════════════════════════════
+
+class _PremiumPlayPauseButton extends StatefulWidget {
+  const _PremiumPlayPauseButton({
+    required this.isPlaying,
+    required this.onTap,
+  });
+
+  final bool isPlaying;
+  final VoidCallback onTap;
+
+  @override
+  State<_PremiumPlayPauseButton> createState() =>
+      _PremiumPlayPauseButtonState();
+}
+
+class _PremiumPlayPauseButtonState extends State<_PremiumPlayPauseButton>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _pulseController;
+
+  @override
+  void initState() {
+    super.initState();
+    _pulseController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1500),
+    )..repeat(reverse: true);
+  }
+
+  @override
+  void dispose() {
+    _pulseController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: widget.onTap,
+      child: AnimatedBuilder(
+        animation: _pulseController,
+        builder: (context, child) {
+          final pulseValue = widget.isPlaying
+              ? 0.6 + (_pulseController.value * 0.4)
+              : 1.0;
+
+          return ClipRRect(
+            borderRadius: BorderRadius.circular(14),
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeOutCubic,
+                width: 42,
+                height: 42,
+                decoration: BoxDecoration(
+                  color: widget.isPlaying
+                      ? Colors.black
+                          .withAlpha((60 * pulseValue).round())
+                      : Colors.black.withAlpha(140),
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(
+                    color: widget.isPlaying
+                        ? Colors.white.withAlpha(25)
+                        : AppColors.violet.withAlpha(100),
+                    width: widget.isPlaying ? 0.5 : 1.0,
+                  ),
+                  boxShadow: widget.isPlaying
+                      ? null
+                      : [
+                          BoxShadow(
+                            color: AppColors.violet.withAlpha(50),
+                            blurRadius: 16,
+                            spreadRadius: -2,
+                          ),
+                        ],
+                ),
+                child: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 250),
+                  switchInCurve: Curves.easeOutBack,
+                  switchOutCurve: Curves.easeIn,
+                  transitionBuilder: (child, animation) =>
+                      ScaleTransition(
+                    scale: animation,
+                    child: child,
+                  ),
+                  child: Icon(
+                    widget.isPlaying
+                        ? Icons.pause_rounded
+                        : Icons.play_arrow_rounded,
+                    key: ValueKey(widget.isPlaying),
+                    color: widget.isPlaying
+                        ? Colors.white.withAlpha(200)
+                        : Colors.white,
+                    size: 22,
+                  ),
+                ),
+              ),
             ),
           );
         },
@@ -170,7 +488,82 @@ class _ProFeedBody extends StatelessWidget {
 }
 
 // ═════════════════════════════════════════════════════════════════════════════
-// PREMIUM VIDEO PROGRESS — thin gradient line at bottom
+// PRO NOTIFICATION BUTTON — glassmorphism matching the top bar
+// ═════════════════════════════════════════════════════════════════════════════
+
+class _ProNotifButton extends StatelessWidget {
+  const _ProNotifButton({
+    required this.icon,
+    required this.hasUnread,
+    required this.dotColor,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final bool hasUnread;
+  final Color dotColor;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(13),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
+          child: Container(
+            width: 38,
+            height: 38,
+            decoration: BoxDecoration(
+              color: Colors.black.withAlpha(80),
+              borderRadius: BorderRadius.circular(13),
+              border: Border.all(color: Colors.white.withAlpha(20)),
+            ),
+            child: Stack(
+              children: [
+                Center(
+                  child: Icon(
+                    icon,
+                    color: Colors.white,
+                    size: 18,
+                    shadows: const [
+                      Shadow(color: Colors.black54, blurRadius: 6),
+                    ],
+                  ),
+                ),
+                if (hasUnread)
+                  Positioned(
+                    top: 7,
+                    right: 7,
+                    child: Container(
+                      width: 8,
+                      height: 8,
+                      decoration: BoxDecoration(
+                        color: dotColor,
+                        shape: BoxShape.circle,
+                        border:
+                            Border.all(color: Colors.white, width: 1.5),
+                        boxShadow: [
+                          BoxShadow(
+                            color: dotColor.withAlpha(120),
+                            blurRadius: 6,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ═════════════════════════════════════════════════════════════════════════════
+// VIDEO PROGRESS — thin gradient line at bottom
 // ═════════════════════════════════════════════════════════════════════════════
 
 class _PremiumVideoProgress extends StatelessWidget {
@@ -198,11 +591,7 @@ class _PremiumVideoProgress extends StatelessWidget {
             height: 3,
             child: Stack(
               children: [
-                // Track
-                Container(
-                  color: Colors.white.withAlpha(20),
-                ),
-                // Progress
+                Container(color: Colors.white.withAlpha(20)),
                 AnimatedFractionallySizedBox(
                   duration: const Duration(milliseconds: 350),
                   curve: Curves.easeOutCubic,
@@ -225,102 +614,6 @@ class _PremiumVideoProgress extends StatelessWidget {
               ],
             ),
           ),
-        ),
-      ),
-    );
-  }
-}
-
-// ═════════════════════════════════════════════════════════════════════════════
-// EMPTY STATE — premium design
-// ═════════════════════════════════════════════════════════════════════════════
-
-class _ProFeedEmptyState extends StatelessWidget {
-  const _ProFeedEmptyState({required this.onRetry});
-
-  final VoidCallback onRetry;
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 40),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            // Premium icon container with gradient ring
-            Container(
-              width: 110,
-              height: 110,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: LinearGradient(
-                  colors: [
-                    AppColors.violet.withAlpha(30),
-                    AppColors.violet.withAlpha(10),
-                  ],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                border: Border.all(
-                  color: AppColors.violet.withAlpha(40),
-                  width: 1.5,
-                ),
-              ),
-              child: Icon(
-                Icons.play_circle_rounded,
-                size: 52,
-                color: AppColors.violet,
-              ),
-            ),
-            const SizedBox(height: 28),
-            Text(
-              'Aucune vidéo',
-              textAlign: TextAlign.center,
-              style: GoogleFonts.sora(
-                // Always white — video feed is always dark
-                color: Colors.white,
-                fontSize: 22,
-                fontWeight: FontWeight.w700,
-                letterSpacing: -0.3,
-              ),
-            ),
-            const SizedBox(height: 10),
-            Text(
-              'Les vidéos des professionnels\napparaîtront ici',
-              textAlign: TextAlign.center,
-              style: GoogleFonts.dmSans(
-                color: Colors.white.withAlpha(150),
-                fontSize: 15,
-                height: 1.5,
-              ),
-            ),
-            const SizedBox(height: 32),
-            // Premium gradient button
-            GestureDetector(
-              onTap: onRetry,
-              child: Container(
-                width: 180,
-                height: 48,
-                decoration: BoxDecoration(
-                  gradient: AppColors.gradientAccent,
-                  borderRadius: BorderRadius.circular(24),
-                  boxShadow: AppColors.primaryButtonShadow,
-                ),
-                child: Center(
-                  child: Text(
-                    'Actualiser',
-                    style: GoogleFonts.dmSans(
-                      color: Colors.white,
-                      fontSize: 15,
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: 0.3,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ],
         ),
       ),
     );
