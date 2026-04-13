@@ -41,7 +41,6 @@
   "decline": "Decline",
   "scanQr": "Scan QR",
   "share": "Share",
-
   "proSettingsTitle": "Settings",
   "proSettingsSavedToast": "Saved",
   "proSettingsSectionAccount": "ACCOUNT",
@@ -94,16 +93,13 @@
   "proSettingsDeleteAccount": "Delete my account",
   "proSettingsModifyEmailTitle": "Change email",
   "proSettingsModifyPhoneTitle": "Change phone",
-
   "proChangePasswordTitle": "Change password",
   "proCurrentPassword": "Current password",
   "proNewPassword": "New password",
   "proConfirmPassword": "Passwords do not match",
-
   "settingsLanguageScreenTitle": "Language",
   "settingsLanguageScreenSubtitle": "Choose the app language",
   "settingsLanguageSavedSnack": "Language saved",
-
   "spotifySheetTitle": "Add a track",
   "spotifySheetSearchHint": "Search for a track...",
   "spotifySheetTopTracksHeader": "Your top tracks",
@@ -113,13 +109,6 @@
   "spotifySheetEmptyTop": "No top tracks",
   "spotifySheetEmptyNeedLink": "Connect your Spotify account",
   "spotifySheetOpenSettings": "Open settings",
-  "spotifySheetTrackAdded": "Track added: {track}",
-  "@spotifySheetTrackAdded": {
-    "placeholders": {
-      "track": { "type": "String" }
-    }
-  },
-
   "a11yBack": "Back",
   "buttonContinue": "Continue",
   "buttonNext": "Next",
@@ -133,7 +122,6 @@
   "fieldAddress": "Address",
   "fieldAddressHint": "123 Main St, City",
   "fieldConfirmPassword": "Confirm password",
-
   "authWelcomeTitle": "Welcome to Spotbook",
   "authSelectAccountType": "Select your account type",
   "authRoleClient": "Client",
@@ -191,16 +179,7 @@
   "authSelectCategoriesForFeed": "Select categories to personalize your feed",
   "authWhatServicesOffer": "What services do you offer?",
   "authSelectServiceCategories": "Select your service categories",
-  "authStepLabel": "Step {current} of {total}",
-  "@authStepLabel": {
-    "placeholders": {
-      "current": { "type": "int" },
-      "total": { "type": "int" }
-    }
-  },
-
   "categoriesLoadFailed": "Failed to load categories",
-
   "goalDiscoverTitle": "Discover services",
   "goalDiscoverDesc": "Find the best professionals near you",
   "goalBookTitle": "Book appointments",
@@ -211,22 +190,18 @@
   "goalPricesDesc": "Find the best deals for the services you need",
   "goalsTitle": "What are your goals?",
   "goalsSubtitle": "Help us personalize your experience",
-
   "completeProfileUploadFailed": "Failed to upload photo",
   "completeProfileSaveFailed": "Failed to save profile",
   "completeProfileAccountCreated": "Account created!",
   "completeProfileTitle": "Complete your profile",
   "completeProfileSubtitle": "Add a photo and your name to get started.",
   "completeProfileBioHint": "Tell us about yourself...",
-
   "locationPermTitle": "Enable location",
   "locationPermSubtitle": "Find professionals and events near you.",
   "locationPermAllow": "Allow location access",
   "locationPermPrivacy": "Your location is never shared publicly.",
-
   "proExpertiseTitle": "Your expertise",
   "proExpertiseSubtitle": "Select the categories that match your services",
-
   "becomeProNameRequired": "Business name is required",
   "becomeProCategoryRequired": "Please select a category",
   "becomeProAddressRequired": "Address is required",
@@ -248,7 +223,6 @@
   "becomeProYourProfile": "Your profile",
   "becomeProInfoBox": "You can edit this information anytime from your settings.",
   "becomeProActivate": "Activate my Pro account",
-
   "bizConfigInProgress": "Setup in progress",
   "bizYourBusiness": "Your business",
   "bizSubtitle": "Configure your professional profile",
@@ -258,7 +232,6 @@
   "bizCategoryLabel": "Category",
   "bizAddressLabel": "Address",
   "bizAddressHint": "123 Main St, City",
-
   "stripePaymentsTitle": "Payments",
   "stripeOpenDashboard": "Open Stripe Dashboard",
   "stripeFinishSetup": "Finish setup",
@@ -306,7 +279,6 @@
   "stripeChargesEnabledSub": "You can accept payments from clients.",
   "stripePayoutsEnabled": "Payouts enabled",
   "stripePayoutsEnabledSub": "Funds will be transferred to your bank account.",
-
   "verificationUploadFailed": "Failed to upload document",
   "verificationIdRequired": "ID document is required",
   "stepOf": "Step",
@@ -326,7 +298,6 @@
   "uploadFormats": "JPG, PNG or PDF (max 10 MB)",
   "idSecurityNote": "Your ID is securely stored and only used for verification.",
   "submitDocuments": "Submit documents",
-
   "bookAgain": "Book again",
   "filterLabel": "Filter",
   "tabUpcoming": "Upcoming",
@@ -350,7 +321,6 @@
   "dateTo": "Until",
   "searchProHint": "Search a pro...",
   "applyTheFilters": "Apply filters",
-
   "tonight": "Tonight",
   "thisWeekend": "This weekend",
   "thisMonth": "This month",
@@ -386,22 +356,10 @@
   "waitlistTitle": "Waitlist",
   "youAreRegistered": "You are registered!",
   "ticketsSoldOut": "Tickets sold out",
-  "waitlistNotifyMessage": "You will be notified if a ticket becomes available for \"{eventTitle}\". You will have 30 minutes to confirm.",
-  "@waitlistNotifyMessage": {
-    "placeholders": {
-      "eventTitle": { "type": "String" }
-    }
-  },
   "waitlistJoinMessage": "Join the waitlist to get notified if a ticket becomes available.",
   "joinWaitlist": "Join the waitlist",
   "ticketValidated": "Ticket validated!",
   "alreadyScanned": "Already scanned",
-  "alreadyScannedAt": "Already scanned at {time}",
-  "@alreadyScannedAt": {
-    "placeholders": {
-      "time": { "type": "String" }
-    }
-  },
   "invalidTicket": "Invalid ticket",
   "ticketValidatedSuccess": "This ticket has been scanned successfully.",
   "alreadyUsed": "This ticket has already been used.",
@@ -411,24 +369,11 @@
   "searchEventHint": "Search an event...",
   "online": "Online",
   "inactive": "Inactive",
-  "ticketsSoldCount": "{sold} / {total}",
-  "@ticketsSoldCount": {
-    "placeholders": {
-      "sold": { "type": "int" },
-      "total": { "type": "int" }
-    }
-  },
   "ticketsSold": "Tickets sold",
   "createEvent": "Create Event",
   "errorPrefix": "Error",
   "back": "Back",
   "allLabel": "All",
-  "fromPrice": "From ${price}",
-  "@fromPrice": {
-    "placeholders": {
-      "price": { "type": "String" }
-    }
-  },
   "freeLabel": "Free",
   "changeLabel": "Change",
   "tapToUploadCover": "Tap to upload cover",
@@ -445,12 +390,6 @@
   "addLabel": "Add",
   "noTicketTypesYet": "No ticket types yet",
   "tapToAddFirstTicket": "Tap to add your first ticket tier",
-  "ticketTierIndex": "Ticket Tier {index}",
-  "@ticketTierIndex": {
-    "placeholders": {
-      "index": { "type": "int" }
-    }
-  },
   "ticketNameLabel": "TICKET NAME",
   "ticketNameHint": "e.g. General Admission",
   "priceLabel": "PRICE",
@@ -460,12 +399,6 @@
   "scannedLabel": "Scanned",
   "remainingLabel": "Remaining",
   "revenueLabel": "Revenue",
-  "spotsRemaining": "{count} spots remaining",
-  "@spotsRemaining": {
-    "placeholders": {
-      "count": { "type": "int" }
-    }
-  },
   "publishedLabel": "Published",
   "draftLabel": "Draft",
   "editAction": "Edit",
@@ -476,12 +409,6 @@
   "draftsEventsFilter": "Drafts",
   "pastEventsFilter": "Past",
   "noEventsCreated": "No events created",
-  "noEventsWithFilter": "No {filter} events",
-  "@noEventsWithFilter": {
-    "placeholders": {
-      "filter": { "type": "String" }
-    }
-  },
   "createFirstEventHint": "Create your first event\nto start selling tickets.",
   "notSignedIn": "Not signed in",
   "noEvents": "No events",
@@ -491,18 +418,6 @@
   "chooseEventScanHint": "Choose the event, then scan QR codes from tickets with the camera.",
   "dateToConfirm": "Date to confirm",
   "myTicketsTitle": "My Tickets",
-  "upcomingCount": "Upcoming ({count})",
-  "@upcomingCount": {
-    "placeholders": {
-      "count": { "type": "int" }
-    }
-  },
-  "pastCount": "Past ({count})",
-  "@pastCount": {
-    "placeholders": {
-      "count": { "type": "int" }
-    }
-  },
   "noUpcomingTickets": "No upcoming tickets",
   "upcomingTicketsHint": "Your upcoming events will appear here.",
   "noPastTickets": "No past tickets",
@@ -511,12 +426,774 @@
   "statusValid": "Valid",
   "statusRefunded": "Refunded",
   "statusCancelled": "Cancelled",
+  "invalidQrCode": "This QR code is not a valid Spotbook ticket.",
+  "acceptBooking": "Accept booking",
+  "accessDenied": "Access denied",
+  "activeBadge": "Active",
+  "addBioHint": "Tell clients about yourself…",
+  "addCommentHint": "Add a comment…",
+  "addNetworkTitle": "Add network",
+  "addRule": "Add rule",
+  "addRuleFirst": "Add a rule first",
+  "addServiceAction": "Add a service",
+  "addTextTitle": "Add text",
+  "addVideoAction": "Add a video",
+  "addVideoTitle": "Add video",
+  "allNetworksAdded": "All networks added",
+  "amountPaid": "Amount paid",
+  "analyticsLabel": "Analytics",
+  "applyPromo": "Apply",
+  "appointmentDetails": "Appointment details",
+  "appointmentMarkedDone": "Appointment marked as done",
+  "availabilityQuickAction": "Availability",
+  "availabilityRulesHint": "Set your weekly availability rules",
+  "availabilitySection": "Availability",
+  "availableDaysHint": "Available days",
+  "avgRating": "Average rating",
+  "balanceMarkedPaid": "Balance marked as paid",
+  "balanceToCollectOnSite": "Balance to collect on site",
+  "balanceToPayOnSite": "Balance to pay on site",
+  "becomePro": "Become a Pro",
+  "becomeProManageServices": "Manage your services",
+  "becomeProManageServicesDesc": "Create and manage your service offerings",
+  "becomeProPublishVideos": "Publish videos",
+  "becomeProPublishVideosDesc": "Showcase your work with video content",
+  "becomeProReceivePayments": "Receive payments",
+  "becomeProReceivePaymentsDesc": "Get paid securely via Stripe",
+  "becomeProSellTickets": "Sell tickets",
+  "becomeProSellTicketsDesc": "Create events and sell tickets",
+  "becomeProSubtitle": "Unlock professional features",
+  "bioHint": "Write a short bio…",
+  "bioLabel": "Bio",
+  "block": "Block",
+  "blockUserBlocked": "User blocked",
+  "blockUserConfirmTitle": "Block user?",
+  "blockUserDefault": "this user",
+  "blockedUsersEmpty": "No blocked users",
+  "blockedUsersTitle": "Blocked users",
+  "blockedUsersUnblock": "Unblock",
+  "bookingAccepted": "Booking accepted",
+  "bookingCodeLabel": "Booking code",
+  "bookingConfirmed": "Booking confirmed",
+  "bookingConfirmedSubtitle": "Your appointment is confirmed",
+  "bookingConfirmedTitle": "Booking confirmed!",
+  "bookingNotFound": "Booking not found",
+  "bookingReportDescription": "Report an issue with this booking",
+  "bookingReportDetailsHint": "Describe the issue in detail…",
+  "bookingReportDetailsLabel": "Details",
+  "bookingReportReasonHarassment": "Harassment",
+  "bookingReportReasonInappropriate": "Inappropriate behavior",
+  "bookingReportReasonNoShow": "No-show",
+  "bookingReportReasonNotAsDescribed": "Not as described",
+  "bookingReportReasonPayment": "Payment issue",
+  "bookingReportSentConfirmation": "Report sent successfully",
+  "bookingReportTitle": "Report booking",
+  "bookingsLabel": "Bookings",
+  "bookingsWillAppearHere": "Your bookings will appear here",
+  "buyTicketAction": "Buy ticket",
+  "calendarAndAvailability": "Calendar & Availability",
+  "cancelReasonHint": "Reason for cancellation…",
+  "cancellationFactBasedOnStart": "Based on the appointment start time",
+  "cancellationFactDisputes": "Disputes can be resolved via support",
+  "cancellationFactRefundDelay": "Refunds may take 5-10 business days",
+  "cancellationFactReschedule": "You can reschedule instead of cancelling",
+  "cancellationHowItWorks": "How it works",
+  "cancellationIfYouCancel": "If you cancel",
+  "cancellationIfYouCancelDescription": "The refund depends on your cancellation policy",
+  "cancellationKeyPoints": "Key points",
+  "cancellationPolicyTitle": "Cancellation policy",
+  "cancellationProtectDescription": "Protects both clients and professionals",
+  "cancellationProtectTitle": "Fair for everyone",
+  "cancellationRuleNoShowDescription": "If the client does not show up, the deposit is kept",
+  "cancellationRuleNoShowSubtitle": "Deposit is kept by the professional",
+  "cancellationRuleNoShowTitle": "No-show policy",
+  "changePhoto": "Change photo",
+  "choose": "Choose",
+  "chooseADate": "Choose a date",
+  "chooseAService": "Choose a service",
+  "chooseAServiceSubtitle": "Select the service you want to book",
+  "chooseASlot": "Choose a time slot",
+  "close": "Close",
+  "closedException": "Closed",
+  "commission": "Commission",
+  "commissionsCateringDeposits": "Catering & Deposits",
+  "commissionsCateringDesc": "18% commission on catering orders",
+  "commissionsClientPaysFee": "Client pays service fee",
+  "commissionsClientPaysService": "Client pays",
+  "commissionsClientServiceFee": "Client service fee",
+  "commissionsClientTotal": "Client total",
+  "commissionsDescription": "Understand how Spotbook commissions work",
+  "commissionsDetailedExample": "Detailed example",
+  "commissionsEventTickets": "Event Tickets",
+  "commissionsEventTicketsDesc": "12% commission on ticket sales",
+  "commissionsFixedFeeDescription": "A fixed fee is added to each booking for the client",
+  "commissionsFixedFeePerBooking": "Fixed fee per booking",
+  "commissionsPayouts": "Payouts",
+  "commissionsPayoutsDescription": "Payouts are sent automatically via Stripe",
+  "commissionsRates": "Commission rates",
+  "commissionsServiceBookings": "Service Bookings",
+  "commissionsServiceBookingsDesc": "18% commission on service bookings",
+  "commissionsServicePrice": "Service price",
+  "commissionsTitle": "Commissions & Fees",
+  "commissionsTransparentPricing": "Transparent pricing",
+  "commissionsYouReceive": "You receive",
+  "confirmBalanceTitle": "Confirm balance",
+  "confirmCancellation": "Confirm cancellation",
+  "confirmed": "Confirmed",
+  "continueLabel": "Continue",
+  "copyLinkAction": "Copy link",
+  "createEventAction": "Create event",
+  "createProAccount": "Create Pro account",
+  "creditCard": "Credit card",
+  "darkMode": "Dark mode",
+  "dashboardLoadError": "Failed to load dashboard",
+  "deleteAccount": "Delete account",
+  "deleteAccountConfirmCheckbox": "I understand this action is irreversible",
+  "deleteAccountDescription": "This will permanently delete your account and all data",
+  "deleteAccountFailed": "Failed to delete account",
+  "deleteAccountIrreversible": "This action cannot be undone",
+  "deleteAccountPermanently": "Delete permanently",
+  "deleteVideoConfirm": "Are you sure you want to delete this video?",
+  "deleteVideoTitle": "Delete video",
+  "depositAmountCad": "Deposit amount (CAD)",
+  "depositCadMinimum": "Minimum $5 CAD",
+  "depositClientPaysNow": "Client pays now",
+  "depositDisabledDescription": "Client pays the full amount on site",
+  "depositEnabledDescription": "Client pays a deposit online",
+  "depositExplanation": "The deposit secures the booking",
+  "depositMinimumDescription": "Minimum deposit amount",
+  "depositMinimumTitle": "Minimum deposit",
+  "depositPaidOnline": "Paid online",
+  "depositPercent": "Deposit %",
+  "depositPercentageDescription": "Percentage of total price",
+  "depositPercentageTitle": "Deposit percentage",
+  "depositPlusSurplace": "Deposit + balance on site",
+  "depositPreviewTitle": "Deposit preview",
+  "depositQuickSelect": "Quick select",
+  "depositReceivedOnline": "Received online",
+  "depositRequire": "Require deposit",
+  "depositRequireOnBooking": "Require deposit on booking",
+  "depositSaveSettings": "Save settings",
+  "depositServiceFee": "Service fee",
+  "depositServiceTotal": "Service total",
+  "depositSettingsSaved": "Deposit settings saved",
+  "depositSettingsTitle": "Deposit settings",
+  "depositsCollected": "Deposits collected",
+  "descriptionHint": "Describe your service…",
+  "descriptionOptional": "Description (optional)",
+  "descriptionRequired": "Description is required",
+  "displayNameLabel": "Display name",
+  "doneCountLabel": "Done",
+  "durationLabel": "Duration",
+  "editProfile": "Edit profile",
+  "editVideoTitle": "Edit video",
+  "endLabel": "End",
+  "enterCodeHint": "Enter promo code",
+  "eventsQuickAction": "Events",
+  "eventsTab": "Events",
+  "fastReplyBadge": "Fast reply",
+  "feedDiscover": "Discover",
+  "feedFollowing": "Following",
+  "filtersTool": "Filters",
+  "followLabel": "Follow",
+  "followMeSection": "Follow me",
+  "followersLabel": "Followers",
+  "followingLabel": "Following",
+  "freePrice": "Free",
+  "friday": "Friday",
+  "fullPayment": "Full payment",
+  "generateSlots": "Generate slots",
+  "glutenFreeLabel": "Gluten-free",
+  "greetingAfternoon": "Good afternoon",
+  "greetingEvening": "Good evening",
+  "greetingMorning": "Good morning",
+  "grossRevenue": "Gross revenue",
+  "hashtagsHint": "Add hashtags…",
+  "hashtagsLabel": "Hashtags",
+  "invalidDepositAmount": "Invalid deposit amount",
+  "invalidPrice": "Invalid price",
+  "leaveReview": "Leave a review",
+  "likeProsToFindHere": "Like pros to find them here",
+  "linkCopied": "Link copied",
+  "linkCopiedSnack": "Link copied to clipboard",
+  "linkCopiedToClipboard": "Link copied to clipboard",
+  "loadError": "Failed to load",
+  "locationHint": "Enter your location…",
+  "locationLabel": "Location",
+  "logout": "Log out",
+  "logoutConfirmMessage": "Are you sure you want to log out?",
+  "logoutConfirmTitle": "Log out?",
+  "manageServices": "Manage services",
+  "markAsDone": "Mark as done",
+  "markAsDoneMessage": "Mark this appointment as completed?",
+  "markAsDoneTitle": "Mark as done?",
+  "memberBadge": "Member",
+  "menuTab": "Menu",
+  "messageLabel": "Message",
+  "monday": "Monday",
+  "moreOptionsAction": "More options",
+  "mostBookings": "Most bookings",
+  "mostRecent": "Most recent",
+  "mostSpent": "Most spent",
+  "myClients": "My clients",
+  "myEventsSection": "My events",
+  "myFavoritePros": "My favorite pros",
+  "myProfile": "My profile",
+  "myQrCode": "My QR code",
+  "myServicesSection": "My services",
+  "myVideosSection": "My videos",
+  "netRevenue": "Net revenue",
+  "newBadge": "New",
+  "newTimeSlot": "New time slot",
+  "nextEventHeader": "Next event",
+  "nextLabel": "Next",
+  "noBookableServices": "No bookable services",
+  "noCancel": "No, keep it",
+  "noClients": "No clients yet",
+  "noComments": "No comments yet",
+  "noEventsLabel": "No events",
+  "noMenuAvailable": "No menu available",
+  "noProfessionalsAvailable": "No professionals available",
+  "noRulesHint": "No availability rules yet",
+  "noServicesAvailable": "No services available",
+  "noServicesLabel": "No services",
+  "noSlotsForDate": "No slots available for this date",
+  "noSlotsForDay": "No slots for this day",
+  "noTransactionsPeriod": "No transactions for this period",
+  "noUpcomingAppointments": "No upcoming appointments",
+  "noVideosAvailable": "No videos available",
+  "noVideosYet": "No videos yet",
+  "notConnected": "Not connected",
+  "notifMarketing": "Marketing",
+  "notifMarketingSubtitle": "Promotions and special offers",
+  "notifMessages": "Messages",
+  "notifMessagesSubtitle": "New messages from clients",
+  "notifReminders": "Reminders",
+  "notifRemindersSubtitle": "Appointment reminders",
+  "notifReviewRequests": "Review requests",
+  "notifReviewRequestsSubtitle": "Requests to review your experience",
+  "notifSectionAppointments": "Appointments",
+  "notifSectionCommunication": "Communication",
+  "notifSectionEvents": "Events",
+  "notifSectionOther": "Other",
+  "notifUpdates": "Updates",
+  "notifUpdatesSubtitle": "App updates and new features",
+  "notifWaitlist": "Waitlist",
+  "notifWaitlistSubtitle": "Waitlist notifications",
+  "notificationsEmpty": "No notifications",
+  "notificationsMarkAllRead": "Mark all as read",
+  "ok": "OK",
+  "openForBooking": "Open for booking",
+  "payButtonPrefix": "Pay",
+  "payNowLabel": "Pay now",
+  "paymentFailed": "Payment failed",
+  "paymentPending": "Payment pending",
+  "paymentSubtitlePrefix": "Payment for",
+  "pending": "Pending",
+  "perDay": "per day",
+  "periodNinetyDays": "90 days",
+  "periodOneYear": "1 year",
+  "periodSevenDays": "7 days",
+  "periodThirtyDays": "30 days",
+  "photoUploadError": "Failed to upload photo",
+  "priceCad": "Price (CAD)",
+  "privacyPolicy": "Privacy policy",
+  "proProfileFromPrice": "From",
+  "proProfileNoReviews": "No reviews yet",
+  "proShellCateringSubtitle": "Manage your catering menu",
+  "proShellGallery": "Gallery",
+  "proShellLanguage": "Language",
+  "proShellMyMenu": "My menu",
+  "proShellMyPackages": "My packages",
+  "proShellMyReviews": "My reviews",
+  "proShellPaymentConfig": "Payment configuration",
+  "proToolsSection": "Pro tools",
+  "profileLoadError": "Failed to load profile",
+  "profileLoadErrorMessage": "Could not load this profile",
+  "profileNotFoundLabel": "Profile not found",
+  "profileUpdated": "Profile updated",
+  "promoApplied": "Promo code applied",
+  "promoCodeTitle": "Promo code",
+  "promoCodes": "Promo codes",
+  "publishAService": "Publish a service",
+  "publishMyService": "Publish my service",
+  "qrShareInfo": "Share this QR code with your clients",
+  "quickActionsHeader": "Quick actions",
+  "recentHistory": "Recent history",
+  "recordVideo": "Record video",
+  "recordVideoSubtitle": "Record a video of your service",
+  "refundErrorRetry": "Refund failed. Please try again.",
+  "refundRequestTitle": "Refund request",
+  "remainingBalanceOnSite": "Remaining balance on site",
+  "remainingOnDay": "Remaining on the day",
+  "report": "Report",
+  "reportBooking": "Report booking",
+  "reportReasonFakeProfile": "Fake profile",
+  "reportReasonHarassment": "Harassment",
+  "reportReasonInappropriate": "Inappropriate content",
+  "reportReasonOther": "Other",
+  "reportReasonSpam": "Spam",
+  "reportSent": "Report sent",
+  "reportSubmitButton": "Submit report",
+  "reportWhyReporting": "Why are you reporting?",
+  "reservations": "Reservations",
+  "reserveLabel": "Reserve",
+  "retourLabel": "Back",
+  "revenue": "Revenue",
+  "revenueAndStats": "Revenue & Stats",
+  "revenueQuickAction": "Revenue",
+  "reviewDone": "Review submitted",
+  "reviewFeedbackHelps": "Your feedback helps improve the service",
+  "reviewHowWasAppointment": "How was your appointment?",
+  "reviewLeaveReview": "Leave a review",
+  "reviewShareExperience": "Share your experience",
+  "reviewSubmit": "Submit review",
+  "reviewTapToRate": "Tap to rate",
+  "reviewThankYou": "Thank you for your review!",
+  "reviewsEmpty": "No reviews yet",
+  "reviewsFilterAll": "All",
+  "reviewsLabel": "Reviews",
+  "reviewsReceivedTitle": "Reviews received",
+  "reviewsTab": "Reviews",
+  "saturday": "Saturday",
+  "scanTicket": "Scan ticket",
+  "searchClientHint": "Search clients…",
+  "searchProfessionalHint": "Search professionals…",
+  "secured": "Secured",
+  "selectCategoryRequired": "Please select a category",
+  "selectVideoMax": "Select a video (max 2 min)",
+  "selectedLabel": "Selected",
+  "serviceFee": "Service fee",
+  "serviceName": "Service name",
+  "serviceNameMinChars": "Service name must be at least 3 characters",
+  "servicesAvailableLabel": "Services available",
+  "servicesQuickAction": "Services",
+  "servicesTab": "Services",
+  "settingsAvailability": "Availability",
+  "settingsCancellationPolicy": "Cancellation policy",
+  "settingsCancellationPolicySubtitle": "Set your cancellation rules",
+  "settingsChangePassword": "Change password",
+  "settingsCommissions": "Commissions & Fees",
+  "settingsConfigurePayments": "Configure payments",
+  "settingsContactUs": "Contact us",
+  "settingsDepositSettings": "Deposit settings",
+  "settingsDepositSettingsSubtitle": "Configure deposit requirements",
+  "settingsHistory": "History",
+  "settingsLanguage": "Language",
+  "settingsManageServices": "Manage services",
+  "settingsMyEvents": "My events",
+  "settingsMyQrCode": "My QR code",
+  "settingsMyReviews": "My reviews",
+  "settingsPreferences": "Preferences",
+  "settingsQuotes": "Quotes",
+  "settingsQuotesSubtitle": "Manage quote requests",
+  "settingsRevenueStats": "Revenue & Statistics",
+  "settingsSectionAccount": "Account",
+  "settingsSectionBookings": "Bookings",
+  "settingsSectionBusiness": "Business",
+  "settingsSectionLegal": "Legal",
+  "settingsSectionNotifications": "Notifications",
+  "settingsSectionPayments": "Payments",
+  "settingsSectionPreferences": "Preferences",
+  "settingsSectionSupport": "Support",
+  "shareCopy": "Copy",
+  "shareMessages": "Messages",
+  "shareMyProfile": "Share my profile",
+  "shareProfileTitle": "Share profile",
+  "signIn": "Sign in",
+  "signInToFollow": "Sign in to follow",
+  "signInToMessage": "Sign in to message",
+  "slotDurationLabel": "Slot duration",
+  "slotsPreviewHeader": "Slots preview",
+  "slotsUpdated": "Slots updated",
+  "socialLinksAutoDetectHint": "Links are auto-detected",
+  "socialLinksHeader": "Social links",
+  "socialNetworks": "Social networks",
+  "soumissionsLabel": "Submissions",
+  "startLabel": "Start",
+  "statsLoadError": "Failed to load statistics",
+  "statusPending": "Pending",
+  "stepConfirmed": "Confirmed",
+  "stepDate": "Date",
+  "stepPayment": "Payment",
+  "stepService": "Service",
+  "stepSummary": "Summary",
+  "stepTime": "Time",
+  "subscribedLabel": "Subscribed",
+  "subtotal": "Subtotal",
+  "summarySubtitle": "Review your booking details",
+  "sunday": "Sunday",
+  "syncing": "Syncing…",
+  "tapToChange": "Tap to change",
+  "termsOfService": "Terms of service",
+  "textTool": "Text",
+  "thisWeek": "This week",
+  "thursday": "Thursday",
+  "topProBadge": "Top Pro",
+  "totalPeriod": "Total for period",
+  "totalService": "Total for service",
+  "transactions": "Transactions",
+  "tuesday": "Tuesday",
+  "upcomingAppointmentsHint": "Your upcoming appointments",
+  "upcomingBookingsHeader": "Upcoming bookings",
+  "uploadVideo": "Upload video",
+  "uploadVideoSubtitle": "Upload a video of your service",
+  "usernameInvalidChars": "Username can only contain letters, numbers, and underscores",
+  "usernameLabel": "Username",
+  "usernameMinChars": "Username must be at least 3 characters",
+  "usernameTaken": "This username is already taken",
+  "veganLabel": "Vegan",
+  "vegetarianLabel": "Vegetarian",
+  "verifiedBadge": "Verified",
+  "videoLabel": "Video",
+  "videoPublished": "Video published",
+  "videoStatusFlagged": "Flagged",
+  "videoStatusPublished": "Published",
+  "videoStatusRejected": "Rejected",
+  "videoTooLong": "Video is too long (max 2 minutes)",
+  "videoUnavailable": "Video unavailable",
+  "videosTab": "Videos",
+  "viewAll": "View all",
+  "viewCalendar": "View calendar",
+  "wednesday": "Wednesday",
+  "weeklyRulesHeader": "Weekly rules",
+  "withdraw": "Withdraw",
+  "yesCancel": "Yes, cancel",
+  "yourTextHint": "Your text here…",
+  "titleRequired": "Title (required)",
+  "titleHint": "Give your video a title…",
+  "addLabel2": "Add",
+  "reviewRating1": "Terrible",
+  "reviewRating2": "Poor",
+  "reviewRating3": "Average",
+  "reviewRating4": "Good",
+  "reviewRating5": "Excellent",
+  "cancellationRule48hTitle": "More than 48h before",
+  "cancellationRule48hSubtitle": "Full refund",
+  "cancellationRule48hDescription": "Cancel more than 48 hours before the appointment for a full refund.",
+  "cancellationRule24to48hTitle": "Between 24h and 48h",
+  "cancellationRule24to48hSubtitle": "50% refund",
+  "cancellationRule24to48hDescription": "Cancel between 24 and 48 hours before and receive a 50% refund.",
+  "cancellationRuleLess24hTitle": "Less than 24h",
+  "cancellationRuleLess24hSubtitle": "No refund",
+  "cancellationRuleLess24hDescription": "Cancellations within 24 hours are not eligible for a refund.",
+  "balanceOnSite": "Balance on site: {amount} {currency}",
+  "@balanceOnSite": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "currency": {
+        "type": "String"
+      }
+    }
+  },
+  "blockUserConfirmMessage": "Are you sure you want to block {name}?",
+  "@blockUserConfirmMessage": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "commissionEstimate": "Commission {pct}%: {commission} {currency} — you receive {net} {currency}",
+  "@commissionEstimate": {
+    "placeholders": {
+      "pct": {
+        "type": "String"
+      },
+      "commission": {
+        "type": "String"
+      },
+      "currency": {
+        "type": "String"
+      },
+      "net": {
+        "type": "String"
+      }
+    }
+  },
+  "commissionsExampleCatering": "Ex: ${price} catering → you receive ${net}",
+  "@commissionsExampleCatering": {
+    "placeholders": {
+      "price": {
+        "type": "int"
+      },
+      "net": {
+        "type": "String"
+      }
+    }
+  },
+  "commissionsExampleService": "Ex: ${price} service → you receive ${net}",
+  "@commissionsExampleService": {
+    "placeholders": {
+      "price": {
+        "type": "int"
+      },
+      "net": {
+        "type": "String"
+      }
+    }
+  },
+  "commissionsExampleTicket": "Ex: ${price} ticket → you receive ${net}",
+  "@commissionsExampleTicket": {
+    "placeholders": {
+      "price": {
+        "type": "int"
+      },
+      "net": {
+        "type": "String"
+      }
+    }
+  },
+  "commissionsSpotbookCommission": "Spotbook commission: {pct}%",
+  "@commissionsSpotbookCommission": {
+    "placeholders": {
+      "pct": {
+        "type": "int"
+      }
+    }
+  },
+  "confirmBalanceMessage": "Confirm remaining balance of {amount} {currency} collected on site?",
+  "@confirmBalanceMessage": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "currency": {
+        "type": "String"
+      }
+    }
+  },
+  "depositAmountLabel": "{pct}% deposit",
+  "@depositAmountLabel": {
+    "placeholders": {
+      "pct": {
+        "type": "int"
+      }
+    }
+  },
+  "linkPlatform": "Link {platform}",
+  "@linkPlatform": {
+    "placeholders": {
+      "platform": {
+        "type": "String"
+      }
+    }
+  },
+  "noBookingsOn": "No bookings on {date}",
+  "@noBookingsOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "noResultsFor": "No results for \"{query}\"",
+  "@noResultsFor": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "pasteLinkFor": "Paste your {platform} link",
+  "@pasteLinkFor": {
+    "placeholders": {
+      "platform": {
+        "type": "String"
+      }
+    }
+  },
+  "publicProfileTicketsLeft": "{remaining} tickets left",
+  "@publicProfileTicketsLeft": {
+    "placeholders": {
+      "remaining": {
+        "type": "int"
+      }
+    }
+  },
+  "publishingProgress": "Publishing… {percent}%",
+  "@publishingProgress": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "reviewCountLabel": "{count} reviews",
+  "@reviewCountLabel": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reviewsCount": "{count} reviews",
+  "@reviewsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsCommissionsSubtitle": "Bookings {bookingPct}% · Events {eventPct}% · Fee ${fee}",
+  "@settingsCommissionsSubtitle": {
+    "placeholders": {
+      "bookingPct": {
+        "type": "int"
+      },
+      "eventPct": {
+        "type": "int"
+      },
+      "fee": {
+        "type": "String"
+      }
+    }
+  },
+  "ticketPriceLabel": "From {price}",
+  "@ticketPriceLabel": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "videoReason": "Reason: {reason}",
+  "@videoReason": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "videoSelectedDuration": "Duration: {seconds}s",
+  "@videoSelectedDuration": {
+    "placeholders": {
+      "seconds": {
+        "type": "String"
+      }
+    }
+  },
+  "depositPreviewDescription": "Preview: deposit on a ${price} service",
+  "@depositPreviewDescription": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "depositRemainingOnDay": "Remaining on site: ${amount}",
+  "@depositRemainingOnDay": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "spotifySheetTrackAdded": "Track added: {track}",
+  "@spotifySheetTrackAdded": {
+    "placeholders": {
+      "track": {
+        "type": "String"
+      }
+    }
+  },
+  "authStepLabel": "Step {current} of {total}",
+  "@authStepLabel": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "waitlistNotifyMessage": "You will be notified if a ticket becomes available for \\\"{eventTitle}\\\". You will have 30 minutes to confirm.",
+  "@waitlistNotifyMessage": {
+    "placeholders": {
+      "eventTitle": {
+        "type": "String"
+      }
+    }
+  },
+  "alreadyScannedAt": "Already scanned at {time}",
+  "@alreadyScannedAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "ticketsSoldCount": "{sold} / {total}",
+  "@ticketsSoldCount": {
+    "placeholders": {
+      "sold": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "fromPrice": "From ${price}",
+  "@fromPrice": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "ticketTierIndex": "Ticket Tier {index}",
+  "@ticketTierIndex": {
+    "placeholders": {
+      "index": {
+        "type": "int"
+      }
+    }
+  },
+  "spotsRemaining": "{count} spots remaining",
+  "@spotsRemaining": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "noEventsWithFilter": "No {filter} events",
+  "@noEventsWithFilter": {
+    "placeholders": {
+      "filter": {
+        "type": "String"
+      }
+    }
+  },
+  "upcomingCount": "Upcoming ({count})",
+  "@upcomingCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "pastCount": "Past ({count})",
+  "@pastCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "scannedProgress": "{scanned} / {total} scanned",
   "@scannedProgress": {
     "placeholders": {
-      "scanned": { "type": "int" },
-      "total": { "type": "int" }
+      "scanned": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
     }
-  },
-  "invalidQrCode": "This QR code is not a valid Spotbook ticket."
+  }
 }

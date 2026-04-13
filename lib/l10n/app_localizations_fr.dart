@@ -342,11 +342,6 @@ class AppLocalizationsFr extends AppLocalizations {
   String get spotifySheetOpenSettings => 'Ouvrir les paramètres';
 
   @override
-  String spotifySheetTrackAdded(String track) {
-    return 'Morceau ajouté : $track';
-  }
-
-  @override
   String get a11yBack => 'Retour';
 
   @override
@@ -563,11 +558,6 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get authSelectServiceCategories =>
       'Sélectionnez vos catégories de services';
-
-  @override
-  String authStepLabel(int current, int total) {
-    return 'Étape $current sur $total';
-  }
 
   @override
   String get categoriesLoadFailed => 'Impossible de charger les catégories';
@@ -1134,11 +1124,6 @@ class AppLocalizationsFr extends AppLocalizations {
   String get ticketsSoldOut => 'Billets épuisés';
 
   @override
-  String waitlistNotifyMessage(String eventTitle) {
-    return 'Vous serez notifié si un billet devient disponible pour « $eventTitle ». Vous aurez 30 minutes pour confirmer.';
-  }
-
-  @override
   String get waitlistJoinMessage =>
       'Rejoignez la liste d\'attente pour être notifié si un billet devient disponible.';
 
@@ -1150,11 +1135,6 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get alreadyScanned => 'Déjà scanné';
-
-  @override
-  String alreadyScannedAt(String time) {
-    return 'Déjà scanné à $time';
-  }
 
   @override
   String get invalidTicket => 'Billet invalide';
@@ -1184,11 +1164,6 @@ class AppLocalizationsFr extends AppLocalizations {
   String get inactive => 'Inactif';
 
   @override
-  String ticketsSoldCount(int sold, int total) {
-    return '$sold / $total';
-  }
-
-  @override
   String get ticketsSold => 'Billets vendus';
 
   @override
@@ -1202,11 +1177,6 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get allLabel => 'Tous';
-
-  @override
-  String fromPrice(String price) {
-    return 'Dès $price \$';
-  }
 
   @override
   String get freeLabel => 'Gratuit';
@@ -1258,11 +1228,6 @@ class AppLocalizationsFr extends AppLocalizations {
   String get tapToAddFirstTicket => 'Appuyez pour ajouter votre premier billet';
 
   @override
-  String ticketTierIndex(int index) {
-    return 'Billet niveau $index';
-  }
-
-  @override
   String get ticketNameLabel => 'NOM DU BILLET';
 
   @override
@@ -1288,11 +1253,6 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get revenueLabel => 'Revenus';
-
-  @override
-  String spotsRemaining(int count) {
-    return '$count places restantes';
-  }
 
   @override
   String get publishedLabel => 'Publié';
@@ -1325,11 +1285,6 @@ class AppLocalizationsFr extends AppLocalizations {
   String get noEventsCreated => 'Aucun événement créé';
 
   @override
-  String noEventsWithFilter(String filter) {
-    return 'Aucun événement $filter';
-  }
-
-  @override
   String get createFirstEventHint =>
       'Créez votre premier événement\npour commencer à vendre des billets.';
 
@@ -1359,16 +1314,6 @@ class AppLocalizationsFr extends AppLocalizations {
   String get myTicketsTitle => 'Mes billets';
 
   @override
-  String upcomingCount(int count) {
-    return 'À venir ($count)';
-  }
-
-  @override
-  String pastCount(int count) {
-    return 'Passés ($count)';
-  }
-
-  @override
   String get noUpcomingTickets => 'Aucun billet à venir';
 
   @override
@@ -1393,76 +1338,8 @@ class AppLocalizationsFr extends AppLocalizations {
   String get statusCancelled => 'Annulé';
 
   @override
-  String scannedProgress(int scanned, int total) {
-    return '$scanned / $total scannés';
-  }
-
-  @override
   String get invalidQrCode =>
       'Ce QR code n\'est pas un billet Spotbook valide.';
-
-  @override
-  String balanceOnSite(String amount, String currency) => 'Solde sur place : $amount $currency';
-
-  @override
-  String blockUserConfirmMessage(String name) => 'Voulez-vous vraiment bloquer $name ?';
-
-  @override
-  String commissionEstimate(String pct, String commission, String currency, String net) => 'Commission $pct% : $commission $currency — vous recevez $net $currency';
-
-  @override
-  String commissionsExampleCatering(int price, String net) => 'Ex : ${price}\$ traiteur → vous recevez ${net}\$';
-
-  @override
-  String commissionsExampleService(int price, String net) => 'Ex : ${price}\$ service → vous recevez ${net}\$';
-
-  @override
-  String commissionsExampleTicket(int price, String net) => 'Ex : ${price}\$ billet → vous recevez ${net}\$';
-
-  @override
-  String commissionsSpotbookCommission(int pct) => 'Commission Spotbook : $pct%';
-
-  @override
-  String confirmBalanceMessage(String amount, String currency) => 'Confirmer le solde restant de $amount $currency collecté sur place ?';
-
-  @override
-  String depositAmountLabel(int pct) => 'Acompte de $pct%';
-
-  @override
-  String linkPlatform(String platform) => 'Lier $platform';
-
-  @override
-  String noBookingsOn(String date) => 'Aucune réservation le $date';
-
-  @override
-  String noResultsFor(String query) => 'Aucun résultat pour « $query »';
-
-  @override
-  String pasteLinkFor(String platform) => 'Collez votre lien $platform';
-
-  @override
-  String publicProfileTicketsLeft(int remaining) => '$remaining billets restants';
-
-  @override
-  String publishingProgress(int percent) => 'Publication… $percent%';
-
-  @override
-  String reviewCountLabel(int count) => '$count avis';
-
-  @override
-  String reviewsCount(int count) => '$count avis';
-
-  @override
-  String settingsCommissionsSubtitle(int bookingPct, int eventPct, String fee) => 'Réservations $bookingPct% · Événements $eventPct% · Frais ${fee}\$';
-
-  @override
-  String ticketPriceLabel(String price) => 'À partir de $price';
-
-  @override
-  String videoReason(String reason) => 'Raison : $reason';
-
-  @override
-  String videoSelectedDuration(String seconds) => 'Durée : ${seconds}s';
 
   @override
   String get acceptBooking => 'Accepter la réservation';
@@ -1522,7 +1399,8 @@ class AppLocalizationsFr extends AppLocalizations {
   String get availabilityQuickAction => 'Disponibilité';
 
   @override
-  String get availabilityRulesHint => 'Définissez vos règles de disponibilité hebdomadaires';
+  String get availabilityRulesHint =>
+      'Définissez vos règles de disponibilité hebdomadaires';
 
   @override
   String get availabilitySection => 'Disponibilité';
@@ -1549,7 +1427,8 @@ class AppLocalizationsFr extends AppLocalizations {
   String get becomeProManageServices => 'Gérez vos services';
 
   @override
-  String get becomeProManageServicesDesc => 'Créez et gérez vos offres de services';
+  String get becomeProManageServicesDesc =>
+      'Créez et gérez vos offres de services';
 
   @override
   String get becomeProPublishVideos => 'Publiez des vidéos';
@@ -1561,13 +1440,15 @@ class AppLocalizationsFr extends AppLocalizations {
   String get becomeProReceivePayments => 'Recevez des paiements';
 
   @override
-  String get becomeProReceivePaymentsDesc => 'Soyez payé en toute sécurité via Stripe';
+  String get becomeProReceivePaymentsDesc =>
+      'Soyez payé en toute sécurité via Stripe';
 
   @override
   String get becomeProSellTickets => 'Vendez des billets';
 
   @override
-  String get becomeProSellTicketsDesc => 'Créez des événements et vendez des billets';
+  String get becomeProSellTicketsDesc =>
+      'Créez des événements et vendez des billets';
 
   @override
   String get becomeProSubtitle => 'Débloquez les fonctionnalités Pro';
@@ -1618,7 +1499,8 @@ class AppLocalizationsFr extends AppLocalizations {
   String get bookingNotFound => 'Réservation introuvable';
 
   @override
-  String get bookingReportDescription => 'Signaler un problème avec cette réservation';
+  String get bookingReportDescription =>
+      'Signaler un problème avec cette réservation';
 
   @override
   String get bookingReportDetailsHint => 'Décrivez le problème en détail…';
@@ -1636,7 +1518,8 @@ class AppLocalizationsFr extends AppLocalizations {
   String get bookingReportReasonNoShow => 'Absence';
 
   @override
-  String get bookingReportReasonNotAsDescribed => 'Non conforme à la description';
+  String get bookingReportReasonNotAsDescribed =>
+      'Non conforme à la description';
 
   @override
   String get bookingReportReasonPayment => 'Problème de paiement';
@@ -1663,16 +1546,20 @@ class AppLocalizationsFr extends AppLocalizations {
   String get cancelReasonHint => 'Raison de l\'annulation…';
 
   @override
-  String get cancellationFactBasedOnStart => 'Basé sur l\'heure de début du rendez-vous';
+  String get cancellationFactBasedOnStart =>
+      'Basé sur l\'heure de début du rendez-vous';
 
   @override
-  String get cancellationFactDisputes => 'Les litiges peuvent être résolus via le support';
+  String get cancellationFactDisputes =>
+      'Les litiges peuvent être résolus via le support';
 
   @override
-  String get cancellationFactRefundDelay => 'Les remboursements peuvent prendre 5 à 10 jours ouvrables';
+  String get cancellationFactRefundDelay =>
+      'Les remboursements peuvent prendre 5 à 10 jours ouvrables';
 
   @override
-  String get cancellationFactReschedule => 'Vous pouvez reporter au lieu d\'annuler';
+  String get cancellationFactReschedule =>
+      'Vous pouvez reporter au lieu d\'annuler';
 
   @override
   String get cancellationHowItWorks => 'Comment ça marche';
@@ -1681,7 +1568,8 @@ class AppLocalizationsFr extends AppLocalizations {
   String get cancellationIfYouCancel => 'Si vous annulez';
 
   @override
-  String get cancellationIfYouCancelDescription => 'Le remboursement dépend de la politique d\'annulation';
+  String get cancellationIfYouCancelDescription =>
+      'Le remboursement dépend de la politique d\'annulation';
 
   @override
   String get cancellationKeyPoints => 'Points clés';
@@ -1690,16 +1578,19 @@ class AppLocalizationsFr extends AppLocalizations {
   String get cancellationPolicyTitle => 'Politique d\'annulation';
 
   @override
-  String get cancellationProtectDescription => 'Protège les clients et les professionnels';
+  String get cancellationProtectDescription =>
+      'Protège les clients et les professionnels';
 
   @override
   String get cancellationProtectTitle => 'Équitable pour tous';
 
   @override
-  String get cancellationRuleNoShowDescription => 'Si le client ne se présente pas, l\'acompte est conservé';
+  String get cancellationRuleNoShowDescription =>
+      'Si le client ne se présente pas, l\'acompte est conservé';
 
   @override
-  String get cancellationRuleNoShowSubtitle => 'L\'acompte est conservé par le professionnel';
+  String get cancellationRuleNoShowSubtitle =>
+      'L\'acompte est conservé par le professionnel';
 
   @override
   String get cancellationRuleNoShowTitle => 'Politique de non-présentation';
@@ -1717,7 +1608,8 @@ class AppLocalizationsFr extends AppLocalizations {
   String get chooseAService => 'Choisir un service';
 
   @override
-  String get chooseAServiceSubtitle => 'Sélectionnez le service que vous souhaitez réserver';
+  String get chooseAServiceSubtitle =>
+      'Sélectionnez le service que vous souhaitez réserver';
 
   @override
   String get chooseASlot => 'Choisir un créneau';
@@ -1735,7 +1627,8 @@ class AppLocalizationsFr extends AppLocalizations {
   String get commissionsCateringDeposits => 'Traiteur & Acomptes';
 
   @override
-  String get commissionsCateringDesc => '18% de commission sur les commandes traiteur';
+  String get commissionsCateringDesc =>
+      '18% de commission sur les commandes traiteur';
 
   @override
   String get commissionsClientPaysFee => 'Le client paie les frais de service';
@@ -1750,7 +1643,8 @@ class AppLocalizationsFr extends AppLocalizations {
   String get commissionsClientTotal => 'Total client';
 
   @override
-  String get commissionsDescription => 'Comprendre le fonctionnement des commissions Spotbook';
+  String get commissionsDescription =>
+      'Comprendre le fonctionnement des commissions Spotbook';
 
   @override
   String get commissionsDetailedExample => 'Exemple détaillé';
@@ -1759,10 +1653,12 @@ class AppLocalizationsFr extends AppLocalizations {
   String get commissionsEventTickets => 'Billets d\'événements';
 
   @override
-  String get commissionsEventTicketsDesc => '12% de commission sur la vente de billets';
+  String get commissionsEventTicketsDesc =>
+      '12% de commission sur la vente de billets';
 
   @override
-  String get commissionsFixedFeeDescription => 'Des frais fixes sont ajoutés à chaque réservation pour le client';
+  String get commissionsFixedFeeDescription =>
+      'Des frais fixes sont ajoutés à chaque réservation pour le client';
 
   @override
   String get commissionsFixedFeePerBooking => 'Frais fixes par réservation';
@@ -1771,7 +1667,8 @@ class AppLocalizationsFr extends AppLocalizations {
   String get commissionsPayouts => 'Virements';
 
   @override
-  String get commissionsPayoutsDescription => 'Les virements sont envoyés automatiquement via Stripe';
+  String get commissionsPayoutsDescription =>
+      'Les virements sont envoyés automatiquement via Stripe';
 
   @override
   String get commissionsRates => 'Taux de commission';
@@ -1780,7 +1677,8 @@ class AppLocalizationsFr extends AppLocalizations {
   String get commissionsServiceBookings => 'Réservations de services';
 
   @override
-  String get commissionsServiceBookingsDesc => '18% de commission sur les réservations de services';
+  String get commissionsServiceBookingsDesc =>
+      '18% de commission sur les réservations de services';
 
   @override
   String get commissionsServicePrice => 'Prix du service';
@@ -1828,10 +1726,12 @@ class AppLocalizationsFr extends AppLocalizations {
   String get deleteAccount => 'Supprimer le compte';
 
   @override
-  String get deleteAccountConfirmCheckbox => 'Je comprends que cette action est irréversible';
+  String get deleteAccountConfirmCheckbox =>
+      'Je comprends que cette action est irréversible';
 
   @override
-  String get deleteAccountDescription => 'Cela supprimera définitivement votre compte et toutes les données';
+  String get deleteAccountDescription =>
+      'Cela supprimera définitivement votre compte et toutes les données';
 
   @override
   String get deleteAccountFailed => 'Échec de la suppression du compte';
@@ -1843,7 +1743,8 @@ class AppLocalizationsFr extends AppLocalizations {
   String get deleteAccountPermanently => 'Supprimer définitivement';
 
   @override
-  String get deleteVideoConfirm => 'Voulez-vous vraiment supprimer cette vidéo ?';
+  String get deleteVideoConfirm =>
+      'Voulez-vous vraiment supprimer cette vidéo ?';
 
   @override
   String get deleteVideoTitle => 'Supprimer la vidéo';
@@ -1858,7 +1759,8 @@ class AppLocalizationsFr extends AppLocalizations {
   String get depositClientPaysNow => 'Le client paie maintenant';
 
   @override
-  String get depositDisabledDescription => 'Le client paie le montant total sur place';
+  String get depositDisabledDescription =>
+      'Le client paie le montant total sur place';
 
   @override
   String get depositEnabledDescription => 'Le client paie un acompte en ligne';
@@ -1888,9 +1790,6 @@ class AppLocalizationsFr extends AppLocalizations {
   String get depositPlusSurplace => 'Acompte + solde sur place';
 
   @override
-  String depositPreviewDescription(String price) => 'Aperçu : acompte sur un service de ${price}\$';
-
-  @override
   String get depositPreviewTitle => 'Aperçu de l\'acompte';
 
   @override
@@ -1898,9 +1797,6 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get depositReceivedOnline => 'Reçu en ligne';
-
-  @override
-  String depositRemainingOnDay(String amount) => 'Restant sur place : ${amount}\$';
 
   @override
   String get depositRequire => 'Exiger un acompte';
@@ -2203,7 +2099,8 @@ class AppLocalizationsFr extends AppLocalizations {
   String get notifReviewRequests => 'Demandes d\'avis';
 
   @override
-  String get notifReviewRequestsSubtitle => 'Demandes d\'évaluation de votre expérience';
+  String get notifReviewRequestsSubtitle =>
+      'Demandes d\'évaluation de votre expérience';
 
   @override
   String get notifSectionAppointments => 'Rendez-vous';
@@ -2221,7 +2118,8 @@ class AppLocalizationsFr extends AppLocalizations {
   String get notifUpdates => 'Mises à jour';
 
   @override
-  String get notifUpdatesSubtitle => 'Mises à jour et nouvelles fonctionnalités';
+  String get notifUpdatesSubtitle =>
+      'Mises à jour et nouvelles fonctionnalités';
 
   @override
   String get notifWaitlist => 'Liste d\'attente';
@@ -2419,7 +2317,8 @@ class AppLocalizationsFr extends AppLocalizations {
   String get reviewDone => 'Avis envoyé';
 
   @override
-  String get reviewFeedbackHelps => 'Vos commentaires aident à améliorer le service';
+  String get reviewFeedbackHelps =>
+      'Vos commentaires aident à améliorer le service';
 
   @override
   String get reviewHowWasAppointment => 'Comment était votre rendez-vous ?';
@@ -2485,7 +2384,8 @@ class AppLocalizationsFr extends AppLocalizations {
   String get serviceName => 'Nom du service';
 
   @override
-  String get serviceNameMinChars => 'Le nom du service doit contenir au moins 3 caractères';
+  String get serviceNameMinChars =>
+      'Le nom du service doit contenir au moins 3 caractères';
 
   @override
   String get servicesAvailableLabel => 'Services disponibles';
@@ -2503,7 +2403,8 @@ class AppLocalizationsFr extends AppLocalizations {
   String get settingsCancellationPolicy => 'Politique d\'annulation';
 
   @override
-  String get settingsCancellationPolicySubtitle => 'Définissez vos règles d\'annulation';
+  String get settingsCancellationPolicySubtitle =>
+      'Définissez vos règles d\'annulation';
 
   @override
   String get settingsChangePassword => 'Changer le mot de passe';
@@ -2521,7 +2422,8 @@ class AppLocalizationsFr extends AppLocalizations {
   String get settingsDepositSettings => 'Paramètres d\'acompte';
 
   @override
-  String get settingsDepositSettingsSubtitle => 'Configurez les exigences d\'acompte';
+  String get settingsDepositSettingsSubtitle =>
+      'Configurez les exigences d\'acompte';
 
   @override
   String get settingsHistory => 'Historique';
@@ -2608,7 +2510,8 @@ class AppLocalizationsFr extends AppLocalizations {
   String get slotsUpdated => 'Créneaux mis à jour';
 
   @override
-  String get socialLinksAutoDetectHint => 'Les liens sont détectés automatiquement';
+  String get socialLinksAutoDetectHint =>
+      'Les liens sont détectés automatiquement';
 
   @override
   String get socialLinksHeader => 'Liens sociaux';
@@ -2704,13 +2607,15 @@ class AppLocalizationsFr extends AppLocalizations {
   String get uploadVideoSubtitle => 'Téléchargez une vidéo de votre service';
 
   @override
-  String get usernameInvalidChars => 'Le nom d\'utilisateur ne peut contenir que des lettres, chiffres et underscores';
+  String get usernameInvalidChars =>
+      'Le nom d\'utilisateur ne peut contenir que des lettres, chiffres et underscores';
 
   @override
   String get usernameLabel => 'Nom d\'utilisateur';
 
   @override
-  String get usernameMinChars => 'Le nom d\'utilisateur doit contenir au moins 3 caractères';
+  String get usernameMinChars =>
+      'Le nom d\'utilisateur doit contenir au moins 3 caractères';
 
   @override
   String get usernameTaken => 'Ce nom d\'utilisateur est déjà pris';
@@ -2800,7 +2705,8 @@ class AppLocalizationsFr extends AppLocalizations {
   String get cancellationRule48hSubtitle => 'Remboursement intégral';
 
   @override
-  String get cancellationRule48hDescription => 'Annulez plus de 48 heures avant le rendez-vous pour un remboursement intégral.';
+  String get cancellationRule48hDescription =>
+      'Annulez plus de 48 heures avant le rendez-vous pour un remboursement intégral.';
 
   @override
   String get cancellationRule24to48hTitle => 'Entre 24h et 48h';
@@ -2809,7 +2715,8 @@ class AppLocalizationsFr extends AppLocalizations {
   String get cancellationRule24to48hSubtitle => 'Remboursement de 50%';
 
   @override
-  String get cancellationRule24to48hDescription => 'Annulez entre 24 et 48 heures avant pour un remboursement de 50%.';
+  String get cancellationRule24to48hDescription =>
+      'Annulez entre 24 et 48 heures avant pour un remboursement de 50%.';
 
   @override
   String get cancellationRuleLess24hTitle => 'Moins de 24h';
@@ -2818,5 +2725,182 @@ class AppLocalizationsFr extends AppLocalizations {
   String get cancellationRuleLess24hSubtitle => 'Aucun remboursement';
 
   @override
-  String get cancellationRuleLess24hDescription => 'Les annulations dans les 24 heures ne sont pas éligibles au remboursement.';
+  String get cancellationRuleLess24hDescription =>
+      'Les annulations dans les 24 heures ne sont pas éligibles au remboursement.';
+
+  @override
+  String balanceOnSite(String amount, String currency) {
+    return 'Solde sur place : $amount $currency';
+  }
+
+  @override
+  String blockUserConfirmMessage(String name) {
+    return 'Voulez-vous vraiment bloquer $name ?';
+  }
+
+  @override
+  String commissionEstimate(
+      String pct, String commission, String currency, String net) {
+    return 'Commission $pct% : $commission $currency — vous recevez $net $currency';
+  }
+
+  @override
+  String commissionsExampleCatering(int price, String net) {
+    return 'Ex : $price\$ traiteur → vous recevez $net\$';
+  }
+
+  @override
+  String commissionsExampleService(int price, String net) {
+    return 'Ex : $price\$ service → vous recevez $net\$';
+  }
+
+  @override
+  String commissionsExampleTicket(int price, String net) {
+    return 'Ex : $price\$ billet → vous recevez $net\$';
+  }
+
+  @override
+  String commissionsSpotbookCommission(int pct) {
+    return 'Commission Spotbook : $pct%';
+  }
+
+  @override
+  String confirmBalanceMessage(String amount, String currency) {
+    return 'Confirmer le solde restant de $amount $currency collecté sur place ?';
+  }
+
+  @override
+  String depositAmountLabel(int pct) {
+    return 'Acompte de $pct%';
+  }
+
+  @override
+  String linkPlatform(String platform) {
+    return 'Lier $platform';
+  }
+
+  @override
+  String noBookingsOn(String date) {
+    return 'Aucune réservation le $date';
+  }
+
+  @override
+  String noResultsFor(String query) {
+    return 'Aucun résultat pour « $query »';
+  }
+
+  @override
+  String pasteLinkFor(String platform) {
+    return 'Collez votre lien $platform';
+  }
+
+  @override
+  String publicProfileTicketsLeft(int remaining) {
+    return '$remaining billets restants';
+  }
+
+  @override
+  String publishingProgress(int percent) {
+    return 'Publication… $percent%';
+  }
+
+  @override
+  String reviewCountLabel(int count) {
+    return '$count avis';
+  }
+
+  @override
+  String reviewsCount(int count) {
+    return '$count avis';
+  }
+
+  @override
+  String settingsCommissionsSubtitle(int bookingPct, int eventPct, String fee) {
+    return 'Réservations $bookingPct% · Événements $eventPct% · Frais $fee\$';
+  }
+
+  @override
+  String ticketPriceLabel(String price) {
+    return 'À partir de $price';
+  }
+
+  @override
+  String videoReason(String reason) {
+    return 'Raison : $reason';
+  }
+
+  @override
+  String videoSelectedDuration(String seconds) {
+    return 'Durée : ${seconds}s';
+  }
+
+  @override
+  String depositPreviewDescription(String price) {
+    return 'Aperçu : acompte sur un service de $price\$';
+  }
+
+  @override
+  String depositRemainingOnDay(String amount) {
+    return 'Restant sur place : $amount\$';
+  }
+
+  @override
+  String spotifySheetTrackAdded(String track) {
+    return 'Morceau ajouté : $track';
+  }
+
+  @override
+  String authStepLabel(int current, int total) {
+    return 'Étape $current sur $total';
+  }
+
+  @override
+  String waitlistNotifyMessage(String eventTitle) {
+    return 'Vous serez notifié si un billet devient disponible pour « $eventTitle ». Vous aurez 30 minutes pour confirmer.';
+  }
+
+  @override
+  String alreadyScannedAt(String time) {
+    return 'Déjà scanné à $time';
+  }
+
+  @override
+  String ticketsSoldCount(int sold, int total) {
+    return '$sold / $total';
+  }
+
+  @override
+  String fromPrice(String price) {
+    return 'Dès $price \$';
+  }
+
+  @override
+  String ticketTierIndex(int index) {
+    return 'Billet niveau $index';
+  }
+
+  @override
+  String spotsRemaining(int count) {
+    return '$count places restantes';
+  }
+
+  @override
+  String noEventsWithFilter(String filter) {
+    return 'Aucun événement $filter';
+  }
+
+  @override
+  String upcomingCount(int count) {
+    return 'À venir ($count)';
+  }
+
+  @override
+  String pastCount(int count) {
+    return 'Passés ($count)';
+  }
+
+  @override
+  String scannedProgress(int scanned, int total) {
+    return '$scanned / $total scannés';
+  }
 }

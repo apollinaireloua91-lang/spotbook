@@ -752,12 +752,6 @@ abstract class AppLocalizations {
   /// **'Open settings'**
   String get spotifySheetOpenSettings;
 
-  /// No description provided for @spotifySheetTrackAdded.
-  ///
-  /// In en, this message translates to:
-  /// **'Track added: {track}'**
-  String spotifySheetTrackAdded(String track);
-
   /// No description provided for @a11yBack.
   ///
   /// In en, this message translates to:
@@ -1177,12 +1171,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Select your service categories'**
   String get authSelectServiceCategories;
-
-  /// No description provided for @authStepLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Step {current} of {total}'**
-  String authStepLabel(int current, int total);
 
   /// No description provided for @categoriesLoadFailed.
   ///
@@ -2246,12 +2234,6 @@ abstract class AppLocalizations {
   /// **'Tickets sold out'**
   String get ticketsSoldOut;
 
-  /// No description provided for @waitlistNotifyMessage.
-  ///
-  /// In en, this message translates to:
-  /// **'You will be notified if a ticket becomes available for \"{eventTitle}\". You will have 30 minutes to confirm.'**
-  String waitlistNotifyMessage(String eventTitle);
-
   /// No description provided for @waitlistJoinMessage.
   ///
   /// In en, this message translates to:
@@ -2275,12 +2257,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Already scanned'**
   String get alreadyScanned;
-
-  /// No description provided for @alreadyScannedAt.
-  ///
-  /// In en, this message translates to:
-  /// **'Already scanned at {time}'**
-  String alreadyScannedAt(String time);
 
   /// No description provided for @invalidTicket.
   ///
@@ -2336,12 +2312,6 @@ abstract class AppLocalizations {
   /// **'Inactive'**
   String get inactive;
 
-  /// No description provided for @ticketsSoldCount.
-  ///
-  /// In en, this message translates to:
-  /// **'{sold} / {total}'**
-  String ticketsSoldCount(int sold, int total);
-
   /// No description provided for @ticketsSold.
   ///
   /// In en, this message translates to:
@@ -2371,12 +2341,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'All'**
   String get allLabel;
-
-  /// No description provided for @fromPrice.
-  ///
-  /// In en, this message translates to:
-  /// **'From \${price}'**
-  String fromPrice(String price);
 
   /// No description provided for @freeLabel.
   ///
@@ -2474,12 +2438,6 @@ abstract class AppLocalizations {
   /// **'Tap to add your first ticket tier'**
   String get tapToAddFirstTicket;
 
-  /// No description provided for @ticketTierIndex.
-  ///
-  /// In en, this message translates to:
-  /// **'Ticket Tier {index}'**
-  String ticketTierIndex(int index);
-
   /// No description provided for @ticketNameLabel.
   ///
   /// In en, this message translates to:
@@ -2533,12 +2491,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Revenue'**
   String get revenueLabel;
-
-  /// No description provided for @spotsRemaining.
-  ///
-  /// In en, this message translates to:
-  /// **'{count} spots remaining'**
-  String spotsRemaining(int count);
 
   /// No description provided for @publishedLabel.
   ///
@@ -2600,12 +2552,6 @@ abstract class AppLocalizations {
   /// **'No events created'**
   String get noEventsCreated;
 
-  /// No description provided for @noEventsWithFilter.
-  ///
-  /// In en, this message translates to:
-  /// **'No {filter} events'**
-  String noEventsWithFilter(String filter);
-
   /// No description provided for @createFirstEventHint.
   ///
   /// In en, this message translates to:
@@ -2660,18 +2606,6 @@ abstract class AppLocalizations {
   /// **'My Tickets'**
   String get myTicketsTitle;
 
-  /// No description provided for @upcomingCount.
-  ///
-  /// In en, this message translates to:
-  /// **'Upcoming ({count})'**
-  String upcomingCount(int count);
-
-  /// No description provided for @pastCount.
-  ///
-  /// In en, this message translates to:
-  /// **'Past ({count})'**
-  String pastCount(int count);
-
   /// No description provided for @noUpcomingTickets.
   ///
   /// In en, this message translates to:
@@ -2720,496 +2654,2922 @@ abstract class AppLocalizations {
   /// **'Cancelled'**
   String get statusCancelled;
 
-  /// No description provided for @scannedProgress.
-  ///
-  /// In en, this message translates to:
-  /// **'{scanned} / {total} scanned'**
-  String scannedProgress(int scanned, int total);
-
   /// No description provided for @invalidQrCode.
   ///
   /// In en, this message translates to:
   /// **'This QR code is not a valid Spotbook ticket.'**
   String get invalidQrCode;
 
-  // --- Additional abstract declarations ---
-
-  String balanceOnSite(String amount, String currency);
-  String blockUserConfirmMessage(String name);
-  String commissionEstimate(String pct, String commission, String currency, String net);
-  String commissionsExampleCatering(int price, String net);
-  String commissionsExampleService(int price, String net);
-  String commissionsExampleTicket(int price, String net);
-  String commissionsSpotbookCommission(int pct);
-  String confirmBalanceMessage(String amount, String currency);
-  String depositAmountLabel(int pct);
-  String linkPlatform(String platform);
-  String noBookingsOn(String date);
-  String noResultsFor(String query);
-  String pasteLinkFor(String platform);
-  String publicProfileTicketsLeft(int remaining);
-  String publishingProgress(int percent);
-  String reviewCountLabel(int count);
-  String reviewsCount(int count);
-  String settingsCommissionsSubtitle(int bookingPct, int eventPct, String fee);
-  String ticketPriceLabel(String price);
-  String videoReason(String reason);
-  String videoSelectedDuration(String seconds);
-
+  /// No description provided for @acceptBooking.
+  ///
+  /// In en, this message translates to:
+  /// **'Accept booking'**
   String get acceptBooking;
+
+  /// No description provided for @accessDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'Access denied'**
   String get accessDenied;
+
+  /// No description provided for @activeBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
   String get activeBadge;
+
+  /// No description provided for @addBioHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Tell clients about yourself…'**
   String get addBioHint;
+
+  /// No description provided for @addCommentHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a comment…'**
   String get addCommentHint;
+
+  /// No description provided for @addNetworkTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add network'**
   String get addNetworkTitle;
+
+  /// No description provided for @addRule.
+  ///
+  /// In en, this message translates to:
+  /// **'Add rule'**
   String get addRule;
+
+  /// No description provided for @addRuleFirst.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a rule first'**
   String get addRuleFirst;
+
+  /// No description provided for @addServiceAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a service'**
   String get addServiceAction;
+
+  /// No description provided for @addTextTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add text'**
   String get addTextTitle;
+
+  /// No description provided for @addVideoAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a video'**
   String get addVideoAction;
+
+  /// No description provided for @addVideoTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add video'**
   String get addVideoTitle;
+
+  /// No description provided for @allNetworksAdded.
+  ///
+  /// In en, this message translates to:
+  /// **'All networks added'**
   String get allNetworksAdded;
+
+  /// No description provided for @amountPaid.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount paid'**
   String get amountPaid;
+
+  /// No description provided for @analyticsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Analytics'**
   String get analyticsLabel;
+
+  /// No description provided for @applyPromo.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply'**
   String get applyPromo;
+
+  /// No description provided for @appointmentDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Appointment details'**
   String get appointmentDetails;
+
+  /// No description provided for @appointmentMarkedDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Appointment marked as done'**
   String get appointmentMarkedDone;
+
+  /// No description provided for @availabilityQuickAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Availability'**
   String get availabilityQuickAction;
+
+  /// No description provided for @availabilityRulesHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Set your weekly availability rules'**
   String get availabilityRulesHint;
+
+  /// No description provided for @availabilitySection.
+  ///
+  /// In en, this message translates to:
+  /// **'Availability'**
   String get availabilitySection;
+
+  /// No description provided for @availableDaysHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Available days'**
   String get availableDaysHint;
+
+  /// No description provided for @avgRating.
+  ///
+  /// In en, this message translates to:
+  /// **'Average rating'**
   String get avgRating;
+
+  /// No description provided for @balanceMarkedPaid.
+  ///
+  /// In en, this message translates to:
+  /// **'Balance marked as paid'**
   String get balanceMarkedPaid;
+
+  /// No description provided for @balanceToCollectOnSite.
+  ///
+  /// In en, this message translates to:
+  /// **'Balance to collect on site'**
   String get balanceToCollectOnSite;
+
+  /// No description provided for @balanceToPayOnSite.
+  ///
+  /// In en, this message translates to:
+  /// **'Balance to pay on site'**
   String get balanceToPayOnSite;
+
+  /// No description provided for @becomePro.
+  ///
+  /// In en, this message translates to:
+  /// **'Become a Pro'**
   String get becomePro;
+
+  /// No description provided for @becomeProManageServices.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage your services'**
   String get becomeProManageServices;
+
+  /// No description provided for @becomeProManageServicesDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Create and manage your service offerings'**
   String get becomeProManageServicesDesc;
+
+  /// No description provided for @becomeProPublishVideos.
+  ///
+  /// In en, this message translates to:
+  /// **'Publish videos'**
   String get becomeProPublishVideos;
+
+  /// No description provided for @becomeProPublishVideosDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Showcase your work with video content'**
   String get becomeProPublishVideosDesc;
+
+  /// No description provided for @becomeProReceivePayments.
+  ///
+  /// In en, this message translates to:
+  /// **'Receive payments'**
   String get becomeProReceivePayments;
+
+  /// No description provided for @becomeProReceivePaymentsDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Get paid securely via Stripe'**
   String get becomeProReceivePaymentsDesc;
+
+  /// No description provided for @becomeProSellTickets.
+  ///
+  /// In en, this message translates to:
+  /// **'Sell tickets'**
   String get becomeProSellTickets;
+
+  /// No description provided for @becomeProSellTicketsDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Create events and sell tickets'**
   String get becomeProSellTicketsDesc;
+
+  /// No description provided for @becomeProSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlock professional features'**
   String get becomeProSubtitle;
+
+  /// No description provided for @bioHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Write a short bio…'**
   String get bioHint;
+
+  /// No description provided for @bioLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Bio'**
   String get bioLabel;
+
+  /// No description provided for @block.
+  ///
+  /// In en, this message translates to:
+  /// **'Block'**
   String get block;
+
+  /// No description provided for @blockUserBlocked.
+  ///
+  /// In en, this message translates to:
+  /// **'User blocked'**
   String get blockUserBlocked;
+
+  /// No description provided for @blockUserConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Block user?'**
   String get blockUserConfirmTitle;
+
+  /// No description provided for @blockUserDefault.
+  ///
+  /// In en, this message translates to:
+  /// **'this user'**
   String get blockUserDefault;
+
+  /// No description provided for @blockedUsersEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No blocked users'**
   String get blockedUsersEmpty;
+
+  /// No description provided for @blockedUsersTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Blocked users'**
   String get blockedUsersTitle;
+
+  /// No description provided for @blockedUsersUnblock.
+  ///
+  /// In en, this message translates to:
+  /// **'Unblock'**
   String get blockedUsersUnblock;
+
+  /// No description provided for @bookingAccepted.
+  ///
+  /// In en, this message translates to:
+  /// **'Booking accepted'**
   String get bookingAccepted;
+
+  /// No description provided for @bookingCodeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Booking code'**
   String get bookingCodeLabel;
+
+  /// No description provided for @bookingConfirmed.
+  ///
+  /// In en, this message translates to:
+  /// **'Booking confirmed'**
   String get bookingConfirmed;
+
+  /// No description provided for @bookingConfirmedSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your appointment is confirmed'**
   String get bookingConfirmedSubtitle;
+
+  /// No description provided for @bookingConfirmedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Booking confirmed!'**
   String get bookingConfirmedTitle;
+
+  /// No description provided for @bookingNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Booking not found'**
   String get bookingNotFound;
+
+  /// No description provided for @bookingReportDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Report an issue with this booking'**
   String get bookingReportDescription;
+
+  /// No description provided for @bookingReportDetailsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Describe the issue in detail…'**
   String get bookingReportDetailsHint;
+
+  /// No description provided for @bookingReportDetailsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Details'**
   String get bookingReportDetailsLabel;
+
+  /// No description provided for @bookingReportReasonHarassment.
+  ///
+  /// In en, this message translates to:
+  /// **'Harassment'**
   String get bookingReportReasonHarassment;
+
+  /// No description provided for @bookingReportReasonInappropriate.
+  ///
+  /// In en, this message translates to:
+  /// **'Inappropriate behavior'**
   String get bookingReportReasonInappropriate;
+
+  /// No description provided for @bookingReportReasonNoShow.
+  ///
+  /// In en, this message translates to:
+  /// **'No-show'**
   String get bookingReportReasonNoShow;
+
+  /// No description provided for @bookingReportReasonNotAsDescribed.
+  ///
+  /// In en, this message translates to:
+  /// **'Not as described'**
   String get bookingReportReasonNotAsDescribed;
+
+  /// No description provided for @bookingReportReasonPayment.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment issue'**
   String get bookingReportReasonPayment;
+
+  /// No description provided for @bookingReportSentConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Report sent successfully'**
   String get bookingReportSentConfirmation;
+
+  /// No description provided for @bookingReportTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Report booking'**
   String get bookingReportTitle;
+
+  /// No description provided for @bookingsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Bookings'**
   String get bookingsLabel;
+
+  /// No description provided for @bookingsWillAppearHere.
+  ///
+  /// In en, this message translates to:
+  /// **'Your bookings will appear here'**
   String get bookingsWillAppearHere;
+
+  /// No description provided for @buyTicketAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Buy ticket'**
   String get buyTicketAction;
+
+  /// No description provided for @calendarAndAvailability.
+  ///
+  /// In en, this message translates to:
+  /// **'Calendar & Availability'**
   String get calendarAndAvailability;
+
+  /// No description provided for @cancelReasonHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Reason for cancellation…'**
   String get cancelReasonHint;
+
+  /// No description provided for @cancellationFactBasedOnStart.
+  ///
+  /// In en, this message translates to:
+  /// **'Based on the appointment start time'**
   String get cancellationFactBasedOnStart;
+
+  /// No description provided for @cancellationFactDisputes.
+  ///
+  /// In en, this message translates to:
+  /// **'Disputes can be resolved via support'**
   String get cancellationFactDisputes;
+
+  /// No description provided for @cancellationFactRefundDelay.
+  ///
+  /// In en, this message translates to:
+  /// **'Refunds may take 5-10 business days'**
   String get cancellationFactRefundDelay;
+
+  /// No description provided for @cancellationFactReschedule.
+  ///
+  /// In en, this message translates to:
+  /// **'You can reschedule instead of cancelling'**
   String get cancellationFactReschedule;
+
+  /// No description provided for @cancellationHowItWorks.
+  ///
+  /// In en, this message translates to:
+  /// **'How it works'**
   String get cancellationHowItWorks;
+
+  /// No description provided for @cancellationIfYouCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'If you cancel'**
   String get cancellationIfYouCancel;
+
+  /// No description provided for @cancellationIfYouCancelDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'The refund depends on your cancellation policy'**
   String get cancellationIfYouCancelDescription;
+
+  /// No description provided for @cancellationKeyPoints.
+  ///
+  /// In en, this message translates to:
+  /// **'Key points'**
   String get cancellationKeyPoints;
+
+  /// No description provided for @cancellationPolicyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancellation policy'**
   String get cancellationPolicyTitle;
+
+  /// No description provided for @cancellationProtectDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Protects both clients and professionals'**
   String get cancellationProtectDescription;
+
+  /// No description provided for @cancellationProtectTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Fair for everyone'**
   String get cancellationProtectTitle;
+
+  /// No description provided for @cancellationRuleNoShowDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'If the client does not show up, the deposit is kept'**
   String get cancellationRuleNoShowDescription;
+
+  /// No description provided for @cancellationRuleNoShowSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Deposit is kept by the professional'**
   String get cancellationRuleNoShowSubtitle;
+
+  /// No description provided for @cancellationRuleNoShowTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No-show policy'**
   String get cancellationRuleNoShowTitle;
+
+  /// No description provided for @changePhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Change photo'**
   String get changePhoto;
+
+  /// No description provided for @choose.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose'**
   String get choose;
+
+  /// No description provided for @chooseADate.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a date'**
   String get chooseADate;
+
+  /// No description provided for @chooseAService.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a service'**
   String get chooseAService;
+
+  /// No description provided for @chooseAServiceSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Select the service you want to book'**
   String get chooseAServiceSubtitle;
+
+  /// No description provided for @chooseASlot.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a time slot'**
   String get chooseASlot;
+
+  /// No description provided for @close.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
   String get close;
+
+  /// No description provided for @closedException.
+  ///
+  /// In en, this message translates to:
+  /// **'Closed'**
   String get closedException;
+
+  /// No description provided for @commission.
+  ///
+  /// In en, this message translates to:
+  /// **'Commission'**
   String get commission;
+
+  /// No description provided for @commissionsCateringDeposits.
+  ///
+  /// In en, this message translates to:
+  /// **'Catering & Deposits'**
   String get commissionsCateringDeposits;
+
+  /// No description provided for @commissionsCateringDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'18% commission on catering orders'**
   String get commissionsCateringDesc;
+
+  /// No description provided for @commissionsClientPaysFee.
+  ///
+  /// In en, this message translates to:
+  /// **'Client pays service fee'**
   String get commissionsClientPaysFee;
+
+  /// No description provided for @commissionsClientPaysService.
+  ///
+  /// In en, this message translates to:
+  /// **'Client pays'**
   String get commissionsClientPaysService;
+
+  /// No description provided for @commissionsClientServiceFee.
+  ///
+  /// In en, this message translates to:
+  /// **'Client service fee'**
   String get commissionsClientServiceFee;
+
+  /// No description provided for @commissionsClientTotal.
+  ///
+  /// In en, this message translates to:
+  /// **'Client total'**
   String get commissionsClientTotal;
+
+  /// No description provided for @commissionsDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Understand how Spotbook commissions work'**
   String get commissionsDescription;
+
+  /// No description provided for @commissionsDetailedExample.
+  ///
+  /// In en, this message translates to:
+  /// **'Detailed example'**
   String get commissionsDetailedExample;
+
+  /// No description provided for @commissionsEventTickets.
+  ///
+  /// In en, this message translates to:
+  /// **'Event Tickets'**
   String get commissionsEventTickets;
+
+  /// No description provided for @commissionsEventTicketsDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'12% commission on ticket sales'**
   String get commissionsEventTicketsDesc;
+
+  /// No description provided for @commissionsFixedFeeDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'A fixed fee is added to each booking for the client'**
   String get commissionsFixedFeeDescription;
+
+  /// No description provided for @commissionsFixedFeePerBooking.
+  ///
+  /// In en, this message translates to:
+  /// **'Fixed fee per booking'**
   String get commissionsFixedFeePerBooking;
+
+  /// No description provided for @commissionsPayouts.
+  ///
+  /// In en, this message translates to:
+  /// **'Payouts'**
   String get commissionsPayouts;
+
+  /// No description provided for @commissionsPayoutsDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Payouts are sent automatically via Stripe'**
   String get commissionsPayoutsDescription;
+
+  /// No description provided for @commissionsRates.
+  ///
+  /// In en, this message translates to:
+  /// **'Commission rates'**
   String get commissionsRates;
+
+  /// No description provided for @commissionsServiceBookings.
+  ///
+  /// In en, this message translates to:
+  /// **'Service Bookings'**
   String get commissionsServiceBookings;
+
+  /// No description provided for @commissionsServiceBookingsDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'18% commission on service bookings'**
   String get commissionsServiceBookingsDesc;
+
+  /// No description provided for @commissionsServicePrice.
+  ///
+  /// In en, this message translates to:
+  /// **'Service price'**
   String get commissionsServicePrice;
+
+  /// No description provided for @commissionsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Commissions & Fees'**
   String get commissionsTitle;
+
+  /// No description provided for @commissionsTransparentPricing.
+  ///
+  /// In en, this message translates to:
+  /// **'Transparent pricing'**
   String get commissionsTransparentPricing;
+
+  /// No description provided for @commissionsYouReceive.
+  ///
+  /// In en, this message translates to:
+  /// **'You receive'**
   String get commissionsYouReceive;
+
+  /// No description provided for @confirmBalanceTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm balance'**
   String get confirmBalanceTitle;
+
+  /// No description provided for @confirmCancellation.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm cancellation'**
   String get confirmCancellation;
+
+  /// No description provided for @confirmed.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirmed'**
   String get confirmed;
+
+  /// No description provided for @continueLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
   String get continueLabel;
+
+  /// No description provided for @copyLinkAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy link'**
   String get copyLinkAction;
+
+  /// No description provided for @createEventAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Create event'**
   String get createEventAction;
+
+  /// No description provided for @createProAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Pro account'**
   String get createProAccount;
+
+  /// No description provided for @creditCard.
+  ///
+  /// In en, this message translates to:
+  /// **'Credit card'**
   String get creditCard;
+
+  /// No description provided for @darkMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Dark mode'**
   String get darkMode;
+
+  /// No description provided for @dashboardLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load dashboard'**
   String get dashboardLoadError;
+
+  /// No description provided for @deleteAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete account'**
   String get deleteAccount;
+
+  /// No description provided for @deleteAccountConfirmCheckbox.
+  ///
+  /// In en, this message translates to:
+  /// **'I understand this action is irreversible'**
   String get deleteAccountConfirmCheckbox;
+
+  /// No description provided for @deleteAccountDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'This will permanently delete your account and all data'**
   String get deleteAccountDescription;
+
+  /// No description provided for @deleteAccountFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to delete account'**
   String get deleteAccountFailed;
+
+  /// No description provided for @deleteAccountIrreversible.
+  ///
+  /// In en, this message translates to:
+  /// **'This action cannot be undone'**
   String get deleteAccountIrreversible;
+
+  /// No description provided for @deleteAccountPermanently.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete permanently'**
   String get deleteAccountPermanently;
+
+  /// No description provided for @deleteVideoConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this video?'**
   String get deleteVideoConfirm;
+
+  /// No description provided for @deleteVideoTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete video'**
   String get deleteVideoTitle;
+
+  /// No description provided for @depositAmountCad.
+  ///
+  /// In en, this message translates to:
+  /// **'Deposit amount (CAD)'**
   String get depositAmountCad;
+
+  /// No description provided for @depositCadMinimum.
+  ///
+  /// In en, this message translates to:
+  /// **'Minimum \$5 CAD'**
   String get depositCadMinimum;
+
+  /// No description provided for @depositClientPaysNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Client pays now'**
   String get depositClientPaysNow;
+
+  /// No description provided for @depositDisabledDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Client pays the full amount on site'**
   String get depositDisabledDescription;
+
+  /// No description provided for @depositEnabledDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Client pays a deposit online'**
   String get depositEnabledDescription;
+
+  /// No description provided for @depositExplanation.
+  ///
+  /// In en, this message translates to:
+  /// **'The deposit secures the booking'**
   String get depositExplanation;
+
+  /// No description provided for @depositMinimumDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Minimum deposit amount'**
   String get depositMinimumDescription;
+
+  /// No description provided for @depositMinimumTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Minimum deposit'**
   String get depositMinimumTitle;
+
+  /// No description provided for @depositPaidOnline.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid online'**
   String get depositPaidOnline;
+
+  /// No description provided for @depositPercent.
+  ///
+  /// In en, this message translates to:
+  /// **'Deposit %'**
   String get depositPercent;
+
+  /// No description provided for @depositPercentageDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Percentage of total price'**
   String get depositPercentageDescription;
+
+  /// No description provided for @depositPercentageTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Deposit percentage'**
   String get depositPercentageTitle;
+
+  /// No description provided for @depositPlusSurplace.
+  ///
+  /// In en, this message translates to:
+  /// **'Deposit + balance on site'**
   String get depositPlusSurplace;
-  String depositPreviewDescription(String price);
+
+  /// No description provided for @depositPreviewTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Deposit preview'**
   String get depositPreviewTitle;
+
+  /// No description provided for @depositQuickSelect.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick select'**
   String get depositQuickSelect;
+
+  /// No description provided for @depositReceivedOnline.
+  ///
+  /// In en, this message translates to:
+  /// **'Received online'**
   String get depositReceivedOnline;
-  String depositRemainingOnDay(String amount);
+
+  /// No description provided for @depositRequire.
+  ///
+  /// In en, this message translates to:
+  /// **'Require deposit'**
   String get depositRequire;
+
+  /// No description provided for @depositRequireOnBooking.
+  ///
+  /// In en, this message translates to:
+  /// **'Require deposit on booking'**
   String get depositRequireOnBooking;
+
+  /// No description provided for @depositSaveSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Save settings'**
   String get depositSaveSettings;
+
+  /// No description provided for @depositServiceFee.
+  ///
+  /// In en, this message translates to:
+  /// **'Service fee'**
   String get depositServiceFee;
+
+  /// No description provided for @depositServiceTotal.
+  ///
+  /// In en, this message translates to:
+  /// **'Service total'**
   String get depositServiceTotal;
+
+  /// No description provided for @depositSettingsSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Deposit settings saved'**
   String get depositSettingsSaved;
+
+  /// No description provided for @depositSettingsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Deposit settings'**
   String get depositSettingsTitle;
+
+  /// No description provided for @depositsCollected.
+  ///
+  /// In en, this message translates to:
+  /// **'Deposits collected'**
   String get depositsCollected;
+
+  /// No description provided for @descriptionHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Describe your service…'**
   String get descriptionHint;
+
+  /// No description provided for @descriptionOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Description (optional)'**
   String get descriptionOptional;
+
+  /// No description provided for @descriptionRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Description is required'**
   String get descriptionRequired;
+
+  /// No description provided for @displayNameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Display name'**
   String get displayNameLabel;
+
+  /// No description provided for @doneCountLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
   String get doneCountLabel;
+
+  /// No description provided for @durationLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Duration'**
   String get durationLabel;
+
+  /// No description provided for @editProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit profile'**
   String get editProfile;
+
+  /// No description provided for @editVideoTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit video'**
   String get editVideoTitle;
+
+  /// No description provided for @endLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'End'**
   String get endLabel;
+
+  /// No description provided for @enterCodeHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter promo code'**
   String get enterCodeHint;
+
+  /// No description provided for @eventsQuickAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Events'**
   String get eventsQuickAction;
+
+  /// No description provided for @eventsTab.
+  ///
+  /// In en, this message translates to:
+  /// **'Events'**
   String get eventsTab;
+
+  /// No description provided for @fastReplyBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Fast reply'**
   String get fastReplyBadge;
+
+  /// No description provided for @feedDiscover.
+  ///
+  /// In en, this message translates to:
+  /// **'Discover'**
   String get feedDiscover;
+
+  /// No description provided for @feedFollowing.
+  ///
+  /// In en, this message translates to:
+  /// **'Following'**
   String get feedFollowing;
+
+  /// No description provided for @filtersTool.
+  ///
+  /// In en, this message translates to:
+  /// **'Filters'**
   String get filtersTool;
+
+  /// No description provided for @followLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Follow'**
   String get followLabel;
+
+  /// No description provided for @followMeSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Follow me'**
   String get followMeSection;
+
+  /// No description provided for @followersLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Followers'**
   String get followersLabel;
+
+  /// No description provided for @followingLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Following'**
   String get followingLabel;
+
+  /// No description provided for @freePrice.
+  ///
+  /// In en, this message translates to:
+  /// **'Free'**
   String get freePrice;
+
+  /// No description provided for @friday.
+  ///
+  /// In en, this message translates to:
+  /// **'Friday'**
   String get friday;
+
+  /// No description provided for @fullPayment.
+  ///
+  /// In en, this message translates to:
+  /// **'Full payment'**
   String get fullPayment;
+
+  /// No description provided for @generateSlots.
+  ///
+  /// In en, this message translates to:
+  /// **'Generate slots'**
   String get generateSlots;
+
+  /// No description provided for @glutenFreeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Gluten-free'**
   String get glutenFreeLabel;
+
+  /// No description provided for @greetingAfternoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Good afternoon'**
   String get greetingAfternoon;
+
+  /// No description provided for @greetingEvening.
+  ///
+  /// In en, this message translates to:
+  /// **'Good evening'**
   String get greetingEvening;
+
+  /// No description provided for @greetingMorning.
+  ///
+  /// In en, this message translates to:
+  /// **'Good morning'**
   String get greetingMorning;
+
+  /// No description provided for @grossRevenue.
+  ///
+  /// In en, this message translates to:
+  /// **'Gross revenue'**
   String get grossRevenue;
+
+  /// No description provided for @hashtagsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Add hashtags…'**
   String get hashtagsHint;
+
+  /// No description provided for @hashtagsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Hashtags'**
   String get hashtagsLabel;
+
+  /// No description provided for @invalidDepositAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid deposit amount'**
   String get invalidDepositAmount;
+
+  /// No description provided for @invalidPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid price'**
   String get invalidPrice;
+
+  /// No description provided for @leaveReview.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave a review'**
   String get leaveReview;
+
+  /// No description provided for @likeProsToFindHere.
+  ///
+  /// In en, this message translates to:
+  /// **'Like pros to find them here'**
   String get likeProsToFindHere;
+
+  /// No description provided for @linkCopied.
+  ///
+  /// In en, this message translates to:
+  /// **'Link copied'**
   String get linkCopied;
+
+  /// No description provided for @linkCopiedSnack.
+  ///
+  /// In en, this message translates to:
+  /// **'Link copied to clipboard'**
   String get linkCopiedSnack;
+
+  /// No description provided for @linkCopiedToClipboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Link copied to clipboard'**
   String get linkCopiedToClipboard;
+
+  /// No description provided for @loadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load'**
   String get loadError;
+
+  /// No description provided for @locationHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your location…'**
   String get locationHint;
+
+  /// No description provided for @locationLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Location'**
   String get locationLabel;
+
+  /// No description provided for @logout.
+  ///
+  /// In en, this message translates to:
+  /// **'Log out'**
   String get logout;
+
+  /// No description provided for @logoutConfirmMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to log out?'**
   String get logoutConfirmMessage;
+
+  /// No description provided for @logoutConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Log out?'**
   String get logoutConfirmTitle;
+
+  /// No description provided for @manageServices.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage services'**
   String get manageServices;
+
+  /// No description provided for @markAsDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark as done'**
   String get markAsDone;
+
+  /// No description provided for @markAsDoneMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark this appointment as completed?'**
   String get markAsDoneMessage;
+
+  /// No description provided for @markAsDoneTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark as done?'**
   String get markAsDoneTitle;
+
+  /// No description provided for @memberBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Member'**
   String get memberBadge;
+
+  /// No description provided for @menuTab.
+  ///
+  /// In en, this message translates to:
+  /// **'Menu'**
   String get menuTab;
+
+  /// No description provided for @messageLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Message'**
   String get messageLabel;
+
+  /// No description provided for @monday.
+  ///
+  /// In en, this message translates to:
+  /// **'Monday'**
   String get monday;
+
+  /// No description provided for @moreOptionsAction.
+  ///
+  /// In en, this message translates to:
+  /// **'More options'**
   String get moreOptionsAction;
+
+  /// No description provided for @mostBookings.
+  ///
+  /// In en, this message translates to:
+  /// **'Most bookings'**
   String get mostBookings;
+
+  /// No description provided for @mostRecent.
+  ///
+  /// In en, this message translates to:
+  /// **'Most recent'**
   String get mostRecent;
+
+  /// No description provided for @mostSpent.
+  ///
+  /// In en, this message translates to:
+  /// **'Most spent'**
   String get mostSpent;
+
+  /// No description provided for @myClients.
+  ///
+  /// In en, this message translates to:
+  /// **'My clients'**
   String get myClients;
+
+  /// No description provided for @myEventsSection.
+  ///
+  /// In en, this message translates to:
+  /// **'My events'**
   String get myEventsSection;
+
+  /// No description provided for @myFavoritePros.
+  ///
+  /// In en, this message translates to:
+  /// **'My favorite pros'**
   String get myFavoritePros;
+
+  /// No description provided for @myProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'My profile'**
   String get myProfile;
+
+  /// No description provided for @myQrCode.
+  ///
+  /// In en, this message translates to:
+  /// **'My QR code'**
   String get myQrCode;
+
+  /// No description provided for @myServicesSection.
+  ///
+  /// In en, this message translates to:
+  /// **'My services'**
   String get myServicesSection;
+
+  /// No description provided for @myVideosSection.
+  ///
+  /// In en, this message translates to:
+  /// **'My videos'**
   String get myVideosSection;
+
+  /// No description provided for @netRevenue.
+  ///
+  /// In en, this message translates to:
+  /// **'Net revenue'**
   String get netRevenue;
+
+  /// No description provided for @newBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'New'**
   String get newBadge;
+
+  /// No description provided for @newTimeSlot.
+  ///
+  /// In en, this message translates to:
+  /// **'New time slot'**
   String get newTimeSlot;
+
+  /// No description provided for @nextEventHeader.
+  ///
+  /// In en, this message translates to:
+  /// **'Next event'**
   String get nextEventHeader;
+
+  /// No description provided for @nextLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Next'**
   String get nextLabel;
+
+  /// No description provided for @noBookableServices.
+  ///
+  /// In en, this message translates to:
+  /// **'No bookable services'**
   String get noBookableServices;
+
+  /// No description provided for @noCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'No, keep it'**
   String get noCancel;
+
+  /// No description provided for @noClients.
+  ///
+  /// In en, this message translates to:
+  /// **'No clients yet'**
   String get noClients;
+
+  /// No description provided for @noComments.
+  ///
+  /// In en, this message translates to:
+  /// **'No comments yet'**
   String get noComments;
+
+  /// No description provided for @noEventsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'No events'**
   String get noEventsLabel;
+
+  /// No description provided for @noMenuAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'No menu available'**
   String get noMenuAvailable;
+
+  /// No description provided for @noProfessionalsAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'No professionals available'**
   String get noProfessionalsAvailable;
+
+  /// No description provided for @noRulesHint.
+  ///
+  /// In en, this message translates to:
+  /// **'No availability rules yet'**
   String get noRulesHint;
+
+  /// No description provided for @noServicesAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'No services available'**
   String get noServicesAvailable;
+
+  /// No description provided for @noServicesLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'No services'**
   String get noServicesLabel;
+
+  /// No description provided for @noSlotsForDate.
+  ///
+  /// In en, this message translates to:
+  /// **'No slots available for this date'**
   String get noSlotsForDate;
+
+  /// No description provided for @noSlotsForDay.
+  ///
+  /// In en, this message translates to:
+  /// **'No slots for this day'**
   String get noSlotsForDay;
+
+  /// No description provided for @noTransactionsPeriod.
+  ///
+  /// In en, this message translates to:
+  /// **'No transactions for this period'**
   String get noTransactionsPeriod;
+
+  /// No description provided for @noUpcomingAppointments.
+  ///
+  /// In en, this message translates to:
+  /// **'No upcoming appointments'**
   String get noUpcomingAppointments;
+
+  /// No description provided for @noVideosAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'No videos available'**
   String get noVideosAvailable;
+
+  /// No description provided for @noVideosYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No videos yet'**
   String get noVideosYet;
+
+  /// No description provided for @notConnected.
+  ///
+  /// In en, this message translates to:
+  /// **'Not connected'**
   String get notConnected;
+
+  /// No description provided for @notifMarketing.
+  ///
+  /// In en, this message translates to:
+  /// **'Marketing'**
   String get notifMarketing;
+
+  /// No description provided for @notifMarketingSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Promotions and special offers'**
   String get notifMarketingSubtitle;
+
+  /// No description provided for @notifMessages.
+  ///
+  /// In en, this message translates to:
+  /// **'Messages'**
   String get notifMessages;
+
+  /// No description provided for @notifMessagesSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New messages from clients'**
   String get notifMessagesSubtitle;
+
+  /// No description provided for @notifReminders.
+  ///
+  /// In en, this message translates to:
+  /// **'Reminders'**
   String get notifReminders;
+
+  /// No description provided for @notifRemindersSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Appointment reminders'**
   String get notifRemindersSubtitle;
+
+  /// No description provided for @notifReviewRequests.
+  ///
+  /// In en, this message translates to:
+  /// **'Review requests'**
   String get notifReviewRequests;
+
+  /// No description provided for @notifReviewRequestsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Requests to review your experience'**
   String get notifReviewRequestsSubtitle;
+
+  /// No description provided for @notifSectionAppointments.
+  ///
+  /// In en, this message translates to:
+  /// **'Appointments'**
   String get notifSectionAppointments;
+
+  /// No description provided for @notifSectionCommunication.
+  ///
+  /// In en, this message translates to:
+  /// **'Communication'**
   String get notifSectionCommunication;
+
+  /// No description provided for @notifSectionEvents.
+  ///
+  /// In en, this message translates to:
+  /// **'Events'**
   String get notifSectionEvents;
+
+  /// No description provided for @notifSectionOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
   String get notifSectionOther;
+
+  /// No description provided for @notifUpdates.
+  ///
+  /// In en, this message translates to:
+  /// **'Updates'**
   String get notifUpdates;
+
+  /// No description provided for @notifUpdatesSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'App updates and new features'**
   String get notifUpdatesSubtitle;
+
+  /// No description provided for @notifWaitlist.
+  ///
+  /// In en, this message translates to:
+  /// **'Waitlist'**
   String get notifWaitlist;
+
+  /// No description provided for @notifWaitlistSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Waitlist notifications'**
   String get notifWaitlistSubtitle;
+
+  /// No description provided for @notificationsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No notifications'**
   String get notificationsEmpty;
+
+  /// No description provided for @notificationsMarkAllRead.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark all as read'**
   String get notificationsMarkAllRead;
+
+  /// No description provided for @ok.
+  ///
+  /// In en, this message translates to:
+  /// **'OK'**
   String get ok;
+
+  /// No description provided for @openForBooking.
+  ///
+  /// In en, this message translates to:
+  /// **'Open for booking'**
   String get openForBooking;
+
+  /// No description provided for @payButtonPrefix.
+  ///
+  /// In en, this message translates to:
+  /// **'Pay'**
   String get payButtonPrefix;
+
+  /// No description provided for @payNowLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Pay now'**
   String get payNowLabel;
+
+  /// No description provided for @paymentFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment failed'**
   String get paymentFailed;
+
+  /// No description provided for @paymentPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment pending'**
   String get paymentPending;
+
+  /// No description provided for @paymentSubtitlePrefix.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment for'**
   String get paymentSubtitlePrefix;
+
+  /// No description provided for @pending.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
   String get pending;
+
+  /// No description provided for @perDay.
+  ///
+  /// In en, this message translates to:
+  /// **'per day'**
   String get perDay;
+
+  /// No description provided for @periodNinetyDays.
+  ///
+  /// In en, this message translates to:
+  /// **'90 days'**
   String get periodNinetyDays;
+
+  /// No description provided for @periodOneYear.
+  ///
+  /// In en, this message translates to:
+  /// **'1 year'**
   String get periodOneYear;
+
+  /// No description provided for @periodSevenDays.
+  ///
+  /// In en, this message translates to:
+  /// **'7 days'**
   String get periodSevenDays;
+
+  /// No description provided for @periodThirtyDays.
+  ///
+  /// In en, this message translates to:
+  /// **'30 days'**
   String get periodThirtyDays;
+
+  /// No description provided for @photoUploadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to upload photo'**
   String get photoUploadError;
+
+  /// No description provided for @priceCad.
+  ///
+  /// In en, this message translates to:
+  /// **'Price (CAD)'**
   String get priceCad;
+
+  /// No description provided for @privacyPolicy.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy policy'**
   String get privacyPolicy;
+
+  /// No description provided for @proProfileFromPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'From'**
   String get proProfileFromPrice;
+
+  /// No description provided for @proProfileNoReviews.
+  ///
+  /// In en, this message translates to:
+  /// **'No reviews yet'**
   String get proProfileNoReviews;
+
+  /// No description provided for @proShellCateringSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage your catering menu'**
   String get proShellCateringSubtitle;
+
+  /// No description provided for @proShellGallery.
+  ///
+  /// In en, this message translates to:
+  /// **'Gallery'**
   String get proShellGallery;
+
+  /// No description provided for @proShellLanguage.
+  ///
+  /// In en, this message translates to:
+  /// **'Language'**
   String get proShellLanguage;
+
+  /// No description provided for @proShellMyMenu.
+  ///
+  /// In en, this message translates to:
+  /// **'My menu'**
   String get proShellMyMenu;
+
+  /// No description provided for @proShellMyPackages.
+  ///
+  /// In en, this message translates to:
+  /// **'My packages'**
   String get proShellMyPackages;
+
+  /// No description provided for @proShellMyReviews.
+  ///
+  /// In en, this message translates to:
+  /// **'My reviews'**
   String get proShellMyReviews;
+
+  /// No description provided for @proShellPaymentConfig.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment configuration'**
   String get proShellPaymentConfig;
+
+  /// No description provided for @proToolsSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Pro tools'**
   String get proToolsSection;
+
+  /// No description provided for @profileLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load profile'**
   String get profileLoadError;
+
+  /// No description provided for @profileLoadErrorMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load this profile'**
   String get profileLoadErrorMessage;
+
+  /// No description provided for @profileNotFoundLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile not found'**
   String get profileNotFoundLabel;
+
+  /// No description provided for @profileUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile updated'**
   String get profileUpdated;
+
+  /// No description provided for @promoApplied.
+  ///
+  /// In en, this message translates to:
+  /// **'Promo code applied'**
   String get promoApplied;
+
+  /// No description provided for @promoCodeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Promo code'**
   String get promoCodeTitle;
+
+  /// No description provided for @promoCodes.
+  ///
+  /// In en, this message translates to:
+  /// **'Promo codes'**
   String get promoCodes;
+
+  /// No description provided for @publishAService.
+  ///
+  /// In en, this message translates to:
+  /// **'Publish a service'**
   String get publishAService;
+
+  /// No description provided for @publishMyService.
+  ///
+  /// In en, this message translates to:
+  /// **'Publish my service'**
   String get publishMyService;
+
+  /// No description provided for @qrShareInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Share this QR code with your clients'**
   String get qrShareInfo;
+
+  /// No description provided for @quickActionsHeader.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick actions'**
   String get quickActionsHeader;
+
+  /// No description provided for @recentHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent history'**
   String get recentHistory;
+
+  /// No description provided for @recordVideo.
+  ///
+  /// In en, this message translates to:
+  /// **'Record video'**
   String get recordVideo;
+
+  /// No description provided for @recordVideoSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Record a video of your service'**
   String get recordVideoSubtitle;
+
+  /// No description provided for @refundErrorRetry.
+  ///
+  /// In en, this message translates to:
+  /// **'Refund failed. Please try again.'**
   String get refundErrorRetry;
+
+  /// No description provided for @refundRequestTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Refund request'**
   String get refundRequestTitle;
+
+  /// No description provided for @remainingBalanceOnSite.
+  ///
+  /// In en, this message translates to:
+  /// **'Remaining balance on site'**
   String get remainingBalanceOnSite;
+
+  /// No description provided for @remainingOnDay.
+  ///
+  /// In en, this message translates to:
+  /// **'Remaining on the day'**
   String get remainingOnDay;
+
+  /// No description provided for @report.
+  ///
+  /// In en, this message translates to:
+  /// **'Report'**
   String get report;
+
+  /// No description provided for @reportBooking.
+  ///
+  /// In en, this message translates to:
+  /// **'Report booking'**
   String get reportBooking;
+
+  /// No description provided for @reportReasonFakeProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Fake profile'**
   String get reportReasonFakeProfile;
+
+  /// No description provided for @reportReasonHarassment.
+  ///
+  /// In en, this message translates to:
+  /// **'Harassment'**
   String get reportReasonHarassment;
+
+  /// No description provided for @reportReasonInappropriate.
+  ///
+  /// In en, this message translates to:
+  /// **'Inappropriate content'**
   String get reportReasonInappropriate;
+
+  /// No description provided for @reportReasonOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
   String get reportReasonOther;
+
+  /// No description provided for @reportReasonSpam.
+  ///
+  /// In en, this message translates to:
+  /// **'Spam'**
   String get reportReasonSpam;
+
+  /// No description provided for @reportSent.
+  ///
+  /// In en, this message translates to:
+  /// **'Report sent'**
   String get reportSent;
+
+  /// No description provided for @reportSubmitButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit report'**
   String get reportSubmitButton;
+
+  /// No description provided for @reportWhyReporting.
+  ///
+  /// In en, this message translates to:
+  /// **'Why are you reporting?'**
   String get reportWhyReporting;
+
+  /// No description provided for @reservations.
+  ///
+  /// In en, this message translates to:
+  /// **'Reservations'**
   String get reservations;
+
+  /// No description provided for @reserveLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Reserve'**
   String get reserveLabel;
+
+  /// No description provided for @retourLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
   String get retourLabel;
+
+  /// No description provided for @revenue.
+  ///
+  /// In en, this message translates to:
+  /// **'Revenue'**
   String get revenue;
+
+  /// No description provided for @revenueAndStats.
+  ///
+  /// In en, this message translates to:
+  /// **'Revenue & Stats'**
   String get revenueAndStats;
+
+  /// No description provided for @revenueQuickAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Revenue'**
   String get revenueQuickAction;
+
+  /// No description provided for @reviewDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Review submitted'**
   String get reviewDone;
+
+  /// No description provided for @reviewFeedbackHelps.
+  ///
+  /// In en, this message translates to:
+  /// **'Your feedback helps improve the service'**
   String get reviewFeedbackHelps;
+
+  /// No description provided for @reviewHowWasAppointment.
+  ///
+  /// In en, this message translates to:
+  /// **'How was your appointment?'**
   String get reviewHowWasAppointment;
+
+  /// No description provided for @reviewLeaveReview.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave a review'**
   String get reviewLeaveReview;
+
+  /// No description provided for @reviewShareExperience.
+  ///
+  /// In en, this message translates to:
+  /// **'Share your experience'**
   String get reviewShareExperience;
+
+  /// No description provided for @reviewSubmit.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit review'**
   String get reviewSubmit;
+
+  /// No description provided for @reviewTapToRate.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to rate'**
   String get reviewTapToRate;
+
+  /// No description provided for @reviewThankYou.
+  ///
+  /// In en, this message translates to:
+  /// **'Thank you for your review!'**
   String get reviewThankYou;
+
+  /// No description provided for @reviewsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No reviews yet'**
   String get reviewsEmpty;
+
+  /// No description provided for @reviewsFilterAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
   String get reviewsFilterAll;
+
+  /// No description provided for @reviewsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Reviews'**
   String get reviewsLabel;
+
+  /// No description provided for @reviewsReceivedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Reviews received'**
   String get reviewsReceivedTitle;
+
+  /// No description provided for @reviewsTab.
+  ///
+  /// In en, this message translates to:
+  /// **'Reviews'**
   String get reviewsTab;
+
+  /// No description provided for @saturday.
+  ///
+  /// In en, this message translates to:
+  /// **'Saturday'**
   String get saturday;
+
+  /// No description provided for @scanTicket.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan ticket'**
   String get scanTicket;
+
+  /// No description provided for @searchClientHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search clients…'**
   String get searchClientHint;
+
+  /// No description provided for @searchProfessionalHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search professionals…'**
   String get searchProfessionalHint;
+
+  /// No description provided for @secured.
+  ///
+  /// In en, this message translates to:
+  /// **'Secured'**
   String get secured;
+
+  /// No description provided for @selectCategoryRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select a category'**
   String get selectCategoryRequired;
+
+  /// No description provided for @selectVideoMax.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a video (max 2 min)'**
   String get selectVideoMax;
+
+  /// No description provided for @selectedLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Selected'**
   String get selectedLabel;
+
+  /// No description provided for @serviceFee.
+  ///
+  /// In en, this message translates to:
+  /// **'Service fee'**
   String get serviceFee;
+
+  /// No description provided for @serviceName.
+  ///
+  /// In en, this message translates to:
+  /// **'Service name'**
   String get serviceName;
+
+  /// No description provided for @serviceNameMinChars.
+  ///
+  /// In en, this message translates to:
+  /// **'Service name must be at least 3 characters'**
   String get serviceNameMinChars;
+
+  /// No description provided for @servicesAvailableLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Services available'**
   String get servicesAvailableLabel;
+
+  /// No description provided for @servicesQuickAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Services'**
   String get servicesQuickAction;
+
+  /// No description provided for @servicesTab.
+  ///
+  /// In en, this message translates to:
+  /// **'Services'**
   String get servicesTab;
+
+  /// No description provided for @settingsAvailability.
+  ///
+  /// In en, this message translates to:
+  /// **'Availability'**
   String get settingsAvailability;
+
+  /// No description provided for @settingsCancellationPolicy.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancellation policy'**
   String get settingsCancellationPolicy;
+
+  /// No description provided for @settingsCancellationPolicySubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Set your cancellation rules'**
   String get settingsCancellationPolicySubtitle;
+
+  /// No description provided for @settingsChangePassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Change password'**
   String get settingsChangePassword;
+
+  /// No description provided for @settingsCommissions.
+  ///
+  /// In en, this message translates to:
+  /// **'Commissions & Fees'**
   String get settingsCommissions;
+
+  /// No description provided for @settingsConfigurePayments.
+  ///
+  /// In en, this message translates to:
+  /// **'Configure payments'**
   String get settingsConfigurePayments;
+
+  /// No description provided for @settingsContactUs.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact us'**
   String get settingsContactUs;
+
+  /// No description provided for @settingsDepositSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Deposit settings'**
   String get settingsDepositSettings;
+
+  /// No description provided for @settingsDepositSettingsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Configure deposit requirements'**
   String get settingsDepositSettingsSubtitle;
+
+  /// No description provided for @settingsHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'History'**
   String get settingsHistory;
+
+  /// No description provided for @settingsLanguage.
+  ///
+  /// In en, this message translates to:
+  /// **'Language'**
   String get settingsLanguage;
+
+  /// No description provided for @settingsManageServices.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage services'**
   String get settingsManageServices;
+
+  /// No description provided for @settingsMyEvents.
+  ///
+  /// In en, this message translates to:
+  /// **'My events'**
   String get settingsMyEvents;
+
+  /// No description provided for @settingsMyQrCode.
+  ///
+  /// In en, this message translates to:
+  /// **'My QR code'**
   String get settingsMyQrCode;
+
+  /// No description provided for @settingsMyReviews.
+  ///
+  /// In en, this message translates to:
+  /// **'My reviews'**
   String get settingsMyReviews;
+
+  /// No description provided for @settingsPreferences.
+  ///
+  /// In en, this message translates to:
+  /// **'Preferences'**
   String get settingsPreferences;
+
+  /// No description provided for @settingsQuotes.
+  ///
+  /// In en, this message translates to:
+  /// **'Quotes'**
   String get settingsQuotes;
+
+  /// No description provided for @settingsQuotesSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage quote requests'**
   String get settingsQuotesSubtitle;
+
+  /// No description provided for @settingsRevenueStats.
+  ///
+  /// In en, this message translates to:
+  /// **'Revenue & Statistics'**
   String get settingsRevenueStats;
+
+  /// No description provided for @settingsSectionAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Account'**
   String get settingsSectionAccount;
+
+  /// No description provided for @settingsSectionBookings.
+  ///
+  /// In en, this message translates to:
+  /// **'Bookings'**
   String get settingsSectionBookings;
+
+  /// No description provided for @settingsSectionBusiness.
+  ///
+  /// In en, this message translates to:
+  /// **'Business'**
   String get settingsSectionBusiness;
+
+  /// No description provided for @settingsSectionLegal.
+  ///
+  /// In en, this message translates to:
+  /// **'Legal'**
   String get settingsSectionLegal;
+
+  /// No description provided for @settingsSectionNotifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications'**
   String get settingsSectionNotifications;
+
+  /// No description provided for @settingsSectionPayments.
+  ///
+  /// In en, this message translates to:
+  /// **'Payments'**
   String get settingsSectionPayments;
+
+  /// No description provided for @settingsSectionPreferences.
+  ///
+  /// In en, this message translates to:
+  /// **'Preferences'**
   String get settingsSectionPreferences;
+
+  /// No description provided for @settingsSectionSupport.
+  ///
+  /// In en, this message translates to:
+  /// **'Support'**
   String get settingsSectionSupport;
+
+  /// No description provided for @shareCopy.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy'**
   String get shareCopy;
+
+  /// No description provided for @shareMessages.
+  ///
+  /// In en, this message translates to:
+  /// **'Messages'**
   String get shareMessages;
+
+  /// No description provided for @shareMyProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Share my profile'**
   String get shareMyProfile;
+
+  /// No description provided for @shareProfileTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Share profile'**
   String get shareProfileTitle;
+
+  /// No description provided for @signIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in'**
   String get signIn;
+
+  /// No description provided for @signInToFollow.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to follow'**
   String get signInToFollow;
+
+  /// No description provided for @signInToMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to message'**
   String get signInToMessage;
+
+  /// No description provided for @slotDurationLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Slot duration'**
   String get slotDurationLabel;
+
+  /// No description provided for @slotsPreviewHeader.
+  ///
+  /// In en, this message translates to:
+  /// **'Slots preview'**
   String get slotsPreviewHeader;
+
+  /// No description provided for @slotsUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Slots updated'**
   String get slotsUpdated;
+
+  /// No description provided for @socialLinksAutoDetectHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Links are auto-detected'**
   String get socialLinksAutoDetectHint;
+
+  /// No description provided for @socialLinksHeader.
+  ///
+  /// In en, this message translates to:
+  /// **'Social links'**
   String get socialLinksHeader;
+
+  /// No description provided for @socialNetworks.
+  ///
+  /// In en, this message translates to:
+  /// **'Social networks'**
   String get socialNetworks;
+
+  /// No description provided for @soumissionsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Submissions'**
   String get soumissionsLabel;
+
+  /// No description provided for @startLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Start'**
   String get startLabel;
+
+  /// No description provided for @statsLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load statistics'**
   String get statsLoadError;
+
+  /// No description provided for @statusPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
   String get statusPending;
+
+  /// No description provided for @stepConfirmed.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirmed'**
   String get stepConfirmed;
+
+  /// No description provided for @stepDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
   String get stepDate;
+
+  /// No description provided for @stepPayment.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment'**
   String get stepPayment;
+
+  /// No description provided for @stepService.
+  ///
+  /// In en, this message translates to:
+  /// **'Service'**
   String get stepService;
+
+  /// No description provided for @stepSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Summary'**
   String get stepSummary;
+
+  /// No description provided for @stepTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Time'**
   String get stepTime;
+
+  /// No description provided for @subscribedLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Subscribed'**
   String get subscribedLabel;
+
+  /// No description provided for @subtotal.
+  ///
+  /// In en, this message translates to:
+  /// **'Subtotal'**
   String get subtotal;
+
+  /// No description provided for @summarySubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Review your booking details'**
   String get summarySubtitle;
+
+  /// No description provided for @sunday.
+  ///
+  /// In en, this message translates to:
+  /// **'Sunday'**
   String get sunday;
+
+  /// No description provided for @syncing.
+  ///
+  /// In en, this message translates to:
+  /// **'Syncing…'**
   String get syncing;
+
+  /// No description provided for @tapToChange.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to change'**
   String get tapToChange;
+
+  /// No description provided for @termsOfService.
+  ///
+  /// In en, this message translates to:
+  /// **'Terms of service'**
   String get termsOfService;
+
+  /// No description provided for @textTool.
+  ///
+  /// In en, this message translates to:
+  /// **'Text'**
   String get textTool;
+
+  /// No description provided for @thisWeek.
+  ///
+  /// In en, this message translates to:
+  /// **'This week'**
   String get thisWeek;
+
+  /// No description provided for @thursday.
+  ///
+  /// In en, this message translates to:
+  /// **'Thursday'**
   String get thursday;
+
+  /// No description provided for @topProBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Top Pro'**
   String get topProBadge;
+
+  /// No description provided for @totalPeriod.
+  ///
+  /// In en, this message translates to:
+  /// **'Total for period'**
   String get totalPeriod;
+
+  /// No description provided for @totalService.
+  ///
+  /// In en, this message translates to:
+  /// **'Total for service'**
   String get totalService;
+
+  /// No description provided for @transactions.
+  ///
+  /// In en, this message translates to:
+  /// **'Transactions'**
   String get transactions;
+
+  /// No description provided for @tuesday.
+  ///
+  /// In en, this message translates to:
+  /// **'Tuesday'**
   String get tuesday;
+
+  /// No description provided for @upcomingAppointmentsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Your upcoming appointments'**
   String get upcomingAppointmentsHint;
+
+  /// No description provided for @upcomingBookingsHeader.
+  ///
+  /// In en, this message translates to:
+  /// **'Upcoming bookings'**
   String get upcomingBookingsHeader;
+
+  /// No description provided for @uploadVideo.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload video'**
   String get uploadVideo;
+
+  /// No description provided for @uploadVideoSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload a video of your service'**
   String get uploadVideoSubtitle;
+
+  /// No description provided for @usernameInvalidChars.
+  ///
+  /// In en, this message translates to:
+  /// **'Username can only contain letters, numbers, and underscores'**
   String get usernameInvalidChars;
+
+  /// No description provided for @usernameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Username'**
   String get usernameLabel;
+
+  /// No description provided for @usernameMinChars.
+  ///
+  /// In en, this message translates to:
+  /// **'Username must be at least 3 characters'**
   String get usernameMinChars;
+
+  /// No description provided for @usernameTaken.
+  ///
+  /// In en, this message translates to:
+  /// **'This username is already taken'**
   String get usernameTaken;
+
+  /// No description provided for @veganLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Vegan'**
   String get veganLabel;
+
+  /// No description provided for @vegetarianLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Vegetarian'**
   String get vegetarianLabel;
+
+  /// No description provided for @verifiedBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Verified'**
   String get verifiedBadge;
+
+  /// No description provided for @videoLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Video'**
   String get videoLabel;
+
+  /// No description provided for @videoPublished.
+  ///
+  /// In en, this message translates to:
+  /// **'Video published'**
   String get videoPublished;
+
+  /// No description provided for @videoStatusFlagged.
+  ///
+  /// In en, this message translates to:
+  /// **'Flagged'**
   String get videoStatusFlagged;
+
+  /// No description provided for @videoStatusPublished.
+  ///
+  /// In en, this message translates to:
+  /// **'Published'**
   String get videoStatusPublished;
+
+  /// No description provided for @videoStatusRejected.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejected'**
   String get videoStatusRejected;
+
+  /// No description provided for @videoTooLong.
+  ///
+  /// In en, this message translates to:
+  /// **'Video is too long (max 2 minutes)'**
   String get videoTooLong;
+
+  /// No description provided for @videoUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Video unavailable'**
   String get videoUnavailable;
+
+  /// No description provided for @videosTab.
+  ///
+  /// In en, this message translates to:
+  /// **'Videos'**
   String get videosTab;
+
+  /// No description provided for @viewAll.
+  ///
+  /// In en, this message translates to:
+  /// **'View all'**
   String get viewAll;
+
+  /// No description provided for @viewCalendar.
+  ///
+  /// In en, this message translates to:
+  /// **'View calendar'**
   String get viewCalendar;
+
+  /// No description provided for @wednesday.
+  ///
+  /// In en, this message translates to:
+  /// **'Wednesday'**
   String get wednesday;
+
+  /// No description provided for @weeklyRulesHeader.
+  ///
+  /// In en, this message translates to:
+  /// **'Weekly rules'**
   String get weeklyRulesHeader;
+
+  /// No description provided for @withdraw.
+  ///
+  /// In en, this message translates to:
+  /// **'Withdraw'**
   String get withdraw;
+
+  /// No description provided for @yesCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes, cancel'**
   String get yesCancel;
+
+  /// No description provided for @yourTextHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Your text here…'**
   String get yourTextHint;
 
-  // ── Additional missing keys ──
+  /// No description provided for @titleRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Title (required)'**
   String get titleRequired;
+
+  /// No description provided for @titleHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Give your video a title…'**
   String get titleHint;
+
+  /// No description provided for @addLabel2.
+  ///
+  /// In en, this message translates to:
+  /// **'Add'**
   String get addLabel2;
+
+  /// No description provided for @reviewRating1.
+  ///
+  /// In en, this message translates to:
+  /// **'Terrible'**
   String get reviewRating1;
+
+  /// No description provided for @reviewRating2.
+  ///
+  /// In en, this message translates to:
+  /// **'Poor'**
   String get reviewRating2;
+
+  /// No description provided for @reviewRating3.
+  ///
+  /// In en, this message translates to:
+  /// **'Average'**
   String get reviewRating3;
+
+  /// No description provided for @reviewRating4.
+  ///
+  /// In en, this message translates to:
+  /// **'Good'**
   String get reviewRating4;
+
+  /// No description provided for @reviewRating5.
+  ///
+  /// In en, this message translates to:
+  /// **'Excellent'**
   String get reviewRating5;
+
+  /// No description provided for @cancellationRule48hTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'More than 48h before'**
   String get cancellationRule48hTitle;
+
+  /// No description provided for @cancellationRule48hSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Full refund'**
   String get cancellationRule48hSubtitle;
+
+  /// No description provided for @cancellationRule48hDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel more than 48 hours before the appointment for a full refund.'**
   String get cancellationRule48hDescription;
+
+  /// No description provided for @cancellationRule24to48hTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Between 24h and 48h'**
   String get cancellationRule24to48hTitle;
+
+  /// No description provided for @cancellationRule24to48hSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'50% refund'**
   String get cancellationRule24to48hSubtitle;
+
+  /// No description provided for @cancellationRule24to48hDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel between 24 and 48 hours before and receive a 50% refund.'**
   String get cancellationRule24to48hDescription;
+
+  /// No description provided for @cancellationRuleLess24hTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Less than 24h'**
   String get cancellationRuleLess24hTitle;
+
+  /// No description provided for @cancellationRuleLess24hSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No refund'**
   String get cancellationRuleLess24hSubtitle;
+
+  /// No description provided for @cancellationRuleLess24hDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancellations within 24 hours are not eligible for a refund.'**
   String get cancellationRuleLess24hDescription;
+
+  /// No description provided for @balanceOnSite.
+  ///
+  /// In en, this message translates to:
+  /// **'Balance on site: {amount} {currency}'**
+  String balanceOnSite(String amount, String currency);
+
+  /// No description provided for @blockUserConfirmMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to block {name}?'**
+  String blockUserConfirmMessage(String name);
+
+  /// No description provided for @commissionEstimate.
+  ///
+  /// In en, this message translates to:
+  /// **'Commission {pct}%: {commission} {currency} — you receive {net} {currency}'**
+  String commissionEstimate(
+      String pct, String commission, String currency, String net);
+
+  /// No description provided for @commissionsExampleCatering.
+  ///
+  /// In en, this message translates to:
+  /// **'Ex: \${price} catering → you receive \${net}'**
+  String commissionsExampleCatering(int price, String net);
+
+  /// No description provided for @commissionsExampleService.
+  ///
+  /// In en, this message translates to:
+  /// **'Ex: \${price} service → you receive \${net}'**
+  String commissionsExampleService(int price, String net);
+
+  /// No description provided for @commissionsExampleTicket.
+  ///
+  /// In en, this message translates to:
+  /// **'Ex: \${price} ticket → you receive \${net}'**
+  String commissionsExampleTicket(int price, String net);
+
+  /// No description provided for @commissionsSpotbookCommission.
+  ///
+  /// In en, this message translates to:
+  /// **'Spotbook commission: {pct}%'**
+  String commissionsSpotbookCommission(int pct);
+
+  /// No description provided for @confirmBalanceMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm remaining balance of {amount} {currency} collected on site?'**
+  String confirmBalanceMessage(String amount, String currency);
+
+  /// No description provided for @depositAmountLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'{pct}% deposit'**
+  String depositAmountLabel(int pct);
+
+  /// No description provided for @linkPlatform.
+  ///
+  /// In en, this message translates to:
+  /// **'Link {platform}'**
+  String linkPlatform(String platform);
+
+  /// No description provided for @noBookingsOn.
+  ///
+  /// In en, this message translates to:
+  /// **'No bookings on {date}'**
+  String noBookingsOn(String date);
+
+  /// No description provided for @noResultsFor.
+  ///
+  /// In en, this message translates to:
+  /// **'No results for \"{query}\"'**
+  String noResultsFor(String query);
+
+  /// No description provided for @pasteLinkFor.
+  ///
+  /// In en, this message translates to:
+  /// **'Paste your {platform} link'**
+  String pasteLinkFor(String platform);
+
+  /// No description provided for @publicProfileTicketsLeft.
+  ///
+  /// In en, this message translates to:
+  /// **'{remaining} tickets left'**
+  String publicProfileTicketsLeft(int remaining);
+
+  /// No description provided for @publishingProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Publishing… {percent}%'**
+  String publishingProgress(int percent);
+
+  /// No description provided for @reviewCountLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} reviews'**
+  String reviewCountLabel(int count);
+
+  /// No description provided for @reviewsCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} reviews'**
+  String reviewsCount(int count);
+
+  /// No description provided for @settingsCommissionsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Bookings {bookingPct}% · Events {eventPct}% · Fee \${fee}'**
+  String settingsCommissionsSubtitle(int bookingPct, int eventPct, String fee);
+
+  /// No description provided for @ticketPriceLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'From {price}'**
+  String ticketPriceLabel(String price);
+
+  /// No description provided for @videoReason.
+  ///
+  /// In en, this message translates to:
+  /// **'Reason: {reason}'**
+  String videoReason(String reason);
+
+  /// No description provided for @videoSelectedDuration.
+  ///
+  /// In en, this message translates to:
+  /// **'Duration: {seconds}s'**
+  String videoSelectedDuration(String seconds);
+
+  /// No description provided for @depositPreviewDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Preview: deposit on a \${price} service'**
+  String depositPreviewDescription(String price);
+
+  /// No description provided for @depositRemainingOnDay.
+  ///
+  /// In en, this message translates to:
+  /// **'Remaining on site: \${amount}'**
+  String depositRemainingOnDay(String amount);
+
+  /// No description provided for @spotifySheetTrackAdded.
+  ///
+  /// In en, this message translates to:
+  /// **'Track added: {track}'**
+  String spotifySheetTrackAdded(String track);
+
+  /// No description provided for @authStepLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Step {current} of {total}'**
+  String authStepLabel(int current, int total);
+
+  /// No description provided for @waitlistNotifyMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'You will be notified if a ticket becomes available for \\\"{eventTitle}\\\". You will have 30 minutes to confirm.'**
+  String waitlistNotifyMessage(String eventTitle);
+
+  /// No description provided for @alreadyScannedAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Already scanned at {time}'**
+  String alreadyScannedAt(String time);
+
+  /// No description provided for @ticketsSoldCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{sold} / {total}'**
+  String ticketsSoldCount(int sold, int total);
+
+  /// No description provided for @fromPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'From \${price}'**
+  String fromPrice(String price);
+
+  /// No description provided for @ticketTierIndex.
+  ///
+  /// In en, this message translates to:
+  /// **'Ticket Tier {index}'**
+  String ticketTierIndex(int index);
+
+  /// No description provided for @spotsRemaining.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} spots remaining'**
+  String spotsRemaining(int count);
+
+  /// No description provided for @noEventsWithFilter.
+  ///
+  /// In en, this message translates to:
+  /// **'No {filter} events'**
+  String noEventsWithFilter(String filter);
+
+  /// No description provided for @upcomingCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Upcoming ({count})'**
+  String upcomingCount(int count);
+
+  /// No description provided for @pastCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Past ({count})'**
+  String pastCount(int count);
+
+  /// No description provided for @scannedProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'{scanned} / {total} scanned'**
+  String scannedProgress(int scanned, int total);
 }
 
 class _AppLocalizationsDelegate

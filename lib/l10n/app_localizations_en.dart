@@ -340,11 +340,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get spotifySheetOpenSettings => 'Open settings';
 
   @override
-  String spotifySheetTrackAdded(String track) {
-    return 'Track added: $track';
-  }
-
-  @override
   String get a11yBack => 'Back';
 
   @override
@@ -557,11 +552,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get authSelectServiceCategories => 'Select your service categories';
-
-  @override
-  String authStepLabel(int current, int total) {
-    return 'Step $current of $total';
-  }
 
   @override
   String get categoriesLoadFailed => 'Failed to load categories';
@@ -1119,11 +1109,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get ticketsSoldOut => 'Tickets sold out';
 
   @override
-  String waitlistNotifyMessage(String eventTitle) {
-    return 'You will be notified if a ticket becomes available for \"$eventTitle\". You will have 30 minutes to confirm.';
-  }
-
-  @override
   String get waitlistJoinMessage =>
       'Join the waitlist to get notified if a ticket becomes available.';
 
@@ -1135,11 +1120,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get alreadyScanned => 'Already scanned';
-
-  @override
-  String alreadyScannedAt(String time) {
-    return 'Already scanned at $time';
-  }
 
   @override
   String get invalidTicket => 'Invalid ticket';
@@ -1170,11 +1150,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get inactive => 'Inactive';
 
   @override
-  String ticketsSoldCount(int sold, int total) {
-    return '$sold / $total';
-  }
-
-  @override
   String get ticketsSold => 'Tickets sold';
 
   @override
@@ -1188,11 +1163,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get allLabel => 'All';
-
-  @override
-  String fromPrice(String price) {
-    return 'From \$$price';
-  }
 
   @override
   String get freeLabel => 'Free';
@@ -1244,11 +1214,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get tapToAddFirstTicket => 'Tap to add your first ticket tier';
 
   @override
-  String ticketTierIndex(int index) {
-    return 'Ticket Tier $index';
-  }
-
-  @override
   String get ticketNameLabel => 'TICKET NAME';
 
   @override
@@ -1274,11 +1239,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get revenueLabel => 'Revenue';
-
-  @override
-  String spotsRemaining(int count) {
-    return '$count spots remaining';
-  }
 
   @override
   String get publishedLabel => 'Published';
@@ -1311,11 +1271,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noEventsCreated => 'No events created';
 
   @override
-  String noEventsWithFilter(String filter) {
-    return 'No $filter events';
-  }
-
-  @override
   String get createFirstEventHint =>
       'Create your first event\nto start selling tickets.';
 
@@ -1345,16 +1300,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get myTicketsTitle => 'My Tickets';
 
   @override
-  String upcomingCount(int count) {
-    return 'Upcoming ($count)';
-  }
-
-  @override
-  String pastCount(int count) {
-    return 'Past ($count)';
-  }
-
-  @override
   String get noUpcomingTickets => 'No upcoming tickets';
 
   @override
@@ -1379,75 +1324,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get statusCancelled => 'Cancelled';
 
   @override
-  String scannedProgress(int scanned, int total) {
-    return '$scanned / $total scanned';
-  }
-
-  @override
   String get invalidQrCode => 'This QR code is not a valid Spotbook ticket.';
-
-  @override
-  String balanceOnSite(String amount, String currency) => 'Balance on site: $amount $currency';
-
-  @override
-  String blockUserConfirmMessage(String name) => 'Are you sure you want to block $name?';
-
-  @override
-  String commissionEstimate(String pct, String commission, String currency, String net) => 'Commission $pct%: $commission $currency — you receive $net $currency';
-
-  @override
-  String commissionsExampleCatering(int price, String net) => 'Ex: \$$price catering → you receive \$$net';
-
-  @override
-  String commissionsExampleService(int price, String net) => 'Ex: \$$price service → you receive \$$net';
-
-  @override
-  String commissionsExampleTicket(int price, String net) => 'Ex: \$$price ticket → you receive \$$net';
-
-  @override
-  String commissionsSpotbookCommission(int pct) => 'Spotbook commission: $pct%';
-
-  @override
-  String confirmBalanceMessage(String amount, String currency) => 'Confirm remaining balance of $amount $currency collected on site?';
-
-  @override
-  String depositAmountLabel(int pct) => '$pct% deposit';
-
-  @override
-  String linkPlatform(String platform) => 'Link $platform';
-
-  @override
-  String noBookingsOn(String date) => 'No bookings on $date';
-
-  @override
-  String noResultsFor(String query) => 'No results for "$query"';
-
-  @override
-  String pasteLinkFor(String platform) => 'Paste your $platform link';
-
-  @override
-  String publicProfileTicketsLeft(int remaining) => '$remaining tickets left';
-
-  @override
-  String publishingProgress(int percent) => 'Publishing… $percent%';
-
-  @override
-  String reviewCountLabel(int count) => '$count reviews';
-
-  @override
-  String reviewsCount(int count) => '$count reviews';
-
-  @override
-  String settingsCommissionsSubtitle(int bookingPct, int eventPct, String fee) => 'Bookings $bookingPct% · Events $eventPct% · Fee \$$fee';
-
-  @override
-  String ticketPriceLabel(String price) => 'From $price';
-
-  @override
-  String videoReason(String reason) => 'Reason: $reason';
-
-  @override
-  String videoSelectedDuration(String seconds) => 'Duration: ${seconds}s';
 
   @override
   String get acceptBooking => 'Accept booking';
@@ -1534,13 +1411,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get becomeProManageServices => 'Manage your services';
 
   @override
-  String get becomeProManageServicesDesc => 'Create and manage your service offerings';
+  String get becomeProManageServicesDesc =>
+      'Create and manage your service offerings';
 
   @override
   String get becomeProPublishVideos => 'Publish videos';
 
   @override
-  String get becomeProPublishVideosDesc => 'Showcase your work with video content';
+  String get becomeProPublishVideosDesc =>
+      'Showcase your work with video content';
 
   @override
   String get becomeProReceivePayments => 'Receive payments';
@@ -1648,16 +1527,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get cancelReasonHint => 'Reason for cancellation…';
 
   @override
-  String get cancellationFactBasedOnStart => 'Based on the appointment start time';
+  String get cancellationFactBasedOnStart =>
+      'Based on the appointment start time';
 
   @override
   String get cancellationFactDisputes => 'Disputes can be resolved via support';
 
   @override
-  String get cancellationFactRefundDelay => 'Refunds may take 5-10 business days';
+  String get cancellationFactRefundDelay =>
+      'Refunds may take 5-10 business days';
 
   @override
-  String get cancellationFactReschedule => 'You can reschedule instead of cancelling';
+  String get cancellationFactReschedule =>
+      'You can reschedule instead of cancelling';
 
   @override
   String get cancellationHowItWorks => 'How it works';
@@ -1666,7 +1548,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get cancellationIfYouCancel => 'If you cancel';
 
   @override
-  String get cancellationIfYouCancelDescription => 'The refund depends on your cancellation policy';
+  String get cancellationIfYouCancelDescription =>
+      'The refund depends on your cancellation policy';
 
   @override
   String get cancellationKeyPoints => 'Key points';
@@ -1675,16 +1558,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get cancellationPolicyTitle => 'Cancellation policy';
 
   @override
-  String get cancellationProtectDescription => 'Protects both clients and professionals';
+  String get cancellationProtectDescription =>
+      'Protects both clients and professionals';
 
   @override
   String get cancellationProtectTitle => 'Fair for everyone';
 
   @override
-  String get cancellationRuleNoShowDescription => 'If the client does not show up, the deposit is kept';
+  String get cancellationRuleNoShowDescription =>
+      'If the client does not show up, the deposit is kept';
 
   @override
-  String get cancellationRuleNoShowSubtitle => 'Deposit is kept by the professional';
+  String get cancellationRuleNoShowSubtitle =>
+      'Deposit is kept by the professional';
 
   @override
   String get cancellationRuleNoShowTitle => 'No-show policy';
@@ -1735,7 +1621,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get commissionsClientTotal => 'Client total';
 
   @override
-  String get commissionsDescription => 'Understand how Spotbook commissions work';
+  String get commissionsDescription =>
+      'Understand how Spotbook commissions work';
 
   @override
   String get commissionsDetailedExample => 'Detailed example';
@@ -1747,7 +1634,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get commissionsEventTicketsDesc => '12% commission on ticket sales';
 
   @override
-  String get commissionsFixedFeeDescription => 'A fixed fee is added to each booking for the client';
+  String get commissionsFixedFeeDescription =>
+      'A fixed fee is added to each booking for the client';
 
   @override
   String get commissionsFixedFeePerBooking => 'Fixed fee per booking';
@@ -1756,7 +1644,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get commissionsPayouts => 'Payouts';
 
   @override
-  String get commissionsPayoutsDescription => 'Payouts are sent automatically via Stripe';
+  String get commissionsPayoutsDescription =>
+      'Payouts are sent automatically via Stripe';
 
   @override
   String get commissionsRates => 'Commission rates';
@@ -1765,7 +1654,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get commissionsServiceBookings => 'Service Bookings';
 
   @override
-  String get commissionsServiceBookingsDesc => '18% commission on service bookings';
+  String get commissionsServiceBookingsDesc =>
+      '18% commission on service bookings';
 
   @override
   String get commissionsServicePrice => 'Service price';
@@ -1813,10 +1703,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get deleteAccount => 'Delete account';
 
   @override
-  String get deleteAccountConfirmCheckbox => 'I understand this action is irreversible';
+  String get deleteAccountConfirmCheckbox =>
+      'I understand this action is irreversible';
 
   @override
-  String get deleteAccountDescription => 'This will permanently delete your account and all data';
+  String get deleteAccountDescription =>
+      'This will permanently delete your account and all data';
 
   @override
   String get deleteAccountFailed => 'Failed to delete account';
@@ -1828,7 +1720,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get deleteAccountPermanently => 'Delete permanently';
 
   @override
-  String get deleteVideoConfirm => 'Are you sure you want to delete this video?';
+  String get deleteVideoConfirm =>
+      'Are you sure you want to delete this video?';
 
   @override
   String get deleteVideoTitle => 'Delete video';
@@ -1843,7 +1736,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get depositClientPaysNow => 'Client pays now';
 
   @override
-  String get depositDisabledDescription => 'Client pays the full amount on site';
+  String get depositDisabledDescription =>
+      'Client pays the full amount on site';
 
   @override
   String get depositEnabledDescription => 'Client pays a deposit online';
@@ -1873,9 +1767,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get depositPlusSurplace => 'Deposit + balance on site';
 
   @override
-  String depositPreviewDescription(String price) => 'Preview: deposit on a \$$price service';
-
-  @override
   String get depositPreviewTitle => 'Deposit preview';
 
   @override
@@ -1883,9 +1774,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get depositReceivedOnline => 'Received online';
-
-  @override
-  String depositRemainingOnDay(String amount) => 'Remaining on site: \$$amount';
 
   @override
   String get depositRequire => 'Require deposit';
@@ -2188,7 +2076,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get notifReviewRequests => 'Review requests';
 
   @override
-  String get notifReviewRequestsSubtitle => 'Requests to review your experience';
+  String get notifReviewRequestsSubtitle =>
+      'Requests to review your experience';
 
   @override
   String get notifSectionAppointments => 'Appointments';
@@ -2470,7 +2359,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get serviceName => 'Service name';
 
   @override
-  String get serviceNameMinChars => 'Service name must be at least 3 characters';
+  String get serviceNameMinChars =>
+      'Service name must be at least 3 characters';
 
   @override
   String get servicesAvailableLabel => 'Services available';
@@ -2488,7 +2378,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsCancellationPolicy => 'Cancellation policy';
 
   @override
-  String get settingsCancellationPolicySubtitle => 'Set your cancellation rules';
+  String get settingsCancellationPolicySubtitle =>
+      'Set your cancellation rules';
 
   @override
   String get settingsChangePassword => 'Change password';
@@ -2506,7 +2397,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsDepositSettings => 'Deposit settings';
 
   @override
-  String get settingsDepositSettingsSubtitle => 'Configure deposit requirements';
+  String get settingsDepositSettingsSubtitle =>
+      'Configure deposit requirements';
 
   @override
   String get settingsHistory => 'History';
@@ -2689,7 +2581,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get uploadVideoSubtitle => 'Upload a video of your service';
 
   @override
-  String get usernameInvalidChars => 'Username can only contain letters, numbers, and underscores';
+  String get usernameInvalidChars =>
+      'Username can only contain letters, numbers, and underscores';
 
   @override
   String get usernameLabel => 'Username';
@@ -2785,7 +2678,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get cancellationRule48hSubtitle => 'Full refund';
 
   @override
-  String get cancellationRule48hDescription => 'Cancel more than 48 hours before the appointment for a full refund.';
+  String get cancellationRule48hDescription =>
+      'Cancel more than 48 hours before the appointment for a full refund.';
 
   @override
   String get cancellationRule24to48hTitle => 'Between 24h and 48h';
@@ -2794,7 +2688,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get cancellationRule24to48hSubtitle => '50% refund';
 
   @override
-  String get cancellationRule24to48hDescription => 'Cancel between 24 and 48 hours before and receive a 50% refund.';
+  String get cancellationRule24to48hDescription =>
+      'Cancel between 24 and 48 hours before and receive a 50% refund.';
 
   @override
   String get cancellationRuleLess24hTitle => 'Less than 24h';
@@ -2803,5 +2698,182 @@ class AppLocalizationsEn extends AppLocalizations {
   String get cancellationRuleLess24hSubtitle => 'No refund';
 
   @override
-  String get cancellationRuleLess24hDescription => 'Cancellations within 24 hours are not eligible for a refund.';
+  String get cancellationRuleLess24hDescription =>
+      'Cancellations within 24 hours are not eligible for a refund.';
+
+  @override
+  String balanceOnSite(String amount, String currency) {
+    return 'Balance on site: $amount $currency';
+  }
+
+  @override
+  String blockUserConfirmMessage(String name) {
+    return 'Are you sure you want to block $name?';
+  }
+
+  @override
+  String commissionEstimate(
+      String pct, String commission, String currency, String net) {
+    return 'Commission $pct%: $commission $currency — you receive $net $currency';
+  }
+
+  @override
+  String commissionsExampleCatering(int price, String net) {
+    return 'Ex: \$$price catering → you receive \$$net';
+  }
+
+  @override
+  String commissionsExampleService(int price, String net) {
+    return 'Ex: \$$price service → you receive \$$net';
+  }
+
+  @override
+  String commissionsExampleTicket(int price, String net) {
+    return 'Ex: \$$price ticket → you receive \$$net';
+  }
+
+  @override
+  String commissionsSpotbookCommission(int pct) {
+    return 'Spotbook commission: $pct%';
+  }
+
+  @override
+  String confirmBalanceMessage(String amount, String currency) {
+    return 'Confirm remaining balance of $amount $currency collected on site?';
+  }
+
+  @override
+  String depositAmountLabel(int pct) {
+    return '$pct% deposit';
+  }
+
+  @override
+  String linkPlatform(String platform) {
+    return 'Link $platform';
+  }
+
+  @override
+  String noBookingsOn(String date) {
+    return 'No bookings on $date';
+  }
+
+  @override
+  String noResultsFor(String query) {
+    return 'No results for \"$query\"';
+  }
+
+  @override
+  String pasteLinkFor(String platform) {
+    return 'Paste your $platform link';
+  }
+
+  @override
+  String publicProfileTicketsLeft(int remaining) {
+    return '$remaining tickets left';
+  }
+
+  @override
+  String publishingProgress(int percent) {
+    return 'Publishing… $percent%';
+  }
+
+  @override
+  String reviewCountLabel(int count) {
+    return '$count reviews';
+  }
+
+  @override
+  String reviewsCount(int count) {
+    return '$count reviews';
+  }
+
+  @override
+  String settingsCommissionsSubtitle(int bookingPct, int eventPct, String fee) {
+    return 'Bookings $bookingPct% · Events $eventPct% · Fee \$$fee';
+  }
+
+  @override
+  String ticketPriceLabel(String price) {
+    return 'From $price';
+  }
+
+  @override
+  String videoReason(String reason) {
+    return 'Reason: $reason';
+  }
+
+  @override
+  String videoSelectedDuration(String seconds) {
+    return 'Duration: ${seconds}s';
+  }
+
+  @override
+  String depositPreviewDescription(String price) {
+    return 'Preview: deposit on a \$$price service';
+  }
+
+  @override
+  String depositRemainingOnDay(String amount) {
+    return 'Remaining on site: \$$amount';
+  }
+
+  @override
+  String spotifySheetTrackAdded(String track) {
+    return 'Track added: $track';
+  }
+
+  @override
+  String authStepLabel(int current, int total) {
+    return 'Step $current of $total';
+  }
+
+  @override
+  String waitlistNotifyMessage(String eventTitle) {
+    return 'You will be notified if a ticket becomes available for \\\"$eventTitle\\\". You will have 30 minutes to confirm.';
+  }
+
+  @override
+  String alreadyScannedAt(String time) {
+    return 'Already scanned at $time';
+  }
+
+  @override
+  String ticketsSoldCount(int sold, int total) {
+    return '$sold / $total';
+  }
+
+  @override
+  String fromPrice(String price) {
+    return 'From \$$price';
+  }
+
+  @override
+  String ticketTierIndex(int index) {
+    return 'Ticket Tier $index';
+  }
+
+  @override
+  String spotsRemaining(int count) {
+    return '$count spots remaining';
+  }
+
+  @override
+  String noEventsWithFilter(String filter) {
+    return 'No $filter events';
+  }
+
+  @override
+  String upcomingCount(int count) {
+    return 'Upcoming ($count)';
+  }
+
+  @override
+  String pastCount(int count) {
+    return 'Past ($count)';
+  }
+
+  @override
+  String scannedProgress(int scanned, int total) {
+    return '$scanned / $total scanned';
+  }
 }
