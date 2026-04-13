@@ -76,9 +76,7 @@ serve(async (req) => {
       remaining: result.remaining,
     });
   } catch (error: unknown) {
-    const message =
-      error instanceof Error ? error.message : String(error ?? "unknown_error");
-    console.error("[rate-limiter]", message, error);
-    return jsonResponse({ error: message }, 400);
+    console.error("[rate-limiter]", error);
+    return jsonResponse({ error: "internal_error" }, 500);
   }
 });

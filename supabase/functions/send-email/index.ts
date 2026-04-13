@@ -27,6 +27,9 @@ serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: securityHeadersFor(req) });
   }
+  if (req.method !== "POST") {
+    return jsonResponse({ error: "method_not_allowed" }, 405, undefined, req);
+  }
 
   try {
     // Internal-only: service role required
@@ -130,6 +133,6 @@ serve(async (req) => {
     );
   } catch (error) {
     console.error("send-email error:", error);
-    return jsonResponse({ error: (error as Error).message }, 500, undefined, req);
+    return jsonResponse({ error: "internal_error" }, 500, undefined, req);
   }
 });

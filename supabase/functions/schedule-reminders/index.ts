@@ -53,6 +53,9 @@ serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: securityHeadersFor(req) });
   }
+  if (req.method !== "POST") {
+    return jsonResponse({ error: "method_not_allowed" }, 405, undefined, req);
+  }
 
   try {
     const forbidden = assertServiceRoleOnly(req);
@@ -181,6 +184,7 @@ serve(async (req) => {
       headers: { ...securityHeadersFor(req), "Content-Type": "application/json" },
     });
   } catch (error) {
-    return jsonResponse({ error: (error as Error).message }, 400, undefined, req);
+    console.error("schedule-reminders error:", error);
+    return jsonResponse({ error: "internal_error" }, 500, undefined, req);
   }
 });

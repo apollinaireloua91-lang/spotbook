@@ -6,6 +6,9 @@ serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: securityHeaders });
   }
+  if (req.method !== "POST") {
+    return jsonResponse({ error: "method_not_allowed" }, 405);
+  }
 
   const forbidden = assertServiceRoleOnly(req);
   if (forbidden) return forbidden;

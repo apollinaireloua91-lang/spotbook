@@ -51,6 +51,10 @@ serve(async (req) => {
     return new Response("ok", { headers: corsHeaders });
   }
 
+  if (req.method !== "POST") {
+    return jsonResponse({ error: "method_not_allowed" }, 405);
+  }
+
   try {
     // Verify the caller is authenticated
     const supabase = createClient(
@@ -112,7 +116,8 @@ serve(async (req) => {
     const data = await spotifyRes.json();
     return jsonResponse(mapResults(data, searchType));
   } catch (error) {
-    return jsonResponse({ error: (error as Error).message }, 500);
+    console.error("spotify-search error:", error);
+    return jsonResponse({ error: "internal_error" }, 500);
   }
 });
 

@@ -110,7 +110,7 @@ serve(async (req) => {
           updateError.message
         );
         return jsonResponse(
-          { error: updateError.message },
+          { error: "update_failed" },
           500,
           undefined,
           req
@@ -182,7 +182,7 @@ serve(async (req) => {
   } catch (error) {
     console.error("[cloudflare-webhook] Unhandled error", error);
     return jsonResponse(
-      { error: (error as Error).message },
+      { error: "internal_error" },
       500,
       undefined,
       req

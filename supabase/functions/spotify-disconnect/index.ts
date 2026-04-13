@@ -6,6 +6,9 @@ serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: securityHeaders });
   }
+  if (req.method !== "POST") {
+    return jsonResponse({ error: "method_not_allowed" }, 405);
+  }
 
   try {
     const authHeader = req.headers.get("Authorization");
@@ -30,6 +33,7 @@ serve(async (req) => {
 
     return jsonResponse({ ok: true });
   } catch (e) {
-    return jsonResponse({ error: (e as Error).message }, 500);
+    console.error("spotify-disconnect error:", e);
+    return jsonResponse({ error: "internal_error" }, 500);
   }
 });

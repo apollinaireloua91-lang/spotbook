@@ -273,28 +273,36 @@ serve(async (req) => {
     if (clientEmail) {
       if (newStatus === "confirmed") {
         await sendEmail("booking_confirmed", clientEmail, {
+          clientName: clientUser?.raw_user_meta_data
+            ? (clientUser.raw_user_meta_data as Record<string, unknown>)?.full_name ?? ""
+            : "",
           serviceName: service?.name ?? "Service",
-          proName: proProfile?.business_name ?? "",
+          providerName: proProfile?.business_name ?? "",
           date: slot?.date ?? "",
           time: slot?.start_time ?? "",
-          bookingCode: booking.booking_code ?? "",
-          amount: booking.deposit_amount
-            ? Number(booking.deposit_amount).toFixed(2)
-            : "",
+          address: "",
+          amountPaid: booking.deposit_amount
+            ? Math.round(Number(booking.deposit_amount) * 100)
+            : 0,
+          bookingId: bookingId,
         });
       } else if (newStatus === "rejected") {
         await sendEmail("booking_cancelled", clientEmail, {
+          clientName: "",
           serviceName: service?.name ?? "Service",
-          bookingCode: booking.booking_code ?? "",
-          reason: reason ? sanitizeText(reason) : undefined,
+          providerName: proProfile?.business_name ?? "",
+          date: slot?.date ?? "",
           refundAmount: booking.deposit_amount
-            ? Number(booking.deposit_amount).toFixed(2)
+            ? Math.round(Number(booking.deposit_amount) * 100)
             : undefined,
+          bookingId: bookingId,
         });
       } else if (newStatus === "completed") {
         await sendEmail("review_request", clientEmail, {
+          clientName: "",
+          providerName: proProfile?.business_name ?? "votre prestataire",
           serviceName: service?.name ?? "votre prestation",
-          proName: proProfile?.business_name ?? "votre prestataire",
+          bookingId: bookingId,
         });
       }
     }

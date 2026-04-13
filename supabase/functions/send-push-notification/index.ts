@@ -5,6 +5,7 @@ import {
   jsonResponse,
   sanitizeText,
   securityHeadersFor,
+  timingSafeEqual,
 } from "../_shared/security.ts";
 
 interface PushPayload {
@@ -37,12 +38,15 @@ function notificationTypeEnabled(
 function isServiceRoleRequest(req: Request): boolean {
   const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
   const auth = req.headers.get("Authorization") ?? "";
-  return Boolean(serviceKey && auth === `Bearer ${serviceKey}`);
+  return Boolean(serviceKey && timingSafeEqual(auth, `Bearer ${serviceKey}`));
 }
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: securityHeadersFor(req) });
+  }
+  if (req.method !== "POST") {
+    return jsonResponse({ error: "method_not_allowed" }, 405, undefined, req);
   }
 
   try {
@@ -181,6 +185,7 @@ serve(async (req) => {
 
     return jsonResponse({ success: true, push_sent: pushSent }, 200, undefined, req);
   } catch (error) {
-    return jsonResponse({ error: (error as Error).message }, 400, undefined, req);
+    console.error("send-push-notification error:", error);
+    return jsonResponse({ error: "internal_error" }, 500, undefined, req);
   }
 });

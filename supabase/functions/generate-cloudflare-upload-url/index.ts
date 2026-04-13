@@ -227,6 +227,7 @@ serve(async (req) => {
       req,
     );
   } catch (error) {
-    return jsonResponse({ error: (error as Error).message }, 500, undefined, req);
+    console.error("generate-cloudflare-upload-url error:", error);
+    return jsonResponse({ error: "internal_error" }, 500, undefined, req);
   }
 });

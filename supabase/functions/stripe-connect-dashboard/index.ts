@@ -14,6 +14,9 @@ serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { status: 200, headers: securityHeadersFor(req) });
   }
+  if (req.method !== "POST") {
+    return jsonResponse({ error: "method_not_allowed" }, 405, undefined, req);
+  }
 
   try {
     const authHeader = req.headers.get("Authorization");
@@ -122,7 +125,6 @@ serve(async (req) => {
     );
   } catch (error) {
     console.error("stripe-connect-dashboard error:", error);
-    const message = error instanceof Error ? error.message : String(error);
-    return jsonResponse({ error: message }, 500, undefined, req);
+    return jsonResponse({ error: "internal_error" }, 500, undefined, req);
   }
 });

@@ -14,6 +14,9 @@ serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: securityHeadersFor(req) });
   }
+  if (req.method !== "POST") {
+    return jsonResponse({ error: "method_not_allowed" }, 405, undefined, req);
+  }
 
   try {
     const authHeader = req.headers.get("Authorization");
@@ -112,7 +115,7 @@ serve(async (req) => {
 
     return jsonResponse({ url: accountLink.url }, 200, undefined, req);
   } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    return jsonResponse({ error: message }, 500, undefined, req);
+    console.error("stripe-connect-onboarding error:", error);
+    return jsonResponse({ error: "internal_error" }, 500, undefined, req);
   }
 });

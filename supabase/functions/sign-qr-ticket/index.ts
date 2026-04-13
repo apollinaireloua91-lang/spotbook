@@ -5,6 +5,7 @@ import {
   isValidUuid,
   jsonResponse,
   securityHeadersFor,
+  timingSafeEqual,
 } from "../_shared/security.ts";
 import { generateQrPng } from "../_shared/qr_png.ts";
 
@@ -14,7 +15,7 @@ async function assertCanSignTicket(
 ): Promise<Response | null> {
   const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
   const auth = req.headers.get("Authorization") ?? "";
-  if (serviceKey && auth === `Bearer ${serviceKey}`) {
+  if (serviceKey && timingSafeEqual(auth, `Bearer ${serviceKey}`)) {
     return null;
   }
 
@@ -54,6 +55,9 @@ async function hmacSha256(data: string, secret: string): Promise<string> {
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: securityHeadersFor(req) });
+  }
+  if (req.method !== "POST") {
+    return jsonResponse({ error: "method_not_allowed" }, 405, undefined, req);
   }
 
   try {
