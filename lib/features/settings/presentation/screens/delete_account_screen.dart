@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../../auth/data/auth_repository.dart';
 
@@ -38,12 +39,13 @@ class DeleteAccountScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l = AppLocalizations.of(context)!;
     final s = ref.watch(_deleteProvider);
     final n = ref.read(_deleteProvider.notifier);
 
     return Scaffold(
       backgroundColor: AppColors.fond,
-      appBar: AppBar(backgroundColor: AppColors.fond, surfaceTintColor: Colors.transparent, elevation: 0, title: Text('Supprimer le compte', style: GoogleFonts.sora(color: AppColors.blanc, fontWeight: FontWeight.bold))),
+      appBar: AppBar(backgroundColor: AppColors.fond, surfaceTintColor: Colors.transparent, elevation: 0, title: Text(l.deleteAccount, style: GoogleFonts.sora(color: AppColors.blanc, fontWeight: FontWeight.bold))),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Column(
@@ -52,9 +54,9 @@ class DeleteAccountScreen extends ConsumerWidget {
             const SizedBox(height: 24),
             Icon(Icons.warning_amber_outlined, color: AppColors.error, size: 48),
             const SizedBox(height: 16),
-            Text('Cette action est irréversible', style: GoogleFonts.sora(color: AppColors.blanc, fontSize: 22, fontWeight: FontWeight.bold)),
+            Text(l.deleteAccountIrreversible, style: GoogleFonts.sora(color: AppColors.blanc, fontSize: 22, fontWeight: FontWeight.bold)),
             const SizedBox(height: 12),
-            Text('Votre compte sera désactivé pendant 30 jours avant la suppression définitive. Vos données seront effacées et ne pourront pas être récupérées.', style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 15, height: 1.5)),
+            Text(l.deleteAccountDescription, style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 15, height: 1.5)),
             const SizedBox(height: 32),
             GestureDetector(
               onTap: n.toggleConfirm,
@@ -62,7 +64,7 @@ class DeleteAccountScreen extends ConsumerWidget {
                 Container(width: 24, height: 24, decoration: BoxDecoration(borderRadius: BorderRadius.circular(6), border: Border.all(color: s.confirmed ? AppColors.error : AppColors.border, width: 2), color: s.confirmed ? AppColors.error : Colors.transparent),
                   child: s.confirmed ? Icon(Icons.check, color: AppColors.blanc, size: 16) : null),
                 const SizedBox(width: 12),
-                Expanded(child: Text('Je confirme vouloir supprimer mon compte', style: GoogleFonts.dmSans(color: AppColors.blanc, fontSize: 15))),
+                Expanded(child: Text(l.deleteAccountConfirmCheckbox, style: GoogleFonts.dmSans(color: AppColors.blanc, fontSize: 15))),
               ]),
             ),
             const Spacer(),
@@ -72,17 +74,17 @@ class DeleteAccountScreen extends ConsumerWidget {
                   await n.deleteAccount();
                   if (context.mounted) context.go('/login');
                 } catch (_) {
-                  if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: const Text('Échec de la suppression'), backgroundColor: AppColors.error));
+                  if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l.deleteAccountFailed), backgroundColor: AppColors.error));
                 }
               } : null,
               style: ElevatedButton.styleFrom(backgroundColor: AppColors.error, foregroundColor: AppColors.blanc, disabledBackgroundColor: AppColors.error.withAlpha(77), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
-              child: s.isLoading ? SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.blanc)) : Text('Supprimer définitivement', style: GoogleFonts.dmSans(fontSize: 16, fontWeight: FontWeight.w600)),
+              child: s.isLoading ? SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.blanc)) : Text(l.deleteAccountPermanently, style: GoogleFonts.dmSans(fontSize: 16, fontWeight: FontWeight.w600)),
             )),
             const SizedBox(height: 12),
             SizedBox(width: double.infinity, height: 52, child: OutlinedButton(
               onPressed: () => context.pop(),
               style: OutlinedButton.styleFrom(foregroundColor: AppColors.blanc, side: BorderSide(color: AppColors.border), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
-              child: Text('Annuler', style: GoogleFonts.dmSans(fontSize: 16, fontWeight: FontWeight.w600)),
+              child: Text(l.cancel, style: GoogleFonts.dmSans(fontSize: 16, fontWeight: FontWeight.w600)),
             )),
             const SizedBox(height: 40),
           ],

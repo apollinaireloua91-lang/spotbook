@@ -21,6 +21,7 @@ import 'widgets/pro_top_bar.dart';
 /// - No tabs (Découvrir / Abonnements) — shows all approved videos
 /// - ProTopBar with 4 notification buttons (bell, calendar, tickets, messages)
 /// - Right column: Like + Save + Share + Spotify (NO Comment button)
+/// - Premium play/pause controls always visible on screen
 class ProFeedScreen extends ConsumerStatefulWidget {
   const ProFeedScreen({super.key});
 
@@ -143,6 +144,18 @@ class _ProFeedBody extends StatelessWidget {
                   right: 0,
                   child: ProTopBar(),
                 ),
+
+                // ── Video progress indicator — thin premium line ──
+                if (!state.isLoading && state.videos.isNotEmpty)
+                  Positioned(
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    child: _PremiumVideoProgress(
+                      currentIndex: state.currentIndex,
+                      totalCount: state.videos.length,
+                    ),
+                  ),
               ],
             ),
           );
@@ -151,6 +164,72 @@ class _ProFeedBody extends StatelessWidget {
     );
   }
 }
+
+// ═════════════════════════════════════════════════════════════════════════════
+// PREMIUM VIDEO PROGRESS — thin gradient line at bottom
+// ═════════════════════════════════════════════════════════════════════════════
+
+class _PremiumVideoProgress extends StatelessWidget {
+  const _PremiumVideoProgress({
+    required this.currentIndex,
+    required this.totalCount,
+  });
+
+  final int currentIndex;
+  final int totalCount;
+
+  @override
+  Widget build(BuildContext context) {
+    if (totalCount <= 1) return const SizedBox.shrink();
+
+    final progress = (currentIndex + 1) / totalCount;
+
+    return SafeArea(
+      top: false,
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: 88, left: 16, right: 16),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(1.5),
+          child: SizedBox(
+            height: 3,
+            child: Stack(
+              children: [
+                // Track
+                Container(
+                  color: Colors.white.withAlpha(20),
+                ),
+                // Progress
+                AnimatedFractionallySizedBox(
+                  duration: const Duration(milliseconds: 350),
+                  curve: Curves.easeOutCubic,
+                  widthFactor: progress,
+                  alignment: Alignment.centerLeft,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      gradient: AppColors.gradientAccent,
+                      borderRadius: BorderRadius.circular(1.5),
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppColors.violet.withAlpha(80),
+                          blurRadius: 6,
+                          spreadRadius: -1,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ═════════════════════════════════════════════════════════════════════════════
+// EMPTY STATE — premium design
+// ═════════════════════════════════════════════════════════════════════════════
 
 class _ProFeedEmptyState extends StatelessWidget {
   const _ProFeedEmptyState({required this.onRetry});
@@ -165,32 +244,45 @@ class _ProFeedEmptyState extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            // Premium icon container with gradient ring
             Container(
-              width: 100,
-              height: 100,
+              width: 110,
+              height: 110,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: AppColors.violet.withAlpha(25),
+                gradient: LinearGradient(
+                  colors: [
+                    AppColors.violet.withAlpha(30),
+                    AppColors.violet.withAlpha(10),
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                border: Border.all(
+                  color: AppColors.violet.withAlpha(40),
+                  width: 1.5,
+                ),
               ),
               child: Icon(
                 Icons.play_circle_rounded,
-                size: 48,
+                size: 52,
                 color: AppColors.violet,
               ),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 28),
             Text(
-              'No videos yet',
+              'Aucune vidéo',
               textAlign: TextAlign.center,
               style: GoogleFonts.sora(
                 color: AppColors.blanc,
-                fontSize: 20,
+                fontSize: 22,
                 fontWeight: FontWeight.w700,
+                letterSpacing: -0.3,
               ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 10),
             Text(
-              'Videos from professionals\nwill appear here',
+              'Les vidéos des professionnels\napparaîtront ici',
               textAlign: TextAlign.center,
               style: GoogleFonts.dmSans(
                 color: AppColors.gris,
@@ -198,25 +290,27 @@ class _ProFeedEmptyState extends StatelessWidget {
                 height: 1.5,
               ),
             ),
-            const SizedBox(height: 28),
-            SizedBox(
-              width: 200,
-              height: 46,
-              child: ElevatedButton(
-                onPressed: onRetry,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.violet,
-                  foregroundColor: AppColors.blanc,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  elevation: 0,
+            const SizedBox(height: 32),
+            // Premium gradient button
+            GestureDetector(
+              onTap: onRetry,
+              child: Container(
+                width: 180,
+                height: 48,
+                decoration: BoxDecoration(
+                  gradient: AppColors.gradientAccent,
+                  borderRadius: BorderRadius.circular(24),
+                  boxShadow: AppColors.primaryButtonShadow,
                 ),
-                child: Text(
-                  'Refresh',
-                  style: GoogleFonts.dmSans(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w600,
+                child: Center(
+                  child: Text(
+                    'Actualiser',
+                    style: GoogleFonts.dmSans(
+                      color: Colors.white,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 0.3,
+                    ),
                   ),
                 ),
               ),

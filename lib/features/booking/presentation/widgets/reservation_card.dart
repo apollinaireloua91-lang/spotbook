@@ -178,10 +178,12 @@ class _ReservationCardState extends State<ReservationCard>
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
             color: AppColors.surface,
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(18),
             border: Border.all(
               color: AppColors.blanc.withAlpha(13),
+              width: 0.5,
             ),
+            boxShadow: AppColors.premiumCardShadow,
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -189,18 +191,25 @@ class _ReservationCardState extends State<ReservationCard>
               // ─── Header: avatar + name + service + badge ───
               Row(
                 children: [
-                  // Category gradient avatar
+                  // Premium gradient ring avatar
                   Container(
-                    width: 44,
-                    height: 44,
+                    width: 46,
+                    height: 46,
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(14),
                       gradient: _categoryGradient(null),
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppColors.violet.withAlpha(30),
+                          blurRadius: 8,
+                          spreadRadius: -2,
+                        ),
+                      ],
                     ),
                     child: Padding(
-                      padding: const EdgeInsets.all(2),
+                      padding: const EdgeInsets.all(2.5),
                       child: ClipRRect(
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: BorderRadius.circular(11),
                         child: b.proAvatarUrl != null
                             ? CachedNetworkImage(
                                 imageUrl: b.proAvatarUrl!,
@@ -412,17 +421,22 @@ class _InfoPill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 7),
       decoration: BoxDecoration(
-        color: AppColors.blanc.withAlpha(10),
-        borderRadius: BorderRadius.circular(8),
+        color: AppColors.blanc.withAlpha(8),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(
+          color: AppColors.blanc.withAlpha(6),
+          width: 0.5,
+        ),
       ),
       child: Text(
         '$icon $text',
         style: TextStyle(
-          color: AppColors.blanc,
-          fontSize: 10,
+          color: AppColors.blanc.withAlpha(200),
+          fontSize: 11,
           fontWeight: FontWeight.w500,
+          letterSpacing: 0.1,
         ),
       ),
     );
@@ -454,12 +468,22 @@ class _ActionButton extends StatelessWidget {
         onTap?.call();
       },
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 10),
+        padding: const EdgeInsets.symmetric(vertical: 11),
         decoration: BoxDecoration(
           color: bgColor,
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(12),
           border: borderColor != null
-              ? Border.all(color: borderColor!)
+              ? Border.all(color: borderColor!, width: 0.5)
+              : null,
+          boxShadow: bgColor == AppColors.violet
+              ? [
+                  BoxShadow(
+                    color: AppColors.violet.withAlpha(40),
+                    blurRadius: 12,
+                    spreadRadius: -2,
+                    offset: const Offset(0, 3),
+                  ),
+                ]
               : null,
         ),
         child: Center(
@@ -469,6 +493,7 @@ class _ActionButton extends StatelessWidget {
               color: textColor,
               fontSize: 13,
               fontWeight: FontWeight.w600,
+              letterSpacing: 0.1,
             ),
           ),
         ),

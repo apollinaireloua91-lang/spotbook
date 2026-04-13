@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
 
 // ═════════════════════════════════════════════════════════════════════════════
@@ -14,6 +15,7 @@ class CancellationPolicyScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: AppColors.fond,
       appBar: AppBar(
@@ -21,7 +23,7 @@ class CancellationPolicyScreen extends StatelessWidget {
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         leading: Semantics(
-          label: 'Back',
+          label: l.retourLabel,
           child: IconButton(
             icon: Container(
               padding: const EdgeInsets.all(8),
@@ -40,7 +42,7 @@ class CancellationPolicyScreen extends StatelessWidget {
           ),
         ),
         title: Text(
-          'Politique d\'annulation',
+          l.cancellationPolicyTitle,
           style: GoogleFonts.sora(
             color: AppColors.blanc,
             fontWeight: FontWeight.w700,
@@ -69,7 +71,7 @@ class CancellationPolicyScreen extends StatelessWidget {
                       color: AppColors.violet, size: 40),
                   const SizedBox(height: 12),
                   Text(
-                    'Protégez votre temps et vos revenus',
+                    l.cancellationProtectTitle,
                     style: GoogleFonts.sora(
                       color: AppColors.blanc,
                       fontWeight: FontWeight.w700,
@@ -79,7 +81,7 @@ class CancellationPolicyScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Notre politique d\'annulation vous protège contre les annulations de dernière minute tout en restant équitable envers les clients.',
+                    l.cancellationProtectDescription,
                     style: GoogleFonts.dmSans(
                       color: AppColors.gris,
                       fontSize: 13,
@@ -93,7 +95,7 @@ class CancellationPolicyScreen extends StatelessWidget {
 
             // ── Timeline visual ──
             Text(
-              'Comment ça fonctionne',
+              l.cancellationHowItWorks,
               style: GoogleFonts.sora(
                 color: AppColors.blanc,
                 fontWeight: FontWeight.w700,
@@ -106,10 +108,9 @@ class CancellationPolicyScreen extends StatelessWidget {
             _PolicyRule(
               icon: Icons.check_circle,
               iconColor: AppColors.success,
-              title: 'Plus de 48 heures avant',
-              subtitle: 'Remboursement intégral au client',
-              description:
-                  'Le client reçoit un remboursement complet de son acompte. Aucun frais n\'est facturé.',
+              title: l.cancellationRule48hTitle,
+              subtitle: l.cancellationRule48hSubtitle,
+              description: l.cancellationRule48hDescription,
             ),
             const _TimelineLine(),
 
@@ -117,10 +118,9 @@ class CancellationPolicyScreen extends StatelessWidget {
             _PolicyRule(
               icon: Icons.warning_amber_rounded,
               iconColor: AppColors.warning,
-              title: 'Entre 24h et 48h avant',
-              subtitle: '50% de l\'acompte conservé',
-              description:
-                  'Vous conservez 50% de l\'acompte en compensation. Les 50% restants sont remboursés au client.',
+              title: l.cancellationRule24to48hTitle,
+              subtitle: l.cancellationRule24to48hSubtitle,
+              description: l.cancellationRule24to48hDescription,
             ),
             const _TimelineLine(),
 
@@ -128,10 +128,9 @@ class CancellationPolicyScreen extends StatelessWidget {
             _PolicyRule(
               icon: Icons.block,
               iconColor: AppColors.error,
-              title: 'Moins de 24 heures avant',
-              subtitle: '100% de l\'acompte conservé',
-              description:
-                  'Vous conservez la totalité de l\'acompte. Le client n\'est pas éligible à un remboursement.',
+              title: l.cancellationRuleLess24hTitle,
+              subtitle: l.cancellationRuleLess24hSubtitle,
+              description: l.cancellationRuleLess24hDescription,
             ),
             const _TimelineLine(),
 
@@ -139,10 +138,9 @@ class CancellationPolicyScreen extends StatelessWidget {
             _PolicyRule(
               icon: Icons.person_off,
               iconColor: AppColors.error.withAlpha(200),
-              title: 'Absence',
-              subtitle: '100% de l\'acompte conservé',
-              description:
-                  'Si le client ne se présente pas, vous conservez la totalité de l\'acompte. La réservation est marquée comme terminée.',
+              title: l.cancellationRuleNoShowTitle,
+              subtitle: l.cancellationRuleNoShowSubtitle,
+              description: l.cancellationRuleNoShowDescription,
             ),
 
             const SizedBox(height: 28),
@@ -165,7 +163,7 @@ class CancellationPolicyScreen extends StatelessWidget {
                           color: AppColors.warning, size: 20),
                       const SizedBox(width: 8),
                       Text(
-                        'Si vous annulez',
+                        l.cancellationIfYouCancel,
                         style: GoogleFonts.dmSans(
                           color: AppColors.warning,
                           fontWeight: FontWeight.w700,
@@ -176,7 +174,7 @@ class CancellationPolicyScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Si vous annulez une réservation, le client reçoit un remboursement intégral quel que soit le délai. Les annulations répétées peuvent affecter votre visibilité sur la plateforme.',
+                    l.cancellationIfYouCancelDescription,
                     style: GoogleFonts.dmSans(
                       color: AppColors.gris,
                       fontSize: 12,
@@ -190,7 +188,7 @@ class CancellationPolicyScreen extends StatelessWidget {
 
             // ── Key facts ──
             Text(
-              'Points clés',
+              l.cancellationKeyPoints,
               style: GoogleFonts.sora(
                 color: AppColors.blanc,
                 fontWeight: FontWeight.w700,
@@ -198,21 +196,21 @@ class CancellationPolicyScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 12),
-            const _KeyFact(
+            _KeyFact(
               icon: Icons.access_time,
-              text: 'La politique est basée sur l\'heure de début du rendez-vous',
+              text: l.cancellationFactBasedOnStart,
             ),
-            const _KeyFact(
+            _KeyFact(
               icon: Icons.payment,
-              text: 'Les remboursements sont traités sous 5 à 10 jours ouvrables',
+              text: l.cancellationFactRefundDelay,
             ),
-            const _KeyFact(
+            _KeyFact(
               icon: Icons.gavel,
-              text: 'Les litiges sont gérés par le support Spotbook',
+              text: l.cancellationFactDisputes,
             ),
-            const _KeyFact(
+            _KeyFact(
               icon: Icons.edit_note,
-              text: 'Le report est gratuit jusqu\'à 24h avant le rendez-vous',
+              text: l.cancellationFactReschedule,
             ),
 
             const SizedBox(height: 40),

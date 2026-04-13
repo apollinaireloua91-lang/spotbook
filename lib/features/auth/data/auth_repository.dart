@@ -177,6 +177,52 @@ class AuthRepository {
     }
   }
 
+  /// Initiates Apple OAuth sign-in via browser redirect (iOS).
+  /// Completes when the deep link callback sets the session.
+  Future<void> signInWithApple() async {
+    final completer = Completer<void>();
+
+    late final StreamSubscription<AuthState> sub;
+    sub = _supabase.auth.onAuthStateChange.listen((state) {
+      if (state.event == AuthChangeEvent.signedIn && !completer.isCompleted) {
+        sub.cancel();
+        completer.complete();
+      }
+    });
+
+    final launched = await _supabase.auth.signInWithOAuth(
+      OAuthProvider.apple,
+      redirectTo: 'app.spotbook://login-callback',
+      authScreenLaunchMode: LaunchMode.externalApplication,
+    );
+
+    if (!launched) {
+      sub.cancel();
+      throw AuthException('Could not launch Apple sign-in.');
+    }
+
+    try {
+      await completer.future.timeout(const Duration(minutes: 5));
+    } on TimeoutException {
+      sub.cancel();
+      throw AuthException('Apple sign-in timed out.');
+    }
+
+    final uid = currentUserId;
+    if (uid != null) {
+      try {
+        await _supabase.from('audit_logs').insert({
+          'user_id': uid,
+          'action': 'user_login',
+          'resource_type': 'auth',
+          'metadata': {'provider': 'apple'},
+        });
+      } catch (_) {
+        // Audit log is non-critical — don't block login
+      }
+    }
+  }
+
   Future<void> resetPassword(String email) async {
     try {
       await _supabase.functions.invoke(

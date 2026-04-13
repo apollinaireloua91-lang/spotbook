@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../core/services/app_config_provider.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
 
 // ═════════════════════════════════════════════════════════════════════════════
@@ -16,6 +17,7 @@ class CommissionsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l = AppLocalizations.of(context)!;
     final cfg = ref.watch(appConfigProvider).value ?? AppConfig.fallback;
 
     final bookingPct = (cfg.commissionBookings * 100).round();
@@ -34,7 +36,7 @@ class CommissionsScreen extends ConsumerWidget {
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         leading: Semantics(
-          label: 'Back',
+          label: l.retourLabel,
           child: IconButton(
             icon: Container(
               padding: const EdgeInsets.all(8),
@@ -53,7 +55,7 @@ class CommissionsScreen extends ConsumerWidget {
           ),
         ),
         title: Text(
-          'Commissions Spotbook',
+          l.commissionsTitle,
           style: GoogleFonts.sora(
             color: AppColors.blanc,
             fontWeight: FontWeight.w700,
@@ -89,7 +91,7 @@ class CommissionsScreen extends ConsumerWidget {
                   Icon(Icons.percent, color: AppColors.violet, size: 36),
                   const SizedBox(height: 12),
                   Text(
-                    'Tarification transparente',
+                    l.commissionsTransparentPricing,
                     style: GoogleFonts.sora(
                       color: AppColors.blanc,
                       fontWeight: FontWeight.w700,
@@ -98,7 +100,7 @@ class CommissionsScreen extends ConsumerWidget {
                   ),
                   const SizedBox(height: 6),
                   Text(
-                    'Spotbook prélève une petite commission sur chaque transaction pour maintenir la plateforme. Voici le détail complet.',
+                    l.commissionsDescription,
                     style: GoogleFonts.dmSans(
                       color: AppColors.gris,
                       fontSize: 12,
@@ -112,7 +114,7 @@ class CommissionsScreen extends ConsumerWidget {
 
             // ── Commission breakdown ──
             Text(
-              'Taux de commission',
+              l.commissionsRates,
               style: GoogleFonts.sora(
                 color: AppColors.blanc,
                 fontWeight: FontWeight.w700,
@@ -123,36 +125,33 @@ class CommissionsScreen extends ConsumerWidget {
 
             _CommissionCard(
               icon: Icons.content_cut,
-              title: 'Réservations de services',
+              title: l.commissionsServiceBookings,
               rate: '$bookingPct%',
-              description:
-                  'Appliqué au prix total du service lorsqu\'un client réserve via Spotbook.',
-              example:
-                  'Un service à \$100 → Vous recevez \$${(100 - bookingPct).toStringAsFixed(0)}',
+              description: l.commissionsServiceBookingsDesc,
+              example: l.commissionsExampleService(
+                  100, (100 - bookingPct).toStringAsFixed(0)),
               color: AppColors.violet,
             ),
             const SizedBox(height: 12),
 
             _CommissionCard(
               icon: Icons.confirmation_number,
-              title: 'Billets d\'événements',
+              title: l.commissionsEventTickets,
               rate: '$eventPct%',
-              description:
-                  'Appliqué à chaque billet vendu pour vos événements sur la plateforme.',
-              example:
-                  'Un billet à \$50 → Vous recevez \$${(50 - 50 * eventPct / 100).toStringAsFixed(0)}',
+              description: l.commissionsEventTicketsDesc,
+              example: l.commissionsExampleTicket(
+                  50, (50 - 50 * eventPct / 100).toStringAsFixed(0)),
               color: AppColors.warning,
             ),
             const SizedBox(height: 12),
 
             _CommissionCard(
               icon: Icons.restaurant,
-              title: 'Acomptes traiteur',
+              title: l.commissionsCateringDeposits,
               rate: '$cateringPct%',
-              description:
-                  'Même taux que les réservations de services, appliqué aux commandes traiteur.',
-              example:
-                  'Une commande à \$200 → Vous recevez \$${(200 - 200 * cateringPct / 100).toStringAsFixed(0)}',
+              description: l.commissionsCateringDesc,
+              example: l.commissionsExampleCatering(
+                  200, (200 - 200 * cateringPct / 100).toStringAsFixed(0)),
               color: AppColors.success,
             ),
 
@@ -160,7 +159,7 @@ class CommissionsScreen extends ConsumerWidget {
 
             // ── Client fee ──
             Text(
-              'Frais de service client',
+              l.commissionsClientServiceFee,
               style: GoogleFonts.sora(
                 color: AppColors.blanc,
                 fontWeight: FontWeight.w700,
@@ -202,7 +201,7 @@ class CommissionsScreen extends ConsumerWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Frais fixes par réservation',
+                          l.commissionsFixedFeePerBooking,
                           style: GoogleFonts.dmSans(
                             color: AppColors.blanc,
                             fontWeight: FontWeight.w700,
@@ -211,7 +210,7 @@ class CommissionsScreen extends ConsumerWidget {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          'Ces frais sont facturés directement au client en plus du prix de votre service. Ils ne sont PAS déduits de vos revenus.',
+                          l.commissionsFixedFeeDescription,
                           style: GoogleFonts.dmSans(
                             color: AppColors.gris,
                             fontSize: 12,
@@ -228,7 +227,7 @@ class CommissionsScreen extends ConsumerWidget {
 
             // ── Payment example ──
             Text(
-              'Exemple détaillé',
+              l.commissionsDetailedExample,
               style: GoogleFonts.sora(
                 color: AppColors.blanc,
                 fontWeight: FontWeight.w700,
@@ -247,11 +246,11 @@ class CommissionsScreen extends ConsumerWidget {
               child: Column(
                 children: [
                   _ExampleRow(
-                    label: 'Prix du service',
+                    label: l.commissionsServicePrice,
                     value: '\$${examplePrice.toStringAsFixed(2)}',
                   ),
                   _ExampleRow(
-                    label: 'Commission Spotbook ($bookingPct%)',
+                    label: l.commissionsSpotbookCommission(bookingPct),
                     value: '-\$${exampleCommission.toStringAsFixed(2)}',
                     isNegative: true,
                   ),
@@ -260,7 +259,7 @@ class CommissionsScreen extends ConsumerWidget {
                     child: Divider(color: AppColors.border, height: 1),
                   ),
                   _ExampleRow(
-                    label: 'Vous recevez',
+                    label: l.commissionsYouReceive,
                     value: '\$${examplePro.toStringAsFixed(2)}',
                     isBold: true,
                     isPrimary: true,
@@ -269,16 +268,16 @@ class CommissionsScreen extends ConsumerWidget {
                   Divider(color: AppColors.border, height: 1),
                   const SizedBox(height: 8),
                   _ExampleRow(
-                    label: 'Le client paie (service)',
+                    label: l.commissionsClientPaysService,
                     value: '\$${examplePrice.toStringAsFixed(2)}',
                   ),
                   _ExampleRow(
-                    label: 'Le client paie (frais de service)',
+                    label: l.commissionsClientPaysFee,
                     value: '+\$${cfg.serviceFeeClient.toStringAsFixed(2)}',
                   ),
                   const SizedBox(height: 4),
                   _ExampleRow(
-                    label: 'Total client',
+                    label: l.commissionsClientTotal,
                     value:
                         '\$${(examplePrice + cfg.serviceFeeClient).toStringAsFixed(2)}',
                     isBold: true,
@@ -306,7 +305,7 @@ class CommissionsScreen extends ConsumerWidget {
                           color: AppColors.violet, size: 20),
                       const SizedBox(width: 8),
                       Text(
-                        'Versements',
+                        l.commissionsPayouts,
                         style: GoogleFonts.dmSans(
                           color: AppColors.violet,
                           fontWeight: FontWeight.w700,
@@ -317,7 +316,7 @@ class CommissionsScreen extends ConsumerWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Vos revenus sont transférés automatiquement sur votre compte Stripe Connect. Les versements sont traités quotidiennement et arrivent généralement sous 2 à 3 jours ouvrables.',
+                    l.commissionsPayoutsDescription,
                     style: GoogleFonts.dmSans(
                       color: AppColors.gris,
                       fontSize: 12,

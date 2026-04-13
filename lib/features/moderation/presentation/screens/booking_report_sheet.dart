@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../data/report_notifier.dart';
 
@@ -31,15 +32,6 @@ class _BookingReportSheet extends ConsumerStatefulWidget {
 }
 
 class _BookingReportSheetState extends ConsumerState<_BookingReportSheet> {
-  static const _reasons = [
-    'Comportement inapproprié',
-    'Absence / no-show',
-    'Problème de paiement ou remboursement',
-    'Service non conforme à l\'annonce',
-    'Harcèlement ou menaces',
-    'Autre',
-  ];
-
   final _detailsCtrl = TextEditingController();
 
   @override
@@ -50,6 +42,15 @@ class _BookingReportSheetState extends ConsumerState<_BookingReportSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
+    final reasons = [
+      l.bookingReportReasonInappropriate,
+      l.bookingReportReasonNoShow,
+      l.bookingReportReasonPayment,
+      l.bookingReportReasonNotAsDescribed,
+      l.bookingReportReasonHarassment,
+      l.reportReasonOther,
+    ];
     final reportState = ref.watch(reportNotifierProvider).asData?.value ?? const ReportState();
     final bottomInset = MediaQuery.of(context).viewPadding.bottom;
 
@@ -78,7 +79,7 @@ class _BookingReportSheetState extends ConsumerState<_BookingReportSheet> {
               ),
               const SizedBox(height: 20),
               Text(
-                'Signaler cette réservation',
+                l.bookingReportTitle,
                 style: GoogleFonts.sora(
                   color: AppColors.blanc,
                   fontSize: 20,
@@ -87,12 +88,12 @@ class _BookingReportSheetState extends ConsumerState<_BookingReportSheet> {
               ),
               const SizedBox(height: 4),
               Text(
-                'Pourquoi signalez-vous cette réservation ? Les détails aident l\'équipe de modération.',
+                l.bookingReportDescription,
                 style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 14, height: 1.35),
               ),
               const SizedBox(height: 16),
-              ...List.generate(_reasons.length, (i) {
-                final reason = _reasons[i];
+              ...List.generate(reasons.length, (i) {
+                final reason = reasons[i];
                 final isSelected = reportState.selectedReason == reason;
                 return GestureDetector(
                   onTap: () {
@@ -123,7 +124,7 @@ class _BookingReportSheetState extends ConsumerState<_BookingReportSheet> {
               }),
               const SizedBox(height: 12),
               Text(
-                'Détails (optionnel, max 500 caractères)',
+                l.bookingReportDetailsLabel,
                 style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 12, fontWeight: FontWeight.w600),
               ),
               const SizedBox(height: 8),
@@ -148,7 +149,7 @@ class _BookingReportSheetState extends ConsumerState<_BookingReportSheet> {
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide(color: AppColors.blanc, width: 1),
                   ),
-                  hintText: 'Contexte, dates, échanges…',
+                  hintText: l.bookingReportDetailsHint,
                   hintStyle: TextStyle(color: AppColors.gris.withValues(alpha: 0.7)),
                   counterStyle: TextStyle(color: AppColors.gris),
                 ),
@@ -173,8 +174,8 @@ class _BookingReportSheetState extends ConsumerState<_BookingReportSheet> {
                               Navigator.of(context).pop();
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
-                                  content: const Text(
-                                    'Signalement envoyé. Merci, examen sous 24h.',
+                                  content: Text(
+                                    l.bookingReportSentConfirmation,
                                   ),
                                   backgroundColor: AppColors.success,
                                 ),
@@ -207,7 +208,7 @@ class _BookingReportSheetState extends ConsumerState<_BookingReportSheet> {
                           ),
                         )
                       : Text(
-                          'Envoyer le signalement',
+                          l.reportSubmitButton,
                           style: GoogleFonts.dmSans(fontWeight: FontWeight.bold, fontSize: 16),
                         ),
                 ),

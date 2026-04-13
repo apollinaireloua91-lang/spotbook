@@ -9,6 +9,9 @@ serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
   }
+  if (req.method !== "POST") {
+    return jsonResponse({ error: "method_not_allowed" }, 405);
+  }
 
   try {
     const supabase = createClient(
@@ -132,14 +135,21 @@ serve(async (req) => {
       });
     }
 
-    await supabase
+    // Atomic update — guard against TOCTOU race (concurrent cancel requests)
+    const { data: updatedRows, error: updateErr } = await supabase
       .from("bookings")
       .update({
         status: newStatus,
         refund_amount: refundAmount,
         refund_status: refundAmount > 0 ? "refunded" : "no_refund",
       })
-      .eq("id", bookingId);
+      .eq("id", bookingId)
+      .in("status", cancellableStatuses)
+      .select("id");
+
+    if (updateErr || !updatedRows?.length) {
+      return jsonResponse({ error: "booking_already_cancelled" }, 409);
+    }
     await supabase.rpc("log_audit_action", {
       p_user_id: user.id,
       p_action: "booking_cancelled",

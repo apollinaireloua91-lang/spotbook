@@ -181,13 +181,21 @@ serve(async (req) => {
           destination: pro.stripe_account_id,
         },
         metadata: {
+          bookingId,
           clientId: user.id,
           proId: providerId,
-          type: "spotbook_connect",
+          type: "deposit",
         },
       },
       { idempotencyKey },
     );
+
+    // Store PaymentIntent ID on booking for webhook correlation
+    await supabase
+      .from("bookings")
+      .update({ stripe_payment_intent_id: paymentIntent.id })
+      .eq("id", bookingId)
+      .is("stripe_payment_intent_id", null);
 
     return jsonResponse(
       {

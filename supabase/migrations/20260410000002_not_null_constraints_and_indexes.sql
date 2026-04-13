@@ -17,14 +17,9 @@ ALTER TABLE public.bookings ALTER COLUMN deposit_amount SET NOT NULL;
 ALTER TABLE public.bookings ALTER COLUMN deposit_amount SET DEFAULT 0;
 
 -- Event tickets: status must never be NULL
-UPDATE public.event_tickets SET status = 'valid' WHERE status IS NULL;
-ALTER TABLE public.event_tickets ALTER COLUMN status SET NOT NULL;
-ALTER TABLE public.event_tickets ALTER COLUMN status SET DEFAULT 'valid';
-
--- Payments: status must never be NULL
-UPDATE public.payments SET status = 'pending' WHERE status IS NULL;
-ALTER TABLE public.payments ALTER COLUMN status SET NOT NULL;
-ALTER TABLE public.payments ALTER COLUMN status SET DEFAULT 'pending';
+UPDATE public.tickets SET status = 'valid' WHERE status IS NULL;
+ALTER TABLE public.tickets ALTER COLUMN status SET NOT NULL;
+ALTER TABLE public.tickets ALTER COLUMN status SET DEFAULT 'valid';
 
 -- Confirmed bookings MUST have a Stripe payment intent
 ALTER TABLE public.bookings DROP CONSTRAINT IF EXISTS bookings_pi_on_confirmed;

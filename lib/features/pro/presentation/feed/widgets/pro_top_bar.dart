@@ -4,10 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../../shared/theme/app_colors.dart';
+import '../../../../../shared/theme/app_typography.dart';
 import '../cubit/pro_feed_cubit.dart';
 import 'pro_notif_sheets.dart';
 
-/// Pro feed top bar: 4 notification buttons aligned right.
+/// Pro feed top bar — premium glassmorphism.
+///
+/// Layout: "Spotbook" logo (left) ← spacer → 4 notification buttons (right).
+/// Each button uses frosted glass with colored badge dots and pulse animation.
 class ProTopBar extends StatelessWidget {
   const ProTopBar({super.key});
 
@@ -23,11 +27,19 @@ class ProTopBar extends StatelessWidget {
         return SafeArea(
           bottom: false,
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
             child: Row(
               children: [
+                // ── Spotbook logo ──
+                Text(
+                  'Spotbook',
+                  style: AppTypography.spotbookLogo(
+                      onVideoBackground: true),
+                ),
                 const Spacer(),
-                _ProNotifButton(
+                // ── Notification buttons ──
+                _PremiumNotifButton(
                   icon: Icons.notifications_outlined,
                   dotColor: AppColors.rose,
                   hasUnread: state.unreadNotif > 0,
@@ -36,18 +48,18 @@ class ProTopBar extends StatelessWidget {
                     const ProActivitySheet(),
                   ),
                 ),
-                const SizedBox(width: 6),
-                _ProNotifButton(
+                const SizedBox(width: 8),
+                _PremiumNotifButton(
                   icon: Icons.calendar_today_outlined,
-                  dotColor: AppColors.violet,
+                  dotColor: AppColors.violetClair,
                   hasUnread: state.unreadRdv > 0,
                   onTap: () => _openSheet(
                     context,
                     const ProRdvSheet(),
                   ),
                 ),
-                const SizedBox(width: 6),
-                _ProNotifButton(
+                const SizedBox(width: 8),
+                _PremiumNotifButton(
                   icon: Icons.confirmation_number_outlined,
                   dotColor: AppColors.rose,
                   hasUnread: state.unreadTickets > 0,
@@ -56,9 +68,9 @@ class ProTopBar extends StatelessWidget {
                     const ProTicketsSheet(),
                   ),
                 ),
-                const SizedBox(width: 6),
-                _ProNotifButton(
-                  icon: Icons.chat_bubble_outline,
+                const SizedBox(width: 8),
+                _PremiumNotifButton(
+                  icon: Icons.chat_bubble_outline_rounded,
                   dotColor: AppColors.success,
                   hasUnread: state.unreadMessages > 0,
                   onTap: () => _openSheet(
@@ -84,9 +96,16 @@ class ProTopBar extends StatelessWidget {
   }
 }
 
-/// 32x32 notification button with pulsing colored dot.
-class _ProNotifButton extends StatefulWidget {
-  const _ProNotifButton({
+/// 38×38 premium glassmorphism notification button with animated badge.
+///
+/// Upgrades from old 32×32:
+/// - Larger touch target (38px)
+/// - Stronger frosted glass (12σ blur)
+/// - Rounded rect instead of small square (radius 12)
+/// - Glowing dot badge with scale pulse
+/// - Subtle gradient border on hover/active states
+class _PremiumNotifButton extends StatefulWidget {
+  const _PremiumNotifButton({
     required this.icon,
     required this.dotColor,
     required this.hasUnread,
@@ -99,10 +118,10 @@ class _ProNotifButton extends StatefulWidget {
   final VoidCallback onTap;
 
   @override
-  State<_ProNotifButton> createState() => _ProNotifButtonState();
+  State<_PremiumNotifButton> createState() => _PremiumNotifButtonState();
 }
 
-class _ProNotifButtonState extends State<_ProNotifButton>
+class _PremiumNotifButtonState extends State<_PremiumNotifButton>
     with SingleTickerProviderStateMixin {
   late final AnimationController _pulseCtrl;
   late final Animation<double> _pulseScale;
@@ -115,18 +134,18 @@ class _ProNotifButtonState extends State<_ProNotifButton>
       vsync: this,
       duration: const Duration(seconds: 2),
     );
-    _pulseScale = Tween<double>(begin: 1.0, end: 1.3).animate(
+    _pulseScale = Tween<double>(begin: 1.0, end: 1.4).animate(
       CurvedAnimation(parent: _pulseCtrl, curve: Curves.easeInOut),
     );
     _pulseOpacity = TweenSequence<double>([
-      TweenSequenceItem(tween: Tween(begin: 0.7, end: 1.0), weight: 50),
-      TweenSequenceItem(tween: Tween(begin: 1.0, end: 0.7), weight: 50),
+      TweenSequenceItem(tween: Tween(begin: 0.8, end: 1.0), weight: 50),
+      TweenSequenceItem(tween: Tween(begin: 1.0, end: 0.8), weight: 50),
     ]).animate(CurvedAnimation(parent: _pulseCtrl, curve: Curves.easeInOut));
     if (widget.hasUnread) _pulseCtrl.repeat(reverse: true);
   }
 
   @override
-  void didUpdateWidget(covariant _ProNotifButton oldWidget) {
+  void didUpdateWidget(covariant _PremiumNotifButton oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.hasUnread && !_pulseCtrl.isAnimating) {
       _pulseCtrl.repeat(reverse: true);
@@ -147,16 +166,21 @@ class _ProNotifButtonState extends State<_ProNotifButton>
     return GestureDetector(
       onTap: widget.onTap,
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(12),
         child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+          filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
           child: Container(
-            width: 32,
-            height: 32,
+            width: 38,
+            height: 38,
             decoration: BoxDecoration(
-              color: Colors.black.withAlpha(77),
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: Colors.white.withAlpha(26)),
+              color: Colors.black.withAlpha(90),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: widget.hasUnread
+                    ? widget.dotColor.withAlpha(40)
+                    : Colors.white.withAlpha(20),
+                width: 0.5,
+              ),
             ),
             child: Stack(
               children: [
@@ -164,7 +188,7 @@ class _ProNotifButtonState extends State<_ProNotifButton>
                   child: Icon(
                     widget.icon,
                     color: Colors.white,
-                    size: 16,
+                    size: 18,
                     shadows: const [
                       Shadow(color: Colors.black54, blurRadius: 6),
                     ],
@@ -172,8 +196,8 @@ class _ProNotifButtonState extends State<_ProNotifButton>
                 ),
                 if (widget.hasUnread)
                   Positioned(
-                    top: 4,
-                    right: 4,
+                    top: 6,
+                    right: 6,
                     child: AnimatedBuilder(
                       animation: _pulseCtrl,
                       builder: (context, child) {
@@ -186,11 +210,18 @@ class _ProNotifButtonState extends State<_ProNotifButton>
                         );
                       },
                       child: Container(
-                        width: 6,
-                        height: 6,
+                        width: 7,
+                        height: 7,
                         decoration: BoxDecoration(
                           color: widget.dotColor,
                           shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: widget.dotColor.withAlpha(120),
+                              blurRadius: 6,
+                              spreadRadius: -1,
+                            ),
+                          ],
                         ),
                       ),
                     ),

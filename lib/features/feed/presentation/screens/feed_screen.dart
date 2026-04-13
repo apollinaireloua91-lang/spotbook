@@ -11,6 +11,7 @@ import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/theme/app_typography.dart';
 import '../../../notifications/data/notification_notifier.dart';
 import '../../data/feed_notifier.dart';
+import '../../data/feed_play_state.dart';
 import '../widgets/video_feed_item.dart';
 
 class FeedScreen extends ConsumerStatefulWidget {
@@ -34,33 +35,54 @@ class _FeedScreenState extends ConsumerState<FeedScreen> {
     final s = ref.watch(feedProvider);
     final n = ref.read(feedProvider.notifier);
     final topPad = MediaQuery.of(context).padding.top;
+    final isPlaying = ref.watch(feedPlayStateProvider);
 
     if (s.isLoading) {
       return Scaffold(
-        backgroundColor: AppColors.fond,
+        backgroundColor: Colors.black,
         body: Center(
-            child: CircularProgressIndicator(color: AppColors.blanc)),
+          child: SizedBox(
+            width: 32,
+            height: 32,
+            child: CircularProgressIndicator(
+              strokeWidth: 2.5,
+              color: AppColors.violet,
+            ),
+          ),
+        ),
       );
     }
 
     if (s.videos.isEmpty) {
       return Scaffold(
-        backgroundColor: AppColors.fond,
+        backgroundColor: Colors.black,
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.play_circle_outline,
-                  size: 64, color: AppColors.gris.withAlpha(128)),
-              const SizedBox(height: 16),
+              Container(
+                width: 80,
+                height: 80,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: AppColors.violet.withAlpha(20),
+                  border: Border.all(
+                    color: AppColors.violet.withAlpha(40),
+                  ),
+                ),
+                child: Icon(Icons.play_circle_outline_rounded,
+                    size: 40, color: AppColors.violet.withAlpha(180)),
+              ),
+              const SizedBox(height: 20),
               Text('Aucune vidéo',
                   style: GoogleFonts.sora(
-                      color: AppColors.blanc,
+                      color: Colors.white,
                       fontSize: 18,
                       fontWeight: FontWeight.w600)),
               const SizedBox(height: 8),
               Text('Les vidéos des professionnels apparaîtront ici',
-                  style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 14)),
+                  style: GoogleFonts.dmSans(
+                      color: Colors.white.withAlpha(120), fontSize: 14)),
             ],
           ),
         ),
@@ -68,7 +90,7 @@ class _FeedScreenState extends ConsumerState<FeedScreen> {
     }
 
     return Scaffold(
-      backgroundColor: AppColors.fond,
+      backgroundColor: Colors.black,
       extendBodyBehindAppBar: true,
       body: Stack(
         children: [
@@ -77,7 +99,10 @@ class _FeedScreenState extends ConsumerState<FeedScreen> {
             controller: _pageController,
             scrollDirection: Axis.vertical,
             itemCount: s.videos.length,
-            onPageChanged: n.setCurrentIndex,
+            onPageChanged: (i) {
+              n.setCurrentIndex(i);
+              ref.read(feedPlayStateProvider.notifier).set(true);
+            },
             itemBuilder: (context, index) {
               return VideoFeedItem(
                 video: s.videos[index],
@@ -91,49 +116,84 @@ class _FeedScreenState extends ConsumerState<FeedScreen> {
             },
           ),
 
-          // ─── Top Bar Overlay ───
+          // ─── Premium Top Bar — Glassmorphism ───
           Positioned(
             top: 0,
             left: 0,
             right: 0,
-            child: Container(
-              padding: EdgeInsets.only(
-                  top: topPad + 8, left: 16, right: 16, bottom: 12),
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    AppColors.overlayMedium,
-                    Colors.transparent,
-                  ],
+            child: ClipRect(
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+                child: Container(
+                  padding: EdgeInsets.only(
+                      top: topPad + 10, left: 16, right: 16, bottom: 14),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Colors.black.withAlpha(140),
+                        Colors.black.withAlpha(40),
+                        Colors.transparent,
+                      ],
+                      stops: const [0.0, 0.6, 1.0],
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      // Spotbook logo — premium with subtle glow
+                      Text('Spotbook',
+                          style: AppTypography.spotbookLogo(
+                                  onVideoBackground: true)
+                              .copyWith(
+                            fontSize: 20,
+                            letterSpacing: -0.8,
+                            shadows: [
+                              const Shadow(
+                                color: AppColors.shadowTextLight,
+                                blurRadius: 12,
+                                offset: Offset(0, 1),
+                              ),
+                              Shadow(
+                                color: AppColors.violet.withAlpha(40),
+                                blurRadius: 24,
+                              ),
+                            ],
+                          )),
+
+                      const Spacer(),
+
+                      // Discover / Following pill tabs
+                      _FeedTabPill(
+                        activeTab: s.activeTab,
+                        onTap: (tab) {
+                          HapticFeedback.lightImpact();
+                          n.switchTab(tab);
+                        },
+                      ),
+
+                      const Spacer(),
+
+                      // Bell notification icon — frosted glass
+                      _NotificationBell(
+                          onTap: () => context.push('/notifications')),
+                    ],
+                  ),
                 ),
               ),
-              child: Row(
-                children: [
-                  // Spotbook logo — white, DM Sans bold 19
-                  Text('Spotbook',
-                      style: AppTypography.spotbookLogo(
-                              onVideoBackground: true)
-                          .copyWith(fontSize: 19)),
+            ),
+          ),
 
-                  const Spacer(),
-
-                  // Discover / Following pill tabs
-                  _FeedTabPill(
-                    activeTab: s.activeTab,
-                    onTap: (tab) {
-                      HapticFeedback.lightImpact();
-                      n.switchTab(tab);
-                    },
-                  ),
-
-                  const Spacer(),
-
-                  // Bell notification icon — 34×34
-                  _NotificationBell(onTap: () => context.push('/notifications')),
-                ],
-              ),
+          // ─── Persistent Play/Pause Control — Always visible ───
+          Positioned(
+            top: topPad + 62,
+            left: 16,
+            child: _PremiumPlayPauseButton(
+              isPlaying: isPlaying,
+              onTap: () {
+                HapticFeedback.lightImpact();
+                ref.read(feedPlayStateProvider.notifier).toggle();
+              },
             ),
           ),
         ],
@@ -142,7 +202,111 @@ class _FeedScreenState extends ConsumerState<FeedScreen> {
   }
 }
 
-// ─── Discover / Following tab pill ───────────────────────────────────────────
+// ─── Premium Play/Pause Button — Persistent, always visible ─────────────────
+
+class _PremiumPlayPauseButton extends StatefulWidget {
+  const _PremiumPlayPauseButton({
+    required this.isPlaying,
+    required this.onTap,
+  });
+
+  final bool isPlaying;
+  final VoidCallback onTap;
+
+  @override
+  State<_PremiumPlayPauseButton> createState() =>
+      _PremiumPlayPauseButtonState();
+}
+
+class _PremiumPlayPauseButtonState extends State<_PremiumPlayPauseButton>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _pulseController;
+
+  @override
+  void initState() {
+    super.initState();
+    _pulseController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1500),
+    )..repeat(reverse: true);
+  }
+
+  @override
+  void dispose() {
+    _pulseController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: widget.onTap,
+      child: AnimatedBuilder(
+        animation: _pulseController,
+        builder: (context, child) {
+          final pulseValue = widget.isPlaying
+              ? 0.6 + (_pulseController.value * 0.4)
+              : 1.0;
+
+          return ClipRRect(
+            borderRadius: BorderRadius.circular(14),
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeOutCubic,
+                width: 42,
+                height: 42,
+                decoration: BoxDecoration(
+                  color: widget.isPlaying
+                      ? Colors.black.withAlpha((60 * pulseValue).round())
+                      : Colors.black.withAlpha(140),
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(
+                    color: widget.isPlaying
+                        ? Colors.white.withAlpha(25)
+                        : AppColors.violet.withAlpha(100),
+                    width: widget.isPlaying ? 0.5 : 1.0,
+                  ),
+                  boxShadow: widget.isPlaying
+                      ? null
+                      : [
+                          BoxShadow(
+                            color: AppColors.violet.withAlpha(50),
+                            blurRadius: 16,
+                            spreadRadius: -2,
+                          ),
+                        ],
+                ),
+                child: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 250),
+                  switchInCurve: Curves.easeOutBack,
+                  switchOutCurve: Curves.easeIn,
+                  transitionBuilder: (child, animation) => ScaleTransition(
+                    scale: animation,
+                    child: child,
+                  ),
+                  child: Icon(
+                    widget.isPlaying
+                        ? Icons.pause_rounded
+                        : Icons.play_arrow_rounded,
+                    key: ValueKey(widget.isPlaying),
+                    color: widget.isPlaying
+                        ? Colors.white.withAlpha(200)
+                        : Colors.white,
+                    size: 22,
+                  ),
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+// ─── Discover / Following tab pill — Premium glass variant ──────────────────
 
 class _FeedTabPill extends StatelessWidget {
   const _FeedTabPill({required this.activeTab, required this.onTap});
@@ -152,27 +316,33 @@ class _FeedTabPill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(3),
-      decoration: BoxDecoration(
-        color: Colors.black.withAlpha(60),
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: Colors.white.withAlpha(18)),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          _TabItem(
-            label: AppLocalizations.of(context)!.feedDiscover,
-            isActive: activeTab == FeedTab.discover,
-            onTap: () => onTap(FeedTab.discover),
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(12),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+        child: Container(
+          padding: const EdgeInsets.all(3),
+          decoration: BoxDecoration(
+            color: Colors.black.withAlpha(80),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: Colors.white.withAlpha(15)),
           ),
-          _TabItem(
-            label: AppLocalizations.of(context)!.feedFollowing,
-            isActive: activeTab == FeedTab.following,
-            onTap: () => onTap(FeedTab.following),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _TabItem(
+                label: AppLocalizations.of(context)!.feedDiscover,
+                isActive: activeTab == FeedTab.discover,
+                onTap: () => onTap(FeedTab.discover),
+              ),
+              _TabItem(
+                label: AppLocalizations.of(context)!.feedFollowing,
+                isActive: activeTab == FeedTab.following,
+                onTap: () => onTap(FeedTab.following),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
@@ -194,23 +364,25 @@ class _TabItem extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 250),
-        curve: Curves.easeOut,
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOutCubic,
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
           color: isActive
-              ? Colors.white.withAlpha(40)
+              ? Colors.white.withAlpha(30)
               : Colors.transparent,
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(9),
+          border: isActive
+              ? Border.all(color: Colors.white.withAlpha(10))
+              : null,
         ),
         child: AnimatedDefaultTextStyle(
-          duration: const Duration(milliseconds: 200),
+          duration: const Duration(milliseconds: 250),
           style: GoogleFonts.dmSans(
-            color: isActive
-                ? Colors.white
-                : Colors.white.withAlpha(140),
+            color: isActive ? Colors.white : Colors.white.withAlpha(120),
             fontSize: 13,
             fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
+            letterSpacing: isActive ? 0.2 : 0,
           ),
           child: Text(label),
         ),
@@ -219,7 +391,7 @@ class _TabItem extends StatelessWidget {
   }
 }
 
-// ─── Notification bell with unread dot ──────────────────────────────────────
+// ─── Notification bell — Premium frosted glass with glow dot ────────────────
 
 class _NotificationBell extends ConsumerWidget {
   const _NotificationBell({required this.onTap});
@@ -233,17 +405,16 @@ class _NotificationBell extends ConsumerWidget {
     return GestureDetector(
       onTap: onTap,
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(11),
+        borderRadius: BorderRadius.circular(13),
         child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+          filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
           child: Container(
-            width: 34,
-            height: 34,
+            width: 38,
+            height: 38,
             decoration: BoxDecoration(
-              color: Colors.black.withAlpha(90),
-              borderRadius: BorderRadius.circular(11),
-              border: Border.all(
-                  color: Colors.white.withAlpha(30)),
+              color: Colors.black.withAlpha(80),
+              borderRadius: BorderRadius.circular(13),
+              border: Border.all(color: Colors.white.withAlpha(20)),
             ),
             child: Stack(
               children: [
@@ -251,20 +422,26 @@ class _NotificationBell extends ConsumerWidget {
                   child: Icon(
                     Icons.notifications_outlined,
                     color: Colors.white,
-                    size: 19,
+                    size: 20,
                   ),
                 ),
                 if (unread > 0)
                   Positioned(
-                    top: 5,
-                    right: 5,
+                    top: 7,
+                    right: 7,
                     child: Container(
-                      width: 7,
-                      height: 7,
+                      width: 8,
+                      height: 8,
                       decoration: BoxDecoration(
-                        color: AppColors.error,
+                        color: AppColors.rose,
                         shape: BoxShape.circle,
-                        border: Border.all(color: Colors.white, width: 1),
+                        border: Border.all(color: Colors.white, width: 1.5),
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppColors.rose.withAlpha(120),
+                            blurRadius: 6,
+                          ),
+                        ],
                       ),
                     ),
                   ),

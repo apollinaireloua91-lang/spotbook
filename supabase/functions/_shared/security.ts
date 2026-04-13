@@ -48,11 +48,26 @@ export function jsonResponse(
   });
 }
 
+/** Timing-safe string comparison to prevent timing attacks on secret comparisons. */
+export function timingSafeEqual(a: string, b: string): boolean {
+  if (a.length !== b.length) return false;
+  const encoder = new TextEncoder();
+  const bufA = encoder.encode(a);
+  const bufB = encoder.encode(b);
+  if (bufA.byteLength !== bufB.byteLength) return false;
+  // Use constant-time XOR comparison
+  let result = 0;
+  for (let i = 0; i < bufA.byteLength; i++) {
+    result |= bufA[i] ^ bufB[i];
+  }
+  return result === 0;
+}
+
 /** Appels internes uniquement (Edge → Edge, pg_net, cron) : vérifie le JWT service_role Supabase. */
 export function assertServiceRoleOnly(req: Request): Response | null {
   const expected = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
   const auth = req.headers.get("Authorization") ?? "";
-  if (!expected || auth !== `Bearer ${expected}`) {
+  if (!expected || !timingSafeEqual(auth, `Bearer ${expected}`)) {
     return jsonResponse({ error: "forbidden" }, 403, undefined, req);
   }
   return null;

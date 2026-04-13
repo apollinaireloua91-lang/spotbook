@@ -92,29 +92,28 @@ serve(async (req) => {
     const expiresAt = new Date(Date.now() + tok.expires_in * 1000).toISOString();
     const now = new Date().toISOString();
 
-    // Encrypt tokens before storage (same pattern as link-instagram/tiktok/youtube)
+    // Encrypt tokens before storage — NEVER store plaintext
     const keyHex = Deno.env.get("SOCIAL_TOKEN_KEY_HEX") ?? "";
-    let encAccessToken = tok.access_token;
-    let encRefreshToken = tok.refresh_token;
-    let tokenNonce: string | null = null;
-
-    if (keyHex && keyHex.length === 64) {
-      const { data: encAccess } = await service.rpc("encrypt_social_token", {
-        p_plaintext: tok.access_token,
-        p_key_hex: keyHex,
-      });
-      const { data: encRefresh } = await service.rpc("encrypt_social_token", {
-        p_plaintext: tok.refresh_token,
-        p_key_hex: keyHex,
-      });
-      if (encAccess?.encrypted && encAccess?.nonce) {
-        encAccessToken = encAccess.encrypted;
-        tokenNonce = encAccess.nonce;
-      }
-      if (encRefresh?.encrypted) {
-        encRefreshToken = encRefresh.encrypted;
-      }
+    if (!keyHex || keyHex.length !== 64) {
+      return jsonResponse({ error: "SOCIAL_TOKEN_KEY_HEX invalide — tokens non stockés" }, 500);
     }
+
+    const { data: encAccess } = await service.rpc("encrypt_social_token", {
+      p_plaintext: tok.access_token,
+      p_key_hex: keyHex,
+    });
+    const { data: encRefresh } = await service.rpc("encrypt_social_token", {
+      p_plaintext: tok.refresh_token,
+      p_key_hex: keyHex,
+    });
+
+    if (!encAccess?.encrypted || !encAccess?.nonce) {
+      return jsonResponse({ error: "Erreur chiffrement token" }, 500);
+    }
+
+    const encAccessToken = encAccess.encrypted;
+    const encRefreshToken = encRefresh?.encrypted ?? tok.refresh_token;
+    const tokenNonce = encAccess.nonce;
 
     const patch = {
       access_token: encAccessToken,

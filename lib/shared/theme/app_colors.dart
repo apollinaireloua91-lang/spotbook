@@ -203,4 +203,109 @@ abstract final class AppColors {
             offset: const Offset(0, 4),
           ),
         ];
+
+  // ═════════════════════════════════════════════════════════════════════════
+  // PREMIUM GLASSMORPHISM & DEPTH SYSTEM
+  // ═════════════════════════════════════════════════════════════════════════
+
+  /// Frosted glass background for nav bars, overlays, and floating panels.
+  static Color get glass => isDark
+      ? const Color(0xFF0A0A14).withAlpha(180)
+      : const Color(0xFFFFFFFF).withAlpha(200);
+
+  /// Lighter glass for subtle overlays (top bar on video feed).
+  static Color get glassLight => isDark
+      ? Colors.black.withAlpha(120)
+      : Colors.white.withAlpha(140);
+
+  /// Glass border — barely visible, catches light.
+  static Color get glassBorder => isDark
+      ? Colors.white.withAlpha(18)
+      : Colors.black.withAlpha(8);
+
+  /// Premium inner glow for glass surfaces (dark mode only).
+  static Color get glassInnerGlow => isDark
+      ? const Color(0xFF8E05C2).withAlpha(12)
+      : Colors.transparent;
+
+  /// Elevated glass shadow — depth without weight.
+  static List<BoxShadow> get glassShadow => isDark
+      ? [
+          BoxShadow(
+            color: Colors.black.withAlpha(80),
+            blurRadius: 32,
+            spreadRadius: -8,
+            offset: const Offset(0, 8),
+          ),
+          BoxShadow(
+            color: const Color(0xFF8E05C2).withAlpha(8),
+            blurRadius: 48,
+            spreadRadius: -4,
+          ),
+        ]
+      : [
+          BoxShadow(
+            color: Colors.black.withAlpha(16),
+            blurRadius: 24,
+            spreadRadius: -6,
+            offset: const Offset(0, 6),
+          ),
+        ];
+
+  /// Premium card shadow — deeper, more layered than cardShadow.
+  static List<BoxShadow> get premiumCardShadow => isDark
+      ? [
+          BoxShadow(
+            color: Colors.black.withAlpha(100),
+            blurRadius: 20,
+            spreadRadius: -6,
+            offset: const Offset(0, 8),
+          ),
+          BoxShadow(
+            color: const Color(0xFF8E05C2).withAlpha(15),
+            blurRadius: 40,
+            spreadRadius: -2,
+          ),
+        ]
+      : [
+          BoxShadow(
+            color: Colors.black.withAlpha(8),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+          BoxShadow(
+            color: Colors.black.withAlpha(5),
+            blurRadius: 24,
+            offset: const Offset(0, 8),
+          ),
+        ];
+
+  /// Shimmer gradient for premium button sweep animation.
+  static LinearGradient get shimmerGradient => LinearGradient(
+        colors: [
+          Colors.white.withAlpha(0),
+          Colors.white.withAlpha(isDark ? 30 : 50),
+          Colors.white.withAlpha(0),
+        ],
+        stops: const [0.0, 0.5, 1.0],
+      );
+
+  /// Active glow for play/pause and action buttons on video.
+  static List<BoxShadow> get videoControlGlow => [
+        BoxShadow(
+          color: const Color(0xFF8E05C2).withAlpha(80),
+          blurRadius: 24,
+          spreadRadius: -4,
+        ),
+        const BoxShadow(
+          color: Colors.black26,
+          blurRadius: 12,
+          offset: Offset(0, 4),
+        ),
+      ];
+
+  /// Subtle pulse glow for active interactive elements.
+  static Color get pulseGlow => isDark
+      ? const Color(0xFF8E05C2).withAlpha(60)
+      : const Color(0xFF8039C5).withAlpha(30);
 }

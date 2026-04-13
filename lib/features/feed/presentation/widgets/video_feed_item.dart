@@ -4,11 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/utils/analytics_service.dart';
 import '../../../../shared/widgets/bookmark_bounce.dart';
 import '../../../moderation/presentation/screens/report_sheet.dart';
+import '../../data/feed_play_state.dart';
 import '../../data/video_repository.dart';
 import '../../domain/video_model.dart';
 import 'comments_sheet.dart';
@@ -57,11 +59,9 @@ class VideoFeedItem extends ConsumerStatefulWidget {
   final bool useLocalHeartAnimation;
 
   /// When provided, replaces the default right action column.
-  /// Used by ProFeedScreen to show Pro-specific buttons (no Comment, enhanced Spotify).
   final Widget? rightColumnOverride;
 
-  /// When provided, replaces the default bottom-left overlay (pro name + Book).
-  /// Used by ProFeedScreen to show PostLeftColumnPro (name + badge + caption + CTA).
+  /// When provided, replaces the default bottom-left overlay.
   final Widget? bottomOverlayOverride;
 
   @override
@@ -71,7 +71,6 @@ class VideoFeedItem extends ConsumerStatefulWidget {
 class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
   BetterPlayerController? _controller;
   bool _viewCounted = false;
-
   bool _isPlaying = false;
 
   @override
@@ -132,6 +131,8 @@ class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
         _isPlaying = true;
       }
     });
+    // Keep the persistent play/pause button in sync.
+    ref.read(feedPlayStateProvider.notifier).set(_isPlaying);
   }
 
   void _countView() {
@@ -193,7 +194,7 @@ class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
         padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
         decoration: BoxDecoration(
           color: AppColors.surface,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
         ),
         child: SafeArea(
           top: false,
@@ -203,16 +204,17 @@ class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
               Container(
                 width: 36,
                 height: 4,
-                margin: const EdgeInsets.only(bottom: 16),
+                margin: const EdgeInsets.only(bottom: 20),
                 decoration: BoxDecoration(
-                  color: AppColors.gris.withAlpha(100),
+                  color: AppColors.gris.withAlpha(80),
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
               ListTile(
                 contentPadding: EdgeInsets.zero,
                 leading: Icon(Icons.flag_outlined, color: AppColors.blanc),
-                title: Text('Report', style: TextStyle(color: AppColors.blanc)),
+                title:
+                    Text('Report', style: TextStyle(color: AppColors.blanc)),
                 onTap: () {
                   ctx.pop();
                   showReportSheet(
@@ -225,7 +227,8 @@ class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
               ListTile(
                 contentPadding: EdgeInsets.zero,
                 leading: Icon(Icons.block, color: AppColors.error),
-                title: Text('Block this pro', style: TextStyle(color: AppColors.error)),
+                title: Text('Block this pro',
+                    style: TextStyle(color: AppColors.error)),
                 onTap: () {
                   ctx.pop();
                   showBlockConfirmDialog(
@@ -247,6 +250,18 @@ class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
   Widget build(BuildContext context) {
     final showLikeAnim = ref.watch(_showLikeAnimProvider);
 
+    // Sync with the persistent play/pause button from FeedScreen.
+    ref.listen<bool>(feedPlayStateProvider, (prev, next) {
+      if (!widget.isActive || _controller == null) return;
+      if (next && !_isPlaying) {
+        _controller!.play();
+        setState(() => _isPlaying = true);
+      } else if (!next && _isPlaying) {
+        _controller!.pause();
+        setState(() => _isPlaying = false);
+      }
+    });
+
     return GestureDetector(
       onTap: _togglePlayPause,
       onDoubleTap: _onDoubleTap,
@@ -254,8 +269,6 @@ class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
         fit: StackFit.expand,
         children: [
           // ─── Video / Thumbnail ───
-          // IgnorePointer prevents BetterPlayer's internal GestureDetector
-          // from stealing taps meant for play/pause and double-tap like.
           if (_controller != null)
             IgnorePointer(child: BetterPlayer(controller: _controller!))
           else if (widget.video.thumbnailUrl != null)
@@ -267,18 +280,23 @@ class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
           else
             Container(color: Colors.black),
 
-          // ─── Bottom gradient ───
-          const Positioned(
+          // ─── Bottom gradient — deeper, cinematic ───
+          Positioned(
             bottom: 0,
             left: 0,
             right: 0,
-            height: 280,
+            height: 350,
             child: DecoratedBox(
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   begin: Alignment.bottomCenter,
                   end: Alignment.topCenter,
-                  colors: [AppColors.overlayHeavy, Colors.transparent],
+                  colors: [
+                    Colors.black.withAlpha(230),
+                    Colors.black.withAlpha(100),
+                    Colors.transparent,
+                  ],
+                  stops: const [0.0, 0.4, 1.0],
                 ),
               ),
             ),
@@ -296,12 +314,12 @@ class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
             Positioned(
               bottom: 100,
               left: 16,
-              right: 72,
+              right: 76,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  // Book Now CTA
+                  // Premium Book Now CTA with gradient + glow
                   GestureDetector(
                     onTap: () {
                       HapticFeedback.lightImpact();
@@ -309,38 +327,47 @@ class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
                     },
                     child: Container(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 9),
+                          horizontal: 18, vertical: 10),
                       decoration: BoxDecoration(
-                        color: AppColors.violet,
-                        borderRadius: BorderRadius.circular(22),
+                        gradient: AppColors.gradientAccent,
+                        borderRadius: BorderRadius.circular(24),
                         boxShadow: [
                           BoxShadow(
-                            color: AppColors.violet.withAlpha(90),
-                            blurRadius: 16,
-                            offset: const Offset(0, 5),
+                            color: AppColors.violet.withAlpha(100),
+                            blurRadius: 20,
+                            spreadRadius: -2,
+                            offset: const Offset(0, 6),
+                          ),
+                          BoxShadow(
+                            color: AppColors.violet.withAlpha(40),
+                            blurRadius: 40,
+                            spreadRadius: -4,
                           ),
                         ],
                       ),
-                      child: const Row(
+                      child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(Icons.calendar_today_rounded,
+                          const Icon(Icons.calendar_today_rounded,
                               color: Colors.white, size: 14),
-                          SizedBox(width: 7),
+                          const SizedBox(width: 8),
                           Text(
                             'Book Now',
-                            style: TextStyle(
+                            style: GoogleFonts.dmSans(
                               color: Colors.white,
                               fontSize: 13,
                               fontWeight: FontWeight.w700,
-                              letterSpacing: 0.3,
+                              letterSpacing: 0.4,
                             ),
                           ),
+                          const SizedBox(width: 4),
+                          const Icon(Icons.arrow_forward_rounded,
+                              color: Colors.white, size: 14),
                         ],
                       ),
                     ),
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 14),
                   // @username + verified badge
                   GestureDetector(
                     onTap: () =>
@@ -351,14 +378,15 @@ class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
                         Flexible(
                           child: Text(
                             '@${widget.video.proName ?? 'Pro'}',
-                            style: const TextStyle(
+                            style: GoogleFonts.dmSans(
                               color: AppColors.textOnVideo,
                               fontSize: 15,
                               fontWeight: FontWeight.w800,
-                              shadows: [
+                              letterSpacing: -0.2,
+                              shadows: const [
                                 Shadow(
                                   color: AppColors.overlayHeavy,
-                                  blurRadius: 8,
+                                  blurRadius: 10,
                                   offset: Offset(0, 1),
                                 ),
                               ],
@@ -368,11 +396,17 @@ class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
                         ),
                         const SizedBox(width: 6),
                         Container(
-                          width: 16,
-                          height: 16,
+                          width: 17,
+                          height: 17,
                           decoration: BoxDecoration(
-                            color: AppColors.violet,
+                            gradient: AppColors.gradientAccent,
                             shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(
+                                color: AppColors.violet.withAlpha(60),
+                                blurRadius: 8,
+                              ),
+                            ],
                           ),
                           child: const Icon(Icons.check,
                               color: Colors.white, size: 10),
@@ -382,18 +416,17 @@ class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
                   ),
                   // Caption
                   if (widget.video.title.isNotEmpty) ...[
-                    const SizedBox(height: 6),
+                    const SizedBox(height: 8),
                     Text(
                       widget.video.title,
-                      style: TextStyle(
-                        color: Colors.white.withAlpha(215),
+                      style: GoogleFonts.dmSans(
+                        color: Colors.white.withAlpha(200),
                         fontSize: 13,
                         fontWeight: FontWeight.w500,
-                        height: 1.35,
+                        height: 1.4,
                         shadows: const [
                           Shadow(
-                              color: AppColors.overlayMedium,
-                              blurRadius: 6),
+                              color: AppColors.overlayMedium, blurRadius: 8),
                         ],
                       ),
                       maxLines: 2,
@@ -404,36 +437,45 @@ class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
               ),
             ),
 
-          // ─── Right side action buttons ───
+          // ─── Right side action buttons — Premium glass column ───
           Positioned(
             bottom: 100,
             right: 12,
             child: widget.rightColumnOverride ??
                 Column(
                   children: [
-                    // Pro avatar + follow badge
+                    // Pro avatar with gradient ring
                     GestureDetector(
-                      onTap: () => context.push('/pro/${widget.video.proId}'),
+                      onTap: () =>
+                          context.push('/pro/${widget.video.proId}'),
                       child: SizedBox(
-                        width: 48,
-                        height: 56,
+                        width: 50,
+                        height: 58,
                         child: Stack(
                           clipBehavior: Clip.none,
                           children: [
                             Container(
-                              padding: const EdgeInsets.all(2),
+                              width: 48,
+                              height: 48,
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
-                                border: Border.all(
-                                    color: Colors.white, width: 2),
-                                boxShadow: const [
+                                gradient: AppColors.gradientAccent,
+                                boxShadow: [
                                   BoxShadow(
-                                      color: Colors.black26, blurRadius: 8),
+                                    color: AppColors.violet.withAlpha(50),
+                                    blurRadius: 12,
+                                    spreadRadius: -2,
+                                  ),
+                                  const BoxShadow(
+                                    color: Colors.black38,
+                                    blurRadius: 8,
+                                  ),
                                 ],
                               ),
+                              padding: const EdgeInsets.all(2.5),
                               child: CircleAvatar(
-                                radius: 20,
-                                backgroundColor: AppColors.surfaceAlt,
+                                radius: 21,
+                                backgroundColor: Colors.black,
                                 backgroundImage:
                                     widget.video.proAvatarUrl != null
                                         ? CachedNetworkImageProvider(
@@ -444,9 +486,10 @@ class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
                                         (widget.video.proName ?? 'P')
                                             .substring(0, 1)
                                             .toUpperCase(),
-                                        style: const TextStyle(
+                                        style: GoogleFonts.sora(
                                           color: Colors.white,
-                                          fontWeight: FontWeight.bold,
+                                          fontWeight: FontWeight.w700,
+                                          fontSize: 16,
                                         ),
                                       )
                                     : null,
@@ -454,8 +497,8 @@ class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
                             ),
                             if (!widget.video.isFollowed)
                               Positioned(
-                                bottom: -2,
-                                right: -2,
+                                bottom: 0,
+                                right: -1,
                                 child: GestureDetector(
                                   onTap: () {
                                     HapticFeedback.lightImpact();
@@ -466,16 +509,23 @@ class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
                                     }
                                   },
                                   child: Container(
-                                    width: 18,
-                                    height: 18,
+                                    width: 20,
+                                    height: 20,
                                     decoration: BoxDecoration(
-                                      color: AppColors.violet,
+                                      gradient: AppColors.gradientAccent,
                                       shape: BoxShape.circle,
                                       border: Border.all(
-                                          color: Colors.white, width: 2),
+                                          color: Colors.black, width: 2),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color:
+                                              AppColors.violet.withAlpha(80),
+                                          blurRadius: 6,
+                                        ),
+                                      ],
                                     ),
                                     child: const Icon(Icons.add,
-                                        color: Colors.white, size: 10),
+                                        color: Colors.white, size: 12),
                                   ),
                                 ),
                               ),
@@ -483,39 +533,47 @@ class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 22),
-                    _ActionButton(
+                    const SizedBox(height: 20),
+                    // Like — with glow when active
+                    _PremiumActionButton(
                       icon: widget.video.isLiked
-                          ? Icons.favorite
-                          : Icons.favorite_outline,
+                          ? Icons.favorite_rounded
+                          : Icons.favorite_outline_rounded,
                       label: _formatCount(widget.video.likesCount),
                       color: widget.video.isLiked
                           ? AppColors.rose
                           : Colors.white,
+                      isActive: widget.video.isLiked,
+                      glowColor: AppColors.rose,
                       onTap: _toggleLike,
                     ),
-                    const SizedBox(height: 18),
-                    _ActionButton(
-                      icon: Icons.chat_bubble_outline,
+                    const SizedBox(height: 16),
+                    // Comments
+                    _PremiumActionButton(
+                      icon: Icons.chat_bubble_outline_rounded,
                       label: _formatCount(widget.video.commentsCount),
                       onTap: _openComments,
                     ),
-                    const SizedBox(height: 18),
+                    const SizedBox(height: 16),
+                    // Bookmark
                     BookmarkBounce(
                       isSaved: widget.video.isSaved,
-                      child: _ActionButton(
+                      child: _PremiumActionButton(
                         icon: widget.video.isSaved
-                            ? Icons.bookmark
-                            : Icons.bookmark_outline,
+                            ? Icons.bookmark_rounded
+                            : Icons.bookmark_outline_rounded,
                         label: '',
                         color: widget.video.isSaved
                             ? AppColors.violet
                             : Colors.white,
+                        isActive: widget.video.isSaved,
+                        glowColor: AppColors.violet,
                         onTap: _toggleSave,
                       ),
                     ),
-                    const SizedBox(height: 18),
-                    _ActionButton(
+                    const SizedBox(height: 16),
+                    // Share
+                    _PremiumActionButton(
                       icon: Icons.share_outlined,
                       label: '',
                       onTap: () {
@@ -527,48 +585,16 @@ class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
                         );
                       },
                     ),
-                    const SizedBox(height: 18),
-                    _ActionButton(
-                      icon: Icons.more_horiz,
+                    const SizedBox(height: 16),
+                    // More
+                    _PremiumActionButton(
+                      icon: Icons.more_horiz_rounded,
                       label: '',
                       onTap: _openModerationMenu,
                     ),
                   ],
                 ),
           ),
-
-          // ─── Play/Pause button — always visible, under top bar ───
-          if (widget.isActive)
-            Positioned(
-              top: MediaQuery.of(context).padding.top + 56,
-              left: 16,
-              child: GestureDetector(
-                onTap: _togglePlayPause,
-                child: AnimatedOpacity(
-                  opacity: 1.0,
-                  duration: const Duration(milliseconds: 200),
-                  child: Container(
-                    width: 38,
-                    height: 38,
-                    decoration: BoxDecoration(
-                      color: Colors.black.withAlpha(100),
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: Colors.white.withAlpha(50),
-                        width: 0.5,
-                      ),
-                    ),
-                    child: Icon(
-                      _isPlaying
-                          ? Icons.pause_rounded
-                          : Icons.play_arrow_rounded,
-                      color: Colors.white,
-                      size: 20,
-                    ),
-                  ),
-                ),
-              ),
-            ),
 
           // ─── Double-tap like animation ───
           if (showLikeAnim) const Center(child: LikeAnimation()),
@@ -584,18 +610,24 @@ class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
   }
 }
 
-class _ActionButton extends StatelessWidget {
-  const _ActionButton({
+// ─── Premium Action Button — Glass circle background + glow on active ───────
+
+class _PremiumActionButton extends StatelessWidget {
+  const _PremiumActionButton({
     required this.icon,
     required this.label,
     required this.onTap,
     this.color = Colors.white,
+    this.isActive = false,
+    this.glowColor,
   });
 
   final IconData icon;
   final String label;
   final VoidCallback onTap;
   final Color color;
+  final bool isActive;
+  final Color? glowColor;
 
   @override
   Widget build(BuildContext context) {
@@ -604,27 +636,53 @@ class _ActionButton extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(
-            icon,
-            color: color,
-            size: 30,
-            shadows: const [
-              Shadow(
-                  color: Colors.black54,
-                  blurRadius: 12,
-                  offset: Offset(0, 2)),
-              Shadow(color: Colors.black26, blurRadius: 4),
-            ],
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeOutCubic,
+            width: 44,
+            height: 44,
+            decoration: BoxDecoration(
+              color: isActive
+                  ? (glowColor ?? color).withAlpha(25)
+                  : Colors.black.withAlpha(50),
+              shape: BoxShape.circle,
+              border: Border.all(
+                color: isActive
+                    ? (glowColor ?? color).withAlpha(60)
+                    : Colors.white.withAlpha(15),
+                width: isActive ? 1.0 : 0.5,
+              ),
+              boxShadow: isActive && glowColor != null
+                  ? [
+                      BoxShadow(
+                        color: glowColor!.withAlpha(40),
+                        blurRadius: 16,
+                        spreadRadius: -2,
+                      ),
+                    ]
+                  : null,
+            ),
+            child: Icon(
+              icon,
+              color: color,
+              size: 24,
+              shadows: const [
+                Shadow(
+                    color: Colors.black45,
+                    blurRadius: 10,
+                    offset: Offset(0, 2)),
+              ],
+            ),
           ),
           if (label.isNotEmpty) ...[
-            const SizedBox(height: 3),
+            const SizedBox(height: 4),
             Text(
               label,
-              style: const TextStyle(
+              style: GoogleFonts.dmSans(
                 color: Colors.white,
-                fontSize: 12,
+                fontSize: 11,
                 fontWeight: FontWeight.w700,
-                shadows: [
+                shadows: const [
                   Shadow(
                       color: Colors.black54,
                       blurRadius: 6,

@@ -1,6 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
-import { jsonResponse, securityHeadersFor } from "../_shared/security.ts";
+import { jsonResponse, securityHeadersFor, timingSafeEqual } from "../_shared/security.ts";
 
 /**
  * Cloudflare Stream Webhook handler.
@@ -31,8 +31,8 @@ serve(async (req) => {
       console.error("[cloudflare-webhook] CLOUDFLARE_WEBHOOK_SECRET not configured");
       throw new Error("Webhook secret not configured");
     }
-    const receivedSecret = req.headers.get("webhook-secret")?.trim();
-    if (receivedSecret !== webhookSecret) {
+    const receivedSecret = req.headers.get("webhook-secret")?.trim() ?? "";
+    if (!receivedSecret || !timingSafeEqual(receivedSecret, webhookSecret)) {
       console.error("[cloudflare-webhook] Invalid webhook secret");
       return jsonResponse({ error: "Forbidden" }, 403, undefined, req);
     }

@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/widgets/spotbook_app_bar.dart';
 import '../../../../shared/widgets/spotbook_avatar.dart';
@@ -103,11 +104,12 @@ class _ProviderReviewsReceivedScreenState
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     final dataAsync = ref.watch(_reviewsProvider);
 
     return Scaffold(
       backgroundColor: AppColors.fond,
-      appBar: const SpotbookAppBar(title: 'Avis reçus'),
+      appBar: SpotbookAppBar(title: l.reviewsReceivedTitle),
       body: dataAsync.when(
         loading: () => Center(
             child: CircularProgressIndicator(color: AppColors.violet)),
@@ -161,7 +163,7 @@ class _ProviderReviewsReceivedScreenState
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          '${data.reviews.length} avis',
+                          l.reviewsCount(data.reviews.length),
                           style: GoogleFonts.dmSans(
                               color: AppColors.gris, fontSize: 12),
                         ),
@@ -233,7 +235,7 @@ class _ProviderReviewsReceivedScreenState
                   scrollDirection: Axis.horizontal,
                   children: [
                     _RatingFilterChip(
-                      label: 'Tous',
+                      label: l.reviewsFilterAll,
                       selected: _filterRating == null,
                       onTap: () =>
                           setState(() => _filterRating = null),
@@ -259,7 +261,7 @@ class _ProviderReviewsReceivedScreenState
                 Padding(
                   padding: const EdgeInsets.only(top: 40),
                   child: Center(
-                    child: Text('Aucun avis',
+                    child: Text(l.reviewsEmpty,
                         style: TextStyle(
                             color: AppColors.gris, fontSize: 15)),
                   ),

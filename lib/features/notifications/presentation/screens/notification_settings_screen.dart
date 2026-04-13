@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../data/notification_notifier.dart';
 
@@ -12,6 +13,7 @@ class NotificationSettingsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l = AppLocalizations.of(context)!;
     final state = ref.watch(notifPrefsProvider);
 
     return Scaffold(
@@ -21,7 +23,7 @@ class NotificationSettingsScreen extends ConsumerWidget {
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         leading: Semantics(
-          label: 'Back',
+          label: l.retourLabel,
           child: IconButton(
             icon: Container(
               padding: const EdgeInsets.all(8),
@@ -40,7 +42,7 @@ class NotificationSettingsScreen extends ConsumerWidget {
           ),
         ),
         title: Text(
-          'Notifications',
+          l.notifications,
           style: GoogleFonts.sora(
             color: AppColors.blanc,
             fontWeight: FontWeight.w700,
@@ -57,50 +59,50 @@ class NotificationSettingsScreen extends ConsumerWidget {
           : ListView(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
               children: [
-                _SectionLabel(label: 'RENDEZ-VOUS'),
+                _SectionLabel(label: l.notifSectionAppointments),
                 const SizedBox(height: 8),
                 _ToggleTile(
-                  title: 'Rappels',
-                  subtitle: '1 jour et 2 heures avant vos rendez-vous',
+                  title: l.notifReminders,
+                  subtitle: l.notifRemindersSubtitle,
                   value: state.prefs.bookingReminder,
                   dbKey: 'booking_reminder_enabled',
                 ),
                 _ToggleTile(
-                  title: 'Mises à jour',
-                  subtitle: 'Confirmations, annulations, modifications',
+                  title: l.notifUpdates,
+                  subtitle: l.notifUpdatesSubtitle,
                   value: state.prefs.bookingUpdate,
                   dbKey: 'booking_update_enabled',
                 ),
                 const SizedBox(height: 24),
-                _SectionLabel(label: 'COMMUNICATION'),
+                _SectionLabel(label: l.notifSectionCommunication),
                 const SizedBox(height: 8),
                 _ToggleTile(
-                  title: 'Messages',
-                  subtitle: 'Nouveaux messages de vos pros',
+                  title: l.notifMessages,
+                  subtitle: l.notifMessagesSubtitle,
                   value: state.prefs.chat,
                   dbKey: 'chat_enabled',
                 ),
                 _ToggleTile(
-                  title: 'Demandes d\'avis',
-                  subtitle: 'Après vos rendez-vous',
+                  title: l.notifReviewRequests,
+                  subtitle: l.notifReviewRequestsSubtitle,
                   value: state.prefs.reviewRequest,
                   dbKey: 'review_request_enabled',
                 ),
                 const SizedBox(height: 24),
-                _SectionLabel(label: 'ÉVÉNEMENTS'),
+                _SectionLabel(label: l.notifSectionEvents),
                 const SizedBox(height: 8),
                 _ToggleTile(
-                  title: 'Liste d\'attente',
-                  subtitle: 'Un billet devient disponible pour un événement',
+                  title: l.notifWaitlist,
+                  subtitle: l.notifWaitlistSubtitle,
                   value: state.prefs.waitlist,
                   dbKey: 'waitlist_enabled',
                 ),
                 const SizedBox(height: 24),
-                _SectionLabel(label: 'AUTRE'),
+                _SectionLabel(label: l.notifSectionOther),
                 const SizedBox(height: 8),
                 _ToggleTile(
-                  title: 'Marketing',
-                  subtitle: 'Promotions et nouveautés Spotbook',
+                  title: l.notifMarketing,
+                  subtitle: l.notifMarketingSubtitle,
                   value: state.prefs.marketing,
                   dbKey: 'marketing_enabled',
                 ),

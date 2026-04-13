@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:shimmer/shimmer.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../data/notification_notifier.dart';
 import '../../domain/notification_model.dart';
@@ -15,6 +16,7 @@ class NotificationHistoryScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l = AppLocalizations.of(context)!;
     final state = ref.watch(notificationListProvider);
 
     return Scaffold(
@@ -24,7 +26,7 @@ class NotificationHistoryScreen extends ConsumerWidget {
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         leading: Semantics(
-          label: 'Back',
+          label: l.retourLabel,
           child: IconButton(
             icon: Container(
               padding: const EdgeInsets.all(8),
@@ -41,13 +43,13 @@ class NotificationHistoryScreen extends ConsumerWidget {
             },
           ),
         ),
-        title: Text('Notifications',
+        title: Text(l.notifications,
             style: GoogleFonts.sora(color: AppColors.blanc, fontWeight: FontWeight.w700)),
         centerTitle: true,
         actions: [
           if (state.notifications.any((n) => !n.isRead))
             Semantics(
-              label: 'Mark all as read',
+              label: l.notificationsMarkAllRead,
               child: IconButton(
                 icon: Icon(Icons.done_all, color: AppColors.blanc),
                 onPressed: () {
@@ -67,7 +69,7 @@ class NotificationHistoryScreen extends ConsumerWidget {
                     children: [
                       Icon(Icons.notifications_off_outlined, color: AppColors.gris, size: 48),
                       const SizedBox(height: 12),
-                      Text('Aucune notification',
+                      Text(l.notificationsEmpty,
                           style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 15)),
                     ],
                   ),

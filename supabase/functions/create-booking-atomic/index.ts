@@ -13,9 +13,10 @@ const corsHeaders = securityHeaders;
 
 function generateBookingCode(): string {
   const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  const randomBytes = crypto.getRandomValues(new Uint8Array(8));
   let code = "SPT-";
   for (let i = 0; i < 8; i++) {
-    code += chars.charAt(Math.floor(Math.random() * chars.length));
+    code += chars.charAt(randomBytes[i] % chars.length);
   }
   return code;
 }
@@ -23,6 +24,9 @@ function generateBookingCode(): string {
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
+  }
+  if (req.method !== "POST") {
+    return jsonResponse({ error: "method_not_allowed" }, 405);
   }
 
   try {

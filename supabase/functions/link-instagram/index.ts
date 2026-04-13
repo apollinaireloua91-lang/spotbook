@@ -13,16 +13,23 @@ serve(async (req) => {
     return new Response('ok', { headers: corsHeaders });
   }
   try {
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader) {
+      return jsonResponse({ error: 'unauthorized' }, 401);
+    }
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_ANON_KEY') ?? '',
-      { global: { headers: { Authorization: req.headers.get('Authorization')! } } }
+      { global: { headers: { Authorization: authHeader } } }
     );
     const { code } = await req.json();
     if (!code || String(code).trim().length < 4) {
       return jsonResponse({ error: 'code OAuth invalide' }, 400);
     }
-    
+
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return jsonResponse({ error: 'unauthorized' }, 401);
+
     // Mocking the OAuth flow: graph.facebook.com -> token -> graph.instagram.com/me -> followers
     // In a real app, we would exchange the code for an access token, then fetch user data.
     const mockFollowers = Math.floor(Math.random() * 50000) + 10000;
@@ -35,11 +42,14 @@ serve(async (req) => {
     if (!keyHex || keyHex.length !== 64) {
       return jsonResponse({ error: "SOCIAL_TOKEN_KEY_HEX invalide" }, 500);
     }
-    
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error('Not authenticated');
 
-    const { data: encryptedToken, error: encErr } = await supabase.rpc(
+    // Use service_role client for encryption RPC — never send key via anon client
+    const serviceClient = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
+    );
+
+    const { data: encryptedToken, error: encErr } = await serviceClient.rpc(
       "encrypt_social_token",
       {
         p_token: token,
@@ -51,7 +61,7 @@ serve(async (req) => {
       return jsonResponse({ error: "Erreur chiffrement token" }, 500);
     }
 
-    await supabase.from('social_connections').upsert({
+    await serviceClient.from('social_connections').upsert({
       pro_id: user.id,
       platform: 'instagram',
       handle: mockHandle,

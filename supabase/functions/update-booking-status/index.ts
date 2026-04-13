@@ -53,6 +53,9 @@ serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: securityHeadersFor(req) });
   }
+  if (req.method !== "POST") {
+    return jsonResponse({ error: "method_not_allowed" }, 405, undefined, req);
+  }
 
   try {
     // ─── Auth ──────────────────────────────────────────────────
@@ -219,16 +222,19 @@ serve(async (req) => {
       updateData.completed_at = new Date().toISOString();
     }
 
-    const { error: updateErr } = await supabase
+    // Atomic update — guard against TOCTOU race by requiring current status match
+    const { data: updatedRows, error: updateErr } = await supabase
       .from("bookings")
       .update(updateData)
-      .eq("id", bookingId);
+      .eq("id", bookingId)
+      .eq("status", booking.status)
+      .select("id");
 
-    if (updateErr) {
+    if (updateErr || !updatedRows?.length) {
       console.error("booking update failed:", updateErr);
       return jsonResponse(
-        { error: "update_failed" },
-        500,
+        { error: "update_failed_or_stale" },
+        409,
         undefined,
         req
       );
@@ -273,7 +279,7 @@ serve(async (req) => {
           time: slot?.start_time ?? "",
           bookingCode: booking.booking_code ?? "",
           amount: booking.deposit_amount
-            ? (Number(booking.deposit_amount) / 100).toFixed(2)
+            ? Number(booking.deposit_amount).toFixed(2)
             : "",
         });
       } else if (newStatus === "rejected") {
@@ -282,7 +288,7 @@ serve(async (req) => {
           bookingCode: booking.booking_code ?? "",
           reason: reason ? sanitizeText(reason) : undefined,
           refundAmount: booking.deposit_amount
-            ? (Number(booking.deposit_amount) / 100).toFixed(2)
+            ? Number(booking.deposit_amount).toFixed(2)
             : undefined,
         });
       } else if (newStatus === "completed") {

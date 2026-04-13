@@ -15,6 +15,9 @@ serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
   }
+  if (req.method !== "POST") {
+    return jsonResponse({ error: "method_not_allowed" }, 405);
+  }
 
   try {
     const supabase = createClient(
@@ -131,7 +134,7 @@ serve(async (req) => {
     const paymentIntent = await stripe.paymentIntents.create(
       params as Stripe.PaymentIntentCreateParams,
       {
-        idempotencyKey: `ticket-${ticketTypeId}-${user.id}-${quantity}`,
+        idempotencyKey: `ticket-${ticketTypeId}-${user.id}-${quantity}-${crypto.randomUUID()}`,
       }
     );
 

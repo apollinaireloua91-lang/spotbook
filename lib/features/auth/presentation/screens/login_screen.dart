@@ -17,23 +17,27 @@ class _LoginState {
   const _LoginState({
     this.isLoading = false,
     this.isGoogleLoading = false,
+    this.isAppleLoading = false,
     this.isMagicLinkLoading = false,
     this.obscurePassword = true,
   });
   final bool isLoading;
   final bool isGoogleLoading;
+  final bool isAppleLoading;
   final bool isMagicLinkLoading;
   final bool obscurePassword;
 
   _LoginState copyWith({
     bool? isLoading,
     bool? isGoogleLoading,
+    bool? isAppleLoading,
     bool? isMagicLinkLoading,
     bool? obscurePassword,
   }) =>
       _LoginState(
         isLoading: isLoading ?? this.isLoading,
         isGoogleLoading: isGoogleLoading ?? this.isGoogleLoading,
+        isAppleLoading: isAppleLoading ?? this.isAppleLoading,
         isMagicLinkLoading: isMagicLinkLoading ?? this.isMagicLinkLoading,
         obscurePassword: obscurePassword ?? this.obscurePassword,
       );
@@ -81,6 +85,21 @@ class _LoginNotifier extends Notifier<_LoginState> {
       return profile?['role'] as String?;
     } catch (e) {
       state = state.copyWith(isGoogleLoading: false);
+      rethrow;
+    }
+  }
+
+  Future<String?> signInWithApple() async {
+    state = state.copyWith(isAppleLoading: true);
+    try {
+      final repo = ref.read(authRepositoryProvider);
+      await repo.signInWithApple();
+      await ref.read(userSetupRepositoryProvider).setupNewUser();
+      final profile = await repo.getUserProfile();
+      state = state.copyWith(isAppleLoading: false);
+      return profile?['role'] as String?;
+    } catch (e) {
+      state = state.copyWith(isAppleLoading: false);
       rethrow;
     }
   }
@@ -166,6 +185,17 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   Future<void> _signInWithGoogle() async {
     try {
       final role = await ref.read(_loginProvider.notifier).signInWithGoogle();
+      _navigateByRole(role);
+    } on Exception catch (e) {
+      if (!mounted) return;
+      final msg = e.toString().replaceFirst('Exception: ', '');
+      if (!msg.contains('cancel')) _showError(msg);
+    }
+  }
+
+  Future<void> _signInWithApple() async {
+    try {
+      final role = await ref.read(_loginProvider.notifier).signInWithApple();
       _navigateByRole(role);
     } on Exception catch (e) {
       if (!mounted) return;
@@ -351,15 +381,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 _SocialButton(
                   label: l.authContinueApple,
                   icon: Icons.apple_rounded,
-                  iconColor: AppColors.blanc,
-                  backgroundColor: AppColors.surface,
-                  textColor: AppColors.blanc,
-                  borderColor: AppColors.border,
-                  onPressed: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(l.authAppleComingSoon), backgroundColor: AppColors.surface),
-                    );
-                  },
+                  iconColor: Colors.white,
+                  backgroundColor: Colors.black,
+                  textColor: Colors.white,
+                  borderColor: Colors.grey.shade800,
+                  isLoading: s.isAppleLoading,
+                  onPressed: s.isAppleLoading ? null : _signInWithApple,
                 ),
 
               const SizedBox(height: 32),

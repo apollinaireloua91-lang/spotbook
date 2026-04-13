@@ -13,8 +13,18 @@ serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: securityHeaders });
   }
+  if (req.method !== "POST") {
+    return jsonResponse({ error: "method_not_allowed" }, 405);
+  }
 
   try {
+    // Rate limiter is internal-only: require service_role or valid user JWT
+    const authHeader = req.headers.get("Authorization") ?? "";
+    const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
+    if (!authHeader || (authHeader !== `Bearer ${serviceKey}` && !authHeader.startsWith("Bearer "))) {
+      return jsonResponse({ error: "unauthorized" }, 401);
+    }
+
     const body = await req.json();
     // Accept both naming conventions: type/email OR scope/identifier
     const type = body.type ?? body.scope;

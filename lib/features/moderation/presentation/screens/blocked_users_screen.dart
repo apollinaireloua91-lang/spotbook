@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shimmer/shimmer.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../data/moderation_repository.dart';
 import '../../domain/moderation_models.dart';
@@ -55,6 +56,7 @@ class BlockedUsersScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l = AppLocalizations.of(context)!;
     final state = ref.watch(_blockedProvider);
 
     return Scaffold(
@@ -64,7 +66,7 @@ class BlockedUsersScreen extends ConsumerWidget {
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         leading: Semantics(
-          label: 'Back',
+          label: l.retourLabel,
           child: IconButton(
             icon: Container(
               padding: const EdgeInsets.all(8),
@@ -81,7 +83,7 @@ class BlockedUsersScreen extends ConsumerWidget {
             },
           ),
         ),
-        title: Text('Blocked users',
+        title: Text(l.blockedUsersTitle,
             style: GoogleFonts.sora(color: AppColors.blanc, fontWeight: FontWeight.bold)),
         centerTitle: true,
       ),
@@ -109,7 +111,7 @@ class BlockedUsersScreen extends ConsumerWidget {
                     children: [
                       Icon(Icons.block, color: AppColors.gris, size: 48),
                       const SizedBox(height: 12),
-                      Text('No blocked users',
+                      Text(l.blockedUsersEmpty,
                           style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 15)),
                     ],
                   ),
@@ -166,7 +168,7 @@ class BlockedUsersScreen extends ConsumerWidget {
                                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                                 padding: const EdgeInsets.symmetric(horizontal: 16),
                               ),
-                              child: Text('Unblock',
+                              child: Text(l.blockedUsersUnblock,
                                   style: GoogleFonts.dmSans(color: AppColors.blanc, fontSize: 13, fontWeight: FontWeight.w500)),
                             ),
                           ),

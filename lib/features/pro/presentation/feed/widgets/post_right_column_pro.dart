@@ -10,12 +10,13 @@ import '../../../../../shared/widgets/bookmark_bounce.dart';
 import '../../../../feed/domain/video_model.dart';
 import '../../../../feed/presentation/widgets/share_bottom_sheet.dart';
 
-/// Right action column for the Pro feed.
+/// Right action column for the Pro feed — premium $20M design.
+///
 /// Order: Avatar → Like (with count) → Save (with count) → Share
 /// NO comment button (exclusive to Client).
 ///
-/// Enhanced design: 50px circles, neon glow on active states,
-/// stronger frosted glass, prominent count labels.
+/// Design: 52px glassmorphism circles with animated neon borders,
+/// gradient glow on active states, larger count labels.
 class PostRightColumnPro extends StatelessWidget {
   const PostRightColumnPro({
     super.key,
@@ -42,46 +43,55 @@ class PostRightColumnPro extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        // ── Pro avatar (50px + border + subtle glow) ──
+        // ── Pro avatar (52px + gradient ring + follow badge) ──
         GestureDetector(
           onTap: () => context.push('/pro/${video.proId}'),
           child: SizedBox(
-            width: 50,
-            height: 60,
+            width: 54,
+            height: 64,
             child: Stack(
               clipBehavior: Clip.none,
               children: [
+                // Gradient ring
                 Container(
-                  width: 50,
-                  height: 50,
+                  width: 54,
+                  height: 54,
+                  padding: const EdgeInsets.all(2.5),
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    border: Border.all(color: Colors.white, width: 2.5),
+                    gradient: AppColors.gradientAccent,
                     boxShadow: [
-                      const BoxShadow(
-                        color: Colors.black38,
-                        blurRadius: 12,
-                        spreadRadius: 1,
-                      ),
                       BoxShadow(
                         color: AppColors.violet.withAlpha(50),
                         blurRadius: 16,
                         spreadRadius: -2,
                       ),
+                      const BoxShadow(
+                        color: Colors.black26,
+                        blurRadius: 10,
+                        offset: Offset(0, 2),
+                      ),
                     ],
                   ),
-                  child: CircleAvatar(
-                    radius: 22,
-                    backgroundColor: AppColors.surfaceAlt,
-                    backgroundImage: video.proAvatarUrl != null
-                        ? CachedNetworkImageProvider(video.proAvatarUrl!)
-                        : null,
-                    child: video.proAvatarUrl == null
-                        ? Icon(Icons.person, size: 20, color: AppColors.gris)
-                        : null,
+                  child: Container(
+                    decoration: const BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.black,
+                    ),
+                    padding: const EdgeInsets.all(1.5),
+                    child: CircleAvatar(
+                      radius: 22,
+                      backgroundColor: AppColors.surfaceAlt,
+                      backgroundImage: video.proAvatarUrl != null
+                          ? CachedNetworkImageProvider(video.proAvatarUrl!)
+                          : null,
+                      child: video.proAvatarUrl == null
+                          ? Icon(Icons.person, size: 20, color: AppColors.gris)
+                          : null,
+                    ),
                   ),
                 ),
-                // "+" follow badge — gradient accent
+                // "+" follow badge — elevated neon pill
                 if (!video.isFollowed)
                   Positioned(
                     bottom: 0,
@@ -94,18 +104,18 @@ class PostRightColumnPro extends StatelessWidget {
                           onToggleFollow?.call();
                         },
                         child: Container(
-                          width: 22,
-                          height: 22,
+                          width: 24,
+                          height: 24,
                           decoration: BoxDecoration(
                             gradient: AppColors.gradientAccent,
                             shape: BoxShape.circle,
                             border:
-                                Border.all(color: Colors.white, width: 2),
+                                Border.all(color: Colors.white, width: 2.5),
                             boxShadow: [
                               BoxShadow(
-                                color: AppColors.violet.withAlpha(100),
-                                blurRadius: 8,
-                                spreadRadius: -1,
+                                color: AppColors.violet.withAlpha(120),
+                                blurRadius: 10,
+                                spreadRadius: -2,
                               ),
                             ],
                           ),
@@ -119,11 +129,11 @@ class PostRightColumnPro extends StatelessWidget {
             ),
           ),
         ),
-        const SizedBox(height: 20),
+        const SizedBox(height: 22),
 
         // ── Like (with count) ──
-        _GlowActionButton(
-          icon: video.isLiked ? Icons.favorite : Icons.favorite_border,
+        _PremiumActionButton(
+          icon: video.isLiked ? Icons.favorite_rounded : Icons.favorite_outline_rounded,
           label: _formatCount(video.likesCount),
           isActive: video.isLiked,
           activeColor: AppColors.rose,
@@ -132,13 +142,13 @@ class PostRightColumnPro extends StatelessWidget {
             onToggleLike();
           },
         ),
-        const SizedBox(height: 18),
+        const SizedBox(height: 20),
 
         // ── Bookmark (BookmarkBounce) ──
         BookmarkBounce(
           isSaved: video.isSaved,
-          child: _GlowActionButton(
-            icon: video.isSaved ? Icons.bookmark : Icons.bookmark_border,
+          child: _PremiumActionButton(
+            icon: video.isSaved ? Icons.bookmark_rounded : Icons.bookmark_outline_rounded,
             label: _formatCount(video.savesCount),
             isActive: video.isSaved,
             activeColor: AppColors.violetClair,
@@ -148,11 +158,11 @@ class PostRightColumnPro extends StatelessWidget {
             },
           ),
         ),
-        const SizedBox(height: 18),
+        const SizedBox(height: 20),
 
         // ── Share ──
-        _GlowActionButton(
-          icon: Icons.share_outlined,
+        _PremiumActionButton(
+          icon: Icons.send_rounded,
           label: '',
           onTap: () {
             showModalBottomSheet(
@@ -167,15 +177,16 @@ class PostRightColumnPro extends StatelessWidget {
   }
 }
 
-/// 50px action button with enhanced frosted glass + neon glow on active state.
+/// 52px premium glassmorphism action button.
 ///
-/// Improvements over the old _BlurActionButton:
-/// - 50px (was 44px) — bigger touch target, more visual weight
-/// - Stronger backdrop blur (14σ vs 10σ) + more opaque bg
-/// - Active state: tinted glass + colored border + outer glow shadow
-/// - Colored count label when active
-class _GlowActionButton extends StatelessWidget {
-  const _GlowActionButton({
+/// Design upgrades:
+/// - 52px (was 50px) with rounded rect shape (radius 18) instead of circle
+/// - Stronger backdrop blur (16σ) + richer glass tinting
+/// - Active state: colored glass tint + animated glowing border + neon shadow
+/// - Icon transitions with scale animation
+/// - Bolder count labels with letter-spacing
+class _PremiumActionButton extends StatelessWidget {
+  const _PremiumActionButton({
     required this.icon,
     required this.label,
     required this.onTap,
@@ -197,55 +208,71 @@ class _GlowActionButton extends StatelessWidget {
         children: [
           Container(
             decoration: BoxDecoration(
-              shape: BoxShape.circle,
+              borderRadius: BorderRadius.circular(18),
               boxShadow: isActive
                   ? [
                       BoxShadow(
-                        color: activeColor.withAlpha(70),
-                        blurRadius: 16,
-                        spreadRadius: -2,
+                        color: activeColor.withAlpha(60),
+                        blurRadius: 18,
+                        spreadRadius: -3,
+                      ),
+                      BoxShadow(
+                        color: activeColor.withAlpha(25),
+                        blurRadius: 30,
+                        spreadRadius: 0,
                       ),
                     ]
                   : [
-                      const BoxShadow(
-                        color: Colors.black26,
-                        blurRadius: 10,
-                        spreadRadius: -2,
+                      BoxShadow(
+                        color: Colors.black.withAlpha(40),
+                        blurRadius: 12,
+                        spreadRadius: -3,
                       ),
                     ],
             ),
-            child: ClipOval(
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(18),
               child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 14, sigmaY: 14),
-                child: Container(
-                  width: 50,
-                  height: 50,
+                filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 300),
+                  curve: Curves.easeOutCubic,
+                  width: 52,
+                  height: 52,
                   decoration: BoxDecoration(
                     color: isActive
-                        ? activeColor.withAlpha(30)
-                        : Colors.black.withAlpha(115),
-                    shape: BoxShape.circle,
+                        ? activeColor.withAlpha(25)
+                        : Colors.black.withAlpha(110),
+                    borderRadius: BorderRadius.circular(18),
                     border: Border.all(
                       color: isActive
-                          ? activeColor.withAlpha(90)
-                          : Colors.white.withAlpha(45),
-                      width: isActive ? 1.5 : 1,
+                          ? activeColor.withAlpha(80)
+                          : Colors.white.withAlpha(35),
+                      width: isActive ? 1.5 : 0.5,
                     ),
                   ),
                   child: Center(
-                    child: Icon(
-                      icon,
-                      color: isActive ? activeColor : Colors.white,
-                      size: 28,
-                      shadows: [
-                        Shadow(
-                          color: isActive
-                              ? activeColor.withAlpha(100)
-                              : Colors.black87,
-                          blurRadius: isActive ? 12 : 8,
-                        ),
-                        const Shadow(color: Colors.black38, blurRadius: 4),
-                      ],
+                    child: AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 200),
+                      transitionBuilder: (child, anim) => ScaleTransition(
+                        scale: anim,
+                        child: child,
+                      ),
+                      child: Icon(
+                        icon,
+                        key: ValueKey('$icon-$isActive'),
+                        color: isActive ? activeColor : Colors.white,
+                        size: 26,
+                        shadows: [
+                          Shadow(
+                            color: isActive
+                                ? activeColor.withAlpha(100)
+                                : Colors.black87,
+                            blurRadius: isActive ? 12 : 6,
+                          ),
+                          const Shadow(color: Colors.black38, blurRadius: 3),
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -253,13 +280,14 @@ class _GlowActionButton extends StatelessWidget {
             ),
           ),
           if (label.isNotEmpty) ...[
-            const SizedBox(height: 4),
+            const SizedBox(height: 5),
             Text(
               label,
               style: TextStyle(
                 color: isActive ? activeColor : Colors.white,
                 fontSize: 12,
                 fontWeight: FontWeight.w700,
+                letterSpacing: 0.3,
                 shadows: const [
                   Shadow(color: Colors.black87, blurRadius: 6),
                   Shadow(color: Colors.black54, blurRadius: 3),

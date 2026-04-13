@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../data/moderation_repository.dart';
 import '../../data/report_notifier.dart';
@@ -26,21 +27,22 @@ void showBlockConfirmDialog(
   required String userId,
   String? userName,
 }) {
+  final l = AppLocalizations.of(context)!;
   showDialog(
     context: context,
     builder: (ctx) => AlertDialog(
       backgroundColor: AppColors.surface,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      title: Text('Bloquer cet utilisateur ?',
+      title: Text(l.blockUserConfirmTitle,
           style: GoogleFonts.sora(color: AppColors.blanc, fontSize: 17, fontWeight: FontWeight.bold)),
       content: Text(
-        '${userName ?? 'Cet utilisateur'} ne pourra plus voir votre profil ni vous contacter.',
+        l.blockUserConfirmMessage(userName ?? l.blockUserDefault),
         style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 14),
       ),
       actions: [
         TextButton(
           onPressed: () => Navigator.of(ctx).pop(),
-          child: Text('Annuler', style: GoogleFonts.dmSans(color: AppColors.gris)),
+          child: Text(l.cancel, style: GoogleFonts.dmSans(color: AppColors.gris)),
         ),
         TextButton(
           onPressed: () async {
@@ -50,13 +52,13 @@ void showBlockConfirmDialog(
             if (context.mounted) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: const Text('Utilisateur bloqué'),
+                  content: Text(l.blockUserBlocked),
                   backgroundColor: AppColors.success,
                 ),
               );
             }
           },
-          child: Text('Bloquer',
+          child: Text(l.block,
               style: GoogleFonts.dmSans(color: AppColors.error, fontWeight: FontWeight.bold)),
         ),
       ],
@@ -69,16 +71,16 @@ class _ReportSheet extends ConsumerWidget {
   final String targetId;
   final String targetType;
 
-  static const _reasons = [
-    'Contenu inapproprié',
-    'Spam ou arnaque',
-    'Harcèlement',
-    'Faux profil',
-    'Autre',
-  ];
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l = AppLocalizations.of(context)!;
+    final reasons = [
+      l.reportReasonInappropriate,
+      l.reportReasonSpam,
+      l.reportReasonHarassment,
+      l.reportReasonFakeProfile,
+      l.reportReasonOther,
+    ];
     final reportState = ref.watch(reportNotifierProvider).asData?.value ?? const ReportState();
 
     return Container(
@@ -107,14 +109,14 @@ class _ReportSheet extends ConsumerWidget {
             ),
           ),
           const SizedBox(height: 20),
-          Text('Signaler',
+          Text(l.report,
               style: GoogleFonts.sora(color: AppColors.blanc, fontSize: 20, fontWeight: FontWeight.bold)),
           const SizedBox(height: 4),
-          Text('Pourquoi signalez-vous ce contenu ?',
+          Text(l.reportWhyReporting,
               style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 14)),
           const SizedBox(height: 16),
-          ...List.generate(_reasons.length, (i) {
-            final reason = _reasons[i];
+          ...List.generate(reasons.length, (i) {
+            final reason = reasons[i];
             final isSelected = reportState.selectedReason == reason;
             return GestureDetector(
               onTap: () {
@@ -161,7 +163,7 @@ class _ReportSheet extends ConsumerWidget {
                           Navigator.of(context).pop();
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: const Text('Signalement envoyé'),
+                              content: Text(l.reportSent),
                               backgroundColor: AppColors.success,
                             ),
                           );
@@ -189,7 +191,7 @@ class _ReportSheet extends ConsumerWidget {
                         strokeWidth: 2,
                       ),
                     )
-                  : Text('Envoyer le signalement',
+                  : Text(l.reportSubmitButton,
                       style: GoogleFonts.dmSans(fontWeight: FontWeight.bold, fontSize: 16)),
             ),
           ),

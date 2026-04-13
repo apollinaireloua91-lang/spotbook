@@ -159,6 +159,34 @@ class _SignUpNotifier extends Notifier<_SignUpState> {
       rethrow;
     }
   }
+
+  Future<String?> signInWithApple(String role) async {
+    state = state.copyWith(isLoading: true);
+    try {
+      final repo = ref.read(authRepositoryProvider);
+      await repo.signInWithApple();
+      await repo.updateUserRole(role);
+      final setupRepo = ref.read(userSetupRepositoryProvider);
+      await setupRepo.setupNewUser();
+
+      if (role == 'pro') {
+        final user = repo.currentUser;
+        final name = user?.userMetadata?['full_name'] as String? ?? 'My Business';
+        await setupRepo.createProProfile(
+          businessName: name,
+          category: 'Other',
+          city: '',
+        );
+      }
+
+      final profile = await repo.getUserProfile();
+      state = state.copyWith(isLoading: false);
+      return profile?['role'] as String?;
+    } catch (e) {
+      state = state.copyWith(isLoading: false);
+      rethrow;
+    }
+  }
 }
 
 final _signUpProvider = NotifierProvider<_SignUpNotifier, _SignUpState>(
@@ -272,6 +300,18 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
   Future<void> _signInWithGoogle() async {
     try {
       await ref.read(_signUpProvider.notifier).signInWithGoogle(widget.role);
+      if (!mounted) return;
+      _navigateToHome();
+    } on Exception catch (e) {
+      if (!mounted) return;
+      final msg = e.toString().replaceFirst('Exception: ', '');
+      if (!msg.contains('cancel')) _showError(msg);
+    }
+  }
+
+  Future<void> _signInWithApple() async {
+    try {
+      await ref.read(_signUpProvider.notifier).signInWithApple(widget.role);
       if (!mounted) return;
       _navigateToHome();
     } on Exception catch (e) {
@@ -418,6 +458,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
               ref.read(_signUpProvider.notifier).toggleObscureConfirm,
           onNext: _nextStep,
           onGoogleSignIn: _signInWithGoogle,
+          onAppleSignIn: _signInWithApple,
           isLoading: s.isLoading,
         ),
         _Step2ClientProfile(
@@ -457,6 +498,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
               ref.read(_signUpProvider.notifier).toggleObscureConfirm,
           onNext: _nextStep,
           onGoogleSignIn: _signInWithGoogle,
+          onAppleSignIn: _signInWithApple,
           isLoading: s.isLoading,
         ),
         _Step2ProProfile(
@@ -505,6 +547,7 @@ class _Step1EmailPassword extends StatelessWidget {
     required this.onToggleConfirm,
     required this.onNext,
     required this.onGoogleSignIn,
+    required this.onAppleSignIn,
     required this.isLoading,
   });
 
@@ -518,6 +561,7 @@ class _Step1EmailPassword extends StatelessWidget {
   final VoidCallback onToggleConfirm;
   final VoidCallback onNext;
   final VoidCallback onGoogleSignIn;
+  final VoidCallback onAppleSignIn;
   final bool isLoading;
 
   @override
@@ -587,23 +631,11 @@ class _Step1EmailPassword extends StatelessWidget {
                 width: double.infinity,
                 height: 56,
                 child: OutlinedButton(
-                  onPressed: isLoading
-                      ? null
-                      : () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(l.authAppleComingSoon),
-                              backgroundColor: AppColors.surface,
-                              behavior: SnackBarBehavior.floating,
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12)),
-                            ),
-                          );
-                        },
+                  onPressed: isLoading ? null : onAppleSignIn,
                   style: OutlinedButton.styleFrom(
-                    backgroundColor: AppColors.surface,
-                    foregroundColor: AppColors.blanc,
-                    side: BorderSide(color: AppColors.border),
+                    backgroundColor: Colors.black,
+                    foregroundColor: Colors.white,
+                    side: BorderSide(color: Colors.grey.shade800),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(14),
                     ),
@@ -611,15 +643,15 @@ class _Step1EmailPassword extends StatelessWidget {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.apple_rounded,
-                          size: 24, color: AppColors.blanc),
+                      const Icon(Icons.apple_rounded,
+                          size: 24, color: Colors.white),
                       const SizedBox(width: 10),
                       Text(
                         l.authContinueApple,
                         style: GoogleFonts.dmSans(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
-                          color: AppColors.blanc,
+                          color: Colors.white,
                         ),
                       ),
                     ],

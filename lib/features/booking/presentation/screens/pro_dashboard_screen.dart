@@ -95,22 +95,36 @@ class _PremiumGreetingHeader extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Row(
         children: [
-          // Avatar with gradient ring
+          // Premium avatar with gradient ring + glow
           Container(
-            padding: const EdgeInsets.all(2),
+            padding: const EdgeInsets.all(2.5),
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               gradient: AppColors.gradientAccent,
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.violet.withAlpha(30),
+                  blurRadius: 16,
+                  spreadRadius: -2,
+                ),
+              ],
             ),
-            child: CircleAvatar(
-              radius: 24,
-              backgroundColor: AppColors.fond,
-              backgroundImage: avatarUrl != null
-                  ? CachedNetworkImageProvider(avatarUrl!)
-                  : null,
-              child: avatarUrl == null
-                  ? Icon(Icons.person, color: AppColors.gris, size: 24)
-                  : null,
+            child: Container(
+              padding: const EdgeInsets.all(1.5),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: AppColors.fond,
+              ),
+              child: CircleAvatar(
+                radius: 24,
+                backgroundColor: AppColors.surfaceAlt,
+                backgroundImage: avatarUrl != null
+                    ? CachedNetworkImageProvider(avatarUrl!)
+                    : null,
+                child: avatarUrl == null
+                    ? Icon(Icons.person, color: AppColors.gris, size: 24)
+                    : null,
+              ),
             ),
           ),
           const SizedBox(width: 14),
@@ -121,19 +135,20 @@ class _PremiumGreetingHeader extends StatelessWidget {
                 Text(
                   _greeting(l),
                   style: GoogleFonts.dmSans(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w500,
                     color: AppColors.gris,
+                    letterSpacing: 0.2,
                   ),
                 ),
-                const SizedBox(height: 2),
+                const SizedBox(height: 3),
                 Text(
                   name ?? 'Pro',
                   style: GoogleFonts.sora(
-                    fontSize: 22,
+                    fontSize: 24,
                     fontWeight: FontWeight.w700,
                     color: AppColors.blanc,
-                    letterSpacing: -0.3,
+                    letterSpacing: -0.5,
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -165,12 +180,24 @@ class _HeaderActionButton extends StatelessWidget {
         onTap();
       },
       child: Container(
-        width: 42,
-        height: 42,
+        width: 44,
+        height: 44,
         decoration: BoxDecoration(
           color: AppColors.surface,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: AppColors.border),
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(
+            color: AppColors.border,
+            width: 0.5,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.isDark
+                  ? AppColors.violet.withAlpha(10)
+                  : Colors.black.withAlpha(6),
+              blurRadius: 12,
+              offset: const Offset(0, 2),
+            ),
+          ],
         ),
         child: Icon(icon, color: AppColors.blanc, size: 20),
       ),
@@ -277,20 +304,28 @@ class _PremiumStatCard extends StatelessWidget {
     );
 
     return Container(
-      width: 155,
+      width: 160,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: gradientColors[0].withAlpha(30),
+          color: gradientColors[0].withAlpha(35),
+          width: 0.5,
         ),
         boxShadow: [
           BoxShadow(
-            color: gradientColors[0].withAlpha(10),
-            blurRadius: 20,
-            offset: const Offset(0, 4),
+            color: gradientColors[0].withAlpha(15),
+            blurRadius: 24,
+            offset: const Offset(0, 6),
+            spreadRadius: -4,
           ),
+          if (AppColors.isDark)
+            BoxShadow(
+              color: gradientColors[0].withAlpha(8),
+              blurRadius: 40,
+              spreadRadius: 0,
+            ),
         ],
       ),
       child: Column(
@@ -492,34 +527,61 @@ class _PremiumActionButtonState extends State<_PremiumActionButton>
             child: child,
           ),
           child: Container(
-            padding: const EdgeInsets.symmetric(vertical: 16),
+            padding: const EdgeInsets.symmetric(vertical: 18),
             decoration: BoxDecoration(
               color: AppColors.surface,
-              borderRadius: BorderRadius.circular(14),
+              borderRadius: BorderRadius.circular(16),
               border: Border.all(
-                color: widget.gradientColors[0].withAlpha(25),
+                color: widget.gradientColors[0].withAlpha(20),
+                width: 0.5,
               ),
+              boxShadow: [
+                BoxShadow(
+                  color: widget.gradientColors[0].withAlpha(8),
+                  blurRadius: 16,
+                  offset: const Offset(0, 4),
+                ),
+              ],
             ),
             child: Column(
               children: [
-                // Gradient icon
-                ShaderMask(
-                  shaderCallback: (rect) => LinearGradient(
-                    colors: widget.gradientColors,
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ).createShader(rect),
-                  child: Icon(widget.icon, color: AppColors.blanc, size: 24),
+                // Gradient icon with background pill
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    gradient: LinearGradient(
+                      colors: [
+                        widget.gradientColors[0].withAlpha(22),
+                        widget.gradientColors[1].withAlpha(10),
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                  ),
+                  child: ShaderMask(
+                    shaderCallback: (rect) => LinearGradient(
+                      colors: widget.gradientColors,
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ).createShader(rect),
+                    child: Icon(widget.icon, color: AppColors.blanc, size: 22),
+                  ),
                 ),
-                const SizedBox(height: 8),
-                Text(
-                  widget.label,
-                  textAlign: TextAlign.center,
-                  style: GoogleFonts.dmSans(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w500,
-                    height: 1.3,
-                    color: AppColors.grisClair,
+                const SizedBox(height: 10),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                  child: Text(
+                    widget.label,
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.dmSans(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w500,
+                      height: 1.3,
+                      color: AppColors.grisClair,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
               ],

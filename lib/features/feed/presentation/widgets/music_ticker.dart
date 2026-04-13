@@ -1,4 +1,8 @@
+import 'dart:math';
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../shared/theme/app_colors.dart';
 
@@ -14,17 +18,32 @@ class MusicTicker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        _SpinningDisc(),
-        const SizedBox(width: 8),
-        Expanded(
-          child: SizedBox(
-            height: 16,
-            child: _ScrollingText(text: '$trackTitle — $trackArtist'),
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(20),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+          decoration: BoxDecoration(
+            color: Colors.black.withAlpha(80),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: Colors.white.withAlpha(12)),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _SpinningDisc(),
+              const SizedBox(width: 8),
+              Flexible(
+                child: SizedBox(
+                  height: 16,
+                  child: _ScrollingText(text: '$trackTitle — $trackArtist'),
+                ),
+              ),
+            ],
           ),
         ),
-      ],
+      ),
     );
   }
 }
@@ -68,15 +87,24 @@ class _ScrollingTextState extends State<_ScrollingText>
   @override
   Widget build(BuildContext context) {
     final display = '${widget.text}     ${widget.text}     ';
-    return SingleChildScrollView(
-      controller: _scrollController,
-      scrollDirection: Axis.horizontal,
-      physics: const NeverScrollableScrollPhysics(),
-      child: Text(
-        display,
-        style: TextStyle(
-          color: AppColors.blanc.withAlpha(179),
-          fontSize: 10,
+    return ShaderMask(
+      shaderCallback: (bounds) => const LinearGradient(
+        colors: [Colors.transparent, Colors.white, Colors.white, Colors.transparent],
+        stops: [0.0, 0.08, 0.92, 1.0],
+      ).createShader(bounds),
+      blendMode: BlendMode.dstIn,
+      child: SingleChildScrollView(
+        controller: _scrollController,
+        scrollDirection: Axis.horizontal,
+        physics: const NeverScrollableScrollPhysics(),
+        child: Text(
+          display,
+          style: GoogleFonts.dmSans(
+            color: Colors.white.withAlpha(200),
+            fontSize: 11,
+            fontWeight: FontWeight.w500,
+            letterSpacing: 0.2,
+          ),
         ),
       ),
     );
@@ -112,22 +140,36 @@ class _SpinningDiscState extends State<_SpinningDisc>
     return AnimatedBuilder(
       animation: _controller,
       builder: (_, child) => Transform.rotate(
-        angle: _controller.value * 2 * 3.14159,
+        angle: _controller.value * 2 * pi,
         child: child,
       ),
       child: Container(
-        width: 28,
-        height: 28,
+        width: 26,
+        height: 26,
         decoration: BoxDecoration(
-          color: AppColors.surfaceAlt,
+          gradient: AppColors.gradientAccent,
           shape: BoxShape.circle,
-          border: Border.all(color: AppColors.border, width: 1.5),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.violet.withAlpha(40),
+              blurRadius: 8,
+              spreadRadius: -2,
+            ),
+          ],
         ),
-        child: Center(
-          child: Icon(
-            Icons.music_note,
-            color: AppColors.blanc,
-            size: 14,
+        child: Container(
+          margin: const EdgeInsets.all(3),
+          decoration: BoxDecoration(
+            color: Colors.black,
+            shape: BoxShape.circle,
+            border: Border.all(color: Colors.white.withAlpha(30), width: 0.5),
+          ),
+          child: const Center(
+            child: Icon(
+              Icons.music_note_rounded,
+              color: Colors.white,
+              size: 12,
+            ),
           ),
         ),
       ),

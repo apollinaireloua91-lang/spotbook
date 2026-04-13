@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS soumissions (
   total_cents     INTEGER NOT NULL DEFAULT 0 CHECK (total_cents >= 0),
 
   -- Sharing
-  share_token   TEXT UNIQUE NOT NULL DEFAULT encode(gen_random_bytes(16), 'hex'),
+  share_token   TEXT UNIQUE NOT NULL DEFAULT encode(extensions.gen_random_bytes(16), 'hex'),
   client_email  TEXT,
   client_phone  TEXT,
   client_name   TEXT,

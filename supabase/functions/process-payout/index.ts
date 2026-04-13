@@ -13,6 +13,9 @@ serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { status: 200, headers: securityHeadersFor(req) });
   }
+  if (req.method !== "POST") {
+    return jsonResponse({ error: "method_not_allowed" }, 405, undefined, req);
+  }
 
   try {
     const forbidden = assertServiceRoleOnly(req);
@@ -88,10 +91,12 @@ serve(async (req) => {
       { idempotencyKey: `payout-${booking.id}` }
     );
 
+    // Atomic update — only set transfer_id if still null (TOCTOU guard)
     await supabase
       .from("bookings")
       .update({ transfer_id: transfer.id })
-      .eq("id", bookingId);
+      .eq("id", bookingId)
+      .is("transfer_id", null);
     await supabase.rpc("log_audit_action", {
       p_user_id: booking.pro_id,
       p_action: "pro_payout_sent",

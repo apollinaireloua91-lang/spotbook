@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shimmer/shimmer.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/utils/analytics_service.dart';
 import '../../data/review_repository.dart';
@@ -83,6 +84,7 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     final state = ref.watch(_reviewProvider);
 
     if (state.submitted) {
@@ -96,10 +98,10 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
               children: [
                 Icon(Icons.check_circle, color: AppColors.success, size: 64),
                 const SizedBox(height: 20),
-                Text('Merci pour votre avis !',
+                Text(l.reviewThankYou,
                     style: GoogleFonts.sora(color: AppColors.blanc, fontSize: 22, fontWeight: FontWeight.bold)),
                 const SizedBox(height: 8),
-                Text('Votre retour aide les autres utilisateurs.',
+                Text(l.reviewFeedbackHelps,
                     style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 15), textAlign: TextAlign.center),
                 const SizedBox(height: 32),
                 SizedBox(
@@ -115,7 +117,7 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
                       foregroundColor: AppColors.fond,
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     ),
-                    child: Text('Terminé', style: GoogleFonts.dmSans(fontWeight: FontWeight.bold, fontSize: 16)),
+                    child: Text(l.reviewDone, style: GoogleFonts.dmSans(fontWeight: FontWeight.bold, fontSize: 16)),
                   ),
                 ),
               ],
@@ -132,7 +134,7 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         leading: Semantics(
-          label: 'Retour',
+          label: l.retourLabel,
           child: IconButton(
             icon: Container(
               padding: const EdgeInsets.all(8),
@@ -149,7 +151,7 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
             },
           ),
         ),
-        title: Text('Laisser un avis',
+        title: Text(l.reviewLeaveReview,
             style: GoogleFonts.sora(color: AppColors.blanc, fontWeight: FontWeight.bold)),
         centerTitle: true,
       ),
@@ -163,7 +165,7 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
                   style: TextStyle(color: AppColors.gris, fontSize: 15)),
               const SizedBox(height: 8),
             ],
-            Text('Comment s\'est passé votre rendez-vous ?',
+            Text(l.reviewHowWasAppointment,
                 style: GoogleFonts.sora(color: AppColors.blanc, fontSize: 20, fontWeight: FontWeight.bold),
                 textAlign: TextAlign.center),
             const SizedBox(height: 32),
@@ -212,7 +214,7 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
                       maxLength: 300,
                       style: TextStyle(color: AppColors.blanc, fontSize: 15),
                       decoration: InputDecoration(
-                        hintText: 'Partagez votre expérience (optionnel)',
+                        hintText: l.reviewShareExperience,
                         hintStyle: TextStyle(color: AppColors.gris),
                         filled: true,
                         fillColor: AppColors.surface,
@@ -269,7 +271,7 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
                           ),
                         ),
                       )
-                    : Text('Envoyer', style: GoogleFonts.dmSans(fontWeight: FontWeight.bold, fontSize: 16)),
+                    : Text(l.reviewSubmit, style: GoogleFonts.dmSans(fontWeight: FontWeight.bold, fontSize: 16)),
               ),
             ),
             const SizedBox(height: 32),
@@ -280,19 +282,20 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
   }
 
   String _ratingLabel(int rating) {
+    final l = AppLocalizations.of(context)!;
     switch (rating) {
       case 1:
-        return 'Décevant';
+        return l.reviewRating1;
       case 2:
-        return 'Moyen';
+        return l.reviewRating2;
       case 3:
-        return 'Bien';
+        return l.reviewRating3;
       case 4:
-        return 'Très bien';
+        return l.reviewRating4;
       case 5:
-        return 'Excellent';
+        return l.reviewRating5;
       default:
-        return 'Appuyez pour noter';
+        return l.reviewTapToRate;
     }
   }
 }

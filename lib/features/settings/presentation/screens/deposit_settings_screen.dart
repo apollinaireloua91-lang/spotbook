@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../../profile/presentation/notifiers/pro_settings_notifier.dart';
 
@@ -28,6 +29,7 @@ class _DepositSettingsScreenState extends ConsumerState<DepositSettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     final settingsAsync = ref.watch(proSettingsProvider);
 
     // Initialize local state from loaded snapshot (once)
@@ -52,7 +54,7 @@ class _DepositSettingsScreenState extends ConsumerState<DepositSettingsScreen> {
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         leading: Semantics(
-          label: 'Back',
+          label: l.retourLabel,
           child: IconButton(
             icon: Container(
               padding: const EdgeInsets.all(8),
@@ -71,7 +73,7 @@ class _DepositSettingsScreenState extends ConsumerState<DepositSettingsScreen> {
           ),
         ),
         title: Text(
-          'Paramètres d\'acompte',
+          l.depositSettingsTitle,
           style: GoogleFonts.sora(
             color: AppColors.blanc,
             fontWeight: FontWeight.w700,
@@ -92,7 +94,7 @@ class _DepositSettingsScreenState extends ConsumerState<DepositSettingsScreen> {
                     ),
                   )
                 : Text(
-                    'Enregistrer',
+                    l.save,
                     style: GoogleFonts.dmSans(
                       color: AppColors.violet,
                       fontWeight: FontWeight.w700,
@@ -106,7 +108,7 @@ class _DepositSettingsScreenState extends ConsumerState<DepositSettingsScreen> {
         loading: () =>
             Center(child: CircularProgressIndicator(color: AppColors.violet)),
         error: (e, _) => Center(
-          child: Text('Erreur : $e',
+          child: Text('${l.error} : $e',
               style: GoogleFonts.dmSans(color: AppColors.gris)),
         ),
         data: (_) => SingleChildScrollView(
@@ -129,7 +131,7 @@ class _DepositSettingsScreenState extends ConsumerState<DepositSettingsScreen> {
                         color: AppColors.violet, size: 36),
                     const SizedBox(height: 12),
                     Text(
-                      'Exiger un acompte à la réservation',
+                      l.depositRequireOnBooking,
                       style: GoogleFonts.sora(
                         color: AppColors.blanc,
                         fontWeight: FontWeight.w700,
@@ -138,7 +140,7 @@ class _DepositSettingsScreenState extends ConsumerState<DepositSettingsScreen> {
                     ),
                     const SizedBox(height: 6),
                     Text(
-                      'Demandez aux clients de payer un pourcentage du prix du service lors de la réservation. Le montant restant est perçu le jour du rendez-vous.',
+                      l.depositExplanation,
                       style: GoogleFonts.dmSans(
                         color: AppColors.gris,
                         fontSize: 12,
@@ -166,7 +168,7 @@ class _DepositSettingsScreenState extends ConsumerState<DepositSettingsScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Exiger un acompte',
+                            l.depositRequire,
                             style: GoogleFonts.dmSans(
                               color: AppColors.blanc,
                               fontWeight: FontWeight.w700,
@@ -176,8 +178,8 @@ class _DepositSettingsScreenState extends ConsumerState<DepositSettingsScreen> {
                           const SizedBox(height: 4),
                           Text(
                             _depositEnabled
-                                ? 'Les clients doivent verser un acompte pour confirmer leur réservation'
-                                : 'Les clients réservent sans payer à l\'avance',
+                                ? l.depositEnabledDescription
+                                : l.depositDisabledDescription,
                             style: GoogleFonts.dmSans(
                               color: AppColors.gris,
                               fontSize: 12,
@@ -207,7 +209,7 @@ class _DepositSettingsScreenState extends ConsumerState<DepositSettingsScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Pourcentage d\'acompte',
+                        l.depositPercentageTitle,
                         style: GoogleFonts.sora(
                           color: AppColors.blanc,
                           fontWeight: FontWeight.w700,
@@ -216,7 +218,7 @@ class _DepositSettingsScreenState extends ConsumerState<DepositSettingsScreen> {
                       ),
                       const SizedBox(height: 6),
                       Text(
-                        'Choisissez le pourcentage que les clients paient à la réservation.',
+                        l.depositPercentageDescription,
                         style: GoogleFonts.dmSans(
                           color: AppColors.gris,
                           fontSize: 12,
@@ -289,7 +291,7 @@ class _DepositSettingsScreenState extends ConsumerState<DepositSettingsScreen> {
 
                       // ── Quick select buttons ──
                       Text(
-                        'Sélection rapide',
+                        l.depositQuickSelect,
                         style: GoogleFonts.dmSans(
                           color: AppColors.gris,
                           fontSize: 12,
@@ -346,7 +348,7 @@ class _DepositSettingsScreenState extends ConsumerState<DepositSettingsScreen> {
 
                       // ── Minimum deposit ──
                       Text(
-                        'Acompte minimum',
+                        l.depositMinimumTitle,
                         style: GoogleFonts.sora(
                           color: AppColors.blanc,
                           fontWeight: FontWeight.w700,
@@ -355,7 +357,7 @@ class _DepositSettingsScreenState extends ConsumerState<DepositSettingsScreen> {
                       ),
                       const SizedBox(height: 6),
                       Text(
-                        'Même si le pourcentage donne un montant faible, l\'acompte ne sera jamais inférieur à ce montant.',
+                        l.depositMinimumDescription,
                         style: GoogleFonts.dmSans(
                           color: AppColors.gris,
                           fontSize: 12,
@@ -413,7 +415,7 @@ class _DepositSettingsScreenState extends ConsumerState<DepositSettingsScreen> {
                               ),
                             ),
                             Text(
-                              'CAD minimum',
+                              l.depositCadMinimum,
                               style: GoogleFonts.dmSans(
                                 color: AppColors.grisInactif,
                                 fontSize: 12,
@@ -426,7 +428,7 @@ class _DepositSettingsScreenState extends ConsumerState<DepositSettingsScreen> {
 
                       // ── Live preview ──
                       Text(
-                        'Aperçu',
+                        l.depositPreviewTitle,
                         style: GoogleFonts.sora(
                           color: AppColors.blanc,
                           fontWeight: FontWeight.w700,
@@ -435,7 +437,7 @@ class _DepositSettingsScreenState extends ConsumerState<DepositSettingsScreen> {
                       ),
                       const SizedBox(height: 6),
                       Text(
-                        'Voici ce que vos clients verront pour un service à \$${examplePrice.toStringAsFixed(0)} :',
+                        l.depositPreviewDescription(examplePrice.toStringAsFixed(0)),
                         style: GoogleFonts.dmSans(
                           color: AppColors.gris,
                           fontSize: 12,
@@ -456,7 +458,7 @@ class _DepositSettingsScreenState extends ConsumerState<DepositSettingsScreen> {
                         child: Column(
                           children: [
                             _PreviewRow(
-                              label: 'Total du service',
+                              label: l.depositServiceTotal,
                               value:
                                   '\$${examplePrice.toStringAsFixed(2)}',
                             ),
@@ -465,13 +467,13 @@ class _DepositSettingsScreenState extends ConsumerState<DepositSettingsScreen> {
                             const SizedBox(height: 8),
                             _PreviewRow(
                               label:
-                                  'Acompte (${_depositPercentage.toInt()}%)',
+                                  l.depositAmountLabel(_depositPercentage.toInt()),
                               value:
                                   '\$${exampleDeposit.toStringAsFixed(2)}',
                             ),
                             const SizedBox(height: 4),
                             _PreviewRow(
-                              label: 'Frais de service',
+                              label: l.depositServiceFee,
                               value: '\$2.50',
                               isSmall: true,
                             ),
@@ -483,7 +485,7 @@ class _DepositSettingsScreenState extends ConsumerState<DepositSettingsScreen> {
                                   MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
-                                  'Le client paie maintenant',
+                                  l.depositClientPaysNow,
                                   style: GoogleFonts.dmSans(
                                     color: AppColors.violet,
                                     fontWeight: FontWeight.w700,
@@ -515,7 +517,7 @@ class _DepositSettingsScreenState extends ConsumerState<DepositSettingsScreen> {
                                   const SizedBox(width: 6),
                                   Expanded(
                                     child: Text(
-                                      'Reste \$${exampleRemaining.toStringAsFixed(2)} à payer le jour du rendez-vous',
+                                      l.depositRemainingOnDay(exampleRemaining.toStringAsFixed(2)),
                                       style: GoogleFonts.dmSans(
                                         color: AppColors.violet,
                                         fontSize: 11,
@@ -562,7 +564,7 @@ class _DepositSettingsScreenState extends ConsumerState<DepositSettingsScreen> {
                                     ),
                                   )
                                 : Text(
-                                    'Enregistrer les paramètres d\'acompte',
+                                    l.depositSaveSettings,
                                     style: GoogleFonts.dmSans(
                                       color: Colors.white,
                                       fontWeight: FontWeight.w700,
@@ -596,10 +598,11 @@ class _DepositSettingsScreenState extends ConsumerState<DepositSettingsScreen> {
       });
 
       if (mounted) {
+        final l = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              'Paramètres d\'acompte enregistrés !',
+              l.depositSettingsSaved,
               style: GoogleFonts.dmSans(color: Colors.white),
             ),
             backgroundColor: AppColors.violet,
@@ -609,9 +612,10 @@ class _DepositSettingsScreenState extends ConsumerState<DepositSettingsScreen> {
       }
     } catch (e) {
       if (mounted) {
+        final l = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Erreur : $e',
+            content: Text('${l.error} : $e',
                 style: GoogleFonts.dmSans(color: Colors.white)),
             backgroundColor: AppColors.error,
           ),

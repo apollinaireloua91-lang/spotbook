@@ -17,7 +17,6 @@ serve(async (req) => {
 
   try {
     const authHeader = req.headers.get("Authorization");
-    console.log("[onboarding] authHeader present:", !!authHeader, authHeader?.substring(0, 20));
     if (!authHeader) {
       return jsonResponse({ error: "unauthorized", reason: "no_auth_header" }, 401, undefined, req);
     }
@@ -40,9 +39,8 @@ serve(async (req) => {
     });
 
     const { data: authData, error: authError } = await supabaseAuth.auth.getUser();
-    console.log("[onboarding] getUser result:", { userId: authData?.user?.id, error: authError?.message });
     if (authError || !authData?.user) {
-      return jsonResponse({ error: "unauthorized", reason: "getUser_failed", detail: authError?.message }, 401, undefined, req);
+      return jsonResponse({ error: "unauthorized" }, 401, undefined, req);
     }
     const user = authData.user;
 
