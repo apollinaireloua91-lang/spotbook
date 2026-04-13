@@ -10,7 +10,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../../shared/theme/app_colors.dart';
 import '../../../../../shared/theme/theme_mode_notifier.dart';
 import '../cubit/client_search_cubit.dart';
-import 'pro_list_card.dart';
+import '../models/search_models.dart';
 
 // ── Trending videos from all pros ──
 final _clientTrendingVideosProvider =
@@ -44,68 +44,43 @@ final _clientTrendingEventsProvider =
   return (data as List).cast<Map<String, dynamic>>();
 });
 
-class SearchListView extends StatefulWidget {
+class SearchListView extends StatelessWidget {
   const SearchListView({super.key});
-
-  @override
-  State<SearchListView> createState() => _SearchListViewState();
-}
-
-class _SearchListViewState extends State<SearchListView>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _staggerCtrl;
-
-  @override
-  void initState() {
-    super.initState();
-    _staggerCtrl = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 800),
-    )..forward();
-  }
-
-  @override
-  void dispose() {
-    _staggerCtrl.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<ClientSearchCubit, ClientSearchState>(
       builder: (context, state) {
-        // Show trending content even when no search results
         final hasSearchResults = state.pros.isNotEmpty || state.events.isNotEmpty;
         final isSearching = state.query.isNotEmpty;
 
         return ListView(
           padding: const EdgeInsets.only(top: 8, bottom: 100),
           children: [
-            // ── Section: Pros près de toi ──
+            // ── Section: Pros près de toi (horizontal scroll) ──
             if (state.pros.isNotEmpty) ...[
               const _SectionTitle(title: 'Près de toi'),
-              const SizedBox(height: 8),
-              ...List.generate(state.pros.length, (index) {
-                final delay = (index * 0.08).clamp(0.0, 0.6);
-                return _StaggeredItem(
-                  animation: _staggerCtrl,
-                  delay: delay,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 4,
-                    ),
-                    child: ProListCard(
-                      pro: state.pros[index],
+              const SizedBox(height: 12),
+              SizedBox(
+                height: 190,
+                child: ListView.separated(
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  itemCount: state.pros.length,
+                  separatorBuilder: (_, __) => const SizedBox(width: 12),
+                  itemBuilder: (context, index) {
+                    final pro = state.pros[index];
+                    return _HorizontalProCard(
+                      pro: pro,
                       onTap: () {
                         context
                             .read<ClientSearchCubit>()
-                            .openDetailPanel(state.pros[index].id);
+                            .openDetailPanel(pro.id);
                       },
-                    ),
-                  ),
-                );
-              }),
+                    );
+                  },
+                ),
+              ),
             ],
 
             // ── Empty search state ──
@@ -718,6 +693,172 @@ class _ClientVideoCard extends StatelessWidget {
   }
 }
 
+// ═════════════════════════════════════════════════════════════════════════════
+// HORIZONTAL PRO CARD — used in "Près de toi" scroll
+// ═════════════════════════════════════════════════════════════════════════════
+
+class _HorizontalProCard extends StatelessWidget {
+  const _HorizontalProCard({required this.pro, required this.onTap});
+
+  final ProSearchResult pro;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final catColor = categoryColor(pro.category);
+
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 150,
+        decoration: BoxDecoration(
+          color: AppColors.surface,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: AppColors.border, width: 0.5),
+          boxShadow: AppColors.cardShadow,
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: Column(
+          children: [
+            // ── Top: avatar on gradient background ──
+            Container(
+              height: 84,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [catColor.withAlpha(50), catColor.withAlpha(20)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+              ),
+              child: Center(
+                child: Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    Container(
+                      width: 50,
+                      height: 50,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(14),
+                        gradient: LinearGradient(
+                          colors: [catColor, catColor.withAlpha(160)],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                      ),
+                      child: pro.avatarUrl != null && pro.avatarUrl!.isNotEmpty
+                          ? ClipRRect(
+                              borderRadius: BorderRadius.circular(14),
+                              child: CachedNetworkImage(
+                                imageUrl: pro.avatarUrl!,
+                                fit: BoxFit.cover,
+                                width: 50,
+                                height: 50,
+                                placeholder: (_, __) => _ProCardInitial(name: pro.name),
+                                errorWidget: (_, __, ___) => _ProCardInitial(name: pro.name),
+                              ),
+                            )
+                          : _ProCardInitial(name: pro.name),
+                    ),
+                    if (pro.online)
+                      Positioned(
+                        right: -2,
+                        bottom: -2,
+                        child: Container(
+                          width: 14,
+                          height: 14,
+                          decoration: BoxDecoration(
+                            color: AppColors.success,
+                            shape: BoxShape.circle,
+                            border: Border.all(color: AppColors.surface, width: 2),
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ),
+            // ── Bottom: name, category, rating, distance ──
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(10, 8, 10, 8),
+                child: Column(
+                  children: [
+                    Text(
+                      pro.name,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.dmSans(
+                        color: AppColors.blanc,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      '${categoryEmoji(pro.category)} ${pro.category}',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.dmSans(
+                        color: AppColors.gris,
+                        fontSize: 10,
+                      ),
+                    ),
+                    const Spacer(),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          '\u2B50 ${pro.rating}',
+                          style: GoogleFonts.dmSans(
+                            color: AppColors.ratingAmber,
+                            fontSize: 10,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          '${pro.distKm} km',
+                          style: GoogleFonts.dmSans(
+                            color: AppColors.violet,
+                            fontSize: 10,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _ProCardInitial extends StatelessWidget {
+  const _ProCardInitial({required this.name});
+  final String name;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Text(
+        name.isNotEmpty ? name[0].toUpperCase() : '?',
+        style: GoogleFonts.sora(
+          color: Colors.white,
+          fontSize: 20,
+          fontWeight: FontWeight.w700,
+        ),
+      ),
+    );
+  }
+}
+
 // ─── Section Title ───────────────────────────────────────────────────
 
 class _SectionTitle extends StatelessWidget {
@@ -741,39 +882,3 @@ class _SectionTitle extends StatelessWidget {
   }
 }
 
-// ─── Staggered FadeSlideUp ───────────────────────────────────────────
-
-class _StaggeredItem extends StatelessWidget {
-  const _StaggeredItem({
-    required this.animation,
-    required this.delay,
-    required this.child,
-  });
-
-  final AnimationController animation;
-  final double delay;
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    final curved = CurvedAnimation(
-      parent: animation,
-      curve: Interval(delay, (delay + 0.3).clamp(0.0, 1.0),
-          curve: Curves.easeOut),
-    );
-
-    return AnimatedBuilder(
-      animation: curved,
-      builder: (context, child) {
-        return Opacity(
-          opacity: curved.value.clamp(0.0, 1.0),
-          child: Transform.translate(
-            offset: Offset(0, 20 * (1 - curved.value)),
-            child: child,
-          ),
-        );
-      },
-      child: child,
-    );
-  }
-}

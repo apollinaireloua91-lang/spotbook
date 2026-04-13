@@ -36,6 +36,11 @@ const _kDarkMapStyle = '''[
   {"featureType":"transit","stylers":[{"visibility":"off"}]}
 ]''';
 
+const _kLightMapStyle = '''[
+  {"featureType":"poi","stylers":[{"visibility":"off"}]},
+  {"featureType":"transit","stylers":[{"visibility":"off"}]}
+]''';
+
 /// Position carte : GPS réel du pro, sinon décal déterministe autour de [anchor] (ville / pas de GPS).
 LatLng _proMapLatLng(ProviderSearchResult pro, LatLng anchor) {
   if (pro.latitude != null && pro.longitude != null) {
@@ -45,6 +50,23 @@ LatLng _proMapLatLng(ProviderSearchResult pro, LatLng anchor) {
   final dx = ((h % 200) - 100) / 3200.0;
   final dy = (((h >> 8) % 200) - 100) / 3200.0;
   return LatLng(anchor.latitude + dx, anchor.longitude + dy);
+}
+
+/// Category → marker color (local to avoid cross-feature import).
+Color _categoryColor(String? category) {
+  if (category == null || category.isEmpty) return AppColors.violet;
+  final key = category.toLowerCase();
+  if (key.contains('barb') || key.contains('coiff')) return const Color(0xFFFF6B35);
+  if (key.contains('nail') || key.contains('manu')) return const Color(0xFFE91E90);
+  if (key.contains('mass')) return const Color(0xFFEC4899);
+  if (key.contains('esth') || key.contains('beaut')) return AppColors.rose;
+  if (key.contains('coach') || key.contains('fit')) return AppColors.success;
+  if (key.contains('photo')) return AppColors.violet;
+  if (key.contains('traiteur') || key.contains('cuisine')) return AppColors.catering;
+  if (key.contains('tattoo') || key.contains('tatou')) return AppColors.error;
+  if (key.contains('dj') || key.contains('musiq')) return const Color(0xFF8B5CF6);
+  if (key.contains('mode')) return AppColors.roseClair;
+  return AppColors.violet;
 }
 
 class DiscoverSearchMapScreen extends ConsumerStatefulWidget {
@@ -123,6 +145,7 @@ class _DiscoverSearchMapScreenState
       if (_markerIcons.containsKey(p.id)) continue;
       _makeMarkerIcon(
         category: p.category,
+        displayName: p.displayName,
         isOnline: p.isOnline ?? false,
       ).then((icon) {
         if (mounted) setState(() => _markerIcons[p.id] = icon);
@@ -132,52 +155,79 @@ class _DiscoverSearchMapScreenState
 
   Future<BitmapDescriptor> _makeMarkerIcon({
     String? category,
+    String? displayName,
     bool isOnline = false,
   }) async {
-    const int px = 80;
+    const int px = 96;
     const double half = px / 2;
-    const double r = half - 4;
+    const double r = half - 6;
 
     final recorder = ui.PictureRecorder();
     final canvas = ui.Canvas(recorder);
 
-    // Background fill
+    final catColor = _categoryColor(category);
+
+    // Drop shadow for depth
     canvas.drawCircle(
-      const ui.Offset(half, half),
-      r,
+      const ui.Offset(half, half + 2),
+      r + 1,
       ui.Paint()
-        ..color = isOnline
-            ? AppColors.success
-            : AppColors.surface,
+        ..color = Colors.black.withAlpha(50)
+        ..maskFilter = const ui.MaskFilter.blur(ui.BlurStyle.normal, 3),
     );
 
-    // White border
+    // Main circle — category color
+    canvas.drawCircle(
+      const ui.Offset(half, half),
+      r,
+      ui.Paint()..color = catColor,
+    );
+
+    // White border ring
     canvas.drawCircle(
       const ui.Offset(half, half),
       r,
       ui.Paint()
-        ..color = AppColors.blanc
+        ..color = Colors.white
         ..style = ui.PaintingStyle.stroke
-        ..strokeWidth = 3.5,
+        ..strokeWidth = 3,
     );
 
-    // Category icon using Material Icons codepoint
-    final iconData = ServiceCategoryIcons.icon(category);
+    // Pro initial (default system font — always available, unlike MaterialIcons)
+    final letter = (displayName != null && displayName.isNotEmpty)
+        ? displayName[0].toUpperCase()
+        : '?';
     final paraBuilder = ui.ParagraphBuilder(
       ui.ParagraphStyle(
         textAlign: ui.TextAlign.center,
-        fontSize: px * 0.38,
-        fontFamily: 'MaterialIcons',
+        fontSize: px * 0.34,
       ),
     )
       ..pushStyle(ui.TextStyle(
-        color: AppColors.blanc,
-        fontFamily: 'MaterialIcons',
+        color: Colors.white,
+        fontWeight: ui.FontWeight.w700,
       ))
-      ..addText(String.fromCharCode(iconData.codePoint));
+      ..addText(letter);
     final para = paraBuilder.build();
     para.layout(ui.ParagraphConstraints(width: px.toDouble()));
     canvas.drawParagraph(para, ui.Offset(0, (px - para.height) / 2));
+
+    // Online indicator dot
+    if (isOnline) {
+      canvas.drawCircle(
+        ui.Offset(px * 0.76, px * 0.24),
+        px * 0.1,
+        ui.Paint()..color = const Color(0xFF22C55E),
+      );
+      canvas.drawCircle(
+        ui.Offset(px * 0.76, px * 0.24),
+        px * 0.1,
+        ui.Paint()
+          ..color = Colors.white
+          ..style = ui.PaintingStyle.stroke
+          ..strokeWidth = 2,
+      );
+    }
 
     final img = await recorder.endRecording().toImage(px, px);
     final bytes = await img.toByteData(format: ui.ImageByteFormat.png);
@@ -313,7 +363,7 @@ class _DiscoverSearchMapScreenState
             markers: markers,
             mapToolbarEnabled: false,
             zoomControlsEnabled: false,
-            style: _kDarkMapStyle,
+            style: AppColors.isDark ? _kDarkMapStyle : _kLightMapStyle,
             onMapCreated: (c) {
               _controller = c;
               if (!_cameraSet) {
