@@ -1401,70 +1401,635 @@ class AppLocalizationsFr extends AppLocalizations {
   String get invalidQrCode =>
       'Ce QR code n\'est pas un billet Spotbook valide.';
 
-  // ═══ Missing getters added ═══
+  @override
+  String balanceOnSite(String amount, String currency) => 'Solde sur place : $amount $currency';
 
   @override
-  String get signIn => 'Se connecter';
+  String blockUserConfirmMessage(String name) => 'Voulez-vous vraiment bloquer $name ?';
 
   @override
-  String get close => 'Fermer';
+  String commissionEstimate(String pct, String commission, String currency, String net) => 'Commission $pct% : $commission $currency — vous recevez $net $currency';
 
   @override
-  String get ok => 'OK';
+  String commissionsExampleCatering(int price, String net) => 'Ex : ${price}\$ traiteur → vous recevez ${net}\$';
 
   @override
-  String get choose => 'Choisir';
+  String commissionsExampleService(int price, String net) => 'Ex : ${price}\$ service → vous recevez ${net}\$';
 
   @override
-  String get logout => 'Déconnexion';
+  String commissionsExampleTicket(int price, String net) => 'Ex : ${price}\$ billet → vous recevez ${net}\$';
 
   @override
-  String get logoutConfirmTitle => 'Se déconnecter ?';
+  String commissionsSpotbookCommission(int pct) => 'Commission Spotbook : $pct%';
 
   @override
-  String get logoutConfirmMessage => 'Êtes-vous sûr de vouloir vous déconnecter ?';
+  String confirmBalanceMessage(String amount, String currency) => 'Confirmer le solde restant de $amount $currency collecté sur place ?';
 
   @override
-  String get retourLabel => 'Retour';
+  String depositAmountLabel(int pct) => 'Acompte de $pct%';
 
   @override
-  String get nextLabel => 'Suivant';
+  String linkPlatform(String platform) => 'Lier $platform';
 
   @override
-  String get continueLabel => 'Continuer';
+  String noBookingsOn(String date) => 'Aucune réservation le $date';
 
   @override
-  String get selectedLabel => 'Sélectionné';
+  String noResultsFor(String query) => 'Aucun résultat pour « $query »';
 
   @override
-  String get yesCancel => 'Oui, annuler';
+  String pasteLinkFor(String platform) => 'Collez votre lien $platform';
 
   @override
-  String get noCancel => 'Non';
+  String publicProfileTicketsLeft(int remaining) => '$remaining billets restants';
 
   @override
-  String get loadError => 'Erreur de chargement';
+  String publishingProgress(int percent) => 'Publication… $percent%';
+
+  @override
+  String reviewCountLabel(int count) => '$count avis';
+
+  @override
+  String reviewsCount(int count) => '$count avis';
+
+  @override
+  String settingsCommissionsSubtitle(int bookingPct, int eventPct, String fee) => 'Réservations $bookingPct% · Événements $eventPct% · Frais ${fee}\$';
+
+  @override
+  String ticketPriceLabel(String price) => 'À partir de $price';
+
+  @override
+  String videoReason(String reason) => 'Raison : $reason';
+
+  @override
+  String videoSelectedDuration(String seconds) => 'Durée : ${seconds}s';
+
+  @override
+  String get acceptBooking => 'Accepter la réservation';
 
   @override
   String get accessDenied => 'Accès refusé';
 
   @override
-  String get secured => 'Sécurisé';
+  String get activeBadge => 'Actif';
 
   @override
-  String get syncing => 'Synchronisation...';
+  String get addBioHint => 'Parlez de vous à vos clients…';
+
+  @override
+  String get addCommentHint => 'Ajouter un commentaire…';
+
+  @override
+  String get addNetworkTitle => 'Ajouter un réseau';
+
+  @override
+  String get addRule => 'Ajouter une règle';
+
+  @override
+  String get addRuleFirst => 'Ajoutez d\'abord une règle';
+
+  @override
+  String get addServiceAction => 'Ajouter un service';
+
+  @override
+  String get addTextTitle => 'Ajouter du texte';
+
+  @override
+  String get addVideoAction => 'Ajouter une vidéo';
+
+  @override
+  String get addVideoTitle => 'Ajouter une vidéo';
+
+  @override
+  String get allNetworksAdded => 'Tous les réseaux ajoutés';
+
+  @override
+  String get amountPaid => 'Montant payé';
+
+  @override
+  String get analyticsLabel => 'Analytiques';
+
+  @override
+  String get applyPromo => 'Appliquer';
+
+  @override
+  String get appointmentDetails => 'Détails du rendez-vous';
+
+  @override
+  String get appointmentMarkedDone => 'Rendez-vous marqué comme terminé';
+
+  @override
+  String get availabilityQuickAction => 'Disponibilité';
+
+  @override
+  String get availabilityRulesHint => 'Définissez vos règles de disponibilité hebdomadaires';
+
+  @override
+  String get availabilitySection => 'Disponibilité';
+
+  @override
+  String get availableDaysHint => 'Jours disponibles';
+
+  @override
+  String get avgRating => 'Note moyenne';
+
+  @override
+  String get balanceMarkedPaid => 'Solde marqué comme payé';
+
+  @override
+  String get balanceToCollectOnSite => 'Solde à collecter sur place';
+
+  @override
+  String get balanceToPayOnSite => 'Solde à payer sur place';
+
+  @override
+  String get becomePro => 'Devenir Pro';
+
+  @override
+  String get becomeProManageServices => 'Gérez vos services';
+
+  @override
+  String get becomeProManageServicesDesc => 'Créez et gérez vos offres de services';
+
+  @override
+  String get becomeProPublishVideos => 'Publiez des vidéos';
+
+  @override
+  String get becomeProPublishVideosDesc => 'Montrez votre travail en vidéo';
+
+  @override
+  String get becomeProReceivePayments => 'Recevez des paiements';
+
+  @override
+  String get becomeProReceivePaymentsDesc => 'Soyez payé en toute sécurité via Stripe';
+
+  @override
+  String get becomeProSellTickets => 'Vendez des billets';
+
+  @override
+  String get becomeProSellTicketsDesc => 'Créez des événements et vendez des billets';
+
+  @override
+  String get becomeProSubtitle => 'Débloquez les fonctionnalités Pro';
+
+  @override
+  String get bioHint => 'Écrivez une courte bio…';
+
+  @override
+  String get bioLabel => 'Bio';
+
+  @override
+  String get block => 'Bloquer';
+
+  @override
+  String get blockUserBlocked => 'Utilisateur bloqué';
+
+  @override
+  String get blockUserConfirmTitle => 'Bloquer l\'utilisateur ?';
+
+  @override
+  String get blockUserDefault => 'cet utilisateur';
+
+  @override
+  String get blockedUsersEmpty => 'Aucun utilisateur bloqué';
+
+  @override
+  String get blockedUsersTitle => 'Utilisateurs bloqués';
+
+  @override
+  String get blockedUsersUnblock => 'Débloquer';
+
+  @override
+  String get bookingAccepted => 'Réservation acceptée';
+
+  @override
+  String get bookingCodeLabel => 'Code de réservation';
+
+  @override
+  String get bookingConfirmed => 'Réservation confirmée';
+
+  @override
+  String get bookingConfirmedSubtitle => 'Votre rendez-vous est confirmé';
+
+  @override
+  String get bookingConfirmedTitle => 'Réservation confirmée !';
+
+  @override
+  String get bookingNotFound => 'Réservation introuvable';
+
+  @override
+  String get bookingReportDescription => 'Signaler un problème avec cette réservation';
+
+  @override
+  String get bookingReportDetailsHint => 'Décrivez le problème en détail…';
+
+  @override
+  String get bookingReportDetailsLabel => 'Détails';
+
+  @override
+  String get bookingReportReasonHarassment => 'Harcèlement';
+
+  @override
+  String get bookingReportReasonInappropriate => 'Comportement inapproprié';
+
+  @override
+  String get bookingReportReasonNoShow => 'Absence';
+
+  @override
+  String get bookingReportReasonNotAsDescribed => 'Non conforme à la description';
+
+  @override
+  String get bookingReportReasonPayment => 'Problème de paiement';
+
+  @override
+  String get bookingReportSentConfirmation => 'Signalement envoyé avec succès';
+
+  @override
+  String get bookingReportTitle => 'Signaler la réservation';
+
+  @override
+  String get bookingsLabel => 'Réservations';
+
+  @override
+  String get bookingsWillAppearHere => 'Vos réservations apparaîtront ici';
+
+  @override
+  String get buyTicketAction => 'Acheter un billet';
+
+  @override
+  String get calendarAndAvailability => 'Calendrier & Disponibilité';
+
+  @override
+  String get cancelReasonHint => 'Raison de l\'annulation…';
+
+  @override
+  String get cancellationFactBasedOnStart => 'Basé sur l\'heure de début du rendez-vous';
+
+  @override
+  String get cancellationFactDisputes => 'Les litiges peuvent être résolus via le support';
+
+  @override
+  String get cancellationFactRefundDelay => 'Les remboursements peuvent prendre 5 à 10 jours ouvrables';
+
+  @override
+  String get cancellationFactReschedule => 'Vous pouvez reporter au lieu d\'annuler';
+
+  @override
+  String get cancellationHowItWorks => 'Comment ça marche';
+
+  @override
+  String get cancellationIfYouCancel => 'Si vous annulez';
+
+  @override
+  String get cancellationIfYouCancelDescription => 'Le remboursement dépend de la politique d\'annulation';
+
+  @override
+  String get cancellationKeyPoints => 'Points clés';
+
+  @override
+  String get cancellationPolicyTitle => 'Politique d\'annulation';
+
+  @override
+  String get cancellationProtectDescription => 'Protège les clients et les professionnels';
+
+  @override
+  String get cancellationProtectTitle => 'Équitable pour tous';
+
+  @override
+  String get cancellationRuleNoShowDescription => 'Si le client ne se présente pas, l\'acompte est conservé';
+
+  @override
+  String get cancellationRuleNoShowSubtitle => 'L\'acompte est conservé par le professionnel';
+
+  @override
+  String get cancellationRuleNoShowTitle => 'Politique de non-présentation';
+
+  @override
+  String get changePhoto => 'Changer la photo';
+
+  @override
+  String get choose => 'Choisir';
+
+  @override
+  String get chooseADate => 'Choisir une date';
+
+  @override
+  String get chooseAService => 'Choisir un service';
+
+  @override
+  String get chooseAServiceSubtitle => 'Sélectionnez le service que vous souhaitez réserver';
+
+  @override
+  String get chooseASlot => 'Choisir un créneau';
+
+  @override
+  String get close => 'Fermer';
+
+  @override
+  String get closedException => 'Fermé';
+
+  @override
+  String get commission => 'Commission';
+
+  @override
+  String get commissionsCateringDeposits => 'Traiteur & Acomptes';
+
+  @override
+  String get commissionsCateringDesc => '18% de commission sur les commandes traiteur';
+
+  @override
+  String get commissionsClientPaysFee => 'Le client paie les frais de service';
+
+  @override
+  String get commissionsClientPaysService => 'Le client paie';
+
+  @override
+  String get commissionsClientServiceFee => 'Frais de service client';
+
+  @override
+  String get commissionsClientTotal => 'Total client';
+
+  @override
+  String get commissionsDescription => 'Comprendre le fonctionnement des commissions Spotbook';
+
+  @override
+  String get commissionsDetailedExample => 'Exemple détaillé';
+
+  @override
+  String get commissionsEventTickets => 'Billets d\'événements';
+
+  @override
+  String get commissionsEventTicketsDesc => '12% de commission sur la vente de billets';
+
+  @override
+  String get commissionsFixedFeeDescription => 'Des frais fixes sont ajoutés à chaque réservation pour le client';
+
+  @override
+  String get commissionsFixedFeePerBooking => 'Frais fixes par réservation';
+
+  @override
+  String get commissionsPayouts => 'Virements';
+
+  @override
+  String get commissionsPayoutsDescription => 'Les virements sont envoyés automatiquement via Stripe';
+
+  @override
+  String get commissionsRates => 'Taux de commission';
+
+  @override
+  String get commissionsServiceBookings => 'Réservations de services';
+
+  @override
+  String get commissionsServiceBookingsDesc => '18% de commission sur les réservations de services';
+
+  @override
+  String get commissionsServicePrice => 'Prix du service';
+
+  @override
+  String get commissionsTitle => 'Commissions & Frais';
+
+  @override
+  String get commissionsTransparentPricing => 'Tarification transparente';
+
+  @override
+  String get commissionsYouReceive => 'Vous recevez';
+
+  @override
+  String get confirmBalanceTitle => 'Confirmer le solde';
+
+  @override
+  String get confirmCancellation => 'Confirmer l\'annulation';
+
+  @override
+  String get confirmed => 'Confirmé';
+
+  @override
+  String get continueLabel => 'Continuer';
+
+  @override
+  String get copyLinkAction => 'Copier le lien';
+
+  @override
+  String get createEventAction => 'Créer un événement';
+
+  @override
+  String get createProAccount => 'Créer un compte Pro';
+
+  @override
+  String get creditCard => 'Carte de crédit';
 
   @override
   String get darkMode => 'Mode sombre';
 
   @override
-  String get privacyPolicy => 'Politique de confidentialité';
+  String get dashboardLoadError => 'Échec du chargement du tableau de bord';
 
   @override
-  String get termsOfService => 'Conditions d\'utilisation';
+  String get deleteAccount => 'Supprimer le compte';
 
   @override
-  String get copyLinkAction => 'Copier le lien';
+  String get deleteAccountConfirmCheckbox => 'Je comprends que cette action est irréversible';
+
+  @override
+  String get deleteAccountDescription => 'Cela supprimera définitivement votre compte et toutes les données';
+
+  @override
+  String get deleteAccountFailed => 'Échec de la suppression du compte';
+
+  @override
+  String get deleteAccountIrreversible => 'Cette action est irréversible';
+
+  @override
+  String get deleteAccountPermanently => 'Supprimer définitivement';
+
+  @override
+  String get deleteVideoConfirm => 'Voulez-vous vraiment supprimer cette vidéo ?';
+
+  @override
+  String get deleteVideoTitle => 'Supprimer la vidéo';
+
+  @override
+  String get depositAmountCad => 'Montant de l\'acompte (CAD)';
+
+  @override
+  String get depositCadMinimum => 'Minimum 5\$ CAD';
+
+  @override
+  String get depositClientPaysNow => 'Le client paie maintenant';
+
+  @override
+  String get depositDisabledDescription => 'Le client paie le montant total sur place';
+
+  @override
+  String get depositEnabledDescription => 'Le client paie un acompte en ligne';
+
+  @override
+  String get depositExplanation => 'L\'acompte sécurise la réservation';
+
+  @override
+  String get depositMinimumDescription => 'Montant minimum de l\'acompte';
+
+  @override
+  String get depositMinimumTitle => 'Acompte minimum';
+
+  @override
+  String get depositPaidOnline => 'Payé en ligne';
+
+  @override
+  String get depositPercent => 'Acompte %';
+
+  @override
+  String get depositPercentageDescription => 'Pourcentage du prix total';
+
+  @override
+  String get depositPercentageTitle => 'Pourcentage de l\'acompte';
+
+  @override
+  String get depositPlusSurplace => 'Acompte + solde sur place';
+
+  @override
+  String depositPreviewDescription(String price) => 'Aperçu : acompte sur un service de ${price}\$';
+
+  @override
+  String get depositPreviewTitle => 'Aperçu de l\'acompte';
+
+  @override
+  String get depositQuickSelect => 'Sélection rapide';
+
+  @override
+  String get depositReceivedOnline => 'Reçu en ligne';
+
+  @override
+  String depositRemainingOnDay(String amount) => 'Restant sur place : ${amount}\$';
+
+  @override
+  String get depositRequire => 'Exiger un acompte';
+
+  @override
+  String get depositRequireOnBooking => 'Exiger un acompte à la réservation';
+
+  @override
+  String get depositSaveSettings => 'Enregistrer les paramètres';
+
+  @override
+  String get depositServiceFee => 'Frais de service';
+
+  @override
+  String get depositServiceTotal => 'Total du service';
+
+  @override
+  String get depositSettingsSaved => 'Paramètres d\'acompte enregistrés';
+
+  @override
+  String get depositSettingsTitle => 'Paramètres d\'acompte';
+
+  @override
+  String get depositsCollected => 'Acomptes collectés';
+
+  @override
+  String get descriptionHint => 'Décrivez votre service…';
+
+  @override
+  String get descriptionOptional => 'Description (optionnelle)';
+
+  @override
+  String get descriptionRequired => 'La description est requise';
+
+  @override
+  String get displayNameLabel => 'Nom affiché';
+
+  @override
+  String get doneCountLabel => 'Terminés';
+
+  @override
+  String get durationLabel => 'Durée';
+
+  @override
+  String get editProfile => 'Modifier le profil';
+
+  @override
+  String get editVideoTitle => 'Modifier la vidéo';
+
+  @override
+  String get endLabel => 'Fin';
+
+  @override
+  String get enterCodeHint => 'Entrez le code promo';
+
+  @override
+  String get eventsQuickAction => 'Événements';
+
+  @override
+  String get eventsTab => 'Événements';
+
+  @override
+  String get fastReplyBadge => 'Réponse rapide';
+
+  @override
+  String get feedDiscover => 'Découvrir';
+
+  @override
+  String get feedFollowing => 'Abonnements';
+
+  @override
+  String get filtersTool => 'Filtres';
+
+  @override
+  String get followLabel => 'Suivre';
+
+  @override
+  String get followMeSection => 'Me suivre';
+
+  @override
+  String get followersLabel => 'Abonnés';
+
+  @override
+  String get followingLabel => 'Abonnements';
+
+  @override
+  String get freePrice => 'Gratuit';
+
+  @override
+  String get friday => 'Vendredi';
+
+  @override
+  String get fullPayment => 'Paiement complet';
+
+  @override
+  String get generateSlots => 'Générer les créneaux';
+
+  @override
+  String get glutenFreeLabel => 'Sans gluten';
+
+  @override
+  String get greetingAfternoon => 'Bon après-midi';
+
+  @override
+  String get greetingEvening => 'Bonsoir';
+
+  @override
+  String get greetingMorning => 'Bonjour';
+
+  @override
+  String get grossRevenue => 'Revenu brut';
+
+  @override
+  String get hashtagsHint => 'Ajoutez des hashtags…';
+
+  @override
+  String get hashtagsLabel => 'Hashtags';
+
+  @override
+  String get invalidDepositAmount => 'Montant d\'acompte invalide';
+
+  @override
+  String get invalidPrice => 'Prix invalide';
+
+  @override
+  String get leaveReview => 'Laisser un avis';
+
+  @override
+  String get likeProsToFindHere => 'Aimez des pros pour les retrouver ici';
 
   @override
   String get linkCopied => 'Lien copié';
@@ -1476,127 +2041,262 @@ class AppLocalizationsFr extends AppLocalizations {
   String get linkCopiedToClipboard => 'Lien copié dans le presse-papiers';
 
   @override
-  String get shareCopy => 'Copier';
+  String get loadError => 'Échec du chargement';
 
   @override
-  String get shareMessages => 'Messages';
+  String get locationHint => 'Entrez votre emplacement…';
 
   @override
-  String get editProfile => 'Modifier le profil';
+  String get locationLabel => 'Emplacement';
 
   @override
-  String get myProfile => 'Mon profil';
+  String get logout => 'Se déconnecter';
 
   @override
-  String get changePhoto => 'Changer la photo';
+  String get logoutConfirmMessage => 'Voulez-vous vraiment vous déconnecter ?';
 
   @override
-  String get tapToChange => 'Appuyez pour modifier';
+  String get logoutConfirmTitle => 'Se déconnecter ?';
 
   @override
-  String get displayNameLabel => 'Nom affiché';
+  String get manageServices => 'Gérer les services';
 
   @override
-  String get usernameLabel => 'Nom d\'utilisateur';
+  String get markAsDone => 'Marquer comme terminé';
 
   @override
-  String get usernameMinChars => '3 caractères minimum';
+  String get markAsDoneMessage => 'Marquer ce rendez-vous comme terminé ?';
 
   @override
-  String get usernameInvalidChars => 'Lettres, chiffres et underscores uniquement';
+  String get markAsDoneTitle => 'Marquer comme terminé ?';
 
   @override
-  String get usernameTaken => 'Ce nom d\'utilisateur est déjà pris';
+  String get memberBadge => 'Membre';
 
   @override
-  String get bioLabel => 'Bio';
+  String get menuTab => 'Menu';
 
   @override
-  String get bioHint => 'Parlez de vous...';
+  String get messageLabel => 'Message';
 
   @override
-  String get addBioHint => 'Ajouter une bio';
+  String get monday => 'Lundi';
 
   @override
-  String get locationLabel => 'Localisation';
+  String get moreOptionsAction => 'Plus d\'options';
 
   @override
-  String get locationHint => 'Ville, pays';
+  String get mostBookings => 'Plus de réservations';
 
   @override
-  String get profileUpdated => 'Profil mis à jour';
+  String get mostRecent => 'Plus récent';
 
   @override
-  String get profileLoadError => 'Erreur de chargement du profil';
+  String get mostSpent => 'Plus dépensé';
 
   @override
-  String get profileLoadErrorMessage => 'Impossible de charger le profil. Réessayez.';
-
-  @override
-  String get profileNotFoundLabel => 'Profil introuvable';
-
-  @override
-  String get shareProfileTitle => 'Partager le profil';
-
-  @override
-  String get shareMyProfile => 'Partager mon profil';
-
-  @override
-  String get followLabel => 'Suivre';
-
-  @override
-  String get followersLabel => 'Abonnés';
-
-  @override
-  String get followingLabel => 'Abonnements';
-
-  @override
-  String get followMeSection => 'Mes réseaux';
-
-  @override
-  String get socialNetworks => 'Réseaux sociaux';
-
-  @override
-  String get socialLinksHeader => 'Liens sociaux';
-
-  @override
-  String get socialLinksAutoDetectHint => 'Collez un lien, on détecte le réseau';
-
-  @override
-  String get addNetworkTitle => 'Ajouter un réseau';
-
-  @override
-  String get allNetworksAdded => 'Tous les réseaux sont ajoutés';
-
-  @override
-  String get notConnected => 'Non connecté';
-
-  @override
-  String get signInToFollow => 'Connectez-vous pour suivre';
-
-  @override
-  String get signInToMessage => 'Connectez-vous pour envoyer un message';
-
-  @override
-  String get myServicesSection => 'Mes services';
+  String get myClients => 'Mes clients';
 
   @override
   String get myEventsSection => 'Mes événements';
 
   @override
+  String get myFavoritePros => 'Mes pros favoris';
+
+  @override
+  String get myProfile => 'Mon profil';
+
+  @override
+  String get myQrCode => 'Mon QR code';
+
+  @override
+  String get myServicesSection => 'Mes services';
+
+  @override
   String get myVideosSection => 'Mes vidéos';
 
   @override
-  String get proToolsSection => 'Outils Pro';
+  String get netRevenue => 'Revenu net';
+
+  @override
+  String get newBadge => 'Nouveau';
+
+  @override
+  String get newTimeSlot => 'Nouveau créneau';
+
+  @override
+  String get nextEventHeader => 'Prochain événement';
+
+  @override
+  String get nextLabel => 'Suivant';
+
+  @override
+  String get noBookableServices => 'Aucun service réservable';
+
+  @override
+  String get noCancel => 'Non, garder';
+
+  @override
+  String get noClients => 'Aucun client pour le moment';
+
+  @override
+  String get noComments => 'Aucun commentaire';
+
+  @override
+  String get noEventsLabel => 'Aucun événement';
+
+  @override
+  String get noMenuAvailable => 'Aucun menu disponible';
+
+  @override
+  String get noProfessionalsAvailable => 'Aucun professionnel disponible';
+
+  @override
+  String get noRulesHint => 'Aucune règle de disponibilité';
+
+  @override
+  String get noServicesAvailable => 'Aucun service disponible';
+
+  @override
+  String get noServicesLabel => 'Aucun service';
+
+  @override
+  String get noSlotsForDate => 'Aucun créneau disponible pour cette date';
+
+  @override
+  String get noSlotsForDay => 'Aucun créneau pour ce jour';
+
+  @override
+  String get noTransactionsPeriod => 'Aucune transaction pour cette période';
+
+  @override
+  String get noUpcomingAppointments => 'Aucun rendez-vous à venir';
+
+  @override
+  String get noVideosAvailable => 'Aucune vidéo disponible';
+
+  @override
+  String get noVideosYet => 'Aucune vidéo pour le moment';
+
+  @override
+  String get notConnected => 'Non connecté';
+
+  @override
+  String get notifMarketing => 'Marketing';
+
+  @override
+  String get notifMarketingSubtitle => 'Promotions et offres spéciales';
+
+  @override
+  String get notifMessages => 'Messages';
+
+  @override
+  String get notifMessagesSubtitle => 'Nouveaux messages de clients';
+
+  @override
+  String get notifReminders => 'Rappels';
+
+  @override
+  String get notifRemindersSubtitle => 'Rappels de rendez-vous';
+
+  @override
+  String get notifReviewRequests => 'Demandes d\'avis';
+
+  @override
+  String get notifReviewRequestsSubtitle => 'Demandes d\'évaluation de votre expérience';
+
+  @override
+  String get notifSectionAppointments => 'Rendez-vous';
+
+  @override
+  String get notifSectionCommunication => 'Communication';
+
+  @override
+  String get notifSectionEvents => 'Événements';
+
+  @override
+  String get notifSectionOther => 'Autre';
+
+  @override
+  String get notifUpdates => 'Mises à jour';
+
+  @override
+  String get notifUpdatesSubtitle => 'Mises à jour et nouvelles fonctionnalités';
+
+  @override
+  String get notifWaitlist => 'Liste d\'attente';
+
+  @override
+  String get notifWaitlistSubtitle => 'Notifications de liste d\'attente';
+
+  @override
+  String get notificationsEmpty => 'Aucune notification';
+
+  @override
+  String get notificationsMarkAllRead => 'Tout marquer comme lu';
+
+  @override
+  String get ok => 'OK';
+
+  @override
+  String get openForBooking => 'Ouvert aux réservations';
+
+  @override
+  String get payButtonPrefix => 'Payer';
+
+  @override
+  String get payNowLabel => 'Payer maintenant';
+
+  @override
+  String get paymentFailed => 'Paiement échoué';
+
+  @override
+  String get paymentPending => 'Paiement en attente';
+
+  @override
+  String get paymentSubtitlePrefix => 'Paiement pour';
+
+  @override
+  String get pending => 'En attente';
+
+  @override
+  String get perDay => 'par jour';
+
+  @override
+  String get periodNinetyDays => '90 jours';
+
+  @override
+  String get periodOneYear => '1 an';
+
+  @override
+  String get periodSevenDays => '7 jours';
+
+  @override
+  String get periodThirtyDays => '30 jours';
+
+  @override
+  String get photoUploadError => 'Échec du téléchargement de la photo';
+
+  @override
+  String get priceCad => 'Prix (CAD)';
+
+  @override
+  String get privacyPolicy => 'Politique de confidentialité';
 
   @override
   String get proProfileFromPrice => 'À partir de';
 
   @override
-  String get proProfileNoReviews => 'Aucun avis';
+  String get proProfileNoReviews => 'Aucun avis pour le moment';
+
+  @override
+  String get proShellCateringSubtitle => 'Gérez votre menu traiteur';
 
   @override
   String get proShellGallery => 'Galerie';
+
+  @override
+  String get proShellLanguage => 'Langue';
 
   @override
   String get proShellMyMenu => 'Mon menu';
@@ -1608,349 +2308,31 @@ class AppLocalizationsFr extends AppLocalizations {
   String get proShellMyReviews => 'Mes avis';
 
   @override
-  String get proShellPaymentConfig => 'Configuration paiement';
+  String get proShellPaymentConfig => 'Configuration des paiements';
 
   @override
-  String get proShellCateringSubtitle => 'Gérez votre menu traiteur';
+  String get proToolsSection => 'Outils Pro';
 
   @override
-  String get proShellLanguage => 'Langue';
+  String get profileLoadError => 'Échec du chargement du profil';
 
   @override
-  String get feedDiscover => 'Découvrir';
+  String get profileLoadErrorMessage => 'Impossible de charger ce profil';
 
   @override
-  String get feedFollowing => 'Abonnements';
+  String get profileNotFoundLabel => 'Profil introuvable';
 
   @override
-  String get videoLabel => 'Vidéo';
-
-  @override
-  String get videoPublished => 'Vidéo publiée';
-
-  @override
-  String get videoTooLong => 'La vidéo dépasse 2 minutes';
-
-  @override
-  String get videoUnavailable => 'Vidéo indisponible';
-
-  @override
-  String get videoStatusPublished => 'Publiée';
-
-  @override
-  String get videoStatusFlagged => 'Signalée';
-
-  @override
-  String get videoStatusRejected => 'Rejetée';
-
-  @override
-  String get noVideosAvailable => 'Aucune vidéo disponible';
-
-  @override
-  String get noVideosYet => 'Pas encore de vidéos';
-
-  @override
-  String get deleteVideoTitle => 'Supprimer la vidéo';
-
-  @override
-  String get deleteVideoConfirm => 'Cette action est irréversible.';
-
-  @override
-  String get editVideoTitle => 'Modifier la vidéo';
-
-  @override
-  String get uploadVideo => 'Uploader une vidéo';
-
-  @override
-  String get uploadVideoSubtitle => 'Depuis votre galerie';
-
-  @override
-  String get recordVideo => 'Enregistrer une vidéo';
-
-  @override
-  String get recordVideoSubtitle => 'Utiliser la caméra';
-
-  @override
-  String get selectVideoMax => 'Sélectionner une vidéo (max 2 min)';
-
-  @override
-  String get photoUploadError => 'Erreur lors de l\'upload de la photo';
-
-  @override
-  String get addVideoTitle => 'Ajouter une vidéo';
-
-  @override
-  String get addVideoAction => 'Ajouter une vidéo';
-
-  @override
-  String get addTextTitle => 'Ajouter du texte';
-
-  @override
-  String get titleHint => 'Titre de la publication';
-
-  @override
-  String get titleRequired => 'Le titre est requis';
-
-  @override
-  String get descriptionHint => 'Décrivez votre prestation...';
-
-  @override
-  String get descriptionRequired => 'La description est requise (min 20 caractères)';
-
-  @override
-  String get descriptionOptional => 'Description (optionnel)';
-
-  @override
-  String get hashtagsLabel => 'Hashtags';
-
-  @override
-  String get hashtagsHint => 'Ajoutez des hashtags...';
-
-  @override
-  String get textTool => 'Texte';
-
-  @override
-  String get filtersTool => 'Filtres';
-
-  @override
-  String get noComments => 'Aucun commentaire';
-
-  @override
-  String get addCommentHint => 'Ajouter un commentaire...';
-
-  @override
-  String get yourTextHint => 'Votre texte...';
-
-  @override
-  String get moreOptionsAction => 'Plus d\'options';
-
-  @override
-  String get stepService => 'Service';
-
-  @override
-  String get stepDate => 'Date';
-
-  @override
-  String get stepTime => 'Heure';
-
-  @override
-  String get stepSummary => 'Résumé';
-
-  @override
-  String get stepPayment => 'Paiement';
-
-  @override
-  String get stepConfirmed => 'Confirmé';
-
-  @override
-  String get chooseAService => 'Choisir un service';
-
-  @override
-  String get chooseAServiceSubtitle => 'Sélectionnez le service souhaité';
-
-  @override
-  String get chooseADate => 'Choisir une date';
-
-  @override
-  String get chooseASlot => 'Choisir un créneau';
-
-  @override
-  String get noServicesAvailable => 'Aucun service disponible';
-
-  @override
-  String get noBookableServices => 'Aucun service réservable';
-
-  @override
-  String get noSlotsForDate => 'Aucun créneau pour cette date';
-
-  @override
-  String get noSlotsForDay => 'Aucun créneau pour ce jour';
-
-  @override
-  String get promoCodeTitle => 'Code promo';
-
-  @override
-  String get enterCodeHint => 'Entrer le code';
-
-  @override
-  String get applyPromo => 'Appliquer';
+  String get profileUpdated => 'Profil mis à jour';
 
   @override
   String get promoApplied => 'Code promo appliqué';
 
   @override
-  String get summarySubtitle => 'Vérifiez les détails de votre réservation';
+  String get promoCodeTitle => 'Code promo';
 
   @override
-  String get subtotal => 'Sous-total';
-
-  @override
-  String get serviceFee => 'Frais de service';
-
-  @override
-  String get totalService => 'Total';
-
-  @override
-  String get fullPayment => 'Paiement complet';
-
-  @override
-  String get creditCard => 'Carte bancaire';
-
-  @override
-  String get payNowLabel => 'Payer maintenant';
-
-  @override
-  String get payButtonPrefix => 'Payer';
-
-  @override
-  String get paymentSubtitlePrefix => 'Montant à payer :';
-
-  @override
-  String get paymentPending => 'Paiement en attente';
-
-  @override
-  String get paymentFailed => 'Échec du paiement';
-
-  @override
-  String get bookingConfirmedTitle => 'Réservation confirmée !';
-
-  @override
-  String get bookingConfirmedSubtitle => 'Votre réservation a été confirmée avec succès.';
-
-  @override
-  String get bookingConfirmed => 'Réservation confirmée';
-
-  @override
-  String get bookingAccepted => 'Réservation acceptée';
-
-  @override
-  String get bookingNotFound => 'Réservation introuvable';
-
-  @override
-  String get bookingCodeLabel => 'Code réservation';
-
-  @override
-  String get appointmentDetails => 'Détails du rendez-vous';
-
-  @override
-  String get confirmCancellation => 'Confirmer l\'annulation';
-
-  @override
-  String get cancelReasonHint => 'Raison de l\'annulation (optionnel)';
-
-  @override
-  String get confirmBalanceTitle => 'Confirmer le solde';
-
-  @override
-  String get acceptBooking => 'Accepter la réservation';
-
-  @override
-  String get reserveLabel => 'Réserver';
-
-  @override
-  String get reservations => 'Réservations';
-
-  @override
-  String get confirmed => 'Confirmé';
-
-  @override
-  String get pending => 'En attente';
-
-  @override
-  String get depositAmountCad => 'Montant de l\'acompte';
-
-  @override
-  String get remainingBalanceOnSite => 'Solde restant sur place';
-
-  @override
-  String get remainingOnDay => 'Restant le jour J';
-
-  @override
-  String get amountPaid => 'Montant payé';
-
-  @override
-  String get depositsCollected => 'Acomptes encaissés';
-
-  @override
-  String get balanceMarkedPaid => 'Solde marqué payé';
-
-  @override
-  String get balanceToCollectOnSite => 'Solde à encaisser sur place';
-
-  @override
-  String get balanceToPayOnSite => 'Solde à payer sur place';
-
-  @override
-  String get appointmentMarkedDone => 'Rendez-vous marqué terminé';
-
-  @override
-  String get markAsDone => 'Marquer terminé';
-
-  @override
-  String get markAsDoneTitle => 'Marquer terminé ?';
-
-  @override
-  String get markAsDoneMessage => 'Confirmez que ce rendez-vous est terminé.';
-
-  @override
-  String get doneCountLabel => 'Terminés';
-
-  @override
-  String get noUpcomingAppointments => 'Aucun rendez-vous à venir';
-
-  @override
-  String get upcomingAppointmentsHint => 'Vos prochains rendez-vous apparaîtront ici.';
-
-  @override
-  String get upcomingBookingsHeader => 'Réservations à venir';
-
-  @override
-  String get bookingsWillAppearHere => 'Vos réservations apparaîtront ici.';
-
-  @override
-  String get bookingsLabel => 'Réservations';
-
-  @override
-  String get greetingMorning => 'Bonjour';
-
-  @override
-  String get greetingAfternoon => 'Bon après-midi';
-
-  @override
-  String get greetingEvening => 'Bonsoir';
-
-  @override
-  String get quickActionsHeader => 'Actions rapides';
-
-  @override
-  String get servicesQuickAction => 'Services';
-
-  @override
-  String get eventsQuickAction => 'Événements';
-
-  @override
-  String get availabilityQuickAction => 'Disponibilités';
-
-  @override
-  String get revenueQuickAction => 'Revenus';
-
-  @override
-  String get nextEventHeader => 'Prochain événement';
-
-  @override
-  String get noEventsLabel => 'Aucun événement';
-
-  @override
-  String get dashboardLoadError => 'Erreur de chargement du dashboard';
-
-  @override
-  String get statsLoadError => 'Erreur de chargement des stats';
-
-  @override
-  String get manageServices => 'Gérer les services';
-
-  @override
-  String get addServiceAction => 'Ajouter un service';
+  String get promoCodes => 'Codes promo';
 
   @override
   String get publishAService => 'Publier un service';
@@ -1959,307 +2341,31 @@ class AppLocalizationsFr extends AppLocalizations {
   String get publishMyService => 'Publier mon service';
 
   @override
-  String get serviceName => 'Nom du service';
+  String get qrShareInfo => 'Partagez ce QR code avec vos clients';
 
   @override
-  String get serviceNameMinChars => '5 caractères minimum';
+  String get quickActionsHeader => 'Actions rapides';
 
   @override
-  String get durationLabel => 'Durée';
+  String get recentHistory => 'Historique récent';
 
   @override
-  String get priceCad => 'Prix (CAD)';
+  String get recordVideo => 'Enregistrer une vidéo';
 
   @override
-  String get invalidPrice => 'Prix invalide';
+  String get recordVideoSubtitle => 'Enregistrez une vidéo de votre service';
 
   @override
-  String get freePrice => 'Gratuit';
+  String get refundErrorRetry => 'Remboursement échoué. Veuillez réessayer.';
 
   @override
-  String get selectCategoryRequired => 'Catégorie requise';
+  String get refundRequestTitle => 'Demande de remboursement';
 
   @override
-  String get noServicesLabel => 'Aucun service';
+  String get remainingBalanceOnSite => 'Solde restant sur place';
 
   @override
-  String get servicesAvailableLabel => 'Services disponibles';
-
-  @override
-  String get openForBooking => 'Ouvert aux réservations';
-
-  @override
-  String get calendarAndAvailability => 'Calendrier et disponibilités';
-
-  @override
-  String get weeklyRulesHeader => 'Règles hebdomadaires';
-
-  @override
-  String get addRule => 'Ajouter une règle';
-
-  @override
-  String get addRuleFirst => 'Ajoutez votre première règle de disponibilité';
-
-  @override
-  String get noRulesHint => 'Aucune règle configurée';
-
-  @override
-  String get availableDaysHint => 'Jours disponibles';
-
-  @override
-  String get startLabel => 'Début';
-
-  @override
-  String get endLabel => 'Fin';
-
-  @override
-  String get slotDurationLabel => 'Durée du créneau';
-
-  @override
-  String get generateSlots => 'Générer les créneaux';
-
-  @override
-  String get slotsPreviewHeader => 'Aperçu des créneaux';
-
-  @override
-  String get slotsUpdated => 'Créneaux mis à jour';
-
-  @override
-  String get newTimeSlot => 'Nouveau créneau';
-
-  @override
-  String get viewCalendar => 'Voir le calendrier';
-
-  @override
-  String get monday => 'Lundi';
-
-  @override
-  String get tuesday => 'Mardi';
-
-  @override
-  String get wednesday => 'Mercredi';
-
-  @override
-  String get thursday => 'Jeudi';
-
-  @override
-  String get friday => 'Vendredi';
-
-  @override
-  String get saturday => 'Samedi';
-
-  @override
-  String get sunday => 'Dimanche';
-
-  @override
-  String get closedException => 'Fermé';
-
-  @override
-  String get revenue => 'Revenus';
-
-  @override
-  String get revenueAndStats => 'Revenus et statistiques';
-
-  @override
-  String get grossRevenue => 'Revenu brut';
-
-  @override
-  String get netRevenue => 'Revenu net';
-
-  @override
-  String get commission => 'Commission';
-
-  @override
-  String get transactions => 'Transactions';
-
-  @override
-  String get totalPeriod => 'Total période';
-
-  @override
-  String get noTransactionsPeriod => 'Aucune transaction sur cette période';
-
-  @override
-  String get periodSevenDays => '7 jours';
-
-  @override
-  String get periodThirtyDays => '30 jours';
-
-  @override
-  String get periodNinetyDays => '90 jours';
-
-  @override
-  String get periodOneYear => '1 an';
-
-  @override
-  String get withdraw => 'Retirer';
-
-  @override
-  String get perDay => 'par jour';
-
-  @override
-  String get thisWeek => 'Cette semaine';
-
-  @override
-  String get eventsTab => 'Événements';
-
-  @override
-  String get createEventAction => 'Créer un événement';
-
-  @override
-  String get buyTicketAction => 'Acheter un billet';
-
-  @override
-  String get scanTicket => 'Scanner un billet';
-
-  @override
-  String get servicesTab => 'Services';
-
-  @override
-  String get videosTab => 'Vidéos';
-
-  @override
-  String get reviewsTab => 'Avis';
-
-  @override
-  String get menuTab => 'Menu';
-
-  @override
-  String get myClients => 'Mes clients';
-
-  @override
-  String get noClients => 'Aucun client';
-
-  @override
-  String get mostRecent => 'Plus récent';
-
-  @override
-  String get mostBookings => 'Plus de réservations';
-
-  @override
-  String get mostSpent => 'Plus dépensé';
-
-  @override
-  String get messageLabel => 'Message';
-
-  @override
-  String get searchClientHint => 'Rechercher un client...';
-
-  @override
-  String get searchProfessionalHint => 'Rechercher un professionnel...';
-
-  @override
-  String get noProfessionalsAvailable => 'Aucun professionnel disponible';
-
-  @override
-  String get notificationsEmpty => 'Aucune notification';
-
-  @override
-  String get notificationsMarkAllRead => 'Tout marquer comme lu';
-
-  @override
-  String get notifSectionAppointments => 'Rendez-vous';
-
-  @override
-  String get notifSectionEvents => 'Événements';
-
-  @override
-  String get notifSectionCommunication => 'Communication';
-
-  @override
-  String get notifSectionOther => 'Autre';
-
-  @override
-  String get notifReminders => 'Rappels';
-
-  @override
-  String get notifRemindersSubtitle => 'Rappels de rendez-vous et événements';
-
-  @override
-  String get notifMessages => 'Messages';
-
-  @override
-  String get notifMessagesSubtitle => 'Nouveaux messages de vos clients ou pros';
-
-  @override
-  String get notifUpdates => 'Mises à jour';
-
-  @override
-  String get notifUpdatesSubtitle => 'Mises à jour de réservations et événements';
-
-  @override
-  String get notifMarketing => 'Promotions';
-
-  @override
-  String get notifMarketingSubtitle => 'Offres et nouveautés Spotbook';
-
-  @override
-  String get notifReviewRequests => 'Demandes d\'avis';
-
-  @override
-  String get notifReviewRequestsSubtitle => 'Rappels pour laisser un avis après un RDV';
-
-  @override
-  String get notifWaitlist => 'Liste d\'attente';
-
-  @override
-  String get notifWaitlistSubtitle => 'Notifications de places disponibles';
-
-  @override
-  String get reviewsReceivedTitle => 'Avis reçus';
-
-  @override
-  String get reviewsEmpty => 'Aucun avis';
-
-  @override
-  String get reviewsFilterAll => 'Tous';
-
-  @override
-  String get reviewsLabel => 'Avis';
-
-  @override
-  String get leaveReview => 'Laisser un avis';
-
-  @override
-  String get reviewHowWasAppointment => 'Comment était votre rendez-vous ?';
-
-  @override
-  String get reviewTapToRate => 'Appuyez pour noter';
-
-  @override
-  String get reviewShareExperience => 'Partagez votre expérience';
-
-  @override
-  String get reviewSubmit => 'Envoyer l\'avis';
-
-  @override
-  String get reviewThankYou => 'Merci pour votre avis !';
-
-  @override
-  String get reviewFeedbackHelps => 'Votre retour aide les autres utilisateurs.';
-
-  @override
-  String get reviewDone => 'Terminé';
-
-  @override
-  String get reviewLeaveReview => 'Laisser un avis';
-
-  @override
-  String get reviewRating1 => 'Terrible';
-
-  @override
-  String get reviewRating2 => 'Mauvais';
-
-  @override
-  String get reviewRating3 => 'Correct';
-
-  @override
-  String get reviewRating4 => 'Bien';
-
-  @override
-  String get reviewRating5 => 'Excellent';
-
-  @override
-  String get avgRating => 'Note moyenne';
+  String get remainingOnDay => 'Restant le jour J';
 
   @override
   String get report => 'Signaler';
@@ -2268,10 +2374,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get reportBooking => 'Signaler la réservation';
 
   @override
-  String get reportWhyReporting => 'Pourquoi signalez-vous ?';
-
-  @override
-  String get reportReasonSpam => 'Spam';
+  String get reportReasonFakeProfile => 'Faux profil';
 
   @override
   String get reportReasonHarassment => 'Harcèlement';
@@ -2280,94 +2383,154 @@ class AppLocalizationsFr extends AppLocalizations {
   String get reportReasonInappropriate => 'Contenu inapproprié';
 
   @override
-  String get reportReasonFakeProfile => 'Faux profil';
-
-  @override
   String get reportReasonOther => 'Autre';
 
   @override
-  String get reportSubmitButton => 'Envoyer le signalement';
+  String get reportReasonSpam => 'Spam';
 
   @override
   String get reportSent => 'Signalement envoyé';
 
   @override
-  String get block => 'Bloquer';
+  String get reportSubmitButton => 'Envoyer le signalement';
 
   @override
-  String get blockUserConfirmTitle => 'Bloquer cet utilisateur ?';
+  String get reportWhyReporting => 'Pourquoi signalez-vous ?';
 
   @override
-  String get blockUserBlocked => 'Utilisateur bloqué';
+  String get reservations => 'Réservations';
 
   @override
-  String get blockUserDefault => 'Bloquer l\'utilisateur';
+  String get reserveLabel => 'Réserver';
 
   @override
-  String get blockedUsersTitle => 'Utilisateurs bloqués';
+  String get retourLabel => 'Retour';
 
   @override
-  String get blockedUsersEmpty => 'Aucun utilisateur bloqué';
+  String get revenue => 'Revenus';
 
   @override
-  String get blockedUsersUnblock => 'Débloquer';
+  String get revenueAndStats => 'Revenus & Statistiques';
 
   @override
-  String get bookingReportTitle => 'Signaler la réservation';
+  String get revenueQuickAction => 'Revenus';
 
   @override
-  String get bookingReportDescription => 'Décrivez le problème rencontré';
+  String get reviewDone => 'Avis envoyé';
 
   @override
-  String get bookingReportDetailsLabel => 'Détails';
+  String get reviewFeedbackHelps => 'Vos commentaires aident à améliorer le service';
 
   @override
-  String get bookingReportDetailsHint => 'Décrivez le problème...';
+  String get reviewHowWasAppointment => 'Comment était votre rendez-vous ?';
 
   @override
-  String get bookingReportReasonNoShow => 'Non-présentation';
+  String get reviewLeaveReview => 'Laisser un avis';
 
   @override
-  String get bookingReportReasonNotAsDescribed => 'Non conforme à la description';
+  String get reviewShareExperience => 'Partagez votre expérience';
 
   @override
-  String get bookingReportReasonHarassment => 'Harcèlement';
+  String get reviewSubmit => 'Envoyer l\'avis';
 
   @override
-  String get bookingReportReasonInappropriate => 'Contenu inapproprié';
+  String get reviewTapToRate => 'Appuyez pour noter';
 
   @override
-  String get bookingReportReasonPayment => 'Problème de paiement';
+  String get reviewThankYou => 'Merci pour votre avis !';
 
   @override
-  String get bookingReportSentConfirmation => 'Votre signalement a été envoyé.';
+  String get reviewsEmpty => 'Aucun avis pour le moment';
 
   @override
-  String get settingsSectionAccount => 'Compte';
+  String get reviewsFilterAll => 'Tous';
 
   @override
-  String get settingsSectionBusiness => 'Business';
+  String get reviewsLabel => 'Avis';
 
   @override
-  String get settingsSectionBookings => 'Réservations';
+  String get reviewsReceivedTitle => 'Avis reçus';
 
   @override
-  String get settingsSectionPayments => 'Paiements';
+  String get reviewsTab => 'Avis';
 
   @override
-  String get settingsSectionNotifications => 'Notifications';
+  String get saturday => 'Samedi';
 
   @override
-  String get settingsSectionPreferences => 'Préférences';
+  String get scanTicket => 'Scanner le billet';
 
   @override
-  String get settingsSectionSupport => 'Support';
+  String get searchClientHint => 'Rechercher des clients…';
 
   @override
-  String get settingsSectionLegal => 'Légal';
+  String get searchProfessionalHint => 'Rechercher des professionnels…';
 
   @override
-  String get settingsManageServices => 'Gérer mes services';
+  String get secured => 'Sécurisé';
+
+  @override
+  String get selectCategoryRequired => 'Veuillez sélectionner une catégorie';
+
+  @override
+  String get selectVideoMax => 'Sélectionnez une vidéo (max 2 min)';
+
+  @override
+  String get selectedLabel => 'Sélectionné';
+
+  @override
+  String get serviceFee => 'Frais de service';
+
+  @override
+  String get serviceName => 'Nom du service';
+
+  @override
+  String get serviceNameMinChars => 'Le nom du service doit contenir au moins 3 caractères';
+
+  @override
+  String get servicesAvailableLabel => 'Services disponibles';
+
+  @override
+  String get servicesQuickAction => 'Services';
+
+  @override
+  String get servicesTab => 'Services';
+
+  @override
+  String get settingsAvailability => 'Disponibilité';
+
+  @override
+  String get settingsCancellationPolicy => 'Politique d\'annulation';
+
+  @override
+  String get settingsCancellationPolicySubtitle => 'Définissez vos règles d\'annulation';
+
+  @override
+  String get settingsChangePassword => 'Changer le mot de passe';
+
+  @override
+  String get settingsCommissions => 'Commissions & Frais';
+
+  @override
+  String get settingsConfigurePayments => 'Configurer les paiements';
+
+  @override
+  String get settingsContactUs => 'Nous contacter';
+
+  @override
+  String get settingsDepositSettings => 'Paramètres d\'acompte';
+
+  @override
+  String get settingsDepositSettingsSubtitle => 'Configurez les exigences d\'acompte';
+
+  @override
+  String get settingsHistory => 'Historique';
+
+  @override
+  String get settingsLanguage => 'Langue';
+
+  @override
+  String get settingsManageServices => 'Gérer les services';
 
   @override
   String get settingsMyEvents => 'Mes événements';
@@ -2376,497 +2539,284 @@ class AppLocalizationsFr extends AppLocalizations {
   String get settingsMyQrCode => 'Mon QR code';
 
   @override
-  String get settingsAvailability => 'Disponibilités';
-
-  @override
-  String get settingsCancellationPolicy => 'Politique d\'annulation';
-
-  @override
-  String get settingsCancellationPolicySubtitle => 'Gérez vos conditions d\'annulation';
-
-  @override
-  String get settingsCommissions => 'Commissions';
-
-  @override
-  String get settingsConfigurePayments => 'Configurer les paiements';
-
-  @override
-  String get settingsRevenueStats => 'Revenus et statistiques';
-
-  @override
-  String get settingsDepositSettings => 'Paramètres d\'acompte';
-
-  @override
-  String get settingsDepositSettingsSubtitle => 'Configurez vos acomptes par service';
-
-  @override
-  String get settingsQuotes => 'Soumissions';
-
-  @override
-  String get settingsQuotesSubtitle => 'Gérez vos demandes de soumission';
-
-  @override
-  String get settingsHistory => 'Historique';
+  String get settingsMyReviews => 'Mes avis';
 
   @override
   String get settingsPreferences => 'Préférences';
 
   @override
-  String get settingsLanguage => 'Langue';
+  String get settingsQuotes => 'Devis';
 
   @override
-  String get settingsMyReviews => 'Mes avis';
+  String get settingsQuotesSubtitle => 'Gérez les demandes de devis';
 
   @override
-  String get settingsContactUs => 'Nous contacter';
+  String get settingsRevenueStats => 'Revenus & Statistiques';
 
   @override
-  String get settingsChangePassword => 'Changer le mot de passe';
+  String get settingsSectionAccount => 'Compte';
 
   @override
-  String get deleteAccount => 'Supprimer le compte';
+  String get settingsSectionBookings => 'Réservations';
 
   @override
-  String get deleteAccountDescription => 'Cette action est irréversible. Toutes vos données seront supprimées.';
+  String get settingsSectionBusiness => 'Entreprise';
 
   @override
-  String get deleteAccountConfirmCheckbox => 'Je comprends que cette action est irréversible';
+  String get settingsSectionLegal => 'Légal';
 
   @override
-  String get deleteAccountPermanently => 'Supprimer définitivement';
+  String get settingsSectionNotifications => 'Notifications';
 
   @override
-  String get deleteAccountIrreversible => 'Action irréversible';
+  String get settingsSectionPayments => 'Paiements';
 
   @override
-  String get deleteAccountFailed => 'Échec de la suppression du compte';
+  String get settingsSectionPreferences => 'Préférences';
 
   @override
-  String get cancellationPolicyTitle => 'Politique d\'annulation';
+  String get settingsSectionSupport => 'Support';
 
   @override
-  String get cancellationHowItWorks => 'Comment ça fonctionne';
+  String get shareCopy => 'Copier';
 
   @override
-  String get cancellationKeyPoints => 'Points clés';
+  String get shareMessages => 'Messages';
 
   @override
-  String get cancellationProtectTitle => 'Protégez votre activité';
+  String get shareMyProfile => 'Partager mon profil';
 
   @override
-  String get cancellationProtectDescription => 'Notre politique d\'annulation vous protège contre les annulations de dernière minute.';
+  String get shareProfileTitle => 'Partager le profil';
 
   @override
-  String get cancellationIfYouCancel => 'Si vous annulez';
+  String get signIn => 'Se connecter';
 
   @override
-  String get cancellationIfYouCancelDescription => 'Voici ce qui se passe selon le moment de l\'annulation.';
+  String get signInToFollow => 'Connectez-vous pour suivre';
 
   @override
-  String get cancellationRule48hTitle => 'Plus de 48h avant';
+  String get signInToMessage => 'Connectez-vous pour envoyer un message';
 
   @override
-  String get cancellationRule48hSubtitle => 'Remboursement complet';
+  String get slotDurationLabel => 'Durée du créneau';
 
   @override
-  String get cancellationRule48hDescription => 'Annulation gratuite, remboursement complet de l\'acompte.';
+  String get slotsPreviewHeader => 'Aperçu des créneaux';
 
   @override
-  String get cancellationRule24to48hTitle => 'Entre 24h et 48h';
+  String get slotsUpdated => 'Créneaux mis à jour';
 
   @override
-  String get cancellationRule24to48hSubtitle => '50% de l\'acompte gardé';
+  String get socialLinksAutoDetectHint => 'Les liens sont détectés automatiquement';
 
   @override
-  String get cancellationRule24to48hDescription => 'Le pro conserve 50% de l\'acompte.';
+  String get socialLinksHeader => 'Liens sociaux';
 
   @override
-  String get cancellationRuleLess24hTitle => 'Moins de 24h avant';
-
-  @override
-  String get cancellationRuleLess24hSubtitle => 'Acompte non remboursable';
-
-  @override
-  String get cancellationRuleLess24hDescription => 'L\'acompte est entièrement conservé par le pro.';
-
-  @override
-  String get cancellationRuleNoShowTitle => 'Non-présentation';
-
-  @override
-  String get cancellationRuleNoShowSubtitle => 'Acompte perdu';
-
-  @override
-  String get cancellationRuleNoShowDescription => 'En cas de non-présentation, l\'acompte est perdu.';
-
-  @override
-  String get cancellationFactBasedOnStart => 'Basé sur l\'heure de début du RDV';
-
-  @override
-  String get cancellationFactRefundDelay => 'Remboursements sous 5-10 jours ouvrés';
-
-  @override
-  String get cancellationFactReschedule => 'Le report n\'est pas une annulation';
-
-  @override
-  String get cancellationFactDisputes => 'En cas de litige, contactez le support';
-
-  @override
-  String get commissionsTitle => 'Commissions';
-
-  @override
-  String get commissionsDescription => 'Comprendre nos taux de commission';
-
-  @override
-  String get commissionsRates => 'Nos taux';
-
-  @override
-  String get commissionsServiceBookings => 'Réservations de services';
-
-  @override
-  String get commissionsServiceBookingsDesc => 'Commission sur chaque réservation';
-
-  @override
-  String get commissionsEventTickets => 'Billets d\'événements';
-
-  @override
-  String get commissionsEventTicketsDesc => 'Commission sur chaque billet vendu';
-
-  @override
-  String get commissionsCateringDeposits => 'Acomptes traiteur';
-
-  @override
-  String get commissionsCateringDesc => 'Commission sur les acomptes traiteur';
-
-  @override
-  String get commissionsClientServiceFee => 'Frais de service client';
-
-  @override
-  String get commissionsFixedFeePerBooking => 'Frais fixe par réservation';
-
-  @override
-  String get commissionsFixedFeeDescription => 'Ce frais est payé par le client, pas par le pro.';
-
-  @override
-  String get commissionsTransparentPricing => 'Tarification transparente';
-
-  @override
-  String get commissionsDetailedExample => 'Exemple détaillé';
-
-  @override
-  String get commissionsServicePrice => 'Prix du service';
-
-  @override
-  String get commissionsYouReceive => 'Vous recevez';
-
-  @override
-  String get commissionsClientPaysService => 'Le client paie (service)';
-
-  @override
-  String get commissionsClientPaysFee => 'Le client paie (frais)';
-
-  @override
-  String get commissionsClientTotal => 'Total client';
-
-  @override
-  String get commissionsPayouts => 'Versements';
-
-  @override
-  String get commissionsPayoutsDescription => 'Les versements sont effectués automatiquement via Stripe Connect.';
-
-  @override
-  String get depositSettingsTitle => 'Paramètres d\'acompte';
-
-  @override
-  String get depositRequire => 'Exiger un acompte';
-
-  @override
-  String get depositRequireOnBooking => 'Exiger un acompte à la réservation';
-
-  @override
-  String get depositEnabledDescription => 'Les clients paieront un acompte lors de la réservation.';
-
-  @override
-  String get depositDisabledDescription => 'Les clients paieront le montant total sur place.';
-
-  @override
-  String get depositPercentageTitle => 'Pourcentage';
-
-  @override
-  String get depositPercentageDescription => 'L\'acompte est un pourcentage du prix du service.';
-
-  @override
-  String get depositPercent => 'Pourcentage de l\'acompte';
-
-  @override
-  String get depositMinimumTitle => 'Minimum';
-
-  @override
-  String get depositMinimumDescription => 'Montant minimum de l\'acompte en CAD.';
-
-  @override
-  String get depositCadMinimum => 'Minimum (CAD)';
-
-  @override
-  String get depositQuickSelect => 'Sélection rapide';
-
-  @override
-  String get depositPreviewTitle => 'Aperçu';
-
-  @override
-  String get depositPaidOnline => 'Payé en ligne';
-
-  @override
-  String get depositReceivedOnline => 'Reçu en ligne';
-
-  @override
-  String get depositPlusSurplace => '+ solde sur place';
-
-  @override
-  String get depositClientPaysNow => 'Le client paie maintenant';
-
-  @override
-  String get depositServiceFee => 'Frais de service';
-
-  @override
-  String get depositServiceTotal => 'Total service';
-
-  @override
-  String get depositExplanation => 'L\'acompte est déduit du montant total le jour du rendez-vous.';
-
-  @override
-  String get depositSaveSettings => 'Enregistrer';
-
-  @override
-  String get depositSettingsSaved => 'Paramètres d\'acompte enregistrés';
-
-  @override
-  String get invalidDepositAmount => 'Montant d\'acompte invalide';
-
-  @override
-  String get myQrCode => 'Mon QR Code';
-
-  @override
-  String get qrShareInfo => 'Partagez ce QR code pour que les clients vous trouvent facilement.';
-
-  @override
-  String get promoCodes => 'Codes promo';
-
-  @override
-  String get verifiedBadge => 'Vérifié';
-
-  @override
-  String get topProBadge => 'Top Pro';
-
-  @override
-  String get activeBadge => 'Actif';
-
-  @override
-  String get newBadge => 'Nouveau';
-
-  @override
-  String get memberBadge => 'Membre';
-
-  @override
-  String get fastReplyBadge => 'Réponse rapide';
-
-  @override
-  String get subscribedLabel => 'Abonné';
-
-  @override
-  String get becomePro => 'Devenir Pro';
-
-  @override
-  String get becomeProSubtitle => 'Rejoignez Spotbook en tant que professionnel';
-
-  @override
-  String get becomeProPublishVideos => 'Publiez vos vidéos';
-
-  @override
-  String get becomeProPublishVideosDesc => 'Montrez vos prestations en vidéo';
-
-  @override
-  String get becomeProManageServices => 'Gérez vos services';
-
-  @override
-  String get becomeProManageServicesDesc => 'Créez et gérez vos prestations';
-
-  @override
-  String get becomeProReceivePayments => 'Recevez des paiements';
-
-  @override
-  String get becomeProReceivePaymentsDesc => 'Paiements sécurisés via Stripe';
-
-  @override
-  String get becomeProSellTickets => 'Vendez des billets';
-
-  @override
-  String get becomeProSellTicketsDesc => 'Organisez des événements avec billetterie';
-
-  @override
-  String get createProAccount => 'Créer un compte Pro';
-
-  @override
-  String get refundRequestTitle => 'Demande de remboursement';
-
-  @override
-  String get refundErrorRetry => 'Erreur. Veuillez réessayer.';
-
-  @override
-  String get myFavoritePros => 'Mes pros favoris';
-
-  @override
-  String get likeProsToFindHere => 'Aimez des pros pour les retrouver ici';
-
-  @override
-  String get recentHistory => 'Historique récent';
-
-  @override
-  String get analyticsLabel => 'Analytiques';
-
-  @override
-  String get statusPending => 'En attente';
-
-  @override
-  String get viewAll => 'Voir tout';
-
-  @override
-  String get availabilitySection => 'Disponibilités';
-
-  @override
-  String get noMenuAvailable => 'Aucun menu disponible';
-
-  @override
-  String get glutenFreeLabel => 'Sans gluten';
-
-  @override
-  String get veganLabel => 'Végétalien';
-
-  @override
-  String get vegetarianLabel => 'Végétarien';
+  String get socialNetworks => 'Réseaux sociaux';
 
   @override
   String get soumissionsLabel => 'Soumissions';
 
   @override
+  String get startLabel => 'Début';
+
+  @override
+  String get statsLoadError => 'Échec du chargement des statistiques';
+
+  @override
+  String get statusPending => 'En attente';
+
+  @override
+  String get stepConfirmed => 'Confirmé';
+
+  @override
+  String get stepDate => 'Date';
+
+  @override
+  String get stepPayment => 'Paiement';
+
+  @override
+  String get stepService => 'Service';
+
+  @override
+  String get stepSummary => 'Résumé';
+
+  @override
+  String get stepTime => 'Heure';
+
+  @override
+  String get subscribedLabel => 'Abonné';
+
+  @override
+  String get subtotal => 'Sous-total';
+
+  @override
+  String get summarySubtitle => 'Vérifiez les détails de votre réservation';
+
+  @override
+  String get sunday => 'Dimanche';
+
+  @override
+  String get syncing => 'Synchronisation…';
+
+  @override
+  String get tapToChange => 'Appuyez pour changer';
+
+  @override
+  String get termsOfService => 'Conditions d\'utilisation';
+
+  @override
+  String get textTool => 'Texte';
+
+  @override
+  String get thisWeek => 'Cette semaine';
+
+  @override
+  String get thursday => 'Jeudi';
+
+  @override
+  String get topProBadge => 'Top Pro';
+
+  @override
+  String get totalPeriod => 'Total de la période';
+
+  @override
+  String get totalService => 'Total du service';
+
+  @override
+  String get transactions => 'Transactions';
+
+  @override
+  String get tuesday => 'Mardi';
+
+  @override
+  String get upcomingAppointmentsHint => 'Vos prochains rendez-vous';
+
+  @override
+  String get upcomingBookingsHeader => 'Réservations à venir';
+
+  @override
+  String get uploadVideo => 'Télécharger une vidéo';
+
+  @override
+  String get uploadVideoSubtitle => 'Téléchargez une vidéo de votre service';
+
+  @override
+  String get usernameInvalidChars => 'Le nom d\'utilisateur ne peut contenir que des lettres, chiffres et underscores';
+
+  @override
+  String get usernameLabel => 'Nom d\'utilisateur';
+
+  @override
+  String get usernameMinChars => 'Le nom d\'utilisateur doit contenir au moins 3 caractères';
+
+  @override
+  String get usernameTaken => 'Ce nom d\'utilisateur est déjà pris';
+
+  @override
+  String get veganLabel => 'Végan';
+
+  @override
+  String get vegetarianLabel => 'Végétarien';
+
+  @override
+  String get verifiedBadge => 'Vérifié';
+
+  @override
+  String get videoLabel => 'Vidéo';
+
+  @override
+  String get videoPublished => 'Vidéo publiée';
+
+  @override
+  String get videoStatusFlagged => 'Signalée';
+
+  @override
+  String get videoStatusPublished => 'Publiée';
+
+  @override
+  String get videoStatusRejected => 'Rejetée';
+
+  @override
+  String get videoTooLong => 'La vidéo est trop longue (max 2 minutes)';
+
+  @override
+  String get videoUnavailable => 'Vidéo indisponible';
+
+  @override
+  String get videosTab => 'Vidéos';
+
+  @override
+  String get viewAll => 'Voir tout';
+
+  @override
+  String get viewCalendar => 'Voir le calendrier';
+
+  @override
+  String get wednesday => 'Mercredi';
+
+  @override
+  String get weeklyRulesHeader => 'Règles hebdomadaires';
+
+  @override
+  String get withdraw => 'Retirer';
+
+  @override
+  String get yesCancel => 'Oui, annuler';
+
+  @override
+  String get yourTextHint => 'Votre texte ici…';
+
+  @override
+  String get titleRequired => 'Titre (obligatoire)';
+
+  @override
+  String get titleHint => 'Donnez un titre à votre vidéo…';
+
+  @override
   String get addLabel2 => 'Ajouter';
 
-  // ═══ Missing methods added ═══
+  @override
+  String get reviewRating1 => 'Terrible';
 
   @override
-  String balanceOnSite(String amount, String currency) {
-    return 'Solde sur place : \$amount \$currency';
-  }
+  String get reviewRating2 => 'Mauvais';
 
   @override
-  String confirmBalanceMessage(String amount, String currency) {
-    return 'Confirmer le paiement du solde de \$amount \$currency ?';
-  }
+  String get reviewRating3 => 'Moyen';
 
   @override
-  String commissionEstimate(String pct, String commission, String currency, String net) {
-    return 'Commission \$pct% : \$commission \$currency — Vous recevez \$net \$currency';
-  }
+  String get reviewRating4 => 'Bien';
 
   @override
-  String linkPlatform(String platform) {
-    return 'Lier \$platform';
-  }
+  String get reviewRating5 => 'Excellent';
 
   @override
-  String pasteLinkFor(String platform) {
-    return 'Collez votre lien \$platform';
-  }
+  String get cancellationRule48hTitle => 'Plus de 48h avant';
 
   @override
-  String noBookingsOn(String date) {
-    return 'Aucune réservation le \$date';
-  }
+  String get cancellationRule48hSubtitle => 'Remboursement intégral';
 
   @override
-  String noResultsFor(String query) {
-    return 'Aucun résultat pour « \$query »';
-  }
+  String get cancellationRule48hDescription => 'Annulez plus de 48 heures avant le rendez-vous pour un remboursement intégral.';
 
   @override
-  String publicProfileTicketsLeft(int remaining) {
-    return '\$remaining billets restants';
-  }
+  String get cancellationRule24to48hTitle => 'Entre 24h et 48h';
 
   @override
-  String publishingProgress(int percent) {
-    return 'Publication en cours... \$percent%';
-  }
+  String get cancellationRule24to48hSubtitle => 'Remboursement de 50%';
 
   @override
-  String reviewCountLabel(int count) {
-    return '\$count avis';
-  }
+  String get cancellationRule24to48hDescription => 'Annulez entre 24 et 48 heures avant pour un remboursement de 50%.';
 
   @override
-  String ticketPriceLabel(String price) {
-    return 'À partir de \$price';
-  }
+  String get cancellationRuleLess24hTitle => 'Moins de 24h';
 
   @override
-  String videoReason(String reason) {
-    return 'Raison : \$reason';
-  }
+  String get cancellationRuleLess24hSubtitle => 'Aucun remboursement';
 
   @override
-  String videoSelectedDuration(String seconds) {
-    return 'Durée sélectionnée : \$seconds s';
-  }
-
-  @override
-  String settingsCommissionsSubtitle(int bookings, int events, String fee) {
-    return '\$bookings% réservations · \$events% événements · \$fee frais';
-  }
-
-  @override
-  String commissionsExampleService(int price, String net) {
-    return 'Service à \$price \$ → Vous recevez \$net \$';
-  }
-
-  @override
-  String commissionsExampleTicket(int price, String net) {
-    return 'Billet à \$price \$ → Vous recevez \$net \$';
-  }
-
-  @override
-  String commissionsExampleCatering(int price, String net) {
-    return 'Traiteur à \$price \$ → Vous recevez \$net \$';
-  }
-
-  @override
-  String commissionsSpotbookCommission(int pct) {
-    return 'Commission Spotbook : \$pct%';
-  }
-
-  @override
-  String blockUserConfirmMessage(String name) {
-    return 'Voulez-vous vraiment bloquer \$name ?';
-  }
-
-  @override
-  String reviewsCount(int count) {
-    return '\$count avis';
-  }
-
-  @override
-  String depositAmountLabel(int percentage) {
-    return 'Acompte de \$percentage%';
-  }
-
-  @override
-  String depositPreviewDescription(String price) {
-    return 'Pour un service à \$price';
-  }
-
-  @override
-  String depositRemainingOnDay(String amount) {
-    return 'Restant le jour J : \$amount';
-  }
-
-  @override
-  String get availabilityRulesHint => 'Configurez vos règles de disponibilité';
+  String get cancellationRuleLess24hDescription => 'Les annulations dans les 24 heures ne sont pas éligibles au remboursement.';
 }

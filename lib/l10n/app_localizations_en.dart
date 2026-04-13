@@ -1386,70 +1386,635 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get invalidQrCode => 'This QR code is not a valid Spotbook ticket.';
 
-  // ═══ Missing getters added ═══
+  @override
+  String balanceOnSite(String amount, String currency) => 'Balance on site: $amount $currency';
 
   @override
-  String get signIn => 'Sign in';
+  String blockUserConfirmMessage(String name) => 'Are you sure you want to block $name?';
 
   @override
-  String get close => 'Close';
+  String commissionEstimate(String pct, String commission, String currency, String net) => 'Commission $pct%: $commission $currency — you receive $net $currency';
 
   @override
-  String get ok => 'OK';
+  String commissionsExampleCatering(int price, String net) => 'Ex: \$$price catering → you receive \$$net';
 
   @override
-  String get choose => 'Choose';
+  String commissionsExampleService(int price, String net) => 'Ex: \$$price service → you receive \$$net';
 
   @override
-  String get logout => 'Log out';
+  String commissionsExampleTicket(int price, String net) => 'Ex: \$$price ticket → you receive \$$net';
 
   @override
-  String get logoutConfirmTitle => 'Log out?';
+  String commissionsSpotbookCommission(int pct) => 'Spotbook commission: $pct%';
 
   @override
-  String get logoutConfirmMessage => 'Are you sure you want to log out?';
+  String confirmBalanceMessage(String amount, String currency) => 'Confirm remaining balance of $amount $currency collected on site?';
 
   @override
-  String get retourLabel => 'Back';
+  String depositAmountLabel(int pct) => '$pct% deposit';
 
   @override
-  String get nextLabel => 'Next';
+  String linkPlatform(String platform) => 'Link $platform';
 
   @override
-  String get continueLabel => 'Continue';
+  String noBookingsOn(String date) => 'No bookings on $date';
 
   @override
-  String get selectedLabel => 'Selected';
+  String noResultsFor(String query) => 'No results for "$query"';
 
   @override
-  String get yesCancel => 'Yes, cancel';
+  String pasteLinkFor(String platform) => 'Paste your $platform link';
 
   @override
-  String get noCancel => 'No';
+  String publicProfileTicketsLeft(int remaining) => '$remaining tickets left';
 
   @override
-  String get loadError => 'Loading error';
+  String publishingProgress(int percent) => 'Publishing… $percent%';
+
+  @override
+  String reviewCountLabel(int count) => '$count reviews';
+
+  @override
+  String reviewsCount(int count) => '$count reviews';
+
+  @override
+  String settingsCommissionsSubtitle(int bookingPct, int eventPct, String fee) => 'Bookings $bookingPct% · Events $eventPct% · Fee \$$fee';
+
+  @override
+  String ticketPriceLabel(String price) => 'From $price';
+
+  @override
+  String videoReason(String reason) => 'Reason: $reason';
+
+  @override
+  String videoSelectedDuration(String seconds) => 'Duration: ${seconds}s';
+
+  @override
+  String get acceptBooking => 'Accept booking';
 
   @override
   String get accessDenied => 'Access denied';
 
   @override
-  String get secured => 'Secured';
+  String get activeBadge => 'Active';
 
   @override
-  String get syncing => 'Syncing...';
+  String get addBioHint => 'Tell clients about yourself…';
+
+  @override
+  String get addCommentHint => 'Add a comment…';
+
+  @override
+  String get addNetworkTitle => 'Add network';
+
+  @override
+  String get addRule => 'Add rule';
+
+  @override
+  String get addRuleFirst => 'Add a rule first';
+
+  @override
+  String get addServiceAction => 'Add a service';
+
+  @override
+  String get addTextTitle => 'Add text';
+
+  @override
+  String get addVideoAction => 'Add a video';
+
+  @override
+  String get addVideoTitle => 'Add video';
+
+  @override
+  String get allNetworksAdded => 'All networks added';
+
+  @override
+  String get amountPaid => 'Amount paid';
+
+  @override
+  String get analyticsLabel => 'Analytics';
+
+  @override
+  String get applyPromo => 'Apply';
+
+  @override
+  String get appointmentDetails => 'Appointment details';
+
+  @override
+  String get appointmentMarkedDone => 'Appointment marked as done';
+
+  @override
+  String get availabilityQuickAction => 'Availability';
+
+  @override
+  String get availabilityRulesHint => 'Set your weekly availability rules';
+
+  @override
+  String get availabilitySection => 'Availability';
+
+  @override
+  String get availableDaysHint => 'Available days';
+
+  @override
+  String get avgRating => 'Average rating';
+
+  @override
+  String get balanceMarkedPaid => 'Balance marked as paid';
+
+  @override
+  String get balanceToCollectOnSite => 'Balance to collect on site';
+
+  @override
+  String get balanceToPayOnSite => 'Balance to pay on site';
+
+  @override
+  String get becomePro => 'Become a Pro';
+
+  @override
+  String get becomeProManageServices => 'Manage your services';
+
+  @override
+  String get becomeProManageServicesDesc => 'Create and manage your service offerings';
+
+  @override
+  String get becomeProPublishVideos => 'Publish videos';
+
+  @override
+  String get becomeProPublishVideosDesc => 'Showcase your work with video content';
+
+  @override
+  String get becomeProReceivePayments => 'Receive payments';
+
+  @override
+  String get becomeProReceivePaymentsDesc => 'Get paid securely via Stripe';
+
+  @override
+  String get becomeProSellTickets => 'Sell tickets';
+
+  @override
+  String get becomeProSellTicketsDesc => 'Create events and sell tickets';
+
+  @override
+  String get becomeProSubtitle => 'Unlock professional features';
+
+  @override
+  String get bioHint => 'Write a short bio…';
+
+  @override
+  String get bioLabel => 'Bio';
+
+  @override
+  String get block => 'Block';
+
+  @override
+  String get blockUserBlocked => 'User blocked';
+
+  @override
+  String get blockUserConfirmTitle => 'Block user?';
+
+  @override
+  String get blockUserDefault => 'this user';
+
+  @override
+  String get blockedUsersEmpty => 'No blocked users';
+
+  @override
+  String get blockedUsersTitle => 'Blocked users';
+
+  @override
+  String get blockedUsersUnblock => 'Unblock';
+
+  @override
+  String get bookingAccepted => 'Booking accepted';
+
+  @override
+  String get bookingCodeLabel => 'Booking code';
+
+  @override
+  String get bookingConfirmed => 'Booking confirmed';
+
+  @override
+  String get bookingConfirmedSubtitle => 'Your appointment is confirmed';
+
+  @override
+  String get bookingConfirmedTitle => 'Booking confirmed!';
+
+  @override
+  String get bookingNotFound => 'Booking not found';
+
+  @override
+  String get bookingReportDescription => 'Report an issue with this booking';
+
+  @override
+  String get bookingReportDetailsHint => 'Describe the issue in detail…';
+
+  @override
+  String get bookingReportDetailsLabel => 'Details';
+
+  @override
+  String get bookingReportReasonHarassment => 'Harassment';
+
+  @override
+  String get bookingReportReasonInappropriate => 'Inappropriate behavior';
+
+  @override
+  String get bookingReportReasonNoShow => 'No-show';
+
+  @override
+  String get bookingReportReasonNotAsDescribed => 'Not as described';
+
+  @override
+  String get bookingReportReasonPayment => 'Payment issue';
+
+  @override
+  String get bookingReportSentConfirmation => 'Report sent successfully';
+
+  @override
+  String get bookingReportTitle => 'Report booking';
+
+  @override
+  String get bookingsLabel => 'Bookings';
+
+  @override
+  String get bookingsWillAppearHere => 'Your bookings will appear here';
+
+  @override
+  String get buyTicketAction => 'Buy ticket';
+
+  @override
+  String get calendarAndAvailability => 'Calendar & Availability';
+
+  @override
+  String get cancelReasonHint => 'Reason for cancellation…';
+
+  @override
+  String get cancellationFactBasedOnStart => 'Based on the appointment start time';
+
+  @override
+  String get cancellationFactDisputes => 'Disputes can be resolved via support';
+
+  @override
+  String get cancellationFactRefundDelay => 'Refunds may take 5-10 business days';
+
+  @override
+  String get cancellationFactReschedule => 'You can reschedule instead of cancelling';
+
+  @override
+  String get cancellationHowItWorks => 'How it works';
+
+  @override
+  String get cancellationIfYouCancel => 'If you cancel';
+
+  @override
+  String get cancellationIfYouCancelDescription => 'The refund depends on your cancellation policy';
+
+  @override
+  String get cancellationKeyPoints => 'Key points';
+
+  @override
+  String get cancellationPolicyTitle => 'Cancellation policy';
+
+  @override
+  String get cancellationProtectDescription => 'Protects both clients and professionals';
+
+  @override
+  String get cancellationProtectTitle => 'Fair for everyone';
+
+  @override
+  String get cancellationRuleNoShowDescription => 'If the client does not show up, the deposit is kept';
+
+  @override
+  String get cancellationRuleNoShowSubtitle => 'Deposit is kept by the professional';
+
+  @override
+  String get cancellationRuleNoShowTitle => 'No-show policy';
+
+  @override
+  String get changePhoto => 'Change photo';
+
+  @override
+  String get choose => 'Choose';
+
+  @override
+  String get chooseADate => 'Choose a date';
+
+  @override
+  String get chooseAService => 'Choose a service';
+
+  @override
+  String get chooseAServiceSubtitle => 'Select the service you want to book';
+
+  @override
+  String get chooseASlot => 'Choose a time slot';
+
+  @override
+  String get close => 'Close';
+
+  @override
+  String get closedException => 'Closed';
+
+  @override
+  String get commission => 'Commission';
+
+  @override
+  String get commissionsCateringDeposits => 'Catering & Deposits';
+
+  @override
+  String get commissionsCateringDesc => '18% commission on catering orders';
+
+  @override
+  String get commissionsClientPaysFee => 'Client pays service fee';
+
+  @override
+  String get commissionsClientPaysService => 'Client pays';
+
+  @override
+  String get commissionsClientServiceFee => 'Client service fee';
+
+  @override
+  String get commissionsClientTotal => 'Client total';
+
+  @override
+  String get commissionsDescription => 'Understand how Spotbook commissions work';
+
+  @override
+  String get commissionsDetailedExample => 'Detailed example';
+
+  @override
+  String get commissionsEventTickets => 'Event Tickets';
+
+  @override
+  String get commissionsEventTicketsDesc => '12% commission on ticket sales';
+
+  @override
+  String get commissionsFixedFeeDescription => 'A fixed fee is added to each booking for the client';
+
+  @override
+  String get commissionsFixedFeePerBooking => 'Fixed fee per booking';
+
+  @override
+  String get commissionsPayouts => 'Payouts';
+
+  @override
+  String get commissionsPayoutsDescription => 'Payouts are sent automatically via Stripe';
+
+  @override
+  String get commissionsRates => 'Commission rates';
+
+  @override
+  String get commissionsServiceBookings => 'Service Bookings';
+
+  @override
+  String get commissionsServiceBookingsDesc => '18% commission on service bookings';
+
+  @override
+  String get commissionsServicePrice => 'Service price';
+
+  @override
+  String get commissionsTitle => 'Commissions & Fees';
+
+  @override
+  String get commissionsTransparentPricing => 'Transparent pricing';
+
+  @override
+  String get commissionsYouReceive => 'You receive';
+
+  @override
+  String get confirmBalanceTitle => 'Confirm balance';
+
+  @override
+  String get confirmCancellation => 'Confirm cancellation';
+
+  @override
+  String get confirmed => 'Confirmed';
+
+  @override
+  String get continueLabel => 'Continue';
+
+  @override
+  String get copyLinkAction => 'Copy link';
+
+  @override
+  String get createEventAction => 'Create event';
+
+  @override
+  String get createProAccount => 'Create Pro account';
+
+  @override
+  String get creditCard => 'Credit card';
 
   @override
   String get darkMode => 'Dark mode';
 
   @override
-  String get privacyPolicy => 'Privacy Policy';
+  String get dashboardLoadError => 'Failed to load dashboard';
 
   @override
-  String get termsOfService => 'Terms of Service';
+  String get deleteAccount => 'Delete account';
 
   @override
-  String get copyLinkAction => 'Copy link';
+  String get deleteAccountConfirmCheckbox => 'I understand this action is irreversible';
+
+  @override
+  String get deleteAccountDescription => 'This will permanently delete your account and all data';
+
+  @override
+  String get deleteAccountFailed => 'Failed to delete account';
+
+  @override
+  String get deleteAccountIrreversible => 'This action cannot be undone';
+
+  @override
+  String get deleteAccountPermanently => 'Delete permanently';
+
+  @override
+  String get deleteVideoConfirm => 'Are you sure you want to delete this video?';
+
+  @override
+  String get deleteVideoTitle => 'Delete video';
+
+  @override
+  String get depositAmountCad => 'Deposit amount (CAD)';
+
+  @override
+  String get depositCadMinimum => 'Minimum \$5 CAD';
+
+  @override
+  String get depositClientPaysNow => 'Client pays now';
+
+  @override
+  String get depositDisabledDescription => 'Client pays the full amount on site';
+
+  @override
+  String get depositEnabledDescription => 'Client pays a deposit online';
+
+  @override
+  String get depositExplanation => 'The deposit secures the booking';
+
+  @override
+  String get depositMinimumDescription => 'Minimum deposit amount';
+
+  @override
+  String get depositMinimumTitle => 'Minimum deposit';
+
+  @override
+  String get depositPaidOnline => 'Paid online';
+
+  @override
+  String get depositPercent => 'Deposit %';
+
+  @override
+  String get depositPercentageDescription => 'Percentage of total price';
+
+  @override
+  String get depositPercentageTitle => 'Deposit percentage';
+
+  @override
+  String get depositPlusSurplace => 'Deposit + balance on site';
+
+  @override
+  String depositPreviewDescription(String price) => 'Preview: deposit on a \$$price service';
+
+  @override
+  String get depositPreviewTitle => 'Deposit preview';
+
+  @override
+  String get depositQuickSelect => 'Quick select';
+
+  @override
+  String get depositReceivedOnline => 'Received online';
+
+  @override
+  String depositRemainingOnDay(String amount) => 'Remaining on site: \$$amount';
+
+  @override
+  String get depositRequire => 'Require deposit';
+
+  @override
+  String get depositRequireOnBooking => 'Require deposit on booking';
+
+  @override
+  String get depositSaveSettings => 'Save settings';
+
+  @override
+  String get depositServiceFee => 'Service fee';
+
+  @override
+  String get depositServiceTotal => 'Service total';
+
+  @override
+  String get depositSettingsSaved => 'Deposit settings saved';
+
+  @override
+  String get depositSettingsTitle => 'Deposit settings';
+
+  @override
+  String get depositsCollected => 'Deposits collected';
+
+  @override
+  String get descriptionHint => 'Describe your service…';
+
+  @override
+  String get descriptionOptional => 'Description (optional)';
+
+  @override
+  String get descriptionRequired => 'Description is required';
+
+  @override
+  String get displayNameLabel => 'Display name';
+
+  @override
+  String get doneCountLabel => 'Done';
+
+  @override
+  String get durationLabel => 'Duration';
+
+  @override
+  String get editProfile => 'Edit profile';
+
+  @override
+  String get editVideoTitle => 'Edit video';
+
+  @override
+  String get endLabel => 'End';
+
+  @override
+  String get enterCodeHint => 'Enter promo code';
+
+  @override
+  String get eventsQuickAction => 'Events';
+
+  @override
+  String get eventsTab => 'Events';
+
+  @override
+  String get fastReplyBadge => 'Fast reply';
+
+  @override
+  String get feedDiscover => 'Discover';
+
+  @override
+  String get feedFollowing => 'Following';
+
+  @override
+  String get filtersTool => 'Filters';
+
+  @override
+  String get followLabel => 'Follow';
+
+  @override
+  String get followMeSection => 'Follow me';
+
+  @override
+  String get followersLabel => 'Followers';
+
+  @override
+  String get followingLabel => 'Following';
+
+  @override
+  String get freePrice => 'Free';
+
+  @override
+  String get friday => 'Friday';
+
+  @override
+  String get fullPayment => 'Full payment';
+
+  @override
+  String get generateSlots => 'Generate slots';
+
+  @override
+  String get glutenFreeLabel => 'Gluten-free';
+
+  @override
+  String get greetingAfternoon => 'Good afternoon';
+
+  @override
+  String get greetingEvening => 'Good evening';
+
+  @override
+  String get greetingMorning => 'Good morning';
+
+  @override
+  String get grossRevenue => 'Gross revenue';
+
+  @override
+  String get hashtagsHint => 'Add hashtags…';
+
+  @override
+  String get hashtagsLabel => 'Hashtags';
+
+  @override
+  String get invalidDepositAmount => 'Invalid deposit amount';
+
+  @override
+  String get invalidPrice => 'Invalid price';
+
+  @override
+  String get leaveReview => 'Leave a review';
+
+  @override
+  String get likeProsToFindHere => 'Like pros to find them here';
 
   @override
   String get linkCopied => 'Link copied';
@@ -1461,127 +2026,262 @@ class AppLocalizationsEn extends AppLocalizations {
   String get linkCopiedToClipboard => 'Link copied to clipboard';
 
   @override
-  String get shareCopy => 'Copy';
+  String get loadError => 'Failed to load';
 
   @override
-  String get shareMessages => 'Messages';
-
-  @override
-  String get editProfile => 'Edit profile';
-
-  @override
-  String get myProfile => 'My profile';
-
-  @override
-  String get changePhoto => 'Change photo';
-
-  @override
-  String get tapToChange => 'Tap to change';
-
-  @override
-  String get displayNameLabel => 'Display name';
-
-  @override
-  String get usernameLabel => 'Username';
-
-  @override
-  String get usernameMinChars => '3 characters minimum';
-
-  @override
-  String get usernameInvalidChars => 'Letters, numbers and underscores only';
-
-  @override
-  String get usernameTaken => 'This username is already taken';
-
-  @override
-  String get bioLabel => 'Bio';
-
-  @override
-  String get bioHint => 'Tell us about yourself...';
-
-  @override
-  String get addBioHint => 'Add a bio';
+  String get locationHint => 'Enter your location…';
 
   @override
   String get locationLabel => 'Location';
 
   @override
-  String get locationHint => 'City, country';
+  String get logout => 'Log out';
 
   @override
-  String get profileUpdated => 'Profile updated';
+  String get logoutConfirmMessage => 'Are you sure you want to log out?';
 
   @override
-  String get profileLoadError => 'Profile loading error';
+  String get logoutConfirmTitle => 'Log out?';
 
   @override
-  String get profileLoadErrorMessage => 'Unable to load profile. Please try again.';
+  String get manageServices => 'Manage services';
 
   @override
-  String get profileNotFoundLabel => 'Profile not found';
+  String get markAsDone => 'Mark as done';
 
   @override
-  String get shareProfileTitle => 'Share profile';
+  String get markAsDoneMessage => 'Mark this appointment as completed?';
 
   @override
-  String get shareMyProfile => 'Share my profile';
+  String get markAsDoneTitle => 'Mark as done?';
 
   @override
-  String get followLabel => 'Follow';
+  String get memberBadge => 'Member';
 
   @override
-  String get followersLabel => 'Followers';
+  String get menuTab => 'Menu';
 
   @override
-  String get followingLabel => 'Following';
+  String get messageLabel => 'Message';
 
   @override
-  String get followMeSection => 'My networks';
+  String get monday => 'Monday';
 
   @override
-  String get socialNetworks => 'Social networks';
+  String get moreOptionsAction => 'More options';
 
   @override
-  String get socialLinksHeader => 'Social links';
+  String get mostBookings => 'Most bookings';
 
   @override
-  String get socialLinksAutoDetectHint => 'Paste a link, we detect the network';
+  String get mostRecent => 'Most recent';
 
   @override
-  String get addNetworkTitle => 'Add a network';
+  String get mostSpent => 'Most spent';
 
   @override
-  String get allNetworksAdded => 'All networks added';
-
-  @override
-  String get notConnected => 'Not connected';
-
-  @override
-  String get signInToFollow => 'Sign in to follow';
-
-  @override
-  String get signInToMessage => 'Sign in to message';
-
-  @override
-  String get myServicesSection => 'My services';
+  String get myClients => 'My clients';
 
   @override
   String get myEventsSection => 'My events';
 
   @override
+  String get myFavoritePros => 'My favorite pros';
+
+  @override
+  String get myProfile => 'My profile';
+
+  @override
+  String get myQrCode => 'My QR code';
+
+  @override
+  String get myServicesSection => 'My services';
+
+  @override
   String get myVideosSection => 'My videos';
 
   @override
-  String get proToolsSection => 'Pro tools';
+  String get netRevenue => 'Net revenue';
+
+  @override
+  String get newBadge => 'New';
+
+  @override
+  String get newTimeSlot => 'New time slot';
+
+  @override
+  String get nextEventHeader => 'Next event';
+
+  @override
+  String get nextLabel => 'Next';
+
+  @override
+  String get noBookableServices => 'No bookable services';
+
+  @override
+  String get noCancel => 'No, keep it';
+
+  @override
+  String get noClients => 'No clients yet';
+
+  @override
+  String get noComments => 'No comments yet';
+
+  @override
+  String get noEventsLabel => 'No events';
+
+  @override
+  String get noMenuAvailable => 'No menu available';
+
+  @override
+  String get noProfessionalsAvailable => 'No professionals available';
+
+  @override
+  String get noRulesHint => 'No availability rules yet';
+
+  @override
+  String get noServicesAvailable => 'No services available';
+
+  @override
+  String get noServicesLabel => 'No services';
+
+  @override
+  String get noSlotsForDate => 'No slots available for this date';
+
+  @override
+  String get noSlotsForDay => 'No slots for this day';
+
+  @override
+  String get noTransactionsPeriod => 'No transactions for this period';
+
+  @override
+  String get noUpcomingAppointments => 'No upcoming appointments';
+
+  @override
+  String get noVideosAvailable => 'No videos available';
+
+  @override
+  String get noVideosYet => 'No videos yet';
+
+  @override
+  String get notConnected => 'Not connected';
+
+  @override
+  String get notifMarketing => 'Marketing';
+
+  @override
+  String get notifMarketingSubtitle => 'Promotions and special offers';
+
+  @override
+  String get notifMessages => 'Messages';
+
+  @override
+  String get notifMessagesSubtitle => 'New messages from clients';
+
+  @override
+  String get notifReminders => 'Reminders';
+
+  @override
+  String get notifRemindersSubtitle => 'Appointment reminders';
+
+  @override
+  String get notifReviewRequests => 'Review requests';
+
+  @override
+  String get notifReviewRequestsSubtitle => 'Requests to review your experience';
+
+  @override
+  String get notifSectionAppointments => 'Appointments';
+
+  @override
+  String get notifSectionCommunication => 'Communication';
+
+  @override
+  String get notifSectionEvents => 'Events';
+
+  @override
+  String get notifSectionOther => 'Other';
+
+  @override
+  String get notifUpdates => 'Updates';
+
+  @override
+  String get notifUpdatesSubtitle => 'App updates and new features';
+
+  @override
+  String get notifWaitlist => 'Waitlist';
+
+  @override
+  String get notifWaitlistSubtitle => 'Waitlist notifications';
+
+  @override
+  String get notificationsEmpty => 'No notifications';
+
+  @override
+  String get notificationsMarkAllRead => 'Mark all as read';
+
+  @override
+  String get ok => 'OK';
+
+  @override
+  String get openForBooking => 'Open for booking';
+
+  @override
+  String get payButtonPrefix => 'Pay';
+
+  @override
+  String get payNowLabel => 'Pay now';
+
+  @override
+  String get paymentFailed => 'Payment failed';
+
+  @override
+  String get paymentPending => 'Payment pending';
+
+  @override
+  String get paymentSubtitlePrefix => 'Payment for';
+
+  @override
+  String get pending => 'Pending';
+
+  @override
+  String get perDay => 'per day';
+
+  @override
+  String get periodNinetyDays => '90 days';
+
+  @override
+  String get periodOneYear => '1 year';
+
+  @override
+  String get periodSevenDays => '7 days';
+
+  @override
+  String get periodThirtyDays => '30 days';
+
+  @override
+  String get photoUploadError => 'Failed to upload photo';
+
+  @override
+  String get priceCad => 'Price (CAD)';
+
+  @override
+  String get privacyPolicy => 'Privacy policy';
 
   @override
   String get proProfileFromPrice => 'From';
 
   @override
-  String get proProfileNoReviews => 'No reviews';
+  String get proProfileNoReviews => 'No reviews yet';
+
+  @override
+  String get proShellCateringSubtitle => 'Manage your catering menu';
 
   @override
   String get proShellGallery => 'Gallery';
+
+  @override
+  String get proShellLanguage => 'Language';
 
   @override
   String get proShellMyMenu => 'My menu';
@@ -1593,349 +2293,31 @@ class AppLocalizationsEn extends AppLocalizations {
   String get proShellMyReviews => 'My reviews';
 
   @override
-  String get proShellPaymentConfig => 'Payment config';
+  String get proShellPaymentConfig => 'Payment configuration';
 
   @override
-  String get proShellCateringSubtitle => 'Manage your catering menu';
+  String get proToolsSection => 'Pro tools';
 
   @override
-  String get proShellLanguage => 'Language';
+  String get profileLoadError => 'Failed to load profile';
 
   @override
-  String get feedDiscover => 'Discover';
+  String get profileLoadErrorMessage => 'Could not load this profile';
 
   @override
-  String get feedFollowing => 'Following';
+  String get profileNotFoundLabel => 'Profile not found';
 
   @override
-  String get videoLabel => 'Video';
-
-  @override
-  String get videoPublished => 'Video published';
-
-  @override
-  String get videoTooLong => 'Video exceeds 2 minutes';
-
-  @override
-  String get videoUnavailable => 'Video unavailable';
-
-  @override
-  String get videoStatusPublished => 'Published';
-
-  @override
-  String get videoStatusFlagged => 'Flagged';
-
-  @override
-  String get videoStatusRejected => 'Rejected';
-
-  @override
-  String get noVideosAvailable => 'No videos available';
-
-  @override
-  String get noVideosYet => 'No videos yet';
-
-  @override
-  String get deleteVideoTitle => 'Delete video';
-
-  @override
-  String get deleteVideoConfirm => 'This action cannot be undone.';
-
-  @override
-  String get editVideoTitle => 'Edit video';
-
-  @override
-  String get uploadVideo => 'Upload video';
-
-  @override
-  String get uploadVideoSubtitle => 'From your gallery';
-
-  @override
-  String get recordVideo => 'Record video';
-
-  @override
-  String get recordVideoSubtitle => 'Use the camera';
-
-  @override
-  String get selectVideoMax => 'Select a video (max 2 min)';
-
-  @override
-  String get photoUploadError => 'Photo upload error';
-
-  @override
-  String get addVideoTitle => 'Add a video';
-
-  @override
-  String get addVideoAction => 'Add video';
-
-  @override
-  String get addTextTitle => 'Add text';
-
-  @override
-  String get titleHint => 'Post title';
-
-  @override
-  String get titleRequired => 'Title is required';
-
-  @override
-  String get descriptionHint => 'Describe your service...';
-
-  @override
-  String get descriptionRequired => 'Description is required (min 20 characters)';
-
-  @override
-  String get descriptionOptional => 'Description (optional)';
-
-  @override
-  String get hashtagsLabel => 'Hashtags';
-
-  @override
-  String get hashtagsHint => 'Add hashtags...';
-
-  @override
-  String get textTool => 'Text';
-
-  @override
-  String get filtersTool => 'Filters';
-
-  @override
-  String get noComments => 'No comments';
-
-  @override
-  String get addCommentHint => 'Add a comment...';
-
-  @override
-  String get yourTextHint => 'Your text...';
-
-  @override
-  String get moreOptionsAction => 'More options';
-
-  @override
-  String get stepService => 'Service';
-
-  @override
-  String get stepDate => 'Date';
-
-  @override
-  String get stepTime => 'Time';
-
-  @override
-  String get stepSummary => 'Summary';
-
-  @override
-  String get stepPayment => 'Payment';
-
-  @override
-  String get stepConfirmed => 'Confirmed';
-
-  @override
-  String get chooseAService => 'Choose a service';
-
-  @override
-  String get chooseAServiceSubtitle => 'Select the desired service';
-
-  @override
-  String get chooseADate => 'Choose a date';
-
-  @override
-  String get chooseASlot => 'Choose a time slot';
-
-  @override
-  String get noServicesAvailable => 'No services available';
-
-  @override
-  String get noBookableServices => 'No bookable services';
-
-  @override
-  String get noSlotsForDate => 'No slots for this date';
-
-  @override
-  String get noSlotsForDay => 'No slots for this day';
-
-  @override
-  String get promoCodeTitle => 'Promo code';
-
-  @override
-  String get enterCodeHint => 'Enter code';
-
-  @override
-  String get applyPromo => 'Apply';
+  String get profileUpdated => 'Profile updated';
 
   @override
   String get promoApplied => 'Promo code applied';
 
   @override
-  String get summarySubtitle => 'Review your booking details';
+  String get promoCodeTitle => 'Promo code';
 
   @override
-  String get subtotal => 'Subtotal';
-
-  @override
-  String get serviceFee => 'Service fee';
-
-  @override
-  String get totalService => 'Total';
-
-  @override
-  String get fullPayment => 'Full payment';
-
-  @override
-  String get creditCard => 'Credit card';
-
-  @override
-  String get payNowLabel => 'Pay now';
-
-  @override
-  String get payButtonPrefix => 'Pay';
-
-  @override
-  String get paymentSubtitlePrefix => 'Amount to pay:';
-
-  @override
-  String get paymentPending => 'Payment pending';
-
-  @override
-  String get paymentFailed => 'Payment failed';
-
-  @override
-  String get bookingConfirmedTitle => 'Booking confirmed!';
-
-  @override
-  String get bookingConfirmedSubtitle => 'Your booking has been confirmed successfully.';
-
-  @override
-  String get bookingConfirmed => 'Booking confirmed';
-
-  @override
-  String get bookingAccepted => 'Booking accepted';
-
-  @override
-  String get bookingNotFound => 'Booking not found';
-
-  @override
-  String get bookingCodeLabel => 'Booking code';
-
-  @override
-  String get appointmentDetails => 'Appointment details';
-
-  @override
-  String get confirmCancellation => 'Confirm cancellation';
-
-  @override
-  String get cancelReasonHint => 'Cancellation reason (optional)';
-
-  @override
-  String get confirmBalanceTitle => 'Confirm balance';
-
-  @override
-  String get acceptBooking => 'Accept booking';
-
-  @override
-  String get reserveLabel => 'Book';
-
-  @override
-  String get reservations => 'Reservations';
-
-  @override
-  String get confirmed => 'Confirmed';
-
-  @override
-  String get pending => 'Pending';
-
-  @override
-  String get depositAmountCad => 'Deposit amount';
-
-  @override
-  String get remainingBalanceOnSite => 'Remaining balance on-site';
-
-  @override
-  String get remainingOnDay => 'Remaining on the day';
-
-  @override
-  String get amountPaid => 'Amount paid';
-
-  @override
-  String get depositsCollected => 'Deposits collected';
-
-  @override
-  String get balanceMarkedPaid => 'Balance marked as paid';
-
-  @override
-  String get balanceToCollectOnSite => 'Balance to collect on-site';
-
-  @override
-  String get balanceToPayOnSite => 'Balance to pay on-site';
-
-  @override
-  String get appointmentMarkedDone => 'Appointment marked as done';
-
-  @override
-  String get markAsDone => 'Mark as done';
-
-  @override
-  String get markAsDoneTitle => 'Mark as done?';
-
-  @override
-  String get markAsDoneMessage => 'Confirm this appointment is done.';
-
-  @override
-  String get doneCountLabel => 'Done';
-
-  @override
-  String get noUpcomingAppointments => 'No upcoming appointments';
-
-  @override
-  String get upcomingAppointmentsHint => 'Your upcoming appointments will appear here.';
-
-  @override
-  String get upcomingBookingsHeader => 'Upcoming bookings';
-
-  @override
-  String get bookingsWillAppearHere => 'Your bookings will appear here.';
-
-  @override
-  String get bookingsLabel => 'Bookings';
-
-  @override
-  String get greetingMorning => 'Good morning';
-
-  @override
-  String get greetingAfternoon => 'Good afternoon';
-
-  @override
-  String get greetingEvening => 'Good evening';
-
-  @override
-  String get quickActionsHeader => 'Quick actions';
-
-  @override
-  String get servicesQuickAction => 'Services';
-
-  @override
-  String get eventsQuickAction => 'Events';
-
-  @override
-  String get availabilityQuickAction => 'Availability';
-
-  @override
-  String get revenueQuickAction => 'Revenue';
-
-  @override
-  String get nextEventHeader => 'Next event';
-
-  @override
-  String get noEventsLabel => 'No events';
-
-  @override
-  String get dashboardLoadError => 'Dashboard loading error';
-
-  @override
-  String get statsLoadError => 'Stats loading error';
-
-  @override
-  String get manageServices => 'Manage services';
-
-  @override
-  String get addServiceAction => 'Add a service';
+  String get promoCodes => 'Promo codes';
 
   @override
   String get publishAService => 'Publish a service';
@@ -1944,307 +2326,31 @@ class AppLocalizationsEn extends AppLocalizations {
   String get publishMyService => 'Publish my service';
 
   @override
-  String get serviceName => 'Service name';
+  String get qrShareInfo => 'Share this QR code with your clients';
 
   @override
-  String get serviceNameMinChars => '5 characters minimum';
+  String get quickActionsHeader => 'Quick actions';
 
   @override
-  String get durationLabel => 'Duration';
+  String get recentHistory => 'Recent history';
 
   @override
-  String get priceCad => 'Price (CAD)';
+  String get recordVideo => 'Record video';
 
   @override
-  String get invalidPrice => 'Invalid price';
+  String get recordVideoSubtitle => 'Record a video of your service';
 
   @override
-  String get freePrice => 'Free';
+  String get refundErrorRetry => 'Refund failed. Please try again.';
 
   @override
-  String get selectCategoryRequired => 'Category required';
+  String get refundRequestTitle => 'Refund request';
 
   @override
-  String get noServicesLabel => 'No services';
+  String get remainingBalanceOnSite => 'Remaining balance on site';
 
   @override
-  String get servicesAvailableLabel => 'Available services';
-
-  @override
-  String get openForBooking => 'Open for booking';
-
-  @override
-  String get calendarAndAvailability => 'Calendar & availability';
-
-  @override
-  String get weeklyRulesHeader => 'Weekly rules';
-
-  @override
-  String get addRule => 'Add a rule';
-
-  @override
-  String get addRuleFirst => 'Add your first availability rule';
-
-  @override
-  String get noRulesHint => 'No rules configured';
-
-  @override
-  String get availableDaysHint => 'Available days';
-
-  @override
-  String get startLabel => 'Start';
-
-  @override
-  String get endLabel => 'End';
-
-  @override
-  String get slotDurationLabel => 'Slot duration';
-
-  @override
-  String get generateSlots => 'Generate slots';
-
-  @override
-  String get slotsPreviewHeader => 'Slots preview';
-
-  @override
-  String get slotsUpdated => 'Slots updated';
-
-  @override
-  String get newTimeSlot => 'New time slot';
-
-  @override
-  String get viewCalendar => 'View calendar';
-
-  @override
-  String get monday => 'Monday';
-
-  @override
-  String get tuesday => 'Tuesday';
-
-  @override
-  String get wednesday => 'Wednesday';
-
-  @override
-  String get thursday => 'Thursday';
-
-  @override
-  String get friday => 'Friday';
-
-  @override
-  String get saturday => 'Saturday';
-
-  @override
-  String get sunday => 'Sunday';
-
-  @override
-  String get closedException => 'Closed';
-
-  @override
-  String get revenue => 'Revenue';
-
-  @override
-  String get revenueAndStats => 'Revenue & stats';
-
-  @override
-  String get grossRevenue => 'Gross revenue';
-
-  @override
-  String get netRevenue => 'Net revenue';
-
-  @override
-  String get commission => 'Commission';
-
-  @override
-  String get transactions => 'Transactions';
-
-  @override
-  String get totalPeriod => 'Period total';
-
-  @override
-  String get noTransactionsPeriod => 'No transactions for this period';
-
-  @override
-  String get periodSevenDays => '7 days';
-
-  @override
-  String get periodThirtyDays => '30 days';
-
-  @override
-  String get periodNinetyDays => '90 days';
-
-  @override
-  String get periodOneYear => '1 year';
-
-  @override
-  String get withdraw => 'Withdraw';
-
-  @override
-  String get perDay => 'per day';
-
-  @override
-  String get thisWeek => 'This week';
-
-  @override
-  String get eventsTab => 'Events';
-
-  @override
-  String get createEventAction => 'Create event';
-
-  @override
-  String get buyTicketAction => 'Buy ticket';
-
-  @override
-  String get scanTicket => 'Scan ticket';
-
-  @override
-  String get servicesTab => 'Services';
-
-  @override
-  String get videosTab => 'Videos';
-
-  @override
-  String get reviewsTab => 'Reviews';
-
-  @override
-  String get menuTab => 'Menu';
-
-  @override
-  String get myClients => 'My clients';
-
-  @override
-  String get noClients => 'No clients';
-
-  @override
-  String get mostRecent => 'Most recent';
-
-  @override
-  String get mostBookings => 'Most bookings';
-
-  @override
-  String get mostSpent => 'Most spent';
-
-  @override
-  String get messageLabel => 'Message';
-
-  @override
-  String get searchClientHint => 'Search a client...';
-
-  @override
-  String get searchProfessionalHint => 'Search a professional...';
-
-  @override
-  String get noProfessionalsAvailable => 'No professionals available';
-
-  @override
-  String get notificationsEmpty => 'No notifications';
-
-  @override
-  String get notificationsMarkAllRead => 'Mark all as read';
-
-  @override
-  String get notifSectionAppointments => 'Appointments';
-
-  @override
-  String get notifSectionEvents => 'Events';
-
-  @override
-  String get notifSectionCommunication => 'Communication';
-
-  @override
-  String get notifSectionOther => 'Other';
-
-  @override
-  String get notifReminders => 'Reminders';
-
-  @override
-  String get notifRemindersSubtitle => 'Appointment and event reminders';
-
-  @override
-  String get notifMessages => 'Messages';
-
-  @override
-  String get notifMessagesSubtitle => 'New messages from your clients or pros';
-
-  @override
-  String get notifUpdates => 'Updates';
-
-  @override
-  String get notifUpdatesSubtitle => 'Booking and event updates';
-
-  @override
-  String get notifMarketing => 'Promotions';
-
-  @override
-  String get notifMarketingSubtitle => 'Spotbook offers and news';
-
-  @override
-  String get notifReviewRequests => 'Review requests';
-
-  @override
-  String get notifReviewRequestsSubtitle => 'Reminders to leave a review after an appointment';
-
-  @override
-  String get notifWaitlist => 'Waitlist';
-
-  @override
-  String get notifWaitlistSubtitle => 'Notifications for available spots';
-
-  @override
-  String get reviewsReceivedTitle => 'Reviews received';
-
-  @override
-  String get reviewsEmpty => 'No reviews';
-
-  @override
-  String get reviewsFilterAll => 'All';
-
-  @override
-  String get reviewsLabel => 'Reviews';
-
-  @override
-  String get leaveReview => 'Leave a review';
-
-  @override
-  String get reviewHowWasAppointment => 'How was your appointment?';
-
-  @override
-  String get reviewTapToRate => 'Tap to rate';
-
-  @override
-  String get reviewShareExperience => 'Share your experience';
-
-  @override
-  String get reviewSubmit => 'Submit review';
-
-  @override
-  String get reviewThankYou => 'Thank you for your review!';
-
-  @override
-  String get reviewFeedbackHelps => 'Your feedback helps other users.';
-
-  @override
-  String get reviewDone => 'Done';
-
-  @override
-  String get reviewLeaveReview => 'Leave a review';
-
-  @override
-  String get reviewRating1 => 'Terrible';
-
-  @override
-  String get reviewRating2 => 'Bad';
-
-  @override
-  String get reviewRating3 => 'OK';
-
-  @override
-  String get reviewRating4 => 'Good';
-
-  @override
-  String get reviewRating5 => 'Excellent';
-
-  @override
-  String get avgRating => 'Average rating';
+  String get remainingOnDay => 'Remaining on the day';
 
   @override
   String get report => 'Report';
@@ -2253,10 +2359,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get reportBooking => 'Report booking';
 
   @override
-  String get reportWhyReporting => 'Why are you reporting?';
-
-  @override
-  String get reportReasonSpam => 'Spam';
+  String get reportReasonFakeProfile => 'Fake profile';
 
   @override
   String get reportReasonHarassment => 'Harassment';
@@ -2265,100 +2368,118 @@ class AppLocalizationsEn extends AppLocalizations {
   String get reportReasonInappropriate => 'Inappropriate content';
 
   @override
-  String get reportReasonFakeProfile => 'Fake profile';
-
-  @override
   String get reportReasonOther => 'Other';
 
   @override
-  String get reportSubmitButton => 'Submit report';
+  String get reportReasonSpam => 'Spam';
 
   @override
   String get reportSent => 'Report sent';
 
   @override
-  String get block => 'Block';
+  String get reportSubmitButton => 'Submit report';
 
   @override
-  String get blockUserConfirmTitle => 'Block this user?';
+  String get reportWhyReporting => 'Why are you reporting?';
 
   @override
-  String get blockUserBlocked => 'User blocked';
+  String get reservations => 'Reservations';
 
   @override
-  String get blockUserDefault => 'Block user';
+  String get reserveLabel => 'Reserve';
 
   @override
-  String get blockedUsersTitle => 'Blocked users';
+  String get retourLabel => 'Back';
 
   @override
-  String get blockedUsersEmpty => 'No blocked users';
+  String get revenue => 'Revenue';
 
   @override
-  String get blockedUsersUnblock => 'Unblock';
+  String get revenueAndStats => 'Revenue & Stats';
 
   @override
-  String get bookingReportTitle => 'Report booking';
+  String get revenueQuickAction => 'Revenue';
 
   @override
-  String get bookingReportDescription => 'Describe the issue';
+  String get reviewDone => 'Review submitted';
 
   @override
-  String get bookingReportDetailsLabel => 'Details';
+  String get reviewFeedbackHelps => 'Your feedback helps improve the service';
 
   @override
-  String get bookingReportDetailsHint => 'Describe the issue...';
+  String get reviewHowWasAppointment => 'How was your appointment?';
 
   @override
-  String get bookingReportReasonNoShow => 'No-show';
+  String get reviewLeaveReview => 'Leave a review';
 
   @override
-  String get bookingReportReasonNotAsDescribed => 'Not as described';
+  String get reviewShareExperience => 'Share your experience';
 
   @override
-  String get bookingReportReasonHarassment => 'Harassment';
+  String get reviewSubmit => 'Submit review';
 
   @override
-  String get bookingReportReasonInappropriate => 'Inappropriate content';
+  String get reviewTapToRate => 'Tap to rate';
 
   @override
-  String get bookingReportReasonPayment => 'Payment issue';
+  String get reviewThankYou => 'Thank you for your review!';
 
   @override
-  String get bookingReportSentConfirmation => 'Your report has been sent.';
+  String get reviewsEmpty => 'No reviews yet';
 
   @override
-  String get settingsSectionAccount => 'Account';
+  String get reviewsFilterAll => 'All';
 
   @override
-  String get settingsSectionBusiness => 'Business';
+  String get reviewsLabel => 'Reviews';
 
   @override
-  String get settingsSectionBookings => 'Bookings';
+  String get reviewsReceivedTitle => 'Reviews received';
 
   @override
-  String get settingsSectionPayments => 'Payments';
+  String get reviewsTab => 'Reviews';
 
   @override
-  String get settingsSectionNotifications => 'Notifications';
+  String get saturday => 'Saturday';
 
   @override
-  String get settingsSectionPreferences => 'Preferences';
+  String get scanTicket => 'Scan ticket';
 
   @override
-  String get settingsSectionSupport => 'Support';
+  String get searchClientHint => 'Search clients…';
 
   @override
-  String get settingsSectionLegal => 'Legal';
+  String get searchProfessionalHint => 'Search professionals…';
 
   @override
-  String get settingsManageServices => 'Manage my services';
+  String get secured => 'Secured';
 
   @override
-  String get settingsMyEvents => 'My events';
+  String get selectCategoryRequired => 'Please select a category';
 
   @override
-  String get settingsMyQrCode => 'My QR code';
+  String get selectVideoMax => 'Select a video (max 2 min)';
+
+  @override
+  String get selectedLabel => 'Selected';
+
+  @override
+  String get serviceFee => 'Service fee';
+
+  @override
+  String get serviceName => 'Service name';
+
+  @override
+  String get serviceNameMinChars => 'Service name must be at least 3 characters';
+
+  @override
+  String get servicesAvailableLabel => 'Services available';
+
+  @override
+  String get servicesQuickAction => 'Services';
+
+  @override
+  String get servicesTab => 'Services';
 
   @override
   String get settingsAvailability => 'Availability';
@@ -2367,361 +2488,217 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsCancellationPolicy => 'Cancellation policy';
 
   @override
-  String get settingsCancellationPolicySubtitle => 'Manage your cancellation terms';
-
-  @override
-  String get settingsCommissions => 'Commissions';
-
-  @override
-  String get settingsConfigurePayments => 'Configure payments';
-
-  @override
-  String get settingsRevenueStats => 'Revenue & stats';
-
-  @override
-  String get settingsDepositSettings => 'Deposit settings';
-
-  @override
-  String get settingsDepositSettingsSubtitle => 'Configure deposits per service';
-
-  @override
-  String get settingsQuotes => 'Quotes';
-
-  @override
-  String get settingsQuotesSubtitle => 'Manage your quote requests';
-
-  @override
-  String get settingsHistory => 'History';
-
-  @override
-  String get settingsPreferences => 'Preferences';
-
-  @override
-  String get settingsLanguage => 'Language';
-
-  @override
-  String get settingsMyReviews => 'My reviews';
-
-  @override
-  String get settingsContactUs => 'Contact us';
+  String get settingsCancellationPolicySubtitle => 'Set your cancellation rules';
 
   @override
   String get settingsChangePassword => 'Change password';
 
   @override
-  String get deleteAccount => 'Delete account';
+  String get settingsCommissions => 'Commissions & Fees';
 
   @override
-  String get deleteAccountDescription => 'This action cannot be undone. All your data will be deleted.';
+  String get settingsConfigurePayments => 'Configure payments';
 
   @override
-  String get deleteAccountConfirmCheckbox => 'I understand this action is irreversible';
+  String get settingsContactUs => 'Contact us';
 
   @override
-  String get deleteAccountPermanently => 'Delete permanently';
+  String get settingsDepositSettings => 'Deposit settings';
 
   @override
-  String get deleteAccountIrreversible => 'Irreversible action';
+  String get settingsDepositSettingsSubtitle => 'Configure deposit requirements';
 
   @override
-  String get deleteAccountFailed => 'Account deletion failed';
+  String get settingsHistory => 'History';
 
   @override
-  String get cancellationPolicyTitle => 'Cancellation Policy';
+  String get settingsLanguage => 'Language';
 
   @override
-  String get cancellationHowItWorks => 'How it works';
+  String get settingsManageServices => 'Manage services';
 
   @override
-  String get cancellationKeyPoints => 'Key points';
+  String get settingsMyEvents => 'My events';
 
   @override
-  String get cancellationProtectTitle => 'Protect your business';
+  String get settingsMyQrCode => 'My QR code';
 
   @override
-  String get cancellationProtectDescription => 'Our cancellation policy protects you against last-minute cancellations.';
+  String get settingsMyReviews => 'My reviews';
 
   @override
-  String get cancellationIfYouCancel => 'If you cancel';
+  String get settingsPreferences => 'Preferences';
 
   @override
-  String get cancellationIfYouCancelDescription => 'Here\'s what happens depending on when you cancel.';
+  String get settingsQuotes => 'Quotes';
 
   @override
-  String get cancellationRule48hTitle => 'More than 48h before';
+  String get settingsQuotesSubtitle => 'Manage quote requests';
 
   @override
-  String get cancellationRule48hSubtitle => 'Full refund';
+  String get settingsRevenueStats => 'Revenue & Statistics';
 
   @override
-  String get cancellationRule48hDescription => 'Free cancellation, full deposit refund.';
+  String get settingsSectionAccount => 'Account';
 
   @override
-  String get cancellationRule24to48hTitle => 'Between 24h and 48h';
+  String get settingsSectionBookings => 'Bookings';
 
   @override
-  String get cancellationRule24to48hSubtitle => '50% of deposit kept';
+  String get settingsSectionBusiness => 'Business';
 
   @override
-  String get cancellationRule24to48hDescription => 'The pro keeps 50% of the deposit.';
+  String get settingsSectionLegal => 'Legal';
 
   @override
-  String get cancellationRuleLess24hTitle => 'Less than 24h before';
+  String get settingsSectionNotifications => 'Notifications';
 
   @override
-  String get cancellationRuleLess24hSubtitle => 'Deposit non-refundable';
+  String get settingsSectionPayments => 'Payments';
 
   @override
-  String get cancellationRuleLess24hDescription => 'The deposit is fully kept by the pro.';
+  String get settingsSectionPreferences => 'Preferences';
 
   @override
-  String get cancellationRuleNoShowTitle => 'No-show';
+  String get settingsSectionSupport => 'Support';
 
   @override
-  String get cancellationRuleNoShowSubtitle => 'Deposit lost';
+  String get shareCopy => 'Copy';
 
   @override
-  String get cancellationRuleNoShowDescription => 'In case of no-show, the deposit is lost.';
+  String get shareMessages => 'Messages';
 
   @override
-  String get cancellationFactBasedOnStart => 'Based on appointment start time';
+  String get shareMyProfile => 'Share my profile';
 
   @override
-  String get cancellationFactRefundDelay => 'Refunds within 5-10 business days';
+  String get shareProfileTitle => 'Share profile';
 
   @override
-  String get cancellationFactReschedule => 'Rescheduling is not a cancellation';
+  String get signIn => 'Sign in';
 
   @override
-  String get cancellationFactDisputes => 'In case of dispute, contact support';
+  String get signInToFollow => 'Sign in to follow';
 
   @override
-  String get commissionsTitle => 'Commissions';
+  String get signInToMessage => 'Sign in to message';
 
   @override
-  String get commissionsDescription => 'Understand our commission rates';
+  String get slotDurationLabel => 'Slot duration';
 
   @override
-  String get commissionsRates => 'Our rates';
+  String get slotsPreviewHeader => 'Slots preview';
 
   @override
-  String get commissionsServiceBookings => 'Service bookings';
+  String get slotsUpdated => 'Slots updated';
 
   @override
-  String get commissionsServiceBookingsDesc => 'Commission on each booking';
+  String get socialLinksAutoDetectHint => 'Links are auto-detected';
 
   @override
-  String get commissionsEventTickets => 'Event tickets';
+  String get socialLinksHeader => 'Social links';
 
   @override
-  String get commissionsEventTicketsDesc => 'Commission on each ticket sold';
+  String get socialNetworks => 'Social networks';
 
   @override
-  String get commissionsCateringDeposits => 'Catering deposits';
+  String get soumissionsLabel => 'Submissions';
 
   @override
-  String get commissionsCateringDesc => 'Commission on catering deposits';
+  String get startLabel => 'Start';
 
   @override
-  String get commissionsClientServiceFee => 'Client service fee';
-
-  @override
-  String get commissionsFixedFeePerBooking => 'Fixed fee per booking';
-
-  @override
-  String get commissionsFixedFeeDescription => 'This fee is paid by the client, not the pro.';
-
-  @override
-  String get commissionsTransparentPricing => 'Transparent pricing';
-
-  @override
-  String get commissionsDetailedExample => 'Detailed example';
-
-  @override
-  String get commissionsServicePrice => 'Service price';
-
-  @override
-  String get commissionsYouReceive => 'You receive';
-
-  @override
-  String get commissionsClientPaysService => 'Client pays (service)';
-
-  @override
-  String get commissionsClientPaysFee => 'Client pays (fee)';
-
-  @override
-  String get commissionsClientTotal => 'Client total';
-
-  @override
-  String get commissionsPayouts => 'Payouts';
-
-  @override
-  String get commissionsPayoutsDescription => 'Payouts are made automatically via Stripe Connect.';
-
-  @override
-  String get depositSettingsTitle => 'Deposit Settings';
-
-  @override
-  String get depositRequire => 'Require deposit';
-
-  @override
-  String get depositRequireOnBooking => 'Require deposit on booking';
-
-  @override
-  String get depositEnabledDescription => 'Clients will pay a deposit when booking.';
-
-  @override
-  String get depositDisabledDescription => 'Clients will pay the full amount on-site.';
-
-  @override
-  String get depositPercentageTitle => 'Percentage';
-
-  @override
-  String get depositPercentageDescription => 'The deposit is a percentage of the service price.';
-
-  @override
-  String get depositPercent => 'Deposit percentage';
-
-  @override
-  String get depositMinimumTitle => 'Minimum';
-
-  @override
-  String get depositMinimumDescription => 'Minimum deposit amount in CAD.';
-
-  @override
-  String get depositCadMinimum => 'Minimum (CAD)';
-
-  @override
-  String get depositQuickSelect => 'Quick select';
-
-  @override
-  String get depositPreviewTitle => 'Preview';
-
-  @override
-  String get depositPaidOnline => 'Paid online';
-
-  @override
-  String get depositReceivedOnline => 'Received online';
-
-  @override
-  String get depositPlusSurplace => '+ balance on-site';
-
-  @override
-  String get depositClientPaysNow => 'Client pays now';
-
-  @override
-  String get depositServiceFee => 'Service fee';
-
-  @override
-  String get depositServiceTotal => 'Service total';
-
-  @override
-  String get depositExplanation => 'The deposit is deducted from the total amount on the day of the appointment.';
-
-  @override
-  String get depositSaveSettings => 'Save';
-
-  @override
-  String get depositSettingsSaved => 'Deposit settings saved';
-
-  @override
-  String get invalidDepositAmount => 'Invalid deposit amount';
-
-  @override
-  String get myQrCode => 'My QR Code';
-
-  @override
-  String get qrShareInfo => 'Share this QR code so clients can find you easily.';
-
-  @override
-  String get promoCodes => 'Promo codes';
-
-  @override
-  String get verifiedBadge => 'Verified';
-
-  @override
-  String get topProBadge => 'Top Pro';
-
-  @override
-  String get activeBadge => 'Active';
-
-  @override
-  String get newBadge => 'New';
-
-  @override
-  String get memberBadge => 'Member';
-
-  @override
-  String get fastReplyBadge => 'Fast reply';
-
-  @override
-  String get subscribedLabel => 'Subscribed';
-
-  @override
-  String get becomePro => 'Become Pro';
-
-  @override
-  String get becomeProSubtitle => 'Join Spotbook as a professional';
-
-  @override
-  String get becomeProPublishVideos => 'Publish your videos';
-
-  @override
-  String get becomeProPublishVideosDesc => 'Showcase your services on video';
-
-  @override
-  String get becomeProManageServices => 'Manage your services';
-
-  @override
-  String get becomeProManageServicesDesc => 'Create and manage your services';
-
-  @override
-  String get becomeProReceivePayments => 'Receive payments';
-
-  @override
-  String get becomeProReceivePaymentsDesc => 'Secure payments via Stripe';
-
-  @override
-  String get becomeProSellTickets => 'Sell tickets';
-
-  @override
-  String get becomeProSellTicketsDesc => 'Organize events with ticketing';
-
-  @override
-  String get createProAccount => 'Create Pro account';
-
-  @override
-  String get refundRequestTitle => 'Refund request';
-
-  @override
-  String get refundErrorRetry => 'Error. Please try again.';
-
-  @override
-  String get myFavoritePros => 'My favorite pros';
-
-  @override
-  String get likeProsToFindHere => 'Like pros to find them here';
-
-  @override
-  String get recentHistory => 'Recent history';
-
-  @override
-  String get analyticsLabel => 'Analytics';
+  String get statsLoadError => 'Failed to load statistics';
 
   @override
   String get statusPending => 'Pending';
 
   @override
-  String get viewAll => 'View all';
+  String get stepConfirmed => 'Confirmed';
 
   @override
-  String get availabilitySection => 'Availability';
+  String get stepDate => 'Date';
 
   @override
-  String get noMenuAvailable => 'No menu available';
+  String get stepPayment => 'Payment';
 
   @override
-  String get glutenFreeLabel => 'Gluten-free';
+  String get stepService => 'Service';
+
+  @override
+  String get stepSummary => 'Summary';
+
+  @override
+  String get stepTime => 'Time';
+
+  @override
+  String get subscribedLabel => 'Subscribed';
+
+  @override
+  String get subtotal => 'Subtotal';
+
+  @override
+  String get summarySubtitle => 'Review your booking details';
+
+  @override
+  String get sunday => 'Sunday';
+
+  @override
+  String get syncing => 'Syncing…';
+
+  @override
+  String get tapToChange => 'Tap to change';
+
+  @override
+  String get termsOfService => 'Terms of service';
+
+  @override
+  String get textTool => 'Text';
+
+  @override
+  String get thisWeek => 'This week';
+
+  @override
+  String get thursday => 'Thursday';
+
+  @override
+  String get topProBadge => 'Top Pro';
+
+  @override
+  String get totalPeriod => 'Total for period';
+
+  @override
+  String get totalService => 'Total for service';
+
+  @override
+  String get transactions => 'Transactions';
+
+  @override
+  String get tuesday => 'Tuesday';
+
+  @override
+  String get upcomingAppointmentsHint => 'Your upcoming appointments';
+
+  @override
+  String get upcomingBookingsHeader => 'Upcoming bookings';
+
+  @override
+  String get uploadVideo => 'Upload video';
+
+  @override
+  String get uploadVideoSubtitle => 'Upload a video of your service';
+
+  @override
+  String get usernameInvalidChars => 'Username can only contain letters, numbers, and underscores';
+
+  @override
+  String get usernameLabel => 'Username';
+
+  @override
+  String get usernameMinChars => 'Username must be at least 3 characters';
+
+  @override
+  String get usernameTaken => 'This username is already taken';
 
   @override
   String get veganLabel => 'Vegan';
@@ -2730,128 +2707,101 @@ class AppLocalizationsEn extends AppLocalizations {
   String get vegetarianLabel => 'Vegetarian';
 
   @override
-  String get soumissionsLabel => 'Quotes';
+  String get verifiedBadge => 'Verified';
+
+  @override
+  String get videoLabel => 'Video';
+
+  @override
+  String get videoPublished => 'Video published';
+
+  @override
+  String get videoStatusFlagged => 'Flagged';
+
+  @override
+  String get videoStatusPublished => 'Published';
+
+  @override
+  String get videoStatusRejected => 'Rejected';
+
+  @override
+  String get videoTooLong => 'Video is too long (max 2 minutes)';
+
+  @override
+  String get videoUnavailable => 'Video unavailable';
+
+  @override
+  String get videosTab => 'Videos';
+
+  @override
+  String get viewAll => 'View all';
+
+  @override
+  String get viewCalendar => 'View calendar';
+
+  @override
+  String get wednesday => 'Wednesday';
+
+  @override
+  String get weeklyRulesHeader => 'Weekly rules';
+
+  @override
+  String get withdraw => 'Withdraw';
+
+  @override
+  String get yesCancel => 'Yes, cancel';
+
+  @override
+  String get yourTextHint => 'Your text here…';
+
+  @override
+  String get titleRequired => 'Title (required)';
+
+  @override
+  String get titleHint => 'Give your video a title…';
 
   @override
   String get addLabel2 => 'Add';
 
-  // ═══ Missing methods added ═══
+  @override
+  String get reviewRating1 => 'Terrible';
 
   @override
-  String balanceOnSite(String amount, String currency) {
-    return 'Balance on-site: \$amount \$currency';
-  }
+  String get reviewRating2 => 'Poor';
 
   @override
-  String confirmBalanceMessage(String amount, String currency) {
-    return 'Confirm balance payment of \$amount \$currency?';
-  }
+  String get reviewRating3 => 'Average';
 
   @override
-  String commissionEstimate(String pct, String commission, String currency, String net) {
-    return 'Commission \$pct%: \$commission \$currency — You receive \$net \$currency';
-  }
+  String get reviewRating4 => 'Good';
 
   @override
-  String linkPlatform(String platform) {
-    return 'Link \$platform';
-  }
+  String get reviewRating5 => 'Excellent';
 
   @override
-  String pasteLinkFor(String platform) {
-    return 'Paste your \$platform link';
-  }
+  String get cancellationRule48hTitle => 'More than 48h before';
 
   @override
-  String noBookingsOn(String date) {
-    return 'No bookings on \$date';
-  }
+  String get cancellationRule48hSubtitle => 'Full refund';
 
   @override
-  String noResultsFor(String query) {
-    return 'No results for "\$query"';
-  }
+  String get cancellationRule48hDescription => 'Cancel more than 48 hours before the appointment for a full refund.';
 
   @override
-  String publicProfileTicketsLeft(int remaining) {
-    return '\$remaining tickets left';
-  }
+  String get cancellationRule24to48hTitle => 'Between 24h and 48h';
 
   @override
-  String publishingProgress(int percent) {
-    return 'Publishing... \$percent%';
-  }
+  String get cancellationRule24to48hSubtitle => '50% refund';
 
   @override
-  String reviewCountLabel(int count) {
-    return '\$count reviews';
-  }
+  String get cancellationRule24to48hDescription => 'Cancel between 24 and 48 hours before and receive a 50% refund.';
 
   @override
-  String ticketPriceLabel(String price) {
-    return 'From \$price';
-  }
+  String get cancellationRuleLess24hTitle => 'Less than 24h';
 
   @override
-  String videoReason(String reason) {
-    return 'Reason: \$reason';
-  }
+  String get cancellationRuleLess24hSubtitle => 'No refund';
 
   @override
-  String videoSelectedDuration(String seconds) {
-    return 'Selected duration: \$seconds s';
-  }
-
-  @override
-  String settingsCommissionsSubtitle(int bookings, int events, String fee) {
-    return '\$bookings% bookings · \$events% events · \$fee fee';
-  }
-
-  @override
-  String commissionsExampleService(int price, String net) {
-    return 'Service at \$\$price → You receive \$\$net';
-  }
-
-  @override
-  String commissionsExampleTicket(int price, String net) {
-    return 'Ticket at \$\$price → You receive \$\$net';
-  }
-
-  @override
-  String commissionsExampleCatering(int price, String net) {
-    return 'Catering at \$\$price → You receive \$\$net';
-  }
-
-  @override
-  String commissionsSpotbookCommission(int pct) {
-    return 'Spotbook commission: \$pct%';
-  }
-
-  @override
-  String blockUserConfirmMessage(String name) {
-    return 'Are you sure you want to block \$name?';
-  }
-
-  @override
-  String reviewsCount(int count) {
-    return '\$count reviews';
-  }
-
-  @override
-  String depositAmountLabel(int percentage) {
-    return 'Deposit of \$percentage%';
-  }
-
-  @override
-  String depositPreviewDescription(String price) {
-    return 'For a service at \$price';
-  }
-
-  @override
-  String depositRemainingOnDay(String amount) {
-    return 'Remaining on the day: \$amount';
-  }
-
-  @override
-  String get availabilityRulesHint => 'Configure your availability rules';
+  String get cancellationRuleLess24hDescription => 'Cancellations within 24 hours are not eligible for a refund.';
 }
