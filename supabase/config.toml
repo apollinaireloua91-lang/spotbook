@@ -379,6 +379,10 @@ deno_version = 2
 [functions.stripe-webhook-handler]
 verify_jwt = false
 
+# Cloudflare Stream envoie des webhooks sans JWT Supabase — la fonction vérifie via webhook-secret header.
+[functions.cloudflare-webhook]
+verify_jwt = false
+
 # Re-enabled gateway JWT verification (defense in depth). Handler still calls getUser() for user context.
 [functions.generate-cloudflare-upload-url]
 verify_jwt = true
