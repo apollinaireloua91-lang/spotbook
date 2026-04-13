@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../domain/entities/provider_profile_data.dart';
 
@@ -52,6 +53,7 @@ class _ProviderPublicVideoScreenState extends State<ProviderPublicVideoScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: AppColors.fond,
       appBar: AppBar(
@@ -59,7 +61,7 @@ class _ProviderPublicVideoScreenState extends State<ProviderPublicVideoScreen> {
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         leading: Semantics(
-          label: 'Retour',
+          label: l.retourLabel,
           child: IconButton(
             icon: Container(
               padding: const EdgeInsets.all(8),
@@ -77,7 +79,7 @@ class _ProviderPublicVideoScreenState extends State<ProviderPublicVideoScreen> {
           ),
         ),
         title: Text(
-          widget.video.title ?? 'Vidéo',
+          widget.video.title ?? l.videoLabel,
           style: GoogleFonts.sora(
             color: AppColors.blanc,
             fontSize: 16,
@@ -90,7 +92,7 @@ class _ProviderPublicVideoScreenState extends State<ProviderPublicVideoScreen> {
       body: Center(
         child: _controller == null
             ? Text(
-                'Lecture indisponible',
+                l.videoUnavailable,
                 style: GoogleFonts.dmSans(color: AppColors.gris),
               )
             : AspectRatio(

@@ -6,6 +6,7 @@ import 'package:qr_flutter/qr_flutter.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/widgets/spotbook_button.dart';
 
@@ -14,6 +15,7 @@ class ProQrCodeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     final user = Supabase.instance.client.auth.currentUser;
     final uid = user?.id ?? '';
     final meta = user?.userMetadata;
@@ -30,7 +32,7 @@ class ProQrCodeScreen extends StatelessWidget {
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         leading: Semantics(
-          label: 'Back',
+          label: l.retourLabel,
           child: IconButton(
             icon: Container(
               padding: const EdgeInsets.all(8),
@@ -45,7 +47,7 @@ class ProQrCodeScreen extends StatelessWidget {
           ),
         ),
         title: Text(
-          'Mon code QR',
+          l.myQrCode,
           style: GoogleFonts.sora(
               color: AppColors.blanc, fontWeight: FontWeight.bold, fontSize: 18),
         ),
@@ -121,7 +123,7 @@ class ProQrCodeScreen extends StatelessWidget {
                         Clipboard.setData(ClipboardData(text: profileUrl));
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content: const Text('Lien copié !'),
+                            content: Text(l.linkCopiedSnack),
                             backgroundColor: AppColors.success,
                             duration: const Duration(seconds: 2),
                           ),
@@ -178,7 +180,7 @@ class ProQrCodeScreen extends StatelessWidget {
                     const SizedBox(width: 10),
                     Expanded(
                       child: Text(
-                        'Partagez ce QR code avec vos clients pour qu\'ils accèdent directement à votre profil et réservent vos services.',
+                        l.qrShareInfo,
                         style: GoogleFonts.dmSans(
                             color: AppColors.gris,
                             fontSize: 13,
@@ -193,20 +195,20 @@ class ProQrCodeScreen extends StatelessWidget {
 
               // ─── Action buttons ──────────────────────────────────────────
               SpotbookButton.primary(
-                label: 'Partager mon profil',
+                label: l.shareMyProfile,
                 icon: Icons.share_outlined,
                 onPressed: () =>
                     SharePlus.instance.share(ShareParams(text: profileUrl)),
               ),
               const SizedBox(height: 12),
               SpotbookButton.secondary(
-                label: 'Copier le lien',
+                label: l.copyLinkAction,
                 icon: Icons.copy_outlined,
                 onPressed: () {
                   Clipboard.setData(ClipboardData(text: profileUrl));
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: const Text('Lien copié dans le presse-papier'),
+                      content: Text(l.linkCopiedToClipboard),
                       backgroundColor: AppColors.success,
                     ),
                   );

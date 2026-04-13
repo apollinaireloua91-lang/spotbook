@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../domain/profile_models.dart';
 
@@ -41,6 +42,7 @@ class _ProfileHeroState extends State<ProfileHero>
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     final p = widget.profile;
 
     return Column(
@@ -165,7 +167,7 @@ class _ProfileHeroState extends State<ProfileHero>
               Icon(Icons.diamond_outlined, color: AppColors.violetClair, size: 13),
               const SizedBox(width: 5),
               Text(
-                'Membre Spotbook',
+                l.memberBadge,
                 style: GoogleFonts.dmSans(
                   color: AppColors.violetClair,
                   fontSize: 11,
@@ -192,7 +194,7 @@ class _ProfileHeroState extends State<ProfileHero>
                   ),
                 )
               : Text(
-                  'Ajoutez votre bio',
+                  l.addBioHint,
                   style: GoogleFonts.dmSans(
                     color: AppColors.grisInactif,
                     fontSize: 13,

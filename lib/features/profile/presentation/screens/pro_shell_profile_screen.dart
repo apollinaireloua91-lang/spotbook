@@ -8,6 +8,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/theme/theme_mode_notifier.dart';
 import '../../../../shared/widgets/spotbook_button.dart';
@@ -93,6 +94,7 @@ class ProShellProfileScreen extends ConsumerWidget {
     // Watch theme mode so the entire subtree rebuilds when dark mode toggles,
     // re-evaluating all AppColors.xxx getters with the updated brightness.
     ref.watch(themeModeProvider);
+    final l = AppLocalizations.of(context)!;
 
     final profileAsync = ref.watch(_proSelfProfileProvider);
 
@@ -102,7 +104,7 @@ class ProShellProfileScreen extends ConsumerWidget {
           return Scaffold(
             backgroundColor: AppColors.fond,
             body: Center(
-              child: Text('Non connecté',
+              child: Text(l.notSignedIn,
                   style: TextStyle(color: AppColors.gris)),
             ),
           );
@@ -118,7 +120,7 @@ class ProShellProfileScreen extends ConsumerWidget {
       error: (e, _) => Scaffold(
         backgroundColor: AppColors.fond,
         body: Center(
-          child: Text('Error: $e',
+          child: Text('${l.error}: $e',
               style: TextStyle(color: AppColors.error)),
         ),
       ),
@@ -203,6 +205,7 @@ class _ProSelfProfileBodyState extends ConsumerState<_ProSelfProfileBody>
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     final profile = widget.profile;
     final isTraiteur = isCateringCategory(profile.category);
 
@@ -241,7 +244,7 @@ class _ProSelfProfileBodyState extends ConsumerState<_ProSelfProfileBody>
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _SectionHeader(
-                    title: 'Mes vidéos',
+                    title: l.myVideosSection,
                     onSeeAll: () => context.push('/pro/feed'),
                   ),
                   const SizedBox(height: 10),
@@ -256,7 +259,7 @@ class _ProSelfProfileBodyState extends ConsumerState<_ProSelfProfileBody>
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _SectionHeader(
-                    title: 'Mes services',
+                    title: l.myServicesSection,
                     onSeeAll: () => context.push('/pro/services'),
                   ),
                   const SizedBox(height: 10),
@@ -277,7 +280,7 @@ class _ProSelfProfileBodyState extends ConsumerState<_ProSelfProfileBody>
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _SectionHeader(
-                    title: 'Mes événements',
+                    title: l.myEventsSection,
                     onSeeAll: () => context.push('/pro/events'),
                   ),
                   const SizedBox(height: 10),
@@ -556,7 +559,7 @@ class _ProfileHeaderState extends State<_ProfileHeader>
 
         // Edit Profile button — full width outline
         SpotbookButton.outlined(
-          label: 'Modifier le profil',
+          label: AppLocalizations.of(context)!.editProfile,
           onPressed: () {
             HapticFeedback.mediumImpact();
             context.push('/edit-profile');
@@ -760,29 +763,30 @@ class _QuickActions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     return Row(
       children: [
         _QuickActionBtn(
           icon: Icons.design_services_outlined,
-          label: 'Services',
+          label: l.servicesQuickAction,
           onTap: () => context.push('/pro/services'),
         ),
         const SizedBox(width: 8),
         _QuickActionBtn(
           icon: Icons.event_outlined,
-          label: 'Événements',
+          label: l.eventsQuickAction,
           onTap: () => context.push('/pro/events'),
         ),
         const SizedBox(width: 8),
         _QuickActionBtn(
           icon: Icons.bar_chart_rounded,
-          label: 'Revenus',
+          label: l.revenueQuickAction,
           onTap: () => context.push('/pro/revenue'),
         ),
         const SizedBox(width: 8),
         _QuickActionBtn(
           icon: Icons.schedule_outlined,
-          label: 'Disponibilité',
+          label: l.availabilityQuickAction,
           onTap: () => context.push('/pro/availability'),
         ),
       ],
@@ -934,7 +938,7 @@ class _SectionHeader extends StatelessWidget {
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Text(
-                'Voir tout',
+                AppLocalizations.of(context)!.viewAll,
                 style: GoogleFonts.dmSans(
                   fontSize: 11,
                   color: AppColors.violet,
@@ -966,8 +970,8 @@ class _VideosRow extends StatelessWidget {
         if (videos.isEmpty) {
           return _EmptySection(
             icon: Icons.videocam_outlined,
-            text: 'Aucune vidéo',
-            actionLabel: '+ Ajouter une vidéo',
+            text: AppLocalizations.of(context)!.noVideosAvailable,
+            actionLabel: '+ ${AppLocalizations.of(context)!.addVideoAction}',
             onAction: () => _showVideoSourceSheet(context),
           );
         }
@@ -1023,7 +1027,7 @@ class _VideosRow extends StatelessWidget {
               ),
               const SizedBox(height: 20),
               Text(
-                'Ajouter une vidéo',
+                AppLocalizations.of(context)!.addVideoTitle,
                 style: GoogleFonts.sora(
                   fontSize: 18,
                   fontWeight: FontWeight.w600,
@@ -1034,11 +1038,11 @@ class _VideosRow extends StatelessWidget {
               ListTile(
                 leading: Icon(Icons.videocam, color: AppColors.violet),
                 title: Text(
-                  'Filmer une vidéo',
+                  AppLocalizations.of(context)!.recordVideo,
                   style: GoogleFonts.dmSans(color: AppColors.blanc),
                 ),
                 subtitle: Text(
-                  'Capturer avec la caméra',
+                  AppLocalizations.of(context)!.recordVideoSubtitle,
                   style: GoogleFonts.dmSans(
                     color: AppColors.gris,
                     fontSize: 12,
@@ -1052,11 +1056,11 @@ class _VideosRow extends StatelessWidget {
               ListTile(
                 leading: Icon(Icons.upload_file, color: AppColors.violet),
                 title: Text(
-                  'Uploader une vidéo',
+                  AppLocalizations.of(context)!.uploadVideo,
                   style: GoogleFonts.dmSans(color: AppColors.blanc),
                 ),
                 subtitle: Text(
-                  'Choisir depuis la galerie',
+                  AppLocalizations.of(context)!.uploadVideoSubtitle,
                   style: GoogleFonts.dmSans(
                     color: AppColors.gris,
                     fontSize: 12,
@@ -1101,7 +1105,7 @@ class _AddVideoCard extends StatelessWidget {
             Icon(Icons.add, color: AppColors.grisInactif, size: 24),
             const SizedBox(height: 6),
             Text(
-              'Ajouter',
+              AppLocalizations.of(context)!.addLabel2,
               style: GoogleFonts.dmSans(
                 fontSize: 10,
                 color: AppColors.grisInactif,
@@ -1132,8 +1136,8 @@ class _ServicesList extends StatelessWidget {
         if (services.isEmpty) {
           return _EmptySection(
             icon: Icons.design_services_outlined,
-            text: 'Aucun service',
-            actionLabel: '+ Ajouter un service',
+            text: AppLocalizations.of(context)!.noServicesLabel,
+            actionLabel: '+ ${AppLocalizations.of(context)!.addServiceAction}',
             onAction: () => context.push('/pro/services'),
           );
         }
@@ -1254,8 +1258,8 @@ class _EventsList extends StatelessWidget {
         if (events.isEmpty) {
           return _EmptySection(
             icon: Icons.event_outlined,
-            text: 'Aucun événement',
-            actionLabel: '+ Créer un événement',
+            text: AppLocalizations.of(context)!.noEventsLabel,
+            actionLabel: '+ ${AppLocalizations.of(context)!.createEventAction}',
             onAction: () => context.push('/pro/events'),
           );
         }
@@ -1425,13 +1429,13 @@ class _CateringSection extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const CateringBanner(
-          subtitle: 'Gérez votre menu, forfaits et demandes de devis',
+        CateringBanner(
+          subtitle: AppLocalizations.of(context)!.proShellCateringSubtitle,
         ),
         const SizedBox(height: 14),
 
         // ── Menu Items ──
-        const CateringSectionHeader(title: 'MON MENU'),
+        CateringSectionHeader(title: AppLocalizations.of(context)!.proShellMyMenu),
         const SizedBox(height: 10),
         CateringMenuGrid(
           items: menuItems,
@@ -1445,7 +1449,7 @@ class _CateringSection extends ConsumerWidget {
         const SizedBox(height: 14),
 
         // ── Packages ──
-        const CateringSectionHeader(title: 'MES FORFAITS'),
+        CateringSectionHeader(title: AppLocalizations.of(context)!.proShellMyPackages),
         const SizedBox(height: 10),
         CateringForfaitList(
           forfaits: forfaits,
@@ -1460,7 +1464,7 @@ class _CateringSection extends ConsumerWidget {
 
         // ── Gallery ──
         if (gallery.isNotEmpty) ...[
-          const CateringSectionHeader(title: 'GALERIE'),
+          CateringSectionHeader(title: AppLocalizations.of(context)!.proShellGallery),
           const SizedBox(height: 10),
           CateringGalleryRow(items: gallery),
           const SizedBox(height: 14),
@@ -1486,11 +1490,12 @@ class _InlineSettingsSection extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final isDark = ref.watch(themeModeProvider) == ThemeMode.dark;
 
+    final l = AppLocalizations.of(context)!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'PARAMÈTRES',
+          l.settings.toUpperCase(),
           style: GoogleFonts.sora(
             color: AppColors.gris,
             fontSize: 11,
@@ -1501,23 +1506,23 @@ class _InlineSettingsSection extends ConsumerWidget {
         const SizedBox(height: 12),
         _SettingsTile(
           icon: Icons.notifications_outlined,
-          label: 'Notifications',
+          label: l.notifications,
           onTap: () => context.push('/notification-settings'),
         ),
         _SettingsTile(
           icon: Icons.language_outlined,
-          label: 'Langue',
+          label: l.proShellLanguage,
           onTap: () => context.push('/language-settings'),
         ),
         _SettingsTile(
           icon: Icons.star_outline,
-          label: 'Mes avis',
+          label: l.proShellMyReviews,
           onTap: () => context.push('/review'),
         ),
         _SettingsTile(
           icon: Icons.account_balance_outlined,
           label: 'Stripe Connect',
-          subtitle: 'Configuration paiement',
+          subtitle: l.proShellPaymentConfig,
           onTap: () => context.push('/pro/stripe-connect'),
         ),
         _DarkModeTile(
@@ -1554,7 +1559,7 @@ class _DarkModeTile extends StatelessWidget {
           const SizedBox(width: 12),
           Expanded(
             child: Text(
-              'Mode sombre',
+              AppLocalizations.of(context)!.darkMode,
               style: GoogleFonts.dmSans(
                 color: AppColors.blanc,
                 fontSize: 14,
@@ -1649,6 +1654,7 @@ class _LogOutButton extends ConsumerWidget {
     return GestureDetector(
       onTap: () async {
         HapticFeedback.mediumImpact();
+        final l = AppLocalizations.of(context)!;
         final confirmed = await showDialog<bool>(
           context: context,
           builder: (ctx) => AlertDialog(
@@ -1657,14 +1663,14 @@ class _LogOutButton extends ConsumerWidget {
               borderRadius: BorderRadius.circular(16),
             ),
             title: Text(
-              'Déconnexion ?',
+              l.logoutConfirmTitle,
               style: GoogleFonts.dmSans(
                 color: AppColors.blanc,
                 fontWeight: FontWeight.w600,
               ),
             ),
             content: Text(
-              'Vous serez redirigé vers l\'écran de connexion.',
+              l.logoutConfirmMessage,
               style: GoogleFonts.dmSans(
                 color: AppColors.gris,
                 fontSize: 14,
@@ -1674,14 +1680,14 @@ class _LogOutButton extends ConsumerWidget {
               TextButton(
                 onPressed: () => Navigator.of(ctx).pop(false),
                 child: Text(
-                  'Annuler',
+                  l.cancel,
                   style: GoogleFonts.dmSans(color: AppColors.gris),
                 ),
               ),
               TextButton(
                 onPressed: () => Navigator.of(ctx).pop(true),
                 child: Text(
-                  'Déconnexion',
+                  l.logout,
                   style: GoogleFonts.dmSans(
                     color: AppColors.logout,
                     fontWeight: FontWeight.w600,
@@ -1722,7 +1728,7 @@ class _LogOutButton extends ConsumerWidget {
               ),
               const SizedBox(width: 8),
               Text(
-                'Déconnexion',
+                AppLocalizations.of(context)!.logout,
                 style: GoogleFonts.dmSans(
                   color: AppColors.logout,
                   fontSize: 16,

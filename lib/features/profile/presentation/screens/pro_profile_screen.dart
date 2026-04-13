@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/theme/theme_mode_notifier.dart';
 import '../../../../shared/utils/time_ago.dart';
@@ -66,6 +67,7 @@ class ProProfileScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     // Watch theme mode so the entire subtree rebuilds when dark mode toggles.
     ref.watch(themeModeProvider);
+    final l = AppLocalizations.of(context)!;
 
     final profileAsync = ref.watch(proProfileProvider(proId));
 
@@ -82,7 +84,7 @@ class ProProfileScreen extends ConsumerWidget {
             ),
             body: Center(
               child:
-                  Text('Profil introuvable', style: GoogleFonts.dmSans(color: AppColors.gris)),
+                  Text(l.profileNotFoundLabel, style: GoogleFonts.dmSans(color: AppColors.gris)),
             ),
           );
         }
@@ -101,7 +103,7 @@ class ProProfileScreen extends ConsumerWidget {
           leading: _BackButton(),
         ),
         body: Center(
-          child: Text('Erreur : $err',
+          child: Text('${l.error} : $err',
               style: GoogleFonts.dmSans(color: AppColors.error)),
         ),
       ),
@@ -112,8 +114,9 @@ class ProProfileScreen extends ConsumerWidget {
 class _BackButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     return Semantics(
-      label: 'Retour',
+      label: l.retourLabel,
       child: IconButton(
         icon: Container(
           padding: const EdgeInsets.all(8),
@@ -224,7 +227,7 @@ class _PremiumProfileScaffoldState
                 contentPadding: EdgeInsets.zero,
                 leading:
                     Icon(Icons.flag_outlined, color: AppColors.blanc),
-                title: Text('Signaler',
+                title: Text(AppLocalizations.of(context)!.report,
                     style: GoogleFonts.dmSans(color: AppColors.blanc)),
                 onTap: () {
                   Navigator.of(ctx).pop();
@@ -235,7 +238,7 @@ class _PremiumProfileScaffoldState
               ListTile(
                 contentPadding: EdgeInsets.zero,
                 leading: Icon(Icons.block, color: AppColors.error),
-                title: Text('Bloquer',
+                title: Text(AppLocalizations.of(context)!.block,
                     style: GoogleFonts.dmSans(color: AppColors.error)),
                 onTap: () {
                   Navigator.of(ctx).pop();
@@ -254,6 +257,7 @@ class _PremiumProfileScaffoldState
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     final p = widget.profile;
     final isTraiteur = p.category.toLowerCase().contains('traiteur');
     final tabCount = isTraiteur ? 5 : 4;
@@ -297,11 +301,11 @@ class _PremiumProfileScaffoldState
                           fontSize: 13,
                         ),
                         tabs: [
-                          const Tab(text: 'Vidéos'),
-                          const Tab(text: 'Services'),
-                          if (isTraiteur) const Tab(text: 'Menu'),
-                          const Tab(text: 'Avis'),
-                          const Tab(text: 'Événements'),
+                          Tab(text: l.videosTab),
+                          Tab(text: l.servicesTab),
+                          if (isTraiteur) Tab(text: l.menuTab),
+                          Tab(text: l.reviewsTab),
+                          Tab(text: l.eventsTab),
                         ],
                       ),
                     ),
@@ -538,7 +542,7 @@ class _PremiumProfileScaffoldState
                           borderRadius: BorderRadius.circular(6),
                         ),
                         child: Text(
-                          'TOP PRO',
+                          AppLocalizations.of(context)!.topProBadge,
                           style: GoogleFonts.dmSans(
                             color: AppColors.blanc,
                             fontSize: 9,
@@ -608,7 +612,7 @@ class _PremiumProfileScaffoldState
                                   color: AppColors.violetClair, size: 14),
                               const SizedBox(width: 6),
                               Text(
-                                'Réseaux sociaux',
+                                AppLocalizations.of(context)!.socialNetworks,
                                 style: GoogleFonts.dmSans(
                                   color: AppColors.violetClair,
                                   fontSize: 12,
@@ -656,7 +660,7 @@ class _PremiumProfileScaffoldState
                     // Follow
                     Expanded(
                       child: _ActionButton(
-                        label: _isFollowed ? 'Abonné' : 'Suivre',
+                        label: _isFollowed ? AppLocalizations.of(context)!.subscribedLabel : AppLocalizations.of(context)!.followLabel,
                         icon: _isFollowed
                             ? Icons.check_rounded
                             : Icons.person_add_outlined,
@@ -668,7 +672,7 @@ class _PremiumProfileScaffoldState
                     // Message
                     Expanded(
                       child: _ActionButton(
-                        label: 'Message',
+                        label: AppLocalizations.of(context)!.messageLabel,
                         icon: Icons.chat_bubble_outline_rounded,
                         onTap: _openMessage,
                       ),
@@ -806,6 +810,7 @@ class _StatsRow extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l = AppLocalizations.of(context)!;
     final videosAsync = ref.watch(proProfileVideosProvider(proId));
     final videosCount = videosAsync.maybeWhen(
       data: (v) => v.length,
@@ -822,11 +827,11 @@ class _StatsRow extends ConsumerWidget {
       ),
       child: Row(
         children: [
-          _StatItem(value: '$videosCount', label: 'Vidéos'),
+          _StatItem(value: '$videosCount', label: l.videosTab),
           _statDivider(),
-          _StatItem(value: '$reviewsCount', label: 'Avis'),
+          _StatItem(value: '$reviewsCount', label: l.reviewsTab),
           _statDivider(),
-          const _StatItem(value: '—', label: 'RDV'),
+          _StatItem(value: '—', label: l.bookingsLabel),
         ],
       ),
     );
@@ -958,7 +963,7 @@ class _BookButton extends StatelessWidget {
                 color: AppColors.blanc, size: 16),
             const SizedBox(width: 8),
             Text(
-              'Réserver',
+              AppLocalizations.of(context)!.reserveLabel,
               style: GoogleFonts.dmSans(
                 color: AppColors.blanc,
                 fontSize: 14,
@@ -1017,7 +1022,7 @@ class _PersistentBookingBar extends StatelessWidget {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      'Services disponibles',
+                      AppLocalizations.of(context)!.servicesAvailableLabel,
                       style: GoogleFonts.dmSans(
                         color: AppColors.gris.withAlpha(180),
                         fontSize: 12,
@@ -1044,7 +1049,7 @@ class _PersistentBookingBar extends StatelessWidget {
                     ],
                   ),
                   child: Text(
-                    'Réserver',
+                    AppLocalizations.of(context)!.reserveLabel,
                     style: GoogleFonts.dmSans(
                       color: AppColors.blanc,
                       fontSize: 15,
@@ -1101,8 +1106,8 @@ class _ProVideosGrid extends ConsumerWidget {
     return async.when(
       data: (videos) {
         if (videos.isEmpty) {
-          return const _EmptyState(
-              icon: Icons.videocam_outlined, text: 'Aucune vidéo');
+          return _EmptyState(
+              icon: Icons.videocam_outlined, text: AppLocalizations.of(context)!.noVideosAvailable);
         }
         return GridView.builder(
           padding: const EdgeInsets.all(12),
@@ -1141,8 +1146,8 @@ class _PremiumServicesList extends ConsumerWidget {
     return async.when(
       data: (services) {
         if (services.isEmpty) {
-          return const _EmptyState(
-              icon: Icons.design_services_outlined, text: 'Aucun service');
+          return _EmptyState(
+              icon: Icons.design_services_outlined, text: AppLocalizations.of(context)!.noServicesLabel);
         }
         return ListView.builder(
           padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
@@ -1226,7 +1231,7 @@ class _PremiumServiceCard extends StatelessWidget {
               ),
               const SizedBox(height: 2),
               Text(
-                'dès',
+                AppLocalizations.of(context)!.proProfileFromPrice,
                 style: GoogleFonts.dmSans(
                   color: AppColors.gris.withAlpha(130),
                   fontSize: 10,
@@ -1252,7 +1257,7 @@ class _PremiumServiceCard extends StatelessWidget {
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Text(
-                'Book',
+                AppLocalizations.of(context)!.reserveLabel,
                 style: GoogleFonts.dmSans(
                   color: AppColors.blanc,
                   fontSize: 12,
@@ -1287,8 +1292,8 @@ class _PremiumReviewsList extends ConsumerWidget {
     return async.when(
       data: (reviews) {
         if (reviews.isEmpty) {
-          return const _EmptyState(
-              icon: Icons.rate_review_outlined, text: 'Aucun avis');
+          return _EmptyState(
+              icon: Icons.rate_review_outlined, text: AppLocalizations.of(context)!.proProfileNoReviews);
         }
         return ListView.builder(
           padding: const EdgeInsets.fromLTRB(16, 0, 16, 100),
@@ -1357,7 +1362,7 @@ class _ReviewSummary extends StatelessWidget {
               ),
               const SizedBox(height: 6),
               Text(
-                '$count avis',
+                AppLocalizations.of(context)!.reviewCountLabel(count),
                 style: GoogleFonts.dmSans(
                   color: AppColors.gris.withAlpha(180),
                   fontSize: 12,
@@ -1521,7 +1526,7 @@ class _TraiteurMenuWrapper extends ConsumerWidget {
           Center(child: CircularProgressIndicator(color: AppColors.violet)),
       error: (_, __) => Center(
         child:
-            Text('Erreur de chargement', style: GoogleFonts.dmSans(color: AppColors.gris)),
+            Text(AppLocalizations.of(context)!.loadError, style: GoogleFonts.dmSans(color: AppColors.gris)),
       ),
     );
   }
@@ -1541,8 +1546,8 @@ class _ProEventsList extends ConsumerWidget {
     return async.when(
       data: (events) {
         if (events.isEmpty) {
-          return const _EmptyState(
-              icon: Icons.event_outlined, text: 'Aucun événement');
+          return _EmptyState(
+              icon: Icons.event_outlined, text: AppLocalizations.of(context)!.noEventsLabel);
         }
         return ListView.builder(
           padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
@@ -1596,19 +1601,20 @@ class _ErrorState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(Icons.error_outline, color: AppColors.error, size: 36),
           const SizedBox(height: 12),
-          Text('Erreur de chargement',
+          Text(l.loadError,
               style: GoogleFonts.sora(color: AppColors.gris, fontSize: 14)),
           const SizedBox(height: 12),
           GestureDetector(
             onTap: onRetry,
             child: Text(
-              'Réessayer',
+              l.retry,
               style: GoogleFonts.dmSans(
                 color: AppColors.violet,
                 fontSize: 14,

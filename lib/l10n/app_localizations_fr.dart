@@ -1890,4 +1890,308 @@ class AppLocalizationsFr extends AppLocalizations {
   String ticketTierIndex(int index) => 'Billet #$index';
   @override
   String upcomingCount(int count) => 'À venir ($count)';
+
+  // ── Profile screens & widgets ──
+  @override
+  String get myProfile => 'Mon profil';
+  @override
+  String get editProfile => 'Modifier le profil';
+  @override
+  String get statsLoadError => 'Impossible de charger les statistiques';
+  @override
+  String get myFavoritePros => 'Mes pros favoris';
+  @override
+  String get recentHistory => 'Historique récent';
+  @override
+  String get darkMode => 'Mode sombre';
+  @override
+  String get becomePro => 'Devenir Pro';
+  @override
+  String get logout => 'Déconnexion';
+  @override
+  String get logoutConfirmTitle => 'Déconnexion';
+  @override
+  String get logoutConfirmMessage => 'Êtes-vous sûr de vouloir vous déconnecter ?';
+  @override
+  String get signIn => 'Se connecter';
+  @override
+  String get likeProsToFindHere => 'Aimez des pros pour les retrouver ici';
+  @override
+  String get bookingsWillAppearHere => 'Vos réservations apparaîtront ici';
+  @override
+  String get profileLoadError => 'Erreur de chargement';
+  @override
+  String get profileLoadErrorMessage => 'Impossible de charger votre profil';
+  @override
+  String get changePhoto => 'Changer la photo';
+  @override
+  String get displayNameLabel => 'Nom affiché';
+  @override
+  String get usernameLabel => 'Nom d\'utilisateur';
+  @override
+  String get usernameMinChars => 'Min. 3 caractères';
+  @override
+  String get usernameInvalidChars => 'Lettres, chiffres et _ uniquement (3-20 car.)';
+  @override
+  String get usernameTaken => 'Ce nom est déjà pris';
+  @override
+  String get bioLabel => 'Bio';
+  @override
+  String get locationLabel => 'Localisation';
+  @override
+  String get locationHint => 'Votre ville ou adresse';
+  @override
+  String get socialLinksHeader => 'LIENS SOCIAUX';
+  @override
+  String get socialLinksAutoDetectHint => 'Collez un lien, la plateforme sera détectée automatiquement.';
+  @override
+  String get photoUploadError => 'Erreur de téléchargement de la photo';
+  @override
+  String get profileUpdated => 'Profil mis à jour';
+  @override
+  String get myQrCode => 'Mon code QR';
+  @override
+  String get qrShareInfo => 'Partagez ce QR code avec vos clients pour qu\'ils accèdent directement à votre profil et réservent vos services.';
+  @override
+  String get shareMyProfile => 'Partager mon profil';
+  @override
+  String get linkCopiedToClipboard => 'Lien copié dans le presse-papier';
+  @override
+  String get videosTab => 'Vidéos';
+  @override
+  String get servicesTab => 'Services';
+  @override
+  String get menuTab => 'Menu';
+  @override
+  String get reviewsTab => 'Avis';
+  @override
+  String get eventsTab => 'Événements';
+  @override
+  String get followLabel => 'Suivre';
+  @override
+  String get followingLabel => 'Abonné';
+  @override
+  String get subscribedLabel => 'Abonné';
+  @override
+  String get messageLabel => 'Message';
+  @override
+  String get socialNetworks => 'Réseaux sociaux';
+  @override
+  String get proToolsSection => 'Outils Pro';
+  @override
+  String get soumissionsLabel => 'Soumissions';
+  @override
+  String get promoCodes => 'Codes Promo';
+  @override
+  String get analyticsLabel => 'Analytiques';
+  @override
+  String get termsOfService => 'Conditions d\'utilisation';
+  @override
+  String get privacyPolicy => 'Politique de confidentialité';
+  @override
+  String get noVideosAvailable => 'Aucune vidéo';
+  @override
+  String get addVideoAction => '+ Ajouter une vidéo';
+  @override
+  String get noServicesLabel => 'Aucun service';
+  @override
+  String get addServiceAction => '+ Ajouter un service';
+  @override
+  String get noEventsLabel => 'Aucun événement';
+  @override
+  String get createEventAction => '+ Créer un événement';
+  @override
+  String get addVideoTitle => 'Ajouter une vidéo';
+  @override
+  String get recordVideo => 'Filmer une vidéo';
+  @override
+  String get recordVideoSubtitle => 'Capturer avec la caméra';
+  @override
+  String get uploadVideo => 'Uploader une vidéo';
+  @override
+  String get uploadVideoSubtitle => 'Choisir depuis la galerie';
+  @override
+  String get addLabel2 => 'Ajouter';
+  @override
+  String get servicesQuickAction => 'Services';
+  @override
+  String get eventsQuickAction => 'Événements';
+  @override
+  String get revenueQuickAction => 'Revenus';
+  @override
+  String get availabilityQuickAction => 'Disponibilité';
+  @override
+  String get myVideosSection => 'Mes vidéos';
+  @override
+  String get myServicesSection => 'Mes services';
+  @override
+  String get myEventsSection => 'Mes événements';
+  @override
+  String get profileNotFoundLabel => 'Profil introuvable';
+  @override
+  String get retourLabel => 'Retour';
+  @override
+  String get reserveLabel => 'Réserver';
+  @override
+  String get noMenuAvailable => 'Aucun menu disponible';
+  @override
+  String get vegetarianLabel => 'Végétarien';
+  @override
+  String get veganLabel => 'Végan';
+  @override
+  String get glutenFreeLabel => 'Sans gluten';
+  @override
+  String get freePrice => 'Gratuit';
+  @override
+  String get becomeProSubtitle => 'Développez votre activité sur Spotbook';
+  @override
+  String get becomeProPublishVideos => 'Publiez des vidéos';
+  @override
+  String get becomeProPublishVideosDesc => 'Montrez vos services au monde entier';
+  @override
+  String get becomeProManageServices => 'Gérez vos services';
+  @override
+  String get becomeProManageServicesDesc => 'Créneaux, tarifs, disponibilité';
+  @override
+  String get becomeProSellTickets => 'Vendez des billets';
+  @override
+  String get becomeProSellTicketsDesc => 'Organisez et monétisez vos événements';
+  @override
+  String get becomeProReceivePayments => 'Recevez des paiements';
+  @override
+  String get becomeProReceivePaymentsDesc => 'Stripe Connect intégré et sécurisé';
+  @override
+  String get createProAccount => 'Créer un compte Pro';
+  @override
+  String get memberBadge => 'Membre Spotbook';
+  @override
+  String get addBioHint => 'Ajoutez votre bio';
+  @override
+  String get shareProfileTitle => 'Partager le profil';
+  @override
+  String get linkCopiedSnack => 'Lien copié';
+  @override
+  String get copyLinkAction => 'Copier le lien';
+  @override
+  String get moreOptionsAction => 'Plus…';
+  @override
+  String get followMeSection => 'Suivez-moi';
+  @override
+  String get verifiedBadge => 'Vérifié';
+  @override
+  String get activeBadge => 'Actif';
+  @override
+  String get fastReplyBadge => 'Réponse rapide';
+  @override
+  String get signInToFollow => 'Connectez-vous pour suivre';
+  @override
+  String get newBadge => 'Nouveau';
+  @override
+  String get followersLabel => 'Abonnés';
+  @override
+  String get bookingsLabel => 'Réservations';
+  @override
+  String get noBookableServices => 'Aucun service réservable pour le moment.';
+  @override
+  String get signInToMessage => 'Connectez-vous pour envoyer un message.';
+  @override
+  String get videoUnavailable => 'Lecture indisponible';
+  @override
+  String get videoLabel => 'Vidéo';
+  @override
+  String get availabilitySection => 'Disponibilités';
+  @override
+  String get linkSocialTitle => 'Lier';
+  @override
+  String get pasteProfileLink => 'Collez le lien de votre profil';
+  @override
+  String get addNetworkTitle => 'AJOUTER UN RÉSEAU';
+  @override
+  String get allNetworksAdded => 'Tous les réseaux ont été ajoutés.';
+  @override
+  String get requestQuote => 'Demander un devis';
+  @override
+  String get eventTypeLabel => 'Type d\'événement';
+  @override
+  String get guestCountLabel => 'Nombre d\'invités';
+  @override
+  String get enterGuestCountError => 'Veuillez entrer le nombre d\'invités';
+  @override
+  String get dateLabel => 'Date';
+  @override
+  String get timeLabel => 'Heure';
+  @override
+  String get venueLabel => 'Lieu';
+  @override
+  String get addressOrVenueHint => 'Adresse ou lieu';
+  @override
+  String get packageLabel => 'Forfait';
+  @override
+  String get noPackageAvailable => 'Aucun forfait disponible — devis personnalisé';
+  @override
+  String get budgetLabel => 'Budget';
+  @override
+  String get dietaryPrefsLabel => 'Préférences alimentaires';
+  @override
+  String get notesLabel => 'Notes';
+  @override
+  String get notesHint => 'Détails, thème, demandes spéciales...';
+  @override
+  String get submitQuoteRequest => 'Envoyer la demande de devis';
+  @override
+  String get quoteSubmittedSuccess => 'Demande de devis envoyée ! Réponse sous 24-48h.';
+  @override
+  String get depositPreviewLabel => 'Aperçu de l\'acompte';
+  @override
+  String get guestsLabel => 'Invités';
+  @override
+  String get estimatedTotal => 'Total estimé';
+  @override
+  String get depositThirtyPercent => 'Acompte 30%';
+  @override
+  String get doneCountLabel => 'fait(s)';
+  @override
+  String reviewCountLabel(int count) => '($count avis)';
+  @override
+  String linkPlatform(String platform) => 'Lier $platform';
+  @override
+  String pasteLinkFor(String platform) => 'Collez le lien de votre profil $platform';
+  @override
+  String ticketPriceLabel(String price) => 'Billet · $price';
+  @override
+  String publicProfileTicketsLeft(int count) => '$count restant${count > 1 ? 's' : ''}';
+
+  // ── Profile Batch 4 — additional keys ──
+  @override
+  String get report => 'Signaler';
+  @override
+  String get block => 'Bloquer';
+  @override
+  String get topProBadge => 'TOP PRO';
+  @override
+  String get servicesAvailableLabel => 'Services disponibles';
+  @override
+  String get proProfileFromPrice => 'dès';
+  @override
+  String get proProfileNoReviews => 'Aucun avis';
+  @override
+  String get loadError => 'Erreur de chargement';
+  @override
+  String get bioHint => 'Décrivez-vous en quelques mots...';
+  @override
+  String get proShellCateringSubtitle => 'Gérez votre menu, forfaits et demandes de devis';
+  @override
+  String get proShellMyMenu => 'MON MENU';
+  @override
+  String get proShellMyPackages => 'MES FORFAITS';
+  @override
+  String get proShellGallery => 'GALERIE';
+  @override
+  String get proShellLanguage => 'Langue';
+  @override
+  String get proShellMyReviews => 'Mes avis';
+  @override
+  String get proShellPaymentConfig => 'Configuration paiement';
+  @override
+  String get buyTicketAction => 'Acheter un billet';
 }

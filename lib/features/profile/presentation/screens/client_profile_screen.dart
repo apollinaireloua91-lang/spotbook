@@ -7,6 +7,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/theme/theme_mode_notifier.dart';
 import '../../../../shared/widgets/spotbook_loading_shimmer.dart';
@@ -103,6 +104,7 @@ class _ProfileBody extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l = AppLocalizations.of(context)!;
     final statsAsync = ref.watch(clientStatsProvider);
     final favProsAsync = ref.watch(clientFavProsProvider);
     final historyAsync = ref.watch(clientHistoryProvider);
@@ -122,7 +124,7 @@ class _ProfileBody extends ConsumerWidget {
                 children: [
                   Center(
                     child: Text(
-                      'Mon profil',
+                      l.myProfile,
                       style: GoogleFonts.sora(
                         color: AppColors.blanc,
                         fontSize: 18,
@@ -178,7 +180,7 @@ class _ProfileBody extends ConsumerWidget {
               error: (_, __) => Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 child: Text(
-                  'Impossible de charger les statistiques',
+                  l.statsLoadError,
                   style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 12),
                   textAlign: TextAlign.center,
                 ),
@@ -205,7 +207,7 @@ class _ProfileBody extends ConsumerWidget {
                     ),
                   ),
                   child: Text(
-                    'Modifier le profil',
+                    l.editProfile,
                     style: GoogleFonts.dmSans(
                       color: AppColors.blanc,
                       fontWeight: FontWeight.w600,
@@ -241,7 +243,7 @@ class _ProfileBody extends ConsumerWidget {
             Padding(
               padding: const EdgeInsets.only(left: 16, bottom: 10),
               child: Text(
-                'Paramètres',
+                l.settings,
                 style: GoogleFonts.sora(
                   color: AppColors.blanc,
                   fontSize: 14,
@@ -271,6 +273,7 @@ class _FavoriteProsList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -279,7 +282,7 @@ class _FavoriteProsList extends StatelessWidget {
           child: Row(
             children: [
               Text(
-                'Mes pros favoris',
+                l.myFavoritePros,
                 style: GoogleFonts.sora(
                   color: AppColors.blanc,
                   fontSize: 14,
@@ -290,7 +293,7 @@ class _FavoriteProsList extends StatelessWidget {
               GestureDetector(
                 onTap: () => context.push('/favorites'),
                 child: Text(
-                  'Voir tout',
+                  l.viewAll,
                   style: GoogleFonts.dmSans(
                     color: AppColors.violetClair,
                     fontSize: 12,
@@ -423,6 +426,7 @@ class _RecentHistory extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -431,7 +435,7 @@ class _RecentHistory extends StatelessWidget {
           child: Row(
             children: [
               Text(
-                'Historique récent',
+                l.recentHistory,
                 style: GoogleFonts.sora(
                   color: AppColors.blanc,
                   fontSize: 14,
@@ -443,7 +447,7 @@ class _RecentHistory extends StatelessWidget {
                 builder: (ctx) => GestureDetector(
                   onTap: () => ctx.push('/client/bookings'),
                   child: Text(
-                    'Voir tout',
+                    l.viewAll,
                     style: GoogleFonts.dmSans(
                       color: AppColors.violetClair,
                       fontSize: 12,
@@ -537,6 +541,7 @@ class _SettingsSection extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isDark = ref.watch(themeModeProvider) == ThemeMode.dark;
+    final l = AppLocalizations.of(context)!;
 
     return Column(
       children: [
@@ -544,17 +549,17 @@ class _SettingsSection extends ConsumerWidget {
           items: [
             SettingsItemData(
               icon: 'notifications_outlined',
-              label: 'Notifications',
+              label: l.notifications,
               onTap: () => context.push('/notification-settings'),
             ),
             SettingsItemData(
               icon: 'language',
-              label: 'Langue',
+              label: l.proSettingsLanguage,
               onTap: () => context.push('/language-settings'),
             ),
             SettingsItemData(
               icon: 'star_outline',
-              label: 'Mes avis',
+              label: l.reviewsLabel,
               onTap: () => context.push('/favorites'),
             ),
           ],
@@ -578,7 +583,7 @@ class _SettingsSection extends ConsumerWidget {
               const SizedBox(width: 12),
               Expanded(
                 child: Text(
-                  'Mode sombre',
+                  l.darkMode,
                   style: GoogleFonts.dmSans(
                     color: AppColors.grisClair,
                     fontSize: 13,
@@ -609,6 +614,7 @@ class _SpecialActionsSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l = AppLocalizations.of(context)!;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
@@ -645,7 +651,7 @@ class _SpecialActionsSection extends ConsumerWidget {
                     ),
                     const SizedBox(width: 8),
                     Text(
-                      'Devenir Pro',
+                      l.becomePro,
                       style: GoogleFonts.dmSans(
                         color: Colors.white,
                         fontSize: 15,
@@ -683,7 +689,7 @@ class _SpecialActionsSection extends ConsumerWidget {
                     ),
                     const SizedBox(width: 8),
                     Text(
-                      'Déconnexion',
+                      l.logout,
                       style: GoogleFonts.dmSans(
                         color: AppColors.logout,
                         fontSize: 15,
@@ -704,6 +710,7 @@ class _SpecialActionsSection extends ConsumerWidget {
   void _showLogoutDialog(BuildContext context) {
     // Capture the router before any async gap
     final router = GoRouter.of(context);
+    final l = AppLocalizations.of(context)!;
 
     showDialog(
       context: context,
@@ -713,7 +720,7 @@ class _SpecialActionsSection extends ConsumerWidget {
           borderRadius: BorderRadius.circular(16),
         ),
         title: Text(
-          'Déconnexion',
+          l.logoutConfirmTitle,
           style: GoogleFonts.sora(
             color: AppColors.blanc,
             fontSize: 17,
@@ -721,7 +728,7 @@ class _SpecialActionsSection extends ConsumerWidget {
           ),
         ),
         content: Text(
-          'Êtes-vous sûr de vouloir vous déconnecter ?',
+          l.logoutConfirmMessage,
           style: GoogleFonts.dmSans(
             color: AppColors.gris,
             fontSize: 14,
@@ -731,7 +738,7 @@ class _SpecialActionsSection extends ConsumerWidget {
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(),
             child: Text(
-              'Annuler',
+              l.cancel,
               style: GoogleFonts.dmSans(color: AppColors.gris),
             ),
           ),
@@ -748,7 +755,7 @@ class _SpecialActionsSection extends ConsumerWidget {
               router.go('/login');
             },
             child: Text(
-              'Déconnexion',
+              l.logout,
               style: GoogleFonts.dmSans(
                 color: AppColors.logout,
                 fontWeight: FontWeight.w600,
@@ -768,6 +775,7 @@ class _UnauthenticatedState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -776,7 +784,7 @@ class _UnauthenticatedState extends StatelessWidget {
               color: AppColors.gris, size: 48),
           const SizedBox(height: 12),
           Text(
-            'Non connecté',
+            l.notConnected,
             style: GoogleFonts.sora(color: AppColors.gris, fontSize: 16),
           ),
           const SizedBox(height: 16),
@@ -789,7 +797,7 @@ class _UnauthenticatedState extends StatelessWidget {
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Text(
-                'Se connecter',
+                l.signIn,
                 style: GoogleFonts.dmSans(
                   color: AppColors.blanc,
                   fontWeight: FontWeight.w600,
@@ -810,13 +818,14 @@ class _EmptyFavorites extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Mes pros favoris',
+            l.myFavoritePros,
             style: GoogleFonts.sora(
               color: AppColors.blanc,
               fontSize: 14,
@@ -841,7 +850,7 @@ class _EmptyFavorites extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Aimez des pros pour les retrouver ici',
+                  l.likeProsToFindHere,
                   style: GoogleFonts.dmSans(
                     color: AppColors.gris.withAlpha(160),
                     fontSize: 13,
@@ -863,13 +872,14 @@ class _EmptyHistory extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Historique récent',
+            l.recentHistory,
             style: GoogleFonts.sora(
               color: AppColors.blanc,
               fontSize: 14,
@@ -894,7 +904,7 @@ class _EmptyHistory extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Vos réservations apparaîtront ici',
+                  l.bookingsWillAppearHere,
                   style: GoogleFonts.dmSans(
                     color: AppColors.gris.withAlpha(160),
                     fontSize: 13,
@@ -918,6 +928,7 @@ class _ErrorState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     return Center(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 40),
@@ -939,7 +950,7 @@ class _ErrorState extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             Text(
-              'Erreur de chargement',
+              l.profileLoadError,
               style: GoogleFonts.sora(
                 color: AppColors.blanc,
                 fontSize: 17,
@@ -948,7 +959,7 @@ class _ErrorState extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              'Impossible de charger votre profil',
+              l.profileLoadErrorMessage,
               style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 14),
             ),
             const SizedBox(height: 20),
@@ -964,7 +975,7 @@ class _ErrorState extends StatelessWidget {
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
-                  'Réessayer',
+                  l.retry,
                   style: GoogleFonts.dmSans(
                     color: AppColors.blanc,
                     fontWeight: FontWeight.w600,

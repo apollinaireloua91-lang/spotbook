@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
 
 /// Bottom sheet presenting Pro advantages with a gradient CTA.
@@ -26,12 +27,7 @@ class _BecomeProSheetState extends State<BecomeProSheet>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
 
-  static const _advantages = [
-    (icon: '🎬', title: 'Publish videos', desc: 'Showcase your services worldwide'),
-    (icon: '📅', title: 'Manage your services', desc: 'Slots, pricing, availability'),
-    (icon: '🎟️', title: 'Sell tickets', desc: 'Organize and monetize your events'),
-    (icon: '💰', title: 'Receive payments', desc: 'Integrated, secure Stripe Connect'),
-  ];
+  // Advantages are built dynamically with l10n in build()
 
   @override
   void initState() {
@@ -56,6 +52,13 @@ class _BecomeProSheetState extends State<BecomeProSheet>
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
+    final advantages = [
+      (icon: '🎬', title: l.becomeProPublishVideos, desc: l.becomeProPublishVideosDesc),
+      (icon: '📅', title: l.becomeProManageServices, desc: l.becomeProManageServicesDesc),
+      (icon: '🎟️', title: l.becomeProSellTickets, desc: l.becomeProSellTicketsDesc),
+      (icon: '💰', title: l.becomeProReceivePayments, desc: l.becomeProReceivePaymentsDesc),
+    ];
     return Container(
       margin: const EdgeInsets.only(top: 60),
       decoration: BoxDecoration(
@@ -81,7 +84,7 @@ class _BecomeProSheetState extends State<BecomeProSheet>
             shaderCallback: (bounds) =>
                 AppColors.gradientAccent.createShader(bounds),
             child: Text(
-              'Become Pro',
+              l.becomePro,
               style: GoogleFonts.dmSans(
                 color: AppColors.blanc,
                 fontSize: 22,
@@ -91,7 +94,7 @@ class _BecomeProSheetState extends State<BecomeProSheet>
           ),
           const SizedBox(height: 4),
           Text(
-            'Grow your business on Spotbook',
+            l.becomeProSubtitle,
             style: GoogleFonts.dmSans(
               color: AppColors.gris,
               fontSize: 13,
@@ -104,8 +107,8 @@ class _BecomeProSheetState extends State<BecomeProSheet>
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24),
             child: Column(
-              children: List.generate(_advantages.length, (index) {
-                final advantage = _advantages[index];
+              children: List.generate(advantages.length, (index) {
+                final advantage = advantages[index];
                 final delay = index * 0.15;
 
                 return AnimatedBuilder(
@@ -194,7 +197,7 @@ class _BecomeProSheetState extends State<BecomeProSheet>
                 ),
                 child: Center(
                   child: Text(
-                    'Create a Pro account',
+                    l.createProAccount,
                     style: GoogleFonts.dmSans(
                       color: AppColors.blanc,
                       fontSize: 16,

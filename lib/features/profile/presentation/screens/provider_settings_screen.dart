@@ -39,7 +39,7 @@ class ProviderSettingsScreen extends ConsumerWidget {
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         leading: Semantics(
-          label: 'Back',
+          label: l10n.retourLabel,
           child: IconButton(
             icon: Container(
               padding: const EdgeInsets.all(8),
@@ -289,33 +289,33 @@ class _SettingsBody extends ConsumerWidget {
         SpotbookCard(
           child: _SpotifyProSettingsBlock(),
         ),
-        _SectionTitle(text: 'Outils Pro'),
+        _SectionTitle(text: l10n.proToolsSection),
         SpotbookCard(
           child: Column(
             children: [
               _Tile(
-                label: 'Soumissions',
+                label: l10n.soumissionsLabel,
                 value: '',
                 showChevron: true,
                 onTap: () => context.push('/pro/soumissions'),
               ),
               Divider(color: AppColors.border, height: 1),
               _Tile(
-                label: 'Codes Promo',
+                label: l10n.promoCodes,
                 value: '',
                 showChevron: true,
                 onTap: () => context.push('/pro/profile/promo-codes'),
               ),
               Divider(color: AppColors.border, height: 1),
               _Tile(
-                label: 'Mon code QR',
+                label: l10n.myQrCode,
                 value: '',
                 showChevron: true,
                 onTap: () => context.push('/pro/profile/qr-code'),
               ),
               Divider(color: AppColors.border, height: 1),
               _Tile(
-                label: 'Analytiques',
+                label: l10n.analyticsLabel,
                 value: '',
                 showChevron: true,
                 onTap: () => context.push('/pro/analytics'),
@@ -396,7 +396,7 @@ class _SettingsBody extends ConsumerWidget {
               ),
               Divider(color: AppColors.border, height: 1),
               _Tile(
-                label: 'Conditions d\'utilisation',
+                label: l10n.termsOfService,
                 value: '',
                 showChevron: true,
                 onTap: () => launchUrl(
@@ -406,7 +406,7 @@ class _SettingsBody extends ConsumerWidget {
               ),
               Divider(color: AppColors.border, height: 1),
               _Tile(
-                label: 'Politique de confidentialité',
+                label: l10n.privacyPolicy,
                 value: '',
                 showChevron: true,
                 onTap: () => launchUrl(

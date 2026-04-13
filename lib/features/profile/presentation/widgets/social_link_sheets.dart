@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
 
 // ─── Platform metadata ───────────────────────────────────────────────────────
@@ -159,6 +160,7 @@ class _SocialLinkBottomSheetState extends State<SocialLinkBottomSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     final p = widget.platform;
 
     return Padding(
@@ -186,7 +188,7 @@ class _SocialLinkBottomSheetState extends State<SocialLinkBottomSheet> {
           SocialPlatformBrandIcon(platform: p, size: 32),
           const SizedBox(height: 12),
           Text(
-            'Lier ${p.label}',
+            l.linkPlatform(p.label),
             style: TextStyle(
               color: AppColors.blanc,
               fontSize: 18,
@@ -195,7 +197,7 @@ class _SocialLinkBottomSheetState extends State<SocialLinkBottomSheet> {
           ),
           const SizedBox(height: 6),
           Text(
-            'Collez le lien de votre profil ${p.label}',
+            l.pasteLinkFor(p.label),
             style: TextStyle(color: AppColors.gris, fontSize: 13),
           ),
           const SizedBox(height: 20),
@@ -246,7 +248,7 @@ class _SocialLinkBottomSheetState extends State<SocialLinkBottomSheet> {
                     ),
                   ),
                   child: Text(
-                    'Annuler',
+                    l.cancel,
                     style: TextStyle(color: AppColors.gris, fontSize: 14),
                   ),
                 ),
@@ -269,9 +271,9 @@ class _SocialLinkBottomSheetState extends State<SocialLinkBottomSheet> {
                     ),
                     elevation: 0,
                   ),
-                  child: const Text(
-                    'Enregistrer',
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                  child: Text(
+                    l.save,
+                    style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
                   ),
                 ),
               ),
@@ -299,6 +301,7 @@ class AddSocialPlatformSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     final available = kAllSocialPlatforms
         .where((p) => !alreadyAdded.contains(p.key))
         .toList();
@@ -318,7 +321,7 @@ class AddSocialPlatformSheet extends StatelessWidget {
           ),
           const SizedBox(height: 20),
           Text(
-            'AJOUTER UN RÉSEAU',
+            l.addNetworkTitle,
             style: TextStyle(
               color: AppColors.gris,
               fontSize: 11,
@@ -331,7 +334,7 @@ class AddSocialPlatformSheet extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 24),
               child: Text(
-                'Tous les réseaux ont été ajoutés.',
+                l.allNetworksAdded,
                 style: TextStyle(color: AppColors.gris, fontSize: 13),
               ),
             )

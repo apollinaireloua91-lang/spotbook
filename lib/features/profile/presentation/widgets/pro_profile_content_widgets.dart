@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/widgets/spotbook_button.dart';
 import '../../../booking/domain/booking_models.dart';
@@ -147,7 +148,7 @@ class ProServiceCard extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           SpotbookButton.primary(
-            label: 'Réserver',
+            label: AppLocalizations.of(context)!.reserveLabel,
             onPressed: () {
               HapticFeedback.mediumImpact();
               showBookingSheet(
@@ -178,7 +179,7 @@ class ProEventProfileCard extends StatelessWidget {
         : '—';
     final priceStr = event.minPrice > 0
         ? '${event.minPrice.toStringAsFixed(0)} €'
-        : 'Free';
+        : AppLocalizations.of(context)!.freePrice;
 
     return Material(
       color: AppColors.surface,
@@ -240,7 +241,7 @@ class ProEventProfileCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'Ticket · $priceStr',
+                      AppLocalizations.of(context)!.ticketPriceLabel(priceStr),
                       style: TextStyle(
                         color: AppColors.gris,
                         fontSize: 13,

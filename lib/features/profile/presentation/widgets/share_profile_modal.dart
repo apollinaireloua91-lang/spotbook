@@ -4,6 +4,7 @@ import 'package:qr_flutter/qr_flutter.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/widgets/spotbook_bottom_sheet.dart';
 
@@ -16,7 +17,7 @@ Future<void> showShareProfileModal({
 }) {
   return showSpotbookBottomSheet<void>(
     context: context,
-    title: 'Share profile',
+    title: AppLocalizations.of(context)!.shareProfileTitle,
     child: ShareProfileModal(
       profileUrl: profileUrl,
       displayName: displayName,
@@ -44,7 +45,7 @@ class ShareProfileModal extends StatelessWidget {
         SnackBar(
           backgroundColor: AppColors.surface,
           content: Text(
-            'Link copied',
+            AppLocalizations.of(context)!.linkCopiedSnack,
             style: TextStyle(color: AppColors.blanc),
           ),
         ),
@@ -85,6 +86,7 @@ class ShareProfileModal extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 0, 20, 28),
       child: Column(
@@ -112,7 +114,7 @@ class ShareProfileModal extends StatelessWidget {
           const SizedBox(height: 20),
           _SheetTile(
             icon: Icons.link,
-            label: 'Copy link',
+            label: l.copyLinkAction,
             onTap: () => _copy(context),
           ),
           _SheetTile(
@@ -132,7 +134,7 @@ class ShareProfileModal extends StatelessWidget {
           ),
           _SheetTile(
             icon: Icons.ios_share,
-            label: 'More…',
+            label: l.moreOptionsAction,
             onTap: _shareNative,
           ),
         ],

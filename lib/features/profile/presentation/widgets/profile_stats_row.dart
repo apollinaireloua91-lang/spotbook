@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/widgets/animated_counter.dart';
 
@@ -21,6 +22,7 @@ class ProfileStatsRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
       padding: const EdgeInsets.symmetric(vertical: 16),
@@ -40,19 +42,19 @@ class ProfileStatsRow extends StatelessWidget {
             _Divider(),
             _StatItem(
                 value: totalFollowing,
-                label: 'Abonnements',
+                label: l.followingLabel,
                 icon: Icons.people_outline_rounded,
                 color: AppColors.rose),
             _Divider(),
             _StatItem(
                 value: totalEvents,
-                label: 'Événements',
+                label: l.eventsTab,
                 icon: Icons.confirmation_number_outlined,
                 color: AppColors.violetClair),
             _Divider(),
             _StatItem(
                 value: totalReviews,
-                label: 'Avis',
+                label: l.reviewsTab,
                 icon: Icons.star_outline_rounded,
                 color: AppColors.starGold),
           ],

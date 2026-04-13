@@ -8,6 +8,7 @@ import 'package:intl/intl.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/widgets/spotbook_avatar.dart';
 import '../../../../shared/widgets/spotbook_loading_shimmer.dart';
@@ -112,7 +113,7 @@ class _ProviderPublicProfileClientViewScreenState
           SnackBar(
             backgroundColor: AppColors.surface,
             content: Text(
-              'No bookable services at this time.',
+              AppLocalizations.of(context)!.noBookableServices,
               style: TextStyle(color: AppColors.blanc),
             ),
           ),
@@ -137,7 +138,7 @@ class _ProviderPublicProfileClientViewScreenState
         SnackBar(
           backgroundColor: AppColors.surface,
           content: Text(
-            'Connectez-vous pour envoyer un message.',
+            AppLocalizations.of(context)!.signInToMessage,
             style: TextStyle(color: AppColors.blanc),
           ),
         ),
@@ -189,7 +190,7 @@ class _ProviderPublicProfileClientViewScreenState
                       child: Align(
                         alignment: Alignment.centerLeft,
                         child: Semantics(
-                          label: 'Back',
+                          label: AppLocalizations.of(context)!.retourLabel,
                           child: IconButton(
                             icon: Container(
                               padding: const EdgeInsets.all(8),
@@ -220,7 +221,7 @@ class _ProviderPublicProfileClientViewScreenState
                               ),
                               const SizedBox(height: 16),
                               _PillButton(
-                                label: 'Retry',
+                                label: AppLocalizations.of(context)!.retry,
                                 color: AppColors.violet,
                                 onTap: () {
                                   final bloc = context
@@ -428,7 +429,7 @@ class _ReadyBody extends StatelessWidget {
                           child: Column(
                             children: [
                               Text(
-                                'Follow me',
+                                AppLocalizations.of(context)!.followMeSection,
                                 style: GoogleFonts.dmSans(
                                   color: AppColors.gris,
                                   fontSize: 12,
@@ -484,20 +485,20 @@ class _ReadyBody extends StatelessWidget {
                         children: [
                           _TrustBadge(
                             icon: Icons.verified_user_outlined,
-                            label: p.isVerified ? 'Verified' : 'Active',
+                            label: p.isVerified ? AppLocalizations.of(context)!.verifiedBadge : AppLocalizations.of(context)!.activeBadge,
                             color: p.isVerified ? AppColors.success : AppColors.violet,
                           ),
                           const SizedBox(width: 10),
                           _TrustBadge(
                             icon: Icons.flash_on_rounded,
-                            label: 'Fast reply',
+                            label: AppLocalizations.of(context)!.fastReplyBadge,
                             color: AppColors.warning,
                           ),
                           if (p.bookingsCompleted > 0) ...[
                             const SizedBox(width: 10),
                             _TrustBadge(
                               icon: Icons.workspace_premium_outlined,
-                              label: '${p.bookingsCompleted}+ done',
+                              label: '${p.bookingsCompleted}+ ${AppLocalizations.of(context)!.doneCountLabel.toLowerCase()}',
                               color: AppColors.rose,
                             ),
                           ],
@@ -520,7 +521,7 @@ class _ReadyBody extends StatelessWidget {
                         children: [
                           Expanded(
                             child: _ActionButton(
-                              label: 'Message',
+                              label: AppLocalizations.of(context)!.messageLabel,
                               color: AppColors.surface,
                               textColor: AppColors.blanc,
                               icon: Icons.chat_bubble_outline_rounded,
@@ -531,7 +532,7 @@ class _ReadyBody extends StatelessWidget {
                           const SizedBox(width: 10),
                           Expanded(
                             child: _GradientActionButton(
-                              label: 'Book now',
+                              label: AppLocalizations.of(context)!.reserveLabel,
                               icon: Icons.calendar_today_rounded,
                               onTap: onBook,
                             ),
@@ -617,7 +618,7 @@ class _AvailabilityScheduleSection extends StatelessWidget {
                 Icon(Icons.schedule_rounded, color: AppColors.violet, size: 18),
                 const SizedBox(width: 8),
                 Text(
-                  'Disponibilités',
+                  AppLocalizations.of(context)!.availabilitySection,
                   style: GoogleFonts.dmSans(
                     color: AppColors.blanc,
                     fontSize: 15,
@@ -831,7 +832,7 @@ class _RatingBadge extends StatelessWidget {
           border: Border.all(color: AppColors.border, width: 0.5),
         ),
         child: Text(
-          'New',
+          AppLocalizations.of(context)!.newBadge,
           style: GoogleFonts.dmSans(
             color: AppColors.gris,
             fontSize: 13,
@@ -863,7 +864,7 @@ class _RatingBadge extends StatelessWidget {
           ),
           const SizedBox(width: 6),
           Text(
-            '($reviewsCount ${reviewsCount == 1 ? 'review' : 'reviews'})',
+            '(${AppLocalizations.of(context)!.reviewCountLabel(reviewsCount)})',
             style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 13),
           ),
         ],
@@ -900,16 +901,21 @@ class _StatsRow extends StatelessWidget {
         borderRadius: BorderRadius.circular(14),
         border: Border.all(color: AppColors.border, width: 0.5),
       ),
-      child: Row(
-        children: [
-          Expanded(
-              child: _StatCell(value: _fmt(followers), label: 'Followers')),
-          Container(width: 1, height: 28, color: AppColors.border),
-          Expanded(
-              child: _StatCell(value: _fmt(bookings), label: 'Bookings')),
-          Container(width: 1, height: 28, color: AppColors.border),
-          Expanded(child: _StatCell(value: _fmt(videos), label: 'Videos')),
-        ],
+      child: Builder(
+        builder: (context) {
+          final l = AppLocalizations.of(context)!;
+          return Row(
+            children: [
+              Expanded(
+                  child: _StatCell(value: _fmt(followers), label: l.followersLabel)),
+              Container(width: 1, height: 28, color: AppColors.border),
+              Expanded(
+                  child: _StatCell(value: _fmt(bookings), label: l.bookingsLabel)),
+              Container(width: 1, height: 28, color: AppColors.border),
+              Expanded(child: _StatCell(value: _fmt(videos), label: l.videosTab)),
+            ],
+          );
+        },
       ),
     );
   }
@@ -1011,7 +1017,7 @@ class _FollowButton extends StatelessWidget {
         final authId = Supabase.instance.client.auth.currentUser?.id;
         if (authId == null) {
           return _ActionButton(
-            label: 'Connectez-vous pour suivre',
+            label: AppLocalizations.of(context)!.signInToFollow,
             color: AppColors.surfaceAlt,
             textColor: AppColors.gris,
             borderColor: AppColors.border,
@@ -1071,7 +1077,7 @@ class _FollowButton extends StatelessWidget {
                         ),
                         const SizedBox(width: 8),
                         Text(
-                          followed ? 'Following' : 'Follow',
+                          followed ? AppLocalizations.of(context)!.followingLabel : AppLocalizations.of(context)!.followLabel,
                           style: GoogleFonts.dmSans(
                             color:
                                 followed ? AppColors.gris : AppColors.blanc,
@@ -1275,11 +1281,11 @@ class _TabBarDelegate extends SliverPersistentHeaderDelegate {
           fontWeight: FontWeight.w600,
           letterSpacing: 0.3,
         ),
-        tabs: const [
-          Tab(text: 'VIDEOS'),
-          Tab(text: 'SERVICES'),
-          Tab(text: 'REVIEWS'),
-          Tab(text: 'EVENTS'),
+        tabs: [
+          Tab(text: AppLocalizations.of(context)!.videosTab.toUpperCase()),
+          Tab(text: AppLocalizations.of(context)!.servicesTab.toUpperCase()),
+          Tab(text: AppLocalizations.of(context)!.reviewsTab.toUpperCase()),
+          Tab(text: AppLocalizations.of(context)!.eventsTab.toUpperCase()),
         ],
       ),
     );
@@ -1314,7 +1320,7 @@ class _VideosTab extends StatelessWidget {
             Icon(Icons.videocam_off_outlined,
                 color: AppColors.gris, size: 48),
             const SizedBox(height: 12),
-            Text('Aucune vidéo',
+            Text(AppLocalizations.of(context)!.noVideosAvailable,
                 style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 15)),
           ],
         ),
@@ -1442,7 +1448,7 @@ class _ServicesTab extends StatelessWidget {
             Icon(Icons.design_services_outlined,
                 color: AppColors.gris, size: 48),
             const SizedBox(height: 12),
-            Text('Aucun service disponible',
+            Text(AppLocalizations.of(context)!.noServicesLabel,
                 style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 15)),
           ],
         ),
@@ -1535,7 +1541,7 @@ class _ServicesTab extends StatelessWidget {
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
-                        'Book',
+                        AppLocalizations.of(context)!.reserveLabel,
                         style: GoogleFonts.dmSans(
                           color: AppColors.blanc,
                           fontSize: 12,
@@ -1577,7 +1583,7 @@ class _ReviewsTab extends StatelessWidget {
             Icon(Icons.rate_review_outlined,
                 color: AppColors.gris, size: 48),
             const SizedBox(height: 12),
-            Text('Aucun avis',
+            Text(AppLocalizations.of(context)!.proProfileNoReviews,
                 style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 15)),
           ],
         ),
@@ -1621,7 +1627,7 @@ class _ReviewsTab extends StatelessWidget {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      '$reviewsCount ${reviewsCount == 1 ? 'review' : 'reviews'}',
+                      AppLocalizations.of(context)!.reviewCountLabel(reviewsCount),
                       style: GoogleFonts.dmSans(
                           color: AppColors.gris, fontSize: 13),
                     ),
@@ -1738,7 +1744,7 @@ class _EventsTab extends StatelessWidget {
           children: [
             Icon(Icons.event_outlined, color: AppColors.gris, size: 48),
             const SizedBox(height: 12),
-            Text('No upcoming events',
+            Text(AppLocalizations.of(context)!.noEventsLabel,
                 style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 15)),
           ],
         ),
@@ -1856,7 +1862,7 @@ class _EventsTab extends StatelessWidget {
                             color: AppColors.success.withAlpha(60)),
                       ),
                       child: Text(
-                        '$remaining left',
+                        AppLocalizations.of(context)!.publicProfileTicketsLeft(remaining),
                         style: GoogleFonts.dmSans(
                           color: AppColors.success,
                           fontSize: 11,
@@ -1935,7 +1941,7 @@ class _EventsTab extends StatelessWidget {
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: Text(
-                            'Buy ticket',
+                            AppLocalizations.of(context)!.buyTicketAction,
                             style: GoogleFonts.dmSans(
                               color: AppColors.blanc,
                               fontSize: 13,
@@ -2034,7 +2040,7 @@ class _ClientCateringSectionState extends State<_ClientCateringSection> {
 
         // ── Menu Items ──
         if (_menuItems.isNotEmpty) ...[
-          const CateringSectionHeader(title: 'MENU'),
+          CateringSectionHeader(title: AppLocalizations.of(context)!.menuTab.toUpperCase()),
           const SizedBox(height: 10),
           CateringMenuGrid(items: _menuItems),
           const SizedBox(height: 14),
@@ -2042,7 +2048,7 @@ class _ClientCateringSectionState extends State<_ClientCateringSection> {
 
         // ── Packages ──
         if (_forfaits.isNotEmpty) ...[
-          const CateringSectionHeader(title: 'PACKAGES'),
+          CateringSectionHeader(title: AppLocalizations.of(context)!.proShellMyPackages),
           const SizedBox(height: 10),
           CateringForfaitList(forfaits: _forfaits),
           const SizedBox(height: 14),
@@ -2050,7 +2056,7 @@ class _ClientCateringSectionState extends State<_ClientCateringSection> {
 
         // ── Gallery ──
         if (_gallery.isNotEmpty) ...[
-          const CateringSectionHeader(title: 'GALLERY'),
+          CateringSectionHeader(title: AppLocalizations.of(context)!.proShellGallery),
           const SizedBox(height: 10),
           CateringGalleryRow(items: _gallery),
           const SizedBox(height: 14),

@@ -9,6 +9,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/widgets/address_autocomplete_field.dart';
 import '../../../../shared/widgets/spotbook_button.dart';
@@ -136,17 +137,18 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
 
   void _onUsernameChanged() {
     _usernameDebounce?.cancel();
+    final l = AppLocalizations.of(context)!;
     final username = _usernameCtrl.text.trim();
     if (username.isEmpty || username.length < 3) {
       setState(() {
-        _usernameError = username.isNotEmpty ? 'Min. 3 caractères' : null;
+        _usernameError = username.isNotEmpty ? l.usernameMinChars : null;
         _isCheckingUsername = false;
       });
       return;
     }
     if (!_usernameRegex.hasMatch(username)) {
       setState(() {
-        _usernameError = 'Lettres, chiffres et _ uniquement (3-20 car.)';
+        _usernameError = l.usernameInvalidChars;
         _isCheckingUsername = false;
       });
       return;
@@ -165,9 +167,10 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
             .maybeSingle();
 
         if (!mounted) return;
+        final ll = AppLocalizations.of(context)!;
         setState(() {
           _isCheckingUsername = false;
-          _usernameError = result != null ? 'Ce nom est déjà pris' : null;
+          _usernameError = result != null ? ll.usernameTaken : null;
         });
       } catch (_) {
         if (mounted) {
@@ -223,8 +226,9 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     } catch (e) {
       if (mounted) {
         setState(() => _isUploadingAvatar = false);
+        final l = AppLocalizations.of(context)!;
         showSpotbookSnackBar(context,
-            message: 'Erreur de téléchargement de la photo', type: SnackType.error);
+            message: l.photoUploadError, type: SnackType.error);
       }
     }
   }
@@ -257,18 +261,20 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
       }
 
       if (!mounted) return;
+      final l = AppLocalizations.of(context)!;
       showSpotbookSnackBar(context,
-          message: 'Profil mis à jour', type: SnackType.success);
+          message: l.profileUpdated, type: SnackType.success);
       context.pop();
     } catch (e) {
       if (!mounted) return;
       showSpotbookSnackBar(context,
-          message: 'Erreur : ${e.toString()}', type: SnackType.error);
+          message: '${AppLocalizations.of(context)!.error} : ${e.toString()}', type: SnackType.error);
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     final s = ref.watch(editProfileProvider);
     _initControllers(s);
 
@@ -287,7 +293,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         title: Text(
-          'Modifier le profil',
+          l.editProfile,
           style: GoogleFonts.sora(
             color: AppColors.blanc,
             fontWeight: FontWeight.w700,
@@ -378,7 +384,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
               const SizedBox(height: 8),
               Center(
                 child: Text(
-                  'Changer la photo',
+                  l.changePhoto,
                   style: GoogleFonts.dmSans(
                     color: AppColors.violetClair,
                     fontSize: 13,
@@ -390,12 +396,12 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
               const SizedBox(height: 24),
 
               // ─── Name ───
-              _buildTextField('Nom affiché', _nameCtrl),
+              _buildTextField(l.displayNameLabel, _nameCtrl),
 
               const SizedBox(height: 16),
 
               // ─── Username with uniqueness check ───
-              _buildLabel('Nom d\'utilisateur'),
+              _buildLabel(l.usernameLabel),
               const SizedBox(height: 8),
               TextField(
                 controller: _usernameCtrl,
@@ -464,7 +470,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
               const SizedBox(height: 16),
 
               // ─── Bio (for all users) ───
-              _buildLabel('Bio'),
+              _buildLabel(l.bioLabel),
               const SizedBox(height: 8),
               TextField(
                 controller: _bioCtrl,
@@ -472,7 +478,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                 maxLength: 160,
                 style: TextStyle(color: AppColors.blanc, fontSize: 15),
                 decoration: InputDecoration(
-                  hintText: 'Décrivez-vous en quelques mots...',
+                  hintText: l.bioHint,
                   hintStyle: TextStyle(
                     color: AppColors.gris.withAlpha(120),
                     fontSize: 14,
@@ -502,12 +508,12 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
               const SizedBox(height: 16),
 
               // ─── Address with Google Places autocomplete ───
-              _buildLabel('Localisation'),
+              _buildLabel(l.locationLabel),
               const SizedBox(height: 8),
               AddressAutocompleteField(
                 controller: _addressCtrl,
                 label: '',
-                hint: 'Votre ville ou adresse',
+                hint: l.locationHint,
                 icon: Icons.location_on_outlined,
                 fillColor: AppColors.surface,
               ),
@@ -516,7 +522,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
               if (s.isPro) ...[
                 const SizedBox(height: 32),
                 Text(
-                  'LIENS SOCIAUX',
+                  l.socialLinksHeader,
                   style: GoogleFonts.sora(
                     color: AppColors.gris,
                     fontSize: 11,
@@ -526,7 +532,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  'Collez un lien, la plateforme sera détectée automatiquement.',
+                  l.socialLinksAutoDetectHint,
                   style: GoogleFonts.dmSans(
                     color: AppColors.gris,
                     fontSize: 12,
@@ -545,7 +551,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
               const SizedBox(height: 32),
 
               SpotbookButton.primary(
-                label: 'Enregistrer',
+                label: l.save,
                 onPressed: _save,
                 isLoading: s.isSaving,
               ),

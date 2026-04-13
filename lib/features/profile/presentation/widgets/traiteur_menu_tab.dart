@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../../booking/domain/booking_models.dart';
 
@@ -12,11 +13,12 @@ class TraiteurMenuTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     // Collect all menu items grouped by category
     final allItems = <String, List<MenuItemModel>>{};
     for (final service in services) {
       for (final item in service.menuItems) {
-        final cat = item.category ?? 'Menu';
+        final cat = item.category ?? l.menuTab;
         allItems.putIfAbsent(cat, () => []).add(item);
       }
     }
@@ -31,7 +33,7 @@ class TraiteurMenuTab extends StatelessWidget {
               const Text('\uD83C\uDF7D', style: TextStyle(fontSize: 48)),
               const SizedBox(height: 16),
               Text(
-                'Aucun menu disponible',
+                l.noMenuAvailable,
                 style: GoogleFonts.dmSans(
                   color: AppColors.gris,
                   fontSize: 16,
@@ -131,11 +133,11 @@ class _MenuItemCard extends StatelessWidget {
                       spacing: 6,
                       children: [
                         if (item.isVegetarian)
-                          _DietBadge(label: 'Végétarien', emoji: '\uD83E\uDD66'),
+                          _DietBadge(label: AppLocalizations.of(context)!.vegetarianLabel, emoji: '\uD83E\uDD66'),
                         if (item.isVegan)
-                          _DietBadge(label: 'Végan', emoji: '\uD83C\uDF31'),
+                          _DietBadge(label: AppLocalizations.of(context)!.veganLabel, emoji: '\uD83C\uDF31'),
                         if (item.isGlutenFree)
-                          _DietBadge(label: 'Sans gluten', emoji: '\uD83C\uDF3E'),
+                          _DietBadge(label: AppLocalizations.of(context)!.glutenFreeLabel, emoji: '\uD83C\uDF3E'),
                       ],
                     ),
                   ],
