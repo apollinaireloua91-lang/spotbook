@@ -14,6 +14,7 @@ import '../../domain/booking_models.dart';
 import '../widgets/filter_sheet.dart';
 import '../widgets/reservation_card.dart';
 import '../widgets/review_sheet.dart';
+import '../../../../shared/theme/theme_mode_notifier.dart';
 import '../widgets/ticket_card.dart';
 
 class MyBookingsScreen extends ConsumerStatefulWidget {
@@ -74,6 +75,7 @@ class _MyBookingsScreenState extends ConsumerState<MyBookingsScreen>
 
   @override
   Widget build(BuildContext context) {
+    ref.watch(themeModeProvider);
     final l = AppLocalizations.of(context)!;
     final bookingsState = ref.watch(clientBookingsProvider);
     final ticketsState = ref.watch(userTicketsProvider);

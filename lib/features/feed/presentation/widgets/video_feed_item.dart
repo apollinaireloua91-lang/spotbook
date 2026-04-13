@@ -15,6 +15,7 @@ import '../../data/video_repository.dart';
 import '../../domain/video_model.dart';
 import 'comments_sheet.dart';
 import 'like_animation.dart';
+import '../../../../shared/theme/theme_mode_notifier.dart';
 import 'share_bottom_sheet.dart';
 
 class _ShowLikeAnimNotifier extends Notifier<bool> {
@@ -248,6 +249,7 @@ class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
 
   @override
   Widget build(BuildContext context) {
+    ref.watch(themeModeProvider);
     final showLikeAnim = ref.watch(_showLikeAnimProvider);
 
     // Sync with the persistent play/pause button from FeedScreen.

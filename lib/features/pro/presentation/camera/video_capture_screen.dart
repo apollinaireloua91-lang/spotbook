@@ -1,11 +1,13 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../../../shared/theme/app_colors.dart';
+import '../../../../shared/theme/theme_mode_notifier.dart';
 import 'video_preview_screen.dart';
 
 /// Max video duration — 2 minutes (120 seconds).
@@ -16,14 +18,14 @@ const _maxDuration = Duration(minutes: 2);
 /// Accessible ONLY via the Pro shell camera FAB.
 /// Opens the device gallery to pick an existing video,
 /// then navigates to [VideoPreviewScreen] for metadata & publish.
-class VideoCaptureScreen extends StatefulWidget {
+class VideoCaptureScreen extends ConsumerStatefulWidget {
   const VideoCaptureScreen({super.key});
 
   @override
-  State<VideoCaptureScreen> createState() => _VideoCaptureScreenState();
+  ConsumerState<VideoCaptureScreen> createState() => _VideoCaptureScreenState();
 }
 
-class _VideoCaptureScreenState extends State<VideoCaptureScreen> {
+class _VideoCaptureScreenState extends ConsumerState<VideoCaptureScreen> {
   bool _isPicking = false;
 
   @override
@@ -68,6 +70,7 @@ class _VideoCaptureScreenState extends State<VideoCaptureScreen> {
 
   @override
   Widget build(BuildContext context) {
+    ref.watch(themeModeProvider);
     return Scaffold(
       backgroundColor: AppColors.fond,
       appBar: AppBar(

@@ -9,6 +9,7 @@ import 'package:intl/intl.dart';
 import 'package:shimmer/shimmer.dart';
 
 import '../../../../shared/theme/app_colors.dart';
+import '../../../../shared/theme/theme_mode_notifier.dart';
 import '../../data/chat_notifier.dart';
 import '../../data/chat_repository.dart';
 import '../../domain/chat_models.dart';
@@ -74,6 +75,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
 
   @override
   Widget build(BuildContext context) {
+    ref.watch(themeModeProvider);
     final state = ref.watch(chatProvider);
     final currentUid = ref.read(chatRepositoryProvider).currentUserId;
 

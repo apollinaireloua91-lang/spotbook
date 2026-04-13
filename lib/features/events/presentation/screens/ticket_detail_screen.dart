@@ -11,6 +11,7 @@ import 'package:shimmer/shimmer.dart';
 import 'package:add_2_calendar/add_2_calendar.dart';
 
 import '../../../../shared/theme/app_colors.dart';
+import '../../../../shared/theme/theme_mode_notifier.dart';
 import '../../domain/event_models.dart';
 
 class TicketDetailScreen extends ConsumerWidget {
@@ -19,6 +20,7 @@ class TicketDetailScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    ref.watch(themeModeProvider);
     final isUsed = ticket.status == 'used';
     final statusColor = isUsed ? AppColors.gris : AppColors.success;
     final statusLabel = isUsed ? 'Used' : 'Valid';

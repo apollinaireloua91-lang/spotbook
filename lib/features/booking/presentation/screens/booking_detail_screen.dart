@@ -15,6 +15,7 @@ import '../../../chat/data/chat_repository.dart';
 import '../../../moderation/presentation/screens/booking_report_sheet.dart';
 import '../../data/booking_notifier.dart';
 import '../../data/booking_repository.dart';
+import '../../../../shared/theme/theme_mode_notifier.dart';
 import '../../domain/booking_models.dart';
 
 /// Détail d\'un RDV — vue unifiée (client ou pro) selon `auth.uid()`.
@@ -286,6 +287,7 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    ref.watch(themeModeProvider);
     final l = AppLocalizations.of(context)!;
     final async = ref.watch(bookingDetailProvider(widget.bookingId));
     final uid = Supabase.instance.client.auth.currentUser?.id;

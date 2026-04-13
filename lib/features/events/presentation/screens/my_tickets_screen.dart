@@ -8,6 +8,7 @@ import 'package:intl/intl.dart';
 
 import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
+import '../../../../shared/theme/theme_mode_notifier.dart';
 import '../../data/event_notifier.dart';
 import '../../domain/event_models.dart';
 
@@ -38,6 +39,7 @@ class _MyTicketsScreenState extends ConsumerState<MyTicketsScreen>
 
   @override
   Widget build(BuildContext context) {
+    ref.watch(themeModeProvider);
     final l = AppLocalizations.of(context)!;
     final state = ref.watch(userTicketsProvider);
     final now = DateTime.now();

@@ -8,6 +8,7 @@ import 'package:intl/intl.dart';
 
 import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
+import '../../../../shared/theme/theme_mode_notifier.dart';
 import '../../../../shared/widgets/empty_state.dart';
 import '../../../../shared/widgets/spotbook_loading_shimmer.dart';
 import '../../data/event_notifier.dart';
@@ -38,6 +39,7 @@ class _ProScannerEventPickerScreenState
 
   @override
   Widget build(BuildContext context) {
+    ref.watch(themeModeProvider);
     final l = AppLocalizations.of(context)!;
     final async = ref.watch(proEventsProvider);
 

@@ -7,6 +7,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:shimmer/shimmer.dart';
 
 import '../../../../shared/theme/app_colors.dart';
+import '../../../../shared/theme/theme_mode_notifier.dart';
 import '../../../../shared/utils/cloudflare_stream_urls.dart';
 import '../../data/favorite_repository.dart';
 import '../../domain/favorite_model.dart';
@@ -71,6 +72,7 @@ class _SavedPostsScreenState extends ConsumerState<SavedPostsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    ref.watch(themeModeProvider);
     return Scaffold(
       backgroundColor: AppColors.fond,
       appBar: AppBar(

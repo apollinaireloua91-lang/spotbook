@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../data/comments_notifier.dart';
+import '../../../../shared/theme/theme_mode_notifier.dart';
 import '../../domain/video_model.dart';
 
 class CommentsSheet extends ConsumerStatefulWidget {
@@ -43,6 +44,7 @@ class _CommentsSheetState extends ConsumerState<CommentsSheet> {
 
   @override
   Widget build(BuildContext context) {
+    ref.watch(themeModeProvider);
     final l = AppLocalizations.of(context)!;
     final s = ref.watch(commentsProvider);
 

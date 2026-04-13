@@ -12,6 +12,7 @@ import '../../../../shared/utils/analytics_service.dart';
 import '../../../auth/data/category_repository.dart';
 import '../../data/discover_notifier.dart';
 import '../../domain/provider_search_result.dart';
+import '../../../../shared/theme/theme_mode_notifier.dart';
 import '../../domain/video_model.dart';
 
 /// Fallback categories when Supabase data hasn't loaded yet.
@@ -62,6 +63,7 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
 
   @override
   Widget build(BuildContext context) {
+    ref.watch(themeModeProvider);
     final l = AppLocalizations.of(context)!;
     final s = ref.watch(discoverProvider);
     final n = ref.read(discoverProvider.notifier);

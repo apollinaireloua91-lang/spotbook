@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
+import '../../../../shared/theme/theme_mode_notifier.dart';
 import '../../data/moderation_repository.dart';
 import '../../data/report_notifier.dart';
 
@@ -73,6 +74,7 @@ class _ReportSheet extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    ref.watch(themeModeProvider);
     final l = AppLocalizations.of(context)!;
     final reasons = [
       l.reportReasonInappropriate,

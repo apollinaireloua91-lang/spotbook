@@ -11,6 +11,7 @@ import 'package:video_player/video_player.dart';
 
 import '../../../../core/services/cloudflare_stream_service.dart';
 import '../../../../shared/theme/app_colors.dart';
+import '../../../../shared/theme/theme_mode_notifier.dart';
 import '../../../auth/data/category_repository.dart';
 import 'cubit/video_upload_cubit.dart';
 
@@ -159,6 +160,7 @@ class _VideoPreviewScreenState extends ConsumerState<VideoPreviewScreen> {
 
   @override
   Widget build(BuildContext context) {
+    ref.watch(themeModeProvider);
     return BlocProvider.value(
       value: _cubit,
       child: BlocConsumer<VideoUploadCubit, VideoUploadState>(

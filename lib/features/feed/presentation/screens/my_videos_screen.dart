@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
+import '../../../../shared/theme/theme_mode_notifier.dart';
 import '../../data/my_videos_notifier.dart';
 import '../../domain/video_model.dart';
 
@@ -33,6 +34,7 @@ class MyVideosScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    ref.watch(themeModeProvider);
     final l = AppLocalizations.of(context)!;
     final videos = ref.watch(myVideosProvider);
 

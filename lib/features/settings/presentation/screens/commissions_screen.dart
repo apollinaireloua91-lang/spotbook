@@ -7,6 +7,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/services/app_config_provider.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
+import '../../../../shared/theme/theme_mode_notifier.dart';
 
 // ═════════════════════════════════════════════════════════════════════════════
 // COMMISSIONS SCREEN — Premium breakdown of Spotbook fees for Pros
@@ -17,6 +18,7 @@ class CommissionsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    ref.watch(themeModeProvider);
     final l = AppLocalizations.of(context)!;
     final cfg = ref.watch(appConfigProvider).value ?? AppConfig.fallback;
 

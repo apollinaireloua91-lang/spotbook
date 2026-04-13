@@ -7,6 +7,7 @@ import 'package:share_plus/share_plus.dart';
 import 'package:shimmer/shimmer.dart';
 
 import '../../../../shared/theme/app_colors.dart';
+import '../../../../shared/theme/theme_mode_notifier.dart';
 import '../../data/promo_repository.dart';
 import '../../domain/promo_models.dart';
 
@@ -78,6 +79,7 @@ class ReferralScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    ref.watch(themeModeProvider);
     final state = ref.watch(_referralProvider);
 
     return Scaffold(

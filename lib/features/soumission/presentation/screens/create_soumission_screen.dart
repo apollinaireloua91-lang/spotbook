@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../shared/theme/app_colors.dart';
+import '../../../../shared/theme/theme_mode_notifier.dart';
 import '../../../../shared/widgets/spotbook_button.dart';
 import '../../data/soumission_repository.dart';
 import '../../domain/soumission_model.dart';
@@ -125,6 +126,7 @@ class _CreateSoumissionScreenState
 
   @override
   Widget build(BuildContext context) {
+    ref.watch(themeModeProvider);
     return Scaffold(
       backgroundColor: AppColors.fond,
       appBar: AppBar(

@@ -11,6 +11,7 @@ import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/widgets/spotbook_avatar.dart';
 import '../../../../shared/widgets/spotbook_button.dart';
 import '../../data/discover_notifier.dart';
+import '../../../../shared/theme/theme_mode_notifier.dart';
 import '../../domain/provider_search_result.dart';
 
 /// Fallback categories when Supabase data hasn't loaded yet.
@@ -54,6 +55,7 @@ class _DiscoverSearchResultsScreenState
 
   @override
   Widget build(BuildContext context) {
+    ref.watch(themeModeProvider);
     final l = AppLocalizations.of(context)!;
     final s = ref.watch(discoverProvider);
     final n = ref.read(discoverProvider.notifier);

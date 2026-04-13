@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../shared/theme/app_colors.dart';
+import '../../../../shared/theme/theme_mode_notifier.dart';
 import '../../../booking/data/booking_repository.dart';
 import '../../../booking/domain/booking_models.dart';
 
@@ -58,6 +59,7 @@ class _PaymentReceiptScreenState extends ConsumerState<PaymentReceiptScreen>
 
   @override
   Widget build(BuildContext context) {
+    ref.watch(themeModeProvider);
     return Scaffold(
       backgroundColor: AppColors.fond,
       appBar: AppBar(

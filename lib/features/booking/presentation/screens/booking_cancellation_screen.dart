@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
+import '../../../../shared/theme/theme_mode_notifier.dart';
 import '../../data/booking_notifier.dart';
 
 class BookingCancellationScreen extends ConsumerWidget {
@@ -15,6 +16,7 @@ class BookingCancellationScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    ref.watch(themeModeProvider);
     final l = AppLocalizations.of(context)!;
     final state = ref.watch(clientBookingsProvider);
 

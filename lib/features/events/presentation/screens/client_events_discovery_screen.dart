@@ -8,6 +8,7 @@ import 'package:intl/intl.dart';
 
 import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
+import '../../../../shared/theme/theme_mode_notifier.dart';
 import '../../../../shared/widgets/spotbook_app_bar.dart';
 import '../../data/event_notifier.dart';
 import '../../domain/event_models.dart';
@@ -79,6 +80,7 @@ class _ClientEventsDiscoveryScreenState
 
   @override
   Widget build(BuildContext context) {
+    ref.watch(themeModeProvider);
     final l = AppLocalizations.of(context)!;
     final eventsState = ref.watch(eventsProvider);
 

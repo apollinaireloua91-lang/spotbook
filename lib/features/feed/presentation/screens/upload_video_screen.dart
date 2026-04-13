@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
+import '../../../../shared/theme/theme_mode_notifier.dart';
 import '../../../auth/data/category_repository.dart';
 import '../../data/upload_video_notifier.dart';
 
@@ -74,6 +75,7 @@ class _UploadVideoScreenState extends ConsumerState<UploadVideoScreen> {
 
   @override
   Widget build(BuildContext context) {
+    ref.watch(themeModeProvider);
     final l = AppLocalizations.of(context)!;
     final s = ref.watch(uploadVideoProvider);
     final n = ref.read(uploadVideoProvider.notifier);

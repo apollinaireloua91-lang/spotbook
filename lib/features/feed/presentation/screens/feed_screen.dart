@@ -12,6 +12,7 @@ import '../../../../shared/theme/app_typography.dart';
 import '../../../notifications/data/notification_notifier.dart';
 import '../../data/feed_notifier.dart';
 import '../../data/feed_play_state.dart';
+import '../../../../shared/theme/theme_mode_notifier.dart';
 import '../widgets/video_feed_item.dart';
 
 class FeedScreen extends ConsumerStatefulWidget {
@@ -32,6 +33,7 @@ class _FeedScreenState extends ConsumerState<FeedScreen> {
 
   @override
   Widget build(BuildContext context) {
+    ref.watch(themeModeProvider);
     final s = ref.watch(feedProvider);
     final n = ref.read(feedProvider.notifier);
     final topPad = MediaQuery.of(context).padding.top;

@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
+import '../../../../shared/theme/theme_mode_notifier.dart';
 import '../../../../shared/widgets/spotbook_card.dart';
 import '../../data/event_notifier.dart';
 import '../../domain/event_models.dart';
@@ -40,6 +41,7 @@ class _ProEventsListScreenState extends ConsumerState<ProEventsListScreen> {
 
   @override
   Widget build(BuildContext context) {
+    ref.watch(themeModeProvider);
     final l = AppLocalizations.of(context)!;
     final async = ref.watch(proEventsProvider);
 

@@ -7,6 +7,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../../../features/auth/data/category_repository.dart';
 import '../../../../../shared/theme/app_colors.dart';
 import '../cubit/client_search_cubit.dart';
+import '../../../../../shared/theme/theme_mode_notifier.dart';
 import '../models/search_models.dart';
 
 class CategoryPills extends ConsumerWidget {
@@ -14,6 +15,7 @@ class CategoryPills extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    ref.watch(themeModeProvider);
     final asyncCats = ref.watch(proCategoriesProvider);
     final categories = asyncCats.when(
       data: (cats) => [

@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
+import '../../../../shared/theme/theme_mode_notifier.dart';
 import '../../../profile/presentation/notifiers/pro_settings_notifier.dart';
 
 // ═════════════════════════════════════════════════════════════════════════════
@@ -29,6 +30,7 @@ class _DepositSettingsScreenState extends ConsumerState<DepositSettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    ref.watch(themeModeProvider);
     final l = AppLocalizations.of(context)!;
     final settingsAsync = ref.watch(proSettingsProvider);
 

@@ -2,16 +2,18 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../shared/theme/app_colors.dart';
+import '../shared/theme/theme_mode_notifier.dart';
 
 /// Client Shell — 4 tabs, NO camera button:
 ///   Feed | Découvrir | Mes RDV | Profil
 ///
 /// Premium glassmorphism nav bar with animated pill indicator.
-class ClientShell extends StatelessWidget {
+class ClientShell extends ConsumerWidget {
   const ClientShell({super.key, required this.navigationShell});
 
   final StatefulNavigationShell navigationShell;
@@ -25,7 +27,8 @@ class ClientShell extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    ref.watch(themeModeProvider);
     final bottomInset = MediaQuery.paddingOf(context).bottom;
     final idx = navigationShell.currentIndex;
 

@@ -2,10 +2,12 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:go_router/go_router.dart';
 
 import '../shared/theme/app_colors.dart';
+import '../shared/theme/theme_mode_notifier.dart';
 
 /// Pro Shell — 5 tabs with premium floating glassmorphism nav bar.
 ///
@@ -13,7 +15,7 @@ import '../shared/theme/app_colors.dart';
 ///
 /// The camera button floats above the bar with a neon-glow gradient ring,
 /// giving the nav bar a distinctive $20M+ app feel.
-class ProShell extends StatelessWidget {
+class ProShell extends ConsumerWidget {
   const ProShell({super.key, required this.navigationShell});
 
   final StatefulNavigationShell navigationShell;
@@ -27,7 +29,8 @@ class ProShell extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    ref.watch(themeModeProvider);
     final bottomInset = MediaQuery.paddingOf(context).bottom;
     final current = navigationShell.currentIndex;
 

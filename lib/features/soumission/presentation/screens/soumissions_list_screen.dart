@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../../../../shared/theme/app_colors.dart';
+import '../../../../shared/theme/theme_mode_notifier.dart';
 import '../../../../shared/widgets/spotbook_button.dart';
 import '../../data/soumission_repository.dart';
 import '../../domain/soumission_model.dart';
@@ -17,6 +18,7 @@ class SoumissionsListScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    ref.watch(themeModeProvider);
     final async = ref.watch(mySoumissionsProvider);
 
     return Scaffold(

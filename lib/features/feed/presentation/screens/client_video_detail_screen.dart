@@ -9,6 +9,7 @@ import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/utils/cloudflare_stream_urls.dart';
 import '../../../../shared/widgets/spotbook_avatar.dart';
 import '../../data/video_repository.dart';
+import '../../../../shared/theme/theme_mode_notifier.dart';
 import '../../domain/video_model.dart';
 
 // ─── Providers ───────────────────────────────────────────
@@ -88,6 +89,7 @@ class _ClientVideoDetailScreenState
 
   @override
   Widget build(BuildContext context) {
+    ref.watch(themeModeProvider);
     final videoAsync = ref.watch(_videoDetailProvider(widget.videoId));
 
     return videoAsync.when(

@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
+import '../../../../shared/theme/theme_mode_notifier.dart';
 import '../../data/report_notifier.dart';
 
 /// [targetType] = `booking`, [targetId] = UUID du RDV.
@@ -42,6 +43,7 @@ class _BookingReportSheetState extends ConsumerState<_BookingReportSheet> {
 
   @override
   Widget build(BuildContext context) {
+    ref.watch(themeModeProvider);
     final l = AppLocalizations.of(context)!;
     final reasons = [
       l.bookingReportReasonInappropriate,

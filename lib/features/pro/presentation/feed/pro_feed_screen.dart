@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../shared/theme/app_colors.dart';
+import '../../../../shared/theme/theme_mode_notifier.dart';
 import '../../../../shared/widgets/spotbook_loading_shimmer.dart';
 import '../../../feed/data/video_repository.dart';
 import '../../../feed/presentation/widgets/video_feed_item.dart';
@@ -40,6 +41,8 @@ class _ProFeedScreenState extends ConsumerState<ProFeedScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Watch theme to rebuild accent colors when dark mode toggles
+    ref.watch(themeModeProvider);
     return BlocProvider(
       create: (context) => ProFeedCubit(
         videoRepository: ref.read(videoRepositoryProvider),
@@ -81,7 +84,8 @@ class _ProFeedBody extends StatelessWidget {
           final currentUid =
               Supabase.instance.client.auth.currentUser?.id;
           return Scaffold(
-            backgroundColor: AppColors.fond,
+            // Video feed is always dark regardless of theme
+            backgroundColor: Colors.black,
             extendBodyBehindAppBar: true,
             body: Stack(
               children: [
@@ -94,7 +98,7 @@ class _ProFeedBody extends StatelessWidget {
                   RefreshIndicator(
                     onRefresh: cubit.refresh,
                     color: AppColors.violet,
-                    backgroundColor: AppColors.surface,
+                    backgroundColor: const Color(0xFF121218),
                     child: PageView.builder(
                       controller: pageController,
                       scrollDirection: Axis.vertical,
@@ -274,7 +278,8 @@ class _ProFeedEmptyState extends StatelessWidget {
               'Aucune vidéo',
               textAlign: TextAlign.center,
               style: GoogleFonts.sora(
-                color: AppColors.blanc,
+                // Always white — video feed is always dark
+                color: Colors.white,
                 fontSize: 22,
                 fontWeight: FontWeight.w700,
                 letterSpacing: -0.3,
@@ -285,7 +290,7 @@ class _ProFeedEmptyState extends StatelessWidget {
               'Les vidéos des professionnels\napparaîtront ici',
               textAlign: TextAlign.center,
               style: GoogleFonts.dmSans(
-                color: AppColors.gris,
+                color: Colors.white.withAlpha(150),
                 fontSize: 15,
                 height: 1.5,
               ),

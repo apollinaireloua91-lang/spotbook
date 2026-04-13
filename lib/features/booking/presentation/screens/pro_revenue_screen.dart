@@ -11,6 +11,7 @@ import 'package:intl/intl.dart';
 import '../../../../core/services/app_config_provider.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
+import '../../../../shared/theme/theme_mode_notifier.dart';
 import '../../../../shared/widgets/spotbook_loading_shimmer.dart';
 import '../../data/booking_notifier.dart';
 import '../../domain/booking_models.dart';
@@ -29,6 +30,7 @@ class _ProRevenueScreenState extends ConsumerState<ProRevenueScreen> {
 
   @override
   Widget build(BuildContext context) {
+    ref.watch(themeModeProvider);
     final l = AppLocalizations.of(context)!;
     final chartAsync = ref.watch(proRevenueDailyProvider(_periodDays));
     final txAsync = ref.watch(proTransactionsProvider(_periodDays));

@@ -9,6 +9,7 @@ import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/widgets/spotbook_button.dart';
 import '../../data/booking_repository.dart';
+import '../../../../shared/theme/theme_mode_notifier.dart';
 import '../../domain/booking_models.dart';
 
 /// Refund request screen — shows booking details, refund policy, and
@@ -146,6 +147,7 @@ class _RefundRequestScreenState extends ConsumerState<RefundRequestScreen> {
 
   @override
   Widget build(BuildContext context) {
+    ref.watch(themeModeProvider);
     final l = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: AppColors.fond,

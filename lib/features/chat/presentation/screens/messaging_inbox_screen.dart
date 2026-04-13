@@ -10,6 +10,7 @@ import 'package:intl/intl.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../shared/theme/app_colors.dart';
+import '../../../../shared/theme/theme_mode_notifier.dart';
 import '../../../../shared/widgets/empty_state.dart';
 import '../../../../shared/widgets/spotbook_loading_shimmer.dart';
 import '../../data/chat_notifier.dart';
@@ -91,6 +92,7 @@ class _MessagingInboxScreenState extends ConsumerState<MessagingInboxScreen> {
 
   @override
   Widget build(BuildContext context) {
+    ref.watch(themeModeProvider);
     final state = ref.watch(conversationsProvider);
 
     // Subscribe to typing when conversations load

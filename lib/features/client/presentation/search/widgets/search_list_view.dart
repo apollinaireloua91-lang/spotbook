@@ -8,6 +8,7 @@ import 'package:intl/intl.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../../shared/theme/app_colors.dart';
+import '../../../../../shared/theme/theme_mode_notifier.dart';
 import '../cubit/client_search_cubit.dart';
 import 'pro_list_card.dart';
 
@@ -161,6 +162,7 @@ class _TrendingEventsSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    ref.watch(themeModeProvider);
     final events = ref.watch(_clientTrendingEventsProvider);
 
     return Column(
@@ -421,6 +423,7 @@ class _ClientVideosSectionState extends ConsumerState<_ClientVideosSection>
 
   @override
   Widget build(BuildContext context) {
+    ref.watch(themeModeProvider);
     final videos = ref.watch(_clientTrendingVideosProvider);
 
     videos.whenData((_) {

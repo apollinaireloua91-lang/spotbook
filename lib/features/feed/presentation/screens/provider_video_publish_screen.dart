@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../shared/theme/app_colors.dart';
+import '../../../../shared/theme/theme_mode_notifier.dart';
 import '../../../booking/presentation/notifiers/pro_scheduling_notifiers.dart';
 import '../../data/upload_video_notifier.dart';
 
@@ -220,6 +221,7 @@ class _ProviderVideoPublishScreenState
 
   @override
   Widget build(BuildContext context) {
+    ref.watch(themeModeProvider);
     final s = ref.watch(uploadVideoProvider);
     final n = ref.read(uploadVideoProvider.notifier);
     final svcState = ref.watch(proServicesNotifierProvider);

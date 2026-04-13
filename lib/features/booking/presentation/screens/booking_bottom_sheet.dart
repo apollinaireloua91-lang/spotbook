@@ -18,6 +18,7 @@ import '../../../../shared/widgets/confetti_overlay.dart';
 import '../../../profile/domain/profile_models.dart';
 import '../../data/booking_notifier.dart';
 import '../../domain/booking_models.dart';
+import '../../../../shared/theme/theme_mode_notifier.dart';
 import '../widgets/person_count_picker.dart';
 
 Future<void> showBookingSheet(
@@ -93,6 +94,7 @@ class _BookingSheetState extends ConsumerState<_BookingSheet> {
 
   @override
   Widget build(BuildContext context) {
+    ref.watch(themeModeProvider);
     final state = ref.watch(bookingFlowProvider);
 
     return DraggableScrollableSheet(

@@ -8,6 +8,7 @@ import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/locale/app_locale_notifier.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/theme/app_typography.dart';
+import '../../../../shared/theme/theme_mode_notifier.dart';
 import '../../../../shared/widgets/spotbook_card.dart';
 
 /// Sélection FR / EN — persistance via [AppLocaleNotifier] (Hive), appliquée à [MaterialApp.router].
@@ -16,6 +17,7 @@ class LanguageSettingsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    ref.watch(themeModeProvider);
     final l10n = AppLocalizations.of(context)!;
     final locale = ref.watch(appLocaleProvider);
 

@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
+import '../../../../shared/theme/theme_mode_notifier.dart';
 import '../../../auth/data/auth_repository.dart';
 
 class _DeleteState {
@@ -39,6 +40,7 @@ class DeleteAccountScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    ref.watch(themeModeProvider);
     final l = AppLocalizations.of(context)!;
     final s = ref.watch(_deleteProvider);
     final n = ref.read(_deleteProvider.notifier);

@@ -8,6 +8,7 @@ import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/widgets/spotbook_loading_shimmer.dart';
 import '../../../profile/data/profile_repository.dart';
 import '../../../profile/domain/profile_models.dart';
+import '../../../../shared/theme/theme_mode_notifier.dart';
 import 'booking_bottom_sheet.dart';
 
 /// Provider that fetches the pro profile for the booking flow entry.
@@ -52,6 +53,7 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
 
   @override
   Widget build(BuildContext context) {
+    ref.watch(themeModeProvider);
     final l = AppLocalizations.of(context)!;
     final proAsync = ref.watch(_bookingProProvider(widget.providerId));
 

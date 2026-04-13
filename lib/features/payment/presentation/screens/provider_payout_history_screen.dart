@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../shared/theme/app_colors.dart';
+import '../../../../shared/theme/theme_mode_notifier.dart';
 import '../../../../shared/widgets/spotbook_app_bar.dart';
 
 // ─── Model ──────────────────────────────────────────────
@@ -102,6 +103,7 @@ class ProviderPayoutHistoryScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    ref.watch(themeModeProvider);
     final payoutsAsync = ref.watch(_payoutsProvider);
 
     return Scaffold(

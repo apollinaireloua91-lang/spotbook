@@ -15,6 +15,7 @@ import '../../../../shared/widgets/address_autocomplete_field.dart';
 import '../../../../shared/widgets/spotbook_button.dart';
 import '../../../../shared/widgets/spotbook_snackbar.dart';
 import '../../data/edit_profile_notifier.dart';
+import '../../../../shared/theme/theme_mode_notifier.dart';
 import '../../data/profile_repository.dart';
 
 // ─── Social platform config ──────────────────────────────
@@ -274,6 +275,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    ref.watch(themeModeProvider);
     final l = AppLocalizations.of(context)!;
     final s = ref.watch(editProfileProvider);
     _initControllers(s);

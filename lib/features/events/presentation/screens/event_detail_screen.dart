@@ -8,6 +8,7 @@ import 'package:intl/intl.dart';
 import 'package:shimmer/shimmer.dart';
 
 import '../../../../shared/theme/app_colors.dart';
+import '../../../../shared/theme/theme_mode_notifier.dart';
 import '../../data/event_notifier.dart';
 import '../../domain/event_models.dart';
 import '../widgets/buy_ticket_sheet.dart';
@@ -18,6 +19,7 @@ class EventDetailScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    ref.watch(themeModeProvider);
     final eventAsync = ref.watch(eventDetailProvider(eventId));
 
     return Scaffold(

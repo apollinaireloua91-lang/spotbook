@@ -1,20 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
+import '../../../../shared/theme/theme_mode_notifier.dart';
 
 // ═════════════════════════════════════════════════════════════════════════════
 // CANCELLATION POLICY SCREEN — Premium informational page for Pros
 // ═════════════════════════════════════════════════════════════════════════════
 
-class CancellationPolicyScreen extends StatelessWidget {
+class CancellationPolicyScreen extends ConsumerWidget {
   const CancellationPolicyScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    ref.watch(themeModeProvider);
     final l = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: AppColors.fond,

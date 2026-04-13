@@ -15,6 +15,7 @@ import '../../../../shared/widgets/spotbook_avatar.dart';
 import '../../../../shared/widgets/spotbook_button.dart';
 import '../../data/discover_notifier.dart';
 import '../../data/discover_search_repository.dart';
+import '../../../../shared/theme/theme_mode_notifier.dart';
 import '../../domain/provider_search_result.dart';
 
 /// Fallback categories for map filter when Supabase hasn't loaded yet.
@@ -259,6 +260,7 @@ class _DiscoverSearchMapScreenState
 
   @override
   Widget build(BuildContext context) {
+    ref.watch(themeModeProvider);
     final s = ref.watch(discoverProvider);
     final n = ref.read(discoverProvider.notifier);
 

@@ -10,6 +10,7 @@ import 'package:intl/intl.dart';
 
 import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
+import '../../../../shared/theme/theme_mode_notifier.dart';
 import '../../data/event_notifier.dart';
 import '../../data/event_repository.dart';
 import 'pro_my_events_screen.dart';
@@ -247,6 +248,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
 
   @override
   Widget build(BuildContext context) {
+    ref.watch(themeModeProvider);
     final l = AppLocalizations.of(context)!;
     final s = ref.watch(_createProvider);
     final bottomPad = MediaQuery.paddingOf(context).bottom;

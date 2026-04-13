@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 
 import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
+import '../../../../shared/theme/theme_mode_notifier.dart';
 import '../../../profile/data/profile_repository.dart';
 import '../../data/event_repository.dart';
 import '../../domain/event_models.dart';
@@ -20,6 +21,7 @@ class ProMyEventsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    ref.watch(themeModeProvider);
     final l = AppLocalizations.of(context)!;
     final uid = ref.watch(profileRepositoryProvider).currentUserId;
 
