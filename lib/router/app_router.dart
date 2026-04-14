@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -76,6 +77,11 @@ import '../features/settings/presentation/screens/language_settings_screen.dart'
 import '../features/payment/presentation/screens/payment_receipt_screen.dart';
 import '../features/soumission/presentation/screens/soumissions_list_screen.dart';
 import '../features/soumission/presentation/screens/create_soumission_screen.dart';
+import '../features/profile/presentation/screens/provider_public_profile_client_view_screen.dart';
+import '../features/profile/presentation/bloc/public_provider_profile_bloc.dart';
+import '../features/profile/data/datasources/provider_profile_remote_datasource.dart';
+import '../features/profile/data/profile_repository.dart';
+import '../features/chat/data/chat_repository.dart';
 import 'client_shell.dart';
 import 'pro_shell.dart';
 
@@ -643,6 +649,25 @@ final appRouter = GoRouter(
         state: state,
         child: const MyTicketsScreen(),
       ),
+    ),
+    GoRoute(
+      path: '/client/provider/:proId',
+      pageBuilder: (context, state) {
+        final proId = state.pathParameters['proId'] ?? '';
+        final supabase = Supabase.instance.client;
+        return premiumPage(
+          state: state,
+          child: BlocProvider(
+            create: (_) => PublicProviderProfileBloc(
+              profileDatasource: ProviderProfileRemoteDatasource(supabase),
+              profileRepository: ProfileRepository(supabase: supabase),
+              chatRepository: ChatRepository(supabase: supabase),
+              supabase: supabase,
+            )..add(PublicProviderProfileStarted(proId)),
+            child: const ProviderPublicProfileClientViewScreen(),
+          ),
+        );
+      },
     ),
 
     // ─── Routes partagées supplémentaires ───
