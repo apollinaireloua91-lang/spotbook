@@ -47,109 +47,125 @@ class BookingCancellationScreen extends ConsumerWidget {
         ),
         centerTitle: true,
       ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Icon(Icons.warning_amber_rounded,
-                color: AppColors.warning, size: 48),
-            const SizedBox(height: 16),
-            Text(
-              'Politique d\'annulation',
-              style: GoogleFonts.sora(
-                color: AppColors.blanc,
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
+      body: Column(
+        children: [
+          Expanded(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(Icons.warning_amber_rounded,
+                      color: AppColors.warning, size: 48),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Politique d\'annulation',
+                    style: GoogleFonts.sora(
+                      color: AppColors.blanc,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  _PolicyRow(
+                    icon: Icons.check_circle_outline,
+                    color: AppColors.success,
+                    text:
+                        'Plus de 48h avant le rendez-vous : remboursement complet de l\'acompte.',
+                  ),
+                  const SizedBox(height: 12),
+                  _PolicyRow(
+                    icon: Icons.cancel_outlined,
+                    color: AppColors.error,
+                    text:
+                        'Moins de 48h avant le rendez-vous : le pro conserve l\'acompte. Aucun remboursement.',
+                  ),
+                  const SizedBox(height: 32),
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: AppColors.error.withAlpha(15),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: AppColors.error.withAlpha(50)),
+                    ),
+                    child: Text(
+                      'Cette action est irréversible. Confirmez-vous l\'annulation ?',
+                      style: GoogleFonts.dmSans(color: AppColors.error, fontSize: 14),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  if (state.cancellationError != null) ...[
+                    const SizedBox(height: 12),
+                    Text(
+                      state.cancellationError!,
+                      style: GoogleFonts.dmSans(color: AppColors.error, fontSize: 13),
+                    ),
+                  ],
+                ],
               ),
             ),
-            const SizedBox(height: 16),
-            _PolicyRow(
-              icon: Icons.check_circle_outline,
-              color: AppColors.success,
-              text:
-                  'Plus de 48h avant le rendez-vous : remboursement complet de l\'acompte.',
-            ),
-            const SizedBox(height: 12),
-            _PolicyRow(
-              icon: Icons.cancel_outlined,
-              color: AppColors.error,
-              text:
-                  'Moins de 48h avant le rendez-vous : le pro conserve l\'acompte. Aucun remboursement.',
-            ),
-            const SizedBox(height: 32),
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: AppColors.error.withAlpha(15),
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: AppColors.error.withAlpha(50)),
-              ),
-              child: Text(
-                'Cette action est irréversible. Confirmez-vous l\'annulation ?',
-                style: GoogleFonts.dmSans(color: AppColors.error, fontSize: 14),
-                textAlign: TextAlign.center,
-              ),
-            ),
-            if (state.cancellationError != null) ...[
-              const SizedBox(height: 12),
-              Text(
-                state.cancellationError!,
-                style: GoogleFonts.dmSans(color: AppColors.error, fontSize: 13),
-              ),
-            ],
-            const Spacer(),
-            SizedBox(
-              width: double.infinity,
-              height: 52,
-              child: ElevatedButton(
-                onPressed: state.isCancelling
-                    ? null
-                    : () async {
-                        HapticFeedback.mediumImpact();
-                        final success = await ref
-                            .read(clientBookingsProvider.notifier)
-                            .cancelBooking(bookingId);
-                        if (success && context.mounted) {
-                          context.pop();
-                        }
-                      },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.error,
-                  foregroundColor: AppColors.blanc,
-                  disabledBackgroundColor: AppColors.surfaceAlt,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12)),
-                ),
-                child: state.isCancelling
-                    ? SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: CircularProgressIndicator(
-                            color: AppColors.blanc, strokeWidth: 2),
-                      )
-                    : Text(l.confirmCancellation,
-                        style: GoogleFonts.dmSans(fontWeight: FontWeight.bold)),
+          ),
+          SafeArea(
+            top: false,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SizedBox(
+                    width: double.infinity,
+                    height: 52,
+                    child: ElevatedButton(
+                      onPressed: state.isCancelling
+                          ? null
+                          : () async {
+                              HapticFeedback.mediumImpact();
+                              final success = await ref
+                                  .read(clientBookingsProvider.notifier)
+                                  .cancelBooking(bookingId);
+                              if (success && context.mounted) {
+                                context.pop();
+                              }
+                            },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.error,
+                        foregroundColor: AppColors.blanc,
+                        disabledBackgroundColor: AppColors.surfaceAlt,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12)),
+                      ),
+                      child: state.isCancelling
+                          ? SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(
+                                  color: AppColors.blanc, strokeWidth: 2),
+                            )
+                          : Text(l.confirmCancellation,
+                              style: GoogleFonts.dmSans(fontWeight: FontWeight.bold)),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 52,
+                    child: OutlinedButton(
+                      onPressed: state.isCancelling ? null : () => context.pop(),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: AppColors.blanc,
+                        side: BorderSide(color: AppColors.border),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12)),
+                      ),
+                      child: Text(l.back, style: GoogleFonts.dmSans()),
+                    ),
+                  ),
+                ],
               ),
             ),
-            const SizedBox(height: 12),
-            SizedBox(
-              width: double.infinity,
-              height: 52,
-              child: OutlinedButton(
-                onPressed: state.isCancelling ? null : () => context.pop(),
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: AppColors.blanc,
-                  side: BorderSide(color: AppColors.border),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12)),
-                ),
-                child: Text(l.back, style: GoogleFonts.dmSans()),
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
