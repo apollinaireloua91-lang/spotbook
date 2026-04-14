@@ -383,9 +383,10 @@ verify_jwt = false
 [functions.cloudflare-webhook]
 verify_jwt = false
 
-# Re-enabled gateway JWT verification (defense in depth). Handler still calls getUser() for user context.
+# Gateway JWT check disabled — function verifies auth via getUser() internally.
+# Supabase project uses ES256 JWTs; edge function relay only supports HS256.
 [functions.generate-cloudflare-upload-url]
-verify_jwt = true
+verify_jwt = false
 
 
 [analytics]
@@ -407,15 +408,19 @@ s3_access_key = "env(S3_ACCESS_KEY)"
 # Configures AWS_SECRET_ACCESS_KEY for S3 bucket
 s3_secret_key = "env(S3_SECRET_KEY)"
 
+# Gateway JWT check disabled — function verifies auth via getUser() internally.
+# Supabase project uses ES256 JWTs; edge function relay only supports HS256.
 [functions.stripe-connect-onboarding]
 enabled = true
-verify_jwt = true
+verify_jwt = false
 import_map = "./functions/stripe-connect-onboarding/deno.json"
 entrypoint = "./functions/stripe-connect-onboarding/index.ts"
 
+# Gateway JWT check disabled — function verifies auth via getUser() internally.
+# Supabase project uses ES256 JWTs; edge function relay only supports HS256.
 [functions.create-payment-intent]
 enabled = true
-verify_jwt = true
+verify_jwt = false
 import_map = "./functions/create-payment-intent/deno.json"
 # Uncomment to specify a custom file path to the entrypoint.
 # Supported file extensions are: .ts, .js, .mjs, .jsx, .tsx
