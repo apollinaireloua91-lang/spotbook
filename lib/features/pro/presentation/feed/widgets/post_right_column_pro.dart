@@ -129,7 +129,7 @@ class PostRightColumnPro extends StatelessWidget {
             ),
           ),
         ),
-        const SizedBox(height: 22),
+        const SizedBox(height: 16),
 
         // ── Like (with count) ──
         _PremiumActionButton(
@@ -142,7 +142,7 @@ class PostRightColumnPro extends StatelessWidget {
             onToggleLike();
           },
         ),
-        const SizedBox(height: 20),
+        const SizedBox(height: 16),
 
         // ── Bookmark (BookmarkBounce) ──
         BookmarkBounce(
@@ -158,7 +158,7 @@ class PostRightColumnPro extends StatelessWidget {
             },
           ),
         ),
-        const SizedBox(height: 20),
+        const SizedBox(height: 16),
 
         // ── Share ──
         _PremiumActionButton(
@@ -177,10 +177,10 @@ class PostRightColumnPro extends StatelessWidget {
   }
 }
 
-/// 52px premium glassmorphism action button.
+/// 46px premium glassmorphism action button.
 ///
 /// Design upgrades:
-/// - 52px (was 50px) with rounded rect shape (radius 18) instead of circle
+/// - 46px with rounded rect shape (radius 16) instead of circle
 /// - Stronger backdrop blur (16σ) + richer glass tinting
 /// - Active state: colored glass tint + animated glowing border + neon shadow
 /// - Icon transitions with scale animation
@@ -208,7 +208,7 @@ class _PremiumActionButton extends StatelessWidget {
         children: [
           Container(
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(18),
+              borderRadius: BorderRadius.circular(16),
               boxShadow: isActive
                   ? [
                       BoxShadow(
@@ -231,19 +231,19 @@ class _PremiumActionButton extends StatelessWidget {
                     ],
             ),
             child: ClipRRect(
-              borderRadius: BorderRadius.circular(18),
+              borderRadius: BorderRadius.circular(16),
               child: BackdropFilter(
                 filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 300),
                   curve: Curves.easeOutCubic,
-                  width: 52,
-                  height: 52,
+                  width: 46,
+                  height: 46,
                   decoration: BoxDecoration(
                     color: isActive
                         ? activeColor.withAlpha(25)
                         : Colors.black.withAlpha(110),
-                    borderRadius: BorderRadius.circular(18),
+                    borderRadius: BorderRadius.circular(16),
                     border: Border.all(
                       color: isActive
                           ? activeColor.withAlpha(80)
@@ -262,7 +262,7 @@ class _PremiumActionButton extends StatelessWidget {
                         icon,
                         key: ValueKey('$icon-$isActive'),
                         color: isActive ? activeColor : Colors.white,
-                        size: 26,
+                        size: 24,
                         shadows: [
                           Shadow(
                             color: isActive

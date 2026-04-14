@@ -351,16 +351,6 @@ class _ProFeedBody extends ConsumerWidget {
                   ),
                 ),
 
-                // ── Video progress indicator ──
-                Positioned(
-                  bottom: 0,
-                  left: 0,
-                  right: 0,
-                  child: _PremiumVideoProgress(
-                    currentIndex: state.currentIndex,
-                    totalCount: state.videos.length,
-                  ),
-                ),
               ],
             ),
           );
@@ -562,60 +552,3 @@ class _ProNotifButton extends StatelessWidget {
   }
 }
 
-// ═════════════════════════════════════════════════════════════════════════════
-// VIDEO PROGRESS — thin gradient line at bottom
-// ═════════════════════════════════════════════════════════════════════════════
-
-class _PremiumVideoProgress extends StatelessWidget {
-  const _PremiumVideoProgress({
-    required this.currentIndex,
-    required this.totalCount,
-  });
-
-  final int currentIndex;
-  final int totalCount;
-
-  @override
-  Widget build(BuildContext context) {
-    if (totalCount <= 1) return const SizedBox.shrink();
-
-    final progress = (currentIndex + 1) / totalCount;
-
-    return SafeArea(
-      top: false,
-      child: Padding(
-        padding: const EdgeInsets.only(bottom: 88, left: 16, right: 16),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(1.5),
-          child: SizedBox(
-            height: 3,
-            child: Stack(
-              children: [
-                Container(color: Colors.white.withAlpha(20)),
-                AnimatedFractionallySizedBox(
-                  duration: const Duration(milliseconds: 350),
-                  curve: Curves.easeOutCubic,
-                  widthFactor: progress,
-                  alignment: Alignment.centerLeft,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      gradient: AppColors.gradientAccent,
-                      borderRadius: BorderRadius.circular(1.5),
-                      boxShadow: [
-                        BoxShadow(
-                          color: AppColors.violet.withAlpha(80),
-                          blurRadius: 6,
-                          spreadRadius: -1,
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}

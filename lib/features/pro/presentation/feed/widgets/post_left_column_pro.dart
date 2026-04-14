@@ -7,13 +7,10 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../../shared/theme/app_colors.dart';
 import '../../../../feed/domain/video_model.dart';
-import 'booking_strip.dart';
-import 'catering_strip.dart';
-import 'event_strip.dart';
 
-/// Left column + bottom overlay for ProFeedScreen — premium $20M design.
+/// Left column + bottom overlay for ProFeedScreen.
 ///
-/// Layout: Book CTA (glassmorphism pill) → Pro name + verified badge → title → CTA strip.
+/// Layout: Book CTA (gradient pill) → Pro name + verified badge → title.
 class PostLeftColumnPro extends StatelessWidget {
   const PostLeftColumnPro({
     super.key,
@@ -179,35 +176,6 @@ class PostLeftColumnPro extends StatelessWidget {
           ),
         ],
 
-        // ── CTA strip ──
-        if (v.serviceName != null || v.eventName != null) ...[
-          const SizedBox(height: 12),
-          if (v.serviceName != null &&
-              v.category?.toLowerCase() == 'traiteur')
-            CateringStrip(
-              title:
-                  '${v.serviceName} — from ${v.servicePrice?.toStringAsFixed(0) ?? '?'} \$/pers.',
-              onSubmission: () {
-                if (v.serviceId != null) {
-                  context.push('/client/booking/${v.serviceId}/${v.proId}');
-                }
-              },
-            )
-          else if (v.serviceName != null)
-            BookingStrip(
-              serviceName: v.serviceName!,
-              servicePrice: v.servicePrice,
-              serviceNextSlot: v.serviceNextSlot,
-              serviceId: v.serviceId,
-              proId: v.proId,
-            )
-          else if (v.eventName != null)
-            EventStrip(
-              eventName: v.eventName!,
-              eventDate: v.eventDate,
-              eventId: v.eventId,
-            ),
-        ],
       ],
     );
   }
