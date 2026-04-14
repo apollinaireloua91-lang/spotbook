@@ -48,6 +48,7 @@ class VideoFeedItem extends ConsumerStatefulWidget {
     this.useLocalHeartAnimation = false,
     this.rightColumnOverride,
     this.bottomOverlayOverride,
+    this.overlayBottom = 100,
   });
 
   final VideoModel video;
@@ -64,6 +65,9 @@ class VideoFeedItem extends ConsumerStatefulWidget {
 
   /// When provided, replaces the default bottom-left overlay.
   final Widget? bottomOverlayOverride;
+
+  /// Bottom offset for overlay elements (accounts for nav bar height).
+  final double overlayBottom;
 
   @override
   ConsumerState<VideoFeedItem> createState() => _VideoFeedItemState();
@@ -307,14 +311,14 @@ class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
           // ─── Bottom overlay: Book Now + Pro info + caption ───
           if (widget.bottomOverlayOverride != null)
             Positioned(
-              bottom: 100,
+              bottom: widget.overlayBottom,
               left: 16,
               right: 72,
               child: widget.bottomOverlayOverride!,
             )
           else
             Positioned(
-              bottom: 100,
+              bottom: widget.overlayBottom,
               left: 16,
               right: 76,
               child: Column(
@@ -441,7 +445,7 @@ class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
 
           // ─── Right side action buttons — Premium glass column ───
           Positioned(
-            bottom: 100,
+            bottom: widget.overlayBottom,
             right: 12,
             child: widget.rightColumnOverride ??
                 Column(

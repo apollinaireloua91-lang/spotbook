@@ -195,6 +195,7 @@ class _ProFeedBody extends ConsumerWidget {
                           cubit.toggleLike(index, liked),
                       index: index,
                       useLocalHeartAnimation: true,
+                      overlayBottom: 140,
                       onToggleLike: cubit.toggleLike,
                       onToggleSave: cubit.toggleSave,
                       onToggleFollow: cubit.toggleFollow,
