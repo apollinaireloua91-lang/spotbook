@@ -18,22 +18,12 @@ import 'like_animation.dart';
 import '../../../../shared/theme/theme_mode_notifier.dart';
 import 'share_bottom_sheet.dart';
 
-class _ShowLikeAnimNotifier extends Notifier<bool> {
-  @override
-  bool build() => false;
-
-  void trigger() {
-    state = true;
-    Future.delayed(const Duration(milliseconds: 800), () {
-      state = false;
-    });
-  }
+/// Tracks one double-tap heart on screen.
+class _HeartEntry {
+  _HeartEntry({required this.position}) : key = UniqueKey();
+  final Offset position;
+  final Key key;
 }
-
-final _showLikeAnimProvider = NotifierProvider<_ShowLikeAnimNotifier, bool>(
-  _ShowLikeAnimNotifier.new,
-  isAutoDispose: true,
-);
 
 class VideoFeedItem extends ConsumerStatefulWidget {
   const VideoFeedItem({
@@ -77,6 +67,8 @@ class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
   BetterPlayerController? _controller;
   bool _viewCounted = false;
   bool _isPlaying = false;
+  final List<_HeartEntry> _hearts = [];
+  Offset? _lastDoubleTapPosition;
 
   @override
   void initState() {
@@ -178,7 +170,14 @@ class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
     if (!widget.video.isLiked) {
       _toggleLike();
     }
-    ref.read(_showLikeAnimProvider.notifier).trigger();
+    // Spawn a heart at the tap position (or center as fallback).
+    final pos = _lastDoubleTapPosition ??
+        Offset(
+          MediaQuery.sizeOf(context).width / 2,
+          MediaQuery.sizeOf(context).height / 2,
+        );
+    final entry = _HeartEntry(position: pos);
+    setState(() => _hearts.add(entry));
   }
 
   void _openComments() {
@@ -254,7 +253,6 @@ class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
   @override
   Widget build(BuildContext context) {
     ref.watch(themeModeProvider);
-    final showLikeAnim = ref.watch(_showLikeAnimProvider);
 
     // Sync with the persistent play/pause button from FeedScreen.
     ref.listen<bool>(feedPlayStateProvider, (prev, next) {
@@ -270,6 +268,8 @@ class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
 
     return GestureDetector(
       onTap: _togglePlayPause,
+      onDoubleTapDown: (details) =>
+          _lastDoubleTapPosition = details.localPosition,
       onDoubleTap: _onDoubleTap,
       child: Stack(
         fit: StackFit.expand,
@@ -602,8 +602,22 @@ class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
                 ),
           ),
 
-          // ─── Double-tap like animation ───
-          if (showLikeAnim) const Center(child: LikeAnimation()),
+          // ─── Double-tap like hearts — TikTok style at tap position ───
+          for (final heart in _hearts)
+            Positioned(
+              left: heart.position.dx - 100,
+              top: heart.position.dy - 100,
+              child: IgnorePointer(
+                child: LikeAnimation(
+                  key: heart.key,
+                  onComplete: () {
+                    if (mounted) {
+                      setState(() => _hearts.remove(heart));
+                    }
+                  },
+                ),
+              ),
+            ),
         ],
       ),
     );

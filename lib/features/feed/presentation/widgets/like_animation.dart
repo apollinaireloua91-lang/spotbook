@@ -4,8 +4,15 @@ import 'package:flutter/material.dart';
 
 import '../../../../shared/theme/app_colors.dart';
 
+/// TikTok-style double-tap heart animation.
+///
+/// Appears at tap position, scales up with bounce, bursts particles,
+/// then fades out. Calls [onComplete] when done so the parent can
+/// remove it from the widget tree.
 class LikeAnimation extends StatefulWidget {
-  const LikeAnimation({super.key});
+  const LikeAnimation({super.key, this.onComplete});
+
+  final VoidCallback? onComplete;
 
   @override
   State<LikeAnimation> createState() => _LikeAnimationState();
@@ -20,6 +27,9 @@ class _LikeAnimationState extends State<LikeAnimation>
   late final Animation<double> _particleProgress;
 
   static final _random = Random();
+
+  // Slight random rotation for each heart (-15° to +15°)
+  late final double _rotation = (_random.nextDouble() - 0.5) * 0.5;
 
   // Generate random particle directions
   late final List<_Particle> _particles = List.generate(
@@ -37,31 +47,31 @@ class _LikeAnimationState extends State<LikeAnimation>
   void initState() {
     super.initState();
 
-    // Heart animation
+    // Heart animation — pop in, hold, fade out
     _heartController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 800),
+      duration: const Duration(milliseconds: 900),
     );
     _heartScale = TweenSequence<double>([
       TweenSequenceItem(
-          tween: Tween(begin: 0.0, end: 1.4)
+          tween: Tween(begin: 0.0, end: 1.3)
               .chain(CurveTween(curve: Curves.easeOutBack)),
-          weight: 35),
+          weight: 30),
       TweenSequenceItem(
-          tween: Tween(begin: 1.4, end: 1.0)
+          tween: Tween(begin: 1.3, end: 1.0)
               .chain(CurveTween(curve: Curves.easeInOut)),
           weight: 15),
       TweenSequenceItem(tween: Tween(begin: 1.0, end: 1.0), weight: 25),
       TweenSequenceItem(
           tween: Tween(begin: 1.0, end: 0.0)
               .chain(CurveTween(curve: Curves.easeIn)),
-          weight: 25),
+          weight: 30),
     ]).animate(_heartController);
 
     _heartOpacity = TweenSequence<double>([
-      TweenSequenceItem(tween: Tween(begin: 0.0, end: 1.0), weight: 20),
+      TweenSequenceItem(tween: Tween(begin: 0.0, end: 1.0), weight: 15),
       TweenSequenceItem(tween: Tween(begin: 1.0, end: 1.0), weight: 50),
-      TweenSequenceItem(tween: Tween(begin: 1.0, end: 0.0), weight: 30),
+      TweenSequenceItem(tween: Tween(begin: 1.0, end: 0.0), weight: 35),
     ]).animate(_heartController);
 
     // Particles animation
@@ -76,6 +86,13 @@ class _LikeAnimationState extends State<LikeAnimation>
 
     _heartController.forward();
     _particlesController.forward();
+
+    // Notify parent when animation finishes
+    _heartController.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        widget.onComplete?.call();
+      }
+    });
   }
 
   @override
@@ -107,7 +124,7 @@ class _LikeAnimationState extends State<LikeAnimation>
             },
           ),
 
-          // ─── Main heart with glow ───
+          // ─── Main heart with glow + random rotation ───
           AnimatedBuilder(
             animation: _heartController,
             builder: (context, child) {
@@ -115,35 +132,9 @@ class _LikeAnimationState extends State<LikeAnimation>
                 opacity: _heartOpacity.value.clamp(0.0, 1.0),
                 child: Transform.scale(
                   scale: _heartScale.value,
-                  child: Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      // Glow behind heart
-                      Icon(
-                        Icons.favorite,
-                        color: AppColors.rose.withAlpha(80),
-                        size: 120,
-                      ),
-                      // Main heart
-                      Icon(
-                        Icons.favorite,
-                        color: AppColors.rose,
-                        size: 100,
-                      ),
-                      // White highlight
-                      Positioned(
-                        top: 36,
-                        left: 56,
-                        child: Container(
-                          width: 14,
-                          height: 14,
-                          decoration: BoxDecoration(
-                            color: Colors.white.withAlpha(140),
-                            shape: BoxShape.circle,
-                          ),
-                        ),
-                      ),
-                    ],
+                  child: Transform.rotate(
+                    angle: _rotation,
+                    child: const _HeartIcon(),
                   ),
                 ),
               );
@@ -151,6 +142,45 @@ class _LikeAnimationState extends State<LikeAnimation>
           ),
         ],
       ),
+    );
+  }
+}
+
+/// The heart icon with glow + white highlight.
+class _HeartIcon extends StatelessWidget {
+  const _HeartIcon();
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        // Glow behind heart
+        Icon(
+          Icons.favorite,
+          color: AppColors.rose.withAlpha(80),
+          size: 110,
+        ),
+        // Main heart
+        Icon(
+          Icons.favorite,
+          color: AppColors.rose,
+          size: 90,
+        ),
+        // White highlight
+        Positioned(
+          top: 34,
+          left: 52,
+          child: Container(
+            width: 12,
+            height: 12,
+            decoration: BoxDecoration(
+              color: Colors.white.withAlpha(150),
+              shape: BoxShape.circle,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
