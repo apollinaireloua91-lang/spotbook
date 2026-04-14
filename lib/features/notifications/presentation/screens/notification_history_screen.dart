@@ -81,7 +81,7 @@ class NotificationHistoryScreen extends ConsumerWidget {
                   backgroundColor: AppColors.surface,
                   onRefresh: () => ref.read(notificationListProvider.notifier).refresh(),
                   child: ListView.builder(
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                    padding: const EdgeInsets.fromLTRB(20, 8, 20, 100),
                     itemCount: state.notifications.length,
                     itemBuilder: (context, index) {
                       return _NotificationTile(
@@ -233,6 +233,8 @@ class _NotificationTileState extends ConsumerState<_NotificationTile>
                           fontSize: 14,
                           fontWeight: n.isRead ? FontWeight.normal : FontWeight.w600,
                         ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                       ),
                       const SizedBox(height: 2),
                       Text(n.body,

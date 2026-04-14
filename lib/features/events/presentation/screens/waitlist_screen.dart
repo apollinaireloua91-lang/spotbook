@@ -83,7 +83,9 @@ class WaitlistScreen extends ConsumerWidget {
             style: GoogleFonts.sora(color: AppColors.blanc, fontWeight: FontWeight.bold)),
         centerTitle: true,
       ),
-      body: Padding(
+      body: SafeArea(
+        top: false,
+        child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -154,6 +156,7 @@ class WaitlistScreen extends ConsumerWidget {
               ),
           ],
         ),
+      ),
       ),
     );
   }

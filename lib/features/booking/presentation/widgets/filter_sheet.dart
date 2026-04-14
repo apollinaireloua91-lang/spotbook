@@ -168,7 +168,8 @@ class _FilterSheetState extends State<FilterSheet> {
         color: AppColors.surface,
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
-      child: Column(
+      child: SingleChildScrollView(
+        child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -372,6 +373,7 @@ class _FilterSheetState extends State<FilterSheet> {
             ),
           ),
         ],
+      ),
       ),
     );
   }

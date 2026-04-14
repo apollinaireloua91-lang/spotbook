@@ -96,7 +96,8 @@ class _ReportSheet extends ConsumerWidget {
         color: AppColors.surface,
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      child: Column(
+      child: SingleChildScrollView(
+        child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -198,6 +199,7 @@ class _ReportSheet extends ConsumerWidget {
             ),
           ),
         ],
+      ),
       ),
     );
   }

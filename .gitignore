@@ -48,6 +48,7 @@ app.*.map.json
 .env
 .env.json
 *.env
+android/key.properties
 node_modules
 .cursor/
 .playwright-mcp/

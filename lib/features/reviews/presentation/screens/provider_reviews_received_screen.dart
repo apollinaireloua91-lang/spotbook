@@ -127,8 +127,7 @@ class _ProviderReviewsReceivedScreenState
                   .toList();
 
           return ListView(
-            padding: const EdgeInsets.symmetric(
-                horizontal: 16, vertical: 12),
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 100),
             children: [
               // Overall rating header
               Container(

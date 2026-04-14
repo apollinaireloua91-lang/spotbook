@@ -1,3 +1,5 @@
+import 'dart:math' show pi;
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -94,52 +96,31 @@ class _GoogleLogoPainter extends CustomPainter {
     final center = Offset(s / 2, s / 2);
     final r = s / 2;
     const strokeW = 3.6;
+    final rect = Rect.fromCircle(center: center, radius: r - strokeW / 2);
+    const gap = 0.35; // half-gap at the opening (~20°)
+
     final paint = Paint()
       ..style = PaintingStyle.stroke
       ..strokeWidth = strokeW
       ..strokeCap = StrokeCap.round;
 
-    // Blue arc (right / top-right)
-    paint.color = const Color(0xFF4285F4);
-    canvas.drawArc(
-      Rect.fromCircle(center: center, radius: r - strokeW / 2),
-      -0.4,
-      -1.65,
-      false,
-      paint,
-    );
-
-    // Green arc (bottom-right)
+    // Green arc (bottom-right): from gap clockwise to 6 o'clock
     paint.color = const Color(0xFF34A853);
-    canvas.drawArc(
-      Rect.fromCircle(center: center, radius: r - strokeW / 2),
-      1.25,
-      1.0,
-      false,
-      paint,
-    );
+    canvas.drawArc(rect, gap, (pi / 2) - gap, false, paint);
 
-    // Yellow arc (bottom-left)
+    // Yellow arc (bottom-left): from 6 o'clock clockwise to 9 o'clock
     paint.color = const Color(0xFFFBBC05);
-    canvas.drawArc(
-      Rect.fromCircle(center: center, radius: r - strokeW / 2),
-      2.25,
-      0.9,
-      false,
-      paint,
-    );
+    canvas.drawArc(rect, pi / 2, pi / 2, false, paint);
 
-    // Red arc (top-left)
+    // Red arc (top-left): from 9 o'clock clockwise to 12 o'clock
     paint.color = const Color(0xFFEA4335);
-    canvas.drawArc(
-      Rect.fromCircle(center: center, radius: r - strokeW / 2),
-      3.15,
-      0.7,
-      false,
-      paint,
-    );
+    canvas.drawArc(rect, pi, pi / 2, false, paint);
 
-    // Horizontal bar of the "G"
+    // Blue arc (top-right): from 12 o'clock clockwise back toward opening
+    paint.color = const Color(0xFF4285F4);
+    canvas.drawArc(rect, 3 * pi / 2, (pi / 2) - gap, false, paint);
+
+    // Blue horizontal bar of the "G" (center → right)
     final barPaint = Paint()
       ..color = const Color(0xFF4285F4)
       ..style = PaintingStyle.stroke

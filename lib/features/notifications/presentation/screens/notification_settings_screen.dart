@@ -59,7 +59,7 @@ class NotificationSettingsScreen extends ConsumerWidget {
                   color: AppColors.violet, strokeWidth: 2),
             )
           : ListView(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+              padding: const EdgeInsets.fromLTRB(20, 16, 20, 100),
               children: [
                 _SectionLabel(label: l.notifSectionAppointments),
                 const SizedBox(height: 8),

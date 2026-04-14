@@ -123,7 +123,7 @@ class BlockedUsersScreen extends ConsumerWidget {
                   backgroundColor: AppColors.surface,
                   onRefresh: () => ref.read(_blockedProvider.notifier).refresh(),
                   child: ListView.builder(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                  padding: const EdgeInsets.fromLTRB(20, 12, 20, 100),
                   itemCount: state.users.length,
                   itemBuilder: (context, index) {
                     final block = state.users[index];

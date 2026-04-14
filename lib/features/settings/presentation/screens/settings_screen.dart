@@ -62,6 +62,7 @@ class SettingsScreen extends ConsumerWidget {
         ),
       ),
       body: ListView(
+        padding: const EdgeInsets.only(bottom: 40),
         children: [
           // ── Compte ──
           _SettingsSection(
