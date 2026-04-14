@@ -1,3 +1,14 @@
+# ╔════════════════════════════════════════════════════════════════════╗
+# ║  ⚠ NE JAMAIS utiliser `supabase config push` sur ce projet ⚠    ║
+# ║                                                                  ║
+# ║  config push ÉCRASE les settings auth du Dashboard (Google       ║
+# ║  OAuth client_id/secret) avec des valeurs locales incorrectes.   ║
+# ║                                                                  ║
+# ║  → Auth providers : modifier via le Dashboard Supabase           ║
+# ║  → Edge functions : déployer avec `supabase functions deploy`    ║
+# ║  → JWT disabled   : ajouter --no-verify-jwt au deploy           ║
+# ╚════════════════════════════════════════════════════════════════════╝
+#
 # For detailed configuration reference documentation, visit:
 # https://supabase.com/docs/guides/local-development/cli/config
 # A string used to distinguish different Supabase projects on the same host. Defaults to the
