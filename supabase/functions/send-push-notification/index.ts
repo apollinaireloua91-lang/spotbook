@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
+import { encode as base64url } from "https://deno.land/std@0.168.0/encoding/base64url.ts";
 import {
   isValidUuid,
   jsonResponse,
@@ -16,6 +17,73 @@ interface PushPayload {
   data?: Record<string, string>;
   /** Obligatoire pour les appels clients (ex. notif « nouvel abonné »). */
   actorId?: string;
+}
+
+// ─── FCM v1 OAuth2 ────────────────────────────────────────────────
+
+interface ServiceAccount {
+  project_id: string;
+  client_email: string;
+  private_key: string;
+}
+
+/** Import a PEM-encoded RSA private key for signing JWTs. */
+async function importPrivateKey(pem: string): Promise<CryptoKey> {
+  const pemBody = pem
+    .replace(/-----BEGIN PRIVATE KEY-----/, "")
+    .replace(/-----END PRIVATE KEY-----/, "")
+    .replace(/\s/g, "");
+  const binary = Uint8Array.from(atob(pemBody), (c) => c.charCodeAt(0));
+  return crypto.subtle.importKey(
+    "pkcs8",
+    binary,
+    { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256" },
+    false,
+    ["sign"],
+  );
+}
+
+/** Build and sign a Google OAuth2 JWT assertion for FCM. */
+async function createSignedJwt(sa: ServiceAccount): Promise<string> {
+  const now = Math.floor(Date.now() / 1000);
+  const header = { alg: "RS256", typ: "JWT" };
+  const payload = {
+    iss: sa.client_email,
+    scope: "https://www.googleapis.com/auth/firebase.messaging",
+    aud: "https://oauth2.googleapis.com/token",
+    iat: now,
+    exp: now + 3600,
+  };
+
+  const enc = new TextEncoder();
+  const headerB64 = base64url(enc.encode(JSON.stringify(header)));
+  const payloadB64 = base64url(enc.encode(JSON.stringify(payload)));
+  const unsigned = `${headerB64}.${payloadB64}`;
+
+  const key = await importPrivateKey(sa.private_key);
+  const signature = await crypto.subtle.sign(
+    "RSASSA-PKCS1-v1_5",
+    key,
+    enc.encode(unsigned),
+  );
+
+  return `${unsigned}.${base64url(new Uint8Array(signature))}`;
+}
+
+/** Exchange a signed JWT for a short-lived Google OAuth2 access token. */
+async function getAccessToken(sa: ServiceAccount): Promise<string> {
+  const jwt = await createSignedJwt(sa);
+  const res = await fetch("https://oauth2.googleapis.com/token", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: `grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Ajwt-bearer&assertion=${jwt}`,
+  });
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`Google OAuth token exchange failed: ${res.status} ${text}`);
+  }
+  const { access_token } = await res.json();
+  return access_token as string;
 }
 
 /** Préférences table `notification_preferences` (colonnes legacy + *_enabled). */
@@ -133,43 +201,52 @@ serve(async (req) => {
     let pushSent = false;
 
     if (user?.fcm_token) {
-      const projectId = Deno.env.get("FCM_PROJECT_ID") ?? "";
-      const serverKey = Deno.env.get("FCM_SERVER_KEY") ?? "";
+      const saJson = Deno.env.get("FIREBASE_SERVICE_ACCOUNT") ?? "";
+      if (!saJson) {
+        console.error("FIREBASE_SERVICE_ACCOUNT secret is not set");
+      } else {
+        try {
+          const sa: ServiceAccount = JSON.parse(saJson);
+          const accessToken = await getAccessToken(sa);
+          const fcmUrl = `https://fcm.googleapis.com/v1/projects/${sa.project_id}/messages:send`;
 
-      const fcmUrl = `https://fcm.googleapis.com/v1/projects/${projectId}/messages:send`;
+          const message = {
+            message: {
+              token: user.fcm_token,
+              notification: { title, body },
+              data: {
+                type,
+                click_action: "FLUTTER_NOTIFICATION_CLICK",
+                ...(data ?? {}),
+              },
+              android: {
+                priority: "high" as const,
+                notification: { channel_id: "spotbook_notifications" },
+              },
+              apns: {
+                payload: { aps: { sound: "default", badge: 1 } },
+              },
+            },
+          };
 
-      const message = {
-        message: {
-          token: user.fcm_token,
-          notification: { title, body },
-          data: {
-            type,
-            click_action: "FLUTTER_NOTIFICATION_CLICK",
-            ...(data ?? {}),
-          },
-          android: {
-            priority: "high" as const,
-            notification: { channel_id: "spotbook_default" },
-          },
-          apns: {
-            payload: { aps: { sound: "default", badge: 1 } },
-          },
-        },
-      };
+          const fcmRes = await fetch(fcmUrl, {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(message),
+          });
 
-      try {
-        const fcmRes = await fetch(fcmUrl, {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${serverKey}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(message),
-        });
-
-        pushSent = fcmRes.ok;
-      } catch {
-        pushSent = false;
+          if (!fcmRes.ok) {
+            const errBody = await fcmRes.text();
+            console.error(`FCM v1 error ${fcmRes.status}: ${errBody}`);
+          }
+          pushSent = fcmRes.ok;
+        } catch (fcmErr) {
+          console.error("FCM send failed:", fcmErr);
+          pushSent = false;
+        }
       }
     }
 

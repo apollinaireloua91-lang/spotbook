@@ -66,6 +66,18 @@ class ProMapCard extends StatelessWidget {
                               fit: BoxFit.cover,
                               width: 40,
                               height: 40,
+                              errorWidget: (_, __, ___) => Center(
+                                child: Text(
+                                  pro.name.isNotEmpty
+                                      ? pro.name[0].toUpperCase()
+                                      : '?',
+                                  style: GoogleFonts.dmSans(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w700,
+                                    color: AppColors.blanc,
+                                  ),
+                                ),
+                              ),
                             ),
                           )
                         : Center(

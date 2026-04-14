@@ -480,28 +480,27 @@ class _ReadyBody extends StatelessWidget {
                     const SizedBox(height: 16),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 24),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                      child: Wrap(
+                        alignment: WrapAlignment.center,
+                        spacing: 8,
+                        runSpacing: 8,
                         children: [
                           _TrustBadge(
                             icon: Icons.verified_user_outlined,
                             label: p.isVerified ? AppLocalizations.of(context)!.verifiedBadge : AppLocalizations.of(context)!.activeBadge,
                             color: p.isVerified ? AppColors.success : AppColors.violet,
                           ),
-                          const SizedBox(width: 10),
                           _TrustBadge(
                             icon: Icons.flash_on_rounded,
                             label: AppLocalizations.of(context)!.fastReplyBadge,
                             color: AppColors.warning,
                           ),
-                          if (p.bookingsCompleted > 0) ...[
-                            const SizedBox(width: 10),
+                          if (p.bookingsCompleted > 0)
                             _TrustBadge(
                               icon: Icons.workspace_premium_outlined,
                               label: '${p.bookingsCompleted}+ ${AppLocalizations.of(context)!.doneCountLabel.toLowerCase()}',
                               color: AppColors.rose,
                             ),
-                          ],
                         ],
                       ),
                     ),

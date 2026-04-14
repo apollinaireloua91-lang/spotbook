@@ -176,7 +176,7 @@ class _ProFeedScreenState extends ConsumerState<ProFeedScreen> {
           // ── Right column (only wraps actual icons, not full screen) ─
           Positioned(
             right: 10,
-            bottom: 110,
+            bottom: MediaQuery.paddingOf(context).bottom + 100,
             child: _RightColumn(
               video: currentVideo,
               onLike: () => _toggleLike(currentVideo, currentIndex),
@@ -190,7 +190,7 @@ class _ProFeedScreenState extends ConsumerState<ProFeedScreen> {
           Positioned(
             left: 16,
             right: 80,
-            bottom: 110,
+            bottom: MediaQuery.paddingOf(context).bottom + 100,
             child: _LeftColumn(video: currentVideo),
           ),
 
@@ -332,7 +332,7 @@ class _ProFeedScreenState extends ConsumerState<ProFeedScreen> {
         Positioned(
           left: 16,
           right: 88,
-          bottom: 96,
+          bottom: MediaQuery.paddingOf(context).bottom + 100,
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -642,23 +642,9 @@ class _ProTopBar extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Row(
         children: [
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                Icons.bolt_rounded,
-                size: 22,
-                color: Colors.white.withAlpha(235),
-                shadows: [
-                  Shadow(color: AppColors.shadowDark, blurRadius: 8),
-                ],
-              ),
-              const SizedBox(width: 5),
-              Text(
-                'Spotbook',
-                style: AppTypography.spotbookLogo(onVideoBackground: true),
-              ),
-            ],
+          Text(
+            'Spotbook',
+            style: AppTypography.spotbookLogo(onVideoBackground: true),
           ),
           const Spacer(),
           _BadgeButton(

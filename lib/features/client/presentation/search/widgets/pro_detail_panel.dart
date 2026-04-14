@@ -211,6 +211,18 @@ class _PanelContentState extends State<_PanelContent>
                                       fit: BoxFit.cover,
                                       width: 56,
                                       height: 56,
+                                      errorWidget: (_, __, ___) => Center(
+                                        child: Text(
+                                          pro.name.isNotEmpty
+                                              ? pro.name[0].toUpperCase()
+                                              : '?',
+                                          style: GoogleFonts.sora(
+                                            fontSize: 22,
+                                            fontWeight: FontWeight.w700,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ),
                                     ),
                                   )
                                 : Center(

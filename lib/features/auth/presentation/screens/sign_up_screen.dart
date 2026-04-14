@@ -9,6 +9,7 @@ import 'package:image_picker/image_picker.dart';
 
 import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
+import '../../../../shared/widgets/google_sign_in_button.dart';
 import '../../../../shared/utils/analytics_service.dart';
 import '../../../../shared/widgets/address_autocomplete_field.dart';
 import '../../data/auth_repository.dart';
@@ -591,37 +592,11 @@ class _Step1EmailPassword extends StatelessWidget {
             ),
             const SizedBox(height: 28),
 
-            // Google button
-            SizedBox(
-              width: double.infinity,
-              height: 56,
-              child: OutlinedButton(
-                onPressed: isLoading ? null : onGoogleSignIn,
-                style: OutlinedButton.styleFrom(
-                  backgroundColor: Colors.white,
-                  foregroundColor: const Color(0xFF1F1F1F),
-                  side: BorderSide(color: Colors.grey.shade300),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(Icons.g_mobiledata_rounded,
-                        size: 24, color: Color(0xFF1F1F1F)),
-                    const SizedBox(width: 10),
-                    Text(
-                      l.authSignInWithGoogle,
-                      style: GoogleFonts.dmSans(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: const Color(0xFF1F1F1F),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+            // Google button — dark bg, white text, colorful G (CLAUDE.md spec)
+            GoogleSignInButton(
+              label: l.authSignInWithGoogle,
+              isLoading: isLoading,
+              onPressed: isLoading ? null : onGoogleSignIn,
             ),
             const SizedBox(height: 12),
 

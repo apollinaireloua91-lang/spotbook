@@ -8,6 +8,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
+import '../../../../shared/widgets/google_sign_in_button.dart';
 import '../../data/auth_repository.dart';
 import '../../data/user_setup_repository.dart';
 
@@ -363,14 +364,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               ),
               const SizedBox(height: 28),
 
-              // Google button
-              _SocialButton(
+              // Google button — dark bg, white text, colorful G (CLAUDE.md spec)
+              GoogleSignInButton(
                 label: l.continueWithGoogle,
-                icon: Icons.g_mobiledata_rounded,
-                iconColor: const Color(0xFF1F1F1F),
-                backgroundColor: Colors.white,
-                textColor: const Color(0xFF1F1F1F),
-                borderColor: Colors.grey.shade300,
                 isLoading: s.isGoogleLoading,
                 onPressed: s.isGoogleLoading ? null : _signInWithGoogle,
               ),
@@ -614,3 +610,4 @@ class _SocialButton extends StatelessWidget {
     );
   }
 }
+

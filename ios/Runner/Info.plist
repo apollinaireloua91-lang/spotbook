@@ -5,6 +5,7 @@
 		<key>UIBackgroundModes</key>
 		<array>
 			<string>audio</string>
+			<string>remote-notification</string>
 		</array>
 		<key>CADisableMinimumFrameDurationOnPhone</key>
 		<true/>
@@ -31,7 +32,7 @@
 			<dict>
 				<key>CFBundleURLSchemes</key>
 				<array>
-					<string>com.googleusercontent.apps.1084162491451-gr6lp5fs6ccgssto37v1pl27idtv6c53</string>
+					<string>com.googleusercontent.apps.1084162491451-4737guomqu1n7mprmu9eofp8bh854riq</string>
 				</array>
 			</dict>
 			<dict>

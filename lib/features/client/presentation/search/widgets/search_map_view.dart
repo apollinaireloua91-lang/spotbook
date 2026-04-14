@@ -294,7 +294,7 @@ class _SearchMapViewState extends State<SearchMapView> {
             // ── My location FAB ──
             Positioned(
               right: 14,
-              bottom: 160,
+              bottom: MediaQuery.paddingOf(context).bottom + 82 + 140,
               child: GestureDetector(
                 onTap: () {
                   if (state.userLat != null && state.userLng != null) {
@@ -335,7 +335,7 @@ class _SearchMapViewState extends State<SearchMapView> {
               Positioned(
                 left: 0,
                 right: 0,
-                bottom: 10,
+                bottom: MediaQuery.paddingOf(context).bottom + 82,
                 child: SizedBox(
                   height: 130,
                   child: ListView.separated(
