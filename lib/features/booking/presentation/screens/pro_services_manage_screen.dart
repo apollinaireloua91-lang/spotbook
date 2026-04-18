@@ -3,11 +3,11 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:intl/intl.dart';
 
 import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/theme/theme_mode_notifier.dart';
+import '../../../../shared/utils/currency_formatter.dart';
 import '../../../../shared/widgets/spotbook_button.dart';
 import '../../../../shared/widgets/spotbook_card.dart';
 import '../../../../shared/widgets/spotbook_loading_shimmer.dart';
@@ -18,8 +18,6 @@ import '../notifiers/pro_scheduling_notifiers.dart';
 /// Gestion des prestations et tarifs côté pro (table `services`).
 class ProServicesManageScreen extends ConsumerWidget {
   const ProServicesManageScreen({super.key});
-
-  static final _money = NumberFormat.currency(locale: 'en_CA', symbol: r'$');
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -134,11 +132,23 @@ class ProServicesManageScreen extends ConsumerWidget {
                     final s = state.services[i];
                     return _ServiceTile(
                       service: s,
-                      priceLabel: _money.format(s.price),
+                      priceLabel: CurrencyFormatter.formatAmount(s.price,
+                          currency: s.currency),
                       onEdit: () => _openServiceSheet(context, ref, s),
                       onToggle: () {
                         HapticFeedback.selectionClick();
                         notifier.toggleActive(s);
+                      },
+                      onManageAddons: () {
+                        HapticFeedback.lightImpact();
+                        context.push(
+                          '/pro/services/${s.id}/addons',
+                          extra: {
+                            'serviceName': s.name,
+                            'currency': s.currency,
+                            'proId': s.proId,
+                          },
+                        );
                       },
                     );
                   },
@@ -646,12 +656,14 @@ class _ServiceTile extends StatelessWidget {
     required this.priceLabel,
     required this.onEdit,
     required this.onToggle,
+    required this.onManageAddons,
   });
 
   final ServiceModel service;
   final String priceLabel;
   final VoidCallback onEdit;
   final VoidCallback onToggle;
+  final VoidCallback onManageAddons;
 
   String _depositLabel(BuildContext context) {
     final l = AppLocalizations.of(context)!;
@@ -724,7 +736,37 @@ class _ServiceTile extends StatelessWidget {
                     onPressed: onEdit,
                   ),
                 ),
-                const SizedBox(width: 10),
+                const SizedBox(width: 8),
+                // Manage add-ons — compact icon button with label
+                Material(
+                  color: AppColors.violet.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(12),
+                  child: InkWell(
+                    onTap: onManageAddons,
+                    borderRadius: BorderRadius.circular(12),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 12),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.tune_rounded,
+                              color: AppColors.violetClair, size: 18),
+                          const SizedBox(width: 6),
+                          Text(
+                            'Extras',
+                            style: GoogleFonts.dmSans(
+                              color: AppColors.violetClair,
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
                 IconButton.filled(
                   style: IconButton.styleFrom(
                     backgroundColor: AppColors.surfaceAlt,

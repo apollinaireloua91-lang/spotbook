@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -30,6 +31,7 @@ import '../features/booking/presentation/screens/booking_detail_screen.dart';
 import '../features/booking/presentation/screens/my_bookings_screen.dart';
 import '../features/booking/presentation/screens/pro_dashboard_screen.dart';
 import '../features/booking/presentation/screens/pro_rdv_screen.dart';
+import '../features/booking/presentation/screens/pro_service_addons_screen.dart';
 import '../features/booking/presentation/screens/pro_services_manage_screen.dart';
 import '../features/booking/presentation/screens/pro_revenue_screen.dart';
 import '../features/availability/presentation/screens/provider_availability_setup_screen.dart';
@@ -38,6 +40,8 @@ import '../features/events/presentation/screens/create_event_screen.dart';
 import '../features/events/presentation/screens/event_detail_screen.dart';
 import '../features/events/presentation/screens/pro_my_events_screen.dart';
 import '../features/events/presentation/screens/scanner_screen.dart';
+import '../features/scanner/presentation/screens/unified_scanner_screen.dart';
+import '../features/scanner/presentation/screens/unified_scan_result_screen.dart';
 import '../features/events/presentation/screens/ticket_detail_screen.dart';
 import '../features/events/presentation/screens/waitlist_screen.dart';
 import '../features/client/presentation/search/client_search_screen.dart';
@@ -55,6 +59,7 @@ import '../features/profile/presentation/screens/pro_profile_screen.dart';
 import '../features/profile/presentation/screens/pro_shell_profile_screen.dart';
 import '../features/settings/presentation/screens/delete_account_screen.dart';
 import '../features/chat/presentation/screens/chat_screen.dart';
+import '../features/chat/presentation/screens/pro_quick_replies_screen.dart';
 import '../features/favorites/presentation/screens/favorites_screen.dart';
 import '../features/moderation/presentation/screens/blocked_users_screen.dart';
 import '../features/notifications/presentation/screens/notification_history_screen.dart';
@@ -75,6 +80,8 @@ import '../features/events/presentation/screens/client_events_discovery_screen.d
 import '../features/favorites/presentation/screens/saved_posts_screen.dart';
 import '../features/settings/presentation/screens/language_settings_screen.dart';
 import '../features/payment/presentation/screens/payment_receipt_screen.dart';
+import '../features/payment/presentation/screens/provider_payout_history_screen.dart';
+import '../features/profile/presentation/screens/provider_settings_screen.dart';
 import '../features/soumission/presentation/screens/soumissions_list_screen.dart';
 import '../features/soumission/presentation/screens/create_soumission_screen.dart';
 import '../features/profile/presentation/screens/provider_public_profile_client_view_screen.dart';
@@ -321,6 +328,22 @@ final appRouter = GoRouter(
       ),
     ),
     GoRoute(
+      path: '/pro/services/:serviceId/addons',
+      pageBuilder: (context, state) {
+        final serviceId = state.pathParameters['serviceId']!;
+        final extra = state.extra as Map<String, dynamic>? ?? const {};
+        return premiumPage(
+          state: state,
+          child: ProServiceAddonsScreen(
+            serviceId: serviceId,
+            serviceName: extra['serviceName'] as String? ?? 'Service',
+            currency: extra['currency'] as String? ?? 'CAD',
+            proId: extra['proId'] as String? ?? '',
+          ),
+        );
+      },
+    ),
+    GoRoute(
       path: '/pro/availability',
       pageBuilder: (context, state) => premiumPage(
         state: state,
@@ -353,6 +376,24 @@ final appRouter = GoRouter(
       pageBuilder: (context, state) => premiumPage(
         state: state,
         child: const ProScannerEventPickerScreen(),
+      ),
+    ),
+    GoRoute(
+      path: '/pro/scanner-unified',
+      pageBuilder: (context, state) => premiumFadePage(
+        state: state,
+        child: UnifiedScannerScreen(
+          eventId: state.uri.queryParameters['eventId'],
+        ),
+      ),
+    ),
+    GoRoute(
+      path: '/pro/scanner/result',
+      pageBuilder: (context, state) => premiumFadePage(
+        state: state,
+        child: UnifiedScanResultScreen(
+          result: state.extra! as UnifiedScanResult,
+        ),
       ),
     ),
     GoRoute(
@@ -570,6 +611,19 @@ final appRouter = GoRouter(
     ),
     GoRoute(
       path: '/review',
+      redirect: (context, state) {
+        // /review requires Map<String,String> extras with bookingId + proId.
+        // If navigated to without valid args (e.g. state restoration after
+        // cold start — GoRouter can't persist `extra`), fall back to
+        // bookings list instead of crashing with a null-check error.
+        final extra = state.extra;
+        if (extra is! Map<String, String> ||
+            extra['bookingId'] == null ||
+            extra['proId'] == null) {
+          return '/client/bookings';
+        }
+        return null;
+      },
       pageBuilder: (context, state) {
         final args = state.extra! as Map<String, String>;
         return premiumSlideUpPage(
@@ -703,5 +757,144 @@ final appRouter = GoRouter(
         ),
       ),
     ),
+
+    // ─── Pro routes ajoutées / alias ───────────────────────
+    // Historique des payouts Stripe (câblé à l'écran existant).
+    GoRoute(
+      path: '/pro/payouts',
+      pageBuilder: (context, state) => premiumPage(
+        state: state,
+        child: const ProviderPayoutHistoryScreen(),
+      ),
+    ),
+    // Paramètres Pro (écran distinct des settings Client).
+    GoRoute(
+      path: '/pro/settings',
+      pageBuilder: (context, state) => premiumPage(
+        state: state,
+        child: const ProviderSettingsScreen(),
+      ),
+    ),
+    // Alias legacy : /pro/profile/settings → /pro/settings.
+    GoRoute(
+      path: '/pro/profile/settings',
+      redirect: (_, __) => '/pro/settings',
+    ),
+    GoRoute(
+      path: '/pro/profile/settings/change-password',
+      redirect: (_, __) => '/change-password',
+    ),
+    GoRoute(
+      path: '/pro/profile/settings/language',
+      redirect: (_, __) => '/language-settings',
+    ),
+    GoRoute(
+      path: '/pro/profile/edit',
+      redirect: (_, __) => '/edit-profile',
+    ),
+    GoRoute(
+      path: '/pro/profile/promo-codes',
+      redirect: (_, __) => '/promo-codes',
+    ),
+    GoRoute(
+      path: '/pro/profile/qr-code',
+      redirect: (_, __) => '/pro/qr-code',
+    ),
+    GoRoute(
+      path: '/pro/profile/notifications-settings',
+      redirect: (_, __) => '/notification-settings',
+    ),
+    GoRoute(
+      path: '/pro/analytics',
+      redirect: (_, __) => '/pro-insights',
+    ),
+    GoRoute(
+      path: '/pro/quick-replies',
+      pageBuilder: (context, state) => premiumPage(
+        state: state,
+        child: const ProQuickRepliesScreen(),
+      ),
+    ),
+    // "Toutes mes réservations" depuis le hub calendrier.
+    GoRoute(
+      path: '/pro/calendar/bookings',
+      redirect: (_, __) => '/pro/rdv',
+    ),
+    GoRoute(
+      path: '/pro/calendar/bookings/:bookingId',
+      redirect: (_, state) =>
+          '/booking/${state.pathParameters['bookingId']}',
+    ),
+    // Alias legacy auth path utilisé depuis le profil pro public.
+    GoRoute(
+      path: '/auth/login',
+      redirect: (_, __) => '/login',
+    ),
+    // Deep-link legacy : /client/booking/:serviceId/:proId
+    // → /client/booking-flow/:proId?serviceId=:serviceId
+    GoRoute(
+      path: '/client/booking/:serviceId/:proId',
+      redirect: (_, state) {
+        final proId = state.pathParameters['proId'] ?? '';
+        final serviceId = state.pathParameters['serviceId'] ?? '';
+        return '/client/booking-flow/$proId?serviceId=$serviceId';
+      },
+    ),
   ],
+  // Fallback explicite : évite l'écran blanc sur route invalide.
+  errorBuilder: (context, state) => _RouterErrorScreen(error: state.error),
 );
+
+/// Écran de secours affiché lorsqu'une navigation pointe vers une
+/// route non déclarée. Évite l'écran blanc silencieux.
+class _RouterErrorScreen extends StatelessWidget {
+  const _RouterErrorScreen({this.error});
+
+  final Exception? error;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFF000000),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const Icon(Icons.error_outline, color: Colors.white, size: 56),
+              const SizedBox(height: 16),
+              const Text(
+                'Page introuvable',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                error?.toString() ?? 'Route inconnue',
+                textAlign: TextAlign.center,
+                style: const TextStyle(color: Color(0xFFA0A0B8), fontSize: 13),
+              ),
+              const SizedBox(height: 24),
+              FilledButton(
+                onPressed: () {
+                  if (Navigator.of(context).canPop()) {
+                    Navigator.of(context).pop();
+                  } else {
+                    GoRouter.of(context).go('/');
+                  }
+                },
+                child: const Text('Retour'),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
