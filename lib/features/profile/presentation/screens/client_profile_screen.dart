@@ -571,7 +571,7 @@ class _SettingsSection extends ConsumerWidget {
           decoration: BoxDecoration(
             color: AppColors.surface,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: AppColors.blanc.withAlpha(13)),
+            border: Border.all(color: AppColors.border),
           ),
           child: Row(
             children: [
@@ -799,7 +799,7 @@ class _UnauthenticatedState extends StatelessWidget {
               child: Text(
                 l.signIn,
                 style: GoogleFonts.dmSans(
-                  color: AppColors.blanc,
+                  color: AppColors.textOnPrimary,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -839,7 +839,7 @@ class _EmptyFavorites extends StatelessWidget {
             decoration: BoxDecoration(
               color: AppColors.surface,
               borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: AppColors.blanc.withAlpha(10)),
+              border: Border.all(color: AppColors.border),
             ),
             child: Column(
               children: [
@@ -893,7 +893,7 @@ class _EmptyHistory extends StatelessWidget {
             decoration: BoxDecoration(
               color: AppColors.surface,
               borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: AppColors.blanc.withAlpha(10)),
+              border: Border.all(color: AppColors.border),
             ),
             child: Column(
               children: [
@@ -977,7 +977,7 @@ class _ErrorState extends StatelessWidget {
                 child: Text(
                   l.retry,
                   style: GoogleFonts.dmSans(
-                    color: AppColors.blanc,
+                    color: AppColors.textOnPrimary,
                     fontWeight: FontWeight.w600,
                   ),
                 ),

@@ -1,39 +1,30 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../shared/theme/app_colors.dart';
+import '../../../../shared/theme/theme_mode_notifier.dart';
 import '../../../../shared/widgets/spotbook_loading_shimmer.dart';
-import 'cubit/client_search_cubit.dart';
+import 'data/client_search_notifier.dart';
 import 'widgets/category_pills.dart';
 import 'widgets/pro_detail_panel.dart';
 import 'widgets/search_header.dart';
 import 'widgets/search_list_view.dart';
 import 'widgets/search_map_view.dart';
 
-class ClientSearchScreen extends StatelessWidget {
+class ClientSearchScreen extends ConsumerWidget {
   const ClientSearchScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => ClientSearchCubit(),
-      child: const _ClientSearchBody(),
-    );
-  }
-}
-
-class _ClientSearchBody extends StatelessWidget {
-  const _ClientSearchBody();
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    ref.watch(themeModeProvider); // force rebuild on theme toggle
     final topPadding = MediaQuery.paddingOf(context).top;
+    final state = ref.watch(clientSearchProvider);
 
     return Scaffold(
       backgroundColor: AppColors.fond,
-      body: BlocBuilder<ClientSearchCubit, ClientSearchState>(
-        builder: (context, state) {
+      body: Builder(
+        builder: (context) {
           if (state.isLoading) {
             return const SpotbookLoadingShimmer.list();
           }
@@ -52,9 +43,11 @@ class _ClientSearchBody extends StatelessWidget {
                   ),
                   const SizedBox(height: 16),
                   TextButton.icon(
-                    onPressed: () => context.read<ClientSearchCubit>().refresh(),
+                    onPressed: () =>
+                        ref.read(clientSearchProvider.notifier).refresh(),
                     icon: Icon(Icons.refresh, color: AppColors.violet),
-                    label: Text('Réessayer', style: GoogleFonts.dmSans(color: AppColors.violet)),
+                    label: Text('Réessayer',
+                        style: GoogleFonts.dmSans(color: AppColors.violet)),
                   ),
                 ],
               ),
@@ -97,8 +90,8 @@ class _ClientSearchBody extends StatelessWidget {
                     children: [
                       // Scrim
                       GestureDetector(
-                        onTap: () => context
-                            .read<ClientSearchCubit>()
+                        onTap: () => ref
+                            .read(clientSearchProvider.notifier)
                             .closeDetailPanel(),
                         child: Container(
                           color: Colors.black.withValues(alpha: 0.4),

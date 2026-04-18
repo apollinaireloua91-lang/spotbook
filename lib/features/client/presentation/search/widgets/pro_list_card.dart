@@ -28,7 +28,7 @@ class ProListCard extends StatelessWidget {
           decoration: BoxDecoration(
             color: AppColors.surfaceAlt,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: Colors.white.withValues(alpha: 0.04)),
+            border: Border.all(color: AppColors.border),
           ),
           child: Row(
             children: [

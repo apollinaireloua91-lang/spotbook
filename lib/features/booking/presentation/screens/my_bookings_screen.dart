@@ -188,7 +188,7 @@ class _MyBookingsScreenState extends ConsumerState<MyBookingsScreen>
                       child: Text(
                         '${bookingsState.upcoming.length}',
                         style: GoogleFonts.dmSans(
-                          color: AppColors.blanc,
+                          color: AppColors.textOnPrimary,
                           fontSize: 11,
                           fontWeight: FontWeight.w600,
                         ),
@@ -218,7 +218,7 @@ class _MyBookingsScreenState extends ConsumerState<MyBookingsScreen>
                       child: Text(
                         '${ticketsState.tickets.length}',
                         style: GoogleFonts.dmSans(
-                          color: AppColors.blanc,
+                          color: AppColors.textOnPrimary,
                           fontSize: 11,
                           fontWeight: FontWeight.w600,
                         ),
@@ -561,7 +561,7 @@ class _EmptyBookingsStateState extends State<_EmptyBookingsState>
                         child: Text(
                           widget.actionLabel!,
                           style: GoogleFonts.dmSans(
-                            color: AppColors.blanc,
+                            color: AppColors.textOnPrimary,
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
                           ),

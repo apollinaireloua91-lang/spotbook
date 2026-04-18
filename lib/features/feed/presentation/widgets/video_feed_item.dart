@@ -38,7 +38,7 @@ class VideoFeedItem extends ConsumerStatefulWidget {
     this.useLocalHeartAnimation = false,
     this.rightColumnOverride,
     this.bottomOverlayOverride,
-    this.overlayBottom = 100,
+    this.overlayBottom = 120,
   });
 
   final VideoModel video;
@@ -69,6 +69,7 @@ class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
   bool _isPlaying = false;
   final List<_HeartEntry> _hearts = [];
   Offset? _lastDoubleTapPosition;
+  bool _captionExpanded = false;
 
   @override
   void initState() {
@@ -325,56 +326,7 @@ class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  // Premium Book Now CTA with gradient + glow
-                  GestureDetector(
-                    onTap: () {
-                      HapticFeedback.lightImpact();
-                      context.push('/pro/${widget.video.proId}');
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 18, vertical: 10),
-                      decoration: BoxDecoration(
-                        gradient: AppColors.gradientAccent,
-                        borderRadius: BorderRadius.circular(24),
-                        boxShadow: [
-                          BoxShadow(
-                            color: AppColors.violet.withAlpha(100),
-                            blurRadius: 20,
-                            spreadRadius: -2,
-                            offset: const Offset(0, 6),
-                          ),
-                          BoxShadow(
-                            color: AppColors.violet.withAlpha(40),
-                            blurRadius: 40,
-                            spreadRadius: -4,
-                          ),
-                        ],
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Icon(Icons.calendar_today_rounded,
-                              color: Colors.white, size: 14),
-                          const SizedBox(width: 8),
-                          Text(
-                            'Book Now',
-                            style: GoogleFonts.dmSans(
-                              color: Colors.white,
-                              fontSize: 13,
-                              fontWeight: FontWeight.w700,
-                              letterSpacing: 0.4,
-                            ),
-                          ),
-                          const SizedBox(width: 4),
-                          const Icon(Icons.arrow_forward_rounded,
-                              color: Colors.white, size: 14),
-                        ],
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 14),
-                  // @username + verified badge
+                  // @username + verified badge (hierarchy: who first)
                   GestureDetector(
                     onTap: () =>
                         context.push('/pro/${widget.video.proId}'),
@@ -386,9 +338,9 @@ class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
                             '@${widget.video.proName ?? 'Pro'}',
                             style: GoogleFonts.dmSans(
                               color: AppColors.textOnVideo,
-                              fontSize: 15,
+                              fontSize: 16,
                               fontWeight: FontWeight.w800,
-                              letterSpacing: -0.2,
+                              letterSpacing: -0.3,
                               shadows: const [
                                 Shadow(
                                   color: AppColors.overlayHeavy,
@@ -420,25 +372,86 @@ class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
                       ],
                     ),
                   ),
-                  // Caption
+
+                  // Caption — prominent, tappable to expand
                   if (widget.video.title.isNotEmpty) ...[
                     const SizedBox(height: 8),
-                    Text(
-                      widget.video.title,
-                      style: GoogleFonts.dmSans(
-                        color: Colors.white.withAlpha(200),
-                        fontSize: 13,
-                        fontWeight: FontWeight.w500,
-                        height: 1.4,
-                        shadows: const [
-                          Shadow(
-                              color: AppColors.overlayMedium, blurRadius: 8),
-                        ],
+                    GestureDetector(
+                      onTap: () {
+                        HapticFeedback.selectionClick();
+                        setState(
+                            () => _captionExpanded = !_captionExpanded);
+                      },
+                      child: AnimatedSize(
+                        duration: const Duration(milliseconds: 220),
+                        curve: Curves.easeOutCubic,
+                        alignment: Alignment.topLeft,
+                        child: Text(
+                          widget.video.title,
+                          style: GoogleFonts.dmSans(
+                            color: Colors.white.withAlpha(235),
+                            fontSize: 14.5,
+                            fontWeight: FontWeight.w500,
+                            height: 1.4,
+                            shadows: const [
+                              Shadow(
+                                  color: AppColors.overlayHeavy,
+                                  blurRadius: 10,
+                                  offset: Offset(0, 1)),
+                            ],
+                          ),
+                          maxLines: _captionExpanded ? 8 : 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
                     ),
                   ],
+
+                  const SizedBox(height: 14),
+
+                  // Premium Book Now CTA — primary action, last in reading order
+                  GestureDetector(
+                    onTap: () {
+                      HapticFeedback.lightImpact();
+                      context.push('/pro/${widget.video.proId}');
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 18, vertical: 10),
+                      decoration: BoxDecoration(
+                        gradient: AppColors.gradientAccent,
+                        borderRadius: BorderRadius.circular(24),
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppColors.violet.withAlpha(80),
+                            blurRadius: 18,
+                            spreadRadius: -2,
+                            offset: const Offset(0, 6),
+                          ),
+                        ],
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(Icons.calendar_today_rounded,
+                              color: Colors.white, size: 14),
+                          const SizedBox(width: 8),
+                          Text(
+                            'Book Now',
+                            style: GoogleFonts.dmSans(
+                              color: Colors.white,
+                              fontSize: 13,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: 0.4,
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          const Icon(Icons.arrow_forward_rounded,
+                              color: Colors.white, size: 14),
+                        ],
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),

@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../../shared/theme/app_colors.dart';
-import '../cubit/client_search_cubit.dart';
+import '../data/client_search_notifier.dart';
 
-class SearchHeader extends StatefulWidget {
+class SearchHeader extends ConsumerStatefulWidget {
   const SearchHeader({super.key});
 
   @override
-  State<SearchHeader> createState() => _SearchHeaderState();
+  ConsumerState<SearchHeader> createState() => _SearchHeaderState();
 }
 
-class _SearchHeaderState extends State<SearchHeader> {
+class _SearchHeaderState extends ConsumerState<SearchHeader> {
   final _controller = TextEditingController();
   final _focusNode = FocusNode();
   bool _hasFocus = false;
@@ -68,7 +68,7 @@ class _SearchHeaderState extends State<SearchHeader> {
                     border: Border.all(
                       color: _hasFocus
                           ? AppColors.violet
-                          : Colors.white.withValues(alpha: 0.06),
+                          : AppColors.border,
                     ),
                   ),
                   child: TextField(
@@ -93,7 +93,9 @@ class _SearchHeaderState extends State<SearchHeader> {
                           ? GestureDetector(
                               onTap: () {
                                 _controller.clear();
-                                context.read<ClientSearchCubit>().search('');
+                                ref
+                                    .read(clientSearchProvider.notifier)
+                                    .search('');
                               },
                               child: Icon(
                                 Icons.close,
@@ -110,7 +112,7 @@ class _SearchHeaderState extends State<SearchHeader> {
                       isDense: true,
                     ),
                     onChanged: (v) {
-                      context.read<ClientSearchCubit>().search(v);
+                      ref.read(clientSearchProvider.notifier).search(v);
                       setState(() {}); // refresh clear icon
                     },
                   ),
@@ -319,7 +321,7 @@ class _SearchHeaderState extends State<SearchHeader> {
                                     ),
                                     child: Text('Appliquer',
                                         style: GoogleFonts.dmSans(
-                                            color: AppColors.blanc,
+                                            color: AppColors.textOnPrimary,
                                             fontWeight: FontWeight.w700,
                                             fontSize: 14)),
                                   ),
@@ -359,17 +361,16 @@ class _SearchHeaderState extends State<SearchHeader> {
 
 // ─── View Mode Toggle (carte / liste) ────────────────────────────────
 
-class _ViewModeToggle extends StatelessWidget {
+class _ViewModeToggle extends ConsumerWidget {
   const _ViewModeToggle();
 
   @override
-  Widget build(BuildContext context) {
-    return BlocSelector<ClientSearchCubit, ClientSearchState, String>(
-      selector: (state) => state.viewMode,
-      builder: (context, viewMode) {
-        final isMap = viewMode == 'map';
-        return GestureDetector(
-          onTap: () => context.read<ClientSearchCubit>().toggleViewMode(),
+  Widget build(BuildContext context, WidgetRef ref) {
+    final viewMode =
+        ref.watch(clientSearchProvider.select((s) => s.viewMode));
+    final isMap = viewMode == 'map';
+    return GestureDetector(
+      onTap: () => ref.read(clientSearchProvider.notifier).toggleViewMode(),
           child: Container(
             width: 120,
             height: 30,
@@ -405,7 +406,7 @@ class _ViewModeToggle extends StatelessWidget {
                             fontSize: 11,
                             fontWeight: FontWeight.w600,
                             color: isMap
-                                ? AppColors.blanc
+                                ? AppColors.textOnPrimary
                                 : AppColors.gris,
                           ),
                         ),
@@ -420,7 +421,7 @@ class _ViewModeToggle extends StatelessWidget {
                             fontWeight: FontWeight.w600,
                             color: isMap
                                 ? AppColors.gris
-                                : AppColors.blanc,
+                                : AppColors.textOnPrimary,
                           ),
                         ),
                       ),
@@ -431,7 +432,5 @@ class _ViewModeToggle extends StatelessWidget {
             ),
           ),
         );
-      },
-    );
   }
 }

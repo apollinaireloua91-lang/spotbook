@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../../features/auth/data/category_repository.dart';
 import '../../../../../shared/theme/app_colors.dart';
-import '../cubit/client_search_cubit.dart';
 import '../../../../../shared/theme/theme_mode_notifier.dart';
+import '../data/client_search_notifier.dart';
 import '../models/search_models.dart';
 
 class CategoryPills extends ConsumerWidget {
@@ -26,31 +25,30 @@ class CategoryPills extends ConsumerWidget {
       error: (_, __) => kSearchCategoriesFallback,
     );
 
-    return BlocSelector<ClientSearchCubit, ClientSearchState, String>(
-      selector: (s) => s.activeCategory,
-      builder: (context, activeCategory) {
-        return SizedBox(
-          height: 34,
-          child: ListView.separated(
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            itemCount: categories.length,
-            separatorBuilder: (_, __) => const SizedBox(width: 5),
-            itemBuilder: (context, index) {
-              final cat = categories[index];
-              final isActive = cat.key == activeCategory;
-              return _CategoryPill(
-                category: cat,
-                isActive: isActive,
-                onTap: () {
-                  HapticFeedback.lightImpact();
-                  context.read<ClientSearchCubit>().filterByCategory(cat.key);
-                },
-              );
+    final activeCategory =
+        ref.watch(clientSearchProvider.select((s) => s.activeCategory));
+    return SizedBox(
+      height: 34,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        itemCount: categories.length,
+        separatorBuilder: (_, __) => const SizedBox(width: 5),
+        itemBuilder: (context, index) {
+          final cat = categories[index];
+          final isActive = cat.key == activeCategory;
+          return _CategoryPill(
+            category: cat,
+            isActive: isActive,
+            onTap: () {
+              HapticFeedback.lightImpact();
+              ref
+                  .read(clientSearchProvider.notifier)
+                  .filterByCategory(cat.key);
             },
-          ),
-        );
-      },
+          );
+        },
+      ),
     );
   }
 }
@@ -135,12 +133,12 @@ class _CategoryPillState extends State<_CategoryPill>
           duration: const Duration(milliseconds: 200),
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
           decoration: BoxDecoration(
-            color: isActive ? AppColors.violet : Colors.white.withValues(alpha: 0.02),
+            color: isActive ? AppColors.violet : AppColors.surface,
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
               color: isActive
                   ? AppColors.violet
-                  : Colors.white.withValues(alpha: 0.08),
+                  : AppColors.border,
             ),
             boxShadow: isActive
                 ? [
@@ -157,7 +155,7 @@ class _CategoryPillState extends State<_CategoryPill>
             style: GoogleFonts.dmSans(
               fontSize: 10,
               fontWeight: FontWeight.w600,
-              color: isActive ? AppColors.blanc : AppColors.grisInactif,
+              color: isActive ? AppColors.textOnPrimary : AppColors.grisInactif,
             ),
           ),
         ),

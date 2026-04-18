@@ -30,7 +30,7 @@ class ProMapCard extends StatelessWidget {
             color: AppColors.surfaceAlt,
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: Colors.white.withAlpha(18),
+              color: AppColors.border,
             ),
             boxShadow: [
               BoxShadow(
