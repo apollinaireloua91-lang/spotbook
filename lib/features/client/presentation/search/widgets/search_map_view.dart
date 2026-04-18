@@ -3,12 +3,12 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../../../../../shared/theme/app_colors.dart';
-import '../cubit/client_search_cubit.dart';
+import '../data/client_search_notifier.dart';
 import '../models/search_models.dart';
 import 'pro_map_card.dart';
 
@@ -30,17 +30,17 @@ const _kDarkMapStyle = '''[
   {"featureType":"landscape.man_made","elementType":"geometry","stylers":[{"color":"#16161f"}]}
 ]''';
 
-/// Max markers visible on map for performance.
-const _kMaxMarkers = 20;
+/// Les Pros sont désormais tous affichés (le repo garantit des coords pour
+/// chacun via geocode-city + jitter déterministe). Plus de cap arbitraire.
 
-class SearchMapView extends StatefulWidget {
+class SearchMapView extends ConsumerStatefulWidget {
   const SearchMapView({super.key});
 
   @override
-  State<SearchMapView> createState() => _SearchMapViewState();
+  ConsumerState<SearchMapView> createState() => _SearchMapViewState();
 }
 
-class _SearchMapViewState extends State<SearchMapView> {
+class _SearchMapViewState extends ConsumerState<SearchMapView> {
   GoogleMapController? _mapController;
   final _cardScrollController = ScrollController();
   bool _cameraFitted = false;
@@ -140,11 +140,7 @@ class _SearchMapViewState extends State<SearchMapView> {
   // ── Build marker icons (cached by category) ────────────────────────
 
   void _buildProMarkerIcons(List<ProSearchResult> pros) {
-    final categories = pros
-        .where((p) => p.hasRealCoords)
-        .take(_kMaxMarkers)
-        .map((p) => p.category)
-        .toSet();
+    final categories = pros.map((p) => p.category).toSet();
     for (final cat in categories) {
       if (_markerIcons.containsKey(cat)) continue;
       _createSmallDotMarker(categoryColor(cat)).then((icon) {
@@ -160,9 +156,8 @@ class _SearchMapViewState extends State<SearchMapView> {
     final ctrl = _mapController;
     if (ctrl == null) return;
 
-    // Only consider pros with real GPS coordinates for camera bounds
-    final geolocated =
-        pros.where((p) => p.hasRealCoords).take(_kMaxMarkers).toList();
+    // Tous les Pros ont des coords (réelles ou dérivées de la ville).
+    final geolocated = pros;
 
     if (geolocated.isEmpty) {
       // No pro has real coords — center on user or default
@@ -217,149 +212,146 @@ class _SearchMapViewState extends State<SearchMapView> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<ClientSearchCubit, ClientSearchState>(
-      builder: (context, state) {
-        // Build marker icons async (cached by category)
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (mounted) _buildProMarkerIcons(state.pros);
-        });
+    final state = ref.watch(clientSearchProvider);
 
-        // Assemble Google Maps markers
-        final markers = <Marker>{};
+    // Build marker icons async (cached by category)
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _buildProMarkerIcons(state.pros);
+    });
 
-        // User location — premium blue dot
-        if (state.userLat != null &&
-            state.userLng != null &&
-            _userMarkerIcon != null) {
-          markers.add(Marker(
-            markerId: const MarkerId('user_location'),
-            position: LatLng(state.userLat!, state.userLng!),
-            icon: _userMarkerIcon!,
-            zIndexInt: 999,
-            anchor: const Offset(0.5, 0.5),
-          ));
-        }
+    // Assemble Google Maps markers
+    final markers = <Marker>{};
 
-        // Pro markers — tiny colored dots (only for pros with real GPS)
-        for (final pro in state.pros.take(_kMaxMarkers)) {
-          if (!pro.hasRealCoords) continue;
-          markers.add(Marker(
-            markerId: MarkerId(pro.id),
-            position: LatLng(pro.lat, pro.lng),
-            icon: _markerIcons[pro.category] ?? BitmapDescriptor.defaultMarker,
-            zIndexInt: 1,
-            anchor: const Offset(0.5, 0.5),
+    // User location — premium blue dot
+    if (state.userLat != null &&
+        state.userLng != null &&
+        _userMarkerIcon != null) {
+      markers.add(Marker(
+        markerId: const MarkerId('user_location'),
+        position: LatLng(state.userLat!, state.userLng!),
+        icon: _userMarkerIcon!,
+        zIndexInt: 999,
+        anchor: const Offset(0.5, 0.5),
+      ));
+    }
+
+    // Pro markers — tiny colored dots pour TOUS les Pros.
+    for (final pro in state.pros) {
+      markers.add(Marker(
+        markerId: MarkerId(pro.id),
+        position: LatLng(pro.lat, pro.lng),
+        icon: _markerIcons[pro.category] ?? BitmapDescriptor.defaultMarker,
+        zIndexInt: 1,
+        anchor: const Offset(0.5, 0.5),
+        onTap: () {
+          HapticFeedback.lightImpact();
+          context.push('/pro/${pro.id}');
+        },
+      ));
+    }
+
+    final initialTarget = LatLng(
+      state.userLat ?? 45.5100,
+      state.userLng ?? -73.5700,
+    );
+
+    return Stack(
+      children: [
+        // ── Google Map ──
+        GoogleMap(
+          initialCameraPosition: CameraPosition(
+            target: initialTarget,
+            zoom: 12,
+          ),
+          markers: markers,
+          style: _kDarkMapStyle,
+          myLocationEnabled: false,
+          myLocationButtonEnabled: false,
+          mapToolbarEnabled: false,
+          zoomControlsEnabled: false,
+          compassEnabled: false,
+          onMapCreated: (controller) {
+            _mapController = controller;
+            if (!_cameraFitted && state.pros.isNotEmpty) {
+              _cameraFitted = true;
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                _fitCameraToPros(
+                  state.pros,
+                  state.userLat,
+                  state.userLng,
+                );
+              });
+            }
+          },
+        ),
+
+        // ── My location FAB ──
+        Positioned(
+          right: 14,
+          bottom: MediaQuery.paddingOf(context).bottom + 82 + 140,
+          child: GestureDetector(
             onTap: () {
-              HapticFeedback.lightImpact();
-              context.push('/pro/${pro.id}');
+              if (state.userLat != null && state.userLng != null) {
+                _mapController?.animateCamera(
+                  CameraUpdate.newLatLngZoom(
+                    LatLng(state.userLat!, state.userLng!),
+                    14,
+                  ),
+                );
+              }
             },
-          ));
-        }
-
-        final initialTarget = LatLng(
-          state.userLat ?? 45.5100,
-          state.userLng ?? -73.5700,
-        );
-
-        return Stack(
-          children: [
-            // ── Google Map ──
-            GoogleMap(
-              initialCameraPosition: CameraPosition(
-                target: initialTarget,
-                zoom: 12,
+            child: Container(
+              width: 42,
+              height: 42,
+              decoration: BoxDecoration(
+                color: AppColors.surface,
+                shape: BoxShape.circle,
+                border: Border.all(color: AppColors.border),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withAlpha(80),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
               ),
-              markers: markers,
-              style: _kDarkMapStyle,
-              myLocationEnabled: false,
-              myLocationButtonEnabled: false,
-              mapToolbarEnabled: false,
-              zoomControlsEnabled: false,
-              compassEnabled: false,
-              onMapCreated: (controller) {
-                _mapController = controller;
-                if (!_cameraFitted && state.pros.isNotEmpty) {
-                  _cameraFitted = true;
-                  WidgetsBinding.instance.addPostFrameCallback((_) {
-                    _fitCameraToPros(
-                      state.pros,
-                      state.userLat,
-                      state.userLng,
-                    );
-                  });
-                }
-              },
-            ),
-
-            // ── My location FAB ──
-            Positioned(
-              right: 14,
-              bottom: MediaQuery.paddingOf(context).bottom + 82 + 140,
-              child: GestureDetector(
-                onTap: () {
-                  if (state.userLat != null && state.userLng != null) {
-                    _mapController?.animateCamera(
-                      CameraUpdate.newLatLngZoom(
-                        LatLng(state.userLat!, state.userLng!),
-                        14,
-                      ),
-                    );
-                  }
-                },
-                child: Container(
-                  width: 42,
-                  height: 42,
-                  decoration: BoxDecoration(
-                    color: AppColors.surface,
-                    shape: BoxShape.circle,
-                    border: Border.all(color: AppColors.border),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withAlpha(80),
-                        blurRadius: 8,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  child: Icon(
-                    Icons.my_location,
-                    color: AppColors.blanc,
-                    size: 18,
-                  ),
-                ),
+              child: Icon(
+                Icons.my_location,
+                color: AppColors.blanc,
+                size: 18,
               ),
             ),
+          ),
+        ),
 
-            // ── Bottom card carousel ──
-            if (state.pros.isNotEmpty)
-              Positioned(
-                left: 0,
-                right: 0,
-                bottom: MediaQuery.paddingOf(context).bottom + 82,
-                child: SizedBox(
-                  height: 130,
-                  child: ListView.separated(
-                    controller: _cardScrollController,
-                    scrollDirection: Axis.horizontal,
-                    padding: const EdgeInsets.symmetric(horizontal: 14),
-                    itemCount: state.pros.take(_kMaxMarkers).length,
-                    separatorBuilder: (_, __) => const SizedBox(width: 10),
-                    itemBuilder: (context, index) {
-                      final pro = state.pros[index];
-                      return ProMapCard(
-                        pro: pro,
-                        onTap: () {
-                          HapticFeedback.lightImpact();
-                          context.push('/pro/${pro.id}');
-                        },
-                      );
+        // ── Bottom card carousel ──
+        if (state.pros.isNotEmpty)
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: MediaQuery.paddingOf(context).bottom + 82,
+            child: SizedBox(
+              height: 130,
+              child: ListView.separated(
+                controller: _cardScrollController,
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.symmetric(horizontal: 14),
+                itemCount: state.pros.length,
+                separatorBuilder: (_, __) => const SizedBox(width: 10),
+                itemBuilder: (context, index) {
+                  final pro = state.pros[index];
+                  return ProMapCard(
+                    pro: pro,
+                    onTap: () {
+                      HapticFeedback.lightImpact();
+                      context.push('/pro/${pro.id}');
                     },
-                  ),
-                ),
+                  );
+                },
               ),
-          ],
-        );
-      },
+            ),
+          ),
+      ],
     );
   }
 }
