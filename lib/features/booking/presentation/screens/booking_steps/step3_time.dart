@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../../shared/theme/app_colors.dart';
 import '../../../data/booking_notifier.dart';
+import '../../../domain/booking_models.dart';
 
 /// Step 3 — Time slot picker. Lists available slots for the selected date.
 /// Highlights slots that fit the total cart duration (multi-service).
@@ -19,13 +20,62 @@ class Step3Time extends StatelessWidget {
   final BookingFlowState state;
   final int totalDurationMinutes;
 
+  /// Returns only slots where there are enough CONSECUTIVE free 15-min slots
+  /// to cover the total booking duration. For a 90-min booking, that's 6
+  /// contiguous 15-min slots starting at the picked time.
+  ///
+  /// Conservative: if `totalDurationMinutes` is 0 (cart empty — shouldn't
+  /// happen at step 3), we return all available slots.
+  List<TimeSlotModel> _filterByDuration(List<TimeSlotModel> availableSlots) {
+    if (totalDurationMinutes <= 0) return availableSlots;
+
+    // Build an index of available slots by HH:mm for fast lookup
+    final availableTimes = <String>{};
+    for (final s in availableSlots) {
+      availableTimes.add(s.startTime.substring(0, 5));
+    }
+
+    int slotsNeeded = (totalDurationMinutes / 15).ceil();
+    if (slotsNeeded < 1) slotsNeeded = 1;
+
+    final result = <TimeSlotModel>[];
+    for (final slot in availableSlots) {
+      final startStr = slot.startTime.substring(0, 5);
+      final parts = startStr.split(':');
+      int h = int.parse(parts[0]);
+      int m = int.parse(parts[1]);
+      bool ok = true;
+      for (var i = 1; i < slotsNeeded; i++) {
+        m += 15;
+        if (m >= 60) {
+          m -= 60;
+          h += 1;
+        }
+        if (h >= 24) {
+          ok = false;
+          break;
+        }
+        final next =
+            '${h.toString().padLeft(2, '0')}:${m.toString().padLeft(2, '0')}';
+        if (!availableTimes.contains(next)) {
+          ok = false;
+          break;
+        }
+      }
+      if (ok) result.add(slot);
+    }
+    return result;
+  }
+
   @override
   Widget build(BuildContext context) {
     if (state.isLoading && state.timeSlots.isEmpty) {
       return const Center(child: CircularProgressIndicator());
     }
-    final slots =
+    final allAvailable =
         state.timeSlots.where((s) => s.isAvailable).toList();
+    // Filter to only slots that can fit the total cart duration
+    final slots = _filterByDuration(allAvailable);
     if (slots.isEmpty) {
       return Center(
         child: Padding(

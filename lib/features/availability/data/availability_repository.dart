@@ -52,6 +52,37 @@ class AvailabilityRepository {
 
   // ─── Save weekly rules → availability_rules ─────────────────────────────────
 
+  /// Merges overlapping/touching slots within a single day before persisting.
+  /// E.g. [9-12, 11-14] → [9-14]. Prevents duplicate-range chaos in the UI.
+  List<DaySlot> _mergeOverlappingSlots(List<DaySlot> slots) {
+    if (slots.isEmpty) return slots;
+    final valid = slots.where((s) => s.isValid).toList()
+      ..sort((a, b) => a.startMinutes.compareTo(b.startMinutes));
+    if (valid.isEmpty) return [];
+
+    final merged = <DaySlot>[valid.first];
+    for (var i = 1; i < valid.length; i++) {
+      final last = merged.last;
+      final cur = valid[i];
+      final lastEnd = last.endTime.hour * 60 + last.endTime.minute;
+      final curStart = cur.startMinutes;
+      if (curStart <= lastEnd) {
+        // Overlap or touching → merge
+        final curEnd = cur.endTime.hour * 60 + cur.endTime.minute;
+        final newEndMin = lastEnd > curEnd ? lastEnd : curEnd;
+        merged[merged.length - 1] = DaySlot(
+          tempId: last.tempId,
+          slotIndex: last.slotIndex,
+          startTime: last.startTime,
+          endTime: TimeOfDay(hour: newEndMin ~/ 60, minute: newEndMin % 60),
+        );
+      } else {
+        merged.add(cur);
+      }
+    }
+    return merged;
+  }
+
   Future<void> saveAvailability(List<DayRule> rules) async {
     await _db.from('availability_rules').delete().eq('pro_id', _uid);
 
@@ -59,19 +90,34 @@ class AvailabilityRepository {
     for (final rule in rules) {
       if (!rule.isActive || rule.slots.isEmpty) continue;
       final dbDow = _uiDowToDb(rule.dayOfWeek);
-      for (final slot in rule.slots) {
-        if (!slot.isValid) continue;
+      // Merge overlapping slots on this day before persisting
+      final mergedSlots = _mergeOverlappingSlots(rule.slots);
+      for (final slot in mergedSlots) {
         rows.add({
           'pro_id': _uid,
           'day_of_week': dbDow,
           'start_time': _fmt(slot.startTime),
           'end_time': _fmt(slot.endTime),
-          'slot_duration_minutes': 60,
+          'slot_duration_minutes': 15, // 15-min granularity for multi-service
         });
       }
     }
     if (rows.isNotEmpty) {
       await _db.from('availability_rules').insert(rows);
+    }
+
+    // Trigger immediate slot regeneration for this pro.
+    // Non-blocking: if it fails, the daily cron will eventually sync.
+    try {
+      await _db.functions.invoke(
+        'generate-slots',
+        body: {'proId': _uid},
+      );
+    } catch (e) {
+      // Log but don't fail the save — the UI already shows "saved"
+      // and the cron will reconcile.
+      // ignore: avoid_print
+      print('generate-slots trigger failed (non-blocking): $e');
     }
   }
 
