@@ -8,7 +8,6 @@ import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/widgets/spotbook_button.dart';
 import '../../../booking/domain/booking_models.dart';
-import '../../../booking/presentation/screens/booking_bottom_sheet.dart';
 import '../../../events/domain/event_models.dart';
 import '../../../feed/domain/video_model.dart';
 import '../../domain/profile_models.dart';
@@ -151,11 +150,8 @@ class ProServiceCard extends StatelessWidget {
             label: AppLocalizations.of(context)!.reserveLabel,
             onPressed: () {
               HapticFeedback.mediumImpact();
-              showBookingSheet(
-                context,
-                proId: proProfile.id,
-                proProfile: proProfile,
-              );
+              // Use the new full-screen 6-step booking flow (V2).
+              context.push('/client/booking-flow/${proProfile.id}');
             },
           ),
         ],

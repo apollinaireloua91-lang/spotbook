@@ -14,7 +14,6 @@ import '../../../../shared/utils/time_ago.dart';
 import '../../../../shared/widgets/spotbook_loading_shimmer.dart';
 import '../../../booking/data/booking_repository.dart';
 import '../../../booking/domain/booking_models.dart';
-import '../../../booking/presentation/screens/booking_bottom_sheet.dart';
 import '../../../events/data/event_repository.dart';
 import '../../../events/domain/event_models.dart';
 import '../../../feed/data/video_repository.dart';
@@ -184,11 +183,8 @@ class _PremiumProfileScaffoldState
 
   void _openBooking() {
     HapticFeedback.mediumImpact();
-    showBookingSheet(
-      context,
-      proId: widget.profile.id,
-      proProfile: widget.profile,
-    );
+    // Use the new full-screen 6-step booking flow (V2) instead of the legacy bottom sheet.
+    context.push('/client/booking-flow/${widget.profile.id}');
   }
 
   void _openMessage() {
@@ -1244,11 +1240,8 @@ class _PremiumServiceCard extends StatelessWidget {
           GestureDetector(
             onTap: () {
               HapticFeedback.mediumImpact();
-              showBookingSheet(
-                context,
-                proId: proProfile.id,
-                proProfile: proProfile,
-              );
+              // Use the new full-screen 6-step booking flow (V2).
+              context.push('/client/booking-flow/${proProfile.id}');
             },
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
@@ -1574,9 +1567,14 @@ class _EmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
+    // Simple scrollable column — never overflows regardless of parent height.
+    // Content shows at top with generous top padding to look visually centered
+    // on typical body heights.
+    return SingleChildScrollView(
+      physics: const ClampingScrollPhysics(),
+      padding: const EdgeInsets.fromLTRB(24, 48, 24, 48),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
         children: [
           Container(
             width: 64,
@@ -1588,7 +1586,11 @@ class _EmptyState extends StatelessWidget {
             child: Icon(icon, size: 28, color: AppColors.violet),
           ),
           const SizedBox(height: 12),
-          Text(text, style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 14)),
+          Text(
+            text,
+            textAlign: TextAlign.center,
+            style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 14),
+          ),
         ],
       ),
     );
@@ -1602,14 +1604,19 @@ class _ErrorState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
-    return Center(
+    return SingleChildScrollView(
+      physics: const ClampingScrollPhysics(),
+      padding: const EdgeInsets.fromLTRB(24, 48, 24, 48),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
         children: [
           Icon(Icons.error_outline, color: AppColors.error, size: 36),
           const SizedBox(height: 12),
-          Text(l.loadError,
-              style: GoogleFonts.sora(color: AppColors.gris, fontSize: 14)),
+          Text(
+            l.loadError,
+            textAlign: TextAlign.center,
+            style: GoogleFonts.sora(color: AppColors.gris, fontSize: 14),
+          ),
           const SizedBox(height: 12),
           GestureDetector(
             onTap: onRetry,
