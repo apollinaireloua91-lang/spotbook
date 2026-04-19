@@ -65,6 +65,54 @@ class BookingRepository {
     return set;
   }
 
+  /// Fallback slot generator that only reads `availability_rules` (required
+  /// table). Used if the more comprehensive computeSlotsForDate fails for any
+  /// reason (missing columns, RLS issue, network blip). Guarantees a sensible
+  /// display of the Pro's weekly hours.
+  Future<List<TimeSlotModel>> computeSlotsSimple({
+    required String proId,
+    required DateTime date,
+  }) async {
+    final isoDate =
+        '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+    final dowJs = date.weekday == 7 ? 0 : date.weekday;
+
+    final rows = await _supabase
+        .from('availability_rules')
+        .select('start_time, end_time')
+        .eq('pro_id', proId)
+        .eq('day_of_week', dowJs);
+
+    if ((rows as List).isEmpty) return [];
+
+    final now = DateTime.now();
+    final isToday = date.year == now.year &&
+        date.month == now.month &&
+        date.day == now.day;
+    final nowMinutes = now.hour * 60 + now.minute;
+
+    final slots = <TimeSlotModel>[];
+    for (final row in rows) {
+      final r = row as Map;
+      final start = _parseMinutes(r['start_time'] as String);
+      final end = _parseMinutes(r['end_time'] as String);
+      for (var t = start; t + 15 <= end; t += 15) {
+        if (isToday && t < nowMinutes) continue;
+        final startStr = _minutesToStr(t);
+        final endStr = _minutesToStr(t + 15);
+        slots.add(TimeSlotModel(
+          id: 'virtual_${isoDate}_$startStr',
+          proId: proId,
+          date: isoDate,
+          startTime: '$startStr:00',
+          endTime: '$endStr:00',
+          isAvailable: true,
+        ));
+      }
+    }
+    return slots;
+  }
+
   /// Computes the list of 15-minute time slots for a Pro on a given date,
   /// derived from their weekly availability_rules ± exceptions ± lunch break.
   /// Excludes slots already booked (is_available = false in time_slots).

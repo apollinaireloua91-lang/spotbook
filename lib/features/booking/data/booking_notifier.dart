@@ -228,7 +228,7 @@ class BookingFlowNotifier extends Notifier<BookingFlowState> {
   }
 
   Future<void> selectDate(String date) async {
-    state = state.copyWith(selectedDate: date, isLoading: true);
+    state = state.copyWith(selectedDate: date, isLoading: true, error: null);
 
     _slotChannel?.unsubscribe();
     _slotChannel = _repo.subscribeSlotChanges(
@@ -240,11 +240,33 @@ class BookingFlowNotifier extends Notifier<BookingFlowState> {
     // Compute slots on-the-fly from the pro's availability_rules, respecting
     // lunch breaks + exceptions + existing bookings. This works even if
     // generate-slots hasn't run yet for the freshly-saved schedule.
-    final slots = await _repo.computeSlotsForDate(
-      proId: _proId,
-      date: DateTime.parse(date),
-    );
-    state = state.copyWith(timeSlots: slots, isLoading: false);
+    try {
+      // Primary path: full computation with exceptions, lunch breaks, bookings
+      final slots = await _repo.computeSlotsForDate(
+        proId: _proId,
+        date: DateTime.parse(date),
+      );
+      state = state.copyWith(timeSlots: slots, isLoading: false);
+    } catch (e, st) {
+      // ignore: avoid_print
+      print('[booking] computeSlotsForDate failed, falling back: $e\n$st');
+      try {
+        // Fallback: simple rules-based slots (no exceptions, no lunch, no bookings)
+        final slots = await _repo.computeSlotsSimple(
+          proId: _proId,
+          date: DateTime.parse(date),
+        );
+        state = state.copyWith(timeSlots: slots, isLoading: false);
+      } catch (e2, st2) {
+        // ignore: avoid_print
+        print('[booking] computeSlotsSimple also failed: $e2\n$st2');
+        state = state.copyWith(
+          timeSlots: const [],
+          isLoading: false,
+          error: 'Erreur chargement créneaux',
+        );
+      }
+    }
   }
 
   void _onSlotUpdate(Map<String, dynamic> payload) {
