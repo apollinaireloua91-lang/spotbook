@@ -237,7 +237,13 @@ class BookingFlowNotifier extends Notifier<BookingFlowState> {
       onUpdate: _onSlotUpdate,
     );
 
-    final slots = await _repo.getTimeSlots(_proId, date);
+    // Compute slots on-the-fly from the pro's availability_rules, respecting
+    // lunch breaks + exceptions + existing bookings. This works even if
+    // generate-slots hasn't run yet for the freshly-saved schedule.
+    final slots = await _repo.computeSlotsForDate(
+      proId: _proId,
+      date: DateTime.parse(date),
+    );
     state = state.copyWith(timeSlots: slots, isLoading: false);
   }
 

@@ -7,6 +7,12 @@ final bookingRepositoryProvider = Provider<BookingRepository>((ref) {
   return BookingRepository(supabase: Supabase.instance.client);
 });
 
+class _TimeRange {
+  const _TimeRange({required this.start, required this.end});
+  final int start; // minutes from midnight
+  final int end;
+}
+
 class BookingRepository {
   BookingRepository({required SupabaseClient supabase}) : _supabase = supabase;
 
@@ -57,6 +63,181 @@ class BookingRepository {
       if (d is int) set.add(d);
     }
     return set;
+  }
+
+  /// Computes the list of 15-minute time slots for a Pro on a given date,
+  /// derived from their weekly availability_rules ± exceptions ± lunch break.
+  /// Excludes slots already booked (is_available = false in time_slots).
+  ///
+  /// This is the "source of truth" for the client booking flow — it doesn't
+  /// depend on the slot generator having run, so a Pro who just saved their
+  /// schedule can immediately see their slots on the client side.
+  Future<List<TimeSlotModel>> computeSlotsForDate({
+    required String proId,
+    required DateTime date,
+  }) async {
+    final isoDate =
+        '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+    // JS weekday: 0 = Sunday (matches DB)
+    final dowJs = date.weekday == 7 ? 0 : date.weekday;
+
+    final results = await Future.wait<dynamic>([
+      // Weekly rules for this weekday
+      _supabase
+          .from('availability_rules')
+          .select(
+              'start_time, end_time, lunch_break_start, lunch_break_end')
+          .eq('pro_id', proId)
+          .eq('day_of_week', dowJs),
+      // Exception for this specific date
+      _supabase
+          .from('availability_exceptions')
+          .select('is_closed, custom_start, custom_end')
+          .eq('pro_id', proId)
+          .eq('exception_date', isoDate)
+          .maybeSingle(),
+      // Slots already booked (is_available=false) on this date — must be filtered out
+      _supabase
+          .from('time_slots')
+          .select('id, start_time, end_time, is_available')
+          .eq('pro_id', proId)
+          .eq('date', isoDate),
+    ]);
+
+    final rules = results[0] as List;
+    final exception = results[1] as Map<String, dynamic>?;
+    final existingSlots = results[2] as List;
+
+    // If the day is closed via exception, no slots
+    if (exception != null && exception['is_closed'] == true) {
+      return [];
+    }
+
+    // Build merged active ranges
+    var ranges = <_TimeRange>[];
+    if (exception != null &&
+        exception['custom_start'] != null &&
+        exception['custom_end'] != null) {
+      ranges = [
+        _TimeRange(
+          start: _parseMinutes(exception['custom_start'] as String),
+          end: _parseMinutes(exception['custom_end'] as String),
+        ),
+      ];
+    } else {
+      for (final row in rules) {
+        final r = row as Map;
+        ranges.add(_TimeRange(
+          start: _parseMinutes(r['start_time'] as String),
+          end: _parseMinutes(r['end_time'] as String),
+        ));
+      }
+      _mergeRanges(ranges);
+      // Subtract lunch break from the first rule that has one (pro should have 1/day)
+      final lunchRow = rules.firstWhere(
+        (r) =>
+            (r as Map)['lunch_break_start'] != null &&
+            (r)['lunch_break_end'] != null,
+        orElse: () => null,
+      );
+      if (lunchRow != null) {
+        final lunchStart = _parseMinutes(
+            (lunchRow as Map)['lunch_break_start'] as String);
+        final lunchEnd = _parseMinutes(
+            (lunchRow)['lunch_break_end'] as String);
+        ranges = _subtractBreak(ranges, lunchStart, lunchEnd);
+      }
+    }
+
+    if (ranges.isEmpty) return [];
+
+    // Index booked slots by HH:mm for fast lookup
+    final bookedStarts = <String>{};
+    final availableSlotMap = <String, Map<String, dynamic>>{};
+    for (final row in existingSlots) {
+      final r = row as Map<String, dynamic>;
+      final startStr = (r['start_time'] as String).substring(0, 5);
+      if (r['is_available'] == false) {
+        bookedStarts.add(startStr);
+      } else {
+        availableSlotMap[startStr] = r;
+      }
+    }
+
+    // Generate 15-min slots, skipping booked ones
+    final now = DateTime.now();
+    final isToday = date.year == now.year &&
+        date.month == now.month &&
+        date.day == now.day;
+    final nowMinutes = now.hour * 60 + now.minute;
+
+    final slots = <TimeSlotModel>[];
+    for (final range in ranges) {
+      for (var t = range.start; t + 15 <= range.end; t += 15) {
+        final startStr = _minutesToStr(t);
+        final endStr = _minutesToStr(t + 15);
+        // Skip past slots on today's date
+        if (isToday && t < nowMinutes) continue;
+        // Skip booked slots
+        if (bookedStarts.contains(startStr)) continue;
+        // Prefer existing slot id if one exists (for booking creation)
+        final existing = availableSlotMap[startStr];
+        slots.add(TimeSlotModel(
+          id: (existing?['id'] as String?) ?? 'virtual_${isoDate}_$startStr',
+          proId: proId,
+          date: isoDate,
+          startTime: '$startStr:00',
+          endTime: '$endStr:00',
+          isAvailable: true,
+        ));
+      }
+    }
+    return slots;
+  }
+
+  int _parseMinutes(String hhmm) {
+    final parts = hhmm.split(':');
+    return int.parse(parts[0]) * 60 + int.parse(parts[1]);
+  }
+
+  String _minutesToStr(int m) =>
+      '${(m ~/ 60).toString().padLeft(2, '0')}:${(m % 60).toString().padLeft(2, '0')}';
+
+  void _mergeRanges(List<_TimeRange> ranges) {
+    if (ranges.isEmpty) return;
+    ranges.sort((a, b) => a.start.compareTo(b.start));
+    var i = 0;
+    while (i < ranges.length - 1) {
+      if (ranges[i + 1].start <= ranges[i].end) {
+        ranges[i] = _TimeRange(
+          start: ranges[i].start,
+          end: ranges[i].end > ranges[i + 1].end
+              ? ranges[i].end
+              : ranges[i + 1].end,
+        );
+        ranges.removeAt(i + 1);
+      } else {
+        i++;
+      }
+    }
+  }
+
+  List<_TimeRange> _subtractBreak(
+      List<_TimeRange> ranges, int breakStart, int breakEnd) {
+    final out = <_TimeRange>[];
+    for (final r in ranges) {
+      if (breakEnd <= r.start || breakStart >= r.end) {
+        out.add(r);
+        continue;
+      }
+      if (breakStart > r.start) {
+        out.add(_TimeRange(start: r.start, end: breakStart));
+      }
+      if (breakEnd < r.end) {
+        out.add(_TimeRange(start: breakEnd, end: r.end));
+      }
+    }
+    return out;
   }
 
   /// Returns a set of ISO date strings where the Pro has a closed-exception
