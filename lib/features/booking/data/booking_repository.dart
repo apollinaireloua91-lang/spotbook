@@ -42,6 +42,59 @@ class BookingRepository {
     return dates.toList();
   }
 
+  /// Returns the set of active weekday indices for a Pro (0=Sunday … 6=Saturday,
+  /// JS convention matching the DB schema).
+  /// Used by the calendar to decide which dates are clickable even when
+  /// time_slots haven't been generated yet.
+  Future<Set<int>> getProActiveWeekdays(String proId) async {
+    final rows = await _supabase
+        .from('availability_rules')
+        .select('day_of_week')
+        .eq('pro_id', proId);
+    final set = <int>{};
+    for (final row in rows as List) {
+      final d = (row as Map)['day_of_week'];
+      if (d is int) set.add(d);
+    }
+    return set;
+  }
+
+  /// Returns a set of ISO date strings where the Pro has a closed-exception
+  /// or the date is in `blocked_dates`. Calendar greys these out.
+  Future<Set<String>> getProBlockedDates(String proId) async {
+    final results = await Future.wait<dynamic>([
+      _supabase
+          .from('availability_exceptions')
+          .select('exception_date')
+          .eq('pro_id', proId)
+          .eq('is_closed', true)
+          .gte(
+            'exception_date',
+            DateTime.now().toIso8601String().split('T')[0],
+          ),
+      _supabase
+          .from('profiles_pro')
+          .select('availability')
+          .eq('id', proId)
+          .maybeSingle(),
+    ]);
+    final blocked = <String>{};
+    for (final row in (results[0] as List)) {
+      final d = (row as Map)['exception_date'];
+      if (d is String) blocked.add(d);
+    }
+    final av = (results[1] as Map?)?['availability'];
+    if (av is Map) {
+      final list = av['blocked_dates'];
+      if (list is List) {
+        for (final d in list) {
+          if (d is String) blocked.add(d);
+        }
+      }
+    }
+    return blocked;
+  }
+
   Future<List<TimeSlotModel>> getTimeSlots(String proId, String date) async {
     final data = await _supabase
         .from('time_slots')
@@ -271,6 +324,19 @@ class BookingRepository {
       'remaining_paid_at': DateTime.now().toUtc().toIso8601String(),
       'payment_status': 'fully_paid',
     }).eq('id', bookingId);
+  }
+
+  // ─── QR Validation (Pro scanner) ──────────────────────────
+
+  Future<Map<String, dynamic>> validateBookingQr({
+    required String bookingId,
+    required String qrHash,
+  }) async {
+    final res = await _supabase.functions.invoke(
+      'validate-qr-booking',
+      body: {'bookingId': bookingId, 'qrHash': qrHash},
+    );
+    return res.data as Map<String, dynamic>;
   }
 
   // ─── Reviews ─────────────────────────────────────────────
