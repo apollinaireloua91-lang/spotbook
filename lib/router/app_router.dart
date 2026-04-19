@@ -32,6 +32,7 @@ import '../features/booking/presentation/screens/my_bookings_screen.dart';
 import '../features/booking/presentation/screens/pro_dashboard_screen.dart';
 import '../features/booking/presentation/screens/pro_rdv_screen.dart';
 import '../features/booking/presentation/screens/booking_flow_v2_screen.dart';
+import '../features/payment/presentation/screens/get_paid_faster_screen.dart';
 import '../features/booking/presentation/screens/pro_service_addons_screen.dart';
 import '../features/booking/presentation/screens/pro_services_manage_screen.dart';
 import '../features/booking/presentation/screens/pro_revenue_screen.dart';
@@ -325,6 +326,13 @@ final appRouter = GoRouter(
       pageBuilder: (context, state) => premiumPage(
         state: state,
         child: const ProServicesManageScreen(),
+      ),
+    ),
+    GoRoute(
+      path: '/pro/get-paid-faster',
+      pageBuilder: (context, state) => premiumPage(
+        state: state,
+        child: const GetPaidFasterScreen(),
       ),
     ),
     GoRoute(

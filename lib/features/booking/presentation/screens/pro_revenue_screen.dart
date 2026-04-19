@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:fl_chart/fl_chart.dart';
@@ -7,12 +8,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../core/services/app_config_provider.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/theme/theme_mode_notifier.dart';
+import '../../../../shared/utils/currency_formatter.dart';
 import '../../../../shared/widgets/spotbook_loading_shimmer.dart';
+import '../../../payment/data/payment_repository.dart';
 import '../../data/booking_notifier.dart';
 import '../../domain/booking_models.dart';
 
@@ -27,6 +32,102 @@ class ProRevenueScreen extends ConsumerStatefulWidget {
 
 class _ProRevenueScreenState extends ConsumerState<ProRevenueScreen> {
   int _periodDays = 30;
+  RealtimeChannel? _bookingsChannel;
+  bool _openingStripe = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _subscribeToBookingsRealtime();
+  }
+
+  @override
+  void dispose() {
+    final ch = _bookingsChannel;
+    if (ch != null) {
+      Supabase.instance.client.removeChannel(ch);
+    }
+    super.dispose();
+  }
+
+  /// Subscribes to bookings changes for the current pro.
+  /// On any INSERT/UPDATE/DELETE, invalidates the revenue + transactions
+  /// providers so the chart, total, and list refresh live.
+  void _subscribeToBookingsRealtime() {
+    final proId = Supabase.instance.client.auth.currentUser?.id;
+    if (proId == null) return;
+
+    _bookingsChannel = Supabase.instance.client
+        .channel('pro-revenue-$proId')
+        .onPostgresChanges(
+          event: PostgresChangeEvent.all,
+          schema: 'public',
+          table: 'bookings',
+          filter: PostgresChangeFilter(
+            type: PostgresChangeFilterType.eq,
+            column: 'pro_id',
+            value: proId,
+          ),
+          callback: (_) {
+            if (!mounted) return;
+            ref.invalidate(proRevenueDailyProvider(_periodDays));
+            ref.invalidate(proTransactionsProvider(_periodDays));
+          },
+        )
+        .subscribe();
+  }
+
+  /// Tapped "Retirer": fetch the pro's Stripe status and open the right URL.
+  /// - active     → Express Dashboard login link (payout management)
+  /// - pending    → AccountLink (finish onboarding — bank info, etc.)
+  /// - not_connected → redirect to /pro/stripe-connect
+  Future<void> _onWithdraw() async {
+    if (_openingStripe) return;
+    HapticFeedback.mediumImpact();
+    setState(() => _openingStripe = true);
+
+    final l = AppLocalizations.of(context)!;
+    try {
+      final repo = ref.read(paymentRepositoryProvider);
+      final data = await repo.getStripeConnectStatus();
+      if (!mounted) return;
+
+      final status = data['status'] as String?;
+      final url = data['url'] as String?;
+
+      if (status == 'not_connected' || url == null || url.isEmpty) {
+        context.push('/pro/stripe-connect');
+        return;
+      }
+
+      final uri = Uri.parse(url);
+      final ok = await launchUrl(uri, mode: LaunchMode.externalApplication);
+      if (!ok && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            backgroundColor: AppColors.surface,
+            content: Text(
+              l.cannotOpenStripeDashboard,
+              style: TextStyle(color: AppColors.blanc),
+            ),
+          ),
+        );
+      }
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: AppColors.surface,
+          content: Text(
+            e.toString().replaceFirst('Exception: ', ''),
+            style: TextStyle(color: AppColors.blanc),
+          ),
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _openingStripe = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,6 +136,12 @@ class _ProRevenueScreenState extends ConsumerState<ProRevenueScreen> {
     final chartAsync = ref.watch(proRevenueDailyProvider(_periodDays));
     final txAsync = ref.watch(proTransactionsProvider(_periodDays));
     final config = ref.watch(appConfigProvider).value ?? AppConfig.fallback;
+    // Pro's payout currency — derived from their bookings (same across all,
+    // since Stripe Connect locks the country/currency at onboarding).
+    final proCurrency =
+        txAsync.value != null && txAsync.value!.isNotEmpty
+            ? txAsync.value!.first.currency
+            : 'CAD';
 
     return Scaffold(
       backgroundColor: AppColors.fond,
@@ -67,12 +174,31 @@ class _ProRevenueScreenState extends ConsumerState<ProRevenueScreen> {
         ),
         centerTitle: true,
         actions: [
+          // "Get Paid Faster" — Stripe Instant Payouts (priority #1 follow-up)
+          TextButton.icon(
+            onPressed: () {
+              HapticFeedback.selectionClick();
+              context.push('/pro/get-paid-faster');
+            },
+            icon: Icon(Icons.bolt, color: AppColors.violetClair, size: 18),
+            label: Text(
+              'Payé +vite',
+              style: GoogleFonts.dmSans(
+                color: AppColors.violetClair,
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            style: TextButton.styleFrom(
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+            ),
+          ),
           IconButton(
             icon: Icon(Icons.settings_outlined,
                 color: AppColors.blanc, size: 22),
             onPressed: () {
               HapticFeedback.selectionClick();
-              context.push('/pro/stripe-setup');
+              context.push('/pro/stripe-connect');
             },
           ),
         ],
@@ -166,7 +292,7 @@ class _ProRevenueScreenState extends ConsumerState<ProRevenueScreen> {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        '${total.toStringAsFixed(2)} CAD',
+                        CurrencyFormatter.formatAmount(total, currency: proCurrency),
                         style: GoogleFonts.sora(
                           color: AppColors.blanc,
                           fontSize: 28,
@@ -178,13 +304,19 @@ class _ProRevenueScreenState extends ConsumerState<ProRevenueScreen> {
                         width: double.infinity,
                         height: 44,
                         child: ElevatedButton.icon(
-                          onPressed: () {
-                            HapticFeedback.mediumImpact();
-                            context.push('/pro/payouts');
-                          },
-                          icon: const Icon(
-                              Icons.account_balance_outlined,
-                              size: 18),
+                          onPressed: _openingStripe ? null : _onWithdraw,
+                          icon: _openingStripe
+                              ? SizedBox(
+                                  width: 16,
+                                  height: 16,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: AppColors.fond,
+                                  ),
+                                )
+                              : const Icon(
+                                  Icons.account_balance_outlined,
+                                  size: 18),
                           label: Text(l.withdraw,
                               style: GoogleFonts.dmSans(
                                   fontWeight: FontWeight.bold,
@@ -329,8 +461,9 @@ class _ProRevenueScreenState extends ConsumerState<ProRevenueScreen> {
                               ),
                               children: [
                                 TextSpan(
-                                  text:
-                                      '${series[i].amount.toStringAsFixed(2)} CAD',
+                                  text: CurrencyFormatter.formatAmount(
+                                      series[i].amount,
+                                      currency: proCurrency),
                                   style: GoogleFonts.dmSans(
                                     color: AppColors.grisClair,
                                     fontSize: 12,
@@ -459,16 +592,19 @@ class _TransactionRow extends StatelessWidget {
             children: [
               _AmountLabel(
                   label: l.grossRevenue,
-                  value: '${gross.toStringAsFixed(2)} \$'),
+                  value: CurrencyFormatter.formatAmount(gross,
+                      currency: booking.currency)),
               const SizedBox(width: 16),
               _AmountLabel(
                   label: l.commission,
-                  value: '-${commission.toStringAsFixed(2)} \$',
+                  value:
+                      '-${CurrencyFormatter.formatAmount(commission, currency: booking.currency)}',
                   color: AppColors.rose),
               const SizedBox(width: 16),
               _AmountLabel(
                   label: l.netRevenue,
-                  value: '${net.toStringAsFixed(2)} \$',
+                  value: CurrencyFormatter.formatAmount(net,
+                      currency: booking.currency),
                   color: AppColors.success),
             ],
           ),
