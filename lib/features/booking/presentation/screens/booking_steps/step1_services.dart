@@ -112,7 +112,7 @@ class _Header extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 4),
+      padding: const EdgeInsets.only(bottom: 12),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -120,19 +120,42 @@ class _Header extends StatelessWidget {
             'Choisis tes services',
             style: GoogleFonts.sora(
               color: AppColors.blanc,
-              fontSize: 20,
-              fontWeight: FontWeight.w700,
+              fontSize: 24,
+              fontWeight: FontWeight.w800,
+              height: 1.2,
+              letterSpacing: -0.4,
             ),
           ),
-          const SizedBox(height: 4),
-          Text(
-            selectedCount == 0
-                ? 'Tu peux sélectionner plusieurs services — ils seront enchaînés.'
-                : '$selectedCount service${selectedCount > 1 ? 's' : ''} sélectionné${selectedCount > 1 ? 's' : ''}',
-            style:
-                GoogleFonts.dmSans(color: AppColors.gris, fontSize: 13),
+          const SizedBox(height: 6),
+          Row(
+            children: [
+              Icon(
+                selectedCount == 0
+                    ? Icons.touch_app_outlined
+                    : Icons.check_circle,
+                color: selectedCount == 0
+                    ? AppColors.gris
+                    : AppColors.success,
+                size: 14,
+              ),
+              const SizedBox(width: 6),
+              Flexible(
+                child: Text(
+                  selectedCount == 0
+                      ? 'Combine plusieurs services pour une session complète'
+                      : '$selectedCount service${selectedCount > 1 ? 's' : ''} ajouté${selectedCount > 1 ? 's' : ''}',
+                  style: GoogleFonts.dmSans(
+                    color: selectedCount == 0
+                        ? AppColors.gris
+                        : AppColors.success,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w500,
+                    height: 1.4,
+                  ),
+                ),
+              ),
+            ],
           ),
-          const SizedBox(height: 4),
         ],
       ),
     );

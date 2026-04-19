@@ -6,9 +6,11 @@ import '../../../../../shared/theme/app_colors.dart';
 import '../../../../../shared/utils/currency_formatter.dart';
 import '../../../../../shared/widgets/spotbook_card.dart';
 import '../../../data/booking_notifier.dart';
+import '../../../domain/service_addon_models.dart';
 
-/// Step 4 — Review & extras. Shows the full cart breakdown + date/time,
-/// plus room for promo code and (future) recurring/group toggles.
+/// Step 4 — Summary.
+/// Hero card with date/time, service breakdown, promo display, grand total.
+/// Senior design: breathing space, clear visual hierarchy, trust markers.
 class Step4Summary extends StatelessWidget {
   const Step4Summary({
     super.key,
@@ -22,53 +24,85 @@ class Step4Summary extends StatelessWidget {
   String _fmt(double v) =>
       CurrencyFormatter.formatAmount(v, currency: currency);
 
-  String _fmtDate() {
+  String _fmtDateLong() {
     if (state.selectedDate == null) return '—';
     final d = DateTime.parse(state.selectedDate!);
-    return DateFormat('EEEE d MMMM', 'fr_FR').format(d);
+    final formatted = DateFormat('EEEE d MMMM', 'fr_FR').format(d);
+    return formatted[0].toUpperCase() + formatted.substring(1);
   }
 
-  String _fmtTime() {
+  String _fmtTimeRange(int totalMinutes) {
     final slot = state.selectedSlot;
     if (slot == null) return '—';
-    return slot.startTime.substring(0, 5);
+    final startStr = slot.startTime.substring(0, 5);
+    final parts = startStr.split(':');
+    int h = int.parse(parts[0]);
+    int m = int.parse(parts[1]) + totalMinutes;
+    h += m ~/ 60;
+    m = m % 60;
+    final endStr =
+        '${h.toString().padLeft(2, '0')}:${m.toString().padLeft(2, '0')}';
+    return '$startStr → $endStr';
+  }
+
+  String _fmtDuration(int m) {
+    if (m < 60) return '$m min';
+    final h = m ~/ 60;
+    final rem = m % 60;
+    if (rem == 0) return '${h}h';
+    return '${h}h${rem.toString().padLeft(2, '0')}';
   }
 
   @override
   Widget build(BuildContext context) {
     final cart = state.cart;
+    final totalDuration = state.cartTotalDurationMinutes;
     return ListView(
       padding: const EdgeInsets.fromLTRB(20, 4, 20, 16),
       children: [
-        Text(
-          'Vérifie ta réservation',
-          style: GoogleFonts.sora(
-            color: AppColors.blanc,
-            fontSize: 20,
-            fontWeight: FontWeight.w700,
+        _HeaderBlock(),
+        const SizedBox(height: 20),
+        // Hero card — date + time
+        Container(
+          padding: const EdgeInsets.all(18),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                AppColors.violet.withValues(alpha: 0.14),
+                AppColors.violet.withValues(alpha: 0.06),
+              ],
+            ),
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(
+              color: AppColors.violet.withValues(alpha: 0.25),
+              width: 0.5,
+            ),
           ),
-        ),
-        const SizedBox(height: 16),
-        // Date/time card
-        SpotbookCard(
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _SummaryRow(
+              _HeroRow(
                 icon: Icons.calendar_today_rounded,
-                label: 'Date',
-                value: _fmtDate(),
+                label: 'DATE',
+                value: _fmtDateLong(),
               ),
-              const SizedBox(height: 10),
-              _SummaryRow(
-                icon: Icons.access_time_rounded,
-                label: 'Heure',
-                value: _fmtTime(),
+              Divider(
+                  height: 20,
+                  thickness: 0.5,
+                  color: AppColors.border.withValues(alpha: 0.4)),
+              _HeroRow(
+                icon: Icons.schedule_rounded,
+                label: 'HEURE',
+                value: _fmtTimeRange(totalDuration),
+                secondary: _fmtDuration(totalDuration),
               ),
             ],
           ),
         ),
-        const SizedBox(height: 10),
-        // Cart items breakdown
+        const SizedBox(height: 18),
+        // Breakdown card
         SpotbookCard(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -83,61 +117,74 @@ class Step4Summary extends StatelessWidget {
                     style: GoogleFonts.sora(
                       color: AppColors.blanc,
                       fontSize: 15,
-                      fontWeight: FontWeight.w600,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: -0.2,
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 16),
               ...cart.items.map((it) => _CartItemRow(
                     item: it,
                     currency: currency,
                   )),
-              Divider(
-                height: 20,
-                thickness: 0.5,
-                color: AppColors.border.withValues(alpha: 0.6),
+              Container(
+                margin: const EdgeInsets.only(top: 8, bottom: 12),
+                height: 0.5,
+                color: AppColors.border.withValues(alpha: 0.4),
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text('Sous-total',
-                      style: GoogleFonts.dmSans(
-                          color: AppColors.gris, fontSize: 13)),
-                  Text(_fmt(cart.subtotal),
-                      style: GoogleFonts.dmSans(
-                          color: AppColors.gris, fontSize: 13)),
-                ],
+              _TotalRow(
+                label: 'Sous-total',
+                value: _fmt(cart.subtotal),
+                muted: true,
               ),
               if (state.promoApplied) ...[
                 const SizedBox(height: 4),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text('Promo (${state.promoCode?.code ?? ''})',
-                        style: GoogleFonts.dmSans(
-                            color: AppColors.success, fontSize: 13)),
-                    Text('-${_fmt(cart.subtotal - state.totalPrice)}',
-                        style: GoogleFonts.dmSans(
-                            color: AppColors.success, fontSize: 13)),
-                  ],
+                _TotalRow(
+                  label: 'Promo (${state.promoCode?.code ?? ''})',
+                  value: '-${_fmt(cart.subtotal - state.totalPrice)}',
+                  accent: AppColors.success,
                 ),
               ],
-              const SizedBox(height: 6),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text('Total',
-                      style: GoogleFonts.sora(
-                          color: AppColors.blanc,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700)),
-                  Text(_fmt(state.totalPrice),
-                      style: GoogleFonts.sora(
-                          color: AppColors.violetClair,
-                          fontSize: 18,
-                          fontWeight: FontWeight.w700)),
-                ],
+              const SizedBox(height: 10),
+              _TotalRow(
+                label: 'Total',
+                value: _fmt(state.totalPrice),
+                emphasis: true,
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 16),
+        // Trust markers
+        Container(
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            color: AppColors.surfaceAlt,
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(
+              color: AppColors.border.withValues(alpha: 0.5),
+              width: 0.5,
+            ),
+          ),
+          child: Column(
+            children: [
+              _TrustItem(
+                icon: Icons.lock_outline,
+                title: 'Paiement sécurisé',
+                subtitle: 'Chiffré par Stripe · aucune donnée stockée',
+              ),
+              const SizedBox(height: 10),
+              _TrustItem(
+                icon: Icons.replay,
+                title: 'Annulation flexible',
+                subtitle: 'Remboursement gratuit jusqu\'à 24h avant',
+              ),
+              const SizedBox(height: 10),
+              _TrustItem(
+                icon: Icons.notifications_active_outlined,
+                title: 'Rappels automatiques',
+                subtitle: '24h et 30 min avant ton RDV',
               ),
             ],
           ),
@@ -147,35 +194,107 @@ class Step4Summary extends StatelessWidget {
   }
 }
 
-class _SummaryRow extends StatelessWidget {
-  const _SummaryRow({
+class _HeaderBlock extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Presque fini !',
+          style: GoogleFonts.sora(
+            color: AppColors.blanc,
+            fontSize: 24,
+            fontWeight: FontWeight.w800,
+            height: 1.2,
+            letterSpacing: -0.4,
+          ),
+        ),
+        const SizedBox(height: 6),
+        Text(
+          'Vérifie ta réservation avant de payer',
+          style: GoogleFonts.dmSans(
+            color: AppColors.gris,
+            fontSize: 13,
+            height: 1.4,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _HeroRow extends StatelessWidget {
+  const _HeroRow({
     required this.icon,
     required this.label,
     required this.value,
+    this.secondary,
   });
+
   final IconData icon;
   final String label;
   final String value;
+  final String? secondary;
 
   @override
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Icon(icon, color: AppColors.violetClair, size: 18),
-        const SizedBox(width: 10),
-        Text(
-          label,
-          style:
-              GoogleFonts.dmSans(color: AppColors.gris, fontSize: 13),
+        Container(
+          width: 36,
+          height: 36,
+          decoration: BoxDecoration(
+            color: AppColors.violet.withValues(alpha: 0.18),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Icon(icon, color: AppColors.violetClair, size: 18),
         ),
-        const Spacer(),
-        Text(
-          value,
-          style: GoogleFonts.dmSans(
-              color: AppColors.blanc,
-              fontSize: 14,
-              fontWeight: FontWeight.w600),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                label,
+                style: GoogleFonts.dmSans(
+                  color: AppColors.gris,
+                  fontSize: 10,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 1.2,
+                ),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                value,
+                style: GoogleFonts.sora(
+                  color: AppColors.blanc,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: -0.2,
+                ),
+              ),
+            ],
+          ),
         ),
+        if (secondary != null)
+          Container(
+            padding:
+                const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+            decoration: BoxDecoration(
+              color: AppColors.surfaceAlt,
+              borderRadius: BorderRadius.circular(999),
+            ),
+            child: Text(
+              secondary!,
+              style: GoogleFonts.dmSans(
+                color: AppColors.violetClair,
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 0.2,
+              ),
+            ),
+          ),
       ],
     );
   }
@@ -183,13 +302,13 @@ class _SummaryRow extends StatelessWidget {
 
 class _CartItemRow extends StatelessWidget {
   const _CartItemRow({required this.item, required this.currency});
-  final dynamic item; // BookingCartItem — typed via static import
+  final BookingCartItem item;
   final String currency;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.only(bottom: 12),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -197,7 +316,7 @@ class _CartItemRow extends StatelessWidget {
             children: [
               Expanded(
                 child: Text(
-                  item.serviceName as String,
+                  item.serviceName,
                   style: GoogleFonts.dmSans(
                     color: AppColors.blanc,
                     fontSize: 14,
@@ -206,43 +325,64 @@ class _CartItemRow extends StatelessWidget {
                 ),
               ),
               Text(
-                CurrencyFormatter.formatAmount(
-                    item.servicePrice as double,
+                CurrencyFormatter.formatAmount(item.servicePrice,
                     currency: currency),
                 style: GoogleFonts.dmSans(
                   color: AppColors.blanc,
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
+                  fontFeatures: const [FontFeature.tabularFigures()],
                 ),
               ),
             ],
           ),
-          Text(
-            '${item.serviceDurationMinutes} min',
-            style: GoogleFonts.dmSans(
-                color: AppColors.gris, fontSize: 12),
+          const SizedBox(height: 2),
+          Row(
+            children: [
+              Icon(Icons.schedule_rounded,
+                  color: AppColors.gris, size: 11),
+              const SizedBox(width: 4),
+              Text(
+                '${item.serviceDurationMinutes} min',
+                style: GoogleFonts.dmSans(
+                  color: AppColors.gris,
+                  fontSize: 11,
+                ),
+              ),
+            ],
           ),
-          if ((item.selectedAddons as List).isNotEmpty) ...[
-            const SizedBox(height: 4),
-            ...(item.selectedAddons as List).map((a) => Padding(
-                  padding: const EdgeInsets.only(left: 10, top: 2),
+          if (item.selectedAddons.isNotEmpty) ...[
+            const SizedBox(height: 6),
+            ...item.selectedAddons.map((a) => Padding(
+                  padding: const EdgeInsets.only(left: 8, top: 3),
                   child: Row(
                     children: [
-                      Text('+ ',
-                          style: GoogleFonts.dmSans(
-                              color: AppColors.violetClair,
-                              fontSize: 12)),
+                      Container(
+                        width: 3,
+                        height: 3,
+                        margin: const EdgeInsets.only(right: 8),
+                        decoration: BoxDecoration(
+                          color: AppColors.violetClair,
+                          shape: BoxShape.circle,
+                        ),
+                      ),
                       Expanded(
                         child: Text(
-                          a.name as String,
+                          a.name,
                           style: GoogleFonts.dmSans(
-                              color: AppColors.grisClair, fontSize: 12),
+                            color: AppColors.grisClair,
+                            fontSize: 12,
+                          ),
                         ),
                       ),
                       Text(
-                        '+${CurrencyFormatter.formatAmount(a.price as double, currency: currency)}',
+                        '+${CurrencyFormatter.formatAmount(a.price, currency: currency)}',
                         style: GoogleFonts.dmSans(
-                            color: AppColors.violetClair, fontSize: 12),
+                          color: AppColors.violetClair,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          fontFeatures: const [FontFeature.tabularFigures()],
+                        ),
                       ),
                     ],
                   ),
@@ -250,6 +390,113 @@ class _CartItemRow extends StatelessWidget {
           ],
         ],
       ),
+    );
+  }
+}
+
+class _TotalRow extends StatelessWidget {
+  const _TotalRow({
+    required this.label,
+    required this.value,
+    this.muted = false,
+    this.emphasis = false,
+    this.accent,
+  });
+
+  final String label;
+  final String value;
+  final bool muted;
+  final bool emphasis;
+  final Color? accent;
+
+  @override
+  Widget build(BuildContext context) {
+    final labelColor =
+        accent ?? (muted ? AppColors.gris : AppColors.blanc);
+    final valueColor = accent ??
+        (emphasis ? AppColors.violetClair : AppColors.blanc);
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          label,
+          style: emphasis
+              ? GoogleFonts.sora(
+                  color: AppColors.blanc,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: -0.2,
+                )
+              : GoogleFonts.dmSans(
+                  color: labelColor,
+                  fontSize: 13,
+                ),
+        ),
+        Text(
+          value,
+          style: emphasis
+              ? GoogleFonts.sora(
+                  color: valueColor,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: -0.4,
+                  fontFeatures: const [FontFeature.tabularFigures()],
+                )
+              : GoogleFonts.dmSans(
+                  color: valueColor,
+                  fontSize: 13,
+                  fontWeight: muted ? FontWeight.w500 : FontWeight.w600,
+                  fontFeatures: const [FontFeature.tabularFigures()],
+                ),
+        ),
+      ],
+    );
+  }
+}
+
+class _TrustItem extends StatelessWidget {
+  const _TrustItem({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+  });
+
+  final IconData icon;
+  final String title;
+  final String subtitle;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Icon(icon, color: AppColors.violetClair, size: 16),
+        const SizedBox(width: 10),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: GoogleFonts.dmSans(
+                  color: AppColors.blanc,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                subtitle,
+                style: GoogleFonts.dmSans(
+                  color: AppColors.gris,
+                  fontSize: 11,
+                  height: 1.4,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }

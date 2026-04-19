@@ -91,13 +91,24 @@ class BookingRepository {
         date.day == now.day;
     final nowMinutes = now.hour * 60 + now.minute;
 
-    final slots = <TimeSlotModel>[];
+    // Build and merge ranges to prevent duplicates when rules overlap
+    final ranges = <_TimeRange>[];
     for (final row in rows) {
       final r = row as Map;
-      final start = _parseMinutes(r['start_time'] as String);
-      final end = _parseMinutes(r['end_time'] as String);
-      for (var t = start; t + 15 <= end; t += 15) {
+      ranges.add(_TimeRange(
+        start: _parseMinutes(r['start_time'] as String),
+        end: _parseMinutes(r['end_time'] as String),
+      ));
+    }
+    _mergeRanges(ranges);
+
+    // Use a Set of start minutes to guarantee uniqueness as extra safety
+    final seenStarts = <int>{};
+    final slots = <TimeSlotModel>[];
+    for (final range in ranges) {
+      for (var t = range.start; t + 15 <= range.end; t += 15) {
         if (isToday && t < nowMinutes) continue;
+        if (!seenStarts.add(t)) continue; // already generated this start time
         final startStr = _minutesToStr(t);
         final endStr = _minutesToStr(t + 15);
         slots.add(TimeSlotModel(
