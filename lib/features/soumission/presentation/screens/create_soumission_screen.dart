@@ -26,8 +26,11 @@ class _CreateSoumissionScreenState
   final _descCtrl = TextEditingController();
   final _clientNameCtrl = TextEditingController();
   final _clientEmailCtrl = TextEditingController();
-  final _clientPhoneCtrl = TextEditingController();
   final _notesCtrl = TextEditingController();
+
+  // Regex simple pour valider le format email côté client. Le backend
+  // re-valide via isValidEmail() — double-check intentionnel.
+  static final _emailRegex = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$');
 
   final List<_LineItemEntry> _items = [_LineItemEntry()];
   DateTime? _validUntil;
@@ -39,7 +42,6 @@ class _CreateSoumissionScreenState
     _descCtrl.dispose();
     _clientNameCtrl.dispose();
     _clientEmailCtrl.dispose();
-    _clientPhoneCtrl.dispose();
     _notesCtrl.dispose();
     for (final item in _items) {
       item.dispose();
@@ -78,32 +80,29 @@ class _CreateSoumissionScreenState
         );
       }).toList();
 
-      await ref.read(soumissionRepositoryProvider).create(
-            title: _titleCtrl.text.trim(),
-            description: _descCtrl.text.trim().isEmpty
-                ? null
-                : _descCtrl.text.trim(),
-            lineItems: lineItems,
-            clientName: _clientNameCtrl.text.trim().isEmpty
-                ? null
-                : _clientNameCtrl.text.trim(),
-            clientEmail: _clientEmailCtrl.text.trim().isEmpty
-                ? null
-                : _clientEmailCtrl.text.trim(),
-            clientPhone: _clientPhoneCtrl.text.trim().isEmpty
-                ? null
-                : _clientPhoneCtrl.text.trim(),
-            validUntil: _validUntil,
-            notes:
-                _notesCtrl.text.trim().isEmpty ? null : _notesCtrl.text.trim(),
-          );
+      // 1. Crée la soumission en brouillon. Si l'envoi email échoue à l'étape
+      // suivante, le brouillon reste accessible (recoverable state).
+      final repo = ref.read(soumissionRepositoryProvider);
+      final created = await repo.create(
+        title: _titleCtrl.text.trim(),
+        description:
+            _descCtrl.text.trim().isEmpty ? null : _descCtrl.text.trim(),
+        lineItems: lineItems,
+        clientName: _clientNameCtrl.text.trim(),
+        clientEmail: _clientEmailCtrl.text.trim(),
+        validUntil: _validUntil,
+        notes: _notesCtrl.text.trim().isEmpty ? null : _notesCtrl.text.trim(),
+      );
+
+      // 2. Envoie l'email via Edge Function + flip status draft → sent.
+      await repo.sendToClient(created.id);
 
       ref.invalidate(mySoumissionsProvider);
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('Soumission créée !'),
+            content: const Text('Soumission envoyée au client !'),
             backgroundColor: AppColors.success,
             behavior: SnackBarBehavior.floating,
           ),
@@ -184,12 +183,15 @@ class _CreateSoumissionScreenState
             const SizedBox(height: 24),
 
             // ── Client info ──
-            _SectionLabel('Informations client'),
+            _SectionLabel('Informations client *'),
             const SizedBox(height: 6),
             _StyledField(
               controller: _clientNameCtrl,
               hint: 'Nom du client',
               prefixIcon: Icons.person_outline,
+              validator: (v) => (v == null || v.trim().length < 2)
+                  ? 'Nom du client requis'
+                  : null,
             ),
             const SizedBox(height: 10),
             _StyledField(
@@ -197,13 +199,12 @@ class _CreateSoumissionScreenState
               hint: 'Email du client',
               prefixIcon: Icons.email_outlined,
               keyboardType: TextInputType.emailAddress,
-            ),
-            const SizedBox(height: 10),
-            _StyledField(
-              controller: _clientPhoneCtrl,
-              hint: 'Téléphone du client',
-              prefixIcon: Icons.phone_outlined,
-              keyboardType: TextInputType.phone,
+              validator: (v) {
+                final val = v?.trim() ?? '';
+                if (val.isEmpty) return 'Email du client requis';
+                if (!_emailRegex.hasMatch(val)) return 'Email invalide';
+                return null;
+              },
             ),
 
             const SizedBox(height: 24),
@@ -355,7 +356,7 @@ class _CreateSoumissionScreenState
 
             // ── Submit ──
             SpotbookButton.primary(
-              label: _isSubmitting ? 'Création...' : 'Créer la soumission',
+              label: _isSubmitting ? 'Envoi en cours...' : 'Envoyer la soumission',
               onPressed: _isSubmitting ? null : _submit,
             ),
           ],

@@ -86,6 +86,21 @@ class SoumissionRepository {
         .update({'status': newStatus}).eq('id', id);
   }
 
+  /// Envoie la soumission au client par email via l'Edge Function
+  /// `send-soumission`. La fonction vérifie l'ownership (pro_id == auth.uid),
+  /// appelle Resend, puis fait passer le statut `draft → sent`. Lève une
+  /// exception en cas d'échec pour que l'UI puisse afficher un message.
+  Future<void> sendToClient(String soumissionId) async {
+    final resp = await _client.functions.invoke(
+      'send-soumission',
+      body: {'soumissionId': soumissionId},
+    );
+    final data = resp.data;
+    if (data is Map && data['success'] == true) return;
+    final err = (data is Map ? data['error'] : null) ?? 'send_failed';
+    throw Exception(err.toString());
+  }
+
   /// Delete a draft soumission.
   Future<void> deleteDraft(String id) async {
     await _client.from('soumissions').delete().eq('id', id);
