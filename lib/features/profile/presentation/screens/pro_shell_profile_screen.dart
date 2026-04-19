@@ -260,7 +260,9 @@ class _ProSelfProfileBodyState extends ConsumerState<_ProSelfProfileBody>
         },
         child: ListView(
           physics: const AlwaysScrollableScrollPhysics(),
-          padding: const EdgeInsets.only(bottom: 100),
+          padding: EdgeInsets.only(
+            bottom: 120 + MediaQuery.of(context).padding.bottom,
+          ),
           children: [
             // ── Hero: edge-to-edge cover + overlapping avatar ──
             _animated(
