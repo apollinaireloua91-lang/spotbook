@@ -858,6 +858,15 @@
   "wednesday": "Mercredi",
   "weeklyRulesHeader": "Règles hebdomadaires",
   "withdraw": "Retirer",
+  "cannotOpenStripeDashboard": "Impossible d'ouvrir le tableau de bord Stripe",
+  "stripeCountryPickerTitle": "Dans quel pays recevez-vous vos paiements ?",
+  "stripeCountryPickerSub": "Le pays détermine la devise de vos paiements et ne peut pas être modifié après.",
+  "stripeCountryCA": "Canada",
+  "stripeCountryCASub": "CAD — Dollars canadiens",
+  "stripeCountryFR": "France",
+  "stripeCountryFRSub": "EUR — Euros",
+  "stripeCountryUS": "États-Unis",
+  "stripeCountryUSSub": "USD — Dollars américains",
   "yesCancel": "Oui, annuler",
   "yourTextHint": "Votre texte ici…",
   "titleRequired": "Titre (obligatoire)",
@@ -1195,5 +1204,63 @@
         "type": "int"
       }
     }
-  }
+  },
+
+  "yourQrCode": "Votre code QR",
+  "presentQrOnArrival": "Présentez ce code QR à votre arrivée pour votre rendez-vous.",
+  "qrAlreadyValidated": "Déjà validé",
+  "myAppointment": "Mon rendez-vous",
+  "bookingValidated": "Rendez-vous validé !",
+  "bookingValidatedSuccess": "Ce rendez-vous a été vérifié avec succès.",
+  "bookingCancelled": "Réservation annulée",
+  "qrBookingCancelled": "Cette réservation a été annulée et ne peut pas être validée.",
+  "invalidBookingQr": "QR de réservation invalide",
+  "qrCouldNotBeValidated": "Ce code QR n'a pas pu être validé.",
+  "scanAnother": "Scanner un autre",
+  "backToDashboard": "Retour au tableau de bord",
+  "appointment": "Rendez-vous",
+  "ticket": "Billet",
+  "service": "Service",
+  "date": "Date",
+  "duration": "Durée",
+  "amountPaid": "Montant payé",
+  "scanTicketMode": "Scan billets événement",
+  "scanAllMode": "Scanner billets et rendez-vous",
+  "scanQr": "Scanner QR",
+  "chatTitle": "Chat",
+  "typingIndicator": "écrit...",
+  "ticketQuantity": "Quantité",
+  "ticketSubtotal": "Sous-total",
+  "ticketServiceFee": "Frais de service ({pct}%)",
+  "@ticketServiceFee": {
+    "placeholders": {
+      "pct": { "type": "int" }
+    }
+  },
+  "ticketTotal": "Total",
+  "ticketPurchasedSnack": "Billet(s) acheté(s) !",
+  "ticketPayButton": "Payer {amount}",
+  "@ticketPayButton": {
+    "placeholders": {
+      "amount": { "type": "String" }
+    }
+  },
+  "ticketDecreaseQty": "Réduire quantité",
+  "ticketIncreaseQty": "Augmenter quantité",
+  "chatMessageHint": "Message...",
+  "quickReplyBarLabel": "Réponses rapides",
+  "quickRepliesTitle": "Réponses rapides",
+  "quickRepliesEmptyTitle": "Aucune réponse personnalisée",
+  "quickRepliesEmptySubtitle": "Ajoutez vos propres réponses rapides pour répondre à vos clients en un toucher.",
+  "quickRepliesAddButton": "Ajouter une réponse",
+  "quickReplyEditTitle": "Modifier la réponse",
+  "quickReplyAddTitle": "Nouvelle réponse rapide",
+  "quickReplyTextLabel": "Texte",
+  "quickReplyTextHint": "Ex. : Je suis disponible ce week-end !",
+  "quickReplySaveButton": "Enregistrer",
+  "quickReplyDeleteConfirm": "Supprimer cette réponse ?",
+  "quickReplyErrorTooLong": "Maximum 200 caractères",
+  "quickReplyErrorEmpty": "Le texte ne peut pas être vide",
+  "quickRepliesMenuTitle": "Réponses rapides",
+  "quickRepliesMenuSubtitle": "Gérez vos messages prêts à envoyer"
 }

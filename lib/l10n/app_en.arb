@@ -858,6 +858,15 @@
   "wednesday": "Wednesday",
   "weeklyRulesHeader": "Weekly rules",
   "withdraw": "Withdraw",
+  "cannotOpenStripeDashboard": "Can't open the Stripe dashboard",
+  "stripeCountryPickerTitle": "Where will you receive payouts?",
+  "stripeCountryPickerSub": "Your country determines your payout currency and can't be changed later.",
+  "stripeCountryCA": "Canada",
+  "stripeCountryCASub": "CAD — Canadian Dollars",
+  "stripeCountryFR": "France",
+  "stripeCountryFRSub": "EUR — Euros",
+  "stripeCountryUS": "United States",
+  "stripeCountryUSSub": "USD — US Dollars",
   "yesCancel": "Yes, cancel",
   "yourTextHint": "Your text here…",
   "titleRequired": "Title (required)",
@@ -1195,5 +1204,63 @@
         "type": "int"
       }
     }
-  }
+  },
+
+  "yourQrCode": "Your QR Code",
+  "presentQrOnArrival": "Show this QR code when you arrive for your appointment.",
+  "qrAlreadyValidated": "Already validated",
+  "myAppointment": "My appointment",
+  "bookingValidated": "Appointment validated!",
+  "bookingValidatedSuccess": "This appointment has been verified successfully.",
+  "bookingCancelled": "Booking cancelled",
+  "qrBookingCancelled": "This booking has been cancelled and cannot be validated.",
+  "invalidBookingQr": "Invalid booking QR",
+  "qrCouldNotBeValidated": "This QR code could not be validated.",
+  "scanAnother": "Scan another",
+  "backToDashboard": "Back to dashboard",
+  "appointment": "Appointment",
+  "ticket": "Ticket",
+  "service": "Service",
+  "date": "Date",
+  "duration": "Duration",
+  "amountPaid": "Amount paid",
+  "scanTicketMode": "Event ticket scanning",
+  "scanAllMode": "Scan tickets & appointments",
+  "scanQr": "Scan QR",
+  "chatTitle": "Chat",
+  "typingIndicator": "typing...",
+  "ticketQuantity": "Quantity",
+  "ticketSubtotal": "Subtotal",
+  "ticketServiceFee": "Service fee ({pct}%)",
+  "@ticketServiceFee": {
+    "placeholders": {
+      "pct": { "type": "int" }
+    }
+  },
+  "ticketTotal": "Total",
+  "ticketPurchasedSnack": "Ticket(s) purchased!",
+  "ticketPayButton": "Pay {amount}",
+  "@ticketPayButton": {
+    "placeholders": {
+      "amount": { "type": "String" }
+    }
+  },
+  "ticketDecreaseQty": "Decrease quantity",
+  "ticketIncreaseQty": "Increase quantity",
+  "chatMessageHint": "Message...",
+  "quickReplyBarLabel": "Quick replies",
+  "quickRepliesTitle": "Quick replies",
+  "quickRepliesEmptyTitle": "No custom replies yet",
+  "quickRepliesEmptySubtitle": "Add your own quick replies to respond to clients in a single tap.",
+  "quickRepliesAddButton": "Add a reply",
+  "quickReplyEditTitle": "Edit reply",
+  "quickReplyAddTitle": "New quick reply",
+  "quickReplyTextLabel": "Text",
+  "quickReplyTextHint": "E.g. I’m available this weekend!",
+  "quickReplySaveButton": "Save",
+  "quickReplyDeleteConfirm": "Delete this reply?",
+  "quickReplyErrorTooLong": "Max 200 characters",
+  "quickReplyErrorEmpty": "Text cannot be empty",
+  "quickRepliesMenuTitle": "Quick replies",
+  "quickRepliesMenuSubtitle": "Manage your ready-to-send messages"
 }

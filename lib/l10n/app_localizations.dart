@@ -5246,6 +5246,60 @@ abstract class AppLocalizations {
   /// **'Withdraw'**
   String get withdraw;
 
+  /// No description provided for @cannotOpenStripeDashboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Can\'t open the Stripe dashboard'**
+  String get cannotOpenStripeDashboard;
+
+  /// No description provided for @stripeCountryPickerTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Where will you receive payouts?'**
+  String get stripeCountryPickerTitle;
+
+  /// No description provided for @stripeCountryPickerSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Your country determines your payout currency and can\'t be changed later.'**
+  String get stripeCountryPickerSub;
+
+  /// No description provided for @stripeCountryCA.
+  ///
+  /// In en, this message translates to:
+  /// **'Canada'**
+  String get stripeCountryCA;
+
+  /// No description provided for @stripeCountryCASub.
+  ///
+  /// In en, this message translates to:
+  /// **'CAD — Canadian Dollars'**
+  String get stripeCountryCASub;
+
+  /// No description provided for @stripeCountryFR.
+  ///
+  /// In en, this message translates to:
+  /// **'France'**
+  String get stripeCountryFR;
+
+  /// No description provided for @stripeCountryFRSub.
+  ///
+  /// In en, this message translates to:
+  /// **'EUR — Euros'**
+  String get stripeCountryFRSub;
+
+  /// No description provided for @stripeCountryUS.
+  ///
+  /// In en, this message translates to:
+  /// **'United States'**
+  String get stripeCountryUS;
+
+  /// No description provided for @stripeCountryUSSub.
+  ///
+  /// In en, this message translates to:
+  /// **'USD — US Dollars'**
+  String get stripeCountryUSSub;
+
   /// No description provided for @yesCancel.
   ///
   /// In en, this message translates to:
@@ -5570,6 +5624,276 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{scanned} / {total} scanned'**
   String scannedProgress(int scanned, int total);
+
+  /// No description provided for @yourQrCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Your QR Code'**
+  String get yourQrCode;
+
+  /// No description provided for @presentQrOnArrival.
+  ///
+  /// In en, this message translates to:
+  /// **'Show this QR code when you arrive for your appointment.'**
+  String get presentQrOnArrival;
+
+  /// No description provided for @qrAlreadyValidated.
+  ///
+  /// In en, this message translates to:
+  /// **'Already validated'**
+  String get qrAlreadyValidated;
+
+  /// No description provided for @myAppointment.
+  ///
+  /// In en, this message translates to:
+  /// **'My appointment'**
+  String get myAppointment;
+
+  /// No description provided for @bookingValidated.
+  ///
+  /// In en, this message translates to:
+  /// **'Appointment validated!'**
+  String get bookingValidated;
+
+  /// No description provided for @bookingValidatedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'This appointment has been verified successfully.'**
+  String get bookingValidatedSuccess;
+
+  /// No description provided for @bookingCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Booking cancelled'**
+  String get bookingCancelled;
+
+  /// No description provided for @qrBookingCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'This booking has been cancelled and cannot be validated.'**
+  String get qrBookingCancelled;
+
+  /// No description provided for @invalidBookingQr.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid booking QR'**
+  String get invalidBookingQr;
+
+  /// No description provided for @qrCouldNotBeValidated.
+  ///
+  /// In en, this message translates to:
+  /// **'This QR code could not be validated.'**
+  String get qrCouldNotBeValidated;
+
+  /// No description provided for @scanAnother.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan another'**
+  String get scanAnother;
+
+  /// No description provided for @backToDashboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to dashboard'**
+  String get backToDashboard;
+
+  /// No description provided for @appointment.
+  ///
+  /// In en, this message translates to:
+  /// **'Appointment'**
+  String get appointment;
+
+  /// No description provided for @ticket.
+  ///
+  /// In en, this message translates to:
+  /// **'Ticket'**
+  String get ticket;
+
+  /// No description provided for @service.
+  ///
+  /// In en, this message translates to:
+  /// **'Service'**
+  String get service;
+
+  /// No description provided for @date.
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get date;
+
+  /// No description provided for @duration.
+  ///
+  /// In en, this message translates to:
+  /// **'Duration'**
+  String get duration;
+
+  /// No description provided for @scanTicketMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Event ticket scanning'**
+  String get scanTicketMode;
+
+  /// No description provided for @scanAllMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan tickets & appointments'**
+  String get scanAllMode;
+
+  /// No description provided for @chatTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Chat'**
+  String get chatTitle;
+
+  /// No description provided for @typingIndicator.
+  ///
+  /// In en, this message translates to:
+  /// **'typing...'**
+  String get typingIndicator;
+
+  /// No description provided for @ticketQuantity.
+  ///
+  /// In en, this message translates to:
+  /// **'Quantity'**
+  String get ticketQuantity;
+
+  /// No description provided for @ticketSubtotal.
+  ///
+  /// In en, this message translates to:
+  /// **'Subtotal'**
+  String get ticketSubtotal;
+
+  /// No description provided for @ticketServiceFee.
+  ///
+  /// In en, this message translates to:
+  /// **'Service fee ({pct}%)'**
+  String ticketServiceFee(int pct);
+
+  /// No description provided for @ticketTotal.
+  ///
+  /// In en, this message translates to:
+  /// **'Total'**
+  String get ticketTotal;
+
+  /// No description provided for @ticketPurchasedSnack.
+  ///
+  /// In en, this message translates to:
+  /// **'Ticket(s) purchased!'**
+  String get ticketPurchasedSnack;
+
+  /// No description provided for @ticketPayButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Pay {amount}'**
+  String ticketPayButton(String amount);
+
+  /// No description provided for @ticketDecreaseQty.
+  ///
+  /// In en, this message translates to:
+  /// **'Decrease quantity'**
+  String get ticketDecreaseQty;
+
+  /// No description provided for @ticketIncreaseQty.
+  ///
+  /// In en, this message translates to:
+  /// **'Increase quantity'**
+  String get ticketIncreaseQty;
+
+  /// No description provided for @chatMessageHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Message...'**
+  String get chatMessageHint;
+
+  /// No description provided for @quickReplyBarLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick replies'**
+  String get quickReplyBarLabel;
+
+  /// No description provided for @quickRepliesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick replies'**
+  String get quickRepliesTitle;
+
+  /// No description provided for @quickRepliesEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No custom replies yet'**
+  String get quickRepliesEmptyTitle;
+
+  /// No description provided for @quickRepliesEmptySubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add your own quick replies to respond to clients in a single tap.'**
+  String get quickRepliesEmptySubtitle;
+
+  /// No description provided for @quickRepliesAddButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a reply'**
+  String get quickRepliesAddButton;
+
+  /// No description provided for @quickReplyEditTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit reply'**
+  String get quickReplyEditTitle;
+
+  /// No description provided for @quickReplyAddTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New quick reply'**
+  String get quickReplyAddTitle;
+
+  /// No description provided for @quickReplyTextLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Text'**
+  String get quickReplyTextLabel;
+
+  /// No description provided for @quickReplyTextHint.
+  ///
+  /// In en, this message translates to:
+  /// **'E.g. I’m available this weekend!'**
+  String get quickReplyTextHint;
+
+  /// No description provided for @quickReplySaveButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get quickReplySaveButton;
+
+  /// No description provided for @quickReplyDeleteConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete this reply?'**
+  String get quickReplyDeleteConfirm;
+
+  /// No description provided for @quickReplyErrorTooLong.
+  ///
+  /// In en, this message translates to:
+  /// **'Max 200 characters'**
+  String get quickReplyErrorTooLong;
+
+  /// No description provided for @quickReplyErrorEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Text cannot be empty'**
+  String get quickReplyErrorEmpty;
+
+  /// No description provided for @quickRepliesMenuTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick replies'**
+  String get quickRepliesMenuTitle;
+
+  /// No description provided for @quickRepliesMenuSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage your ready-to-send messages'**
+  String get quickRepliesMenuSubtitle;
 }
 
 class _AppLocalizationsDelegate

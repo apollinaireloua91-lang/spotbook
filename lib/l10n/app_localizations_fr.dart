@@ -2669,6 +2669,36 @@ class AppLocalizationsFr extends AppLocalizations {
   String get withdraw => 'Retirer';
 
   @override
+  String get cannotOpenStripeDashboard =>
+      'Impossible d\'ouvrir le tableau de bord Stripe';
+
+  @override
+  String get stripeCountryPickerTitle =>
+      'Dans quel pays recevez-vous vos paiements ?';
+
+  @override
+  String get stripeCountryPickerSub =>
+      'Le pays détermine la devise de vos paiements et ne peut pas être modifié après.';
+
+  @override
+  String get stripeCountryCA => 'Canada';
+
+  @override
+  String get stripeCountryCASub => 'CAD — Dollars canadiens';
+
+  @override
+  String get stripeCountryFR => 'France';
+
+  @override
+  String get stripeCountryFRSub => 'EUR — Euros';
+
+  @override
+  String get stripeCountryUS => 'États-Unis';
+
+  @override
+  String get stripeCountryUSSub => 'USD — Dollars américains';
+
+  @override
   String get yesCancel => 'Oui, annuler';
 
   @override
@@ -2903,4 +2933,147 @@ class AppLocalizationsFr extends AppLocalizations {
   String scannedProgress(int scanned, int total) {
     return '$scanned / $total scannés';
   }
+
+  @override
+  String get yourQrCode => 'Votre code QR';
+
+  @override
+  String get presentQrOnArrival =>
+      'Présentez ce code QR à votre arrivée pour votre rendez-vous.';
+
+  @override
+  String get qrAlreadyValidated => 'Déjà validé';
+
+  @override
+  String get myAppointment => 'Mon rendez-vous';
+
+  @override
+  String get bookingValidated => 'Rendez-vous validé !';
+
+  @override
+  String get bookingValidatedSuccess =>
+      'Ce rendez-vous a été vérifié avec succès.';
+
+  @override
+  String get bookingCancelled => 'Réservation annulée';
+
+  @override
+  String get qrBookingCancelled =>
+      'Cette réservation a été annulée et ne peut pas être validée.';
+
+  @override
+  String get invalidBookingQr => 'QR de réservation invalide';
+
+  @override
+  String get qrCouldNotBeValidated => 'Ce code QR n\'a pas pu être validé.';
+
+  @override
+  String get scanAnother => 'Scanner un autre';
+
+  @override
+  String get backToDashboard => 'Retour au tableau de bord';
+
+  @override
+  String get appointment => 'Rendez-vous';
+
+  @override
+  String get ticket => 'Billet';
+
+  @override
+  String get service => 'Service';
+
+  @override
+  String get date => 'Date';
+
+  @override
+  String get duration => 'Durée';
+
+  @override
+  String get scanTicketMode => 'Scan billets événement';
+
+  @override
+  String get scanAllMode => 'Scanner billets et rendez-vous';
+
+  @override
+  String get chatTitle => 'Chat';
+
+  @override
+  String get typingIndicator => 'écrit...';
+
+  @override
+  String get ticketQuantity => 'Quantité';
+
+  @override
+  String get ticketSubtotal => 'Sous-total';
+
+  @override
+  String ticketServiceFee(int pct) {
+    return 'Frais de service ($pct%)';
+  }
+
+  @override
+  String get ticketTotal => 'Total';
+
+  @override
+  String get ticketPurchasedSnack => 'Billet(s) acheté(s) !';
+
+  @override
+  String ticketPayButton(String amount) {
+    return 'Payer $amount';
+  }
+
+  @override
+  String get ticketDecreaseQty => 'Réduire quantité';
+
+  @override
+  String get ticketIncreaseQty => 'Augmenter quantité';
+
+  @override
+  String get chatMessageHint => 'Message...';
+
+  @override
+  String get quickReplyBarLabel => 'Réponses rapides';
+
+  @override
+  String get quickRepliesTitle => 'Réponses rapides';
+
+  @override
+  String get quickRepliesEmptyTitle => 'Aucune réponse personnalisée';
+
+  @override
+  String get quickRepliesEmptySubtitle =>
+      'Ajoutez vos propres réponses rapides pour répondre à vos clients en un toucher.';
+
+  @override
+  String get quickRepliesAddButton => 'Ajouter une réponse';
+
+  @override
+  String get quickReplyEditTitle => 'Modifier la réponse';
+
+  @override
+  String get quickReplyAddTitle => 'Nouvelle réponse rapide';
+
+  @override
+  String get quickReplyTextLabel => 'Texte';
+
+  @override
+  String get quickReplyTextHint => 'Ex. : Je suis disponible ce week-end !';
+
+  @override
+  String get quickReplySaveButton => 'Enregistrer';
+
+  @override
+  String get quickReplyDeleteConfirm => 'Supprimer cette réponse ?';
+
+  @override
+  String get quickReplyErrorTooLong => 'Maximum 200 caractères';
+
+  @override
+  String get quickReplyErrorEmpty => 'Le texte ne peut pas être vide';
+
+  @override
+  String get quickRepliesMenuTitle => 'Réponses rapides';
+
+  @override
+  String get quickRepliesMenuSubtitle => 'Gérez vos messages prêts à envoyer';
 }

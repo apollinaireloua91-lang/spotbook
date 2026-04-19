@@ -2642,6 +2642,34 @@ class AppLocalizationsEn extends AppLocalizations {
   String get withdraw => 'Withdraw';
 
   @override
+  String get cannotOpenStripeDashboard => 'Can\'t open the Stripe dashboard';
+
+  @override
+  String get stripeCountryPickerTitle => 'Where will you receive payouts?';
+
+  @override
+  String get stripeCountryPickerSub =>
+      'Your country determines your payout currency and can\'t be changed later.';
+
+  @override
+  String get stripeCountryCA => 'Canada';
+
+  @override
+  String get stripeCountryCASub => 'CAD — Canadian Dollars';
+
+  @override
+  String get stripeCountryFR => 'France';
+
+  @override
+  String get stripeCountryFRSub => 'EUR — Euros';
+
+  @override
+  String get stripeCountryUS => 'United States';
+
+  @override
+  String get stripeCountryUSSub => 'USD — US Dollars';
+
+  @override
   String get yesCancel => 'Yes, cancel';
 
   @override
@@ -2876,4 +2904,147 @@ class AppLocalizationsEn extends AppLocalizations {
   String scannedProgress(int scanned, int total) {
     return '$scanned / $total scanned';
   }
+
+  @override
+  String get yourQrCode => 'Your QR Code';
+
+  @override
+  String get presentQrOnArrival =>
+      'Show this QR code when you arrive for your appointment.';
+
+  @override
+  String get qrAlreadyValidated => 'Already validated';
+
+  @override
+  String get myAppointment => 'My appointment';
+
+  @override
+  String get bookingValidated => 'Appointment validated!';
+
+  @override
+  String get bookingValidatedSuccess =>
+      'This appointment has been verified successfully.';
+
+  @override
+  String get bookingCancelled => 'Booking cancelled';
+
+  @override
+  String get qrBookingCancelled =>
+      'This booking has been cancelled and cannot be validated.';
+
+  @override
+  String get invalidBookingQr => 'Invalid booking QR';
+
+  @override
+  String get qrCouldNotBeValidated => 'This QR code could not be validated.';
+
+  @override
+  String get scanAnother => 'Scan another';
+
+  @override
+  String get backToDashboard => 'Back to dashboard';
+
+  @override
+  String get appointment => 'Appointment';
+
+  @override
+  String get ticket => 'Ticket';
+
+  @override
+  String get service => 'Service';
+
+  @override
+  String get date => 'Date';
+
+  @override
+  String get duration => 'Duration';
+
+  @override
+  String get scanTicketMode => 'Event ticket scanning';
+
+  @override
+  String get scanAllMode => 'Scan tickets & appointments';
+
+  @override
+  String get chatTitle => 'Chat';
+
+  @override
+  String get typingIndicator => 'typing...';
+
+  @override
+  String get ticketQuantity => 'Quantity';
+
+  @override
+  String get ticketSubtotal => 'Subtotal';
+
+  @override
+  String ticketServiceFee(int pct) {
+    return 'Service fee ($pct%)';
+  }
+
+  @override
+  String get ticketTotal => 'Total';
+
+  @override
+  String get ticketPurchasedSnack => 'Ticket(s) purchased!';
+
+  @override
+  String ticketPayButton(String amount) {
+    return 'Pay $amount';
+  }
+
+  @override
+  String get ticketDecreaseQty => 'Decrease quantity';
+
+  @override
+  String get ticketIncreaseQty => 'Increase quantity';
+
+  @override
+  String get chatMessageHint => 'Message...';
+
+  @override
+  String get quickReplyBarLabel => 'Quick replies';
+
+  @override
+  String get quickRepliesTitle => 'Quick replies';
+
+  @override
+  String get quickRepliesEmptyTitle => 'No custom replies yet';
+
+  @override
+  String get quickRepliesEmptySubtitle =>
+      'Add your own quick replies to respond to clients in a single tap.';
+
+  @override
+  String get quickRepliesAddButton => 'Add a reply';
+
+  @override
+  String get quickReplyEditTitle => 'Edit reply';
+
+  @override
+  String get quickReplyAddTitle => 'New quick reply';
+
+  @override
+  String get quickReplyTextLabel => 'Text';
+
+  @override
+  String get quickReplyTextHint => 'E.g. I’m available this weekend!';
+
+  @override
+  String get quickReplySaveButton => 'Save';
+
+  @override
+  String get quickReplyDeleteConfirm => 'Delete this reply?';
+
+  @override
+  String get quickReplyErrorTooLong => 'Max 200 characters';
+
+  @override
+  String get quickReplyErrorEmpty => 'Text cannot be empty';
+
+  @override
+  String get quickRepliesMenuTitle => 'Quick replies';
+
+  @override
+  String get quickRepliesMenuSubtitle => 'Manage your ready-to-send messages';
 }

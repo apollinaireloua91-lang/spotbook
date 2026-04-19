@@ -8,11 +8,13 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:shimmer/shimmer.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/theme/theme_mode_notifier.dart';
 import '../../data/chat_notifier.dart';
 import '../../data/chat_repository.dart';
 import '../../domain/chat_models.dart';
+import '../widgets/quick_reply_bar.dart';
 
 class ChatScreen extends ConsumerStatefulWidget {
   const ChatScreen({super.key, required this.conversationId, this.otherUserName});
@@ -27,6 +29,10 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   final _msgCtrl = TextEditingController();
   final _scrollCtrl = ScrollController();
 
+  /// Drives QuickReplyBar visibility: the bar is hidden the moment the user
+  /// starts typing (mirrors Messenger Marketplace).
+  bool _isInputEmpty = true;
+
   @override
   void initState() {
     super.initState();
@@ -37,7 +43,11 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   }
 
   void _onTyping() {
-    if (_msgCtrl.text.isNotEmpty) {
+    final nowEmpty = _msgCtrl.text.isEmpty;
+    if (nowEmpty != _isInputEmpty) {
+      setState(() => _isInputEmpty = nowEmpty);
+    }
+    if (!nowEmpty) {
       ref.read(chatProvider.notifier).sendTypingIndicator();
     }
   }
@@ -78,6 +88,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     ref.watch(themeModeProvider);
     final state = ref.watch(chatProvider);
     final currentUid = ref.read(chatRepositoryProvider).currentUserId;
+    final l = AppLocalizations.of(context)!;
 
     return Scaffold(
       backgroundColor: AppColors.fond,
@@ -106,7 +117,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         title: Column(
           children: [
             Text(
-              widget.otherUserName ?? 'Chat',
+              widget.otherUserName ?? l.chatTitle,
               style: GoogleFonts.sora(
                 color: AppColors.blanc,
                 fontWeight: FontWeight.bold,
@@ -115,7 +126,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
             ),
             if (state.isOtherTyping)
               Text(
-                'typing...',
+                l.typingIndicator,
                 style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 12),
               ),
           ],
@@ -144,6 +155,11 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                       );
                     },
                   ),
+          ),
+          QuickReplyBar(
+            conversationId: widget.conversationId,
+            controller: _msgCtrl,
+            isInputEmpty: _isInputEmpty,
           ),
           _buildInputBar(),
         ],
@@ -179,6 +195,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   }
 
   Widget _buildInputBar() {
+    final l = AppLocalizations.of(context)!;
     return Container(
       padding: EdgeInsets.only(
         left: 12,
@@ -207,7 +224,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
               textInputAction: TextInputAction.send,
               onSubmitted: (_) => _sendMessage(),
               decoration: InputDecoration(
-                hintText: 'Message...',
+                hintText: l.chatMessageHint,
                 hintStyle: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 15),
                 filled: true,
                 fillColor: AppColors.surfaceAlt,
