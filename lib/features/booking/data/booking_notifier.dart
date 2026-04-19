@@ -7,6 +7,7 @@ import '../../../core/realtime/realtime_events.dart';
 import '../../../core/realtime/realtime_manager.dart';
 import '../../payment/data/payment_repository.dart';
 import '../domain/booking_models.dart';
+import '../domain/service_addon_models.dart';
 import 'booking_repository.dart';
 
 // ─── Booking flow state ─────────────────────────────────────
@@ -16,6 +17,7 @@ class BookingFlowState {
     this.step = 0,
     this.services = const [],
     this.selectedService,
+    this.cart = const BookingCart(),
     this.promoCode,
     this.promoApplied = false,
     this.availableDates = const [],
@@ -34,6 +36,9 @@ class BookingFlowState {
   final int step;
   final List<ServiceModel> services;
   final ServiceModel? selectedService;
+  /// Multi-service cart (priority #1 feature). For single-service bookings,
+  /// this cart has exactly 1 item and mirrors `selectedService`.
+  final BookingCart cart;
   final PromoCodeModel? promoCode;
   final bool promoApplied;
   final List<String> availableDates;
@@ -48,7 +53,29 @@ class BookingFlowState {
   final String? error;
   final int personCount;
 
+  /// True when user has picked at least one service (multi-service flow).
+  bool get hasCartItems => cart.items.isNotEmpty;
+
+  /// Total duration in minutes across all cart items (services + their add-ons).
+  int get cartTotalDurationMinutes => cart.totalDurationMinutes;
+
+  /// Cart subtotal (services + add-ons, before promo).
+  double get cartSubtotal => cart.subtotal;
+
   double get totalPrice {
+    // New path: use cart if populated
+    if (cart.items.isNotEmpty) {
+      double price = cart.subtotal;
+      if (promoCode != null) {
+        if (promoCode!.discountType == 'percentage') {
+          price -= price * promoCode!.discountValue / 100;
+        } else {
+          price -= promoCode!.discountValue;
+        }
+      }
+      return price < 0 ? 0 : price;
+    }
+    // Legacy path: single selectedService (back-compat)
     if (selectedService == null) return 0;
     double price;
     if (selectedService!.isTraiteurService) {
@@ -72,6 +99,7 @@ class BookingFlowState {
     int? step,
     List<ServiceModel>? services,
     ServiceModel? selectedService,
+    BookingCart? cart,
     PromoCodeModel? promoCode,
     bool? promoApplied,
     List<String>? availableDates,
@@ -90,6 +118,7 @@ class BookingFlowState {
         step: step ?? this.step,
         services: services ?? this.services,
         selectedService: selectedService ?? this.selectedService,
+        cart: cart ?? this.cart,
         promoCode: promoCode ?? this.promoCode,
         promoApplied: promoApplied ?? this.promoApplied,
         availableDates: availableDates ?? this.availableDates,
@@ -133,6 +162,37 @@ class BookingFlowNotifier extends Notifier<BookingFlowState> {
       selectedService: service,
       personCount: service.minPersons ?? 1,
     );
+  }
+
+  // ─── Multi-service cart operations (priority #1) ─────────────────────
+
+  /// Adds a service to the cart. If already present, no-op.
+  void addToCart(ServiceModel service) {
+    if (state.cart.items.any((it) => it.serviceId == service.id)) return;
+    final item = BookingCartItem(
+      serviceId: service.id,
+      serviceName: service.name,
+      servicePrice: service.price,
+      serviceDurationMinutes: service.durationMinutes,
+    );
+    state = state.copyWith(cart: state.cart.addItem(item));
+  }
+
+  /// Removes a service from the cart by index.
+  void removeFromCart(int index) {
+    state = state.copyWith(cart: state.cart.removeAt(index));
+  }
+
+  /// Toggles an add-on on/off for a given cart item.
+  void toggleCartAddon(int itemIndex, ServiceAddon addon) {
+    if (itemIndex < 0 || itemIndex >= state.cart.items.length) return;
+    final updated = state.cart.items[itemIndex].toggleAddon(addon);
+    state = state.copyWith(cart: state.cart.updateAt(itemIndex, updated));
+  }
+
+  /// Clears the cart (used when user exits the flow).
+  void clearCart() {
+    state = state.copyWith(cart: const BookingCart());
   }
 
   void setPersonCount(int count) {

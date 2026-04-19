@@ -31,6 +31,7 @@ import '../features/booking/presentation/screens/booking_detail_screen.dart';
 import '../features/booking/presentation/screens/my_bookings_screen.dart';
 import '../features/booking/presentation/screens/pro_dashboard_screen.dart';
 import '../features/booking/presentation/screens/pro_rdv_screen.dart';
+import '../features/booking/presentation/screens/booking_flow_v2_screen.dart';
 import '../features/booking/presentation/screens/pro_service_addons_screen.dart';
 import '../features/booking/presentation/screens/pro_services_manage_screen.dart';
 import '../features/booking/presentation/screens/pro_revenue_screen.dart';
@@ -73,7 +74,6 @@ import '../features/settings/presentation/screens/deposit_settings_screen.dart';
 import '../features/settings/presentation/screens/settings_screen.dart';
 import '../features/social/presentation/screens/pro_insights_screen.dart';
 import '../features/chat/presentation/screens/messaging_inbox_screen.dart';
-import '../features/booking/presentation/screens/booking_flow_screen.dart';
 import '../features/booking/presentation/screens/refund_request_screen.dart';
 import '../features/events/presentation/screens/my_tickets_screen.dart';
 import '../features/events/presentation/screens/client_events_discovery_screen.dart';
@@ -684,7 +684,7 @@ final appRouter = GoRouter(
       path: '/client/booking-flow/:proId',
       pageBuilder: (context, state) => premiumSlideUpPage(
         state: state,
-        child: BookingFlowScreen(
+        child: BookingFlowV2Screen(
           providerId: state.pathParameters['proId'] ?? '',
           initialServiceId: state.uri.queryParameters['serviceId'],
         ),
