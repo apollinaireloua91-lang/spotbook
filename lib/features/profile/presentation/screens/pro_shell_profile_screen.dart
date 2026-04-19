@@ -1,4 +1,5 @@
 import 'dart:math' as math;
+import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -6,12 +7,14 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/theme/theme_mode_notifier.dart';
 import '../../../../shared/widgets/spotbook_button.dart';
+import '../../../../shared/widgets/spotbook_snackbar.dart';
 import '../../../auth/data/auth_repository.dart';
 import '../../../booking/data/booking_repository.dart';
 import '../../../booking/domain/booking_models.dart';
@@ -150,6 +153,40 @@ class _ProSelfProfileBodyState extends ConsumerState<_ProSelfProfileBody>
 
   static const _sectionCount = 7;
 
+  bool _isUploadingCover = false;
+
+  Future<void> _pickAndUploadCover() async {
+    if (_isUploadingCover) return;
+    HapticFeedback.selectionClick();
+    final picker = ImagePicker();
+    final image = await picker.pickImage(
+      source: ImageSource.gallery,
+      maxWidth: 1600,
+      maxHeight: 900,
+      imageQuality: 85,
+    );
+    if (image == null) return;
+
+    setState(() => _isUploadingCover = true);
+    try {
+      final bytes = await image.readAsBytes();
+      final ext = image.path.split('.').last;
+      final repo = ref.read(profileRepositoryProvider);
+      await repo.uploadCover(bytes, ext);
+      if (mounted) {
+        ref.invalidate(_proSelfProfileProvider);
+      }
+    } catch (_) {
+      if (mounted) {
+        final l = AppLocalizations.of(context)!;
+        showSpotbookSnackBar(context,
+            message: l.photoUploadError, type: SnackType.error);
+      }
+    } finally {
+      if (mounted) setState(() => _isUploadingCover = false);
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -209,96 +246,139 @@ class _ProSelfProfileBodyState extends ConsumerState<_ProSelfProfileBody>
     final profile = widget.profile;
     final isTraiteur = isCateringCategory(profile.category);
 
+    const hPad = EdgeInsets.symmetric(horizontal: 20);
+
     return Scaffold(
       backgroundColor: AppColors.fond,
-      body: SafeArea(
-        child: RefreshIndicator(
-          color: AppColors.violet,
-          onRefresh: () async {
-            ref.invalidate(_proSelfProfileProvider);
-            ref.invalidate(_proSelfVideosProvider);
-            ref.invalidate(_proSelfServicesProvider);
-            ref.invalidate(_proSelfEventsProvider);
-          },
-          child: ListView(
-            physics: const AlwaysScrollableScrollPhysics(),
-            padding: const EdgeInsets.fromLTRB(20, 16, 20, 100),
-            children: [
-              // ── Header ──
-              _animated(0, _ProfileHeader(profile: profile)),
+      body: RefreshIndicator(
+        color: AppColors.violet,
+        onRefresh: () async {
+          ref.invalidate(_proSelfProfileProvider);
+          ref.invalidate(_proSelfVideosProvider);
+          ref.invalidate(_proSelfServicesProvider);
+          ref.invalidate(_proSelfEventsProvider);
+        },
+        child: ListView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          padding: const EdgeInsets.only(bottom: 100),
+          children: [
+            // ── Hero: edge-to-edge cover + overlapping avatar ──
+            _animated(
+              0,
+              _HeroCoverAvatar(
+                profile: profile,
+                isUploadingCover: _isUploadingCover,
+                onChangeCover: _pickAndUploadCover,
+              ),
+            ),
 
-              const SizedBox(height: 16),
+            // ── Identity (name, badge, rating, bio, edit button) ──
+            _animated(
+              0,
+              Padding(padding: hPad, child: _ProfileIdentity(profile: profile)),
+            ),
 
-              // ── Social Icons Row ──
-              _animated(1, _SocialIconsRow(connections: profile.socialConnections)),
+            const SizedBox(height: 18),
 
-              const SizedBox(height: 20),
+            // ── Social Icons Row ──
+            _animated(
+              1,
+              Padding(
+                padding: hPad,
+                child:
+                    _SocialIconsRow(connections: profile.socialConnections),
+              ),
+            ),
 
-              // ── Quick Actions ──
-              _animated(2, _QuickActions(profile: profile)),
+            const SizedBox(height: 20),
 
-              const SizedBox(height: 28),
+            // ── Quick Actions ──
+            _animated(
+              2,
+              Padding(padding: hPad, child: _QuickActions(profile: profile)),
+            ),
 
-              // ── Videos Section ──
-              _animated(3, Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _SectionHeader(
-                    title: l.myVideosSection,
-                    onSeeAll: () => context.push('/pro/feed'),
-                  ),
-                  const SizedBox(height: 10),
-                  _VideosRow(ref: ref),
-                ],
-              )),
+            const SizedBox(height: 28),
 
-              const SizedBox(height: 28),
+            // ── Videos Section ──
+            _animated(
+              3,
+              Padding(
+                padding: hPad,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _SectionHeader(
+                      title: l.myVideosSection,
+                      onSeeAll: () => context.push('/pro/feed'),
+                    ),
+                    const SizedBox(height: 10),
+                    _VideosRow(ref: ref),
+                  ],
+                ),
+              ),
+            ),
 
-              // ── Services Section ──
-              _animated(4, Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _SectionHeader(
-                    title: l.myServicesSection,
-                    onSeeAll: () => context.push('/pro/services'),
-                  ),
-                  const SizedBox(height: 10),
-                  _ServicesList(ref: ref),
-                ],
-              )),
+            const SizedBox(height: 28),
 
-              // ── Catering Section (conditional — Cuisine/Traiteur/Chef) ──
-              if (isTraiteur) ...[
-                const SizedBox(height: 24),
-                _CateringSection(proId: profile.id),
-              ],
+            // ── Services Section ──
+            _animated(
+              4,
+              Padding(
+                padding: hPad,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _SectionHeader(
+                      title: l.myServicesSection,
+                      onSeeAll: () => context.push('/pro/services'),
+                    ),
+                    const SizedBox(height: 10),
+                    _ServicesList(ref: ref),
+                  ],
+                ),
+              ),
+            ),
 
-              const SizedBox(height: 28),
-
-              // ── Events Section ──
-              _animated(5, Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _SectionHeader(
-                    title: l.myEventsSection,
-                    onSeeAll: () => context.push('/pro/events'),
-                  ),
-                  const SizedBox(height: 10),
-                  _EventsList(ref: ref),
-                ],
-              )),
-
-              const SizedBox(height: 32),
-
-              // ── Settings Section ──
-              _animated(6, const _InlineSettingsSection()),
-
-              const SizedBox(height: 20),
-
-              // ── Log Out Button ──
-              const _LogOutButton(),
+            // ── Catering Section (conditional — Cuisine/Traiteur/Chef) ──
+            if (isTraiteur) ...[
+              const SizedBox(height: 24),
+              Padding(padding: hPad, child: _CateringSection(proId: profile.id)),
             ],
-          ),
+
+            const SizedBox(height: 28),
+
+            // ── Events Section ──
+            _animated(
+              5,
+              Padding(
+                padding: hPad,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _SectionHeader(
+                      title: l.myEventsSection,
+                      onSeeAll: () => context.push('/pro/events'),
+                    ),
+                    const SizedBox(height: 10),
+                    _EventsList(ref: ref),
+                  ],
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 32),
+
+            // ── Settings Section ──
+            _animated(
+              6,
+              const Padding(padding: hPad, child: _InlineSettingsSection()),
+            ),
+
+            const SizedBox(height: 20),
+
+            const Padding(padding: hPad, child: _LogOutButton()),
+          ],
         ),
       ),
     );
@@ -306,20 +386,31 @@ class _ProSelfProfileBodyState extends ConsumerState<_ProSelfProfileBody>
 }
 
 // ═════════════════════════════════════════════════════════════════════════════
-// PROFILE HEADER — avatar 80px, name 22px UPPERCASE, badge, city
+// HERO COVER + AVATAR — edge-to-edge cover with overlapping animated avatar
 // ═════════════════════════════════════════════════════════════════════════════
 
-class _ProfileHeader extends StatefulWidget {
-  const _ProfileHeader({required this.profile});
+class _HeroCoverAvatar extends StatefulWidget {
+  const _HeroCoverAvatar({
+    required this.profile,
+    required this.isUploadingCover,
+    required this.onChangeCover,
+  });
 
   final ProProfile profile;
+  final bool isUploadingCover;
+  final VoidCallback onChangeCover;
 
   @override
-  State<_ProfileHeader> createState() => _ProfileHeaderState();
+  State<_HeroCoverAvatar> createState() => _HeroCoverAvatarState();
 }
 
-class _ProfileHeaderState extends State<_ProfileHeader>
+class _HeroCoverAvatarState extends State<_HeroCoverAvatar>
     with SingleTickerProviderStateMixin {
+  static const _coverHeight = 220.0;
+  static const _avatarSize = 104.0;
+  // Amount of avatar that overflows below the cover.
+  static const _avatarOverflow = 56.0;
+
   late final AnimationController _avatarCtrl;
   late final Animation<double> _avatarScale;
   late final Animation<double> _ringRotation;
@@ -334,10 +425,7 @@ class _ProfileHeaderState extends State<_ProfileHeader>
     _avatarScale = TweenSequence<double>([
       TweenSequenceItem(tween: Tween(begin: 1.0, end: 1.03), weight: 50),
       TweenSequenceItem(tween: Tween(begin: 1.03, end: 1.0), weight: 50),
-    ]).animate(CurvedAnimation(
-      parent: _avatarCtrl,
-      curve: Curves.easeInOut,
-    ));
+    ]).animate(CurvedAnimation(parent: _avatarCtrl, curve: Curves.easeInOut));
     _ringRotation = Tween<double>(begin: 0, end: 2 * math.pi).animate(
       CurvedAnimation(parent: _avatarCtrl, curve: Curves.linear),
     );
@@ -355,95 +443,321 @@ class _ProfileHeaderState extends State<_ProfileHeader>
     final name = profile.businessName;
     final initial = name.isNotEmpty ? name[0].toUpperCase() : '?';
 
-    return Column(
-      children: [
-        // Settings gear top right
-        Align(
-          alignment: Alignment.centerRight,
-          child: GestureDetector(
-            onTap: () {
-              HapticFeedback.mediumImpact();
-              context.push('/settings');
-            },
-            child: Container(
-              width: 38,
-              height: 38,
-              decoration: BoxDecoration(
-                color: AppColors.surfaceAlt,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: AppColors.border, width: 0.5),
+    return SizedBox(
+      height: _coverHeight + _avatarOverflow,
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          // ── Cover image or gradient fallback ──
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            height: _coverHeight,
+            child: _CoverContent(coverUrl: profile.coverUrl),
+          ),
+
+          // ── Bottom-to-fond gradient fade on cover ──
+          Positioned(
+            top: _coverHeight - 120,
+            left: 0,
+            right: 0,
+            height: 120,
+            child: IgnorePointer(
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [Colors.transparent, AppColors.fond],
+                  ),
+                ),
               ),
-              child: Icon(Icons.settings_outlined,
-                  color: AppColors.gris, size: 18),
             ),
           ),
-        ),
-        const SizedBox(height: 12),
 
-        // Avatar 96px with animated gradient ring
-        AnimatedBuilder(
-          animation: _avatarCtrl,
-          builder: (context, child) {
-            return Transform.scale(
-              scale: _avatarScale.value,
-              child: SizedBox(
-                width: 102,
-                height: 102,
-                child: Stack(
-                  alignment: Alignment.center,
+          // ── Top overlay: camera (change cover) + settings ──
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: SafeArea(
+              bottom: false,
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    // Rotating gradient ring
-                    Transform.rotate(
-                      angle: _ringRotation.value,
-                      child: Container(
-                        width: 102,
-                        height: 102,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          gradient: SweepGradient(
-                            colors: [
-                              AppColors.violet,
-                              AppColors.rose,
-                              AppColors.violet.withAlpha(80),
-                              AppColors.violet,
-                            ],
-                            stops: const [0.0, 0.3, 0.7, 1.0],
-                          ),
-                        ),
-                      ),
+                    _GlassIconButton(
+                      icon: widget.isUploadingCover
+                          ? Icons.hourglass_top_rounded
+                          : Icons.photo_camera_outlined,
+                      onTap: widget.isUploadingCover
+                          ? null
+                          : widget.onChangeCover,
+                      showSpinner: widget.isUploadingCover,
                     ),
-                    // White gap ring
-                    Container(
-                      width: 96,
-                      height: 96,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: AppColors.fond,
-                      ),
-                    ),
-                    // Avatar circle
-                    Container(
-                      width: 90,
-                      height: 90,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: AppColors.surface,
-                      ),
-                      child: ClipOval(
-                        child: _buildAvatar(profile, initial),
-                      ),
+                    const SizedBox(width: 8),
+                    _GlassIconButton(
+                      icon: Icons.settings_outlined,
+                      onTap: () {
+                        HapticFeedback.mediumImpact();
+                        context.push('/settings');
+                      },
                     ),
                   ],
                 ),
               ),
-            );
-          },
-        ),
-        const SizedBox(height: 18),
+            ),
+          ),
 
-        // Name — Sora bold, proper case
+          // ── Avatar, overlapping the cover bottom ──
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: Center(
+              child: AnimatedBuilder(
+                animation: _avatarCtrl,
+                builder: (context, _) {
+                  return Transform.scale(
+                    scale: _avatarScale.value,
+                    child: SizedBox(
+                      width: _avatarSize + 6,
+                      height: _avatarSize + 6,
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          // Rotating sweep-gradient ring
+                          Transform.rotate(
+                            angle: _ringRotation.value,
+                            child: Container(
+                              width: _avatarSize + 6,
+                              height: _avatarSize + 6,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                gradient: SweepGradient(
+                                  colors: [
+                                    AppColors.violet,
+                                    AppColors.rose,
+                                    AppColors.violet.withAlpha(80),
+                                    AppColors.violet,
+                                  ],
+                                  stops: const [0.0, 0.3, 0.7, 1.0],
+                                ),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: AppColors.violet.withAlpha(80),
+                                    blurRadius: 20,
+                                    spreadRadius: 1,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          // fond gap ring
+                          Container(
+                            width: _avatarSize,
+                            height: _avatarSize,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: AppColors.fond,
+                            ),
+                          ),
+                          // Avatar content
+                          Container(
+                            width: _avatarSize - 6,
+                            height: _avatarSize - 6,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: AppColors.surface,
+                            ),
+                            child: ClipOval(
+                              child: _buildAvatar(profile, initial),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAvatar(ProProfile profile, String initial) {
+    final size = _avatarSize - 6;
+    if (profile.avatarUrl != null && profile.avatarUrl!.isNotEmpty) {
+      return CachedNetworkImage(
+        imageUrl: profile.avatarUrl!,
+        fit: BoxFit.cover,
+        width: size,
+        height: size,
+        placeholder: (_, __) => _InitialCircle(initial: initial),
+        errorWidget: (_, __, ___) => _InitialCircle(initial: initial),
+      );
+    }
+    return _InitialCircle(initial: initial);
+  }
+}
+
+class _CoverContent extends StatelessWidget {
+  const _CoverContent({required this.coverUrl});
+
+  final String? coverUrl;
+
+  @override
+  Widget build(BuildContext context) {
+    if (coverUrl != null && coverUrl!.isNotEmpty) {
+      return CachedNetworkImage(
+        imageUrl: coverUrl!,
+        fit: BoxFit.cover,
+        width: double.infinity,
+        placeholder: (_, __) => _CoverGradient(),
+        errorWidget: (_, __, ___) => _CoverGradient(),
+      );
+    }
+    return _CoverGradient();
+  }
+}
+
+class _CoverGradient extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            AppColors.violet.withAlpha(150),
+            AppColors.rose.withAlpha(90),
+            AppColors.surfaceAlt,
+          ],
+          stops: const [0.0, 0.55, 1.0],
+        ),
+      ),
+      child: Stack(
+        children: [
+          // Soft radial glow top-left for depth
+          Positioned(
+            top: -40,
+            left: -40,
+            child: Container(
+              width: 200,
+              height: 200,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: RadialGradient(
+                  colors: [
+                    AppColors.violetClair.withAlpha(90),
+                    Colors.transparent,
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _GlassIconButton extends StatelessWidget {
+  const _GlassIconButton({
+    required this.icon,
+    required this.onTap,
+    this.showSpinner = false,
+  });
+
+  final IconData icon;
+  final VoidCallback? onTap;
+  final bool showSpinner;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(12),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+          child: Container(
+            width: 38,
+            height: 38,
+            decoration: BoxDecoration(
+              color: Colors.black.withAlpha(90),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: Colors.white.withAlpha(40),
+                width: 0.5,
+              ),
+            ),
+            child: Center(
+              child: showSpinner
+                  ? const SizedBox(
+                      width: 14,
+                      height: 14,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Colors.white,
+                      ),
+                    )
+                  : Icon(icon, size: 18, color: Colors.white),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _InitialCircle extends StatelessWidget {
+  const _InitialCircle({required this.initial});
+  final String initial;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      color: AppColors.surface,
+      child: Center(
+        child: Text(
+          initial,
+          style: GoogleFonts.sora(
+            fontSize: 32,
+            fontWeight: FontWeight.w700,
+            color: AppColors.violet,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ═════════════════════════════════════════════════════════════════════════════
+// PROFILE IDENTITY — name, username, badge, rating, bio, edit button
+// ═════════════════════════════════════════════════════════════════════════════
+
+class _ProfileIdentity extends StatelessWidget {
+  const _ProfileIdentity({required this.profile});
+
+  final ProProfile profile;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        const SizedBox(height: 10),
+
+        // Name
         Text(
-          name,
+          profile.businessName,
           style: GoogleFonts.sora(
             fontSize: 24,
             fontWeight: FontWeight.w700,
@@ -468,7 +782,7 @@ class _ProfileHeaderState extends State<_ProfileHeader>
         ],
         const SizedBox(height: 10),
 
-        // Category badge + location in a row
+        // Category badge + city row
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
@@ -557,7 +871,7 @@ class _ProfileHeaderState extends State<_ProfileHeader>
         ],
         const SizedBox(height: 18),
 
-        // Edit Profile button — full width outline
+        // Edit profile button
         SpotbookButton.outlined(
           label: AppLocalizations.of(context)!.editProfile,
           onPressed: () {
@@ -566,42 +880,6 @@ class _ProfileHeaderState extends State<_ProfileHeader>
           },
         ),
       ],
-    );
-  }
-
-  Widget _buildAvatar(ProProfile profile, String initial) {
-    if (profile.avatarUrl != null && profile.avatarUrl!.isNotEmpty) {
-      return CachedNetworkImage(
-        imageUrl: profile.avatarUrl!,
-        fit: BoxFit.cover,
-        width: 90,
-        height: 90,
-        placeholder: (_, __) => _InitialCircle(initial: initial),
-        errorWidget: (_, __, ___) => _InitialCircle(initial: initial),
-      );
-    }
-    return _InitialCircle(initial: initial);
-  }
-}
-
-class _InitialCircle extends StatelessWidget {
-  const _InitialCircle({required this.initial});
-  final String initial;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      color: AppColors.surface,
-      child: Center(
-        child: Text(
-          initial,
-          style: GoogleFonts.sora(
-            fontSize: 32,
-            fontWeight: FontWeight.w700,
-            color: AppColors.violet,
-          ),
-        ),
-      ),
     );
   }
 }
