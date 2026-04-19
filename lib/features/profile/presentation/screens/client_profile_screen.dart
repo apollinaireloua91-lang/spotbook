@@ -562,6 +562,16 @@ class _SettingsSection extends ConsumerWidget {
               label: l.reviewsLabel,
               onTap: () => context.push('/favorites'),
             ),
+            SettingsItemData(
+              icon: 'receipt_long',
+              label: 'Mes reçus',
+              onTap: () => context.push('/client/receipts'),
+            ),
+            SettingsItemData(
+              icon: 'volunteer_activism',
+              label: 'Parrainage',
+              onTap: () => context.push('/client/referrals-squire'),
+            ),
           ],
         ),
         const SizedBox(height: 12),

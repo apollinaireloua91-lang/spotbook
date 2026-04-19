@@ -33,6 +33,10 @@ import '../features/booking/presentation/screens/pro_dashboard_screen.dart';
 import '../features/booking/presentation/screens/pro_rdv_screen.dart';
 import '../features/booking/presentation/screens/booking_flow_v2_screen.dart';
 import '../features/payment/presentation/screens/get_paid_faster_screen.dart';
+import '../features/squire/presentation/screens/walk_in_queue_screen.dart';
+import '../features/squire/presentation/screens/loyalty_screen.dart';
+import '../features/squire/presentation/screens/referral_screen.dart';
+import '../features/squire/presentation/screens/my_receipts_screen.dart';
 import '../features/booking/presentation/screens/pro_service_addons_screen.dart';
 import '../features/booking/presentation/screens/pro_services_manage_screen.dart';
 import '../features/booking/presentation/screens/pro_revenue_screen.dart';
@@ -333,6 +337,37 @@ final appRouter = GoRouter(
       pageBuilder: (context, state) => premiumPage(
         state: state,
         child: const GetPaidFasterScreen(),
+      ),
+    ),
+    GoRoute(
+      path: '/pro/walk-in-queue',
+      pageBuilder: (context, state) => premiumPage(
+        state: state,
+        child: const WalkInQueueScreen(),
+      ),
+    ),
+    GoRoute(
+      path: '/pro/loyalty',
+      pageBuilder: (context, state) {
+        final proId = state.uri.queryParameters['proId'] ?? '';
+        return premiumPage(
+          state: state,
+          child: LoyaltyProgramScreen(proId: proId),
+        );
+      },
+    ),
+    GoRoute(
+      path: '/client/referrals-squire',
+      pageBuilder: (context, state) => premiumPage(
+        state: state,
+        child: const SquireReferralScreen(),
+      ),
+    ),
+    GoRoute(
+      path: '/client/receipts',
+      pageBuilder: (context, state) => premiumPage(
+        state: state,
+        child: const MyReceiptsScreen(),
       ),
     ),
     GoRoute(

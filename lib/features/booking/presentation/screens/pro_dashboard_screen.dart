@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shimmer/shimmer.dart';
@@ -425,9 +426,9 @@ class _PremiumQuickActions extends StatelessWidget {
               const SizedBox(width: 10),
               _PremiumActionButton(
                 icon: Icons.qr_code_scanner,
-                label: l.scanTicket,
+                label: l.scanQr,
                 gradientColors: [AppColors.rose, AppColors.roseClair],
-                onTap: () => context.push('/pro/scanner-picker'),
+                onTap: () => context.push('/pro/scanner-unified'),
               ),
               const SizedBox(width: 10),
               _PremiumActionButton(
@@ -460,6 +461,44 @@ class _PremiumQuickActions extends StatelessWidget {
                 label: l.myEventsLabel,
                 gradientColors: [AppColors.warning, AppColors.starGold],
                 onTap: () => context.push('/pro/events'),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          // Squire feature-parity row (#6, #9)
+          Row(
+            children: [
+              _PremiumActionButton(
+                icon: Icons.people_alt_outlined,
+                label: 'File d\'attente',
+                gradientColors: [AppColors.rose, AppColors.roseClair],
+                onTap: () => context.push('/pro/walk-in-queue'),
+              ),
+              const SizedBox(width: 10),
+              Consumer(
+                builder: (context, ref, _) {
+                  final uid = Supabase.instance.client.auth.currentUser?.id ?? '';
+                  return _PremiumActionButton(
+                    icon: Icons.card_giftcard_rounded,
+                    label: 'Fidélité',
+                    gradientColors: [
+                      AppColors.violet,
+                      AppColors.violetClair
+                    ],
+                    onTap: () =>
+                        context.push('/pro/loyalty?proId=$uid'),
+                  );
+                },
+              ),
+              const SizedBox(width: 10),
+              _PremiumActionButton(
+                icon: Icons.bolt,
+                label: 'Payé +vite',
+                gradientColors: [
+                  AppColors.violet,
+                  AppColors.violetPastel,
+                ],
+                onTap: () => context.push('/pro/get-paid-faster'),
               ),
             ],
           ),
