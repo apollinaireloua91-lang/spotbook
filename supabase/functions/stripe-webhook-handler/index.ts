@@ -82,9 +82,64 @@ serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
     );
 
+    // ─── Idempotency : Stripe peut rejouer un event (retry sur 5xx, timeout
+    // ou erreur réseau). `record_stripe_event` renvoie TRUE si l'event est
+    // nouveau, FALSE s'il a déjà été traité. On renvoie 200 immédiatement
+    // dans le second cas pour que Stripe arrête les retries, mais sans
+    // réexécuter les side-effects (tickets, emails, sold_count). ───
+    const { data: isNew, error: dedupErr } = await supabase.rpc(
+      "record_stripe_event",
+      { p_event_id: event.id, p_event_type: event.type },
+    );
+    if (dedupErr) {
+      // Fail-safe : si la dédup n'est pas dispo, on continue mais on loggue.
+      // Les guards de statut (.eq("status", "pending_payment")) atténuent
+      // le risque sur le flux booking ; pour tickets c'est plus exposé.
+      console.error("record_stripe_event failed:", dedupErr.message);
+    } else if (isNew === false) {
+      console.log(`[webhook] duplicate event ignored: ${event.id} (${event.type})`);
+      return new Response(JSON.stringify({ received: true, duplicate: true }), {
+        headers: { ...securityHeaders, "Content-Type": "application/json" },
+        status: 200,
+      });
+    }
+
     switch (event.type) {
       case "payment_intent.succeeded": {
         const pi = event.data.object as Stripe.PaymentIntent;
+
+        // ─── TIP FLOW (priority #3) ──────────────────────────
+        // Tip PaymentIntents are created by the `process-tip` function with
+        // metadata.spotbook_type = 'tip'. On success, mark the tip row as
+        // succeeded and notify the pro. Tips have no Spotbook commission.
+        if (pi.metadata.spotbook_type === "tip") {
+          const tipBookingId = pi.metadata.booking_id;
+          const proId = pi.metadata.pro_id;
+          if (!tipBookingId || !isValidUuid(tipBookingId)) break;
+
+          await supabase
+            .from("tips")
+            .update({
+              status: "succeeded",
+              completed_at: new Date().toISOString(),
+            })
+            .eq("stripe_payment_intent_id", pi.id)
+            .eq("status", "pending");
+
+          // Notify the pro that a tip was received
+          if (proId && isValidUuid(proId)) {
+            const amountDollars = (pi.amount / 100).toFixed(2);
+            await supabase.from("notifications").insert({
+              user_id: proId,
+              type: "tip_received",
+              title: "Pourboire reçu",
+              body: `Tu as reçu ${amountDollars}$ de pourboire.`,
+              resource_id: tipBookingId,
+              idempotency_key: `${event.id}:tip_received:${proId}`,
+            });
+          }
+          break;
+        }
 
         // ─── TICKET PURCHASE FLOW ─────────────────────────────
         if (pi.metadata.type === "ticket") {
@@ -228,6 +283,18 @@ serve(async (req) => {
           p_metadata: { payment_intent_id: pi.id },
         });
 
+        // Sign QR code for booking — non-blocking
+        let bookingQrCodeUrl: string | undefined;
+        try {
+          const { data: signData } = await supabase.functions.invoke(
+            "sign-qr-booking",
+            { body: { bookingId } },
+          );
+          bookingQrCodeUrl = signData?.qrCodeUrl;
+        } catch (e) {
+          console.error("QR signing failed for booking:", bookingId, e);
+        }
+
         // Trigger payout via edge function
         try {
           await supabase.functions.invoke("process-payout", {
@@ -237,14 +304,38 @@ serve(async (req) => {
           // Payout failure is non-blocking for confirmation
         }
 
+        // Priority #9 — Award loyalty points (idempotent, non-blocking).
+        // The edge function checks the loyalty_programs row and only awards
+        // if the pro has an active program. Safe to call on every confirmed
+        // booking — double-calls are rejected by the ledger's unique check.
+        try {
+          await supabase.functions.invoke("award-loyalty", {
+            body: { bookingId },
+          });
+        } catch (e) {
+          console.error("award-loyalty failed:", bookingId, e);
+        }
+
+        // Priority #12 — Generate digital receipt (idempotent via UNIQUE
+        // constraint on receipts.booking_id). This is the "source of truth"
+        // record for the client's purchase — safe to call as soon as payment
+        // succeeds (pre-service) because we snapshot line items at this moment.
+        try {
+          await supabase.functions.invoke("generate-receipt", {
+            body: { bookingId },
+          });
+        } catch (e) {
+          console.error("generate-receipt failed:", bookingId, e);
+        }
+
         // Push notification + email to client
         const { data: booking } = await supabase
           .from("bookings")
           .select(
             "client_id, pro_id, booking_code, deposit_amount, " +
             "services(name), time_slots(date, start_time), " +
-            "users!bookings_client_id_fkey(email), " +
-            "profiles_pro!bookings_pro_id_fkey(business_name)"
+            "users!bookings_client_id_fkey(email, full_name), " +
+            "profiles_pro!bookings_pro_id_fkey(business_name, address)"
           )
           .eq("id", bookingId)
           .single();
@@ -269,23 +360,27 @@ serve(async (req) => {
             },
           ]);
 
-          // Email — booking confirmed
+          // Email — booking confirmed (with QR code)
           const clientUser = booking.users as Record<string, unknown> | null;
           const clientEmail = clientUser?.email as string | undefined;
+          const clientName = clientUser?.full_name as string | undefined;
           const service = booking.services as Record<string, unknown> | null;
           const slot = booking.time_slots as Record<string, unknown> | null;
           const proProfile = booking.profiles_pro as Record<string, unknown> | null;
 
           if (clientEmail) {
             await sendEmail("booking_confirmed", clientEmail, {
+              clientName: clientName ?? "Client",
               serviceName: service?.name ?? "Service",
-              proName: proProfile?.business_name ?? "",
+              providerName: proProfile?.business_name ?? "",
               date: slot?.date ?? "",
               time: slot?.start_time ?? "",
-              bookingCode: booking.booking_code,
-              amount: booking.deposit_amount
-                ? Number(booking.deposit_amount).toFixed(2)
-                : "",
+              address: proProfile?.address ?? "",
+              amountPaid: booking.deposit_amount
+                ? Math.round(Number(booking.deposit_amount) * 100)
+                : 0,
+              bookingId,
+              qrCodeUrl: bookingQrCodeUrl ?? undefined,
             });
 
             // Payment receipt email
