@@ -86,18 +86,74 @@ serve(async (req) => {
       return jsonResponse({ error: rlData.error }, 429);
     }
 
-    const { slotId, serviceId, promoCodeId } = await req.json();
+    const body = await req.json();
+    const {
+      slotId: rawSlotId,
+      serviceId,
+      promoCodeId,
+      proId,
+      slotDate,
+      slotStart,
+      slotEnd,
+    } = body;
 
     if (
-      !slotId ||
       !serviceId ||
-      !isValidUuid(String(slotId)) ||
       !isValidUuid(String(serviceId)) ||
       (promoCodeId && !isValidUuid(String(promoCodeId)))
     ) {
       return jsonResponse(
-        { error: "slotId/serviceId/promoCodeId doivent être des UUID valides" },
-        400
+        { error: "serviceId/promoCodeId doivent être des UUID valides" },
+        400,
+      );
+    }
+
+    // Résoudre le slot : soit un UUID existant (slotId), soit un spec
+    // (proId + slotDate + slotStart + slotEnd) qu'on matche ou insère.
+    let slotId: string | null = null;
+    if (rawSlotId && isValidUuid(String(rawSlotId))) {
+      slotId = String(rawSlotId);
+    } else if (proId && slotDate && slotStart && slotEnd) {
+      if (!isValidUuid(String(proId))) {
+        return jsonResponse({ error: "proId invalide" }, 400);
+      }
+      // Chercher un slot existant pour ce créneau
+      const { data: existing } = await supabase
+        .from("time_slots")
+        .select("id, is_available")
+        .eq("pro_id", proId)
+        .eq("date", slotDate)
+        .eq("start_time", slotStart)
+        .maybeSingle();
+
+      if (existing) {
+        if (!existing.is_available) {
+          return jsonResponse({ error: "slot_unavailable" }, 409);
+        }
+        slotId = existing.id;
+      } else {
+        // Créer le slot via service-role (contourne la RLS pro-only)
+        const { data: inserted, error: insertErr } = await supabase
+          .from("time_slots")
+          .insert({
+            pro_id: proId,
+            date: slotDate,
+            start_time: slotStart,
+            end_time: slotEnd,
+            is_available: true,
+          })
+          .select("id")
+          .single();
+        if (insertErr || !inserted) {
+          console.error("slot insert failed", insertErr);
+          return jsonResponse({ error: "slot_insert_failed" }, 500);
+        }
+        slotId = inserted.id;
+      }
+    } else {
+      return jsonResponse(
+        { error: "slotId ou (proId+slotDate+slotStart+slotEnd) requis" },
+        400,
       );
     }
 

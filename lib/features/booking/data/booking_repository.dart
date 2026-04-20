@@ -370,6 +370,10 @@ class BookingRepository {
     required String slotId,
     required String serviceId,
     String? promoCodeId,
+    String? proId,
+    String? slotDate,
+    String? slotStart,
+    String? slotEnd,
   }) async {
     // Refresh session + passer explicitement le token utilisateur en header.
     // Sans le header explicite, le SDK peut envoyer l'anon key ce qui fait
@@ -379,12 +383,20 @@ class BookingRepository {
     if (accessToken == null || accessToken.isEmpty) {
       throw Exception('Session expirée — reconnecte-toi');
     }
+    // Si le slot a un id "virtual_..." (généré à la volée côté client),
+    // on envoie plutôt le spec (pro/date/heures) et l'edge function crée
+    // le vrai time_slot via service-role avant de créer le booking.
+    final isVirtual = slotId.startsWith('virtual_');
     final res = await _supabase.functions.invoke(
       'create-booking-atomic',
       body: {
-        'slotId': slotId,
+        if (!isVirtual) 'slotId': slotId,
         'serviceId': serviceId,
         if (promoCodeId != null) 'promoCodeId': promoCodeId,
+        if (proId != null) 'proId': proId,
+        if (slotDate != null) 'slotDate': slotDate,
+        if (slotStart != null) 'slotStart': slotStart,
+        if (slotEnd != null) 'slotEnd': slotEnd,
       },
       headers: {'Authorization': 'Bearer $accessToken'},
     );

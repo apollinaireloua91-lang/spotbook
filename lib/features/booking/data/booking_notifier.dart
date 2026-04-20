@@ -300,10 +300,15 @@ class BookingFlowNotifier extends Notifier<BookingFlowState> {
     if (serviceId == null) return;
     state = state.copyWith(isCreating: true, error: null);
     try {
+      final slot = state.selectedSlot!;
       final result = await _repo.createBooking(
-        slotId: state.selectedSlot!.id,
+        slotId: slot.id,
         serviceId: serviceId,
         promoCodeId: state.promoCode?.id,
+        proId: slot.proId,
+        slotDate: slot.date,
+        slotStart: slot.startTime,
+        slotEnd: slot.endTime,
       );
       // create-booking-atomic renvoie déjà le clientSecret — on le récupère
       // directement sans rappeler stripe-create-intent (évite le 401 du 2e appel).
