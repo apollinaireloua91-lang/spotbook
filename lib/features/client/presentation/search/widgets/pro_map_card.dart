@@ -176,22 +176,6 @@ class ProMapCard extends StatelessWidget {
                         ),
                       ),
                     ),
-                  const Spacer(),
-                  // Distance
-                  Icon(
-                    Icons.near_me_outlined,
-                    size: 12,
-                    color: AppColors.gris,
-                  ),
-                  const SizedBox(width: 3),
-                  Text(
-                    '${pro.distKm} km',
-                    style: GoogleFonts.dmSans(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.gris,
-                    ),
-                  ),
                 ],
               ),
             ],

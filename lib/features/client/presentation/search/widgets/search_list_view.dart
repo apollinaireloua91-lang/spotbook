@@ -1,6 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -9,7 +8,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../../shared/theme/app_colors.dart';
 import '../../../../../shared/theme/theme_mode_notifier.dart';
-import '../cubit/client_search_cubit.dart';
+import '../data/client_search_notifier.dart';
 import '../models/search_models.dart';
 
 // ── Trending videos from all pros ──
@@ -44,44 +43,43 @@ final _clientTrendingEventsProvider =
   return (data as List).cast<Map<String, dynamic>>();
 });
 
-class SearchListView extends StatelessWidget {
+class SearchListView extends ConsumerWidget {
   const SearchListView({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<ClientSearchCubit, ClientSearchState>(
-      builder: (context, state) {
-        final hasSearchResults = state.pros.isNotEmpty || state.events.isNotEmpty;
-        final isSearching = state.query.isNotEmpty;
+  Widget build(BuildContext context, WidgetRef ref) {
+    final state = ref.watch(clientSearchProvider);
+    final hasSearchResults = state.pros.isNotEmpty || state.events.isNotEmpty;
+    final isSearching = state.query.isNotEmpty;
 
-        return ListView(
-          padding: const EdgeInsets.only(top: 8, bottom: 100),
-          children: [
-            // ── Section: Pros près de toi (horizontal scroll) ──
-            if (state.pros.isNotEmpty) ...[
-              const _SectionTitle(title: 'Près de toi'),
-              const SizedBox(height: 12),
-              SizedBox(
-                height: 190,
-                child: ListView.separated(
-                  scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  itemCount: state.pros.length,
-                  separatorBuilder: (_, __) => const SizedBox(width: 12),
-                  itemBuilder: (context, index) {
-                    final pro = state.pros[index];
-                    return _HorizontalProCard(
-                      pro: pro,
-                      onTap: () {
-                        context
-                            .read<ClientSearchCubit>()
-                            .openDetailPanel(pro.id);
-                      },
-                    );
+    return ListView(
+      padding: const EdgeInsets.only(top: 8, bottom: 100),
+      children: [
+        // ── Section: Pros près de toi (horizontal scroll) ──
+        if (state.pros.isNotEmpty) ...[
+          const _SectionTitle(title: 'Près de toi'),
+          const SizedBox(height: 12),
+          SizedBox(
+            height: 190,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              itemCount: state.pros.length,
+              separatorBuilder: (_, __) => const SizedBox(width: 12),
+              itemBuilder: (context, index) {
+                final pro = state.pros[index];
+                return _HorizontalProCard(
+                  pro: pro,
+                  onTap: () {
+                    ref
+                        .read(clientSearchProvider.notifier)
+                        .openDetailPanel(pro.id);
                   },
-                ),
-              ),
-            ],
+                );
+              },
+            ),
+          ),
+        ],
 
             // ── Empty search state ──
             if (isSearching && !hasSearchResults)
@@ -118,12 +116,10 @@ class SearchListView extends StatelessWidget {
             const SizedBox(height: 20),
             const _TrendingEventsSection(),
 
-            // ── Section: Vidéos ──
-            const SizedBox(height: 20),
-            const _ClientVideosSection(),
-          ],
-        );
-      },
+        // ── Section: Vidéos ──
+        const SizedBox(height: 20),
+        const _ClientVideosSection(),
+      ],
     );
   }
 }
@@ -807,27 +803,13 @@ class _HorizontalProCard extends StatelessWidget {
                       ),
                     ),
                     const Spacer(),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          '\u2B50 ${pro.rating}',
-                          style: GoogleFonts.dmSans(
-                            color: AppColors.ratingAmber,
-                            fontSize: 10,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          '${pro.distKm} km',
-                          style: GoogleFonts.dmSans(
-                            color: AppColors.violet,
-                            fontSize: 10,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
+                    Text(
+                      '\u2B50 ${pro.rating}',
+                      style: GoogleFonts.dmSans(
+                        color: AppColors.ratingAmber,
+                        fontSize: 10,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ],
                 ),

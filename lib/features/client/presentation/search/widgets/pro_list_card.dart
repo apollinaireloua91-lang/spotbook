@@ -103,26 +103,13 @@ class ProListCard extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 4),
-                    Row(
-                      children: [
-                        Text(
-                          '\u2B50 ${pro.rating}',
-                          style: GoogleFonts.dmSans(
-                            fontSize: 10,
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.ratingAmber,
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          '\uD83D\uDCCD ${pro.distKm} km',
-                          style: GoogleFonts.dmSans(
-                            fontSize: 10,
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.violet,
-                          ),
-                        ),
-                      ],
+                    Text(
+                      '\u2B50 ${pro.rating}',
+                      style: GoogleFonts.dmSans(
+                        fontSize: 10,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.ratingAmber,
+                      ),
                     ),
                   ],
                 ),
