@@ -14,11 +14,13 @@ import '../../../data/booking_repository.dart';
 ///   - It's today or in the future (max +30 days from today)
 ///   - Its day-of-week is in the Pro's active availability_rules
 ///   - It's NOT in the Pro's blocked_dates or closed exceptions
-///   - It has at least one available time_slot (fine-grained filter)
 ///
-/// Rationale: fetching BOTH weekday rules AND time_slots gives us a robust
-/// calendar that stays visible even when the generator hasn't run yet (Pro
-/// just saved new hours), while still reflecting real booking capacity.
+/// Rationale: the calendar trusts the Pro's weekly schedule — every day that
+/// matches an active availability_rule and isn't blocked is clickable.
+/// Step 3 (time picker) computes real 15-min slots on the fly from
+/// availability_rules ± bookings, so we don't need pre-generated time_slots
+/// to decide if a day is open. If Step 3 finds no free slot for a given day,
+/// it shows an empty state and the user picks another date.
 class Step2Date extends ConsumerStatefulWidget {
   const Step2Date({
     super.key,
@@ -36,7 +38,6 @@ class Step2Date extends ConsumerStatefulWidget {
 class _Step2DateState extends ConsumerState<Step2Date> {
   Set<int> _activeWeekdays = const {};
   Set<String> _blockedDates = const {};
-  Set<String> _datesWithSlots = const {};
   bool _loading = true;
   late DateTime _visibleMonth;
 
@@ -68,14 +69,11 @@ class _Step2DateState extends ConsumerState<Step2Date> {
       final results = await Future.wait([
         repo.getProActiveWeekdays(proId),
         repo.getProBlockedDates(proId),
-        repo.getAvailableDates(proId),
-        Future.value(null), // spacer
       ]);
       if (!mounted) return;
       setState(() {
         _activeWeekdays = results[0] as Set<int>;
         _blockedDates = results[1] as Set<String>;
-        _datesWithSlots = Set<String>.from(results[2] as List<String>);
         _loading = false;
       });
     } catch (_) {
@@ -97,11 +95,10 @@ class _Step2DateState extends ConsumerState<Step2Date> {
     final iso = _toIso(date);
     if (_blockedDates.contains(iso)) return false;
 
-    // If we have slot data loaded, require at least one available slot.
-    // Otherwise (generator hasn't run yet but rules exist), trust the weekday.
-    if (_datesWithSlots.isNotEmpty && !_datesWithSlots.contains(iso)) {
-      return false;
-    }
+    // Per-day slot availability is handled in Step 3 (time picker), which
+    // computes real 15-min slots from availability_rules ± bookings. Keeping
+    // the calendar weekday-only means the Pro's schedule is always reflected
+    // as soon as rules are saved — no dependency on a pre-generator.
     return true;
   }
 
