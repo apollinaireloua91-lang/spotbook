@@ -17,6 +17,8 @@ class BookingStepFooter extends StatelessWidget {
     required this.canProceed,
     required this.nextLabel,
     required this.onNext,
+    this.amountOverride,
+    this.amountLabelOverride,
   });
 
   final double cartSubtotal;
@@ -26,6 +28,11 @@ class BookingStepFooter extends StatelessWidget {
   final bool canProceed;
   final String nextLabel;
   final VoidCallback onNext;
+
+  /// When set, replaces the cart subtotal display with this amount.
+  /// Used on the summary step to show "À payer maintenant" instead of cart total.
+  final double? amountOverride;
+  final String? amountLabelOverride;
 
   String _durationLabel(int m) {
     if (m <= 0) return '—';
@@ -63,8 +70,9 @@ class BookingStepFooter extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        '$cartServiceCount service${cartServiceCount > 1 ? 's' : ''}'
-                        ' · ${_durationLabel(cartDurationMinutes)}',
+                        amountLabelOverride ??
+                            '$cartServiceCount service${cartServiceCount > 1 ? 's' : ''}'
+                                ' · ${_durationLabel(cartDurationMinutes)}',
                         style: GoogleFonts.dmSans(
                           color: AppColors.gris,
                           fontSize: 12,
@@ -73,10 +81,13 @@ class BookingStepFooter extends StatelessWidget {
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        CurrencyFormatter.formatAmount(cartSubtotal,
+                        CurrencyFormatter.formatAmount(
+                            amountOverride ?? cartSubtotal,
                             currency: currency),
                         style: GoogleFonts.sora(
-                          color: AppColors.blanc,
+                          color: amountOverride != null
+                              ? AppColors.violetClair
+                              : AppColors.blanc,
                           fontSize: 18,
                           fontWeight: FontWeight.w700,
                         ),

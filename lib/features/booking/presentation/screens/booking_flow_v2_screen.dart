@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../../../core/services/app_config_provider.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/theme/theme_mode_notifier.dart';
 import '../../../../shared/utils/currency_formatter.dart';
@@ -168,6 +169,8 @@ class _BookingFlowV2ScreenState extends ConsumerState<BookingFlowV2Screen> {
     });
 
     final isConfirmation = state.step == 5;
+    // Step 5 (payment) has its own in-body Pay button, so we hide the footer.
+    final hideFooter = isConfirmation || state.step == 4;
 
     return PopScope(
       canPop: false,
@@ -232,15 +235,33 @@ class _BookingFlowV2ScreenState extends ConsumerState<BookingFlowV2Screen> {
                       ),
                     ),
                   Expanded(child: _buildStepBody(state)),
-                  if (!isConfirmation)
-                    BookingStepFooter(
-                      cartSubtotal: state.cartSubtotal,
-                      cartServiceCount: state.cart.serviceCount,
-                      cartDurationMinutes: state.cartTotalDurationMinutes,
-                      currency: _currency(state),
-                      canProceed: _canProceed(state),
-                      nextLabel: _nextLabel(state.step),
-                      onNext: _onNext,
+                  if (!hideFooter)
+                    Builder(
+                      builder: (_) {
+                        final isSummary = state.step == 3;
+                        double? amountOverride;
+                        String? amountLabel;
+                        if (isSummary) {
+                          final cfg = ref.watch(appConfigProvider).value ??
+                              AppConfig.fallback;
+                          final deposit =
+                              (state.totalPrice * 0.30 * 100).roundToDouble() /
+                                  100;
+                          amountOverride = deposit + cfg.serviceFeeClient;
+                          amountLabel = 'À payer maintenant';
+                        }
+                        return BookingStepFooter(
+                          cartSubtotal: state.cartSubtotal,
+                          cartServiceCount: state.cart.serviceCount,
+                          cartDurationMinutes: state.cartTotalDurationMinutes,
+                          currency: _currency(state),
+                          canProceed: _canProceed(state),
+                          nextLabel: _nextLabel(state.step),
+                          onNext: _onNext,
+                          amountOverride: amountOverride,
+                          amountLabelOverride: amountLabel,
+                        );
+                      },
                     ),
                 ],
               ),

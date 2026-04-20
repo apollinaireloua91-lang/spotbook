@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -7,34 +7,33 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../../shared/theme/app_colors.dart';
 import '../../../../chat/data/chat_repository.dart';
-import '../cubit/client_search_cubit.dart';
+import '../data/client_search_notifier.dart';
 import '../models/search_models.dart';
 
-class ProDetailPanel extends StatelessWidget {
+class ProDetailPanel extends ConsumerWidget {
   const ProDetailPanel({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return BlocSelector<ClientSearchCubit, ClientSearchState, ProSearchResult?>(
-      selector: (state) => state.showDetailPanel ? state.selectedPro : null,
-      builder: (context, pro) {
-        if (pro == null) return const SizedBox.shrink();
-        return _PanelContent(pro: pro);
-      },
+  Widget build(BuildContext context, WidgetRef ref) {
+    final pro = ref.watch(
+      clientSearchProvider
+          .select((s) => s.showDetailPanel ? s.selectedPro : null),
     );
+    if (pro == null) return const SizedBox.shrink();
+    return _PanelContent(pro: pro);
   }
 }
 
-class _PanelContent extends StatefulWidget {
+class _PanelContent extends ConsumerStatefulWidget {
   const _PanelContent({required this.pro});
 
   final ProSearchResult pro;
 
   @override
-  State<_PanelContent> createState() => _PanelContentState();
+  ConsumerState<_PanelContent> createState() => _PanelContentState();
 }
 
-class _PanelContentState extends State<_PanelContent>
+class _PanelContentState extends ConsumerState<_PanelContent>
     with SingleTickerProviderStateMixin {
   late final AnimationController _ctrl;
   late final Animation<Offset> _slideAnim;
@@ -65,7 +64,7 @@ class _PanelContentState extends State<_PanelContent>
   }
 
   void _navigateToProfile() {
-    context.read<ClientSearchCubit>().closeDetailPanel();
+    ref.read(clientSearchProvider.notifier).closeDetailPanel();
     context.push('/pro/${widget.pro.id}');
   }
 
@@ -84,7 +83,7 @@ class _PanelContentState extends State<_PanelContent>
         proId: widget.pro.id,
       );
       if (!mounted) return;
-      context.read<ClientSearchCubit>().closeDetailPanel();
+      ref.read(clientSearchProvider.notifier).closeDetailPanel();
       context.push(
         '/chat/${conv.id}',
         extra: {'otherUserName': widget.pro.name},
@@ -160,8 +159,8 @@ class _PanelContentState extends State<_PanelContent>
                         ),
                         const Spacer(),
                         GestureDetector(
-                          onTap: () => context
-                              .read<ClientSearchCubit>()
+                          onTap: () => ref
+                              .read(clientSearchProvider.notifier)
                               .closeDetailPanel(),
                           child: Container(
                             width: 28,
@@ -346,17 +345,6 @@ class _PanelContentState extends State<_PanelContent>
                             color: AppColors.blanc.withAlpha(20),
                           ),
                           _StatItem(
-                            icon: Icons.location_on_outlined,
-                            label: 'Distance',
-                            value: '${pro.distKm} km',
-                            color: AppColors.violet,
-                          ),
-                          Container(
-                            width: 1,
-                            height: 28,
-                            color: AppColors.blanc.withAlpha(20),
-                          ),
-                          _StatItem(
                             icon: Icons.attach_money,
                             label: 'From',
                             value: '${pro.priceRange}\$',
@@ -453,8 +441,8 @@ class _PanelContentState extends State<_PanelContent>
                           child: _GlowBookButton(
                             proId: pro.id,
                             onTap: () {
-                              context
-                                  .read<ClientSearchCubit>()
+                              ref
+                                  .read(clientSearchProvider.notifier)
                                   .closeDetailPanel();
                               context.push('/pro/${pro.id}');
                             },

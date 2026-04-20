@@ -5,7 +5,6 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../core/realtime/realtime_events.dart';
 import '../../../core/realtime/realtime_manager.dart';
-import '../../payment/data/payment_repository.dart';
 import '../domain/booking_models.dart';
 import '../domain/service_addon_models.dart';
 import 'booking_repository.dart';
@@ -293,23 +292,27 @@ class BookingFlowNotifier extends Notifier<BookingFlowState> {
   }
 
   Future<void> createBooking() async {
-    if (state.selectedSlot == null || state.selectedService == null) return;
+    if (state.selectedSlot == null) return;
+    // Resolve service id from cart first (V2 flow), then fall back to legacy.
+    final String? serviceId = state.cart.items.isNotEmpty
+        ? state.cart.items.first.serviceId
+        : state.selectedService?.id;
+    if (serviceId == null) return;
     state = state.copyWith(isCreating: true, error: null);
     try {
       final result = await _repo.createBooking(
         slotId: state.selectedSlot!.id,
-        serviceId: state.selectedService!.id,
+        serviceId: serviceId,
         promoCodeId: state.promoCode?.id,
       );
-      state = state.copyWith(bookingResult: result, isCreating: false);
-
-      // Fetch clientSecret for Stripe payment
-      final bookingId = result['bookingId'] as String?;
-      if (bookingId != null) {
-        final paymentRepo = ref.read(paymentRepositoryProvider);
-        final secret = await paymentRepo.createPaymentIntent(bookingId);
-        state = state.copyWith(clientSecret: secret);
-      }
+      // create-booking-atomic renvoie déjà le clientSecret — on le récupère
+      // directement sans rappeler stripe-create-intent (évite le 401 du 2e appel).
+      final secret = result['clientSecret'] as String?;
+      state = state.copyWith(
+        bookingResult: result,
+        clientSecret: secret,
+        isCreating: false,
+      );
     } catch (e) {
       state = state.copyWith(
           isCreating: false, error: e.toString());

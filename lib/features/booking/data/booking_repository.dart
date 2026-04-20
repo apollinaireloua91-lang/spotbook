@@ -371,6 +371,9 @@ class BookingRepository {
     required String serviceId,
     String? promoCodeId,
   }) async {
+    // Refresh the session to guarantee a fresh JWT reaches the edge function.
+    // Without this, an expired access token returns 401 from getUser().
+    await _supabase.auth.refreshSession();
     final res = await _supabase.functions.invoke(
       'create-booking-atomic',
       body: {

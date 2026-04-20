@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../../core/services/app_config_provider.dart';
 import '../../../../../shared/theme/app_colors.dart';
 import '../../../../../shared/utils/currency_formatter.dart';
 import '../../../../../shared/widgets/spotbook_card.dart';
@@ -9,9 +11,9 @@ import '../../../data/booking_notifier.dart';
 import '../../../domain/service_addon_models.dart';
 
 /// Step 4 — Summary.
-/// Hero card with date/time, service breakdown, promo display, grand total.
-/// Senior design: breathing space, clear visual hierarchy, trust markers.
-class Step4Summary extends StatelessWidget {
+/// Hero card with date/time, service breakdown, transparent fee lines,
+/// and deposit amount the client pays now.
+class Step4Summary extends ConsumerWidget {
   const Step4Summary({
     super.key,
     required this.state,
@@ -54,9 +56,16 @@ class Step4Summary extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final cart = state.cart;
     final totalDuration = state.cartTotalDurationMinutes;
+    final config = ref.watch(appConfigProvider).value ?? AppConfig.fallback;
+    final serviceFee = config.serviceFeeClient;
+    final servicesTotal = state.totalPrice;
+    final deposit = (servicesTotal * 0.30 * 100).roundToDouble() / 100;
+    final dueNow = deposit + serviceFee;
+    final remainingOnSite = servicesTotal - deposit;
+
     return ListView(
       padding: const EdgeInsets.fromLTRB(20, 4, 20, 16),
       children: [
@@ -128,29 +137,58 @@ class Step4Summary extends StatelessWidget {
                     item: it,
                     currency: currency,
                   )),
-              Container(
-                margin: const EdgeInsets.only(top: 8, bottom: 12),
-                height: 0.5,
-                color: AppColors.border.withValues(alpha: 0.4),
-              ),
-              _TotalRow(
-                label: 'Sous-total',
-                value: _fmt(cart.subtotal),
-                muted: true,
-              ),
               if (state.promoApplied) ...[
-                const SizedBox(height: 4),
+                Container(
+                  margin: const EdgeInsets.only(top: 4, bottom: 8),
+                  height: 0.5,
+                  color: AppColors.border.withValues(alpha: 0.4),
+                ),
                 _TotalRow(
                   label: 'Promo (${state.promoCode?.code ?? ''})',
-                  value: '-${_fmt(cart.subtotal - state.totalPrice)}',
+                  value: '-${_fmt(cart.subtotal - servicesTotal)}',
                   accent: AppColors.success,
                 ),
               ],
+              Container(
+                margin: const EdgeInsets.only(top: 12, bottom: 12),
+                height: 0.5,
+                color: AppColors.border.withValues(alpha: 0.4),
+              ),
+              // Breakdown of "À payer maintenant"
+              _TotalRow(
+                label: 'Acompte (30%)',
+                value: _fmt(deposit),
+                muted: true,
+              ),
+              const SizedBox(height: 8),
+              _TotalRow(
+                label: 'Frais de service',
+                value: _fmt(serviceFee),
+                muted: true,
+              ),
+              const SizedBox(height: 14),
+              // Hero line — what you pay now
+              Container(
+                padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+                decoration: BoxDecoration(
+                  color: AppColors.violet.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(
+                    color: AppColors.violet.withValues(alpha: 0.25),
+                    width: 0.5,
+                  ),
+                ),
+                child: _TotalRow(
+                  label: 'À payer maintenant',
+                  value: _fmt(dueNow),
+                  emphasis: true,
+                ),
+              ),
               const SizedBox(height: 10),
               _TotalRow(
-                label: 'Total',
-                value: _fmt(state.totalPrice),
-                emphasis: true,
+                label: 'Solde sur place après RDV',
+                value: _fmt(remainingOnSite),
+                muted: true,
               ),
             ],
           ),
@@ -173,12 +211,6 @@ class Step4Summary extends StatelessWidget {
                 icon: Icons.lock_outline,
                 title: 'Paiement sécurisé',
                 subtitle: 'Chiffré par Stripe · aucune donnée stockée',
-              ),
-              const SizedBox(height: 10),
-              _TrustItem(
-                icon: Icons.replay,
-                title: 'Annulation flexible',
-                subtitle: 'Remboursement gratuit jusqu\'à 24h avant',
               ),
               const SizedBox(height: 10),
               _TrustItem(
