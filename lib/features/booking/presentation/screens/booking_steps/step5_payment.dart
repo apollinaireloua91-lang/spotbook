@@ -1,3 +1,5 @@
+import 'dart:io' show Platform;
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -35,6 +37,7 @@ class _Step5PaymentState extends ConsumerState<Step5Payment> {
   bool _cardComplete = false;
   bool _confirming = false;
   String? _localError;
+  bool _platformPaySupported = false;
 
   @override
   void initState() {
@@ -47,6 +50,87 @@ class _Step5PaymentState extends ConsumerState<Step5Payment> {
         widget.notifier.createBooking();
       }
     });
+    _checkPlatformPaySupport();
+  }
+
+  Future<void> _checkPlatformPaySupport() async {
+    try {
+      final supported = await Stripe.instance.isPlatformPaySupported();
+      if (!mounted) return;
+      setState(() => _platformPaySupported = supported);
+    } catch (_) {
+      // Silently ignore — if the SDK can't tell us, we just hide the button.
+    }
+  }
+
+  Future<void> _confirmPlatformPay() async {
+    final s = ref.read(bookingFlowProvider);
+    final secret = s.clientSecret;
+    if (secret == null) {
+      setState(() => _localError = 'Paiement non initialisé. Réessaie.');
+      return;
+    }
+
+    final servicesTotal = s.totalPrice;
+    final deposit = (servicesTotal * 0.30 * 100).roundToDouble() / 100;
+    final cfg = ref.read(appConfigProvider).value ?? AppConfig.fallback;
+    final dueNow = deposit + cfg.serviceFeeClient;
+
+    HapticFeedback.mediumImpact();
+    setState(() {
+      _confirming = true;
+      _localError = null;
+    });
+
+    try {
+      final confirmParams = Platform.isIOS
+          ? PlatformPayConfirmParams.applePay(
+              applePay: ApplePayParams(
+                merchantCountryCode: 'CA',
+                currencyCode: widget.currency,
+                cartItems: [
+                  ApplePayCartSummaryItem.immediate(
+                    label: 'Spotbook — acompte',
+                    amount: dueNow.toStringAsFixed(2),
+                  ),
+                ],
+              ),
+            )
+          : PlatformPayConfirmParams.googlePay(
+              googlePay: GooglePayParams(
+                merchantCountryCode: 'CA',
+                currencyCode: widget.currency,
+                testEnv: true,
+              ),
+            );
+      await Stripe.instance.confirmPlatformPayPaymentIntent(
+        clientSecret: secret,
+        confirmParams: confirmParams,
+      );
+      await AnalyticsService.instance.capture(
+        'booking_completed',
+        properties: {
+          'booking_id': s.bookingResult?['bookingId']?.toString() ?? '',
+          'method': 'platform_pay',
+        },
+      );
+      if (!mounted) return;
+      widget.notifier.nextStep();
+    } on StripeException catch (e) {
+      final code = e.error.code;
+      final canceled = code == FailureCode.Canceled;
+      setState(() {
+        _confirming = false;
+        _localError = canceled
+            ? null
+            : (e.error.localizedMessage ?? 'Paiement refusé');
+      });
+    } catch (e) {
+      setState(() {
+        _confirming = false;
+        _localError = 'Erreur paiement : $e';
+      });
+    }
   }
 
   Future<void> _confirmPayment() async {
@@ -147,6 +231,54 @@ class _Step5PaymentState extends ConsumerState<Step5Payment> {
               ),
             ),
             const SizedBox(height: 20),
+
+            // ── Platform Pay (Apple Pay / Google Pay) ─────
+            if (_platformPaySupported) ...[
+              Opacity(
+                opacity: (isInitializing || _confirming) ? 0.5 : 1.0,
+                child: IgnorePointer(
+                  ignoring: isInitializing || _confirming,
+                  child: PlatformPayButton(
+                    type: Platform.isIOS
+                        ? PlatformButtonType.inStore
+                        : PlatformButtonType.pay,
+                    appearance: PlatformButtonStyle.black,
+                    onPressed: () {
+                      _confirmPlatformPay();
+                    },
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  Expanded(
+                    child: Container(
+                      height: 0.5,
+                      color: AppColors.border.withValues(alpha: 0.4),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    child: Text(
+                      'ou avec ta carte',
+                      style: GoogleFonts.dmSans(
+                        color: AppColors.gris,
+                        fontSize: 11,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: Container(
+                      height: 0.5,
+                      color: AppColors.border.withValues(alpha: 0.4),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+            ],
 
             // ── Card input ─────────────────────────────────
             Container(
