@@ -12,6 +12,7 @@ import 'package:shimmer/shimmer.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/theme/theme_mode_notifier.dart';
 import '../../../../shared/utils/currency_formatter.dart';
+import '../../../../shared/utils/share_branding.dart';
 import '../../data/event_notifier.dart';
 import '../../domain/event_models.dart';
 import '../widgets/buy_ticket_sheet.dart';
@@ -126,8 +127,15 @@ class _EventDetailBody extends StatelessWidget {
                 _HeroIconButton(
                   icon: Icons.ios_share_rounded,
                   onTap: () {
-                    HapticFeedback.selectionClick();
-                    // Share integration handled by parent context if needed.
+                    HapticFeedback.mediumImpact();
+                    // Mirror pro_profile_screen's share pattern: branded text
+                    // + a public deep-link so the share sheet preview stays
+                    // consistent across iMessage, WhatsApp, etc.
+                    final url = 'https://spotbook.app/event/${event.id}';
+                    ShareBranding.shareWithLogo(
+                      text: 'Découvre "${event.title}" sur Spotbook\n$url',
+                      subject: event.title,
+                    );
                   },
                 ),
                 const SizedBox(width: 12),
