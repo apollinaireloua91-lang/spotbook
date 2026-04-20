@@ -8,6 +8,7 @@ import {
   jsonResponse,
   securityHeaders,
 } from "../_shared/security.ts";
+import { currencyForCountry } from "../_shared/currency.ts";
 
 const corsHeaders = securityHeaders;
 
@@ -37,23 +38,31 @@ serve(async (req) => {
 
     const authHeader = req.headers.get("Authorization");
     if (!authHeader) {
-      return jsonResponse({ error: "unauthorized" }, 401);
+      console.error("create-booking-atomic: missing Authorization header");
+      return jsonResponse({ error: "unauthorized", reason: "no_header" }, 401);
     }
 
-    const authClient = createClient(
-      Deno.env.get("SUPABASE_URL") ?? "",
-      Deno.env.get("SUPABASE_ANON_KEY") ?? "",
-      {
-        global: {
-          headers: { Authorization: authHeader },
-        },
-      }
-    );
-    const {
-      data: { user },
-    } = await authClient.auth.getUser();
-    if (!user) {
-      return jsonResponse({ error: "unauthorized" }, 401);
+    // Extraire le token brut du header "Bearer ..."
+    const token = authHeader.replace(/^Bearer\s+/i, "").trim();
+    if (!token) {
+      console.error("create-booking-atomic: empty bearer token");
+      return jsonResponse({ error: "unauthorized", reason: "empty_token" }, 401);
+    }
+
+    // On passe directement le token à getUser() — plus robuste que
+    // de passer par un authClient global qui peut échouer silencieusement
+    // quand le SDK ne sait pas valider des JWT ES256.
+    const { data: userData, error: userErr } = await supabase.auth.getUser(token);
+    const user = userData?.user;
+    if (userErr || !user) {
+      console.error(
+        "create-booking-atomic: getUser failed",
+        JSON.stringify({ err: userErr?.message, hasUser: !!user }),
+      );
+      return jsonResponse(
+        { error: "unauthorized", reason: "invalid_token" },
+        401,
+      );
     }
 
     // Rate limit — max 5 booking attempts per minute per user
@@ -123,7 +132,7 @@ serve(async (req) => {
 
     const { data: pro } = await supabase
       .from("profiles_pro")
-      .select("stripe_account_id, commission_rate")
+      .select("stripe_account_id, commission_rate, country")
       .eq("id", slot.pro_id)
       .single();
 
@@ -142,9 +151,12 @@ serve(async (req) => {
     const commissionRate = pro?.commission_rate ?? 0.18;
     const applicationFee = Math.round(amountCents * commissionRate);
 
+    const bookingCurrency = currencyForCountry(
+      pro?.country as string | null | undefined,
+    );
     const paymentIntentParams: Record<string, unknown> = {
       amount: amountCents,
-      currency: "cad",
+      currency: bookingCurrency,
       automatic_payment_methods: { enabled: true },
       metadata: {
         bookingId,
@@ -168,11 +180,46 @@ serve(async (req) => {
       { idempotencyKey: `booking-${bookingId}-deposit` }
     );
 
-    // Store payment intent ID on booking
-    await supabase
+    // Store payment intent ID + currency on booking.
+    // La devise est persistée pour que process-payout et cancel-booking
+    // utilisent la même devise que le PaymentIntent original.
+    // Si l'UPDATE échoue après la création du PI : on cancel le PI
+    // (best-effort) + on log ORPHAN_BOOKING pour réconciliation manuelle.
+    const { error: updateErr } = await supabase
       .from("bookings")
-      .update({ stripe_payment_intent_id: paymentIntent.id })
+      .update({
+        stripe_payment_intent_id: paymentIntent.id,
+        currency: bookingCurrency,
+      })
       .eq("id", bookingId);
+
+    if (updateErr) {
+      console.error(
+        JSON.stringify({
+          level: "error",
+          code: "ORPHAN_BOOKING",
+          message: "Stripe PaymentIntent created but booking.update failed",
+          bookingId,
+          paymentIntentId: paymentIntent.id,
+          dbError: updateErr.message,
+        }),
+      );
+      try {
+        await stripe.paymentIntents.cancel(paymentIntent.id, {
+          cancellation_reason: "abandoned",
+        });
+      } catch (cancelErr) {
+        console.error(
+          JSON.stringify({
+            level: "error",
+            code: "ORPHAN_BOOKING_CANCEL_FAILED",
+            paymentIntentId: paymentIntent.id,
+            error: (cancelErr as Error).message,
+          }),
+        );
+      }
+      return jsonResponse({ error: "internal_error" }, 500);
+    }
     await supabase.rpc("log_audit_action", {
       p_user_id: user.id,
       p_action: "booking_created",

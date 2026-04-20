@@ -371,9 +371,14 @@ class BookingRepository {
     required String serviceId,
     String? promoCodeId,
   }) async {
-    // Refresh the session to guarantee a fresh JWT reaches the edge function.
-    // Without this, an expired access token returns 401 from getUser().
+    // Refresh session + passer explicitement le token utilisateur en header.
+    // Sans le header explicite, le SDK peut envoyer l'anon key ce qui fait
+    // échouer getUser() côté edge function (→ 401 unauthorized).
     await _supabase.auth.refreshSession();
+    final accessToken = _supabase.auth.currentSession?.accessToken;
+    if (accessToken == null || accessToken.isEmpty) {
+      throw Exception('Session expirée — reconnecte-toi');
+    }
     final res = await _supabase.functions.invoke(
       'create-booking-atomic',
       body: {
@@ -381,6 +386,7 @@ class BookingRepository {
         'serviceId': serviceId,
         if (promoCodeId != null) 'promoCodeId': promoCodeId,
       },
+      headers: {'Authorization': 'Bearer $accessToken'},
     );
     if (res.status != 200) {
       final err = res.data is Map ? res.data['error'] : 'Booking failed';
