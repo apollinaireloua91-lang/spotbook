@@ -71,11 +71,43 @@ serve(async (req) => {
       return jsonResponse({ error: data.error }, 429);
     }
 
-    const event = stripe.webhooks.constructEvent(
-      rawBody,
-      sig,
-      Deno.env.get("STRIPE_WEBHOOK_SECRET") ?? ""
-    );
+    // ─── Stripe routes Connect events via a dedicated webhook endpoint with
+    // its OWN signing secret (different from the platform secret). We try the
+    // Connect secret first, then fall back to the platform secret, so a single
+    // deployment supports both endpoints without reconfiguration. ───
+    const connectSecret = Deno.env.get("STRIPE_CONNECT_WEBHOOK_SECRET") ?? "";
+    const platformSecret = Deno.env.get("STRIPE_WEBHOOK_SECRET") ?? "";
+    const secrets = [connectSecret, platformSecret].filter(Boolean);
+    if (secrets.length === 0) {
+      console.error("No Stripe webhook secret configured in env");
+      return jsonResponse(
+        { error: "server_misconfigured", detail: "webhook_secret_missing" },
+        500,
+      );
+    }
+
+    let event: Stripe.Event | null = null;
+    let lastVerifyErr: unknown = null;
+    // ─── Deno utilise SubtleCrypto (async) pour HMAC. Le SDK Stripe bloque
+    // `constructEvent()` sync et impose `constructEventAsync()` dans ce runtime.
+    // Cf. erreur : "SubtleCryptoProvider cannot be used in a synchronous context". ───
+    for (const secret of secrets) {
+      try {
+        event = await stripe.webhooks.constructEventAsync(rawBody, sig, secret);
+        break;
+      } catch (err) {
+        lastVerifyErr = err;
+      }
+    }
+    if (!event) {
+      const msg =
+        lastVerifyErr instanceof Error ? lastVerifyErr.message : "unknown";
+      console.error("Signature verification failed:", msg);
+      return jsonResponse(
+        { error: "signature_verification_failed", detail: msg },
+        400,
+      );
+    }
 
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
@@ -502,6 +534,150 @@ serve(async (req) => {
         break;
       }
 
+      /** Checkout Sessions (si utilisé) : fire-and-link. Les side-effects
+       * (tickets, emails, notifications) sont gérés par `payment_intent.succeeded`
+       * qui arrive en parallèle — ici on se contente de lier le PI à la réservation
+       * et de logguer, pour couvrir le cas où Checkout est utilisé à la place de
+       * PaymentSheet. */
+      case "checkout.session.completed": {
+        const session = event.data.object as Stripe.Checkout.Session;
+        // On n'agit que sur les sessions payées. Les `mode: 'setup'` ou
+        // sessions expirées passent en no-op.
+        if (session.payment_status !== "paid") break;
+
+        const bookingId = session.metadata?.bookingId;
+        const piId =
+          typeof session.payment_intent === "string"
+            ? session.payment_intent
+            : session.payment_intent?.id;
+
+        // Si la session porte un bookingId, on relie le PI (si pas déjà fait
+        // par le flux PaymentSheet) pour garantir le lookup ultérieur.
+        if (bookingId && isValidUuid(bookingId) && piId) {
+          await supabase
+            .from("bookings")
+            .update({ stripe_payment_intent_id: piId })
+            .eq("id", bookingId)
+            .is("stripe_payment_intent_id", null);
+        }
+
+        await supabase.rpc("log_audit_action", {
+          p_user_id:
+            session.metadata?.userId ??
+            session.metadata?.clientId ??
+            null,
+          p_action: "checkout_session_completed",
+          p_resource_type: bookingId ? "booking" : "checkout",
+          p_resource_id: bookingId ?? session.metadata?.eventId ?? null,
+          p_metadata: {
+            session_id: session.id,
+            payment_intent_id: piId,
+            amount_total: session.amount_total,
+            mode: session.mode,
+          },
+        });
+        break;
+      }
+
+      /** Transfer reversed : Stripe confirme qu'un virement déjà envoyé au pro
+       * a été annulé (typiquement suite à `stripe.refunds.create({..., reverse_transfer: true})`
+       * pour un remboursement >48h après le payout). Ici on met à jour la
+       * réservation et on prévient le pro que l'argent a été repris. */
+      case "transfer.reversed": {
+        const transfer = event.data.object as Stripe.Transfer;
+
+        type ReversalBooking = {
+          id: string;
+          client_id: string;
+          pro_id: string;
+          booking_code: string;
+          refund_amount: number | null;
+        };
+
+        // Lookup direct via transfer_id (chemin nominal : on a stocké le
+        // transfer_id lors de la création du transfer côté process-payout).
+        let target: ReversalBooking | null = null;
+        const { data: byTransfer } = await supabase
+          .from("bookings")
+          .select("id, client_id, pro_id, booking_code, refund_amount")
+          .eq("transfer_id", transfer.id)
+          .maybeSingle();
+
+        if (byTransfer) {
+          target = byTransfer as ReversalBooking;
+          await supabase
+            .from("bookings")
+            .update({ refund_status: "reversed" })
+            .eq("id", target.id);
+        } else {
+          // Fallback : résoudre via source_transaction → charge → PI.
+          // Utile si le transfer_id n'a pas été persisté au moment du payout
+          // (ancienne version de process-payout, ou race condition).
+          const sourceTxn =
+            typeof transfer.source_transaction === "string"
+              ? transfer.source_transaction
+              : transfer.source_transaction?.id;
+          if (!sourceTxn) {
+            console.error(
+              "transfer.reversed: no transfer_id match and no source_transaction",
+              transfer.id,
+            );
+            break;
+          }
+          try {
+            const charge = await stripe.charges.retrieve(sourceTxn);
+            const piId =
+              typeof charge.payment_intent === "string"
+                ? charge.payment_intent
+                : charge.payment_intent?.id;
+            if (!piId) break;
+            const { data: byPi } = await supabase
+              .from("bookings")
+              .select("id, client_id, pro_id, booking_code, refund_amount")
+              .eq("stripe_payment_intent_id", piId)
+              .maybeSingle();
+            if (!byPi) break;
+            target = byPi as ReversalBooking;
+            // Persiste le transfer_id + marque reversed pour cohérence future.
+            await supabase
+              .from("bookings")
+              .update({
+                transfer_id: transfer.id,
+                refund_status: "reversed",
+              })
+              .eq("id", target.id);
+          } catch (e) {
+            console.error("transfer.reversed: charge retrieve failed:", e);
+            break;
+          }
+        }
+
+        if (target) {
+          await supabase.rpc("log_audit_action", {
+            p_user_id: target.client_id,
+            p_action: "transfer_reversed",
+            p_resource_type: "booking",
+            p_resource_id: target.id,
+            p_metadata: {
+              transfer_id: transfer.id,
+              amount_reversed: transfer.amount_reversed,
+              currency: transfer.currency,
+            },
+          });
+
+          // Notifie le pro (son argent a été repris)
+          await supabase.from("notifications").insert({
+            user_id: target.pro_id,
+            type: "transfer_reversed",
+            title: "Virement annulé",
+            body: `Un virement lié à ${target.booking_code} a été annulé suite à un remboursement.`,
+            resource_id: target.id,
+            idempotency_key: `${event.id}:transfer_reversed:${target.pro_id}`,
+          });
+        }
+        break;
+      }
+
       /** Connect Express : garde `profiles_pro.stripe_onboarded` aligné sur Stripe. */
       case "account.updated": {
         const account = event.data.object as Stripe.Account;
@@ -530,7 +706,12 @@ serve(async (req) => {
       status: 200,
     });
   } catch (error) {
-    console.error("Webhook error:", error);
-    return jsonResponse({ error: "webhook_processing_failed" }, 400);
+    const msg = error instanceof Error ? error.message : String(error);
+    const name = error instanceof Error ? error.name : "UnknownError";
+    console.error("Webhook error:", name, msg, error);
+    return jsonResponse(
+      { error: "webhook_processing_failed", name, detail: msg },
+      400,
+    );
   }
 });
