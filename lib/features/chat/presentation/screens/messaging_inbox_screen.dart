@@ -227,8 +227,9 @@ class _MessagingInboxScreenState extends ConsumerState<MessagingInboxScreen> {
                                 HapticFeedback.selectionClick();
                                 context.push(
                                   '/chat/${c.id}',
-                                  extra: <String, String>{
-                                    'otherUserName': c.otherUserName ?? '',
+                                  extra: <String, String?>{
+                                    'otherUserName': c.otherUserName,
+                                    'otherUserAvatar': c.otherUserAvatar,
                                   },
                                 );
                               },

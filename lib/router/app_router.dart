@@ -542,12 +542,13 @@ final appRouter = GoRouter(
     GoRoute(
       path: '/chat/:conversationId',
       pageBuilder: (context, state) {
-        final extra = state.extra as Map<String, String>?;
+        final extra = state.extra as Map<String, String?>?;
         return premiumPage(
           state: state,
           child: ChatScreen(
             conversationId: state.pathParameters['conversationId'] ?? '',
             otherUserName: extra?['otherUserName'],
+            otherUserAvatar: extra?['otherUserAvatar'],
           ),
         );
       },

@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
@@ -189,9 +190,21 @@ class _PremiumProfileScaffoldState
 
   void _openMessage() {
     HapticFeedback.selectionClick();
-    context.push('/chat/${widget.profile.id}', extra: {
+    context.push('/chat/${widget.profile.id}', extra: <String, String?>{
       'otherUserName': widget.profile.businessName,
+      'otherUserAvatar': widget.profile.avatarUrl,
     });
+  }
+
+  Future<void> _shareProfile() async {
+    HapticFeedback.selectionClick();
+    final p = widget.profile;
+    final name = p.businessName.trim().isEmpty ? 'ce pro' : p.businessName;
+    final url = 'https://spotbook.app/pro/${p.id}';
+    final message = 'Découvre $name sur Spotbook\n$url';
+    await SharePlus.instance.share(
+      ShareParams(text: message, subject: name),
+    );
   }
 
   void _openMoreMenu() {
@@ -345,9 +358,7 @@ class _PremiumProfileScaffoldState
                       const Spacer(),
                       _FloatingIconButton(
                         icon: Icons.share_outlined,
-                        onTap: () {
-                          HapticFeedback.selectionClick();
-                        },
+                        onTap: _shareProfile,
                       ),
                       const SizedBox(width: 8),
                       _FloatingIconButton(

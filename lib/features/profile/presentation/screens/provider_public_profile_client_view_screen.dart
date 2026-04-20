@@ -10,6 +10,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
+import '../../../../shared/utils/currency_formatter.dart';
 import '../../../../shared/widgets/spotbook_avatar.dart';
 import '../../../../shared/widgets/spotbook_loading_shimmer.dart';
 import '../../../catering/data/catering_repository.dart';
@@ -147,8 +148,9 @@ class _ProviderPublicProfileClientViewScreenState
     }
     context.push(
       '/chat/$convId',
-      extra: <String, String>{
+      extra: <String, String?>{
         'otherUserName': s.data.provider.fullName,
+        'otherUserAvatar': s.data.provider.avatarUrl,
       },
     );
   }
@@ -1295,6 +1297,39 @@ class _TabBarDelegate extends SliverPersistentHeaderDelegate {
       controller != oldDelegate.controller;
 }
 
+// ─── Tab Empty State — overflow-proof via SingleChildScrollView ─────────────
+
+class _TabEmptyState extends StatelessWidget {
+  const _TabEmptyState({required this.icon, required this.label});
+
+  final IconData icon;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    // Simple scrollable column — never overflows regardless of parent height.
+    return SingleChildScrollView(
+      physics: const ClampingScrollPhysics(),
+      padding: const EdgeInsets.fromLTRB(24, 48, 24, 48),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, color: AppColors.gris, size: 48),
+          const SizedBox(height: 12),
+          Text(
+            label,
+            textAlign: TextAlign.center,
+            style: GoogleFonts.dmSans(
+              color: AppColors.gris,
+              fontSize: 15,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 // ─── Videos Tab (2-column grid) ─────────────────────────────────────────────
 
 class _VideosTab extends StatelessWidget {
@@ -1312,17 +1347,9 @@ class _VideosTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (videos.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.videocam_off_outlined,
-                color: AppColors.gris, size: 48),
-            const SizedBox(height: 12),
-            Text(AppLocalizations.of(context)!.noVideosAvailable,
-                style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 15)),
-          ],
-        ),
+      return _TabEmptyState(
+        icon: Icons.videocam_off_outlined,
+        label: AppLocalizations.of(context)!.noVideosAvailable,
       );
     }
     return GridView.builder(
@@ -1440,17 +1467,9 @@ class _ServicesTab extends StatelessWidget {
   Widget build(BuildContext context) {
     final active = services.where((s) => s.isActive).toList();
     if (active.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.design_services_outlined,
-                color: AppColors.gris, size: 48),
-            const SizedBox(height: 12),
-            Text(AppLocalizations.of(context)!.noServicesLabel,
-                style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 15)),
-          ],
-        ),
+      return _TabEmptyState(
+        icon: Icons.design_services_outlined,
+        label: AppLocalizations.of(context)!.noServicesLabel,
       );
     }
     return ListView.separated(
@@ -1459,9 +1478,8 @@ class _ServicesTab extends StatelessWidget {
       separatorBuilder: (_, __) => const SizedBox(height: 10),
       itemBuilder: (context, i) {
         final s = active[i];
-        final price =
-            NumberFormat.currency(symbol: r'$', decimalDigits: 0)
-                .format(s.price);
+        final price = CurrencyFormatter.formatCompact(s.price,
+            currency: s.currency);
         return Container(
           decoration: BoxDecoration(
             color: AppColors.surface,
@@ -1575,17 +1593,9 @@ class _ReviewsTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (reviews.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.rate_review_outlined,
-                color: AppColors.gris, size: 48),
-            const SizedBox(height: 12),
-            Text(AppLocalizations.of(context)!.proProfileNoReviews,
-                style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 15)),
-          ],
-        ),
+      return _TabEmptyState(
+        icon: Icons.rate_review_outlined,
+        label: AppLocalizations.of(context)!.proProfileNoReviews,
       );
     }
     final fmt = DateFormat.yMMMd('en');
@@ -1737,16 +1747,9 @@ class _EventsTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (events.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.event_outlined, color: AppColors.gris, size: 48),
-            const SizedBox(height: 12),
-            Text(AppLocalizations.of(context)!.noEventsLabel,
-                style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 15)),
-          ],
-        ),
+      return _TabEmptyState(
+        icon: Icons.event_outlined,
+        label: AppLocalizations.of(context)!.noEventsLabel,
       );
     }
     return ListView.separated(

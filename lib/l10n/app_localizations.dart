@@ -5805,6 +5805,24 @@ abstract class AppLocalizations {
   /// **'Message...'**
   String get chatMessageHint;
 
+  /// No description provided for @chatEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Start the conversation'**
+  String get chatEmptyTitle;
+
+  /// No description provided for @chatEmptySubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Say hi or pick a suggestion below'**
+  String get chatEmptySubtitle;
+
+  /// No description provided for @chatEmojiPickerLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Emoji picker'**
+  String get chatEmojiPickerLabel;
+
   /// No description provided for @quickReplyBarLabel.
   ///
   /// In en, this message translates to:

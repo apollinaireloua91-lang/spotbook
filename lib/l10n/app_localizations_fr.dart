@@ -3032,6 +3032,15 @@ class AppLocalizationsFr extends AppLocalizations {
   String get chatMessageHint => 'Message...';
 
   @override
+  String get chatEmptyTitle => 'Commencez la conversation';
+
+  @override
+  String get chatEmptySubtitle => 'Dites bonjour ou choisissez une suggestion';
+
+  @override
+  String get chatEmojiPickerLabel => 'Sélecteur d\'emoji';
+
+  @override
   String get quickReplyBarLabel => 'Réponses rapides';
 
   @override

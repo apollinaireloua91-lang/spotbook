@@ -86,7 +86,10 @@ class _PanelContentState extends ConsumerState<_PanelContent>
       ref.read(clientSearchProvider.notifier).closeDetailPanel();
       context.push(
         '/chat/${conv.id}',
-        extra: {'otherUserName': widget.pro.name},
+        extra: <String, String?>{
+          'otherUserName': widget.pro.name,
+          'otherUserAvatar': widget.pro.avatarUrl,
+        },
       );
     } catch (e) {
       if (!mounted) return;

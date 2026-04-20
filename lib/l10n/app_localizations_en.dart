@@ -3003,6 +3003,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get chatMessageHint => 'Message...';
 
   @override
+  String get chatEmptyTitle => 'Start the conversation';
+
+  @override
+  String get chatEmptySubtitle => 'Say hi or pick a suggestion below';
+
+  @override
+  String get chatEmojiPickerLabel => 'Emoji picker';
+
+  @override
   String get quickReplyBarLabel => 'Quick replies';
 
   @override
