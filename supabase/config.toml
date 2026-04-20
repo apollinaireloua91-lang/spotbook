@@ -439,3 +439,47 @@ entrypoint = "./functions/create-payment-intent/index.ts"
 # Specifies static files to be bundled with the function. Supports glob patterns.
 # For example, if you want to serve static HTML pages in your function:
 # static_files = [ "./functions/create-payment-intent/*.html" ]
+
+# Gateway JWT check disabled — function verifies auth via getUser() internally.
+# Supabase project uses ES256 JWTs; edge function relay only supports HS256.
+[functions.create-booking-atomic]
+verify_jwt = false
+
+[functions.stripe-create-intent]
+verify_jwt = false
+
+[functions.stripe-create-catering-intent]
+verify_jwt = false
+
+[functions.stripe-create-ticket-intent]
+verify_jwt = false
+
+[functions.stripe-connect-dashboard]
+verify_jwt = false
+
+[functions.cancel-booking]
+verify_jwt = false
+
+[functions.process-payout]
+verify_jwt = false
+
+[functions.sign-qr-ticket]
+verify_jwt = false
+
+[functions.validate-qr-ticket]
+verify_jwt = false
+
+[functions.sign-qr-booking]
+verify_jwt = false
+
+[functions.validate-qr-booking]
+verify_jwt = false
+
+[functions.get-qr-url]
+verify_jwt = false
+
+[functions.delete-account]
+verify_jwt = false
+
+[functions.stripe-return]
+verify_jwt = false
