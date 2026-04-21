@@ -10,7 +10,6 @@ import 'router/app_router.dart';
 import 'shared/locale/app_locale_notifier.dart';
 import 'shared/theme/app_colors.dart';
 import 'shared/theme/app_theme.dart';
-import 'shared/theme/theme_mode_notifier.dart';
 import 'shared/utils/analytics_service.dart';
 
 class SpotbookApp extends ConsumerStatefulWidget {
@@ -57,22 +56,21 @@ class _SpotbookAppState extends ConsumerState<SpotbookApp> {
     ref.watch(realtimeBootstrapProvider);
 
     final locale = ref.watch(appLocaleProvider);
-    final themeMode = ref.watch(themeModeProvider);
-
-    // Resolve effective brightness and sync AppColors
-    final effectiveBrightness = themeMode == ThemeMode.dark
-        ? Brightness.dark
-        : themeMode == ThemeMode.light
-            ? Brightness.light
-            : MediaQuery.platformBrightnessOf(context);
-    AppColors.brightness = effectiveBrightness;
+    // Le light mode a été retiré (2026-04-21). On force dark partout :
+    //   - AppColors.brightness pilote la palette runtime (AppColors.fond,
+    //     AppColors.blanc, etc.) — verrouillé sur Brightness.dark.
+    //   - themeMode côté MaterialApp est fixé à ThemeMode.dark pour que les
+    //     widgets Material (AppBar, CupertinoAlertDialog, etc.) ne tentent
+    //     pas de basculer selon la préférence système.
+    // Voir `theme_mode_notifier.dart` pour la migration du flag Hive.
+    AppColors.brightness = Brightness.dark;
 
     return MaterialApp.router(
       title: 'Spotbook',
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.light,
+      theme: AppTheme.dark,
       darkTheme: AppTheme.dark,
-      themeMode: themeMode,
+      themeMode: ThemeMode.dark,
       routerConfig: appRouter,
       locale: locale,
       supportedLocales: AppLocalizations.supportedLocales,
