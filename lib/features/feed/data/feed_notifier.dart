@@ -113,7 +113,13 @@ class FeedNotifier extends Notifier<FeedState> {
 
   Future<void> _loadInitial() async {
     try {
-      final videos = await ref.read(videoRepositoryProvider).getScoredVideos();
+      final repo = ref.read(videoRepositoryProvider);
+      // Le tab Abonnements doit filtrer sur `follows` — auparavant on
+      // retombait toujours sur getScoredVideos() (Discover), ce qui faisait
+      // que les deux onglets affichaient le même contenu.
+      final videos = state.activeTab == FeedTab.following
+          ? await repo.getFollowingFeed(offset: 0)
+          : await repo.getScoredVideos();
       state = state.copyWith(videos: videos, isLoading: false);
     } catch (_) {
       state = state.copyWith(isLoading: false);
@@ -124,9 +130,10 @@ class FeedNotifier extends Notifier<FeedState> {
     if (state.isLoadingMore) return;
     state = state.copyWith(isLoadingMore: true);
     try {
-      final more = await ref
-          .read(videoRepositoryProvider)
-          .getMoreVideos(offset: state.videos.length);
+      final repo = ref.read(videoRepositoryProvider);
+      final more = state.activeTab == FeedTab.following
+          ? await repo.getFollowingFeed(offset: state.videos.length)
+          : await repo.getMoreVideos(offset: state.videos.length);
       state = state.copyWith(
         videos: [...state.videos, ...more],
         isLoadingMore: false,
