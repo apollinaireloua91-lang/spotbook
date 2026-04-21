@@ -1,4 +1,6 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 
 import '../domain/pos_models.dart';
 import 'pos_repository.dart';
@@ -186,15 +188,35 @@ class PosPaymentNotifier extends AsyncNotifier<PosPaymentState> {
     }
   }
 
+  /// Cancels any in-flight collection and flips the state machine to
+  /// [PosReaderState.canceled]. **Never rethrows** — a cancel is always a
+  /// best-effort operation: the user is trying to exit, so a failure in the
+  /// SDK layer must not propagate up and trap the UI. The state transition is
+  /// what matters for downstream consumers.
+  ///
+  // TODO(stripe-terminal): once the real SDK is wired, distinguish
+  // recoverable failures (Bluetooth drop → retry once) from terminal ones
+  // (reader physically disconnected → force idle + user-facing banner).
+  // For now the swallow-and-log default is correct: the stub always throws
+  // [UnimplementedError], and for real device cancellations the user's
+  // intent (leave the screen) takes precedence over observability.
   Future<void> cancel() async {
     try {
       await ref.read(posTerminalDataSourceProvider).cancelCollection();
-    } finally {
-      state = AsyncData(
-        state.asData?.value.copyWith(readerState: PosReaderState.canceled) ??
-            const PosPaymentState(readerState: PosReaderState.canceled),
-      );
+    } catch (e, st) {
+      if (kDebugMode) {
+        debugPrint('PosPaymentNotifier.cancel swallowed: $e\n$st');
+      }
+      try {
+        await Sentry.captureException(e, stackTrace: st);
+      } catch (_) {
+        // Sentry not initialized (dev without DSN) — silently ignore.
+      }
     }
+    state = AsyncData(
+      state.asData?.value.copyWith(readerState: PosReaderState.canceled) ??
+          const PosPaymentState(readerState: PosReaderState.canceled),
+    );
   }
 
   void reset() {
