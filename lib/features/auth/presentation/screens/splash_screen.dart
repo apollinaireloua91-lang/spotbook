@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:video_player/video_player.dart';
 
 import '../../../../shared/theme/app_colors.dart';
@@ -65,11 +66,27 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
     _navigated = true;
 
     try {
+      // Onboarding gate — doit être checké AVANT la session. Sur iOS, le
+      // token Supabase est persisté dans le Keychain et survit à la
+      // désinstallation, donc `hasActiveSession` peut être `true` même
+      // pour quelqu'un qui n'a jamais vu l'onboarding. Hive, lui, vit dans
+      // le container de l'app et est correctement wipé à la désinstallation.
+      // `OnboardingScreen._complete()` écrit `onboarding_seen = true` sur
+      // skip ET completion — symétrie assurée.
+      final settings = Hive.box('settings');
+      final onboardingSeen =
+          settings.get('onboarding_seen', defaultValue: false) as bool;
+      if (!onboardingSeen) {
+        if (!mounted) return;
+        context.go('/onboarding');
+        return;
+      }
+
       final repo = ref.read(authRepositoryProvider);
 
       if (!repo.hasActiveSession) {
         if (!mounted) return;
-        context.go('/onboarding');
+        context.go('/login');
         return;
       }
 
