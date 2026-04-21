@@ -71,14 +71,14 @@ class BookingCancellationScreen extends ConsumerWidget {
                     icon: Icons.check_circle_outline,
                     color: AppColors.success,
                     text:
-                        'Plus de 48h avant le rendez-vous : remboursement complet de l\'acompte.',
+                        'Plus de 24h avant le rendez-vous : remboursement complet de l\'acompte.',
                   ),
                   const SizedBox(height: 12),
                   _PolicyRow(
                     icon: Icons.cancel_outlined,
-                    color: AppColors.error,
+                    color: AppColors.warning,
                     text:
-                        'Moins de 48h avant le rendez-vous : le pro conserve l\'acompte. Aucun remboursement.',
+                        'Moins de 24h avant le rendez-vous : remboursement partiel de 50 % de l\'acompte.',
                   ),
                   const SizedBox(height: 32),
                   Container(

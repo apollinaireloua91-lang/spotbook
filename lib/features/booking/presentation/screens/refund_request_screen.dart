@@ -3,10 +3,10 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:intl/intl.dart';
 
 import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
+import '../../../../shared/utils/currency_formatter.dart';
 import '../../../../shared/widgets/spotbook_button.dart';
 import '../../data/booking_repository.dart';
 import '../../../../shared/theme/theme_mode_notifier.dart';
@@ -85,9 +85,9 @@ class _RefundRequestScreenState extends ConsumerState<RefundRequestScreen> {
           style: GoogleFonts.sora(color: AppColors.blanc, fontWeight: FontWeight.w700),
         ),
         content: Text(
-          _hoursUntilBooking(booking) > 48
+          _hoursUntilBooking(booking) > 24
               ? 'Vous recevrez un remboursement complet.'
-              : 'L\'annulation est dans moins de 48h — aucun remboursement ne sera effectué.',
+              : 'L\'annulation est dans moins de 24h — 50 % de l\'acompte vous sera remboursé.',
           style: GoogleFonts.dmSans(color: AppColors.gris, height: 1.4),
         ),
         actions: [
@@ -116,15 +116,24 @@ class _RefundRequestScreenState extends ConsumerState<RefundRequestScreen> {
       if (!mounted) return;
 
       final status = result['status'] as String? ?? '';
-      final isRefunded = status == 'cancelled_full_refund';
+      final String message;
+      switch (status) {
+        case 'cancelled_full_refund':
+          message = 'Réservation annulée — remboursement complet en cours.';
+          break;
+        case 'cancelled_partial_refund':
+          message =
+              'Réservation annulée — remboursement partiel (50 %) en cours.';
+          break;
+        default:
+          message = 'Réservation annulée — aucun remboursement.';
+      }
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           backgroundColor: AppColors.surface,
           content: Text(
-            isRefunded
-                ? 'Réservation annulée — remboursement en cours.'
-                : 'Réservation annulée — aucun remboursement (< 48h).',
+            message,
             style: GoogleFonts.dmSans(color: AppColors.blanc),
           ),
         ),
@@ -193,12 +202,16 @@ class _RefundRequestScreenState extends ConsumerState<RefundRequestScreen> {
   Widget _buildContent(BookingModel booking) {
     final l = AppLocalizations.of(context)!;
     final hoursUntil = _hoursUntilBooking(booking);
-    final isFullRefund = hoursUntil > 48;
-    final currencyFormat = NumberFormat.currency(
-      locale: 'fr_CA',
-      symbol: booking.currency == 'EUR' ? '€' : '\$',
-      decimalDigits: 2,
-    );
+    // Policy moderate (cf. supabase/functions/cancel-booking/index.ts) :
+    //   > 24h → remboursement complet (100 %)
+    //   ≤ 24h → remboursement partiel (50 %)
+    // Le 48h est le délai de payout Stripe — ne pas confondre.
+    final isFullRefund = hoursUntil > 24;
+    String currencyFormat(num amount) => CurrencyFormatter.formatAmount(
+          amount,
+          currency: booking.currency,
+          locale: 'fr_CA',
+        );
 
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
@@ -241,7 +254,7 @@ class _RefundRequestScreenState extends ConsumerState<RefundRequestScreen> {
                     Text(l.amountPaid,
                         style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 14)),
                     Text(
-                      currencyFormat.format(booking.depositAmount),
+                      currencyFormat(booking.depositAmount),
                       style: GoogleFonts.dmSans(
                         color: AppColors.blanc,
                         fontSize: 16,
@@ -269,13 +282,14 @@ class _RefundRequestScreenState extends ConsumerState<RefundRequestScreen> {
           _policyRow(
             icon: Icons.check_circle_outline,
             iconColor: AppColors.success,
-            text: 'Plus de 48h avant le rendez-vous → remboursement complet',
+            text: 'Plus de 24h avant le rendez-vous → remboursement complet',
           ),
           const SizedBox(height: 8),
           _policyRow(
             icon: Icons.warning_amber_rounded,
             iconColor: AppColors.warning,
-            text: 'Moins de 48h → aucun remboursement (le pro conserve l\'acompte)',
+            text:
+                'Moins de 24h → remboursement partiel de 50 % (le pro conserve 50 %)',
           ),
 
           const SizedBox(height: 24),
@@ -313,7 +327,7 @@ class _RefundRequestScreenState extends ConsumerState<RefundRequestScreen> {
                     Text(
                       isFullRefund
                           ? 'Remboursement complet'
-                          : 'Aucun remboursement',
+                          : 'Remboursement partiel (50 %)',
                       style: GoogleFonts.sora(
                         color: isFullRefund
                             ? AppColors.success
@@ -327,8 +341,8 @@ class _RefundRequestScreenState extends ConsumerState<RefundRequestScreen> {
                 const SizedBox(height: 8),
                 Text(
                   isFullRefund
-                      ? 'Vous serez remboursé de ${currencyFormat.format(booking.depositAmount)} sur votre moyen de paiement.'
-                      : 'Il reste moins de 48h avant votre RDV. Conformément à notre politique, aucun remboursement ne sera effectué.',
+                      ? 'Vous serez remboursé de ${currencyFormat(booking.depositAmount)} sur votre moyen de paiement.'
+                      : 'Il reste moins de 24h avant votre RDV. 50 % de l\'acompte (${currencyFormat(booking.depositAmount * 0.5)}) vous sera remboursé.',
                   style: GoogleFonts.dmSans(
                     color: isFullRefund
                         ? AppColors.success.withValues(alpha: 0.8)
