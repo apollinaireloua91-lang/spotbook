@@ -194,12 +194,13 @@ class PosPaymentNotifier extends AsyncNotifier<PosPaymentState> {
   /// SDK layer must not propagate up and trap the UI. The state transition is
   /// what matters for downstream consumers.
   ///
-  // TODO(stripe-terminal): once the real SDK is wired, distinguish
-  // recoverable failures (Bluetooth drop → retry once) from terminal ones
-  // (reader physically disconnected → force idle + user-facing banner).
-  // For now the swallow-and-log default is correct: the stub always throws
-  // [UnimplementedError], and for real device cancellations the user's
-  // intent (leave the screen) takes precedence over observability.
+  // Suivi (Chantier 6 — docs/APOLLINAIRE_TODO.md) : quand le SDK Stripe
+  // Terminal réel sera branché, distinguer les échecs récupérables (perte
+  // Bluetooth → retry une fois) des échecs terminaux (reader physiquement
+  // déconnecté → force idle + bannière utilisateur). En l'état, le
+  // swallow-and-log est correct : le stub jette toujours UnimplementedError
+  // et pour une annulation réelle device-side, l'intention utilisateur
+  // (quitter l'écran) prime sur l'observabilité.
   Future<void> cancel() async {
     try {
       await ref.read(posTerminalDataSourceProvider).cancelCollection();
