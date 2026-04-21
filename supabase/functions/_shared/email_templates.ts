@@ -399,6 +399,86 @@ export function reviewRequest(d: ReviewRequestData): EmailResult {
   };
 }
 
+// 8. POS receipt — in-person Tap to Pay transaction
+export interface PosReceiptData {
+  proName: string;
+  date: string;
+  subtotalCents: number;
+  tipCents: number;
+  tpsCents: number;
+  tvqCents: number;
+  totalCents: number;
+  cardBrand?: string; // 'Visa' | 'Mastercard' | 'Interac' | 'Apple Pay' | …
+  cardLast4?: string;
+  taxNumberTps?: string;
+  taxNumberTvq?: string;
+  transactionId: string;
+}
+
+export function posReceipt(d: PosReceiptData): EmailResult {
+  const rows: string[] = [
+    infoRow("Date", d.date),
+    infoRow("Sous-total", fmtMoney(d.subtotalCents)),
+  ];
+  if (d.tipCents > 0) {
+    rows.push(infoRow("Pourboire", fmtMoney(d.tipCents)));
+  }
+  if (d.tpsCents > 0) {
+    const tpsLabel = d.taxNumberTps
+      ? `TPS <span style="font-size:11px;color:#9090AA;">(${d.taxNumberTps})</span>`
+      : "TPS";
+    rows.push(infoRow(tpsLabel, fmtMoney(d.tpsCents)));
+  }
+  if (d.tvqCents > 0) {
+    const tvqLabel = d.taxNumberTvq
+      ? `TVQ <span style="font-size:11px;color:#9090AA;">(${d.taxNumberTvq})</span>`
+      : "TVQ";
+    rows.push(infoRow(tvqLabel, fmtMoney(d.tvqCents)));
+  }
+  rows.push(
+    infoRow(
+      "<strong>Total</strong>",
+      `<strong style="color:#FFFFFF;font-size:16px;">${fmtMoney(d.totalCents)}</strong>`,
+    ),
+  );
+
+  if (d.cardBrand && d.cardLast4) {
+    rows.push(
+      infoRow(
+        "Paiement",
+        `${d.cardBrand} &bull;&bull;&bull;&bull; ${d.cardLast4}`,
+      ),
+    );
+  } else if (d.cardBrand) {
+    rows.push(infoRow("Paiement", d.cardBrand));
+  }
+  rows.push(
+    infoRow(
+      "Transaction",
+      `<code style="color:#8B63FF;font-size:12px;">${d.transactionId}</code>`,
+    ),
+  );
+
+  const content = [
+    heading("Re&ccedil;u de paiement"),
+    para(
+      `Merci pour votre achat aupr&egrave;s de <strong style="color:#FFFFFF;">${d.proName}</strong>.`,
+    ),
+    infoCard(rows.join("")),
+    divider(),
+    `<p style="margin:0;font-size:12px;color:#9090AA;line-height:18px;">Conservez ce re&ccedil;u pour vos dossiers. Aucune donn&eacute;e de carte compl&egrave;te n'est stock&eacute;e par Spotbook.</p>`,
+  ].join("\n");
+
+  return {
+    subject: `Re\u00e7u — ${d.proName}`,
+    html: layout(
+      `Re\u00e7u — ${d.proName}`,
+      `Paiement de ${fmtMoney(d.totalCents)} chez ${d.proName}`,
+      content,
+    ),
+  };
+}
+
 // ── Dispatcher ───────────────────────────────────────────────────────
 
 const builders: Record<string, (data: Record<string, unknown>) => EmailResult> = {
@@ -409,6 +489,7 @@ const builders: Record<string, (data: Record<string, unknown>) => EmailResult> =
   booking_reminder: (d) => bookingReminder(d as unknown as BookingReminderData),
   welcome: (d) => welcome(d as unknown as WelcomeData),
   review_request: (d) => reviewRequest(d as unknown as ReviewRequestData),
+  pos_receipt: (d) => posReceipt(d as unknown as PosReceiptData),
 };
 
 export function buildEmail(
