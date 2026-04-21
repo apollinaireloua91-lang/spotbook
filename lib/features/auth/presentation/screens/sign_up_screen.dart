@@ -276,6 +276,15 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
   }
 
   Future<void> _submit() async {
+    // Défense en profondeur : re-vérifier le match mot-de-passe même si
+    // l'utilisateur a pu repasser par step 0 et éditer un seul des deux
+    // champs avant de revenir via onSkip. Le check de _nextStep L257 reste
+    // la première ligne de défense ; celui-ci garde le filet final.
+    if (_passwordCtrl.text != _confirmCtrl.text) {
+      _showError(AppLocalizations.of(context)!.authPasswordsDontMatch);
+      ref.read(_signUpProvider.notifier).setStep(0);
+      return;
+    }
     try {
       await ref.read(_signUpProvider.notifier).signUp(
             role: widget.role,
