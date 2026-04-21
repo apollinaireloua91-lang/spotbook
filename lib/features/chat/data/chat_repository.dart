@@ -186,16 +186,22 @@ class ChatRepository {
     return _supabase.storage.from('chat-images').getPublicUrl(path);
   }
 
+  /// Marque comme lus tous les messages non envoyés par le user courant
+  /// dans la conversation, via le RPC `mark_messages_read`.
+  ///
+  /// Avantages vs l'UPDATE direct précédent :
+  ///   - enforce `auth.uid() == client_id || pro_id` côté serveur,
+  ///   - reset `unread_count_client` / `unread_count_pro` sur la conversation
+  ///     (le compteur affiché dans la liste),
+  ///   - set `read_at = now()` pour les receipts.
   Future<void> markRead(String conversationId) async {
     final uid = currentUserId;
     if (uid == null) return;
 
-    await _supabase
-        .from('messages')
-        .update({'is_read': true})
-        .eq('conversation_id', conversationId)
-        .neq('sender_id', uid)
-        .eq('is_read', false);
+    await _supabase.rpc(
+      'mark_messages_read',
+      params: {'p_conversation_id': conversationId},
+    );
   }
 
   RealtimeChannel subscribeMessages(
