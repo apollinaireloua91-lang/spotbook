@@ -1,11 +1,35 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 
 import '../../../core/realtime/realtime_events.dart';
 import '../../../core/realtime/realtime_manager.dart';
 import '../domain/video_model.dart';
 import 'video_repository.dart';
+
+/// Wall-clock budget for any feed-loading Supabase round-trip. The Dart
+/// Supabase client has no default socket timeout, so without this the feed
+/// spinner can hang forever if the network stalls (DNS failure, Cloudflare
+/// origin down, RLS recursion, etc.). Matches `pro_own_feed_notifier` for
+/// consistency.
+const _feedLoadTimeout = Duration(seconds: 15);
+
+/// Centralised error sink for feed failures. We never rethrow here — the feed
+/// must degrade gracefully (empty state or last-known videos) rather than
+/// crash — but swallowing without observability is the other failure mode we
+/// refuse. debugPrint surfaces the cause in dev; Sentry keeps prod auditable.
+void _reportFeedError(String where, Object e, StackTrace st) {
+  if (kDebugMode) {
+    debugPrint('FeedNotifier.$where failed: $e\n$st');
+  }
+  try {
+    Sentry.captureException(e, stackTrace: st);
+  } catch (_) {
+    // Sentry not initialized (dev without DSN) — ignore.
+  }
+}
 
 enum FeedTab { discover, following }
 
@@ -81,13 +105,16 @@ class FeedNotifier extends Notifier<FeedState> {
     if (state.videos.any((v) => v.id == videoId)) return;
     try {
       final repo = ref.read(videoRepositoryProvider);
-      final freshVideos = await repo.getScoredVideos(limit: 1);
+      final freshVideos =
+          await repo.getScoredVideos(limit: 1).timeout(_feedLoadTimeout);
       final match = freshVideos.where((v) => v.id == videoId);
       if (match.isNotEmpty) {
         state = state.copyWith(videos: [match.first, ...state.videos]);
       }
-    } catch (_) {
-      // Non-critical — user can still scroll to see new content
+    } catch (e, st) {
+      // Non-critical — user can still scroll to see new content — but we
+      // still want to know when realtime inserts silently miss.
+      _reportFeedError('_onNewPost', e, st);
     }
   }
 
@@ -117,12 +144,19 @@ class FeedNotifier extends Notifier<FeedState> {
       // Le tab Abonnements doit filtrer sur `follows` — auparavant on
       // retombait toujours sur getScoredVideos() (Discover), ce qui faisait
       // que les deux onglets affichaient le même contenu.
-      final videos = state.activeTab == FeedTab.following
-          ? await repo.getFollowingFeed(offset: 0)
-          : await repo.getScoredVideos();
+      // Timeout 15s — sans ça, un DNS qui stall ou un Supabase qui ne répond
+      // pas laisse l'UI bloquée sur son spinner indéfiniment (bug feed client
+      // remonté le 2026-04-21).
+      final videos = await (state.activeTab == FeedTab.following
+              ? repo.getFollowingFeed(offset: 0)
+              : repo.getScoredVideos())
+          .timeout(_feedLoadTimeout);
       state = state.copyWith(videos: videos, isLoading: false);
-    } catch (_) {
-      state = state.copyWith(isLoading: false);
+    } catch (e, st) {
+      _reportFeedError('_loadInitial', e, st);
+      // Empty list + isLoading=false → l'UI bascule sur l'empty state
+      // « Aucune vidéo ». Jamais on ne laisse le spinner figé.
+      state = state.copyWith(videos: [], isLoading: false);
     }
   }
 
@@ -131,14 +165,16 @@ class FeedNotifier extends Notifier<FeedState> {
     state = state.copyWith(isLoadingMore: true);
     try {
       final repo = ref.read(videoRepositoryProvider);
-      final more = state.activeTab == FeedTab.following
-          ? await repo.getFollowingFeed(offset: state.videos.length)
-          : await repo.getMoreVideos(offset: state.videos.length);
+      final more = await (state.activeTab == FeedTab.following
+              ? repo.getFollowingFeed(offset: state.videos.length)
+              : repo.getMoreVideos(offset: state.videos.length))
+          .timeout(_feedLoadTimeout);
       state = state.copyWith(
         videos: [...state.videos, ...more],
         isLoadingMore: false,
       );
-    } catch (_) {
+    } catch (e, st) {
+      _reportFeedError('loadMore', e, st);
       state = state.copyWith(isLoadingMore: false);
     }
   }
