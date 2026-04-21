@@ -1,6 +1,23 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+
+/// Même pattern d'observabilité que les autres entrées critiques
+/// (feed_notifier, pos_notifier) — on ne laisse jamais un upsert auth
+/// foirer en silence, sinon on se retrouve avec une session valide mais
+/// zéro profil en DB → écran profil vide inexplicable.
+void _reportSetupError(String where, Object e, StackTrace st) {
+  if (kDebugMode) {
+    debugPrint('UserSetupRepository.$where failed: $e\n$st');
+  }
+  try {
+    Sentry.captureException(e, stackTrace: st);
+  } catch (_) {
+    // Sentry pas initialisé (dev sans DSN) — on ignore.
+  }
+}
 
 final userSetupRepositoryProvider = Provider<UserSetupRepository>((ref) {
   return UserSetupRepository(supabase: Supabase.instance.client);
@@ -46,34 +63,49 @@ class UserSetupRepository {
     final currency = _currencyMap[countryCode] ?? 'CAD';
     final meta = user.userMetadata ?? {};
 
-    await _supabase.from('users').upsert({
-      'id': user.id,
-      'email': user.email,
-      'full_name': meta['full_name'],
-      'phone': meta['phone'],
-      'age': meta['age'],
-      'address': meta['address'],
-      'city': meta['city'],
-      if (meta['latitude'] != null) 'latitude': meta['latitude'],
-      if (meta['longitude'] != null) 'longitude': meta['longitude'],
-      'role': meta['role'],
-      'avatar_url': meta['avatar_url'],
-      'country': countryCode,
-      'currency': currency,
-      'payment_provider': 'stripe',
-    }, onConflict: 'id');
+    try {
+      await _supabase.from('users').upsert({
+        'id': user.id,
+        'email': user.email,
+        'full_name': meta['full_name'],
+        'phone': meta['phone'],
+        'age': meta['age'],
+        'address': meta['address'],
+        'city': meta['city'],
+        if (meta['latitude'] != null) 'latitude': meta['latitude'],
+        if (meta['longitude'] != null) 'longitude': meta['longitude'],
+        'role': meta['role'],
+        'avatar_url': meta['avatar_url'],
+        'country': countryCode,
+        'currency': currency,
+        'payment_provider': 'stripe',
+      }, onConflict: 'id');
+    } catch (e, st) {
+      // Rethrow : sans la ligne `users` on ne peut rien afficher en aval
+      // (profile screen vide, role null, loop infini sur /select-account-type).
+      // Le caller (login_screen) attrape et affiche une erreur.
+      _reportSetupError('users.upsert', e, st);
+      rethrow;
+    }
 
-    await _supabase.from('notification_preferences').upsert({
-      'user_id': user.id,
-      'push_enabled': true,
-      'email_enabled': true,
-      'booking_reminders': true,
-      'new_messages': true,
-      'promotions': false,
-      'new_followers': true,
-      'booking_updates': true,
-      'event_updates': true,
-    }, onConflict: 'user_id');
+    try {
+      await _supabase.from('notification_preferences').upsert({
+        'user_id': user.id,
+        'push_enabled': true,
+        'email_enabled': true,
+        'booking_reminders': true,
+        'new_messages': true,
+        'promotions': false,
+        'new_followers': true,
+        'booking_updates': true,
+        'event_updates': true,
+      }, onConflict: 'user_id');
+    } catch (e, st) {
+      // Non bloquant : les prefs notifications peuvent être créées plus
+      // tard (first push token register / écran Notifications). On log et
+      // on continue sinon un blip réseau ici casserait tout le login.
+      _reportSetupError('notification_preferences.upsert', e, st);
+    }
   }
 
   /// Creates a `profiles_pro` row so the Edge Function recognises this user
