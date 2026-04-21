@@ -64,7 +64,7 @@ class SocialRepository {
       'target_name': targetName,
       'target_image_url': targetImageUrl,
       'target_subtitle': targetSubtitle,
-    }, onConflict: 'user_id, target_id');
+    }, onConflict: 'user_id,target_id');
   }
 
   Future<List<FavoriteModel>> getFavorites(String targetType) async {

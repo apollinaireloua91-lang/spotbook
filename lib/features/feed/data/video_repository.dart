@@ -96,10 +96,15 @@ class VideoRepository {
   Future<void> likeVideo(String videoId) async {
     final uid = currentUserId;
     if (uid == null) return;
+    // PostgREST n'autorise PAS d'espace après la virgule dans onConflict :
+    // la chaîne est url-encodée telle quelle côté Supabase Dart, et un ` `
+    // encodé devient `%20` → PostgREST cherche alors une colonne littérale
+    // « ␣video_id » et répond 400. D'où le `like_failed` fantôme remonté
+    // le 2026-04-21.
     await _supabase.from('video_likes').upsert({
       'user_id': uid,
       'video_id': videoId,
-    }, onConflict: 'user_id, video_id');
+    }, onConflict: 'user_id,video_id');
   }
 
   Future<void> unlikeVideo(String videoId) async {
@@ -237,7 +242,7 @@ class VideoRepository {
     await _supabase.from('post_saves').upsert({
       'user_id': uid,
       'post_id': videoId,
-    }, onConflict: 'user_id, post_id');
+    }, onConflict: 'user_id,post_id');
   }
 
   Future<void> unsaveVideo(String videoId) async {
@@ -287,7 +292,7 @@ class VideoRepository {
     await _supabase.from('follows').upsert({
       'follower_id': uid,
       'following_id': proId,
-    }, onConflict: 'follower_id, following_id');
+    }, onConflict: 'follower_id,following_id');
   }
 
   Future<void> unfollowPro(String proId) async {

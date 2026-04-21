@@ -127,7 +127,7 @@ class ProfileRepository {
     await _supabase.from('follows').upsert({
       'follower_id': uid,
       'following_id': targetId,
-    }, onConflict: 'follower_id, following_id');
+    }, onConflict: 'follower_id,following_id');
   }
 
   Future<void> unfollowUser(String targetId) async {

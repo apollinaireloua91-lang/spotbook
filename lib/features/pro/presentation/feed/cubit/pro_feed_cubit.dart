@@ -1,9 +1,25 @@
 import 'package:equatable/equatable.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 
 import '../../../../feed/data/video_repository.dart';
 import '../../../../feed/domain/video_model.dart';
 import '../../../../notifications/data/notification_repository.dart';
+
+/// Même pattern d'observabilité que `feed_notifier.dart` — on ne rethrow
+/// jamais (l'UI doit juste annuler l'optimistic + afficher un toast), mais
+/// on n'avale pas l'erreur sans trace : debugPrint en dev, Sentry en prod.
+void _reportCubitError(String where, Object e, StackTrace st) {
+  if (kDebugMode) {
+    debugPrint('ProFeedCubit.$where failed: $e\n$st');
+  }
+  try {
+    Sentry.captureException(e, stackTrace: st);
+  } catch (_) {
+    // Sentry pas initialisé (dev sans DSN) — on ignore.
+  }
+}
 
 class ProFeedState extends Equatable {
   const ProFeedState({
@@ -170,7 +186,8 @@ class ProFeedCubit extends Cubit<ProFeedState> {
       } else {
         await _video.unlikeVideo(v.id);
       }
-    } catch (_) {
+    } catch (e, st) {
+      _reportCubitError('toggleLike', e, st);
       _updateVideoAt(index, v);
       if (!isClosed) emit(state.copyWith(error: 'like_failed'));
     }
@@ -192,7 +209,8 @@ class ProFeedCubit extends Cubit<ProFeedState> {
       } else {
         await _video.unsaveVideo(v.id);
       }
-    } catch (_) {
+    } catch (e, st) {
+      _reportCubitError('toggleSave', e, st);
       _updateVideoAt(index, v);
       if (!isClosed) emit(state.copyWith(error: 'save_failed'));
     }
@@ -215,7 +233,8 @@ class ProFeedCubit extends Cubit<ProFeedState> {
       } else {
         await _video.unfollowPro(v.proId);
       }
-    } catch (_) {
+    } catch (e, st) {
+      _reportCubitError('toggleFollow', e, st);
       if (!isClosed) emit(state.copyWith(videos: previous));
     }
   }
