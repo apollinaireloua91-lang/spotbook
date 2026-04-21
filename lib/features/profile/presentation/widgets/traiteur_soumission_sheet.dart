@@ -40,7 +40,10 @@ class _SoumissionSheetState extends State<_SoumissionSheet> {
 
   late final CateringRepository _repo;
 
-  String _eventType = 'Wedding';
+  // Doit correspondre à une valeur de `_eventTypes` ci-dessous (liste FR).
+  // L'ancien défaut 'Wedding' n'existait pas dans les items du dropdown
+  // → DropdownButton crash assert (`There should be exactly one item`).
+  String _eventType = 'Mariage';
   DateTime _date = DateTime.now().add(const Duration(days: 14));
   TimeOfDay _time = const TimeOfDay(hour: 18, minute: 0);
   final Set<String> _dietaryPrefs = {};
