@@ -144,23 +144,56 @@ class EventRepository {
         .toList();
   }
 
-  /// Buy ticket: create PaymentIntent → confirm → sign QR
+  /// Buy ticket: create PaymentIntent → confirm → sign QR.
+  ///
+  /// [purchaseNonce] — jeton d'idempotence généré côté client (UUID simplifié).
+  /// L'Edge Function l'utilise comme clé Stripe pour que les retries réseau
+  /// renvoient le MÊME PaymentIntent au lieu d'en créer un second.
   Future<String> createTicketPaymentIntent({
     required String ticketTypeId,
     required int quantity,
+    required String purchaseNonce,
   }) async {
+    // Même pattern que `stripe-create-intent` (booking) : on rafraîchit la
+    // session avant l'invoke pour que l'Authorization header envoyé par
+    // supabase_flutter ne soit pas un JWT expiré — l'Edge Function rejette
+    // en 401 sinon (verify_jwt=false mais checks manuellement le header).
+    await _supabase.auth.refreshSession();
     final res = await _supabase.functions.invoke(
       'stripe-create-ticket-intent',
-      body: {'ticketTypeId': ticketTypeId, 'quantity': quantity},
+      body: {
+        'ticketTypeId': ticketTypeId,
+        'quantity': quantity,
+        'purchaseNonce': purchaseNonce,
+      },
     );
     if (res.status != 200) {
       final err = res.data is Map ? res.data['error'] : 'Payment failed';
       throw Exception(err ?? 'Payment failed');
     }
-    return (res.data as Map<String, dynamic>)['clientSecret'] as String;
+    final data = res.data as Map<String, dynamic>;
+    final clientSecret = data['clientSecret'] as String?;
+    if (clientSecret == null || clientSecret.isEmpty) {
+      throw Exception('No client secret returned');
+    }
+    return clientSecret;
   }
 
-  /// After payment success, create ticket records + sign QR
+  /// Matérialise les tickets après un PaymentIntent payé.
+  ///
+  /// **Ne fait plus d'INSERT client-side** (vecteur de fraude 🔴 fermé par
+  /// la migration 20260421120000 qui restreint la policy tickets INSERT
+  /// au service_role). Délègue à l'Edge Function `purchase-tickets-atomic`
+  /// qui :
+  ///   1. vérifie que le PaymentIntent est `succeeded` côté Stripe,
+  ///   2. re-vérifie les metadata (userId, ticketTypeId, quantity, eventId),
+  ///   3. INSERT atomique des N tickets + signe leur QR en HMAC serveur,
+  ///   4. se déduplique avec le webhook Stripe s'il a été plus rapide.
+  ///
+  /// Après la réponse de l'Edge Function, on fetch les tickets complets
+  /// (avec join `events` + `ticket_types`) depuis la DB pour garder le
+  /// même contrat de retour côté caller (`buy_ticket_sheet` n'est pas
+  /// impacté). Lecture autorisée par la policy `tickets_own_select`.
   Future<List<TicketModel>> createTickets({
     required String ticketTypeId,
     required String eventId,
@@ -170,37 +203,37 @@ class EventRepository {
     final uid = currentUserId;
     if (uid == null) throw Exception('Not authenticated');
 
-    final tickets = <TicketModel>[];
-    for (int i = 0; i < quantity; i++) {
-      final data = await _supabase
-          .from('tickets')
-          .insert({
-            'event_id': eventId,
-            'ticket_type_id': ticketTypeId,
-            'user_id': uid,
-            'stripe_payment_intent_id': stripePaymentIntentId,
-          })
-          .select('*, events(title, event_date, location, cover_url), ticket_types(name)')
-          .single();
+    final resp = await _supabase.functions.invoke(
+      'purchase-tickets-atomic',
+      body: {
+        'paymentIntentId': stripePaymentIntentId,
+        'ticketTypeId': ticketTypeId,
+        'eventId': eventId,
+        'quantity': quantity,
+      },
+    );
 
-      final ticket = TicketModel.fromJson(data);
-
-      // Sign QR server-side
-      await _supabase.functions.invoke(
-        'sign-qr-ticket',
-        body: {'ticketId': ticket.id},
-      );
-
-      tickets.add(ticket);
+    final data = resp.data as Map<String, dynamic>?;
+    if (data == null || data['success'] != true) {
+      final errCode = data?['error'] as String? ?? 'purchase_failed';
+      throw Exception('Ticket purchase failed: $errCode');
     }
 
-    // Increment sold count
-    await _supabase.rpc('increment_sold_count', params: {
-      'p_ticket_type_id': ticketTypeId,
-      'p_quantity': quantity,
-    });
+    final tickets = (data['tickets'] as List?)?.cast<Map<String, dynamic>>() ??
+        const [];
+    final ids = tickets.map((t) => t['id'] as String).toList();
+    if (ids.isEmpty) return const [];
 
-    return tickets;
+    final rows = await _supabase
+        .from('tickets')
+        .select(
+            '*, events(title, event_date, location, cover_url), ticket_types(name)')
+        .inFilter('id', ids)
+        .order('purchased_at', ascending: false);
+
+    return (rows as List)
+        .map((e) => TicketModel.fromJson(e as Map<String, dynamic>))
+        .toList();
   }
 
   Future<List<TicketModel>> getUserTickets() async {
