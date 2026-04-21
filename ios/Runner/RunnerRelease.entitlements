@@ -3,10 +3,20 @@
 <plist version="1.0">
 <dict>
 	<key>aps-environment</key>
-	<string>development</string>
+	<string>production</string>
 	<key>com.apple.developer.applesignin</key>
 	<array>
 		<string>Default</string>
 	</array>
+	<key>com.apple.developer.in-app-payments</key>
+	<array>
+		<string>merchant.com.spotbook.app</string>
+	</array>
+	<!-- Tap to Pay on iPhone (Stripe Terminal) — nécessite approbation
+	     manuelle par Apple Developer Support après ouverture d'un ticket.
+	     Sans l'approbation côté Apple, builder avec cet entitlement sera
+	     refusé à l'upload App Store. Voir docs/APOLLINAIRE_TODO.md. -->
+	<key>com.apple.developer.proximity-reader.payment.acceptance</key>
+	<true/>
 </dict>
 </plist>

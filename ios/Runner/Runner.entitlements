@@ -7,6 +7,14 @@
 		<string>Default</string>
 	</array>
 	<key>aps-environment</key>
-	<string>production</string>
+	<string>development</string>
+	<key>com.apple.developer.in-app-payments</key>
+	<array>
+		<string>merchant.com.spotbook.app</string>
+	</array>
+	<!-- Tap to Pay on iPhone (Stripe Terminal) — cf. RunnerRelease.entitlements.
+	     Ne fonctionnera en dev qu'après approbation Apple de la capability. -->
+	<key>com.apple.developer.proximity-reader.payment.acceptance</key>
+	<true/>
 </dict>
 </plist>

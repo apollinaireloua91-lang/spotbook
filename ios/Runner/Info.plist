@@ -77,6 +77,18 @@
 		<string>Spotbook needs your location to show nearby pros on the map</string>
 		<key>NSPhotoLibraryUsageDescription</key>
 		<string>Spotbook a besoin d'accéder à votre galerie pour sélectionner des vidéos.</string>
+		<key>NSFaceIDUsageDescription</key>
+		<string>Spotbook utilise Face ID pour sécuriser l'accès à votre compte et vos paiements.</string>
+		<key>NFCReaderUsageDescription</key>
+		<string>Spotbook utilise le NFC pour accepter les paiements par carte sans contact lors de vos encaissements en personne (Tap to Pay).</string>
+		<key>NSBluetoothAlwaysUsageDescription</key>
+		<string>Spotbook utilise le Bluetooth pour communiquer avec les terminaux de paiement Stripe Reader.</string>
+		<key>NSBluetoothPeripheralUsageDescription</key>
+		<string>Spotbook utilise le Bluetooth pour communiquer avec les terminaux de paiement Stripe Reader.</string>
+		<key>NSUserTrackingUsageDescription</key>
+		<string>Spotbook utilise ces données de manière anonyme pour améliorer l'expérience et les recommandations.</string>
+		<key>ITSAppUsesNonExemptEncryption</key>
+		<false/>
 		<key>UIApplicationSupportsIndirectInputEvents</key>
 		<true/>
 		<key>UILaunchStoryboardName</key>
