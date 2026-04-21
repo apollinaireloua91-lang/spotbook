@@ -133,21 +133,56 @@ class _ProviderReviewsReceivedScreenState
               Container(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: AppColors.surface,
+                  gradient: LinearGradient(
+                    colors: AppColors.isDark
+                        ? [AppColors.surface, AppColors.surfaceAlt]
+                        : [AppColors.surface, AppColors.surface],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(color: AppColors.border),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.warning.withAlpha(12),
+                      blurRadius: 24,
+                      spreadRadius: 0,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
                 ),
                 child: Row(
                   children: [
                     // Big rating
                     Column(
                       children: [
-                        Text(
-                          data.averageRating.toStringAsFixed(1),
-                          style: GoogleFonts.sora(
-                            color: AppColors.blanc,
-                            fontSize: 40,
-                            fontWeight: FontWeight.w800,
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [
+                                AppColors.warning.withAlpha(25),
+                                AppColors.warning.withAlpha(10),
+                              ],
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                            ),
+                            borderRadius: BorderRadius.circular(16),
+                            boxShadow: [
+                              BoxShadow(
+                                color: AppColors.warning.withAlpha(20),
+                                blurRadius: 16,
+                                spreadRadius: 0,
+                              ),
+                            ],
+                          ),
+                          child: Text(
+                            data.averageRating.toStringAsFixed(1),
+                            style: GoogleFonts.sora(
+                              color: AppColors.blanc,
+                              fontSize: 40,
+                              fontWeight: FontWeight.w800,
+                            ),
                           ),
                         ),
                         Row(
@@ -301,15 +336,25 @@ class _RatingFilterChip extends StatelessWidget {
         padding:
             const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
         decoration: BoxDecoration(
-          color: selected ? AppColors.blanc : AppColors.surface,
+          color: selected ? null : AppColors.surface,
+          gradient: selected ? AppColors.gradientAccent : null,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-              color: selected ? AppColors.blanc : AppColors.border),
+              color: selected ? Colors.transparent : AppColors.border),
+          boxShadow: selected
+              ? [
+                  BoxShadow(
+                    color: AppColors.violet.withAlpha(40),
+                    blurRadius: 8,
+                    spreadRadius: 0,
+                  ),
+                ]
+              : null,
         ),
         child: Text(
           label,
           style: GoogleFonts.dmSans(
-            color: selected ? AppColors.fond : AppColors.blanc,
+            color: selected ? Colors.white : AppColors.blanc,
             fontWeight: FontWeight.w600,
             fontSize: 13,
           ),
@@ -331,6 +376,13 @@ class _ReviewCard extends StatelessWidget {
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(14),
         border: Border.all(color: AppColors.border),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.fond.withAlpha(40),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

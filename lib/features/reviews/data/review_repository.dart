@@ -55,6 +55,49 @@ class ReviewRepository {
     return ratings.reduce((a, b) => a + b) / ratings.length;
   }
 
+  /// Completed bookings the current client hasn't reviewed yet.
+  ///
+  /// Two small round-trips:
+  ///   1. Pull all completed bookings with their pro + service joins.
+  ///   2. Pull the set of booking_ids already reviewed by this client.
+  /// Filter locally — simpler than a NOT EXISTS subselect and keeps the
+  /// query readable. Completed-bookings count per client is small.
+  Future<List<ReviewableBookingItem>> getReviewableBookings() async {
+    final uid = _uid;
+    if (uid == null) return [];
+
+    final bookings = await _supabase
+        .from('bookings')
+        .select(
+          'id, pro_id, status, created_at, '
+          'services(name, title), '
+          'pro:users!pro_id(full_name, display_name, avatar_url, '
+          'profiles_pro(business_name, category))',
+        )
+        .eq('client_id', uid)
+        .eq('status', 'completed')
+        .order('created_at', ascending: false);
+
+    final list = (bookings as List).cast<Map<String, dynamic>>();
+    if (list.isEmpty) return [];
+
+    final ids = list.map((b) => b['id'] as String).toList();
+    final reviewed = await _supabase
+        .from('reviews')
+        .select('booking_id')
+        .eq('client_id', uid)
+        .inFilter('booking_id', ids);
+    final reviewedIds = {
+      for (final r in (reviewed as List).cast<Map<String, dynamic>>())
+        r['booking_id'] as String,
+    };
+
+    return list
+        .where((b) => !reviewedIds.contains(b['id']))
+        .map(ReviewableBookingItem.fromJson)
+        .toList();
+  }
+
   Future<bool> hasReviewed(String bookingId) async {
     final uid = _uid;
     if (uid == null) return false;

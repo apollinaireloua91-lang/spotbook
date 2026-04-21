@@ -72,6 +72,7 @@ import '../features/notifications/presentation/screens/notification_history_scre
 import '../features/notifications/presentation/screens/notification_settings_screen.dart';
 import '../features/promo/presentation/screens/create_promo_code_screen.dart';
 import '../features/promo/presentation/screens/referral_screen.dart';
+import '../features/reviews/presentation/screens/client_reviews_inbox_screen.dart';
 import '../features/reviews/presentation/screens/review_screen.dart';
 import '../features/settings/presentation/screens/cancellation_policy_screen.dart';
 import '../features/settings/presentation/screens/commissions_screen.dart';
@@ -764,6 +765,13 @@ final appRouter = GoRouter(
       pageBuilder: (context, state) => premiumPage(
         state: state,
         child: const FavoritesScreen(),
+      ),
+    ),
+    GoRoute(
+      path: '/client/reviews-inbox',
+      pageBuilder: (context, state) => premiumPage(
+        state: state,
+        child: const ClientReviewsInboxScreen(),
       ),
     ),
     GoRoute(

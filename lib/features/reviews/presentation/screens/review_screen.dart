@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:shimmer/shimmer.dart';
 
 import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
@@ -98,28 +97,57 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(Icons.check_circle, color: AppColors.success, size: 64),
-                const SizedBox(height: 20),
+                Container(
+                  width: 96,
+                  height: 96,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        AppColors.success.withAlpha(30),
+                        AppColors.success.withAlpha(10),
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(28),
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColors.success.withAlpha(40),
+                        blurRadius: 32,
+                        spreadRadius: 4,
+                      ),
+                    ],
+                  ),
+                  child: Icon(Icons.check_circle_rounded, color: AppColors.success, size: 48),
+                ),
+                const SizedBox(height: 24),
                 Text(l.reviewThankYou,
-                    style: GoogleFonts.sora(color: AppColors.blanc, fontSize: 22, fontWeight: FontWeight.bold)),
+                    style: GoogleFonts.sora(color: AppColors.blanc, fontSize: 24, fontWeight: FontWeight.bold)),
                 const SizedBox(height: 8),
                 Text(l.reviewFeedbackHelps,
-                    style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 15), textAlign: TextAlign.center),
-                const SizedBox(height: 32),
+                    style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 15, height: 1.4), textAlign: TextAlign.center),
+                const SizedBox(height: 36),
                 SizedBox(
                   width: double.infinity,
                   height: 52,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      HapticFeedback.mediumImpact();
-                      context.pop();
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.blanc,
-                      foregroundColor: AppColors.fond,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      gradient: AppColors.gradientAccent,
+                      borderRadius: BorderRadius.circular(14),
+                      boxShadow: AppColors.primaryButtonShadow,
                     ),
-                    child: Text(l.reviewDone, style: GoogleFonts.dmSans(fontWeight: FontWeight.bold, fontSize: 16)),
+                    child: ElevatedButton(
+                      onPressed: () {
+                        HapticFeedback.mediumImpact();
+                        context.pop();
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.transparent,
+                        shadowColor: Colors.transparent,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                      ),
+                      child: Text(l.reviewDone, style: GoogleFonts.dmSans(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.white)),
+                    ),
                   ),
                 ),
               ],
@@ -187,20 +215,56 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
                     duration: const Duration(milliseconds: 200),
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 6),
-                      child: Icon(
-                        isSelected ? Icons.star_rounded : Icons.star_outline_rounded,
-                        color: isSelected ? AppColors.blanc : AppColors.gris,
-                        size: 48,
+                      child: Container(
+                        decoration: isSelected
+                            ? BoxDecoration(
+                                shape: BoxShape.circle,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: AppColors.warning.withAlpha(60),
+                                    blurRadius: 12,
+                                    spreadRadius: 1,
+                                  ),
+                                ],
+                              )
+                            : null,
+                        child: Icon(
+                          isSelected ? Icons.star_rounded : Icons.star_outline_rounded,
+                          color: isSelected ? AppColors.warning : AppColors.gris,
+                          size: 48,
+                        ),
                       ),
                     ),
                   ),
                 );
               }),
             ),
-            const SizedBox(height: 8),
-            Text(
-              _ratingLabel(state.rating),
-              style: TextStyle(color: AppColors.gris, fontSize: 14),
+            const SizedBox(height: 12),
+            AnimatedSwitcher(
+              duration: const Duration(milliseconds: 200),
+              child: Container(
+                key: ValueKey(state.rating),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                decoration: BoxDecoration(
+                  color: state.rating > 0
+                      ? AppColors.warning.withAlpha(20)
+                      : AppColors.surface,
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(
+                    color: state.rating > 0
+                        ? AppColors.warning.withAlpha(60)
+                        : AppColors.border,
+                  ),
+                ),
+                child: Text(
+                  _ratingLabel(state.rating),
+                  style: GoogleFonts.dmSans(
+                    color: state.rating > 0 ? AppColors.warning : AppColors.gris,
+                    fontSize: 14,
+                    fontWeight: state.rating > 0 ? FontWeight.w600 : FontWeight.normal,
+                  ),
+                ),
+              ),
             ),
             const SizedBox(height: 32),
             // Comment
@@ -235,45 +299,59 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
             SizedBox(
               width: double.infinity,
               height: 52,
-              child: ElevatedButton(
-                onPressed: state.rating == 0 || state.isSubmitting
-                    ? null
-                    : () async {
-                        HapticFeedback.mediumImpact();
-                        try {
-                          await ref.read(_reviewProvider.notifier).submit(
-                                bookingId: widget.bookingId,
-                                proId: widget.proId,
-                                comment: _commentCtrl.text,
-                              );
-                        } catch (e) {
-                          if (context.mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text(e.toString()), backgroundColor: AppColors.error),
-                            );
-                          }
-                        }
-                      },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.blanc,
-                  foregroundColor: AppColors.fond,
-                  disabledBackgroundColor: AppColors.surfaceAlt,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: state.rating > 0 && !state.isSubmitting
+                      ? AppColors.gradientAccent
+                      : null,
+                  color: state.rating == 0 || state.isSubmitting
+                      ? AppColors.surfaceAlt
+                      : null,
+                  borderRadius: BorderRadius.circular(14),
+                  boxShadow: state.rating > 0 && !state.isSubmitting
+                      ? AppColors.primaryButtonShadow
+                      : null,
                 ),
-                child: state.isSubmitting
-                    ? Shimmer.fromColors(
-                        baseColor: AppColors.surface,
-                        highlightColor: AppColors.surfaceAlt,
-                        child: Container(
-                          width: 64,
-                          height: 12,
-                          decoration: BoxDecoration(
-                            color: AppColors.surface,
-                            borderRadius: BorderRadius.circular(999),
+                child: ElevatedButton(
+                  onPressed: state.rating == 0 || state.isSubmitting
+                      ? null
+                      : () async {
+                          HapticFeedback.mediumImpact();
+                          try {
+                            await ref.read(_reviewProvider.notifier).submit(
+                                  bookingId: widget.bookingId,
+                                  proId: widget.proId,
+                                  comment: _commentCtrl.text,
+                                );
+                          } catch (e) {
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text(e.toString()), backgroundColor: AppColors.error),
+                              );
+                            }
+                          }
+                        },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.transparent,
+                    shadowColor: Colors.transparent,
+                    disabledBackgroundColor: Colors.transparent,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                  ),
+                  child: state.isSubmitting
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2,
                           ),
-                        ),
-                      )
-                    : Text(l.reviewSubmit, style: GoogleFonts.dmSans(fontWeight: FontWeight.bold, fontSize: 16)),
+                        )
+                      : Text(l.reviewSubmit, style: GoogleFonts.dmSans(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                          color: state.rating > 0 ? Colors.white : AppColors.gris,
+                        )),
+                ),
               ),
             ),
             const SizedBox(height: 32),

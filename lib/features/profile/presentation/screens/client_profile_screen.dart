@@ -507,17 +507,15 @@ class _SettingsSection extends ConsumerWidget {
         SettingsItemData(
           icon: 'star_outline',
           label: l.reviewsLabel,
-          onTap: () => context.push('/favorites'),
+          // Opens the inbox of completed bookings that still need a
+          // rating. Submitting a review auto-syncs to the pro's account
+          // via the `tr_review_update_rating` SQL trigger.
+          onTap: () => context.push('/client/reviews-inbox'),
         ),
         SettingsItemData(
           icon: 'receipt_long',
           label: 'Mes reçus',
           onTap: () => context.push('/client/receipts'),
-        ),
-        SettingsItemData(
-          icon: 'volunteer_activism',
-          label: 'Parrainage',
-          onTap: () => context.push('/client/referrals-squire'),
         ),
         // Dark mode lives inside the same list so "Paramètres" reads as
         // one cohesive card rather than a list + a stray toggle card.
