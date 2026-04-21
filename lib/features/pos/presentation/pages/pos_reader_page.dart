@@ -27,10 +27,12 @@ library;
 
 import 'dart:math' as math;
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 
 import '../../../../core/theme/spotbook_pos_theme.dart';
 import '../../../../core/theme/spotbook_tokens.dart';
@@ -167,15 +169,34 @@ class _PosReaderPageState extends ConsumerState<PosReaderPage> {
     }
   }
 
+  /// Cancels the current collection and sends the Pro back to the dashboard.
+  ///
+  /// Defensive double-catch even though [PosPaymentNotifier.cancel] is now
+  /// no-throw (commit 2016678): the guarantee is documented but not
+  /// compiler-enforced, and a future regression or a wrapper that awaits
+  /// extra work must never be able to trap the user on this page.
+  ///
+  /// `_hasNavigatedAway` is flipped **after** the navigation decision — never
+  /// before. Setting it upfront (the previous implementation) meant a failed
+  /// navigation (e.g. an SDK throw) left the page in a zombie state where
+  /// every subsequent X tap early-returned with no visible effect.
   Future<void> _cancel() async {
-    if (_hasNavigatedAway) return;
-    _hasNavigatedAway = true;
-    await ref.read(posPaymentProvider.notifier).cancel();
-    if (!mounted) return;
-    if (context.canPop()) {
-      context.pop();
-    } else {
-      context.go('/pro/pos/amount');
+    try {
+      await ref.read(posPaymentProvider.notifier).cancel();
+    } catch (e, st) {
+      if (kDebugMode) {
+        debugPrint('POS _cancel swallowed: $e\n$st');
+      }
+      try {
+        await Sentry.captureException(e, stackTrace: st);
+      } catch (_) {
+        // Sentry not initialized in dev — ignore.
+      }
+    }
+    // Navigation is unconditional: the user asked to leave this screen.
+    if (!_hasNavigatedAway && mounted) {
+      _hasNavigatedAway = true;
+      context.go('/pro/dashboard');
     }
   }
 
