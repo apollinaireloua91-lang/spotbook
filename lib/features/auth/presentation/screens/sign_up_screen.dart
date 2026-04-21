@@ -696,7 +696,18 @@ class _Step1EmailPassword extends StatelessWidget {
                 ),
               ),
               validator: (v) {
-                if (v == null || v.length < 6) return l.authMinSixChars;
+                // Règle : 8 caractères min, au moins une lettre ET un chiffre.
+                // Aligné sur les recommandations OWASP ASVS v4.0 §2.1.1
+                // (min 8) + OWASP pragma pour passwords "simples" (mélange
+                // basique plutôt que policy stricte qui pousse au post-it).
+                if (v == null || v.length < 8) {
+                  return l.authPasswordComplexity;
+                }
+                final hasLetter = RegExp(r'[A-Za-z]').hasMatch(v);
+                final hasDigit = RegExp(r'\d').hasMatch(v);
+                if (!hasLetter || !hasDigit) {
+                  return l.authPasswordComplexity;
+                }
                 return null;
               },
             ),

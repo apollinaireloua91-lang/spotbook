@@ -166,6 +166,7 @@
   "authUpdatePassword": "Mettre à jour le mot de passe",
   "authPasswordsDontMatch": "Les mots de passe ne correspondent pas",
   "authMinSixChars": "Minimum 6 caractères",
+  "authPasswordComplexity": "Minimum 8 caractères, dont une lettre et un chiffre",
   "authSignInWithGoogle": "Se connecter avec Google",
   "authCreateAccountTitle": "Créez votre compte",
   "authJoinCommunity": "Rejoignez la communauté Spotbook",

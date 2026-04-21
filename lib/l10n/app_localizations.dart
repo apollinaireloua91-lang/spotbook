@@ -1094,6 +1094,12 @@ abstract class AppLocalizations {
   /// **'Minimum 6 characters'**
   String get authMinSixChars;
 
+  /// No description provided for @authPasswordComplexity.
+  ///
+  /// In en, this message translates to:
+  /// **'At least 8 characters with a letter and a digit'**
+  String get authPasswordComplexity;
+
   /// No description provided for @authSignInWithGoogle.
   ///
   /// In en, this message translates to:

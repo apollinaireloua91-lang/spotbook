@@ -514,6 +514,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get authMinSixChars => 'Minimum 6 characters';
 
   @override
+  String get authPasswordComplexity =>
+      'At least 8 characters with a letter and a digit';
+
+  @override
   String get authSignInWithGoogle => 'Sign in with Google';
 
   @override
