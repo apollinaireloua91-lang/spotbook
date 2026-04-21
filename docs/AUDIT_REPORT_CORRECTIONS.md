@@ -136,7 +136,40 @@ corriger** (Chantier 9).
 
 ---
 
-## 7. À VALIDER PAR HUMAIN (liste courte)
+## 7. Seuil 48h (UI) vs 24h (backend) — pas une bug backend
+
+### Audit
+Présente la divergence comme "risque juridique : UI annonce 48h, backend
+rembourse au-delà de 24h".
+
+### Réalité
+Le backend est **conforme à CLAUDE.md** :
+- `moderate` : >24h full refund, ≤24h 50 % refund (déjà appliqué en
+  `cancel-booking/index.ts` — corrigé cosmétiquement en Chantier 3 pour
+  expliciter la policy via la constante `POLICY`).
+- `strict` : 0 % refund (déjà correct).
+
+**Le 48h est une confusion de CLAUDE.md lui-même** entre deux notions :
+- le seuil de payout Stripe (après ~48h les fonds sont transférés, un
+  refund nécessite un `transfers.createReversal`) ;
+- le seuil cancellation policy visible au client (24h pour moderate).
+
+L'UI `refund_request_screen.dart` affiche les deux indifféremment à 48h
+avec "no refund below" — ce qui est donc un **bug Flutter**, pas un bug
+backend.
+
+### Décision
+- Backend `cancel-booking` renvoie dorénavant `policy`, `hoursThreshold`,
+  `refundFraction`, `refundAmount` pour que l'UI affiche la vraie valeur.
+- Nouveau endpoint GET `cancellation-policy` : l'UI peut pré-afficher
+  le bon seuil **avant** de déclencher l'annulation.
+- Chantier 4 listera le fix Flutter (remplacer les 48h hardcodés par
+  l'appel au endpoint).
+- CLAUDE.md sera reformulé en Chantier 9 pour dissocier les deux seuils.
+
+---
+
+## 8. À VALIDER PAR HUMAIN (liste courte)
 
 Avant toute utilisation en prod :
 
