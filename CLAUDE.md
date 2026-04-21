@@ -203,9 +203,16 @@ payment_provider = "stripe" pour TOUS les users SANS EXCEPTION
 
 Transfer Reversal OBLIGATOIRE si remboursement après payout au pro
 
-Remboursement > 48h : stripe.refunds.create() + createReversal()
+// ⚠ LE SEUIL 48h CONCERNE LE PAYOUT STRIPE, PAS LA POLITIQUE D'ANNULATION.
+// Au-delà de 48h après le paiement, les fonds sont déjà transférés au Pro
+// → un refund nécessite stripe.transfers.createReversal(). En-dessous de 48h,
+// le simple stripe.refunds.create() suffit (fonds toujours sur la plateforme).
+// Voir supabase/functions/cancel-booking/index.ts L144-149.
 
-Remboursement < 48h : pro garde l'acompte
+Refund > 48h après paiement : stripe.refunds.create() + transfers.createReversal()
+Refund ≤ 48h après paiement : stripe.refunds.create() uniquement
+
+// NE PAS CONFONDRE avec le seuil 24h ci-dessous (politique d'annulation).
 
 Commission réservation : 18%
 
@@ -220,13 +227,21 @@ Acompte (deposit) : configurable PAR SERVICE uniquement (pas de valeur globale p
   → deposit_type : 'percentage' | 'fixed'
   → deposit_value : 10–30% (max 30%, contraint par CHECK SQL)
 
-Politique annulation :
-  flexible  → remboursement total si annulé >12h avant le RDV
-  moderate  → remboursement total si annulé >24h, sinon 50% gardé
-  strict    → aucun remboursement, acompte gardé
+Politique annulation (déclarée par service dans `services.cancellation_policy`) :
+  moderate  → 100 % remboursé si >24h avant le RDV, sinon 50 % remboursé (défaut)
+  strict    → 0 % remboursé (acompte + total gardés par le Pro)
+
+// ⚠ La policy `flexible` a été retirée (migration 20260420170000_remove_flexible_cancellation).
+//    Toute valeur non reconnue en DB tombe sur `moderate` côté Edge Function.
+// Source de vérité : supabase/functions/cancel-booking/index.ts (constante POLICY)
+// + endpoint GET `cancellation-policy` pour que l'UI affiche la même chose
+// que ce qui sera effectivement appliqué.
 
 // Pas de tiers premium — même taux pour tous les Pros.
-// Taux configurables via table app_config (commission_bookings, commission_events, commission_catering, service_fee_client).
+// Taux configurables UNIQUEMENT via table app_config :
+//   commission_bookings, commission_events, commission_catering, service_fee_client
+// Flutter les lit via `appConfigProvider` (lib/core/services/app_config_provider.dart) —
+// ne JAMAIS hardcoder 0.18 / 0.12 / 2.50 dans un widget.
 
 
 ## BASE DE DONNÉES
@@ -240,27 +255,41 @@ notifications, notification_preferences,
 blocks, promo_codes, referrals, reports, app_config
 
 ### Tables Client (nouvelles)
-posts              — publications Pro (video/photo/event) avec caption, media, spotify track
-post_likes         — likes sur posts (PK: post_id + user_id)
-post_saves         — sauvegardes posts (PK: post_id + user_id)
-post_comments      — commentaires sur posts (author_id, text, like_count)
+videos             — publications vidéo des Pros (ex-« posts ») avec caption,
+                     media, spotify_track_title/artist, status (approved par défaut)
+video_likes        — likes sur vidéos (PK: video_id + user_id)
+post_saves         — sauvegardes vidéos (FK → videos.id, PK user_id + post_id)
+video_comments     — commentaires sur vidéos (author_id, text, like_count)
 comment_likes      — likes sur commentaires (PK: comment_id + user_id)
-follows            — abonnements client→pro (PK: client_id + pro_id)
+follows            — abonnements client→pro (PK: follower_id + following_id)
 notifications_client — notifications client (type, title, body, ref_id, is_read)
-reservations       — réservations client (status: pending/confirmed/done/cancelled)
-ticket_purchases   — billets achetés (quantity, total_price, qr_code_url, status)
+favorites          — favoris génériques (target_type IN ('pro','service','event'))
+client_favorite_pros — pros favoris d'un client (PK: client_id + pro_id) —
+                     redondance historique avec favorites(target_type='pro'),
+                     conservée pour compat code Flutter existant
 client_profiles    — profil client (display_name, handle, bio, avatar_url, location)
-client_favorite_pros — pros favoris d'un client (PK: client_id + pro_id)
 reviews            — avis client sur réservation (rating 1-5, comment)
+
+// ⚠ Tables listées dans d'anciens audits mais INEXISTANTES en DB :
+//   `posts`, `post_likes`, `post_comments`, `reservations`, `ticket_purchases`.
+//   Les vues Flutter utilisent respectivement : `videos`, `video_likes`,
+//   `video_comments`, `bookings`, `tickets`. Le RPC `delete_account_rpc`
+//   contient des DELETE wrappés dans `BEGIN/EXCEPTION WHEN undefined_table`
+//   pour ces phantom tables — no-op sûr.
+// Voir docs/AUDIT_REPORT_CORRECTIONS.md §1 pour l'historique.
 
 // RLS activé sur toutes les tables.
 
 
-## RÈGLES POSTS & VIDÉO — SPOTBOOK N'EST PAS TIKTOK
+## RÈGLES VIDÉOS — SPOTBOOK N'EST PAS TIKTOK
 
-Seuls les Pros peuvent créer des posts (vidéo, photo, événement).
+// Table réelle : `videos` (et NON `posts`). Historiquement décrites comme
+// « posts » dans les specs → utiliser le terme « vidéo » dans le code et
+// la doc pour rester aligné avec la DB.
 
-Chaque post vidéo DOIT représenter une prestation de service réelle.
+Seuls les Pros peuvent créer des vidéos.
+
+Chaque vidéo DOIT représenter une prestation de service réelle.
 
 Champs obligatoires : titre (5-80 chars) + catégorie (liste fermée) + description (min 20 chars)
 
@@ -268,14 +297,14 @@ Durée max vidéo : 2 minutes (120 secondes).
 
 Les vidéos sont publiées immédiatement avec status = "approved" (pas de modération).
 
-Le feed n'affiche QUE les posts avec vidéos status = "approved".
+Le feed n'affiche QUE les vidéos avec status = "approved".
 
-Un post peut être lié à un service (service_id) ou un événement (event_id).
+Une vidéo peut être liée à un service (service_id) ou un événement (event_id).
 
-Un post peut avoir un morceau Spotify (spotify_track_title + spotify_track_artist).
+Une vidéo peut avoir un morceau Spotify (spotify_track_title + spotify_track_artist).
 
 // !! Jamais afficher une vidéo sans status = "approved" dans le feed.
-// !! Un client ne peut JAMAIS créer un post ou uploader une vidéo.
+// !! Un client ne peut JAMAIS créer une vidéo ou uploader un média.
 // !! Le bouton commenter est EXCLUSIF au feed Client (absent du ProFeedScreen).
 
 
@@ -350,9 +379,9 @@ Routes supplémentaires Client :
 
 ## CLIENT FEED — COMPORTEMENTS CRITIQUES
 
-1. Feed temps réel : Supabase Realtime stream sur posts
-   - Tab Découvrir = tous les posts récents
-   - Tab Abonnements = posts des pros suivis (JOIN follows)
+1. Feed temps réel : Supabase Realtime stream sur `videos` (table réelle)
+   - Tab Découvrir = getScoredVideos() / getMoreVideos()
+   - Tab Abonnements = getFollowingFeed() (JOIN follows.following_id)
 
 2. VideoPlayer : autoplay au snap PageView, pause au scroll, loop, dispose au destroy
 
@@ -377,3 +406,69 @@ flutter run --dart-define-from-file=.env.json
 flutter build ipa --release --dart-define-from-file=.env.json
 
 flutter build appbundle --release --dart-define-from-file=.env.json
+
+
+## LAST VERIFIED — 2026-04-21
+
+Cette section doit être mise à jour à chaque resync majeure de CLAUDE.md.
+Resync précédente : pre-refonte-totale-premium (date inconnue).
+
+Divergences connues résolues dans cette resync :
+- Table `posts` → `videos` dans la doc (la DB n'a jamais eu `posts`)
+- Policy `flexible` retirée (migration 20260420170000)
+- Seuil 48h (payout Stripe) distingué du seuil 24h (politique annulation)
+- Phantom tables `post_likes`, `post_comments`, `reservations`, `ticket_purchases`
+  marquées comme n'existant pas en DB (cf. delete_account_rpc avec EXCEPTION)
+- Commission rates : source unique `appConfigProvider`, jamais hardcodés
+
+Voir docs/AUDIT_REPORT_CORRECTIONS.md pour l'historique complet des divergences
+audit-vs-réalité et docs/APOLLINAIRE_TODO.md pour les tâches humaines restantes.
+
+
+## KNOWN QUIRKS
+
+Petits comportements qui déroutent si on ne les connaît pas.
+
+1. **delete_account_rpc et phantom tables** — La fonction RPC
+   `delete_account_rpc` contient des DELETE sur des tables qui n'existent
+   peut-être plus (`post_likes`, `post_comments`, etc.), wrappés dans
+   `BEGIN ... EXCEPTION WHEN undefined_table THEN NULL`. C'est volontaire,
+   ne pas « nettoyer » sans vérifier les autres environnements.
+
+2. **Apple Sign In** — Pas encore implémenté (v1.1). Compte Apple Developer
+   payant requis avant activation. Voir docs/APOLLINAIRE_TODO.md §3.
+
+3. **Commission = 18 % bookings ≠ 12 % events** — Volontaire. Les événements
+   sont des volumes plus importants, moins de risque d'annulation tardive.
+   À confirmer avec stakeholder (cf. APOLLINAIRE_TODO §9).
+
+4. **`services.deposit_value` CHECK 10-30%** — Contrainte SQL déjà en place
+   (pas besoin de la ré-appliquer au niveau Flutter, mais l'UI doit valider
+   côté client pour le feedback utilisateur).
+
+5. **`tickets` INSERT** — Seul le `service_role` peut insérer dans `tickets`
+   depuis la migration 20260421120000. Client Flutter passe OBLIGATOIREMENT
+   par l'Edge Function `purchase-tickets-atomic` qui re-vérifie les metadata
+   du PaymentIntent Stripe avant insert.
+
+6. **`waitlist` concurrency** — Ne jamais faire `count + upsert` côté client
+   (race condition). Utiliser l'Edge Function `join-waitlist-atomic` qui
+   sérialise via `pg_advisory_xact_lock(hashtext(ticket_type_id))`.
+
+7. **Fraction de remboursement** — Ne pas calculer côté Flutter. L'Edge
+   Function `cancel-booking` renvoie `{policy, hoursThreshold, refundFraction,
+   refundAmount}` → l'UI doit afficher ces valeurs telles quelles. Pour un
+   affichage pré-soumission, utiliser le GET `/cancellation-policy`.
+
+8. **MAPS_API_KEY Android** — Injectée via `manifestPlaceholders` depuis
+   `android/local.properties` (non commité). L'ancienne clé en dur dans
+   le manifest a été retirée — pensez à rotater si l'historique git est
+   public (cf. APOLLINAIRE_TODO §11).
+
+9. **l10n ARB-first** — Ne JAMAIS éditer `app_localizations*.dart` à la main.
+   Éditer les `.arb`, puis `flutter gen-l10n`. Cf. memory
+   `feedback_l10n_arb_source.md`.
+
+10. **Pas de `supabase db push` ni `functions deploy` automatique** — Claude
+    ne déclenche jamais ces commandes (risque d'écraser le dashboard /
+    surcharger les triggers). L'humain les lance manuellement après revue.
