@@ -1,5 +1,6 @@
 import 'dart:io' show Platform;
 
+import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -100,7 +101,9 @@ class _Step5PaymentState extends ConsumerState<Step5Payment> {
               googlePay: GooglePayParams(
                 merchantCountryCode: 'CA',
                 currencyCode: widget.currency,
-                testEnv: true,
+                // kDebugMode : true en dev (sandbox), false en release.
+                // Un testEnv:true en prod fait rejeter toutes les cartes réelles.
+                testEnv: kDebugMode,
               ),
             );
       await Stripe.instance.confirmPlatformPayPaymentIntent(
@@ -193,9 +196,13 @@ class _Step5PaymentState extends ConsumerState<Step5Payment> {
     final flowState = ref.watch(bookingFlowProvider);
     final cfg = ref.watch(appConfigProvider).value ?? AppConfig.fallback;
     final serviceFee = cfg.serviceFeeClient;
+    final commissionRate = cfg.commissionBookings;
     final servicesTotal = flowState.totalPrice;
     final deposit =
         (servicesTotal * 0.30 * 100).roundToDouble() / 100;
+    final commissionAmount =
+        (deposit * commissionRate * 100).roundToDouble() / 100;
+    final commissionPct = (commissionRate * 100).toStringAsFixed(0);
     final dueNow = deposit + serviceFee;
     final remaining = servicesTotal - deposit;
 
@@ -382,6 +389,11 @@ class _Step5PaymentState extends ConsumerState<Step5Payment> {
                   _PaymentRow(
                       label: 'Frais de service',
                       value: fmt(serviceFee)),
+                  const SizedBox(height: 8),
+                  _PaymentRow(
+                      label: 'Commission Spotbook ($commissionPct%)',
+                      value: fmt(commissionAmount),
+                      muted: true),
                   const SizedBox(height: 8),
                   _PaymentRow(
                       label: 'Solde sur place',
