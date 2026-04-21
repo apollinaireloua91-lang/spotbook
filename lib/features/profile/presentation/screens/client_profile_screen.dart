@@ -187,37 +187,21 @@ class _ProfileBody extends ConsumerWidget {
               ),
             ),
 
-            const SizedBox(height: 16),
+            const SizedBox(height: 18),
 
-            // ─── Edit Profile Button ───
+            // ─── Edit Profile Button — gradient outline pill ───
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: SizedBox(
-                width: double.infinity,
-                child: OutlinedButton(
-                  onPressed: () {
-                    HapticFeedback.lightImpact();
-                    context.push('/edit-profile');
-                  },
-                  style: OutlinedButton.styleFrom(
-                    side: BorderSide(color: AppColors.border),
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14),
-                    ),
-                  ),
-                  child: Text(
-                    l.editProfile,
-                    style: GoogleFonts.dmSans(
-                      color: AppColors.blanc,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
+              child: _EditProfilePill(
+                label: l.editProfile,
+                onTap: () {
+                  HapticFeedback.lightImpact();
+                  context.push('/edit-profile');
+                },
               ),
             ),
 
-            const SizedBox(height: 28),
+            const SizedBox(height: 30),
 
             // ─── Favorite Pros (horizontal scroll) ───
             favProsAsync.when(
@@ -240,17 +224,8 @@ class _ProfileBody extends ConsumerWidget {
             ),
 
             // ─── Settings ───
-            Padding(
-              padding: const EdgeInsets.only(left: 16, bottom: 10),
-              child: Text(
-                l.settings,
-                style: GoogleFonts.sora(
-                  color: AppColors.blanc,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
+            _SectionHeader(title: l.settings),
+            const SizedBox(height: 10),
             const _SettingsSection(),
 
             const SizedBox(height: 16),
@@ -277,31 +252,18 @@ class _FavoriteProsList extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Row(
-            children: [
-              Text(
-                l.myFavoritePros,
-                style: GoogleFonts.sora(
-                  color: AppColors.blanc,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                ),
+        _SectionHeader(
+          title: l.myFavoritePros,
+          trailing: GestureDetector(
+            onTap: () => context.push('/favorites'),
+            child: Text(
+              l.viewAll,
+              style: GoogleFonts.dmSans(
+                color: AppColors.violetClair,
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
               ),
-              const Spacer(),
-              GestureDetector(
-                onTap: () => context.push('/favorites'),
-                child: Text(
-                  l.viewAll,
-                  style: GoogleFonts.dmSans(
-                    color: AppColors.violetClair,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ),
-            ],
+            ),
           ),
         ),
         const SizedBox(height: 12),
@@ -430,33 +392,20 @@ class _RecentHistory extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Row(
-            children: [
-              Text(
-                l.recentHistory,
-                style: GoogleFonts.sora(
-                  color: AppColors.blanc,
-                  fontSize: 14,
+        Builder(
+          builder: (ctx) => _SectionHeader(
+            title: l.recentHistory,
+            trailing: GestureDetector(
+              onTap: () => ctx.push('/client/bookings'),
+              child: Text(
+                l.viewAll,
+                style: GoogleFonts.dmSans(
+                  color: AppColors.violetClair,
+                  fontSize: 12,
                   fontWeight: FontWeight.w600,
                 ),
               ),
-              const Spacer(),
-              Builder(
-                builder: (ctx) => GestureDetector(
-                  onTap: () => ctx.push('/client/bookings'),
-                  child: Text(
-                    l.viewAll,
-                    style: GoogleFonts.dmSans(
-                      color: AppColors.violetClair,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ),
-              ),
-            ],
+            ),
           ),
         ),
         const SizedBox(height: 10),
@@ -543,76 +492,143 @@ class _SettingsSection extends ConsumerWidget {
     final isDark = ref.watch(themeModeProvider) == ThemeMode.dark;
     final l = AppLocalizations.of(context)!;
 
-    return Column(
-      children: [
-        SettingsList(
-          items: [
-            SettingsItemData(
-              icon: 'notifications_outlined',
-              label: l.notifications,
-              onTap: () => context.push('/notification-settings'),
-            ),
-            SettingsItemData(
-              icon: 'language',
-              label: l.proSettingsLanguage,
-              onTap: () => context.push('/language-settings'),
-            ),
-            SettingsItemData(
-              icon: 'star_outline',
-              label: l.reviewsLabel,
-              onTap: () => context.push('/favorites'),
-            ),
-            SettingsItemData(
-              icon: 'receipt_long',
-              label: 'Mes reçus',
-              onTap: () => context.push('/client/receipts'),
-            ),
-            SettingsItemData(
-              icon: 'volunteer_activism',
-              label: 'Parrainage',
-              onTap: () => context.push('/client/referrals-squire'),
-            ),
-          ],
+    return SettingsList(
+      items: [
+        SettingsItemData(
+          icon: 'notifications_outlined',
+          label: l.notifications,
+          onTap: () => context.push('/notification-settings'),
         ),
-        const SizedBox(height: 12),
-        Container(
-          margin: const EdgeInsets.symmetric(horizontal: 16),
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        SettingsItemData(
+          icon: 'language',
+          label: l.proSettingsLanguage,
+          onTap: () => context.push('/language-settings'),
+        ),
+        SettingsItemData(
+          icon: 'star_outline',
+          label: l.reviewsLabel,
+          onTap: () => context.push('/favorites'),
+        ),
+        SettingsItemData(
+          icon: 'receipt_long',
+          label: 'Mes reçus',
+          onTap: () => context.push('/client/receipts'),
+        ),
+        SettingsItemData(
+          icon: 'volunteer_activism',
+          label: 'Parrainage',
+          onTap: () => context.push('/client/referrals-squire'),
+        ),
+        // Dark mode lives inside the same list so "Paramètres" reads as
+        // one cohesive card rather than a list + a stray toggle card.
+        SettingsItemData(
+          icon: isDark ? 'dark_mode' : 'light_mode',
+          label: l.darkMode,
+          showChevron: false,
+          trailing: SizedBox(
+            height: 24,
+            child: Switch.adaptive(
+              value: isDark,
+              onChanged: (_) =>
+                  ref.read(themeModeProvider.notifier).toggle(),
+              activeTrackColor: AppColors.violet,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+// ─── Section header with gradient accent bar ────────────────────────────────
+
+class _SectionHeader extends StatelessWidget {
+  const _SectionHeader({required this.title, this.trailing});
+
+  final String title;
+  final Widget? trailing;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+      child: Row(
+        children: [
+          // Gradient accent bar — echoes the event-detail section headers
+          // so the two screens feel part of one visual system.
+          Container(
+            width: 3,
+            height: 16,
+            decoration: BoxDecoration(
+              gradient: AppColors.gradientAccent,
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+          const SizedBox(width: 10),
+          Text(
+            title,
+            style: GoogleFonts.sora(
+              color: AppColors.blanc,
+              fontSize: 15,
+              fontWeight: FontWeight.w700,
+              letterSpacing: -0.2,
+            ),
+          ),
+          const Spacer(),
+          if (trailing != null) trailing!,
+        ],
+      ),
+    );
+  }
+}
+
+// ─── Premium "Edit profile" pill with gradient outline ──────────────────────
+
+class _EditProfilePill extends StatelessWidget {
+  const _EditProfilePill({required this.label, required this.onTap});
+
+  final String label;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
+      // 1px gradient border via nested containers — cheaper than a
+      // CustomPainter and survives theme flips cleanly.
+      child: Container(
+        padding: const EdgeInsets.all(1.2),
+        decoration: BoxDecoration(
+          gradient: AppColors.gradientAccent,
+          borderRadius: BorderRadius.circular(14),
+        ),
+        child: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(vertical: 13),
           decoration: BoxDecoration(
             color: AppColors.surface,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: AppColors.border),
+            borderRadius: BorderRadius.circular(13),
           ),
           child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(
-                isDark ? Icons.dark_mode : Icons.light_mode,
-                size: 18,
-                color: AppColors.grisClair,
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Text(
-                  l.darkMode,
-                  style: GoogleFonts.dmSans(
-                    color: AppColors.grisClair,
-                    fontSize: 13,
-                  ),
-                ),
-              ),
-              SizedBox(
-                height: 24,
-                child: Switch.adaptive(
-                  value: isDark,
-                  onChanged: (_) =>
-                      ref.read(themeModeProvider.notifier).toggle(),
-                  activeTrackColor: AppColors.violet,
+              Icon(Icons.edit_outlined,
+                  color: AppColors.violetClair, size: 16),
+              const SizedBox(width: 8),
+              Text(
+                label,
+                style: GoogleFonts.dmSans(
+                  color: AppColors.blanc,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: -0.1,
                 ),
               ),
             ],
           ),
         ),
-      ],
+      ),
     );
   }
 }
@@ -829,48 +845,19 @@ class _EmptyFavorites extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            l.myFavoritePros,
-            style: GoogleFonts.sora(
-              color: AppColors.blanc,
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-            ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _SectionHeader(title: l.myFavoritePros),
+        const SizedBox(height: 12),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+          child: _EmptyPlaceholder(
+            icon: Icons.favorite_border_rounded,
+            message: l.likeProsToFindHere,
           ),
-          const SizedBox(height: 12),
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.symmetric(vertical: 20),
-            decoration: BoxDecoration(
-              color: AppColors.surface,
-              borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: AppColors.border),
-            ),
-            child: Column(
-              children: [
-                Icon(
-                  Icons.favorite_border_rounded,
-                  color: AppColors.gris.withAlpha(120),
-                  size: 28,
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  l.likeProsToFindHere,
-                  style: GoogleFonts.dmSans(
-                    color: AppColors.gris.withAlpha(160),
-                    fontSize: 13,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
@@ -883,44 +870,64 @@ class _EmptyHistory extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _SectionHeader(title: l.recentHistory),
+        const SizedBox(height: 12),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+          child: _EmptyPlaceholder(
+            icon: Icons.history_rounded,
+            message: l.bookingsWillAppearHere,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _EmptyPlaceholder extends StatelessWidget {
+  const _EmptyPlaceholder({required this.icon, required this.message});
+
+  final IconData icon;
+  final String message;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(vertical: 24),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.border),
+      ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            l.recentHistory,
-            style: GoogleFonts.sora(
-              color: AppColors.blanc,
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
+          Container(
+            width: 44,
+            height: 44,
+            decoration: BoxDecoration(
+              color: AppColors.violet.withAlpha(18),
+              shape: BoxShape.circle,
+            ),
+            child: Center(
+              child: Icon(
+                icon,
+                color: AppColors.violetClair.withAlpha(200),
+                size: 22,
+              ),
             ),
           ),
-          const SizedBox(height: 12),
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.symmetric(vertical: 20),
-            decoration: BoxDecoration(
-              color: AppColors.surface,
-              borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: AppColors.border),
-            ),
-            child: Column(
-              children: [
-                Icon(
-                  Icons.history_rounded,
-                  color: AppColors.gris.withAlpha(120),
-                  size: 28,
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  l.bookingsWillAppearHere,
-                  style: GoogleFonts.dmSans(
-                    color: AppColors.gris.withAlpha(160),
-                    fontSize: 13,
-                  ),
-                ),
-              ],
+          const SizedBox(height: 10),
+          Text(
+            message,
+            textAlign: TextAlign.center,
+            style: GoogleFonts.dmSans(
+              color: AppColors.gris,
+              fontSize: 13,
+              fontWeight: FontWeight.w500,
             ),
           ),
         ],

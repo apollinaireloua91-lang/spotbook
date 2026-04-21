@@ -181,9 +181,6 @@ class AppLocalizationsFr extends AppLocalizations {
   String get proSettingsCancellationPolicy => 'Politique d\'annulation';
 
   @override
-  String get proSettingsPolicyFlexible => 'Flexible';
-
-  @override
   String get proSettingsPolicyModerate => 'Modérée';
 
   @override
@@ -827,7 +824,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get stripeFaqCancelAnswer =>
-      'Les remboursements dépendent de votre politique d\'annulation (flexible, modérée ou stricte).';
+      'Les remboursements dépendent de votre politique d\'annulation (modérée ou stricte).';
 
   @override
   String get stripeFaqDeposit => 'Comment fonctionnent les acomptes ?';
@@ -1351,7 +1348,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get activeBadge => 'Actif';
 
   @override
-  String get addBioHint => 'Parlez de vous à vos clients…';
+  String get addBioHint => 'Ajoutez une bio pour vous présenter…';
 
   @override
   String get addCommentHint => 'Ajouter un commentaire…';

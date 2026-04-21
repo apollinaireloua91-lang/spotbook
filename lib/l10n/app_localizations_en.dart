@@ -181,9 +181,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get proSettingsCancellationPolicy => 'Cancellation policy';
 
   @override
-  String get proSettingsPolicyFlexible => 'Flexible';
-
-  @override
   String get proSettingsPolicyModerate => 'Moderate';
 
   @override
@@ -813,7 +810,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get stripeFaqCancelAnswer =>
-      'Refund policies depend on your cancellation settings (flexible, moderate, or strict).';
+      'Refund policies depend on your cancellation settings (moderate or strict).';
 
   @override
   String get stripeFaqDeposit => 'How do deposits work?';
@@ -1336,7 +1333,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get activeBadge => 'Active';
 
   @override
-  String get addBioHint => 'Tell clients about yourself…';
+  String get addBioHint => 'Add a bio to introduce yourself…';
 
   @override
   String get addCommentHint => 'Add a comment…';

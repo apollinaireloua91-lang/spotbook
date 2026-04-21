@@ -440,12 +440,6 @@ abstract class AppLocalizations {
   /// **'Cancellation policy'**
   String get proSettingsCancellationPolicy;
 
-  /// No description provided for @proSettingsPolicyFlexible.
-  ///
-  /// In en, this message translates to:
-  /// **'Flexible'**
-  String get proSettingsPolicyFlexible;
-
   /// No description provided for @proSettingsPolicyModerate.
   ///
   /// In en, this message translates to:
@@ -1673,7 +1667,7 @@ abstract class AppLocalizations {
   /// No description provided for @stripeFaqCancelAnswer.
   ///
   /// In en, this message translates to:
-  /// **'Refund policies depend on your cancellation settings (flexible, moderate, or strict).'**
+  /// **'Refund policies depend on your cancellation settings (moderate or strict).'**
   String get stripeFaqCancelAnswer;
 
   /// No description provided for @stripeFaqDeposit.
@@ -2681,7 +2675,7 @@ abstract class AppLocalizations {
   /// No description provided for @addBioHint.
   ///
   /// In en, this message translates to:
-  /// **'Tell clients about yourself…'**
+  /// **'Add a bio to introduce yourself…'**
   String get addBioHint;
 
   /// No description provided for @addCommentHint.
