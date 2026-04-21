@@ -263,22 +263,29 @@ class EventRepository {
     return res.data as Map<String, dynamic>;
   }
 
-  Future<void> joinWaitlist(String ticketTypeId) async {
-    final uid = currentUserId;
-    if (uid == null) throw Exception('Not authenticated');
+  /// Rejoint la waitlist d'un ticket type de façon atomique.
+  ///
+  /// Délègue à l'Edge Function `join-waitlist-atomic` qui utilise un
+  /// `pg_advisory_xact_lock(hashtext(ticket_type_id))` côté Postgres pour
+  /// sérialiser les inscriptions concurrentes — le pattern client-side
+  /// count+upsert précédent créait une race où deux users simultanés
+  /// obtenaient la même `position`.
+  ///
+  /// Retourne la position finale (1-indexed). Si l'utilisateur était déjà
+  /// inscrit, on renvoie la position existante (pas d'erreur).
+  Future<int> joinWaitlist(String ticketTypeId) async {
+    await _supabase.auth.refreshSession();
+    final resp = await _supabase.functions.invoke(
+      'join-waitlist-atomic',
+      body: {'ticketTypeId': ticketTypeId},
+    );
 
-    // Get current position
-    final count = await _supabase
-        .from('waitlist')
-        .select()
-        .eq('ticket_type_id', ticketTypeId)
-        .count(CountOption.exact);
-
-    await _supabase.from('waitlist').upsert({
-      'ticket_type_id': ticketTypeId,
-      'user_id': uid,
-      'position': (count.count) + 1,
-    }, onConflict: 'ticket_type_id, user_id');
+    final data = resp.data as Map<String, dynamic>?;
+    if (data == null || data['success'] != true) {
+      final err = data?['error'] as String? ?? 'waitlist_failed';
+      throw Exception('Join waitlist failed: $err');
+    }
+    return (data['position'] as num?)?.toInt() ?? 0;
   }
 
   Future<int> getScannedCount(String eventId) async {
