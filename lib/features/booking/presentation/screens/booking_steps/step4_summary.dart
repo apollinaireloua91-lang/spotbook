@@ -61,8 +61,16 @@ class Step4Summary extends ConsumerWidget {
     final totalDuration = state.cartTotalDurationMinutes;
     final config = ref.watch(appConfigProvider).value ?? AppConfig.fallback;
     final serviceFee = config.serviceFeeClient;
+    final commissionRate = config.commissionBookings;
     final servicesTotal = state.totalPrice;
-    final deposit = (servicesTotal * 0.30 * 100).roundToDouble() / 100;
+    // Acompte respectant la config du service (percentage/fixed/full).
+    // Fallback 30 % pour les services legacy sans deposit_* rempli.
+    final deposit = state.selectedService?.computeDeposit(servicesTotal) ??
+        (servicesTotal * 0.30 * 100).roundToDouble() / 100;
+    final depositPct = state.selectedService?.displayDepositPercent;
+    final commissionAmount =
+        (deposit * commissionRate * 100).roundToDouble() / 100;
+    final commissionPct = (commissionRate * 100).toStringAsFixed(0);
     final dueNow = deposit + serviceFee;
     final remainingOnSite = servicesTotal - deposit;
 
@@ -156,7 +164,9 @@ class Step4Summary extends ConsumerWidget {
               ),
               // Breakdown of "À payer maintenant"
               _TotalRow(
-                label: 'Acompte (30%)',
+                label: depositPct != null
+                    ? 'Acompte ($depositPct%)'
+                    : 'Acompte',
                 value: _fmt(deposit),
                 muted: true,
               ),
@@ -164,6 +174,12 @@ class Step4Summary extends ConsumerWidget {
               _TotalRow(
                 label: 'Frais de service',
                 value: _fmt(serviceFee),
+                muted: true,
+              ),
+              const SizedBox(height: 8),
+              _TotalRow(
+                label: 'Commission Spotbook ($commissionPct%)',
+                value: _fmt(commissionAmount),
                 muted: true,
               ),
               const SizedBox(height: 14),

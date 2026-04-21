@@ -92,7 +92,13 @@ class BookingFlowState {
     return price < 0 ? 0 : price;
   }
 
-  double get depositPrice => (totalPrice * 0.30 * 100).roundToDouble() / 100;
+  /// Acompte calculé via la config du service sélectionné (payment_mode,
+  /// deposit_type, deposit_value). Retombe sur 30 % si le service n'a pas
+  /// encore de config deposit remplie (legacy). Voir
+  /// `ServiceModel.computeDeposit`.
+  double get depositPrice =>
+      selectedService?.computeDeposit(totalPrice) ??
+      (totalPrice * 0.30 * 100).roundToDouble() / 100;
 
   BookingFlowState copyWith({
     int? step,

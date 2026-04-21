@@ -73,7 +73,10 @@ class _Step5PaymentState extends ConsumerState<Step5Payment> {
     }
 
     final servicesTotal = s.totalPrice;
-    final deposit = (servicesTotal * 0.30 * 100).roundToDouble() / 100;
+    // Acompte via config service (percentage/fixed/full). Fallback 30 %
+    // si le service legacy n'a pas encore de deposit_* rempli.
+    final deposit = s.selectedService?.computeDeposit(servicesTotal) ??
+        (servicesTotal * 0.30 * 100).roundToDouble() / 100;
     final cfg = ref.read(appConfigProvider).value ?? AppConfig.fallback;
     final dueNow = deposit + cfg.serviceFeeClient;
 
@@ -198,7 +201,7 @@ class _Step5PaymentState extends ConsumerState<Step5Payment> {
     final serviceFee = cfg.serviceFeeClient;
     final commissionRate = cfg.commissionBookings;
     final servicesTotal = flowState.totalPrice;
-    final deposit =
+    final deposit = flowState.selectedService?.computeDeposit(servicesTotal) ??
         (servicesTotal * 0.30 * 100).roundToDouble() / 100;
     final commissionAmount =
         (deposit * commissionRate * 100).roundToDouble() / 100;

@@ -6,6 +6,7 @@ class ServiceModel {
     this.description,
     this.durationMinutes = 60,
     required this.price,
+    this.currency = 'CAD',
     this.isActive = true,
     this.depositType,
     this.depositValue,
@@ -25,6 +26,7 @@ class ServiceModel {
   final String? description;
   final int durationMinutes;
   final double price;
+  final String currency;
   final bool isActive;
   final String? depositType;
   final double? depositValue;
@@ -46,6 +48,44 @@ class ServiceModel {
     return price;
   }
 
+  /// Calcule le montant d'acompte attendu pour un [total] donné, en
+  /// appliquant la configuration du service.
+  ///
+  /// Règles (alignées sur la table `services` et
+  /// `create_booking_atomic` côté Postgres) :
+  /// - `payment_mode = 'full'` → [total] (tout est encaissé d'un coup, pas
+  ///   d'acompte distinct).
+  /// - `payment_mode = 'deposit'` + `deposit_type = 'percentage'` →
+  ///   `total * deposit_value / 100`, borné à [total].
+  /// - `payment_mode = 'deposit'` + `deposit_type = 'fixed'` →
+  ///   `min(deposit_value, total)`.
+  /// - Config incomplète (services legacy sans ces colonnes) → fallback
+  ///   historique 30 % — voir CLAUDE.md. Ne pas relâcher ce fallback tant
+  ///   qu'un batch de re-seed n'a pas garni toutes les lignes.
+  double computeDeposit(double total) {
+    if (paymentMode == 'full') return total;
+    final v = depositValue;
+    if (paymentMode == 'deposit' && v != null) {
+      if (depositType == 'fixed') return v > total ? total : v;
+      if (depositType == 'percentage') {
+        final raw = total * v / 100;
+        return (raw > total ? total : raw);
+      }
+    }
+    // Fallback historique — préserve le comportement antérieur pour les
+    // services sans config deposit_* remplie.
+    return (total * 0.30 * 100).roundToDouble() / 100;
+  }
+
+  /// Pourcentage à afficher dans l'UI (ex : "Acompte 25 %"). Nullable si
+  /// la config ne permet pas de l'inférer (mode 'full' ou deposit fixed).
+  int? get displayDepositPercent {
+    if (paymentMode == 'deposit' && depositType == 'percentage') {
+      return depositValue?.round();
+    }
+    return null;
+  }
+
   factory ServiceModel.fromJson(Map<String, dynamic> json) {
     final menuItemsRaw = json['menu_items'] as List<dynamic>? ?? [];
     final extrasRaw = json['extra_options'] as List<dynamic>? ?? [];
@@ -57,6 +97,7 @@ class ServiceModel {
       description: json['description'] as String?,
       durationMinutes: json['duration_minutes'] as int? ?? 60,
       price: (json['price'] as num?)?.toDouble() ?? 0,
+      currency: json['currency'] as String? ?? 'CAD',
       isActive: json['is_active'] as bool? ?? true,
       depositType: json['deposit_type'] as String?,
       depositValue: (json['deposit_value'] as num?)?.toDouble(),
@@ -217,6 +258,9 @@ class BookingModel {
     this.remainingAmount,
     this.remainingPaymentStatus,
     this.isDepositMode = false,
+    this.qrHash,
+    this.qrCodeUrl,
+    this.scannedAt,
   });
 
   final String id;
@@ -246,6 +290,13 @@ class BookingModel {
   final double? remainingAmount;
   final String? remainingPaymentStatus;
   final bool isDepositMode;
+  final String? qrHash;
+  final String? qrCodeUrl;
+  final DateTime? scannedAt;
+
+  bool get hasQrCode => qrHash != null && qrHash!.isNotEmpty;
+  bool get isScanned => scannedAt != null;
+  String? get qrData => hasQrCode ? 'B:$id|$qrHash' : null;
 
   bool get isUpcoming =>
       status == 'pending_payment' || status == 'confirmed';
@@ -298,6 +349,11 @@ class BookingModel {
       remainingAmount: total - deposit,
       remainingPaymentStatus: json['remaining_payment_status'] as String?,
       isDepositMode: deposit > 0 && deposit < total,
+      qrHash: json['qr_hash'] as String?,
+      qrCodeUrl: json['qr_code_url'] as String?,
+      scannedAt: json['scanned_at'] != null
+          ? DateTime.tryParse(json['scanned_at'] as String)
+          : null,
     );
   }
 }

@@ -245,8 +245,11 @@ class _BookingFlowV2ScreenState extends ConsumerState<BookingFlowV2Screen> {
                           final cfg = ref.watch(appConfigProvider).value ??
                               AppConfig.fallback;
                           final deposit =
-                              (state.totalPrice * 0.30 * 100).roundToDouble() /
-                                  100;
+                              state.selectedService
+                                      ?.computeDeposit(state.totalPrice) ??
+                                  (state.totalPrice * 0.30 * 100)
+                                          .roundToDouble() /
+                                      100;
                           amountOverride = deposit + cfg.serviceFeeClient;
                           amountLabel = 'À payer maintenant';
                         }

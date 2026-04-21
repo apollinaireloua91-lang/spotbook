@@ -77,8 +77,14 @@ class _SoumissionSheetState extends State<_SoumissionSheet> {
 
   double get _totalEstimate => _forfaitPrice * _guestCount;
 
+  // Acompte traiteur : 30 % par défaut. Les forfaits catering n'ont pas
+  // encore de champ deposit_value configurable (contrairement aux
+  // `services`). Si ce besoin apparaît, ajouter une colonne
+  // `catering_packages.deposit_value` + lire ici.
+  static const double _cateringDepositFraction = 0.30;
+
   double get _depositAmount =>
-      (_totalEstimate * 0.30 * 100).roundToDouble() / 100;
+      (_totalEstimate * _cateringDepositFraction * 100).roundToDouble() / 100;
 
   @override
   void initState() {
