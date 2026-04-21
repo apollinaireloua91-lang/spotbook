@@ -2730,34 +2730,24 @@ class AppLocalizationsFr extends AppLocalizations {
   String get reviewRating5 => 'Excellent';
 
   @override
-  String get cancellationRule48hTitle => 'Plus de 48h avant';
+  String get cancellationRuleMoreThan24hTitle => 'Plus de 24h avant';
 
   @override
-  String get cancellationRule48hSubtitle => 'Remboursement intégral';
+  String get cancellationRuleMoreThan24hSubtitle => 'Remboursement intégral';
 
   @override
-  String get cancellationRule48hDescription =>
-      'Annulez plus de 48 heures avant le rendez-vous pour un remboursement intégral.';
+  String get cancellationRuleMoreThan24hDescription =>
+      'Annulez plus de 24 heures avant le rendez-vous pour un remboursement intégral de l\'acompte.';
 
   @override
-  String get cancellationRule24to48hTitle => 'Entre 24h et 48h';
+  String get cancellationRuleLessThan24hTitle => 'Moins de 24h avant';
 
   @override
-  String get cancellationRule24to48hSubtitle => 'Remboursement de 50%';
+  String get cancellationRuleLessThan24hSubtitle => 'Remboursement de 50%';
 
   @override
-  String get cancellationRule24to48hDescription =>
-      'Annulez entre 24 et 48 heures avant pour un remboursement de 50%.';
-
-  @override
-  String get cancellationRuleLess24hTitle => 'Moins de 24h';
-
-  @override
-  String get cancellationRuleLess24hSubtitle => 'Aucun remboursement';
-
-  @override
-  String get cancellationRuleLess24hDescription =>
-      'Les annulations dans les 24 heures ne sont pas éligibles au remboursement.';
+  String get cancellationRuleLessThan24hDescription =>
+      'Annulez moins de 24 heures avant le rendez-vous pour un remboursement de 50% de l\'acompte.';
 
   @override
   String balanceOnSite(String amount, String currency) {

@@ -107,37 +107,36 @@ class CancellationPolicyScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 16),
 
-            // Rule 1 — More than 48h
+            // Rule 1 — More than 24h (full refund).
+            // Aligné sur la policy `moderate` appliquée par l'Edge Function
+            // `cancel-booking` (seuil 24h, 100 % > 24h, 50 % ≤ 24h).
+            // Le 48h précédemment affiché correspond au délai de payout
+            // Stripe — pas à la politique client — d'où la divergence
+            // UI↔backend fermée ici.
             _PolicyRule(
               icon: Icons.check_circle,
               iconColor: AppColors.success,
-              title: l.cancellationRule48hTitle,
-              subtitle: l.cancellationRule48hSubtitle,
-              description: l.cancellationRule48hDescription,
+              title: l.cancellationRuleMoreThan24hTitle,
+              subtitle: l.cancellationRuleMoreThan24hSubtitle,
+              description: l.cancellationRuleMoreThan24hDescription,
             ),
             const _TimelineLine(),
 
-            // Rule 2 — Between 24h and 48h
+            // Rule 2 — Less than 24h (partial 50 % refund).
+            // Pas d'« Aucun remboursement » : le backend applique 50 %,
+            // icône/couleur warning (ambré) et non error — c'est un
+            // remboursement partiel, pas une perte totale.
             _PolicyRule(
               icon: Icons.warning_amber_rounded,
               iconColor: AppColors.warning,
-              title: l.cancellationRule24to48hTitle,
-              subtitle: l.cancellationRule24to48hSubtitle,
-              description: l.cancellationRule24to48hDescription,
+              title: l.cancellationRuleLessThan24hTitle,
+              subtitle: l.cancellationRuleLessThan24hSubtitle,
+              description: l.cancellationRuleLessThan24hDescription,
             ),
             const _TimelineLine(),
 
-            // Rule 3 — Less than 24h
-            _PolicyRule(
-              icon: Icons.block,
-              iconColor: AppColors.error,
-              title: l.cancellationRuleLess24hTitle,
-              subtitle: l.cancellationRuleLess24hSubtitle,
-              description: l.cancellationRuleLess24hDescription,
-            ),
-            const _TimelineLine(),
-
-            // Rule 4 — No show
+            // Rule 3 — No show (business rule distincte, pas un palier
+            // temporel, conservée telle quelle).
             _PolicyRule(
               icon: Icons.person_off,
               iconColor: AppColors.error.withAlpha(200),
@@ -251,6 +250,13 @@ class _PolicyRule extends StatelessWidget {
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(14),
         border: Border.all(color: AppColors.border),
+        boxShadow: [
+          BoxShadow(
+            color: iconColor.withAlpha(8),
+            blurRadius: 12,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -259,7 +265,14 @@ class _PolicyRule extends StatelessWidget {
             width: 44,
             height: 44,
             decoration: BoxDecoration(
-              color: iconColor.withAlpha(30),
+              gradient: LinearGradient(
+                colors: [
+                  iconColor.withAlpha(35),
+                  iconColor.withAlpha(15),
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(icon, color: iconColor, size: 22),
@@ -271,6 +284,8 @@ class _PolicyRule extends StatelessWidget {
               children: [
                 Text(
                   title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: GoogleFonts.dmSans(
                     color: AppColors.blanc,
                     fontWeight: FontWeight.w700,
@@ -317,7 +332,17 @@ class _TimelineLine extends StatelessWidget {
       child: Container(
         width: 2,
         height: 20,
-        color: AppColors.border,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              AppColors.violet.withAlpha(60),
+              AppColors.violet.withAlpha(20),
+            ],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+          borderRadius: BorderRadius.circular(1),
+        ),
       ),
     );
   }
@@ -339,7 +364,15 @@ class _KeyFact extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 10),
       child: Row(
         children: [
-          Icon(icon, size: 18, color: AppColors.violet),
+          Container(
+            width: 30,
+            height: 30,
+            decoration: BoxDecoration(
+              color: AppColors.violet.withAlpha(15),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(icon, size: 15, color: AppColors.violet),
+          ),
           const SizedBox(width: 10),
           Expanded(
             child: Text(

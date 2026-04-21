@@ -2701,34 +2701,24 @@ class AppLocalizationsEn extends AppLocalizations {
   String get reviewRating5 => 'Excellent';
 
   @override
-  String get cancellationRule48hTitle => 'More than 48h before';
+  String get cancellationRuleMoreThan24hTitle => 'More than 24h before';
 
   @override
-  String get cancellationRule48hSubtitle => 'Full refund';
+  String get cancellationRuleMoreThan24hSubtitle => 'Full refund';
 
   @override
-  String get cancellationRule48hDescription =>
-      'Cancel more than 48 hours before the appointment for a full refund.';
+  String get cancellationRuleMoreThan24hDescription =>
+      'Cancel more than 24 hours before the appointment for a full refund of the deposit.';
 
   @override
-  String get cancellationRule24to48hTitle => 'Between 24h and 48h';
+  String get cancellationRuleLessThan24hTitle => 'Less than 24h before';
 
   @override
-  String get cancellationRule24to48hSubtitle => '50% refund';
+  String get cancellationRuleLessThan24hSubtitle => '50% refund';
 
   @override
-  String get cancellationRule24to48hDescription =>
-      'Cancel between 24 and 48 hours before and receive a 50% refund.';
-
-  @override
-  String get cancellationRuleLess24hTitle => 'Less than 24h';
-
-  @override
-  String get cancellationRuleLess24hSubtitle => 'No refund';
-
-  @override
-  String get cancellationRuleLess24hDescription =>
-      'Cancellations within 24 hours are not eligible for a refund.';
+  String get cancellationRuleLessThan24hDescription =>
+      'Cancel less than 24 hours before the appointment for a 50% refund of the deposit.';
 
   @override
   String balanceOnSite(String amount, String currency) {

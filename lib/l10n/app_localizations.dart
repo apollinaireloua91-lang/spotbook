@@ -5360,59 +5360,41 @@ abstract class AppLocalizations {
   /// **'Excellent'**
   String get reviewRating5;
 
-  /// No description provided for @cancellationRule48hTitle.
+  /// No description provided for @cancellationRuleMoreThan24hTitle.
   ///
   /// In en, this message translates to:
-  /// **'More than 48h before'**
-  String get cancellationRule48hTitle;
+  /// **'More than 24h before'**
+  String get cancellationRuleMoreThan24hTitle;
 
-  /// No description provided for @cancellationRule48hSubtitle.
+  /// No description provided for @cancellationRuleMoreThan24hSubtitle.
   ///
   /// In en, this message translates to:
   /// **'Full refund'**
-  String get cancellationRule48hSubtitle;
+  String get cancellationRuleMoreThan24hSubtitle;
 
-  /// No description provided for @cancellationRule48hDescription.
+  /// No description provided for @cancellationRuleMoreThan24hDescription.
   ///
   /// In en, this message translates to:
-  /// **'Cancel more than 48 hours before the appointment for a full refund.'**
-  String get cancellationRule48hDescription;
+  /// **'Cancel more than 24 hours before the appointment for a full refund of the deposit.'**
+  String get cancellationRuleMoreThan24hDescription;
 
-  /// No description provided for @cancellationRule24to48hTitle.
+  /// No description provided for @cancellationRuleLessThan24hTitle.
   ///
   /// In en, this message translates to:
-  /// **'Between 24h and 48h'**
-  String get cancellationRule24to48hTitle;
+  /// **'Less than 24h before'**
+  String get cancellationRuleLessThan24hTitle;
 
-  /// No description provided for @cancellationRule24to48hSubtitle.
+  /// No description provided for @cancellationRuleLessThan24hSubtitle.
   ///
   /// In en, this message translates to:
   /// **'50% refund'**
-  String get cancellationRule24to48hSubtitle;
+  String get cancellationRuleLessThan24hSubtitle;
 
-  /// No description provided for @cancellationRule24to48hDescription.
+  /// No description provided for @cancellationRuleLessThan24hDescription.
   ///
   /// In en, this message translates to:
-  /// **'Cancel between 24 and 48 hours before and receive a 50% refund.'**
-  String get cancellationRule24to48hDescription;
-
-  /// No description provided for @cancellationRuleLess24hTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Less than 24h'**
-  String get cancellationRuleLess24hTitle;
-
-  /// No description provided for @cancellationRuleLess24hSubtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'No refund'**
-  String get cancellationRuleLess24hSubtitle;
-
-  /// No description provided for @cancellationRuleLess24hDescription.
-  ///
-  /// In en, this message translates to:
-  /// **'Cancellations within 24 hours are not eligible for a refund.'**
-  String get cancellationRuleLess24hDescription;
+  /// **'Cancel less than 24 hours before the appointment for a 50% refund of the deposit.'**
+  String get cancellationRuleLessThan24hDescription;
 
   /// No description provided for @balanceOnSite.
   ///
