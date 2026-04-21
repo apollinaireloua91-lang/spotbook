@@ -11,6 +11,7 @@ import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/theme/theme_mode_notifier.dart';
 import '../../../../shared/widgets/animated_counter.dart';
+import '../../../pos/presentation/widgets/pos_hero_cta.dart';
 import '../../data/booking_notifier.dart';
 import '../../domain/booking_models.dart';
 
@@ -56,6 +57,8 @@ class ProDashboardScreen extends ConsumerWidget {
                 ticketsSold: state.ticketsSold,
                 revenueChange: state.revenueChange,
               ),
+              const SizedBox(height: 20),
+              const PosHeroCta(),
               const SizedBox(height: 28),
               const _PremiumQuickActions(),
               const SizedBox(height: 28),
