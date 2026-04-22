@@ -404,7 +404,7 @@ class AppLocalizationsFr extends AppLocalizations {
       'Mettez en avant votre travail, gérez vos réservations et atteignez de nouveaux clients.';
 
   @override
-  String get authAlreadyHaveAccount => 'Déjà un compte ? Se connecter';
+  String get authAlreadyHaveAccount => 'Déjà un compte ? ';
 
   @override
   String get authWelcomeBack => 'Bon retour';
@@ -428,7 +428,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get authAppleComingSoon => 'Apple Sign In bientôt disponible';
 
   @override
-  String get authNoAccountPrefix => 'Pas de compte ? S\'inscrire';
+  String get authNoAccountPrefix => 'Pas de compte ? ';
 
   @override
   String get authErrorEmptyFields => 'Veuillez remplir tous les champs';
