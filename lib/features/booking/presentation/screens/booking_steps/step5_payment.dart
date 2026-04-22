@@ -201,13 +201,32 @@ class _Step5PaymentState extends ConsumerState<Step5Payment> {
     final serviceFee = cfg.serviceFeeClient;
     final commissionRate = cfg.commissionBookings;
     final servicesTotal = flowState.totalPrice;
-    final deposit = flowState.selectedService?.computeDeposit(servicesTotal) ??
+    final service = flowState.selectedService;
+    final deposit = service?.computeDeposit(servicesTotal) ??
         (servicesTotal * 0.30 * 100).roundToDouble() / 100;
     final commissionAmount =
         (deposit * commissionRate * 100).roundToDouble() / 100;
     final commissionPct = (commissionRate * 100).toStringAsFixed(0);
     final dueNow = deposit + serviceFee;
     final remaining = servicesTotal - deposit;
+
+    // Label acompte dérivé de la config service (payment_mode / deposit_type
+    // / deposit_value). Sans ça, on affichait toujours « Acompte (30%) »
+    // même si le service était en paiement intégral OU en acompte fixe OU
+    // en pourcentage ≠ 30 — ce qui mentait à l'utilisateur sur la raison
+    // du montant facturé.
+    final isFullPayment = service?.paymentMode == 'full';
+    final displayPct = service?.displayDepositPercent;
+    final String depositLabel;
+    if (isFullPayment) {
+      depositLabel = 'Paiement intégral';
+    } else if (displayPct != null) {
+      depositLabel = 'Acompte ($displayPct%)';
+    } else {
+      // `deposit_type == 'fixed'` ou service legacy sans config → pas de
+      // pourcentage à afficher. Le montant est visible à droite de la ligne.
+      depositLabel = 'Acompte';
+    }
 
     String fmt(double v) =>
         CurrencyFormatter.formatAmount(v, currency: widget.currency);
@@ -384,7 +403,7 @@ class _Step5PaymentState extends ConsumerState<Step5Payment> {
                       label: 'Total services', value: fmt(servicesTotal)),
                   const SizedBox(height: 8),
                   _PaymentRow(
-                    label: 'Acompte (30%)',
+                    label: depositLabel,
                     value: fmt(deposit),
                     valueColor: AppColors.violetClair,
                   ),
@@ -397,11 +416,17 @@ class _Step5PaymentState extends ConsumerState<Step5Payment> {
                       label: 'Commission Spotbook ($commissionPct%)',
                       value: fmt(commissionAmount),
                       muted: true),
-                  const SizedBox(height: 8),
-                  _PaymentRow(
-                      label: 'Solde sur place',
-                      value: fmt(remaining),
-                      muted: true),
+                  // Afficher « Solde sur place » uniquement si un solde
+                  // restera dû après le paiement en ligne. En mode `full`,
+                  // remaining vaut 0 — afficher « 0,00 $ Solde sur place »
+                  // est plus confusing qu'utile.
+                  if (!isFullPayment && remaining > 0) ...[
+                    const SizedBox(height: 8),
+                    _PaymentRow(
+                        label: 'Solde sur place',
+                        value: fmt(remaining),
+                        muted: true),
+                  ],
                   const SizedBox(height: 12),
                   Container(
                     height: 0.5,
