@@ -40,6 +40,7 @@ class FeedState {
     this.currentIndex = 0,
     this.isLoadingMore = false,
     this.activeTab = FeedTab.discover,
+    this.transientError,
   });
   final List<VideoModel> videos;
   final bool isLoading;
@@ -47,12 +48,19 @@ class FeedState {
   final bool isLoadingMore;
   final FeedTab activeTab;
 
+  /// Token d'erreur à consommer par l'UI (SnackBar) puis à effacer via
+  /// `clearTransientError()`. Valeurs connues : `like_failed`,
+  /// `save_failed`, `follow_failed`.
+  final String? transientError;
+
   FeedState copyWith({
     List<VideoModel>? videos,
     bool? isLoading,
     int? currentIndex,
     bool? isLoadingMore,
     FeedTab? activeTab,
+    String? transientError,
+    bool clearError = false,
   }) =>
       FeedState(
         videos: videos ?? this.videos,
@@ -60,6 +68,9 @@ class FeedState {
         currentIndex: currentIndex ?? this.currentIndex,
         isLoadingMore: isLoadingMore ?? this.isLoadingMore,
         activeTab: activeTab ?? this.activeTab,
+        transientError: clearError
+            ? null
+            : (transientError ?? this.transientError),
       );
 }
 
@@ -192,7 +203,13 @@ class FeedNotifier extends Notifier<FeedState> {
     }
   }
 
-  void toggleLike(int index, bool liked) {
+  void clearTransientError() {
+    if (state.transientError != null) {
+      state = state.copyWith(clearError: true);
+    }
+  }
+
+  Future<void> toggleLike(int index, bool liked) async {
     final v = state.videos[index];
     final updated = List<VideoModel>.from(state.videos);
     updated[index] = v.copyWith(
@@ -201,19 +218,27 @@ class FeedNotifier extends Notifier<FeedState> {
     );
     state = state.copyWith(videos: updated);
 
-    // Sync with Supabase
-    final repo = ref.read(videoRepositoryProvider);
-    (liked ? repo.likeVideo(v.id) : repo.unlikeVideo(v.id)).catchError((_) {
-      // Rollback on error
+    try {
+      final repo = ref.read(videoRepositoryProvider);
+      if (liked) {
+        await repo.likeVideo(v.id);
+      } else {
+        await repo.unlikeVideo(v.id);
+      }
+    } catch (e, st) {
+      _reportFeedError('toggleLike', e, st);
       final rollback = List<VideoModel>.from(state.videos);
       if (index < rollback.length) {
         rollback[index] = v;
-        state = state.copyWith(videos: rollback);
       }
-    });
+      state = state.copyWith(
+        videos: rollback,
+        transientError: 'like_failed',
+      );
+    }
   }
 
-  void toggleSave(int index, bool saved) {
+  Future<void> toggleSave(int index, bool saved) async {
     final v = state.videos[index];
     final updated = List<VideoModel>.from(state.videos);
     updated[index] = v.copyWith(
@@ -222,17 +247,27 @@ class FeedNotifier extends Notifier<FeedState> {
     );
     state = state.copyWith(videos: updated);
 
-    final repo = ref.read(videoRepositoryProvider);
-    (saved ? repo.saveVideo(v.id) : repo.unsaveVideo(v.id)).catchError((_) {
+    try {
+      final repo = ref.read(videoRepositoryProvider);
+      if (saved) {
+        await repo.saveVideo(v.id);
+      } else {
+        await repo.unsaveVideo(v.id);
+      }
+    } catch (e, st) {
+      _reportFeedError('toggleSave', e, st);
       final rollback = List<VideoModel>.from(state.videos);
       if (index < rollback.length) {
         rollback[index] = v;
-        state = state.copyWith(videos: rollback);
       }
-    });
+      state = state.copyWith(
+        videos: rollback,
+        transientError: 'save_failed',
+      );
+    }
   }
 
-  void toggleFollow(int index, bool followed) {
+  Future<void> toggleFollow(int index, bool followed) async {
     final v = state.videos[index];
     // Update all videos from the same pro
     final updated = state.videos
@@ -242,16 +277,25 @@ class FeedNotifier extends Notifier<FeedState> {
         .toList();
     state = state.copyWith(videos: updated);
 
-    final repo = ref.read(videoRepositoryProvider);
-    (followed ? repo.followPro(v.proId) : repo.unfollowPro(v.proId))
-        .catchError((_) {
+    try {
+      final repo = ref.read(videoRepositoryProvider);
+      if (followed) {
+        await repo.followPro(v.proId);
+      } else {
+        await repo.unfollowPro(v.proId);
+      }
+    } catch (e, st) {
+      _reportFeedError('toggleFollow', e, st);
       final rollback = state.videos
           .map((video) => video.proId == v.proId
               ? video.copyWith(isFollowed: !followed)
               : video)
           .toList();
-      state = state.copyWith(videos: rollback);
-    });
+      state = state.copyWith(
+        videos: rollback,
+        transientError: 'follow_failed',
+      );
+    }
   }
 }
 

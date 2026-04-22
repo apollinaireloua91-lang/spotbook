@@ -235,7 +235,9 @@ class ProFeedCubit extends Cubit<ProFeedState> {
       }
     } catch (e, st) {
       _reportCubitError('toggleFollow', e, st);
-      if (!isClosed) emit(state.copyWith(videos: previous));
+      if (!isClosed) {
+        emit(state.copyWith(videos: previous, error: 'follow_failed'));
+      }
     }
   }
 

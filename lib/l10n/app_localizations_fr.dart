@@ -1869,6 +1869,18 @@ class AppLocalizationsFr extends AppLocalizations {
   String get feedFollowing => 'Abonnements';
 
   @override
+  String get feedLikeFailed =>
+      'Impossible de mettre à jour le like. Réessaie dans un instant.';
+
+  @override
+  String get feedSaveFailed =>
+      'Impossible de sauvegarder cette vidéo. Réessaie dans un instant.';
+
+  @override
+  String get feedFollowFailed =>
+      'Impossible de mettre à jour l\'abonnement. Réessaie dans un instant.';
+
+  @override
   String get filtersTool => 'Filtres';
 
   @override

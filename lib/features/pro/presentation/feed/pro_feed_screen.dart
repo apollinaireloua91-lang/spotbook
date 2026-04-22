@@ -8,6 +8,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/theme/app_typography.dart';
 import '../../../../shared/theme/theme_mode_notifier.dart';
@@ -73,14 +74,20 @@ class _ProFeedBody extends ConsumerWidget {
       listener: (context, state) {
         final msg = state.error;
         if (msg == null) return;
+        final l = AppLocalizations.of(context)!;
+        final text = switch (msg) {
+          'like_failed' => l.feedLikeFailed,
+          'save_failed' => l.feedSaveFailed,
+          'follow_failed' => l.feedFollowFailed,
+          _ => msg,
+        };
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(
-              msg == 'like_failed'
-                  ? 'Failed to update like'
-                  : msg == 'save_failed'
-                      ? 'Failed to update save'
-                      : msg,
+            content: Text(text),
+            backgroundColor: AppColors.error,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
             ),
           ),
         );

@@ -3662,6 +3662,24 @@ abstract class AppLocalizations {
   /// **'Following'**
   String get feedFollowing;
 
+  /// No description provided for @feedLikeFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t update like. Please try again.'**
+  String get feedLikeFailed;
+
+  /// No description provided for @feedSaveFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t save this video. Please try again.'**
+  String get feedSaveFailed;
+
+  /// No description provided for @feedFollowFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t update follow. Please try again.'**
+  String get feedFollowFailed;
+
   /// No description provided for @filtersTool.
   ///
   /// In en, this message translates to:

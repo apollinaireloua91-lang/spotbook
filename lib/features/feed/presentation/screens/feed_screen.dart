@@ -39,6 +39,33 @@ class _FeedScreenState extends ConsumerState<FeedScreen> {
     final topPad = MediaQuery.of(context).padding.top;
     final isPlaying = ref.watch(feedPlayStateProvider);
 
+    // Transient error SnackBar (like/save/follow failures). On lit
+    // uniquement la transition null → non-null pour éviter de reshowing
+    // le même SnackBar à chaque rebuild.
+    ref.listen<FeedState>(feedProvider, (prev, next) {
+      final err = next.transientError;
+      if (err == null || err == prev?.transientError) return;
+      if (!mounted) return;
+      final l = AppLocalizations.of(context)!;
+      final text = switch (err) {
+        'like_failed' => l.feedLikeFailed,
+        'save_failed' => l.feedSaveFailed,
+        'follow_failed' => l.feedFollowFailed,
+        _ => err,
+      };
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(text),
+          backgroundColor: AppColors.error,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+      );
+      ref.read(feedProvider.notifier).clearTransientError();
+    });
+
     if (s.isLoading) {
       return Scaffold(
         backgroundColor: Colors.black,

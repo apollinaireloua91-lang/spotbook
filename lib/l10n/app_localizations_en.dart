@@ -1846,6 +1846,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get feedFollowing => 'Following';
 
   @override
+  String get feedLikeFailed => 'Couldn\'t update like. Please try again.';
+
+  @override
+  String get feedSaveFailed => 'Couldn\'t save this video. Please try again.';
+
+  @override
+  String get feedFollowFailed => 'Couldn\'t update follow. Please try again.';
+
+  @override
   String get filtersTool => 'Filters';
 
   @override
