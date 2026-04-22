@@ -4,11 +4,14 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../core/services/app_config_provider.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
+import '../../../../shared/utils/currency_formatter.dart';
+import '../../../../shared/utils/share_branding.dart';
 import '../../../../shared/widgets/spotbook_button.dart';
 import '../../../../shared/widgets/spotbook_loading_shimmer.dart';
 import '../../../chat/data/chat_repository.dart';
@@ -17,6 +20,7 @@ import '../../data/booking_notifier.dart';
 import '../../data/booking_repository.dart';
 import '../../../../shared/theme/theme_mode_notifier.dart';
 import '../../domain/booking_models.dart';
+import '../widgets/booking_status_presenter.dart';
 
 /// Détail d\'un RDV — vue unifiée (client ou pro) selon `auth.uid()`.
 class BookingDetailScreen extends ConsumerStatefulWidget {
@@ -373,7 +377,7 @@ class _ErrorScaffold extends StatelessWidget {
               decoration: BoxDecoration(
                 color: AppColors.surface,
                 borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: AppColors.border, width: 0.5),
+                border: Border.all(color: AppColors.glassBorder, width: 0.5),
               ),
               child: Icon(Icons.arrow_back_ios_new,
                   color: AppColors.blanc, size: 16),
@@ -469,24 +473,55 @@ class _DetailBody extends StatelessWidget {
           ),
           centerTitle: true,
           actions: [
-            PopupMenuButton<String>(
-              icon: Icon(Icons.more_vert, color: AppColors.blanc),
-              color: AppColors.surface,
-              onSelected: (value) {
-                if (value == 'report') {
-                  HapticFeedback.lightImpact();
-                  onReport();
-                }
-              },
-              itemBuilder: (context) => [
-                PopupMenuItem<String>(
-                  value: 'report',
-                  child: Text(
-                    l.reportBooking,
-                    style: GoogleFonts.dmSans(color: AppColors.blanc),
+            Padding(
+              padding: const EdgeInsets.only(right: 16),
+              child: Center(
+                child: PopupMenuButton<String>(
+                  offset: const Offset(0, 44),
+                  position: PopupMenuPosition.under,
+                  padding: EdgeInsets.zero,
+                  color: AppColors.surface,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    side: BorderSide(color: AppColors.glassBorder, width: 0.5),
+                  ),
+                  onSelected: (value) {
+                    if (value == 'report') {
+                      HapticFeedback.lightImpact();
+                      onReport();
+                    }
+                  },
+                  itemBuilder: (context) => [
+                    PopupMenuItem<String>(
+                      value: 'report',
+                      child: Row(
+                        children: [
+                          Icon(Icons.flag_outlined,
+                              color: AppColors.rose, size: 16),
+                          const SizedBox(width: 10),
+                          Text(
+                            l.reportBooking,
+                            style: GoogleFonts.dmSans(color: AppColors.blanc),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                  child: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: AppColors.surface,
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(
+                        color: AppColors.glassBorder,
+                        width: 0.5,
+                      ),
+                    ),
+                    child: Icon(Icons.more_horiz_rounded,
+                        color: AppColors.blanc, size: 16),
                   ),
                 ),
-              ],
+              ),
             ),
           ],
         ),
@@ -495,13 +530,23 @@ class _DetailBody extends StatelessWidget {
           padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
           sliver: SliverList(
             delegate: SliverChildListDelegate([
-              _PersonCard(name: name, avatarUrl: avatarUrl),
+              _PersonCard(
+                name: name,
+                avatarUrl: avatarUrl,
+                roleLabel: isProViewer ? 'Client' : 'Prestataire',
+              ),
               const SizedBox(height: 20),
               _InfoSection(
                 booking: booking,
                 isProViewer: isProViewer,
                 commissionRate: commissionRate,
               ),
+              // QR Code section — client only, confirmed bookings
+              if (!isProViewer && booking.hasQrCode && booking.isUpcoming)
+                Padding(
+                  padding: const EdgeInsets.only(top: 24),
+                  child: _BookingQrSection(booking: booking),
+                ),
               const SizedBox(height: 24),
               _StatusTimeline(booking: booking),
               const SizedBox(height: 28),
@@ -532,49 +577,54 @@ class _StatusBanner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
-    final (Color bg, Color fg, String label) = switch (status) {
-      'confirmed' => (
-          AppColors.success.withValues(alpha: 0.12),
-          AppColors.success,
-          l.confirmed,
-        ),
-      'pending_payment' => (
-          AppColors.warning.withValues(alpha: 0.12),
-          AppColors.warning,
-          l.paymentPending,
-        ),
-      'completed' => (
-          AppColors.gris.withValues(alpha: 0.15),
-          AppColors.grisClair,
-          l.markAsDone,
-        ),
-      'cancelled_full_refund' => (
-          AppColors.error.withValues(alpha: 0.12),
-          AppColors.error,
-          'Annulé — remboursé',
-        ),
-      'cancelled_no_refund' => (
-          AppColors.error.withValues(alpha: 0.12),
-          AppColors.error,
-          l.cancel,
-        ),
-      _ => (
-          AppColors.surfaceAlt,
-          AppColors.gris,
-          status,
-        ),
+    final presentation = presentBookingStatus(status, l);
+    final tint = presentation.tint;
+    final label = presentation.label;
+    final icon = switch (status) {
+      'confirmed' => Icons.check_circle_rounded,
+      'pending_payment' => Icons.hourglass_bottom_rounded,
+      'completed' => Icons.verified_rounded,
+      'cancelled_full_refund' ||
+      'cancelled_no_refund' ||
+      'rejected' =>
+        Icons.cancel_rounded,
+      'payment_failed' => Icons.error_outline_rounded,
+      _ => Icons.info_outline_rounded,
     };
 
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-      color: bg,
-      child: Text(
-        label,
-        style: GoogleFonts.dmSans(
-          color: fg,
-          fontWeight: FontWeight.w700,
-          fontSize: 15,
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
+      child: Container(
+        padding: const EdgeInsets.fromLTRB(14, 12, 16, 12),
+        decoration: BoxDecoration(
+          color: tint.withAlpha(14),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: tint.withAlpha(55), width: 0.8),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 32,
+              height: 32,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: tint.withAlpha(30),
+              ),
+              child: Icon(icon, size: 16, color: tint),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                label,
+                style: GoogleFonts.dmSans(
+                  color: tint,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 14,
+                  letterSpacing: 0.1,
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -582,47 +632,90 @@ class _StatusBanner extends StatelessWidget {
 }
 
 class _PersonCard extends StatelessWidget {
-  const _PersonCard({required this.name, this.avatarUrl});
+  const _PersonCard({required this.name, this.avatarUrl, this.roleLabel});
 
   final String name;
   final String? avatarUrl;
+  final String? roleLabel;
 
   @override
   Widget build(BuildContext context) {
+    final hasAvatar = avatarUrl != null && avatarUrl!.isNotEmpty;
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.fromLTRB(14, 14, 16, 14),
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border, width: 0.5),
+        border: Border.all(color: AppColors.border, width: 0.8),
+        boxShadow: AppColors.premiumCardShadow,
       ),
       child: Row(
         children: [
-          ClipOval(
-            child: avatarUrl != null && avatarUrl!.isNotEmpty
-                ? CachedNetworkImage(
-                    imageUrl: avatarUrl!,
-                    width: 56,
-                    height: 56,
-                    fit: BoxFit.cover,
-                    placeholder: (_, __) => Container(
-                      width: 56,
-                      height: 56,
-                      color: AppColors.surfaceAlt,
-                    ),
-                    errorWidget: (_, __, ___) => _fallbackAvatar(name),
-                  )
-                : _fallbackAvatar(name),
+          // Avatar + glow violet quand fallback initiale (cf. plan §P5).
+          // Le glow disparaît quand on a une vraie photo pour ne pas altérer
+          // le portrait du pro/client.
+          Container(
+            width: 56,
+            height: 56,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: LinearGradient(
+                colors: [
+                  AppColors.violet.withAlpha(120),
+                  AppColors.violetClair.withAlpha(60),
+                ],
+              ),
+              boxShadow: hasAvatar
+                  ? null
+                  : [
+                      BoxShadow(
+                        color: AppColors.violet.withAlpha(60),
+                        blurRadius: 12,
+                        spreadRadius: 0,
+                      ),
+                    ],
+            ),
+            padding: const EdgeInsets.all(1.5),
+            child: ClipOval(
+              child: hasAvatar
+                  ? CachedNetworkImage(
+                      imageUrl: avatarUrl!,
+                      fit: BoxFit.cover,
+                      placeholder: (_, __) =>
+                          Container(color: AppColors.surfaceAlt),
+                      errorWidget: (_, __, ___) => _fallbackAvatar(name),
+                    )
+                  : _fallbackAvatar(name),
+            ),
           ),
           const SizedBox(width: 14),
           Expanded(
-            child: Text(
-              name,
-              style: GoogleFonts.sora(
-                color: AppColors.blanc,
-                fontSize: 18,
-                fontWeight: FontWeight.w700,
-              ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (roleLabel != null)
+                  Text(
+                    roleLabel!.toUpperCase(),
+                    style: GoogleFonts.dmSans(
+                      color: AppColors.gris,
+                      fontSize: 10,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 1.6,
+                    ),
+                  ),
+                const SizedBox(height: 3),
+                Text(
+                  name,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: GoogleFonts.sora(
+                    color: AppColors.blanc,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                    height: 1.2,
+                  ),
+                ),
+              ],
             ),
           ),
         ],
@@ -632,8 +725,6 @@ class _PersonCard extends StatelessWidget {
 
   Widget _fallbackAvatar(String n) {
     return Container(
-      width: 56,
-      height: 56,
       color: AppColors.surfaceAlt,
       alignment: Alignment.center,
       child: Text(
@@ -641,7 +732,7 @@ class _PersonCard extends StatelessWidget {
         style: GoogleFonts.sora(
           color: AppColors.blanc,
           fontSize: 22,
-          fontWeight: FontWeight.w600,
+          fontWeight: FontWeight.w700,
         ),
       ),
     );
@@ -669,223 +760,434 @@ class _InfoSection extends StatelessWidget {
         ? booking.slotEndTime!.substring(0, 5)
         : null;
     final timeLine = end != null ? '$start — $end' : start;
+    final prettyDate = _prettyDate(booking.slotDate);
+    // Fused single-line datetime block, more legible than two separate rows.
+    final dateTimeLine = prettyDate != null ? '$prettyDate · $timeLine' : timeLine;
 
     final commissionPct = (commissionRate * 100).round();
     final commission = booking.depositAmount * commissionRate;
     final netEst = booking.depositAmount - commission;
 
-    final remainingStatusLabel = switch (booking.remainingPaymentStatus) {
-      'paid_on_site' => l.confirmed,
-      'waived' => l.cancel,
-      _ => l.statusPending,
-    };
-    final remainingStatusColor = switch (booking.remainingPaymentStatus) {
-      'paid_on_site' => AppColors.success,
+    // Paid-online dot: violet once the booking is confirmed/completed,
+    // warning while still pending payment. No badge is rendered — a small
+    // discreet dot next to the amount is enough to convey state.
+    final isPaidOnline =
+        booking.status == 'confirmed' || booking.status == 'completed';
+    final paidOnlineDot = isPaidOnline ? AppColors.violet : AppColors.warning;
+
+    // Remaining balance dot: violet once the on-site payment is collected,
+    // grey when waived, warning otherwise.
+    final remainingDot = switch (booking.remainingPaymentStatus) {
+      'paid_on_site' => AppColors.violet,
       'waived' => AppColors.gris,
       _ => AppColors.warning,
     };
 
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        _row(Icons.spa_outlined, 'Service', booking.serviceName ?? '—'),
-        if (booking.serviceDurationMinutes != null)
-          _row(
-            Icons.timer_outlined,
-            'Durée',
-            '${booking.serviceDurationMinutes} min',
-          ),
-        _row(Icons.calendar_today_outlined, 'Date', booking.slotDate ?? '—'),
-        _row(Icons.schedule, 'Heure', timeLine),
-
-        // ─── Payment breakdown ───────────────────────────────
-        _row(
-          Icons.payments_outlined,
-          'Total',
-          '${booking.totalAmount.toStringAsFixed(2)} ${booking.currency}',
+        // ─── Prestation + Rendez-vous ─────────────────────────
+        _StatementCard(
+          title: 'Prestation',
+          rows: [
+            _StatementRow(
+              label: 'Service',
+              value: booking.serviceName ?? '—',
+            ),
+            if (booking.serviceDurationMinutes != null)
+              _StatementRow(
+                label: 'Durée',
+                value: '${booking.serviceDurationMinutes} min',
+              ),
+            _StatementRow(
+              label: 'Rendez-vous',
+              value: dateTimeLine,
+              isMono: true,
+            ),
+          ],
         ),
-        if (booking.isDepositMode) ...[
-          _rowWithBadge(
-            Icons.account_balance_wallet_outlined,
-            isProViewer
-                ? l.depositReceivedOnline
-                : l.depositPaidOnline,
-            '${booking.depositAmount.toStringAsFixed(2)} ${booking.currency}',
-            badgeLabel: l.confirmed,
-            badgeColor: AppColors.success,
-          ),
-          _rowWithBadge(
-            Icons.storefront_outlined,
-            isProViewer
-                ? l.balanceToCollectOnSite
-                : l.balanceToPayOnSite,
-            '${(booking.remainingAmount ?? 0).toStringAsFixed(2)} ${booking.currency}',
-            badgeLabel: remainingStatusLabel,
-            badgeColor: remainingStatusColor,
-          ),
-          if (isProViewer && (booking.status == 'confirmed' || booking.status == 'completed')) ...[
-            const SizedBox(height: 8),
-            Text(
-              l.commissionEstimate('$commissionPct', commission.toStringAsFixed(2), booking.currency, netEst.toStringAsFixed(2)),
-              style: TextStyle(
-                color: AppColors.gris,
-                fontSize: 12,
-                height: 1.4,
-              ),
-            ),
-            Text(
-              l.balanceOnSite((booking.remainingAmount ?? 0).toStringAsFixed(2), booking.currency),
-              style: TextStyle(
-                color: AppColors.gris,
-                fontSize: 12,
-                height: 1.4,
-              ),
-            ),
-          ],
-        ] else ...[
-          _rowWithBadge(
-            Icons.account_balance_wallet_outlined,
-            l.depositPaidOnline,
-            '${booking.depositAmount.toStringAsFixed(2)} ${booking.currency}',
-            badgeLabel: l.confirmed,
-            badgeColor: AppColors.success,
-          ),
-          if (isProViewer && (booking.status == 'confirmed' || booking.status == 'completed')) ...[
-            const SizedBox(height: 8),
-            Text(
-              l.commissionEstimate('$commissionPct', commission.toStringAsFixed(2), booking.currency, netEst.toStringAsFixed(2)),
-              style: TextStyle(
-                color: AppColors.gris,
-                fontSize: 12,
-                height: 1.4,
-              ),
-            ),
-          ],
-        ],
 
+        const SizedBox(height: 16),
+
+        // ─── Paiement ─────────────────────────────────────────
+        _StatementCard(
+          title: 'Paiement',
+          rows: [
+            _StatementRow(
+              label: 'Total',
+              value: CurrencyFormatter.formatAmount(
+                booking.totalAmount,
+                currency: booking.currency,
+              ),
+              isMono: true,
+              emphasize: true,
+            ),
+            if (booking.isDepositMode) ...[
+              _StatementRow(
+                label: isProViewer ? l.depositReceivedOnline : l.paidOnline,
+                value: CurrencyFormatter.formatAmount(
+                  booking.depositAmount,
+                  currency: booking.currency,
+                ),
+                isMono: true,
+                leadingDot: paidOnlineDot,
+              ),
+              _StatementRow(
+                label: isProViewer ? l.balanceToCollect : l.balanceToPay,
+                value: CurrencyFormatter.formatAmount(
+                  booking.remainingAmount ?? 0,
+                  currency: booking.currency,
+                ),
+                isMono: true,
+                leadingDot: remainingDot,
+              ),
+            ] else
+              _StatementRow(
+                label: l.paidOnline,
+                value: CurrencyFormatter.formatAmount(
+                  booking.depositAmount,
+                  currency: booking.currency,
+                ),
+                isMono: true,
+                leadingDot: paidOnlineDot,
+              ),
+          ],
+          footer: isProViewer &&
+                  (booking.status == 'confirmed' ||
+                      booking.status == 'completed')
+              ? Padding(
+                  padding: const EdgeInsets.only(top: 6),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        l.commissionEstimate(
+                          '$commissionPct',
+                          commission.toStringAsFixed(2),
+                          booking.currency,
+                          netEst.toStringAsFixed(2),
+                        ),
+                        style: GoogleFonts.dmSans(
+                          color: AppColors.gris,
+                          fontSize: 11.5,
+                          height: 1.5,
+                        ),
+                      ),
+                      if (booking.isDepositMode)
+                        Text(
+                          l.balanceOnSite(
+                            (booking.remainingAmount ?? 0).toStringAsFixed(2),
+                            booking.currency,
+                          ),
+                          style: GoogleFonts.dmSans(
+                            color: AppColors.gris,
+                            fontSize: 11.5,
+                            height: 1.5,
+                          ),
+                        ),
+                    ],
+                  ),
+                )
+              : null,
+        ),
+
+        // ─── Code de réservation (ticket-style) ───────────────
         if (booking.bookingCode != null) ...[
           const SizedBox(height: 16),
-          Text(
-            'Code de réservation',
-            style: GoogleFonts.dmSans(
-              color: AppColors.gris,
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          const SizedBox(height: 4),
-          SelectableText(
-            booking.bookingCode!,
-            style: GoogleFonts.sora(
-              color: AppColors.blanc,
-              fontSize: 16,
-              fontWeight: FontWeight.w700,
-              letterSpacing: 1.2,
-            ),
-          ),
+          _BookingCodeTicket(code: booking.bookingCode!),
         ],
       ],
     );
   }
 
-  Widget _row(IconData icon, String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 14),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+  static String? _prettyDate(String? raw) {
+    if (raw == null) return null;
+    try {
+      final d = DateTime.parse(raw);
+      const days = ['lun', 'mar', 'mer', 'jeu', 'ven', 'sam', 'dim'];
+      const months = [
+        'janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin',
+        'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.',
+      ];
+      return '${days[d.weekday - 1]} ${d.day} ${months[d.month - 1]} ${d.year}';
+    } catch (_) {
+      return raw;
+    }
+  }
+}
+
+// ─── Statement card — grouped label/value rows with section title ────────────
+
+class _StatementCard extends StatelessWidget {
+  const _StatementCard({
+    required this.title,
+    required this.rows,
+    this.footer,
+  });
+
+  final String title;
+  final List<_StatementRow> rows;
+  final Widget? footer;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(18, 16, 18, 14),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.border, width: 0.8),
+        boxShadow: AppColors.premiumCardShadow,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Icon(icon, color: AppColors.gris, size: 20),
-          const SizedBox(width: 12),
+          Text(
+            title.toUpperCase(),
+            style: GoogleFonts.dmSans(
+              color: AppColors.gris,
+              fontSize: 10.5,
+              fontWeight: FontWeight.w700,
+              letterSpacing: 1.6,
+            ),
+          ),
+          const SizedBox(height: 10),
+          for (int i = 0; i < rows.length; i++) ...[
+            rows[i],
+            if (i < rows.length - 1)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                child: Container(height: 0.5, color: AppColors.border),
+              ),
+          ],
+          if (footer != null) footer!,
+        ],
+      ),
+    );
+  }
+}
+
+// ─── Statement row — label left, value right, optional badge ────────────────
+
+class _StatementRow extends StatelessWidget {
+  const _StatementRow({
+    required this.label,
+    required this.value,
+    this.isMono = false,
+    this.emphasize = false,
+    this.leadingDot,
+  });
+
+  final String label;
+  final String value;
+  final bool isMono;
+  final bool emphasize;
+
+  /// Small discreet status dot rendered before the label. Used to signal
+  /// payment state without repeating a status badge/chip already shown on
+  /// the unified status banner above. See user spec 2026-04-22.
+  final Color? leadingDot;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 2),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          if (leadingDot != null) ...[
+            Container(
+              width: 6,
+              height: 6,
+              decoration: BoxDecoration(
+                color: leadingDot,
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(color: leadingDot!.withAlpha(90), blurRadius: 4),
+                ],
+              ),
+            ),
+            const SizedBox(width: 8),
+          ],
           Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  label,
-                  style: GoogleFonts.dmSans(
-                    color: AppColors.gris,
-                    fontSize: 12,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  value,
-                  style: GoogleFonts.dmSans(
-                    color: AppColors.blanc,
-                    fontSize: 15,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ],
+            child: Text(
+              label,
+              style: GoogleFonts.dmSans(
+                color: AppColors.gris,
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+                height: 1.3,
+              ),
+            ),
+          ),
+          Text(
+            value,
+            textAlign: TextAlign.right,
+            style: GoogleFonts.dmSans(
+              color: AppColors.blanc,
+              fontSize: emphasize ? 16 : 14,
+              fontWeight: emphasize ? FontWeight.w700 : FontWeight.w600,
+              fontFeatures:
+                  isMono ? const [FontFeature.tabularFigures()] : null,
+              letterSpacing: emphasize ? 0 : 0.1,
             ),
           ),
         ],
       ),
     );
   }
+}
 
-  Widget _rowWithBadge(
-    IconData icon,
-    String label,
-    String value, {
-    required String badgeLabel,
-    required Color badgeColor,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 14),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(icon, color: AppColors.gris, size: 20),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  label,
-                  style: GoogleFonts.dmSans(
-                    color: AppColors.gris,
-                    fontSize: 12,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Row(
-                  children: [
-                    Text(
-                      value,
-                      style: GoogleFonts.dmSans(
-                        color: AppColors.blanc,
-                        fontSize: 15,
-                        fontWeight: FontWeight.w600,
-                      ),
+// ─── Booking code ticket — dashed pill with copy button ─────────────────────
+
+class _BookingCodeTicket extends StatelessWidget {
+  const _BookingCodeTicket({required this.code});
+  final String code;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(4, 4, 4, 4),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.border, width: 0.8),
+        boxShadow: AppColors.premiumCardShadow,
+      ),
+      child: CustomPaint(
+        painter: _DashedRectPainter(
+          color: AppColors.violet.withAlpha(140),
+          radius: 12,
+          dashLength: 5,
+          gapLength: 3,
+        ),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 14, 8, 14),
+          child: Row(
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'CODE DE RÉSERVATION',
+                    style: GoogleFonts.dmSans(
+                      color: AppColors.gris,
+                      fontSize: 10,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 1.6,
                     ),
-                    const SizedBox(width: 8),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 3),
-                      decoration: BoxDecoration(
-                        color: badgeColor.withValues(alpha: 0.15),
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      child: Text(
-                        badgeLabel,
-                        style: GoogleFonts.dmSans(
-                          color: badgeColor,
-                          fontSize: 11,
-                          fontWeight: FontWeight.w600,
+                  ),
+                  const SizedBox(height: 4),
+                  SelectableText(
+                    code,
+                    style: GoogleFonts.sora(
+                      color: AppColors.blanc,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 1.8,
+                      fontFeatures: const [FontFeature.tabularFigures()],
+                    ),
+                  ),
+                ],
+              ),
+              const Spacer(),
+              Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: () async {
+                    HapticFeedback.lightImpact();
+                    await Clipboard.setData(ClipboardData(text: code));
+                    if (!context.mounted) return;
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        backgroundColor: AppColors.surface,
+                        behavior: SnackBarBehavior.floating,
+                        duration: const Duration(seconds: 2),
+                        content: Text(
+                          'Code copié',
+                          style: GoogleFonts.dmSans(color: AppColors.blanc),
                         ),
                       ),
+                    );
+                  },
+                  borderRadius: BorderRadius.circular(12),
+                  child: Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: AppColors.surfaceAlt,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: AppColors.glassBorder,
+                        width: 0.5,
+                      ),
                     ),
-                  ],
+                    child: Icon(
+                      Icons.content_copy_rounded,
+                      color: AppColors.blanc,
+                      size: 16,
+                    ),
+                  ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
+}
+
+// ─── Dashed rounded-rect painter (used inside the booking code ticket) ──────
+
+class _DashedRectPainter extends CustomPainter {
+  _DashedRectPainter({
+    required this.color,
+    this.radius = 12,
+    this.dashLength = 4,
+    this.gapLength = 4,
+  });
+
+  final Color color;
+  final double radius;
+  final double dashLength;
+  final double gapLength;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    const strokeWidth = 1.0;
+    final rect = RRect.fromRectAndRadius(
+      Rect.fromLTWH(strokeWidth / 2, strokeWidth / 2,
+          size.width - strokeWidth, size.height - strokeWidth),
+      Radius.circular(radius),
+    );
+    final paint = Paint()
+      ..color = color
+      ..strokeWidth = strokeWidth
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round;
+
+    final path = Path()..addRRect(rect);
+    final dashed = Path();
+    for (final metric in path.computeMetrics()) {
+      double distance = 0;
+      while (distance < metric.length) {
+        final next = distance + dashLength;
+        dashed.addPath(
+          metric.extractPath(distance, next.clamp(0, metric.length)),
+          Offset.zero,
+        );
+        distance = next + gapLength;
+      }
+    }
+    canvas.drawPath(dashed, paint);
+  }
+
+  @override
+  bool shouldRepaint(_DashedRectPainter oldDelegate) =>
+      oldDelegate.color != color ||
+      oldDelegate.radius != radius ||
+      oldDelegate.dashLength != dashLength ||
+      oldDelegate.gapLength != gapLength;
 }
 
 class _Actions extends StatelessWidget {
@@ -1042,26 +1344,81 @@ class _Actions extends StatelessWidget {
 // Status timeline
 // ─────────────────────────────────────────────────────────────────────────────
 
-class _StatusTimeline extends StatelessWidget {
+class _StatusTimeline extends StatefulWidget {
   const _StatusTimeline({required this.booking});
   final BookingModel booking;
 
+  @override
+  State<_StatusTimeline> createState() => _StatusTimelineState();
+}
+
+class _StatusTimelineState extends State<_StatusTimeline>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _progressCtrl;
+  late final Animation<double> _progressAnim;
+
   static List<(String, String, IconData)> _steps(AppLocalizations l) => [
-    ('pending_payment', l.statusPending, Icons.receipt_long_outlined),
-    ('pending', l.statusPending, Icons.payments_outlined),
-    ('confirmed', l.confirmed, Icons.check_circle_outline),
-    ('completed', l.markAsDone, Icons.done_all),
-  ];
+        ('pending_payment', l.statusPending, Icons.receipt_long_rounded),
+        ('pending', l.statusPending, Icons.credit_card_rounded),
+        ('confirmed', l.confirmed, Icons.check_circle_outline_rounded),
+        ('completed', l.markAsDone, Icons.verified_rounded),
+      ];
 
   int _currentIndex() {
-    final s = booking.status;
+    final s = widget.booking.status;
     if (s == 'completed') return 3;
     if (s == 'confirmed') return 2;
     if (s == 'pending') return 1;
     if (s == 'pending_payment') return 0;
-    // Cancelled / other — show up to where it got
     if (s.startsWith('cancelled')) return -1;
     return 0;
+  }
+
+  /// When cancelled, returns the last step reached before cancellation.
+  /// Heuristic: depositAmount > 0 implies at least "Paiement" (idx 1) was reached.
+  /// cancelled_full_refund on a confirmed booking is plausibly post-confirm, but
+  /// we lack the signal to prove it without a new DB column, so we stay
+  /// conservative at step 1.
+  int _cancelledAtIndex() {
+    if (widget.booking.depositAmount > 0) return 1;
+    return 0;
+  }
+
+  String _cancelReasonLabel(int reachedIndex, AppLocalizations l) {
+    switch (reachedIndex) {
+      case 0:
+        return 'Annulée avant paiement';
+      case 1:
+        return widget.booking.status == 'cancelled_full_refund'
+            ? 'Annulée après paiement — acompte remboursé'
+            : 'Annulée après paiement de l\'acompte';
+      case 2:
+        return 'Annulée après confirmation du professionnel';
+      default:
+        return 'Réservation annulée';
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _progressCtrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 900),
+    );
+    _progressAnim = CurvedAnimation(
+      parent: _progressCtrl,
+      curve: Curves.easeOutCubic,
+    );
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _progressCtrl.forward();
+    });
+  }
+
+  @override
+  void dispose() {
+    _progressCtrl.dispose();
+    super.dispose();
   }
 
   @override
@@ -1069,132 +1426,484 @@ class _StatusTimeline extends StatelessWidget {
     final l = AppLocalizations.of(context)!;
     final steps = _steps(l);
     final current = _currentIndex();
-    final isCancelled = booking.status.startsWith('cancelled');
+    final isCancelled = widget.booking.status.startsWith('cancelled');
+    final cancelledAt = isCancelled ? _cancelledAtIndex() : -1;
+
+    // Fractional progress along the rail (0..1). On cancel, the rail fills up
+    // to the step that was reached — so the user can see exactly how far the
+    // booking travelled before being cancelled.
+    final targetProgress = isCancelled
+        ? (cancelledAt / (steps.length - 1)).clamp(0.0, 1.0)
+        : (current / (steps.length - 1)).clamp(0.0, 1.0);
 
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.fromLTRB(18, 18, 18, 10),
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border, width: 0.5),
+        border: Border.all(color: AppColors.border, width: 0.8),
+        boxShadow: AppColors.premiumCardShadow,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Row(
+            children: [
+              Text(
+                'SUIVI',
+                style: GoogleFonts.dmSans(
+                  color: AppColors.gris,
+                  fontSize: 10.5,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 1.6,
+                ),
+              ),
+              const Spacer(),
+              if (!isCancelled)
+                Text(
+                  '${(current + 1).clamp(1, steps.length)} / ${steps.length}',
+                  style: GoogleFonts.dmSans(
+                    color: AppColors.gris,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                    fontFeatures: const [FontFeature.tabularFigures()],
+                  ),
+                ),
+            ],
+          ),
+          const SizedBox(height: 18),
+          AnimatedBuilder(
+            animation: _progressAnim,
+            builder: (context, _) {
+              final filled = targetProgress * _progressAnim.value;
+              return Stack(
+                children: [
+                  // Background rail (full dashed column)
+                  Positioned(
+                    left: 17,
+                    top: 18,
+                    bottom: 18,
+                    child: Container(
+                      width: 2,
+                      decoration: BoxDecoration(
+                        color: AppColors.border,
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+                  ),
+                  // Animated progress fill with gradient + glow.
+                  // When cancelled: fade violet → rose, with a clear
+                  // "severed" cap at the cancellation point.
+                  Positioned(
+                    left: 17,
+                    top: 18,
+                    child: LayoutBuilder(
+                      builder: (context, _) {
+                        final totalRail =
+                            (steps.length - 1) * (36.0 + 22.0); // row + gap
+                        final fillHeight =
+                            (totalRail * filled).clamp(0, totalRail);
+                        return Container(
+                          width: 2,
+                          height: fillHeight.toDouble(),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(2),
+                            gradient: LinearGradient(
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                              colors: isCancelled
+                                  ? [
+                                      AppColors.violet,
+                                      AppColors.rose,
+                                    ]
+                                  : [
+                                      AppColors.violet,
+                                      AppColors.violetClair,
+                                    ],
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: (isCancelled
+                                        ? AppColors.rose
+                                        : AppColors.violet)
+                                    .withAlpha(120),
+                                blurRadius: 8,
+                                spreadRadius: 0.5,
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  // Step rows
+                  Column(
+                    children: List.generate(steps.length, (i) {
+                      final (_, label, icon) = steps[i];
+                      final isReached = isCancelled
+                          ? i <= cancelledAt
+                          : i <= current;
+                      final isActive = !isCancelled && i == current;
+                      final isCancelStop = isCancelled && i == cancelledAt;
+                      final isLast = i == steps.length - 1;
+
+                      return Padding(
+                        padding: EdgeInsets.only(bottom: isLast ? 0 : 22),
+                        child: _TimelineStep(
+                          icon: icon,
+                          label: label,
+                          isReached: isReached,
+                          isActive: isActive,
+                          isCancelStop: isCancelStop,
+                        ),
+                      );
+                    }),
+                  ),
+                ],
+              );
+            },
+          ),
+          if (isCancelled) ...[
+            const SizedBox(height: 20),
+            Container(
+              padding: const EdgeInsets.fromLTRB(12, 10, 14, 10),
+              decoration: BoxDecoration(
+                color: AppColors.rose.withAlpha(18),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: AppColors.rose.withAlpha(55),
+                  width: 0.5,
+                ),
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.event_busy_rounded,
+                      size: 16, color: AppColors.rose),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      _cancelReasonLabel(cancelledAt, l),
+                      style: GoogleFonts.dmSans(
+                        color: AppColors.rose,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _TimelineStep extends StatelessWidget {
+  const _TimelineStep({
+    required this.icon,
+    required this.label,
+    required this.isReached,
+    required this.isActive,
+    this.isCancelStop = false,
+  });
+  final IconData icon;
+  final String label;
+  final bool isReached;
+  final bool isActive;
+  final bool isCancelStop;
+
+  @override
+  Widget build(BuildContext context) {
+    // The cancellation step uses rose (the palette's "stop" accent), keeping
+    // us within the 3-color system — no pure error red.
+    final tint = isCancelStop
+        ? AppColors.rose
+        : isActive
+            ? AppColors.violetClair
+            : isReached
+                ? AppColors.violet
+                : AppColors.gris;
+    final bgCircle = isCancelStop
+        ? AppColors.rose.withAlpha(32)
+        : isActive
+            ? AppColors.violet.withAlpha(32)
+            : isReached
+                ? AppColors.violet.withAlpha(16)
+                : AppColors.surfaceAlt;
+    final borderColor = isCancelStop
+        ? AppColors.rose
+        : isActive
+            ? AppColors.violetClair
+            : isReached
+                ? AppColors.violet.withAlpha(120)
+                : AppColors.border;
+
+    return SizedBox(
+      height: 36,
+      child: Row(
+        children: [
+          Container(
+            width: 36,
+            height: 36,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: bgCircle,
+              border: Border.all(
+                color: borderColor,
+                width: (isActive || isCancelStop) ? 1.2 : 0.5,
+              ),
+              boxShadow: (isActive || isCancelStop)
+                  ? [
+                      BoxShadow(
+                        color: (isCancelStop
+                                ? AppColors.rose
+                                : AppColors.violet)
+                            .withAlpha(80),
+                        blurRadius: 12,
+                        spreadRadius: -2,
+                      ),
+                    ]
+                  : null,
+            ),
+            child: Icon(
+              isCancelStop ? Icons.close_rounded : icon,
+              size: 16,
+              color: tint,
+            ),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Text(
+              label,
+              style: GoogleFonts.dmSans(
+                color: isReached ? AppColors.blanc : AppColors.gris,
+                fontSize: 13.5,
+                fontWeight: (isActive || isCancelStop)
+                    ? FontWeight.w700
+                    : FontWeight.w500,
+                height: 1.2,
+                decoration: isCancelStop
+                    ? TextDecoration.lineThrough
+                    : TextDecoration.none,
+                decorationColor: AppColors.rose.withAlpha(120),
+                decorationThickness: 1.5,
+              ),
+            ),
+          ),
+          if (isActive) _TimelineBadge.active(),
+          if (isCancelStop) _TimelineBadge.cancelled(),
+        ],
+      ),
+    );
+  }
+}
+
+/// Dot + label chip used in timeline steps to mark state
+/// (currently active, or cancelled here).
+class _TimelineBadge extends StatelessWidget {
+  const _TimelineBadge._({
+    required this.label,
+    required this.tint,
+  });
+
+  factory _TimelineBadge.active() => _TimelineBadge._(
+        label: 'Actuel',
+        tint: AppColors.violetClair,
+      );
+
+  factory _TimelineBadge.cancelled() => _TimelineBadge._(
+        label: 'Annulée',
+        tint: AppColors.rose,
+      );
+
+  final String label;
+  final Color tint;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(8, 4, 10, 4),
+      decoration: BoxDecoration(
+        color: tint.withAlpha(22),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: tint.withAlpha(70), width: 0.5),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 5,
+            height: 5,
+            decoration: BoxDecoration(
+              color: tint,
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(color: tint.withAlpha(120), blurRadius: 4),
+              ],
+            ),
+          ),
+          const SizedBox(width: 6),
           Text(
-            'Suivi',
+            label,
+            style: GoogleFonts.dmSans(
+              color: tint,
+              fontSize: 10.5,
+              fontWeight: FontWeight.w700,
+              letterSpacing: 0.3,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _BookingQrSection extends StatelessWidget {
+  const _BookingQrSection({required this.booking});
+
+  final BookingModel booking;
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
+    final qrData = booking.qrData;
+    if (qrData == null) return const SizedBox.shrink();
+
+    return Container(
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.border, width: 0.8),
+        boxShadow: AppColors.premiumCardShadow,
+      ),
+      child: Column(
+        children: [
+          Text(
+            l.yourQrCode,
             style: GoogleFonts.sora(
               color: AppColors.blanc,
-              fontSize: 14,
+              fontSize: 16,
               fontWeight: FontWeight.w700,
             ),
           ),
           const SizedBox(height: 16),
-          ...List.generate(steps.length, (i) {
-            final (_, label, icon) = steps[i];
-            final isReached = !isCancelled && i <= current;
-            final isActive = !isCancelled && i == current;
-            final isLast = i == steps.length - 1;
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: QrImageView(
+              data: qrData,
+              version: QrVersions.auto,
+              size: 200,
+              backgroundColor: Colors.white,
+              eyeStyle: const QrEyeStyle(
+                eyeShape: QrEyeShape.square,
+                color: Colors.black,
+              ),
+              dataModuleStyle: const QrDataModuleStyle(
+                dataModuleShape: QrDataModuleShape.square,
+                color: Colors.black,
+              ),
+            ),
+          ),
+          const SizedBox(height: 12),
+          if (booking.isScanned)
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              decoration: BoxDecoration(
+                color: AppColors.success.withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.check_circle, color: AppColors.success, size: 16),
+                  const SizedBox(width: 6),
+                  Text(
+                    l.qrAlreadyValidated,
+                    style: GoogleFonts.dmSans(
+                      color: AppColors.success,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+            )
+          else
+            Text(
+              l.presentQrOnArrival,
+              textAlign: TextAlign.center,
+              style: GoogleFonts.dmSans(
+                color: AppColors.gris,
+                fontSize: 13,
+              ),
+            ),
+          const SizedBox(height: 16),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              _QrActionButton(
+                icon: Icons.share_rounded,
+                label: l.share,
+                onTap: () {
+                  HapticFeedback.lightImpact();
+                  ShareBranding.shareWithLogo(
+                    text: '${l.myAppointment}: ${booking.serviceName ?? ""} — ${booking.slotDate ?? ""} ${booking.slotStartTime ?? ""}',
+                  );
+                },
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
 
-            return Column(
-              children: [
-                Row(
-                  children: [
-                    Container(
-                      width: 32,
-                      height: 32,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: isActive
-                            ? AppColors.success.withValues(alpha: 0.15)
-                            : isReached
-                                ? AppColors.success.withValues(alpha: 0.08)
-                                : AppColors.surfaceAlt,
-                        border: isActive
-                            ? Border.all(color: AppColors.success, width: 1.5)
-                            : null,
-                      ),
-                      child: Icon(
-                        icon,
-                        size: 16,
-                        color: isReached ? AppColors.success : AppColors.gris,
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Text(
-                        label,
-                        style: GoogleFonts.dmSans(
-                          color: isReached ? AppColors.blanc : AppColors.gris,
-                          fontSize: 14,
-                          fontWeight:
-                              isActive ? FontWeight.w700 : FontWeight.w400,
-                        ),
-                      ),
-                    ),
-                    if (isActive)
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 3),
-                        decoration: BoxDecoration(
-                          color: AppColors.success.withValues(alpha: 0.12),
-                          borderRadius: BorderRadius.circular(6),
-                        ),
-                        child: Text(
-                          'Actuel',
-                          style: GoogleFonts.dmSans(
-                            color: AppColors.success,
-                            fontSize: 11,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                  ],
-                ),
-                if (!isLast)
-                  Padding(
-                    padding: const EdgeInsets.only(left: 15),
-                    child: Container(
-                      width: 2,
-                      height: 20,
-                      color: isReached && i < current
-                          ? AppColors.success.withValues(alpha: 0.3)
-                          : AppColors.border,
-                    ),
-                  ),
-              ],
-            );
-          }),
-          if (isCancelled) ...[
-            const SizedBox(height: 8),
-            Row(
-              children: [
-                Container(
-                  width: 32,
-                  height: 32,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: AppColors.error.withValues(alpha: 0.12),
-                    border: Border.all(color: AppColors.error, width: 1.5),
-                  ),
-                  child: Icon(Icons.cancel_outlined,
-                      size: 16, color: AppColors.error),
-                ),
-                const SizedBox(width: 12),
-                Text(
-                  booking.status == 'cancelled_full_refund'
-                      ? 'Annulé — remboursé'
-                      : 'Annulé',
-                  style: GoogleFonts.dmSans(
-                    color: AppColors.error,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ],
+class _QrActionButton extends StatelessWidget {
+  const _QrActionButton({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(10),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        decoration: BoxDecoration(
+          color: AppColors.surfaceAlt,
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: AppColors.border, width: 0.5),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, color: AppColors.blanc, size: 18),
+            const SizedBox(width: 8),
+            Text(
+              label,
+              style: GoogleFonts.dmSans(
+                color: AppColors.blanc,
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ],
-        ],
+        ),
       ),
     );
   }
