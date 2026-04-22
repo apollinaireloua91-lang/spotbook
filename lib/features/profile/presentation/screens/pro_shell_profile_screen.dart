@@ -2,6 +2,7 @@ import 'dart:math' as math;
 import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -95,8 +96,6 @@ class ProShellProfileScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     // Light mode retiré (2026-04-21) — l'app est verrouillée dark, plus
     // besoin de rebuild sur toggle.
-    final l = AppLocalizations.of(context)!;
-
     final profileAsync = ref.watch(_proSelfProfileProvider);
 
     return profileAsync.when(
@@ -104,9 +103,8 @@ class ProShellProfileScreen extends ConsumerWidget {
         if (profile == null) {
           // Session absente OU ligne `users` manquante (cas Google OAuth
           // où setupNewUser a foiré) → on ne bloque pas l'user sur un
-          // écran noir « Not signed in » sans CTA : on renvoie vers
-          // /login, le router décidera ensuite (redirect sur feed si
-          // session valide récupérée, sinon écran de connexion).
+          // écran noir « Not signed in » sans CTA. La destination est
+          // calculée par AuthRequiredRedirect selon l'état session.
           return const AuthRequiredRedirect();
         }
         return _ProSelfProfileBody(profile: profile);
@@ -117,13 +115,15 @@ class ProShellProfileScreen extends ConsumerWidget {
           child: CircularProgressIndicator(color: AppColors.violet),
         ),
       ),
-      error: (e, _) => Scaffold(
-        backgroundColor: AppColors.fond,
-        body: Center(
-          child: Text('${l.error}: $e',
-              style: TextStyle(color: AppColors.error)),
-        ),
-      ),
+      // Erreur fetch (réseau, RLS refusé, table manquante...) : on ne
+      // laisse pas l'user sur un message d'erreur dead-end. Sentry a
+      // déjà capturé via le pattern d'observabilité côté repository.
+      error: (e, st) {
+        if (kDebugMode) {
+          debugPrint('ProShellProfileScreen error: $e\n$st');
+        }
+        return const AuthRequiredRedirect();
+      },
     );
   }
 }
