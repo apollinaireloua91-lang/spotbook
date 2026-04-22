@@ -40,13 +40,51 @@ class UserSetupRepository {
     final user = _supabase.auth.currentUser;
     if (user == null) return;
 
+    final meta = user.userMetadata ?? {};
+
+    // Mapping des claims OAuth selon provider :
+    //   Google  : meta['name']    + meta['picture']   (standard OIDC)
+    //   Apple   : meta['full_name']  (on l'écrit nous-mêmes dans signInWithApple)
+    //   Email   : meta['full_name'] / meta['avatar_url'] (on les passe dans signUpWithEmail)
+    // Sans ce fallback, un login Google résulte en users.full_name = NULL +
+    // avatar_url = NULL → profil vide dans toute l'app.
+    final resolvedFullName = (meta['full_name'] as String?)
+        ?? (meta['name'] as String?);
+    final resolvedAvatarUrl = (meta['avatar_url'] as String?)
+        ?? (meta['picture'] as String?);
+
     final existing = await _supabase
         .from('users')
-        .select('id')
+        .select('id, full_name, avatar_url')
         .eq('id', user.id)
         .maybeSingle();
 
-    if (existing != null) return;
+    if (existing != null) {
+      // User déjà en DB → on backfill UNIQUEMENT les champs NULL/vides pour
+      // ne pas écraser une édition manuelle de l'user. Couvre les users
+      // créés avant ce fix qui ont un profil vide.
+      final backfill = <String, dynamic>{};
+      final currentName = existing['full_name'] as String?;
+      final currentAvatar = existing['avatar_url'] as String?;
+      if ((currentName == null || currentName.isEmpty) &&
+          resolvedFullName != null && resolvedFullName.isNotEmpty) {
+        backfill['full_name'] = resolvedFullName;
+      }
+      if ((currentAvatar == null || currentAvatar.isEmpty) &&
+          resolvedAvatarUrl != null && resolvedAvatarUrl.isNotEmpty) {
+        backfill['avatar_url'] = resolvedAvatarUrl;
+      }
+      if (backfill.isNotEmpty) {
+        try {
+          await _supabase.from('users').update(backfill).eq('id', user.id);
+        } catch (e, st) {
+          _reportSetupError('users.backfill', e, st);
+          // Non-bloquant : l'user est déjà utilisable, le profil s'affichera
+          // vide mais l'app fonctionne. User pourra éditer manuellement.
+        }
+      }
+      return;
+    }
 
     String countryCode = 'CA';
     try {
@@ -61,13 +99,12 @@ class UserSetupRepository {
     }
 
     final currency = _currencyMap[countryCode] ?? 'CAD';
-    final meta = user.userMetadata ?? {};
 
     try {
       await _supabase.from('users').upsert({
         'id': user.id,
         'email': user.email,
-        'full_name': meta['full_name'],
+        'full_name': resolvedFullName,
         'phone': meta['phone'],
         'age': meta['age'],
         'address': meta['address'],
@@ -75,7 +112,7 @@ class UserSetupRepository {
         if (meta['latitude'] != null) 'latitude': meta['latitude'],
         if (meta['longitude'] != null) 'longitude': meta['longitude'],
         'role': meta['role'],
-        'avatar_url': meta['avatar_url'],
+        'avatar_url': resolvedAvatarUrl,
         'country': countryCode,
         'currency': currency,
         'payment_provider': 'stripe',
