@@ -6,8 +6,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../../shared/theme/app_colors.dart';
+
+/// Clé unique pour persister le flag « onboarding vu ». On écrit à la fois
+/// dans SharedPreferences (source de vérité depuis 2026-04-21) et dans
+/// Hive box 'settings' (compat descendante, lecteur fallback dans splash).
+/// Voir splash_screen._navigateNext() pour la logique de migration.
+const _onboardingSeenKey = 'onboarding_seen';
 
 // ─── Page text data ────────────────────────────
 
@@ -65,8 +72,17 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
 
   Future<void> _complete() async {
     HapticFeedback.mediumImpact();
-    final box = Hive.box('settings');
-    await box.put('onboarding_seen', true);
+    // Double-écriture :
+    //  - SharedPreferences = source de vérité depuis la migration
+    //    2026-04-21 (NSUserDefaults iOS, mieux aligné avec la convention
+    //    plateforme + purgé à la désinstallation, comme Hive).
+    //  - Hive = maintenu pour que les anciennes versions du splash qui
+    //    liraient encore la box ne forcent pas l'onboarding à nouveau.
+    //    À retirer dans une release future quand le rollback ne sera
+    //    plus une préoccupation.
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_onboardingSeenKey, true);
+    await Hive.box('settings').put(_onboardingSeenKey, true);
     if (!mounted) return;
     context.go('/select-account-type');
   }

@@ -3,10 +3,15 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:video_player/video_player.dart';
 
 import '../../../../shared/theme/app_colors.dart';
 import '../../data/auth_repository.dart';
+
+/// Même clé que côté `OnboardingScreen._complete()`. SharedPreferences
+/// depuis la migration 2026-04-21, Hive comme fallback legacy.
+const _onboardingSeenKey = 'onboarding_seen';
 
 class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});
@@ -69,13 +74,27 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
       // Onboarding gate — doit être checké AVANT la session. Sur iOS, le
       // token Supabase est persisté dans le Keychain et survit à la
       // désinstallation, donc `hasActiveSession` peut être `true` même
-      // pour quelqu'un qui n'a jamais vu l'onboarding. Hive, lui, vit dans
-      // le container de l'app et est correctement wipé à la désinstallation.
-      // `OnboardingScreen._complete()` écrit `onboarding_seen = true` sur
-      // skip ET completion — symétrie assurée.
-      final settings = Hive.box('settings');
-      final onboardingSeen =
-          settings.get('onboarding_seen', defaultValue: false) as bool;
+      // pour quelqu'un qui n'a jamais vu l'onboarding.
+      //
+      // Stockage du flag (depuis la migration 2026-04-21) :
+      //   1. SharedPreferences (source de vérité, NSUserDefaults iOS /
+      //      SharedPreferences Android). Purgé à la désinstallation.
+      //   2. Hive box 'settings' → lecture fallback pour les users qui
+      //      ont complété l'onboarding AVANT la migration : si Prefs est
+      //      vide mais Hive dit vu, on propage vers Prefs et on évite de
+      //      réafficher l'onboarding inutilement. Sinon (les deux vides)
+      //      → vrai fresh install → onboarding.
+      final prefs = await SharedPreferences.getInstance();
+      bool onboardingSeen = prefs.getBool(_onboardingSeenKey) ?? false;
+      if (!onboardingSeen) {
+        final hiveSeen = Hive.box('settings')
+            .get(_onboardingSeenKey, defaultValue: false) as bool;
+        if (hiveSeen) {
+          // Migration one-shot Hive → SharedPreferences.
+          await prefs.setBool(_onboardingSeenKey, true);
+          onboardingSeen = true;
+        }
+      }
       if (!onboardingSeen) {
         if (!mounted) return;
         context.go('/onboarding');
