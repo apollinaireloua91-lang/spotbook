@@ -107,6 +107,15 @@ class AuthRepository {
         }
       }
 
+      // Welcome email — fire-and-forget. Ne pas attendre la réponse, ne pas
+      // bloquer le flow si l'EF échoue (Resend down, rate-limited, etc.).
+      // Pas de trigger SQL côté auth.users car ça spammerait aussi les
+      // backfills / inserts admin / migrations. Cf. APOLLINAIRE_TODO §25
+      // pour le cas Google/Apple first-login (à ajouter post-v1).
+      if (response.session != null && response.user != null) {
+        unawaited(_invokeWelcomeEmail());
+      }
+
       // Si le projet Supabase a `email_confirm` activé, `signUp` crée bien
       // la row auth.users MAIS ne retourne PAS de session (le client doit
       // cliquer le lien email avant d'avoir un JWT). Sans ce check, Flutter
@@ -326,6 +335,19 @@ class AuthRepository {
         .map((e) => e!.trim())
         .toList();
     return parts.isEmpty ? null : parts.join(' ');
+  }
+
+  /// Fire-and-forget welcome email. Called by signUp flows with an active
+  /// session — the EF reads the caller's JWT, looks up `users.email/role`
+  /// via service-role, and dispatches via the Resend wrapper. Swallows any
+  /// error: the user must not know / feel this happened.
+  Future<void> _invokeWelcomeEmail() async {
+    try {
+      await _supabase.functions.invoke('send-welcome-email');
+    } catch (_) {
+      // Intentionally silent — welcome email is non-critical. Failures are
+      // observable via the EF's own structured logs (Sentry bridge).
+    }
   }
 
   Future<void> resetPassword(String email) async {

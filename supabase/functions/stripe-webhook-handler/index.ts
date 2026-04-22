@@ -879,7 +879,9 @@ serve(async (req) => {
         break;
       }
 
-      /** Connect Express : garde `profiles_pro.stripe_onboarded` aligné sur Stripe. */
+      /** Connect Express : garde `profiles_pro.stripe_onboarded` aligné sur Stripe.
+       *  Détection edge-triggered false→true pour envoyer `pro_stripe_connect_activated`
+       *  une seule fois (Stripe pingue `account.updated` très fréquemment). */
       case "account.updated": {
         const account = event.data.object as Stripe.Account;
         const stripeAccountId = account.id;
@@ -890,6 +892,26 @@ serve(async (req) => {
           account.charges_enabled === true &&
           account.payouts_enabled === true;
 
+        // Lecture de l'état actuel pour détecter la transition false→true.
+        // Si la ligne n'existe pas (pro pas encore inscrit dans profiles_pro),
+        // on laisse l'update no-op plus bas et on ne tente pas d'envoyer l'email.
+        const { data: currentRow, error: readErr } = await supabase
+          .from("profiles_pro")
+          .select("user_id, stripe_onboarded, business_name")
+          .eq("stripe_account_id", stripeAccountId)
+          .maybeSingle();
+
+        if (readErr) {
+          console.error(
+            "account.updated profiles_pro read:",
+            readErr.message,
+          );
+        }
+
+        const previousOnboarded = (currentRow as
+          | { stripe_onboarded: boolean | null }
+          | null)?.stripe_onboarded ?? false;
+
         const { error: updErr } = await supabase
           .from("profiles_pro")
           .update({ stripe_onboarded: onboarded })
@@ -897,6 +919,41 @@ serve(async (req) => {
 
         if (updErr) {
           console.error("account.updated profiles_pro:", updErr.message);
+        }
+
+        // Email edge-triggered : uniquement sur transition false→true.
+        // Évite les envois répétés sur chaque `account.updated` (Stripe les
+        // émet aussi pour des changements mineurs du profil du Pro).
+        if (!previousOnboarded && onboarded && currentRow) {
+          const proUserId = (currentRow as { user_id: string }).user_id;
+          const businessName = (currentRow as { business_name: string | null })
+            .business_name ?? "";
+          const { data: proUserRaw } = await supabase
+            .from("users")
+            .select("email, full_name")
+            .eq("id", proUserId)
+            .maybeSingle();
+          const proUser = proUserRaw as
+            | { email: string | null; full_name: string | null }
+            | null;
+          if (proUser?.email) {
+            await sendResendEmail({
+              event: "pro_stripe_connect_activated",
+              to: proUser.email,
+              variables: {
+                fullName: proUser.full_name ?? "",
+                businessName,
+                stripeAccountId,
+              },
+            });
+            await supabase.rpc("log_audit_action", {
+              p_user_id: proUserId,
+              p_action: "pro_stripe_connect_activated_notified",
+              p_resource_type: "profiles_pro",
+              p_resource_id: proUserId,
+              p_metadata: { stripe_account_id: stripeAccountId },
+            });
+          }
         }
         break;
       }

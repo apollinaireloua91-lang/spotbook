@@ -356,6 +356,23 @@ Templates à créer côté dashboard Resend puis à câbler dans
 > builders existants (voir `email_templates.ts` — `booking_accepted_by_pro`
 > → `bookingConfirmed`, `pro_transfer_reversed` → `bookingCancelled`).
 
+### 25. Welcome email pour premiers logins Google/Apple
+
+Commit 4 câble `send-welcome-email` uniquement depuis `signUpWithEmail` (flow
+email/password). Les premiers logins Google/Apple ne déclenchent **pas**
+l'email de bienvenue — `signInWithOAuth` / `signInWithIdToken` ne distinguent
+pas « nouveau compte » de « connexion récurrente ».
+
+- [ ] Option A (Flutter-side) : comparer `users.created_at` à `DateTime.now()`
+      dans le callback OAuth. Si < 60s, invoke `send-welcome-email`.
+- [ ] Option B (DB-side) : ajouter une colonne `welcome_sent_at timestamptz`
+      dans `public.users` + un call site qui fait `UPDATE ... WHERE welcome_sent_at IS NULL`
+      via le RPC avant `invoke` pour garantir l'unicité (multi-device).
+- [ ] Préférer Option B : évite la race entre deux devices qui se connectent
+      en quasi-simultané et évite que l'utilisateur reçoive l'email à chaque
+      réinstall.
+- [ ] Priorité : basse (l'email welcome est un nice-to-have, pas bloqueur).
+
 ### 24. EF `event-cancel` à créer
 
 Commit 3 a câblé l'event key `event_cancelled` côté template (alias
