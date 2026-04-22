@@ -367,6 +367,52 @@ class AuthRepository {
     }
   }
 
+  /// Self-heal : garantit qu'une row existe dans `public.users` pour l'user
+  /// auth courant. Idempotent.
+  ///
+  /// POURQUOI — Le trigger DB `on_auth_user_created` (AFTER INSERT ON
+  /// auth.users) CRÉE la row public.users au signup. Mais il peut échouer
+  /// silencieusement (raw_user_meta_data mal formé, INSERT rompu par un
+  /// check constraint, ou user créé AVANT install du trigger). Symptôme
+  /// observé en prod sur iPhone physique :
+  ///
+  ///   PostgrestException: insert or update on table "events" violates
+  ///   foreign key constraint "events_pro_id_fkey" — Key is not present
+  ///   in table "users"
+  ///
+  /// → L'user peut se loguer (session JWT valide), mais toute insertion
+  /// avec FK vers public.users échoue (events, bookings, videos, etc.).
+  ///
+  /// FIX — UPSERT avec `ignoreDuplicates: true` : no-op si la row existe
+  /// déjà, INSERT minimal sinon. Autorisé par la RLS policy
+  /// `users_own_insert` (auth.uid() = id). Best-effort : un échec ne doit
+  /// pas bloquer le boot — l'user pourra se réauth.
+  Future<void> ensurePublicUserRow() async {
+    final user = currentUser;
+    if (user == null) return;
+    try {
+      final metadata = user.userMetadata ?? const <String, dynamic>{};
+      await _supabase.from('users').upsert(
+        {
+          'id': user.id,
+          'email': user.email,
+          'full_name': (metadata['full_name'] ??
+                  metadata['name'] ??
+                  '') as String,
+          // Défaut 'client' — l'user peut le modifier via RoleSelectionScreen
+          // si c'est un nouveau compte sans role défini.
+          'role': (metadata['role'] as String?) ?? 'client',
+        },
+        onConflict: 'id',
+        ignoreDuplicates: true,
+      );
+    } catch (_) {
+      // Self-heal best-effort — ne jamais bloquer le boot. Si ça échoue
+      // (RLS, réseau), l'user verra les PostgrestException au moment de
+      // l'action et pourra re-tenter, mais au moins on ne crash pas.
+    }
+  }
+
   Future<void> updateUserRole(String role) async {
     final uid = currentUserId;
     if (uid == null) throw AuthException('User not authenticated');

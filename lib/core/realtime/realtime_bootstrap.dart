@@ -62,6 +62,13 @@ final realtimeBootstrapProvider = Provider<void>((ref) {
         event == AuthChangeEvent.userUpdated ||
         event == AuthChangeEvent.initialSession) {
       if (user != null) {
+        // Self-heal : si le trigger DB `on_auth_user_created` a échoué
+        // silencieusement au signup (row absente de public.users),
+        // toute insertion avec FK → users cassera (events, bookings...).
+        // On tente une insertion idempotente AVANT le fetch de role, pour
+        // qu'il trouve une row valide si elle manquait.
+        await ref.read(authRepositoryProvider).ensurePublicUserRow();
+
         // Fetch role from public.users (authoritative).
         // user.userMetadata['role'] is unreliable: not populated on Google
         // OAuth sign-ins, and is editable by the user anyway (security best
