@@ -39,6 +39,15 @@ import '../../../catering/presentation/widgets/catering_add_sheets.dart';
 
 // ─── Providers ────────────────────────────────────────────────────────────────
 
+/// Budget wall-clock pour les fetchs Supabase du profil Pro. Sans ce
+/// timeout, si le client Supabase ne répond jamais (DNS qui stall, RLS en
+/// récursion, socket idle derrière un proxy iOS), le `FutureProvider` reste
+/// indéfiniment en `loading:` → spinner violet figé visible sur iPhone papi
+/// (rapport 2026-04-21 : onglet Profil Pro bloqué sur le spinner).
+/// En cas de timeout, la branche `error:` prend le relais et redirige via
+/// `AuthRequiredRedirect` plutôt que de laisser l'UI morte.
+const _profileLoadTimeout = Duration(seconds: 15);
+
 final _proSelfProfileProvider =
     FutureProvider.autoDispose<ProProfile?>((ref) async {
   final repo = ref.read(profileRepositoryProvider);
@@ -46,12 +55,13 @@ final _proSelfProfileProvider =
   if (uid == null) return null;
 
   // Try fetching the full pro profile
-  final profile = await repo.getProProfile(uid);
+  final profile = await repo.getProProfile(uid).timeout(_profileLoadTimeout);
   if (profile != null) return profile;
 
   // No profiles_pro row — build a minimal profile from the users table
   // so the screen can still render (newly converted Pro accounts).
-  final userData = await repo.getClientProfile(uid);
+  final userData =
+      await repo.getClientProfile(uid).timeout(_profileLoadTimeout);
   if (userData == null) return null;
 
   return ProProfile(
@@ -71,7 +81,10 @@ final _proSelfVideosProvider =
     FutureProvider.autoDispose<List<VideoModel>>((ref) async {
   final uid = ref.read(profileRepositoryProvider).currentUserId;
   if (uid == null) return [];
-  final list = await ref.read(videoRepositoryProvider).getProVideos(uid);
+  final list = await ref
+      .read(videoRepositoryProvider)
+      .getProVideos(uid)
+      .timeout(_profileLoadTimeout);
   return list.where((v) => v.status == 'approved').toList();
 });
 
@@ -79,14 +92,20 @@ final _proSelfServicesProvider =
     FutureProvider.autoDispose<List<ServiceModel>>((ref) async {
   final uid = ref.read(profileRepositoryProvider).currentUserId;
   if (uid == null) return [];
-  return ref.read(bookingRepositoryProvider).getProServices(uid);
+  return ref
+      .read(bookingRepositoryProvider)
+      .getProServices(uid)
+      .timeout(_profileLoadTimeout);
 });
 
 final _proSelfEventsProvider =
     FutureProvider.autoDispose<List<EventModel>>((ref) async {
   final uid = ref.read(profileRepositoryProvider).currentUserId;
   if (uid == null) return [];
-  return ref.read(eventRepositoryProvider).getEventsByProId(uid);
+  return ref
+      .read(eventRepositoryProvider)
+      .getEventsByProId(uid)
+      .timeout(_profileLoadTimeout);
 });
 
 class ProShellProfileScreen extends ConsumerWidget {
