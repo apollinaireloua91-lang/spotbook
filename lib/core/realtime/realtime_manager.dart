@@ -41,10 +41,16 @@ class RealtimeManager {
 
   // ─── Lifecycle ───────────────────────────────────────────
 
+  /// Last-seen role, used to detect role changes and avoid redundant re-subs.
+  String? _currentRole;
+  String? _currentUserId;
+
   /// Call once after successful authentication.
   void initialize({required String userId, required String role}) {
     if (_initialised) return;
     _initialised = true;
+    _currentRole = role;
+    _currentUserId = userId;
 
     _subscribeFeed();
     _subscribeNotifications(userId);
@@ -64,6 +70,55 @@ class RealtimeManager {
         '— ${_channels.length} channels');
   }
 
+  /// Re-subscribe for a (possibly new) role WITHOUT closing the stream
+  /// controllers. Used when the user's role changes mid-session (e.g. after
+  /// RoleSelectionScreen completes on a Google sign-up that had no role yet).
+  ///
+  /// No-op if [role] matches the current role for the same user.
+  void reinitializeForRole({required String userId, required String role}) {
+    if (_initialised && _currentUserId == userId && _currentRole == role) {
+      return; // nothing changed
+    }
+
+    // Tear down channels only — keep controllers alive so existing listeners
+    // (BookingNotifier, etc.) stay connected to the typed streams.
+    for (final ch in _channels) {
+      _supabase.removeChannel(ch);
+    }
+    _channels.clear();
+    _initialised = false;
+
+    initialize(userId: userId, role: role);
+    debugPrint('[RealtimeManager] reinitialised for role change → $role');
+  }
+
+  /// Current role the manager is subscribed for, or null if not initialised.
+  String? get currentRole => _currentRole;
+
+  /// Tear down et re-abonne tous les channels avec le rôle courant, sans
+  /// fermer les StreamControllers.
+  ///
+  /// Utilisé quand on sait que la socket WebSocket est morte mais que
+  /// l'utilisateur est toujours loggé — typiquement au retour de background
+  /// sur iOS, où le système a suspendu la socket silencieusement pendant
+  /// que l'app dormait. Supabase n'envoie pas toujours un `tokenRefreshed`
+  /// dans ce cas → sans resubscribe explicite, l'user voit un feed / des
+  /// notifs figés tant qu'il ne relance pas l'app.
+  void reconnect() {
+    final uid = _currentUserId;
+    final role = _currentRole;
+    if (uid == null || role == null || !_initialised) return;
+
+    for (final ch in _channels) {
+      _supabase.removeChannel(ch);
+    }
+    _channels.clear();
+    _initialised = false;
+
+    initialize(userId: uid, role: role);
+    debugPrint('[RealtimeManager] reconnected ($role) after lifecycle resume');
+  }
+
   /// Call on logout — tears down every channel and cleans up streams.
   void dispose() {
     for (final ch in _channels) {
@@ -71,6 +126,8 @@ class RealtimeManager {
     }
     _channels.clear();
     _initialised = false;
+    _currentRole = null;
+    _currentUserId = null;
 
     _feedController.close();
     _bookingController.close();
