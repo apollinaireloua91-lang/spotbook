@@ -74,7 +74,7 @@
 		<key>NSMicrophoneUsageDescription</key>
 		<string>Spotbook a besoin du microphone pour enregistrer l'audio de vos vidéos.</string>
 		<key>NSLocationWhenInUseUsageDescription</key>
-		<string>Spotbook needs your location to show nearby pros on the map</string>
+		<string>Spotbook a besoin de votre localisation pour afficher les pros proches sur la carte.</string>
 		<key>NSPhotoLibraryUsageDescription</key>
 		<string>Spotbook a besoin d'accéder à votre galerie pour sélectionner des vidéos.</string>
 		<key>NSFaceIDUsageDescription</key>
