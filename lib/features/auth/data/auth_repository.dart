@@ -1,14 +1,26 @@
 import 'dart:async';
+import 'dart:convert';
+import 'dart:math';
 import 'dart:typed_data';
 
+import 'package:crypto/crypto.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 final authRepositoryProvider = Provider<AuthRepository>((ref) {
   return AuthRepository(
     supabase: Supabase.instance.client,
-    secureStorage: const FlutterSecureStorage(),
+    // Keychain iOS : `first_unlock_this_device` — la clé survit aux reboots
+    // une fois le device débloqué, mais n'est PAS exportée dans les backups
+    // iCloud. Android : ciphers AES Keystore-backed (défaut v10+).
+    secureStorage: const FlutterSecureStorage(
+      iOptions: IOSOptions(
+        accessibility: KeychainAccessibility.first_unlock_this_device,
+      ),
+    ),
   );
 });
 
@@ -177,35 +189,72 @@ class AuthRepository {
     }
   }
 
-  /// Initiates Apple OAuth sign-in via browser redirect (iOS).
-  /// Completes when the deep link callback sets the session.
+  /// Initiates native Apple Sign In on iOS.
+  ///
+  /// Uses nonce-based ID token flow: Apple signs the SHA256(nonce), Supabase
+  /// verifies the signature against Apple's public keys and that the nonce in
+  /// the JWT matches the raw nonce we sent. This bypasses the OAuth web
+  /// redirect (no Service ID / Return URL config needed — just the iOS bundle
+  /// ID added as "Services ID" in Supabase Dashboard → Auth → Apple).
+  ///
+  /// Apple returns `givenName` + `familyName` + `email` ONLY on the first
+  /// login. We persist `full_name` to user metadata and `users` table on that
+  /// first login since it can't be retrieved later.
+  ///
+  /// Throws `AuthException('cancelled_by_user')` if the user cancels the
+  /// Apple dialog — caller should treat this as a silent cancellation (no
+  /// error toast needed, just a discreet SnackBar).
   Future<void> signInWithApple() async {
-    final completer = Completer<void>();
+    final rawNonce = _generateNonce();
+    final hashedNonce = sha256.convert(utf8.encode(rawNonce)).toString();
 
-    late final StreamSubscription<AuthState> sub;
-    sub = _supabase.auth.onAuthStateChange.listen((state) {
-      if (state.event == AuthChangeEvent.signedIn && !completer.isCompleted) {
-        sub.cancel();
-        completer.complete();
+    final AuthorizationCredentialAppleID credential;
+    try {
+      credential = await SignInWithApple.getAppleIDCredential(
+        scopes: [
+          AppleIDAuthorizationScopes.email,
+          AppleIDAuthorizationScopes.fullName,
+        ],
+        nonce: hashedNonce,
+      );
+    } on SignInWithAppleAuthorizationException catch (e) {
+      if (e.code == AuthorizationErrorCode.canceled) {
+        throw AuthException('cancelled_by_user');
       }
-    });
-
-    final launched = await _supabase.auth.signInWithOAuth(
-      OAuthProvider.apple,
-      redirectTo: 'app.spotbook://login-callback',
-      authScreenLaunchMode: LaunchMode.externalApplication,
-    );
-
-    if (!launched) {
-      sub.cancel();
-      throw AuthException('Could not launch Apple sign-in.');
+      throw AuthException('Apple sign-in failed: ${e.message}');
     }
 
-    try {
-      await completer.future.timeout(const Duration(minutes: 5));
-    } on TimeoutException {
-      sub.cancel();
-      throw AuthException('Apple sign-in timed out.');
+    final idToken = credential.identityToken;
+    if (idToken == null) {
+      throw AuthException('Apple sign-in: no identity token returned.');
+    }
+
+    await _supabase.auth.signInWithIdToken(
+      provider: OAuthProvider.apple,
+      idToken: idToken,
+      nonce: rawNonce,
+    );
+
+    // Persist the full name on FIRST login only (Apple never resends it).
+    final fullName = _composeFullName(
+      credential.givenName,
+      credential.familyName,
+    );
+    if (fullName != null && fullName.isNotEmpty) {
+      try {
+        await _supabase.auth.updateUser(
+          UserAttributes(data: {'full_name': fullName}),
+        );
+        final uid = currentUserId;
+        if (uid != null) {
+          await _supabase
+              .from('users')
+              .update({'full_name': fullName})
+              .eq('id', uid);
+        }
+      } catch (_) {
+        // Non-critical — user can edit name from profile screen later.
+      }
     }
 
     final uid = currentUserId;
@@ -221,6 +270,26 @@ class AuthRepository {
         // Audit log is non-critical — don't block login
       }
     }
+  }
+
+  /// Cryptographically secure random nonce for Apple Sign In.
+  /// Must be ≥ 32 chars of URL-safe charset (Apple requirement).
+  String _generateNonce([int length = 32]) {
+    const charset =
+        'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._';
+    final random = Random.secure();
+    return List.generate(
+      length,
+      (_) => charset[random.nextInt(charset.length)],
+    ).join();
+  }
+
+  String? _composeFullName(String? given, String? family) {
+    final parts = [given, family]
+        .where((e) => e != null && e.trim().isNotEmpty)
+        .map((e) => e!.trim())
+        .toList();
+    return parts.isEmpty ? null : parts.join(' ');
   }
 
   Future<void> resetPassword(String email) async {
@@ -252,9 +321,34 @@ class AuthRepository {
       } catch (_) {
         // Audit log is non-critical — don't block logout
       }
+
+      // Purger le fcm_token côté DB AVANT de perdre le droit d'écriture via
+      // RLS. Sans ça, le device continuerait à recevoir les pushes destinées
+      // à l'ex-user jusqu'à ce que le prochain user se logge sur CE device.
+      try {
+        await _supabase
+            .from('users')
+            .update({'fcm_token': null})
+            .eq('id', uid);
+      } catch (_) {
+        // Non-critique — le token sera rotaté côté device juste après.
+      }
     }
+
+    // Rotation du token FCM côté device : le cached token devient invalide
+    // sur APNs/FCM. Le prochain login re-généra un token propre.
+    try {
+      await FirebaseMessaging.instance.deleteToken();
+    } catch (_) {
+      // Non-critique — continue le logout.
+    }
+
     await _supabase.removeAllChannels();
-    await _supabase.auth.signOut();
+    // `SignOutScope.global` révoque le refresh token côté Supabase, ce qui
+    // invalide les sessions sur les autres devices du même user. Défaut
+    // (`local`) ne touche que le client local, les autres devices
+    // continuent à pouvoir refresh.
+    await _supabase.auth.signOut(scope: SignOutScope.global);
     await _secureStorage.deleteAll();
   }
 
@@ -306,22 +400,26 @@ class AuthRepository {
     }
   }
 
+  /// Suppression RGPD : appelle l'Edge Function `delete-account` qui purge /
+  /// anonymise toutes les données métier puis supprime l'entrée auth.users.
+  ///
+  /// Le nom `softDeleteAccount` est conservé pour la rétrocompat — le
+  /// comportement réel est désormais une suppression RGPD complète (hard
+  /// delete des PII, anonymisation des enregistrements contractuels).
   Future<void> softDeleteAccount() async {
     final uid = currentUserId;
     if (uid == null) throw AuthException('User not authenticated');
-    await _supabase
-        .from('users')
-        .update({'deleted_at': DateTime.now().toIso8601String()}).eq('id', uid);
-    try {
-      await _supabase.from('audit_logs').insert({
-        'user_id': uid,
-        'action': 'user_deleted',
-        'resource_type': 'users',
-        'resource_id': uid,
-      });
-    } catch (_) {
-      // Audit log is non-critical — don't block account deletion
+
+    final res = await _supabase.functions.invoke('delete-account');
+    if (res.status != 200) {
+      final body = res.data;
+      final err = (body is Map && body['error'] is String)
+          ? body['error'] as String
+          : 'delete_failed';
+      throw AuthException('Account deletion failed: $err');
     }
+    // La session est invalidée côté Supabase (auth.users supprimé). On force
+    // un signOut local pour purger les caches Flutter (Hive, secure storage).
     await signOut();
   }
 

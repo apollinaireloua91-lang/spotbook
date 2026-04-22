@@ -4,12 +4,10 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:hive_flutter/hive_flutter.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../../../features/auth/data/auth_repository.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
-import '../../../../shared/theme/theme_mode_notifier.dart';
 import '../../../../shared/widgets/spotbook_loading_shimmer.dart';
 import '../../data/profile_repository.dart';
 import '../../domain/profile_models.dart';
@@ -74,9 +72,8 @@ class ClientProfileScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // Watch theme mode so the entire subtree rebuilds when dark mode toggles.
-    ref.watch(themeModeProvider);
-
+    // Light mode retiré (2026-04-21) — plus besoin de watcher themeModeProvider
+    // pour forcer un rebuild sur toggle, l'app est verrouillée dark.
     final profileAsync = ref.watch(clientProfileProvider);
 
     return Scaffold(
@@ -116,45 +113,50 @@ class _ProfileBody extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // Header
+            // ─── Editorial Top Bar — handle left, settings right ───
             Padding(
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-              child: Stack(
-                alignment: Alignment.center,
+              padding: const EdgeInsets.fromLTRB(20, 10, 20, 0),
+              child: Row(
                 children: [
-                  Center(
-                    child: Text(
-                      l.myProfile,
-                      style: GoogleFonts.sora(
-                        color: AppColors.blanc,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w700,
-                        letterSpacing: -0.3,
-                      ),
+                  Container(
+                    width: 3,
+                    height: 14,
+                    decoration: BoxDecoration(
+                      gradient: AppColors.gradientAccentVertical,
+                      borderRadius: BorderRadius.circular(2),
                     ),
                   ),
-                  Positioned(
-                    right: 0,
-                    child: GestureDetector(
-                      onTap: () {
-                        HapticFeedback.lightImpact();
-                        context.push('/settings');
-                      },
-                      child: Container(
-                        width: 38,
-                        height: 38,
-                        decoration: BoxDecoration(
-                          color: AppColors.surface,
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: AppColors.blanc.withAlpha(13),
-                          ),
+                  const SizedBox(width: 10),
+                  Text(
+                    l.myProfile.toUpperCase(),
+                    style: GoogleFonts.sora(
+                      color: AppColors.gris,
+                      fontSize: 11,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 2.4,
+                    ),
+                  ),
+                  const Spacer(),
+                  GestureDetector(
+                    onTap: () {
+                      HapticFeedback.lightImpact();
+                      context.push('/settings');
+                    },
+                    child: Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: AppColors.surface,
+                        borderRadius: BorderRadius.circular(14),
+                        border: Border.all(
+                          color: AppColors.blanc.withAlpha(24),
+                          width: 0.5,
                         ),
-                        child: Icon(
-                          Icons.settings_outlined,
-                          color: AppColors.gris,
-                          size: 18,
-                        ),
+                      ),
+                      child: Icon(
+                        Icons.tune_rounded,
+                        color: AppColors.blanc.withAlpha(200),
+                        size: 18,
                       ),
                     ),
                   ),
@@ -165,6 +167,8 @@ class _ProfileBody extends ConsumerWidget {
             // ─── Hero Section ───
             ProfileHero(profile: profile),
 
+            const SizedBox(height: 4),
+
             // ─── Stats Row ───
             statsAsync.when(
               data: (stats) => ProfileStatsRow(
@@ -174,11 +178,12 @@ class _ProfileBody extends ConsumerWidget {
                 totalReviews: stats['reviews'] ?? 0,
               ),
               loading: () => const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16),
+                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
                 child: SpotbookLoadingShimmer.card(itemCount: 1),
               ),
               error: (_, __) => Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                 child: Text(
                   l.statsLoadError,
                   style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 12),
@@ -187,9 +192,9 @@ class _ProfileBody extends ConsumerWidget {
               ),
             ),
 
-            const SizedBox(height: 18),
+            const SizedBox(height: 20),
 
-            // ─── Edit Profile Button — gradient outline pill ───
+            // ─── Edit Profile — minimal editorial CTA ───
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: _EditProfilePill(
@@ -201,7 +206,7 @@ class _ProfileBody extends ConsumerWidget {
               ),
             ),
 
-            const SizedBox(height: 30),
+            const SizedBox(height: 32),
 
             // ─── Favorite Pros (horizontal scroll) ───
             favProsAsync.when(
@@ -489,7 +494,6 @@ class _SettingsSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isDark = ref.watch(themeModeProvider) == ThemeMode.dark;
     final l = AppLocalizations.of(context)!;
 
     return SettingsList(
@@ -517,22 +521,8 @@ class _SettingsSection extends ConsumerWidget {
           label: 'Mes reçus',
           onTap: () => context.push('/client/receipts'),
         ),
-        // Dark mode lives inside the same list so "Paramètres" reads as
-        // one cohesive card rather than a list + a stray toggle card.
-        SettingsItemData(
-          icon: isDark ? 'dark_mode' : 'light_mode',
-          label: l.darkMode,
-          showChevron: false,
-          trailing: SizedBox(
-            height: 24,
-            child: Switch.adaptive(
-              value: isDark,
-              onChanged: (_) =>
-                  ref.read(themeModeProvider.notifier).toggle(),
-              activeTrackColor: AppColors.violet,
-            ),
-          ),
-        ),
+        // Le tile dark mode a été retiré (2026-04-21) — l'app est
+        // verrouillée dark. Voir theme_mode_notifier.dart.
       ],
     );
   }
@@ -580,7 +570,7 @@ class _SectionHeader extends StatelessWidget {
   }
 }
 
-// ─── Premium "Edit profile" pill with gradient outline ──────────────────────
+// ─── Editorial "Edit profile" CTA — hairline row with chevron ─────────────────
 
 class _EditProfilePill extends StatelessWidget {
   const _EditProfilePill({required this.label, required this.onTap});
@@ -593,38 +583,68 @@ class _EditProfilePill extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
-      // 1px gradient border via nested containers — cheaper than a
-      // CustomPainter and survives theme flips cleanly.
       child: Container(
-        padding: const EdgeInsets.all(1.2),
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
         decoration: BoxDecoration(
-          gradient: AppColors.gradientAccent,
-          borderRadius: BorderRadius.circular(14),
-        ),
-        child: Container(
-          width: double.infinity,
-          padding: const EdgeInsets.symmetric(vertical: 13),
-          decoration: BoxDecoration(
-            color: AppColors.surface,
-            borderRadius: BorderRadius.circular(13),
+          color: AppColors.surface,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: AppColors.blanc.withAlpha(26),
+            width: 0.5,
           ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(Icons.edit_outlined,
-                  color: AppColors.violetClair, size: 16),
-              const SizedBox(width: 8),
-              Text(
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.violet.withAlpha(20),
+              blurRadius: 20,
+              spreadRadius: -8,
+              offset: const Offset(0, 6),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            // Icon tile — violet glass square
+            Container(
+              width: 32,
+              height: 32,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                gradient: LinearGradient(
+                  colors: [
+                    AppColors.violet.withAlpha(38),
+                    AppColors.rose.withAlpha(20),
+                  ],
+                ),
+                border: Border.all(
+                  color: AppColors.violet.withAlpha(40),
+                  width: 0.5,
+                ),
+              ),
+              child: Icon(
+                Icons.edit_outlined,
+                color: AppColors.violetClair,
+                size: 15,
+              ),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Text(
                 label,
                 style: GoogleFonts.dmSans(
                   color: AppColors.blanc,
                   fontSize: 14,
-                  fontWeight: FontWeight.w700,
+                  fontWeight: FontWeight.w600,
                   letterSpacing: -0.1,
                 ),
               ),
-            ],
-          ),
+            ),
+            Icon(
+              Icons.arrow_forward_rounded,
+              color: AppColors.gris,
+              size: 16,
+            ),
+          ],
         ),
       ),
     );
@@ -690,7 +710,7 @@ class _SpecialActionsSection extends ConsumerWidget {
           const SizedBox(height: 10),
           // Log out
           GestureDetector(
-            onTap: () => _showLogoutDialog(context),
+            onTap: () => _showLogoutDialog(context, ref),
             child: Container(
               width: double.infinity,
               padding: const EdgeInsets.symmetric(vertical: 16),
@@ -731,7 +751,7 @@ class _SpecialActionsSection extends ConsumerWidget {
     );
   }
 
-  void _showLogoutDialog(BuildContext context) {
+  void _showLogoutDialog(BuildContext context, WidgetRef ref) {
     // Capture the router before any async gap
     final router = GoRouter.of(context);
     final l = AppLocalizations.of(context)!;
@@ -769,13 +789,16 @@ class _SpecialActionsSection extends ConsumerWidget {
           TextButton(
             onPressed: () async {
               Navigator.of(ctx).pop();
-              // Clear local Hive caches
-              for (final name in ['settings', 'app_settings', 'search_history']) {
-                if (Hive.isBoxOpen(name)) {
-                  await Hive.box(name).clear();
-                }
-              }
-              await Supabase.instance.client.auth.signOut();
+              // Passer par le repo : révocation globale du refresh token,
+              // purge du fcm_token, secureStorage, channels Realtime.
+              // L'ancien chemin contournait tout ça → la session Keychain
+              // survivait et l'ex-compte Pro se réouvrait au login Client.
+              //
+              // NB : on ne purge plus les boxes Hive ici. Le onboarding_seen
+              // vit dans `settings` et DOIT survivre au logout (sinon l'user
+              // revoit l'onboarding à chaque logout — distinct d'un fresh
+              // install). Voir splash_screen._navigateNext pour la gate.
+              await ref.read(authRepositoryProvider).signOut();
               router.go('/login');
             },
             child: Text(
