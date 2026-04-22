@@ -66,7 +66,7 @@ class _AddDishSheetState extends State<_AddDishSheet> {
         SnackBar(
           backgroundColor: AppColors.error,
           content:
-              Text('Please enter a dish name', style: TextStyle(color: AppColors.blanc)),
+              Text('Veuillez saisir un nom de plat', style: TextStyle(color: AppColors.blanc)),
         ),
       );
       return;
@@ -88,7 +88,7 @@ class _AddDishSheetState extends State<_AddDishSheet> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             backgroundColor: AppColors.success,
-            content: Text('Dish added!', style: TextStyle(color: AppColors.blanc)),
+            content: Text('Plat ajouté !', style: TextStyle(color: AppColors.blanc)),
           ),
         );
       }
@@ -97,7 +97,7 @@ class _AddDishSheetState extends State<_AddDishSheet> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             backgroundColor: AppColors.error,
-            content: Text('Error: $e', style: TextStyle(color: AppColors.blanc)),
+            content: Text('Erreur : $e', style: TextStyle(color: AppColors.blanc)),
           ),
         );
       }
@@ -137,7 +137,7 @@ class _AddDishSheetState extends State<_AddDishSheet> {
             child: Row(
               children: [
                 Text(
-                  '🍽️ Add Dish',
+                  '🍽️ Ajouter un plat',
                   style: GoogleFonts.dmSans(
                     fontSize: 16,
                     fontWeight: FontWeight.w700,
@@ -157,21 +157,21 @@ class _AddDishSheetState extends State<_AddDishSheet> {
             child: ListView(
               padding: EdgeInsets.fromLTRB(20, 16, 20, 20 + bottomInset),
               children: [
-                _CateringField(controller: _nameCtrl, label: 'Dish name', hint: 'E.g. Jollof Rice'),
+                _CateringField(controller: _nameCtrl, label: 'Nom du plat', hint: 'Ex. Riz Jollof'),
                 const SizedBox(height: 14),
-                _CateringField(controller: _descCtrl, label: 'Description', hint: 'Short description', maxLines: 2),
+                _CateringField(controller: _descCtrl, label: 'Description', hint: 'Courte description', maxLines: 2),
                 const SizedBox(height: 14),
                 _CateringField(
                   controller: _priceCtrl,
-                  label: 'Price per person (\$)',
-                  hint: 'E.g. 15',
+                  label: 'Prix par personne (\$)',
+                  hint: 'Ex. 15',
                   keyboardType: TextInputType.number,
                 ),
                 const SizedBox(height: 14),
-                _CateringField(controller: _emojiCtrl, label: 'Emoji (optional)', hint: '🍗'),
+                _CateringField(controller: _emojiCtrl, label: 'Emoji (optionnel)', hint: '🍗'),
                 const SizedBox(height: 24),
                 _CateringSubmitButton(
-                  label: 'Add Dish',
+                  label: 'Ajouter le plat',
                   isSubmitting: _isSubmitting,
                   onTap: _submit,
                 ),
@@ -249,7 +249,7 @@ class _AddPackageSheetState extends State<_AddPackageSheet> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           backgroundColor: AppColors.error,
-          content: Text('Name and price are required',
+          content: Text('Le nom et le prix sont obligatoires',
               style: TextStyle(color: AppColors.blanc)),
         ),
       );
@@ -280,7 +280,7 @@ class _AddPackageSheetState extends State<_AddPackageSheet> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             backgroundColor: AppColors.success,
-            content: Text('Package added!', style: TextStyle(color: AppColors.blanc)),
+            content: Text('Forfait ajouté !', style: TextStyle(color: AppColors.blanc)),
           ),
         );
       }
@@ -289,7 +289,7 @@ class _AddPackageSheetState extends State<_AddPackageSheet> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             backgroundColor: AppColors.error,
-            content: Text('Error: $e', style: TextStyle(color: AppColors.blanc)),
+            content: Text('Erreur : $e', style: TextStyle(color: AppColors.blanc)),
           ),
         );
       }
@@ -327,7 +327,7 @@ class _AddPackageSheetState extends State<_AddPackageSheet> {
             child: Row(
               children: [
                 Text(
-                  '📦 Add Package',
+                  '📦 Ajouter un forfait',
                   style: GoogleFonts.dmSans(
                     fontSize: 16,
                     fontWeight: FontWeight.w700,
@@ -346,21 +346,21 @@ class _AddPackageSheetState extends State<_AddPackageSheet> {
             child: ListView(
               padding: EdgeInsets.fromLTRB(20, 16, 20, 20 + bottomInset),
               children: [
-                _CateringField(controller: _nameCtrl, label: 'Package name', hint: 'E.g. Premium'),
+                _CateringField(controller: _nameCtrl, label: 'Nom du forfait', hint: 'Ex. Premium'),
                 const SizedBox(height: 14),
                 _CateringField(
                   controller: _priceCtrl,
-                  label: 'Price per person (\$)',
-                  hint: 'E.g. 45',
+                  label: 'Prix par personne (\$)',
+                  hint: 'Ex. 45',
                   keyboardType: TextInputType.number,
                 ),
                 const SizedBox(height: 14),
-                _CateringField(controller: _descCtrl, label: 'Description', hint: 'What\'s included', maxLines: 2),
+                _CateringField(controller: _descCtrl, label: 'Description', hint: 'Ce qui est inclus', maxLines: 2),
                 const SizedBox(height: 14),
                 _CateringField(
                   controller: _inclusionsCtrl,
-                  label: 'Inclusions (comma separated)',
-                  hint: 'Appetizer, Main course, Dessert, Drinks',
+                  label: 'Inclusions (séparées par virgule)',
+                  hint: 'Entrée, Plat principal, Dessert, Boissons',
                 ),
                 const SizedBox(height: 14),
                 Row(
@@ -368,7 +368,7 @@ class _AddPackageSheetState extends State<_AddPackageSheet> {
                     Expanded(
                       child: _CateringField(
                         controller: _minCtrl,
-                        label: 'Min guests',
+                        label: 'Min invités',
                         hint: '10',
                         keyboardType: TextInputType.number,
                       ),
@@ -377,7 +377,7 @@ class _AddPackageSheetState extends State<_AddPackageSheet> {
                     Expanded(
                       child: _CateringField(
                         controller: _maxCtrl,
-                        label: 'Max guests',
+                        label: 'Max invités',
                         hint: '200',
                         keyboardType: TextInputType.number,
                       ),
@@ -386,7 +386,7 @@ class _AddPackageSheetState extends State<_AddPackageSheet> {
                 ),
                 const SizedBox(height: 24),
                 _CateringSubmitButton(
-                  label: 'Add Package',
+                  label: 'Ajouter le forfait',
                   isSubmitting: _isSubmitting,
                   onTap: _submit,
                 ),

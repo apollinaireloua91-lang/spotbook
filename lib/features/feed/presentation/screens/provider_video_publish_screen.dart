@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/theme/theme_mode_notifier.dart';
 import '../../../booking/presentation/notifiers/pro_scheduling_notifiers.dart';
@@ -195,9 +196,10 @@ class _ProviderVideoPublishScreenState
             linkedServiceId: _linkedServiceId,
           );
       if (!mounted) return;
+      final l = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Video published!',
+          content: Text(l.videoPublished,
               style: GoogleFonts.dmSans(color: AppColors.textOnPrimary)),
           backgroundColor: AppColors.success,
           behavior: SnackBarBehavior.floating,
