@@ -11,20 +11,20 @@ import '../../../booking/presentation/notifiers/pro_scheduling_notifiers.dart';
 import '../../data/upload_video_notifier.dart';
 
 const _allowedCategories = <String, String>{
-  'coiffure': 'Hair',
-  'beaute': 'Beauty',
+  'coiffure': 'Coiffure',
+  'beaute': 'Beauté',
   'fitness': 'Fitness',
-  'photo': 'Photography',
-  'musique': 'Music',
-  'cuisine': 'Cooking',
+  'photo': 'Photographie',
+  'musique': 'Musique',
+  'cuisine': 'Cuisine',
   'massage': 'Massage',
-  'tatouage': 'Tattoo',
-  'maquillage': 'Makeup',
-  'mode': 'Fashion',
-  'danse': 'Dance',
+  'tatouage': 'Tatouage',
+  'maquillage': 'Maquillage',
+  'mode': 'Mode',
+  'danse': 'Danse',
   'art': 'Art',
   'coaching': 'Coaching',
-  'autre_service': 'Other',
+  'autre_service': 'Autre',
 };
 
 const _categoryIcons = <String, IconData>{
@@ -235,7 +235,7 @@ class _ProviderVideoPublishScreenState
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         leading: Semantics(
-          label: 'Back',
+          label: 'Retour',
           child: IconButton(
             icon: Container(
               padding: const EdgeInsets.all(8),
@@ -253,7 +253,7 @@ class _ProviderVideoPublishScreenState
           ),
         ),
         title: Text(
-          'Publish',
+          'Publier',
           style: GoogleFonts.sora(
             color: AppColors.blanc,
             fontWeight: FontWeight.w700,
@@ -270,7 +270,7 @@ class _ProviderVideoPublishScreenState
               child: TextButton(
                 onPressed: _isValid(s) && !s.isUploading ? () => _tryPublish(s) : null,
                 child: Text(
-                  'Publish',
+                  'Publier',
                   style: GoogleFonts.sora(
                     color: AppColors.violet,
                     fontWeight: FontWeight.w700,
@@ -337,8 +337,8 @@ class _ProviderVideoPublishScreenState
                         children: [
                           _PremiumTextField(
                             controller: _titleCtrl,
-                            label: 'Title',
-                            hint: 'Ex: Women\'s cut + blowout',
+                            label: 'Titre',
+                            hint: 'Ex : Coupe femme + brushing',
                             maxLength: _maxTitleLength,
                             prefixIcon: Icons.title_rounded,
                           ),
@@ -350,7 +350,7 @@ class _ProviderVideoPublishScreenState
                                   Icon(Icons.warning_amber, size: 13, color: AppColors.warning),
                                   const SizedBox(width: 4),
                                   Text(
-                                    'Min $_minTitleLength chars ($_titleCharCount/$_minTitleLength)',
+                                    'Min $_minTitleLength caractères ($_titleCharCount/$_minTitleLength)',
                                     style: GoogleFonts.dmSans(
                                       color: AppColors.warning,
                                       fontSize: 11,
@@ -368,7 +368,7 @@ class _ProviderVideoPublishScreenState
                                   Icon(Icons.check_circle, size: 13, color: AppColors.success),
                                   const SizedBox(width: 4),
                                   Text(
-                                    'Looks good!',
+                                    'Parfait !',
                                     style: GoogleFonts.dmSans(
                                       color: AppColors.success,
                                       fontSize: 11,
@@ -393,7 +393,7 @@ class _ProviderVideoPublishScreenState
                           _PremiumTextField(
                             controller: _descCtrl,
                             label: 'Description',
-                            hint: 'Describe your service in detail...',
+                            hint: 'Décrivez votre prestation en détail…',
                             maxLength: _maxDescLength,
                             maxLines: 3,
                             prefixIcon: Icons.notes_rounded,
@@ -408,7 +408,7 @@ class _ProviderVideoPublishScreenState
                                     Icon(Icons.warning_amber, size: 13, color: AppColors.warning),
                                     const SizedBox(width: 4),
                                     Text(
-                                      'Min $_minDescLength chars ($_descCharCount/$_minDescLength)',
+                                      'Min $_minDescLength caractères ($_descCharCount/$_minDescLength)',
                                       style: GoogleFonts.dmSans(
                                         color: AppColors.warning,
                                         fontSize: 11,
@@ -423,7 +423,7 @@ class _ProviderVideoPublishScreenState
                                     Icon(Icons.check_circle, size: 13, color: AppColors.success),
                                     const SizedBox(width: 4),
                                     Text(
-                                      'Looks good!',
+                                      'Parfait !',
                                       style: GoogleFonts.dmSans(
                                         color: AppColors.success,
                                         fontSize: 11,
@@ -560,8 +560,8 @@ class _ProviderVideoPublishScreenState
                         children: [
                           _PremiumToggleRow(
                             icon: Icons.chat_bubble_outline_rounded,
-                            label: 'Allow comments',
-                            subtitle: 'Let viewers comment on your post',
+                            label: 'Autoriser les commentaires',
+                            subtitle: 'Laissez les visiteurs commenter votre publication',
                             value: _allowComments,
                             onChanged: (v) => setState(() => _allowComments = v),
                           ),
@@ -582,7 +582,7 @@ class _ProviderVideoPublishScreenState
                                         color: AppColors.gris.withAlpha(180), size: 18),
                                     const SizedBox(width: 10),
                                     Text(
-                                      'Visibility',
+                                      'Visibilité',
                                       style: GoogleFonts.dmSans(
                                         color: AppColors.blanc,
                                         fontSize: 14,
@@ -598,7 +598,7 @@ class _ProviderVideoPublishScreenState
                                       child: _VisibilityOption(
                                         icon: Icons.public_rounded,
                                         label: 'Public',
-                                        subtitle: 'Everyone',
+                                        subtitle: 'Tout le monde',
                                         selected: _visibility == 'public',
                                         onTap: () => setState(() => _visibility = 'public'),
                                       ),
@@ -607,8 +607,8 @@ class _ProviderVideoPublishScreenState
                                     Expanded(
                                       child: _VisibilityOption(
                                         icon: Icons.people_outline_rounded,
-                                        label: 'Followers',
-                                        subtitle: 'Your followers',
+                                        label: 'Abonnés',
+                                        subtitle: 'Vos abonnés',
                                         selected: _visibility == 'followers',
                                         onTap: () => setState(() => _visibility = 'followers'),
                                       ),
@@ -697,7 +697,7 @@ class _ProviderVideoPublishScreenState
                               ),
                               const SizedBox(width: 10),
                               Text(
-                                'Uploading...',
+                                'Téléversement…',
                                 style: GoogleFonts.dmSans(
                                   color: AppColors.textOnPrimary,
                                   fontSize: 15,
@@ -716,7 +716,7 @@ class _ProviderVideoPublishScreenState
                               ),
                               const SizedBox(width: 8),
                               Text(
-                                'Publish',
+                                'Publier',
                                 style: GoogleFonts.sora(
                                   color: _isValid(s) ? AppColors.textOnPrimary : AppColors.gris,
                                   fontSize: 15,
@@ -747,8 +747,8 @@ class _ProviderVideoPublishScreenState
           style: GoogleFonts.dmSans(color: AppColors.blanc, fontSize: 14),
           decoration: InputDecoration(
             labelText: _hashtags.length >= _maxHashtags
-                ? 'Maximum reached'
-                : 'Add a hashtag',
+                ? 'Maximum atteint'
+                : 'Ajouter un hashtag',
             hintText: 'e.g. barber, fade, style...',
             labelStyle: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 13),
             hintStyle: GoogleFonts.dmSans(color: AppColors.gris.withAlpha(128), fontSize: 13),
@@ -830,7 +830,7 @@ class _ProviderVideoPublishScreenState
         if (_hashtags.length < _maxHashtags) ...[
           const SizedBox(height: 12),
           Text(
-            'Suggested',
+            'Suggérés',
             style: GoogleFonts.dmSans(
               color: AppColors.gris,
               fontSize: 11,
@@ -943,7 +943,7 @@ class _ValidationChecklist extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Ready to publish?',
+            'Prêt à publier ?',
             style: GoogleFonts.sora(
               color: AppColors.blanc,
               fontSize: 13,
@@ -951,10 +951,10 @@ class _ValidationChecklist extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 10),
-          _CheckRow(label: 'Video selected', isValid: hasVideo),
-          _CheckRow(label: 'Title (min $_minTitleLength chars)', isValid: isTitleValid),
-          _CheckRow(label: 'Description (min $_minDescLength chars)', isValid: isDescValid),
-          _CheckRow(label: 'Category selected', isValid: hasCategory),
+          _CheckRow(label: 'Vidéo sélectionnée', isValid: hasVideo),
+          _CheckRow(label: 'Titre (min $_minTitleLength caractères)', isValid: isTitleValid),
+          _CheckRow(label: 'Description (min $_minDescLength caractères)', isValid: isDescValid),
+          _CheckRow(label: 'Catégorie sélectionnée', isValid: hasCategory),
         ],
       ),
     );
@@ -1051,7 +1051,7 @@ class _VideoPreviewCard extends StatelessWidget {
                           ),
                           const SizedBox(height: 10),
                           Text(
-                            'Video ready',
+                            'Vidéo prête',
                             style: GoogleFonts.sora(
                               color: AppColors.blanc,
                               fontSize: 15,
@@ -1060,7 +1060,7 @@ class _VideoPreviewCard extends StatelessWidget {
                           ),
                           const SizedBox(height: 2),
                           Text(
-                            'Tap to change',
+                            'Toucher pour changer',
                             style: GoogleFonts.dmSans(
                               color: AppColors.violet,
                               fontSize: 12,
@@ -1451,7 +1451,7 @@ class _UploadProgressCard extends StatelessWidget {
               ),
               const SizedBox(width: 10),
               Expanded(
-                child: Text('Uploading...',
+                child: Text('Téléversement…',
                     style: GoogleFonts.dmSans(
                         color: AppColors.blanc, fontSize: 13, fontWeight: FontWeight.w600)),
               ),
