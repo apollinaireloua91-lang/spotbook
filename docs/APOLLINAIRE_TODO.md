@@ -32,6 +32,24 @@
 - [ ] Vérifier que le mode `test` ET `live` sont activés
 - [ ] Régénérer les `connectionToken` Edge Function si nécessaire
 
+### 2-bis. « Confirm email » — réactiver avant App Store
+
+- [x] **Actuellement désactivé** (MVP — vérifié dashboard Supabase 2026-04-22).
+      Auth → Sign In / Providers → User Signups → "Confirm email" = off.
+      Permet au signup email/password de créer une session directe sans passer
+      par la boîte mail (sinon `signUp` retourne `session == null` →
+      `/complete-profile` kick vers /login, cf. `auth_repository.dart:109`).
+- [ ] **À réactiver avant release App Store** : obligatoire pour éviter les
+      comptes spam + valider la propriété de l'email.
+- [ ] Quand réactivé, **coder en amont** un écran `/signup-confirm-email` qui :
+      - explique « Un email a été envoyé à <email>, clique le lien »
+      - propose un bouton « Renvoyer » (`authRepository.resendConfirmationEmail`)
+      - propose un bouton « Retour login »
+      - gère le deep-link `app.spotbook://login-callback` au retour du lien
+        confirmé (session auto-créée → navigate direct vers /complete-profile)
+- [ ] Le throw défensif `AuthException('Un e-mail de confirmation a été envoyé...')`
+      dans `signUpWithEmail` reste comme filet de sécurité (voir commit 2026-04-22).
+
 ### 3. Apple Sign In (v1.1 selon CLAUDE.md)
 
 - [ ] Compte Apple Developer payant actif → activer Sign In with Apple pour l'App ID

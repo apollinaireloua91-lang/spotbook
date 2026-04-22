@@ -106,6 +106,23 @@ class AuthRepository {
           // RoleSelectionScreen / onboarding si ça rate ici.
         }
       }
+
+      // Si le projet Supabase a `email_confirm` activé, `signUp` crée bien
+      // la row auth.users MAIS ne retourne PAS de session (le client doit
+      // cliquer le lien email avant d'avoir un JWT). Sans ce check, Flutter
+      // route vers /complete-profile → le guard du router voit session==null
+      // → redirect silencieux vers /login → l'user pense que signup a planté.
+      //
+      // On lève une AuthException explicite pour que le caller affiche un
+      // SnackBar actionnable (« Un email de confirmation a été envoyé »).
+      // Le compte est bien créé, l'user doit juste confirmer l'email.
+      if (response.session == null && response.user != null) {
+        throw AuthException(
+          'Un e-mail de confirmation a été envoyé à $email. '
+          'Confirme ton e-mail puis connecte-toi.',
+        );
+      }
+
       return response;
     } on AuthException catch (e) {
       if (e.message.contains('already registered')) {
@@ -362,13 +379,42 @@ class AuthRepository {
       // Non-critique — continue le logout.
     }
 
-    await _supabase.removeAllChannels();
-    // `SignOutScope.global` révoque le refresh token côté Supabase, ce qui
-    // invalide les sessions sur les autres devices du même user. Défaut
-    // (`local`) ne touche que le client local, les autres devices
-    // continuent à pouvoir refresh.
-    await _supabase.auth.signOut(scope: SignOutScope.global);
-    await _secureStorage.deleteAll();
+    try {
+      await _supabase.removeAllChannels();
+    } catch (_) {
+      // Non-critique — les channels seront GC'd au process teardown.
+    }
+
+    // `SignOutScope.global` révoque le refresh token côté Supabase (invalide
+    // les sessions des autres devices). Si l'appel réseau échoue (offline,
+    // token déjà expiré serveur, 5xx), on retombe sur `local` pour au moins
+    // purger la session locale. SANS ce fallback + finally ci-dessous,
+    // _secureStorage.deleteAll() n'était jamais atteint et le Keychain iOS
+    // gardait le refresh token → au prochain boot, Supabase.initialize
+    // ré-hydratait la session précédente → impossible de se re-loguer avec
+    // un autre compte (le router redirige /login → /pro/feed parce qu'une
+    // session est détectée). Bug observé iPhone papi « login client ouvre
+    // compte pro ».
+    try {
+      await _supabase.auth.signOut(scope: SignOutScope.global);
+    } catch (_) {
+      try {
+        await _supabase.auth.signOut(scope: SignOutScope.local);
+      } catch (_) {
+        // Dernier recours : on tombera sur le deleteAll ci-dessous qui
+        // purge le Keychain directement.
+      }
+    } finally {
+      // Purge Keychain/Keystore systématique — la source de vérité de la
+      // session persistée, peu importe si les appels Supabase ci-dessus
+      // ont réussi ou planté.
+      try {
+        await _secureStorage.deleteAll();
+      } catch (_) {
+        // Même deleteAll peut throw sur un device verrouillé — rare, mais
+        // dans ce cas on ne peut rien de plus ici.
+      }
+    }
   }
 
   Future<Map<String, dynamic>?> getUserProfile() async {
