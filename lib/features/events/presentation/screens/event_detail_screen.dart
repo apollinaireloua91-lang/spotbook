@@ -667,7 +667,7 @@ class _OrganizerRow extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      'View',
+                      'Voir',
                       style: GoogleFonts.dmSans(
                         color: AppColors.textOnPrimary,
                         fontSize: 12.5,
@@ -792,7 +792,7 @@ class _AboutBlockState extends State<_AboutBlock> {
           GestureDetector(
             onTap: () => setState(() => _expanded = !_expanded),
             child: Text(
-              _expanded ? 'Show less' : 'Read more',
+              _expanded ? 'Voir moins' : 'Lire la suite',
               style: GoogleFonts.dmSans(
                 color: AppColors.violetClair,
                 fontSize: 13,

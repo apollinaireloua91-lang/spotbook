@@ -739,7 +739,7 @@ class _ProBottomCard extends StatelessWidget {
                 children: [
                   Expanded(
                     child: SpotbookButton.secondary(
-                      label: 'View profile',
+                      label: 'Voir le profil',
                       onPressed: () =>
                           context.push('/client/provider/${pro.id}'),
                     ),

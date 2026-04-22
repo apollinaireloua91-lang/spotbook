@@ -863,7 +863,7 @@ class _PremiumInputBar extends StatelessWidget {
             icon: Icons.add_photo_alternate_rounded,
             onTap: onPickImage,
             tint: AppColors.violetClair,
-            semanticsLabel: 'Send image',
+            semanticsLabel: 'Envoyer une image',
           ),
           const SizedBox(width: 8),
           Expanded(
@@ -995,7 +995,7 @@ class _SendButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Semantics(
-      label: 'Send',
+      label: 'Envoyer',
       button: true,
       child: AnimatedScale(
         scale: isActive ? 1.0 : 0.92,

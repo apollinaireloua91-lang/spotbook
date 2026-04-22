@@ -239,7 +239,7 @@ class _PaymentReceiptScreenState extends ConsumerState<PaymentReceiptScreen>
             ),
             const SizedBox(height: 8),
             Text(
-              'Show this code at your appointment',
+              'Présentez ce code lors de votre rendez-vous',
               style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 12),
               textAlign: TextAlign.center,
             ),

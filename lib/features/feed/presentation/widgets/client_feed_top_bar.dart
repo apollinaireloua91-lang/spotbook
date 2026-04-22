@@ -38,14 +38,14 @@ class ClientFeedTopBar extends ConsumerWidget {
             ),
             const Spacer(),
             _TabButton(
-              label: 'Discover',
+              label: 'Découvrir',
               isActive: activeTab == FeedTab.discover,
               onTap: () =>
                   ref.read(feedProvider.notifier).switchTab(FeedTab.discover),
             ),
             const SizedBox(width: 20),
             _TabButton(
-              label: 'Following',
+              label: 'Abonnements',
               isActive: activeTab == FeedTab.following,
               onTap: () =>
                   ref.read(feedProvider.notifier).switchTab(FeedTab.following),

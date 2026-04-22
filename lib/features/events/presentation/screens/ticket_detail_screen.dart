@@ -256,7 +256,7 @@ class TicketDetailScreen extends ConsumerWidget {
                           color: AppColors.blanc, size: 18),
                       const SizedBox(width: 8),
                       Text(
-                        'Add to Calendar',
+                        'Ajouter au calendrier',
                         style: GoogleFonts.dmSans(
                           color: AppColors.blanc,
                           fontWeight: FontWeight.w600,
