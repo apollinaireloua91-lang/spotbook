@@ -41,6 +41,7 @@ class FeedState {
     this.isLoadingMore = false,
     this.activeTab = FeedTab.discover,
     this.transientError,
+    this.loadError,
   });
   final List<VideoModel> videos;
   final bool isLoading;
@@ -53,6 +54,14 @@ class FeedState {
   /// `save_failed`, `follow_failed`.
   final String? transientError;
 
+  /// Erreur bloquante du chargement initial (après auto-retry échoué).
+  /// Quand non-null, l'UI affiche un écran « Impossible de charger le
+  /// feed » avec un bouton « Réessayer » au lieu de l'empty state.
+  /// Différencier cet état de `videos.isEmpty` est crucial : un backend
+  /// en carafe et une DB vide produisaient avant le même écran —
+  /// aucune affordance de retry → user coincé.
+  final String? loadError;
+
   FeedState copyWith({
     List<VideoModel>? videos,
     bool? isLoading,
@@ -60,7 +69,9 @@ class FeedState {
     bool? isLoadingMore,
     FeedTab? activeTab,
     String? transientError,
+    String? loadError,
     bool clearError = false,
+    bool clearLoadError = false,
   }) =>
       FeedState(
         videos: videos ?? this.videos,
@@ -71,6 +82,9 @@ class FeedState {
         transientError: clearError
             ? null
             : (transientError ?? this.transientError),
+        loadError: clearLoadError
+            ? null
+            : (loadError ?? this.loadError),
       );
 }
 
@@ -149,7 +163,7 @@ class FeedNotifier extends Notifier<FeedState> {
     state = state.copyWith(videos: updated);
   }
 
-  Future<void> _loadInitial() async {
+  Future<void> _loadInitial({bool isRetry = false}) async {
     try {
       final repo = ref.read(videoRepositoryProvider);
       // Le tab Abonnements doit filtrer sur `follows` — auparavant on
@@ -162,13 +176,35 @@ class FeedNotifier extends Notifier<FeedState> {
               ? repo.getFollowingFeed(offset: 0)
               : repo.getScoredVideos())
           .timeout(_feedLoadTimeout);
-      state = state.copyWith(videos: videos, isLoading: false);
+      state = state.copyWith(
+        videos: videos,
+        isLoading: false,
+        clearLoadError: true,
+      );
     } catch (e, st) {
-      _reportFeedError('_loadInitial', e, st);
-      // Empty list + isLoading=false → l'UI bascule sur l'empty state
-      // « Aucune vidéo ». Jamais on ne laisse le spinner figé.
-      state = state.copyWith(videos: [], isLoading: false);
+      _reportFeedError('_loadInitial${isRetry ? '_retry' : ''}', e, st);
+      // Auto-retry silencieux une seule fois après 500ms — couvre les
+      // hiccups réseau transitoires (DNS qui mouline, Supabase qui réveille
+      // un pool froid). Si le 2e essai échoue → loadError explicite avec
+      // bouton Réessayer, jamais de spinner figé ni d'empty state fantôme.
+      if (!isRetry) {
+        await Future<void>.delayed(const Duration(milliseconds: 500));
+        return _loadInitial(isRetry: true);
+      }
+      state = state.copyWith(
+        videos: [],
+        isLoading: false,
+        loadError: e.toString(),
+      );
     }
+  }
+
+  /// Appelé par le bouton « Réessayer » de l'écran d'erreur. Remet
+  /// l'état en loading + reset loadError, puis relance le pipeline
+  /// complet (avec nouveau cycle auto-retry si nécessaire).
+  Future<void> retryLoad() async {
+    state = state.copyWith(isLoading: true, clearLoadError: true);
+    await _loadInitial();
   }
 
   Future<void> loadMore() async {

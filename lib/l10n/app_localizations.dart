@@ -875,7 +875,7 @@ abstract class AppLocalizations {
   /// No description provided for @authAlreadyHaveAccount.
   ///
   /// In en, this message translates to:
-  /// **'Already have an account? Log in'**
+  /// **'Already have an account? '**
   String get authAlreadyHaveAccount;
 
   /// No description provided for @authWelcomeBack.
@@ -923,7 +923,7 @@ abstract class AppLocalizations {
   /// No description provided for @authNoAccountPrefix.
   ///
   /// In en, this message translates to:
-  /// **'No account? Sign up'**
+  /// **'No account? '**
   String get authNoAccountPrefix;
 
   /// No description provided for @authErrorEmptyFields.
@@ -3679,6 +3679,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Couldn\'t update follow. Please try again.'**
   String get feedFollowFailed;
+
+  /// No description provided for @feedLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load the feed. Check your connection.'**
+  String get feedLoadError;
+
+  /// No description provided for @feedRetry.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get feedRetry;
 
   /// No description provided for @filtersTool.
   ///

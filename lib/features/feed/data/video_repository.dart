@@ -24,14 +24,30 @@ class VideoRepository {
     final uid = currentUserId;
     if (uid == null) return [];
 
-    final blockedIds = await _getBlockedProIds(uid);
-    final userProfile = await _supabase
-        .from('users')
-        .select('city')
-        .eq('id', uid)
-        .maybeSingle();
-    final userCity = userProfile?['city'] as String?;
+    // Phase 1 — round-trips indépendants lancés en parallèle : blocks (requis
+    // pour filtrer la query videos), city de l'user courant (scoring), likes
+    // existants (flag isLiked). Avant, ces 3 queries étaient séquentielles,
+    // soit 3× la latence réseau avant même le fetch des vidéos — bug
+    // « spinner figé » sur iPhone réseau lent (CA).
+    //
+    // NOTE : on ne passe pas par `Future.wait([...])` parce que les 3
+    // opérations ont des types de retour hétérogènes (List<String>,
+    // Map?, Set<String>) → `Future.wait` inférerait Future<dynamic>
+    // ce qui plombe l'analyzer. On démarre chaque future sans await,
+    // puis on les collecte — équivalent en parallélisme, typé proprement.
+    final blocksFuture = _getBlockedProIds(uid);
+    final userProfileFuture =
+        _supabase.from('users').select('city').eq('id', uid).maybeSingle();
+    final likedIdsFuture = _getLikedVideoIds(uid);
 
+    final blockedIds = await blocksFuture;
+    final userProfile = await userProfileFuture;
+    final userCity = userProfile?['city'] as String?;
+    final likedIds = await likedIdsFuture;
+
+    // Phase 2 — la query videos dépend de blockedIds, donc on l'enchaîne
+    // après Future.wait plutôt que de re-filtrer côté client (économie
+    // de bande passante sur une liste de 50 vidéos).
     var query = _supabase
         .from('videos')
         .select(_selectWithPro)
@@ -41,7 +57,6 @@ class VideoRepository {
     }
 
     final data = await query.order('created_at', ascending: false).limit(50);
-    final likedIds = await _getLikedVideoIds(uid);
 
     final videos = (data as List)
         .map((json) => VideoModel.fromJson(json as Map<String, dynamic>,

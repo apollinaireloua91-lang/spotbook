@@ -1855,6 +1855,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get feedFollowFailed => 'Couldn\'t update follow. Please try again.';
 
   @override
+  String get feedLoadError => 'Couldn\'t load the feed. Check your connection.';
+
+  @override
+  String get feedRetry => 'Retry';
+
+  @override
   String get filtersTool => 'Filters';
 
   @override

@@ -597,6 +597,8 @@
   "feedLikeFailed": "Couldn't update like. Please try again.",
   "feedSaveFailed": "Couldn't save this video. Please try again.",
   "feedFollowFailed": "Couldn't update follow. Please try again.",
+  "feedLoadError": "Couldn't load the feed. Check your connection.",
+  "feedRetry": "Retry",
   "filtersTool": "Filters",
   "followLabel": "Follow",
   "followMeSection": "Follow me",

@@ -82,6 +82,92 @@ class _FeedScreenState extends ConsumerState<FeedScreen> {
       );
     }
 
+    // Écran d'erreur dédié — distinct de l'empty state pour que l'utilisateur
+    // ait une affordance de retry. L'auto-retry silencieux (1×) a déjà eu
+    // lieu dans FeedNotifier._loadInitial avant d'arriver ici.
+    if (s.loadError != null) {
+      final l = AppLocalizations.of(context)!;
+      return Scaffold(
+        backgroundColor: Colors.black,
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 32),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  width: 80,
+                  height: 80,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: AppColors.violet.withAlpha(20),
+                    border: Border.all(
+                      color: AppColors.violet.withAlpha(40),
+                    ),
+                  ),
+                  child: Icon(
+                    Icons.cloud_off_rounded,
+                    size: 38,
+                    color: AppColors.violet.withAlpha(200),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Text(
+                  l.feedLoadError,
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.dmSans(
+                    color: Colors.white.withAlpha(200),
+                    fontSize: 15,
+                    height: 1.4,
+                  ),
+                ),
+                const SizedBox(height: 24),
+                DecoratedBox(
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [Color(0xFF700B97), Color(0xFF8E05C2)],
+                    ),
+                    borderRadius: BorderRadius.circular(14),
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColors.violet.withAlpha(80),
+                        blurRadius: 18,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(14),
+                      onTap: () {
+                        HapticFeedback.lightImpact();
+                        n.retryLoad();
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 28, vertical: 12),
+                        child: Text(
+                          l.feedRetry,
+                          style: GoogleFonts.dmSans(
+                            color: Colors.white,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
     if (s.videos.isEmpty) {
       return Scaffold(
         backgroundColor: Colors.black,

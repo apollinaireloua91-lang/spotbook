@@ -597,6 +597,8 @@
   "feedLikeFailed": "Impossible de mettre à jour le like. Réessaie dans un instant.",
   "feedSaveFailed": "Impossible de sauvegarder cette vidéo. Réessaie dans un instant.",
   "feedFollowFailed": "Impossible de mettre à jour l'abonnement. Réessaie dans un instant.",
+  "feedLoadError": "Impossible de charger le feed. Vérifiez votre connexion.",
+  "feedRetry": "Réessayer",
   "filtersTool": "Filtres",
   "followLabel": "Suivre",
   "followMeSection": "Me suivre",

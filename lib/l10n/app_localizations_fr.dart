@@ -1881,6 +1881,13 @@ class AppLocalizationsFr extends AppLocalizations {
       'Impossible de mettre à jour l\'abonnement. Réessaie dans un instant.';
 
   @override
+  String get feedLoadError =>
+      'Impossible de charger le feed. Vérifiez votre connexion.';
+
+  @override
+  String get feedRetry => 'Réessayer';
+
+  @override
   String get filtersTool => 'Filtres';
 
   @override
