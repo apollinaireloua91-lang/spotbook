@@ -12,8 +12,7 @@ import 'package:intl/intl.dart';
 
 import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
-import '../../../../shared/theme/theme_mode_notifier.dart';
-import '../../../../shared/widgets/spotbook_button.dart';
+import '../../../../shared/widgets/auth_required_redirect.dart';
 import '../../../../shared/widgets/spotbook_snackbar.dart';
 import '../../../auth/data/auth_repository.dart';
 import '../../../booking/data/booking_repository.dart';
@@ -94,9 +93,8 @@ class ProShellProfileScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // Watch theme mode so the entire subtree rebuilds when dark mode toggles,
-    // re-evaluating all AppColors.xxx getters with the updated brightness.
-    ref.watch(themeModeProvider);
+    // Light mode retiré (2026-04-21) — l'app est verrouillée dark, plus
+    // besoin de rebuild sur toggle.
     final l = AppLocalizations.of(context)!;
 
     final profileAsync = ref.watch(_proSelfProfileProvider);
@@ -104,13 +102,12 @@ class ProShellProfileScreen extends ConsumerWidget {
     return profileAsync.when(
       data: (profile) {
         if (profile == null) {
-          return Scaffold(
-            backgroundColor: AppColors.fond,
-            body: Center(
-              child: Text(l.notSignedIn,
-                  style: TextStyle(color: AppColors.gris)),
-            ),
-          );
+          // Session absente OU ligne `users` manquante (cas Google OAuth
+          // où setupNewUser a foiré) → on ne bloque pas l'user sur un
+          // écran noir « Not signed in » sans CTA : on renvoie vers
+          // /login, le router décidera ensuite (redirect sur feed si
+          // session valide récupérée, sinon écran de connexion).
+          return const AuthRequiredRedirect();
         }
         return _ProSelfProfileBody(profile: profile);
       },
@@ -752,136 +749,281 @@ class _ProfileIdentity extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final hasCategory = profile.category.isNotEmpty;
+    final hasCity = profile.city != null && profile.city!.trim().isNotEmpty;
+    final hasReviews = profile.reviewsCount > 0;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        const SizedBox(height: 10),
+        const SizedBox(height: 12),
 
-        // Name
+        // ── Business name — oversized Sora display ──
         Text(
           profile.businessName,
           style: GoogleFonts.sora(
-            fontSize: 24,
+            fontSize: 28,
             fontWeight: FontWeight.w700,
             color: AppColors.blanc,
-            letterSpacing: -0.5,
-            height: 1.1,
+            letterSpacing: -0.8,
+            height: 1.05,
           ),
           textAlign: TextAlign.center,
         ),
 
-        // Username handle
+        // ── Handle ──
         if (profile.username != null && profile.username!.isNotEmpty) ...[
-          const SizedBox(height: 4),
+          const SizedBox(height: 6),
           Text(
             '@${profile.username}',
             style: GoogleFonts.dmSans(
-              fontSize: 14,
+              fontSize: 13,
               color: AppColors.gris,
-              fontWeight: FontWeight.w400,
+              fontWeight: FontWeight.w500,
+              letterSpacing: 0.1,
             ),
           ),
         ],
-        const SizedBox(height: 10),
 
-        // Category badge + city row
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (profile.category.isNotEmpty)
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
-                decoration: BoxDecoration(
-                  color: AppColors.violet.withAlpha(20),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Text(
-                  profile.category,
-                  style: GoogleFonts.dmSans(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.violet,
-                  ),
-                ),
+        // ── Category tag (hairline gradient outline) ──
+        if (hasCategory) ...[
+          const SizedBox(height: 14),
+          Container(
+            padding: const EdgeInsets.all(1),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  AppColors.violet.withAlpha(200),
+                  AppColors.rose.withAlpha(160),
+                ],
               ),
-            if (profile.category.isNotEmpty &&
-                profile.city != null &&
-                profile.city!.trim().isNotEmpty)
-              const SizedBox(width: 8),
-            if (profile.city != null && profile.city!.trim().isNotEmpty)
-              Row(
+              borderRadius: BorderRadius.circular(100),
+            ),
+            child: Container(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+              decoration: BoxDecoration(
+                color: AppColors.fond,
+                borderRadius: BorderRadius.circular(100),
+              ),
+              child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(Icons.location_on_outlined,
-                      size: 13, color: AppColors.gris.withAlpha(180)),
-                  const SizedBox(width: 2),
+                  Container(
+                    width: 5,
+                    height: 5,
+                    decoration: BoxDecoration(
+                      color: AppColors.violetClair,
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppColors.violetClair.withAlpha(160),
+                          blurRadius: 6,
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 8),
                   Text(
-                    profile.city!,
-                    style: GoogleFonts.dmSans(
-                      fontSize: 12,
-                      color: AppColors.gris,
+                    profile.category.toUpperCase(),
+                    style: GoogleFonts.sora(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 2.2,
+                      color: AppColors.blanc,
                     ),
                   ),
                 ],
               ),
-          ],
-        ),
+            ),
+          ),
+        ],
 
-        // Rating
-        if (profile.reviewsCount > 0) ...[
-          const SizedBox(height: 8),
+        // ── Meta row — city · rating — caps-spaced editorial ──
+        if (hasCity || hasReviews) ...[
+          const SizedBox(height: 12),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
             children: [
-              ...List.generate(5, (i) {
-                final filled = i < profile.rating.round();
-                return Icon(
-                  filled ? Icons.star_rounded : Icons.star_outline_rounded,
-                  color: filled ? AppColors.starGold : AppColors.grisInactif,
-                  size: 16,
-                );
-              }),
-              const SizedBox(width: 6),
-              Text(
-                '${profile.rating.toStringAsFixed(1)} (${profile.reviewsCount})',
-                style: GoogleFonts.dmSans(
-                  fontSize: 12,
-                  color: AppColors.gris,
-                  fontWeight: FontWeight.w500,
+              if (hasCity) ...[
+                Icon(Icons.place_outlined,
+                    size: 13, color: AppColors.gris),
+                const SizedBox(width: 4),
+                Text(
+                  profile.city!.toUpperCase(),
+                  style: GoogleFonts.dmSans(
+                    fontSize: 10,
+                    color: AppColors.gris,
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: 1.8,
+                  ),
                 ),
-              ),
+              ],
+              if (hasCity && hasReviews) ...[
+                const SizedBox(width: 10),
+                Container(
+                  width: 3,
+                  height: 3,
+                  decoration: BoxDecoration(
+                    color: AppColors.grisInactif,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+                const SizedBox(width: 10),
+              ],
+              if (hasReviews) ...[
+                Icon(Icons.star_rounded,
+                    size: 13, color: AppColors.starGold),
+                const SizedBox(width: 4),
+                Text(
+                  profile.rating.toStringAsFixed(1),
+                  style: GoogleFonts.sora(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.blanc,
+                    fontFeatures: const [FontFeature.tabularFigures()],
+                  ),
+                ),
+                const SizedBox(width: 4),
+                Text(
+                  '(${profile.reviewsCount})',
+                  style: GoogleFonts.dmSans(
+                    fontSize: 11,
+                    color: AppColors.gris,
+                    fontFeatures: const [FontFeature.tabularFigures()],
+                  ),
+                ),
+              ],
             ],
           ),
         ],
 
-        // Bio
+        // ── Bio — editorial italic pull quote ──
         if (profile.bio != null && profile.bio!.trim().isNotEmpty) ...[
-          const SizedBox(height: 12),
-          Text(
-            profile.bio!.trim(),
-            textAlign: TextAlign.center,
-            maxLines: 3,
-            overflow: TextOverflow.ellipsis,
-            style: GoogleFonts.dmSans(
-              fontSize: 14,
-              color: AppColors.gris,
-              height: 1.5,
+          const SizedBox(height: 16),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(top: 2, right: 10),
+                  child: Container(
+                    width: 2,
+                    height: 28,
+                    decoration: BoxDecoration(
+                      gradient: AppColors.gradientAccentVertical,
+                      borderRadius: BorderRadius.circular(1),
+                    ),
+                  ),
+                ),
+                Flexible(
+                  child: Text(
+                    profile.bio!.trim(),
+                    textAlign: TextAlign.start,
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,
+                    style: GoogleFonts.dmSans(
+                      fontSize: 14,
+                      color: AppColors.blanc.withAlpha(210),
+                      fontStyle: FontStyle.italic,
+                      height: 1.5,
+                      letterSpacing: 0.05,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         ],
-        const SizedBox(height: 18),
 
-        // Edit profile button
-        SpotbookButton.outlined(
+        const SizedBox(height: 20),
+
+        // ── Edit profile — editorial hairline CTA ──
+        _ProEditProfilePill(
           label: AppLocalizations.of(context)!.editProfile,
-          onPressed: () {
+          onTap: () {
             HapticFeedback.mediumImpact();
             context.push('/edit-profile');
           },
         ),
       ],
+    );
+  }
+}
+
+// ─── Pro Edit-profile editorial CTA ────────────────────────────────────────────
+
+class _ProEditProfilePill extends StatelessWidget {
+  const _ProEditProfilePill({required this.label, required this.onTap});
+
+  final String label;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 20),
+        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+        decoration: BoxDecoration(
+          color: AppColors.surface,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(
+            color: AppColors.blanc.withAlpha(26),
+            width: 0.5,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.violet.withAlpha(20),
+              blurRadius: 20,
+              spreadRadius: -8,
+              offset: const Offset(0, 6),
+            ),
+          ],
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 28,
+              height: 28,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(9),
+                gradient: LinearGradient(
+                  colors: [
+                    AppColors.violet.withAlpha(38),
+                    AppColors.rose.withAlpha(20),
+                  ],
+                ),
+                border: Border.all(
+                  color: AppColors.violet.withAlpha(40),
+                  width: 0.5,
+                ),
+              ),
+              child: Icon(Icons.edit_outlined,
+                  color: AppColors.violetClair, size: 13),
+            ),
+            const SizedBox(width: 12),
+            Text(
+              label,
+              style: GoogleFonts.dmSans(
+                color: AppColors.blanc,
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                letterSpacing: -0.1,
+              ),
+            ),
+            const SizedBox(width: 10),
+            Icon(Icons.arrow_forward_rounded,
+                color: AppColors.gris, size: 14),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -1768,8 +1910,6 @@ class _InlineSettingsSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isDark = ref.watch(themeModeProvider) == ThemeMode.dark;
-
     final l = AppLocalizations.of(context)!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -1805,57 +1945,8 @@ class _InlineSettingsSection extends ConsumerWidget {
           subtitle: l.proShellPaymentConfig,
           onTap: () => context.push('/pro/stripe-connect'),
         ),
-        _DarkModeTile(
-          isDark: isDark,
-          onChanged: (_) => ref.read(themeModeProvider.notifier).toggle(),
-        ),
+        // _DarkModeTile retiré (2026-04-21) — light mode supprimé.
       ],
-    );
-  }
-}
-
-class _DarkModeTile extends StatelessWidget {
-  const _DarkModeTile({required this.isDark, required this.onChanged});
-
-  final bool isDark;
-  final ValueChanged<bool> onChanged;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 14),
-      decoration: BoxDecoration(
-        border: Border(
-          bottom: BorderSide(color: AppColors.border, width: 0.5),
-        ),
-      ),
-      child: Row(
-        children: [
-          Icon(
-            isDark ? Icons.dark_mode : Icons.light_mode,
-            color: AppColors.blanc,
-            size: 20,
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Text(
-              AppLocalizations.of(context)!.darkMode,
-              style: GoogleFonts.dmSans(
-                color: AppColors.blanc,
-                fontSize: 14,
-              ),
-            ),
-          ),
-          SizedBox(
-            height: 24,
-            child: Switch.adaptive(
-              value: isDark,
-              onChanged: onChanged,
-              activeTrackColor: AppColors.violet,
-            ),
-          ),
-        ],
-      ),
     );
   }
 }

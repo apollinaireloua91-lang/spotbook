@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/theme/theme_mode_notifier.dart';
+import '../../../../shared/widgets/auth_required_redirect.dart';
 import '../../../profile/data/profile_repository.dart';
 import '../../data/event_repository.dart';
 import '../../domain/event_models.dart';
@@ -26,12 +27,9 @@ class ProMyEventsScreen extends ConsumerWidget {
     final uid = ref.watch(profileRepositoryProvider).currentUserId;
 
     if (uid == null) {
-      return Scaffold(
-        backgroundColor: AppColors.fond,
-        body: Center(
-          child: Text(l.notSignedIn, style: GoogleFonts.dmSans(color: AppColors.gris)),
-        ),
-      );
+      // Ancien fallback : Text(l.notSignedIn). On évite l'écran fantôme
+      // dead-end en anglais et on pousse vers /login (cf. widget partagé).
+      return const AuthRequiredRedirect();
     }
 
     final async = ref.watch(proEventsByProIdProvider(uid));
