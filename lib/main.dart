@@ -75,6 +75,19 @@ void main() async {
     // Session persistée dans Keychain (iOS) / secure storage Keystore-backed
     // (Android) — pas en SharedPreferences clair. Voir secure_auth_storage.
     final persistSessionKey = supabasePersistSessionKeyFromUrl(supabaseUrl);
+
+    // iOS Keychain SURVIT à la désinstallation de l'app (comportement Apple
+    // voulu pour les password managers). Sans purge explicite, un user qui
+    // réinstalle Spotbook voit sa session Supabase ressurgir sans passer par
+    // /login — pire, un iPhone revendu peut auto-loguer le nouveau propriétaire.
+    // `clearAuthKeychainIfFreshInstall` détecte l'install fraîche via un flag
+    // SharedPreferences (lui-même wipé à l'uninstall) et purge la session
+    // Keychain fantôme AVANT que Supabase ne l'hydrate.
+    await clearAuthKeychainIfFreshInstall(
+      persistSessionKey: persistSessionKey,
+      onError: _reportError,
+    );
+
     await Supabase.initialize(
       url: supabaseUrl,
       anonKey: supabaseAnonKey,
