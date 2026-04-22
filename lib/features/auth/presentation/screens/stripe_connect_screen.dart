@@ -76,6 +76,14 @@ class _StripeConnectScreenState extends ConsumerState<StripeConnectScreen>
   }
 
   Future<void> _openStripeAction() async {
+    // On first-time onboarding, pick the payout country. Stripe Express locks
+    // the country at account creation, so this decision is one-shot.
+    String? country;
+    if (_status == 'not_connected') {
+      country = await _pickCountry();
+      if (country == null) return; // user dismissed sheet
+    }
+
     setState(() => _isActionLoading = true);
     try {
       String url;
@@ -83,7 +91,7 @@ class _StripeConnectScreenState extends ConsumerState<StripeConnectScreen>
       if (_status == 'not_connected') {
         url = await ref
             .read(paymentRepositoryProvider)
-            .createStripeConnectLink();
+            .createStripeConnectLink(country: country);
       } else {
         final data = await ref
             .read(paymentRepositoryProvider)
@@ -98,13 +106,13 @@ class _StripeConnectScreenState extends ConsumerState<StripeConnectScreen>
         HapticFeedback.mediumImpact();
         await launchUrl(uri, mode: LaunchMode.externalApplication);
       } else {
-        throw Exception('Could not open Stripe');
+        throw Exception('Impossible d\'ouvrir Stripe');
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Erreur: $e'),
+            content: Text('Erreur : $e'),
             backgroundColor: AppColors.error,
           ),
         );
@@ -112,6 +120,80 @@ class _StripeConnectScreenState extends ConsumerState<StripeConnectScreen>
     } finally {
       if (mounted) setState(() => _isActionLoading = false);
     }
+  }
+
+  Future<String?> _pickCountry() async {
+    final l = AppLocalizations.of(context)!;
+    return showModalBottomSheet<String>(
+      context: context,
+      backgroundColor: AppColors.surface,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (sheetCtx) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: Container(
+                    width: 40,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: AppColors.border,
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 18),
+                Text(
+                  l.stripeCountryPickerTitle,
+                  style: GoogleFonts.sora(
+                    color: AppColors.blanc,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  l.stripeCountryPickerSub,
+                  style: GoogleFonts.dmSans(
+                    color: AppColors.gris,
+                    fontSize: 13,
+                    height: 1.4,
+                  ),
+                ),
+                const SizedBox(height: 18),
+                _CountryTile(
+                  flag: '🇨🇦',
+                  label: l.stripeCountryCA,
+                  subtitle: l.stripeCountryCASub,
+                  onTap: () => Navigator.of(sheetCtx).pop('CA'),
+                ),
+                const SizedBox(height: 10),
+                _CountryTile(
+                  flag: '🇫🇷',
+                  label: l.stripeCountryFR,
+                  subtitle: l.stripeCountryFRSub,
+                  onTap: () => Navigator.of(sheetCtx).pop('FR'),
+                ),
+                const SizedBox(height: 10),
+                _CountryTile(
+                  flag: '🇺🇸',
+                  label: l.stripeCountryUS,
+                  subtitle: l.stripeCountryUSSub,
+                  onTap: () => Navigator.of(sheetCtx).pop('US'),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -236,170 +318,7 @@ class _StripeConnectScreenState extends ConsumerState<StripeConnectScreen>
                     ),
                   ),
 
-                  const SizedBox(height: 32),
-
-                  // ── How it works section ──
-                  _SectionHeader(
-                    icon: Icons.auto_awesome_rounded,
-                    title: l.stripeHowItWorks,
-                  ),
-                  const SizedBox(height: 16),
-
-                  _StepTile(
-                    number: '1',
-                    icon: Icons.account_balance_rounded,
-                    title: l.stripeStep1Title,
-                    subtitle: l.stripeStep1Desc,
-                  ),
-                  _StepTile(
-                    number: '2',
-                    icon: Icons.calendar_month_rounded,
-                    title: l.stripeStep2Title,
-                    subtitle: l.stripeStep2Desc,
-                  ),
-                  _StepTile(
-                    number: '3',
-                    icon: Icons.payments_rounded,
-                    title: l.stripeStep3Title,
-                    subtitle: l.stripeStep3Desc,
-                    isLast: true,
-                  ),
-
-                  const SizedBox(height: 28),
-
-                  // ── Fees breakdown ──
-                  _SectionHeader(
-                    icon: Icons.receipt_long_rounded,
-                    title: l.stripeFeesTitle,
-                  ),
-                  const SizedBox(height: 14),
-
-                  _FeeCard(
-                    items: [
-                      _FeeItem(
-                        label: l.stripeFeeBooking,
-                        value: '18%',
-                        subtitle: l.stripeFeeBookingSub,
-                      ),
-                      _FeeItem(
-                        label: l.stripeFeeEvent,
-                        value: '12%',
-                        subtitle: l.stripeFeeEventSub,
-                      ),
-                      _FeeItem(
-                        label: l.stripeFeeService,
-                        value: '\$2.50',
-                        subtitle: l.stripeFeeServiceSub,
-                      ),
-                    ],
-                  ),
-
-                  const SizedBox(height: 12),
-
-                  Container(
-                    padding: const EdgeInsets.all(14),
-                    decoration: BoxDecoration(
-                      color: AppColors.success.withAlpha(15),
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
-                          color: AppColors.success.withAlpha(40), width: 0.5),
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(Icons.info_outline_rounded,
-                            color: AppColors.success, size: 18),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: Text(
-                            l.stripeNoMonthlyFees,
-                            style: GoogleFonts.dmSans(
-                              color: AppColors.success,
-                              fontSize: 12,
-                              height: 1.4,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  const SizedBox(height: 28),
-
-                  // ── Security trust badges ──
-                  _SectionHeader(
-                    icon: Icons.shield_rounded,
-                    title: l.stripeSecurityTitle,
-                  ),
-                  const SizedBox(height: 14),
-
-                  _TrustBadge(
-                    icon: Icons.lock_rounded,
-                    title: l.stripeTrustSsl,
-                    subtitle: l.stripeTrustSslSub,
-                  ),
-                  const SizedBox(height: 10),
-                  _TrustBadge(
-                    icon: Icons.verified_rounded,
-                    title: l.stripeTrustPowered,
-                    subtitle: l.stripeTrustPoweredSub,
-                  ),
-                  const SizedBox(height: 10),
-                  _TrustBadge(
-                    icon: Icons.speed_rounded,
-                    title: l.stripeTrustFast,
-                    subtitle: l.stripeTrustFastSub,
-                  ),
-
-                  const SizedBox(height: 32),
-
-                  // ── FAQ section ──
-                  _SectionHeader(
-                    icon: Icons.help_outline_rounded,
-                    title: l.stripeFaqTitle,
-                  ),
-                  const SizedBox(height: 14),
-
-                  _FAQItem(
-                    question: l.stripeFaqWhenPaid,
-                    answer: l.stripeFaqWhenPaidAnswer,
-                  ),
-                  _FAQItem(
-                    question: l.stripeFaqCancel,
-                    answer: l.stripeFaqCancelAnswer,
-                  ),
-                  _FAQItem(
-                    question: l.stripeFaqDeposit,
-                    answer: l.stripeFaqDepositAnswer,
-                  ),
-
                   const SizedBox(height: 24),
-
-                  // ── Support link ──
-                  Center(
-                    child: GestureDetector(
-                      onTap: () => launchUrl(
-                        Uri.parse(
-                            'https://getspotbook.app/support#contact'),
-                        mode: LaunchMode.externalApplication,
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(Icons.support_agent_rounded,
-                              color: AppColors.violet, size: 16),
-                          const SizedBox(width: 6),
-                          Text(
-                            l.stripeNeedHelp,
-                            style: GoogleFonts.dmSans(
-                              color: AppColors.violet,
-                              fontSize: 13,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
                 ],
               ),
             ),
@@ -580,6 +499,72 @@ class _StatusCard extends StatelessWidget {
   }
 }
 
+class _CountryTile extends StatelessWidget {
+  const _CountryTile({
+    required this.flag,
+    required this.label,
+    required this.subtitle,
+    required this.onTap,
+  });
+  final String flag;
+  final String label;
+  final String subtitle;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(14),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+          decoration: BoxDecoration(
+            color: AppColors.surfaceElevated,
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: AppColors.border, width: 0.5),
+          ),
+          child: Row(
+            children: [
+              Text(flag, style: const TextStyle(fontSize: 24)),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      label,
+                      style: GoogleFonts.dmSans(
+                        color: AppColors.blanc,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      subtitle,
+                      style: GoogleFonts.dmSans(
+                        color: AppColors.gris,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Icon(
+                Icons.arrow_forward_ios_rounded,
+                color: AppColors.grisInactif,
+                size: 14,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class _CheckItem extends StatelessWidget {
   const _CheckItem({
     required this.label,
@@ -629,358 +614,3 @@ class _CheckItem extends StatelessWidget {
   }
 }
 
-// ═════════════════════════════════════════════════════════════════════════════
-// SECTION HEADER
-// ═════════════════════════════════════════════════════════════════════════════
-
-class _SectionHeader extends StatelessWidget {
-  const _SectionHeader({required this.icon, required this.title});
-  final IconData icon;
-  final String title;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Icon(icon, color: AppColors.violet, size: 18),
-        const SizedBox(width: 8),
-        Text(
-          title,
-          style: GoogleFonts.sora(
-            fontSize: 15,
-            fontWeight: FontWeight.w700,
-            color: AppColors.blanc,
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-// ═════════════════════════════════════════════════════════════════════════════
-// STEP TILE — numbered steps with icons
-// ═════════════════════════════════════════════════════════════════════════════
-
-class _StepTile extends StatelessWidget {
-  const _StepTile({
-    required this.number,
-    required this.icon,
-    required this.title,
-    required this.subtitle,
-    this.isLast = false,
-  });
-
-  final String number;
-  final IconData icon;
-  final String title;
-  final String subtitle;
-  final bool isLast;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 4),
-      child: IntrinsicHeight(
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // ── Timeline ──
-            Column(
-              children: [
-                Container(
-                  width: 36,
-                  height: 36,
-                  decoration: BoxDecoration(
-                    gradient: AppColors.gradientAccent,
-                    shape: BoxShape.circle,
-                  ),
-                  child: Center(
-                    child: Text(
-                      number,
-                      style: GoogleFonts.sora(
-                        color: Colors.white,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ),
-                ),
-                if (!isLast)
-                  Expanded(
-                    child: Container(
-                      width: 2,
-                      margin: const EdgeInsets.symmetric(vertical: 4),
-                      color: AppColors.border,
-                    ),
-                  ),
-              ],
-            ),
-            const SizedBox(width: 14),
-            // ── Content ──
-            Expanded(
-              child: Container(
-                margin: const EdgeInsets.only(bottom: 16),
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: AppColors.surface,
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: AppColors.border, width: 0.5),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Icon(icon, color: AppColors.violet, size: 18),
-                        const SizedBox(width: 8),
-                        Text(
-                          title,
-                          style: GoogleFonts.sora(
-                            color: AppColors.blanc,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 6),
-                    Text(
-                      subtitle,
-                      style: GoogleFonts.dmSans(
-                        color: AppColors.gris,
-                        fontSize: 13,
-                        height: 1.45,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-// ═════════════════════════════════════════════════════════════════════════════
-// FEE CARD — commission breakdown
-// ═════════════════════════════════════════════════════════════════════════════
-
-class _FeeItem {
-  const _FeeItem({
-    required this.label,
-    required this.value,
-    required this.subtitle,
-  });
-  final String label;
-  final String value;
-  final String subtitle;
-}
-
-class _FeeCard extends StatelessWidget {
-  const _FeeCard({required this.items});
-  final List<_FeeItem> items;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.border, width: 0.5),
-      ),
-      child: Column(
-        children: [
-          for (int i = 0; i < items.length; i++) ...[
-            Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        items[i].label,
-                        style: GoogleFonts.dmSans(
-                          color: AppColors.blanc,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      Text(
-                        items[i].subtitle,
-                        style: GoogleFonts.dmSans(
-                          color: AppColors.grisInactif,
-                          fontSize: 12,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: AppColors.violet.withAlpha(20),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Text(
-                    items[i].value,
-                    style: GoogleFonts.sora(
-                      color: AppColors.violet,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            if (i < items.length - 1)
-              Divider(
-                  color: AppColors.border, height: 20, thickness: 0.5),
-          ],
-        ],
-      ),
-    );
-  }
-}
-
-// ═════════════════════════════════════════════════════════════════════════════
-// TRUST BADGE
-// ═════════════════════════════════════════════════════════════════════════════
-
-class _TrustBadge extends StatelessWidget {
-  const _TrustBadge({
-    required this.icon,
-    required this.title,
-    required this.subtitle,
-  });
-
-  final IconData icon;
-  final String title;
-  final String subtitle;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.border, width: 0.5),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 38,
-            height: 38,
-            decoration: BoxDecoration(
-              color: AppColors.success.withAlpha(20),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Icon(icon, color: AppColors.success, size: 20),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: GoogleFonts.dmSans(
-                    color: AppColors.blanc,
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                Text(
-                  subtitle,
-                  style: GoogleFonts.dmSans(
-                    color: AppColors.gris,
-                    fontSize: 12,
-                    height: 1.3,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-// ═════════════════════════════════════════════════════════════════════════════
-// FAQ ITEM — expandable question/answer
-// ═════════════════════════════════════════════════════════════════════════════
-
-class _FAQItem extends StatefulWidget {
-  const _FAQItem({required this.question, required this.answer});
-  final String question;
-  final String answer;
-
-  @override
-  State<_FAQItem> createState() => _FAQItemState();
-}
-
-class _FAQItemState extends State<_FAQItem> {
-  bool _expanded = false;
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () => setState(() => _expanded = !_expanded),
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 8),
-        padding: const EdgeInsets.all(14),
-        decoration: BoxDecoration(
-          color: AppColors.surface,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: AppColors.border, width: 0.5),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    widget.question,
-                    style: GoogleFonts.dmSans(
-                      color: AppColors.blanc,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ),
-                AnimatedRotation(
-                  turns: _expanded ? 0.5 : 0,
-                  duration: const Duration(milliseconds: 200),
-                  child: Icon(
-                    Icons.keyboard_arrow_down_rounded,
-                    color: AppColors.gris,
-                    size: 20,
-                  ),
-                ),
-              ],
-            ),
-            if (_expanded) ...[
-              const SizedBox(height: 10),
-              Divider(color: AppColors.border, height: 1),
-              const SizedBox(height: 10),
-              Text(
-                widget.answer,
-                style: GoogleFonts.dmSans(
-                  color: AppColors.gris,
-                  fontSize: 13,
-                  height: 1.5,
-                ),
-              ),
-            ],
-          ],
-        ),
-      ),
-    );
-  }
-}

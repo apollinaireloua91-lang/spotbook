@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/theme/theme_mode_notifier.dart';
+import '../../../../shared/utils/currency_formatter.dart';
 import '../../../booking/data/booking_repository.dart';
 import '../../../booking/domain/booking_models.dart';
 
@@ -77,7 +78,7 @@ class _PaymentReceiptScreenState extends ConsumerState<PaymentReceiptScreen>
             },
           ),
         ),
-        title: Text('Payment receipt',
+        title: Text('Reçu de paiement',
             style:
                 GoogleFonts.sora(color: AppColors.blanc, fontWeight: FontWeight.bold)),
         centerTitle: true,
@@ -88,7 +89,7 @@ class _PaymentReceiptScreenState extends ConsumerState<PaymentReceiptScreen>
                   CircularProgressIndicator(color: AppColors.violet))
           : _booking == null
               ? Center(
-                  child: Text('Booking not found',
+                  child: Text('Réservation introuvable',
                       style: TextStyle(color: AppColors.gris)))
               : FadeTransition(
                   opacity: _fadeAnim,
@@ -98,11 +99,11 @@ class _PaymentReceiptScreenState extends ConsumerState<PaymentReceiptScreen>
   }
 
   Widget _buildReceipt(BookingModel booking) {
-    final currencyFormat = NumberFormat.currency(
-      locale: 'en_CA',
-      symbol: booking.currency == 'EUR' ? '€' : '\$',
-      decimalDigits: 2,
-    );
+    String currencyFormat(num amount) => CurrencyFormatter.formatAmount(
+          amount,
+          currency: booking.currency,
+          locale: 'en_CA',
+        );
     final dateFormat = DateFormat('MMMM d, yyyy', 'en_US');
     final isPaid = booking.status != 'payment_failed';
 
@@ -136,7 +137,7 @@ class _PaymentReceiptScreenState extends ConsumerState<PaymentReceiptScreen>
             ),
           ),
           Text(
-            currencyFormat.format(booking.depositAmount),
+            currencyFormat(booking.depositAmount),
             style: GoogleFonts.sora(
               color: AppColors.blanc,
               fontSize: 32,
@@ -176,7 +177,7 @@ class _PaymentReceiptScreenState extends ConsumerState<PaymentReceiptScreen>
                 ),
                 _receiptRow(
                   'Deposit',
-                  currencyFormat.format(booking.depositAmount),
+                  currencyFormat(booking.depositAmount),
                   isBold: true,
                 ),
                 _receiptRow('Currency', booking.currency.toUpperCase()),
@@ -202,7 +203,7 @@ class _PaymentReceiptScreenState extends ConsumerState<PaymentReceiptScreen>
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     backgroundColor: AppColors.surface,
-                    content: Text('Code copied',
+                    content: Text('Code copié',
                         style: TextStyle(color: AppColors.blanc)),
                     duration: const Duration(seconds: 1),
                   ),

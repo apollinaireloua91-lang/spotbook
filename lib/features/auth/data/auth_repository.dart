@@ -68,7 +68,7 @@ class AuthRepository {
       );
     } on FunctionException catch (e) {
       if (e.status == 429) {
-        throw AuthException('Too many attempts. Try again later.');
+        throw AuthException('Trop de tentatives. Réessayez plus tard.');
       }
       // Non-429 rate-limiter errors are non-critical — proceed with signup
     }
@@ -109,7 +109,7 @@ class AuthRepository {
       return response;
     } on AuthException catch (e) {
       if (e.message.contains('already registered')) {
-        throw AuthException('This email is already registered');
+        throw AuthException('Cet e-mail est déjà utilisé');
       }
       rethrow;
     }
@@ -127,7 +127,7 @@ class AuthRepository {
         );
       } on FunctionException catch (e) {
         if (e.status == 429) {
-          throw AuthException('Too many attempts. Try again later.');
+          throw AuthException('Trop de tentatives. Réessayez plus tard.');
         }
       }
 
@@ -151,12 +151,12 @@ class AuthRepository {
       return response;
     } on AuthException catch (e) {
       if (e.message.contains('Invalid login credentials')) {
-        throw AuthException('Invalid email or password');
+        throw AuthException('E-mail ou mot de passe invalide');
       }
       if (e.message.toLowerCase().contains('token') &&
           e.message.toLowerCase().contains('expired')) {
         await _supabase.auth.refreshSession();
-        throw AuthException('Session expired. Please sign in again.');
+        throw AuthException('Session expirée. Veuillez vous reconnecter.');
       }
       rethrow;
     }
@@ -183,14 +183,14 @@ class AuthRepository {
 
     if (!launched) {
       sub.cancel();
-      throw AuthException('Could not launch Google sign-in.');
+      throw AuthException('Impossible de lancer la connexion Google.');
     }
 
     try {
       await completer.future.timeout(const Duration(minutes: 5));
     } on TimeoutException {
       sub.cancel();
-      throw AuthException('Google sign-in timed out.');
+      throw AuthException('Délai de connexion Google dépassé.');
     }
 
     final uid = currentUserId;
@@ -240,12 +240,12 @@ class AuthRepository {
       if (e.code == AuthorizationErrorCode.canceled) {
         throw AuthException('cancelled_by_user');
       }
-      throw AuthException('Apple sign-in failed: ${e.message}');
+      throw AuthException('Échec de la connexion Apple : ${e.message}');
     }
 
     final idToken = credential.identityToken;
     if (idToken == null) {
-      throw AuthException('Apple sign-in: no identity token returned.');
+      throw AuthException('Connexion Apple : aucun jeton d\'identité reçu.');
     }
 
     await _supabase.auth.signInWithIdToken(
@@ -319,7 +319,7 @@ class AuthRepository {
       );
     } on FunctionException catch (e) {
       if (e.status == 429) {
-        throw AuthException('Too many attempts. Try again later.');
+        throw AuthException('Trop de tentatives. Réessayez plus tard.');
       }
     }
     await _supabase.auth.resetPasswordForEmail(
@@ -434,14 +434,14 @@ class AuthRepository {
 
   Future<void> updateUserRole(String role) async {
     final uid = currentUserId;
-    if (uid == null) throw AuthException('User not authenticated');
+    if (uid == null) throw AuthException('Utilisateur non authentifié');
     await _supabase.from('users').update({'role': role}).eq('id', uid);
     await _supabase.auth.updateUser(UserAttributes(data: {'role': role}));
   }
 
   Future<String> uploadAvatar(Uint8List bytes) async {
     final uid = currentUserId;
-    if (uid == null) throw AuthException('User not authenticated');
+    if (uid == null) throw AuthException('Utilisateur non authentifié');
     final path = '$uid/avatar.jpg';
     await _supabase.storage
         .from('avatars')
@@ -455,7 +455,7 @@ class AuthRepository {
     String? avatarUrl,
   }) async {
     final uid = currentUserId;
-    if (uid == null) throw AuthException('User not authenticated');
+    if (uid == null) throw AuthException('Utilisateur non authentifié');
     final updates = <String, dynamic>{};
     if (fullName != null) updates['full_name'] = fullName;
     if (bio != null) updates['bio'] = bio;
@@ -473,7 +473,7 @@ class AuthRepository {
   /// delete des PII, anonymisation des enregistrements contractuels).
   Future<void> softDeleteAccount() async {
     final uid = currentUserId;
-    if (uid == null) throw AuthException('User not authenticated');
+    if (uid == null) throw AuthException('Utilisateur non authentifié');
 
     final res = await _supabase.functions.invoke('delete-account');
     if (res.status != 200) {
@@ -481,7 +481,7 @@ class AuthRepository {
       final err = (body is Map && body['error'] is String)
           ? body['error'] as String
           : 'delete_failed';
-      throw AuthException('Account deletion failed: $err');
+      throw AuthException('Échec de la suppression du compte : $err');
     }
     // La session est invalidée côté Supabase (auth.users supprimé). On force
     // un signOut local pour purger les caches Flutter (Hive, secure storage).
@@ -507,7 +507,7 @@ class AuthRepository {
   }) async {
     // Re-authenticate with current password first
     final email = currentUser?.email;
-    if (email == null) throw AuthException('No email found');
+    if (email == null) throw AuthException('Aucun e-mail trouvé');
     await _supabase.auth.signInWithPassword(
       email: email,
       password: currentPassword,
@@ -531,7 +531,7 @@ class AuthRepository {
       );
     } on FunctionException catch (e) {
       if (e.status == 429) {
-        throw AuthException('Too many attempts. Try again later.');
+        throw AuthException('Trop de tentatives. Réessayez plus tard.');
       }
     }
     await _supabase.auth.signInWithOtp(

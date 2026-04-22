@@ -232,7 +232,7 @@ class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
               ListTile(
                 contentPadding: EdgeInsets.zero,
                 leading: Icon(Icons.block, color: AppColors.error),
-                title: Text('Block this pro',
+                title: Text('Bloquer ce pro',
                     style: TextStyle(color: AppColors.error)),
                 onTap: () {
                   ctx.pop();
@@ -268,6 +268,7 @@ class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
     });
 
     return GestureDetector(
+      behavior: HitTestBehavior.opaque,
       onTap: _togglePlayPause,
       onDoubleTapDown: (details) =>
           _lastDoubleTapPosition = details.localPosition,

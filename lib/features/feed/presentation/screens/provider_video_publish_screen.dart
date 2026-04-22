@@ -306,7 +306,7 @@ class _ProviderVideoPublishScreenState
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 content: Text(
-                                  'Invalid format or duration (mp4/mov/m4v, max 60s)',
+                                  'Format ou durée invalide (mp4/mov/m4v, max 60s)',
                                   style: GoogleFonts.dmSans(color: AppColors.textOnPrimary),
                                 ),
                                 backgroundColor: AppColors.error,
@@ -1128,7 +1128,7 @@ class _VideoPreviewCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 12),
                   Text(
-                    'Choose a video',
+                    'Choisir une vidéo',
                     style: GoogleFonts.sora(
                       color: AppColors.blanc,
                       fontSize: 15,

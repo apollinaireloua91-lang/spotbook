@@ -121,7 +121,7 @@ class _ClientVideoDetailScreenState
           ),
         ),
         body: Center(
-          child: Text('Error: $e',
+          child: Text('Erreur : $e',
               style: GoogleFonts.dmSans(color: AppColors.gris)),
         ),
       ),
@@ -150,7 +150,7 @@ class _ClientVideoDetailScreenState
               ),
             ),
             body: Center(
-              child: Text('Video not found',
+              child: Text('Vidéo introuvable',
                   style: GoogleFonts.dmSans(color: AppColors.gris)),
             ),
           );
@@ -399,7 +399,7 @@ class _CommentsSheetState extends ConsumerState<_CommentsSheet> {
     } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: const Text('Unable to send comment'), backgroundColor: AppColors.error),
+          SnackBar(content: const Text('Impossible d\'envoyer le commentaire'), backgroundColor: AppColors.error),
         );
       }
     }

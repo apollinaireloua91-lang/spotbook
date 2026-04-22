@@ -6,12 +6,12 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:qr_flutter/qr_flutter.dart';
-import 'package:share_plus/share_plus.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:add_2_calendar/add_2_calendar.dart';
 
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/theme/theme_mode_notifier.dart';
+import '../../../../shared/utils/share_branding.dart';
 import '../../domain/event_models.dart';
 
 class TicketDetailScreen extends ConsumerWidget {
@@ -61,7 +61,7 @@ class TicketDetailScreen extends ConsumerWidget {
         centerTitle: true,
         actions: [
           Semantics(
-            label: 'Share ticket',
+            label: 'Partager le billet',
             child: IconButton(
               icon: Container(
                 padding: const EdgeInsets.all(8),
@@ -75,10 +75,9 @@ class TicketDetailScreen extends ConsumerWidget {
               ),
               onPressed: () {
                 HapticFeedback.mediumImpact();
-                SharePlus.instance.share(
-                  ShareParams(
-                      text:
-                          'My ticket for ${ticket.eventTitle ?? 'the event'} — Spotbook'),
+                ShareBranding.shareWithLogo(
+                  text:
+                      'My ticket for ${ticket.eventTitle ?? 'the event'} — Spotbook',
                 );
               },
             ),

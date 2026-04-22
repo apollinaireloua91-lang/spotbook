@@ -59,7 +59,7 @@ class MyVideosScreen extends ConsumerWidget {
             onPressed: () => context.pop(),
           ),
         ),
-        title: Text('My videos', style: GoogleFonts.sora(color: AppColors.blanc, fontWeight: FontWeight.w600, fontSize: 17)),
+        title: Text('Mes vidéos', style: GoogleFonts.sora(color: AppColors.blanc, fontWeight: FontWeight.w600, fontSize: 17)),
         centerTitle: true,
       ),
       body: videos == null

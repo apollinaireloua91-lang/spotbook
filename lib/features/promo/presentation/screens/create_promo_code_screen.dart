@@ -267,7 +267,7 @@ class _CreatePromoCodeScreenState extends ConsumerState<CreatePromoCodeScreen> {
           ),
           const SizedBox(height: 20),
           Text(
-            'No promo codes yet',
+            'Aucun code promo',
             style: GoogleFonts.sora(
               color: AppColors.blanc,
               fontSize: 17,
@@ -276,7 +276,7 @@ class _CreatePromoCodeScreenState extends ConsumerState<CreatePromoCodeScreen> {
           ),
           const SizedBox(height: 6),
           Text(
-            'Create your first code above to attract customers.',
+            'Créez votre premier code ci-dessus pour attirer les clients.',
             textAlign: TextAlign.center,
             style: GoogleFonts.dmSans(
               color: AppColors.gris,
@@ -443,7 +443,7 @@ class _CreateFormSection extends StatelessWidget {
                               size: 18),
                           const SizedBox(width: 6),
                           Text(
-                            'Create Code',
+                            'Créer le code',
                             style: GoogleFonts.sora(
                               color: AppColors.textOnPrimary,
                               fontSize: 14,

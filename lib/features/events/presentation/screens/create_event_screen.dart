@@ -947,7 +947,7 @@ class _TicketTypeCard extends StatelessWidget {
                 ),
               ),
               Semantics(
-                label: 'Remove ticket type',
+                label: 'Supprimer le type de billet',
                 child: GestureDetector(
                   onTap: () {
                     HapticFeedback.lightImpact();

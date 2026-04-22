@@ -318,7 +318,7 @@ class _DayCard extends StatelessWidget {
                 children: [
                   Icon(Icons.bedtime_outlined, color: AppColors.gris, size: 14),
                   const SizedBox(width: 6),
-                  Text('Day off',
+                  Text('Jour de repos',
                       style: TextStyle(color: AppColors.gris, fontSize: 13)),
                 ],
               ),
@@ -435,7 +435,7 @@ class _SlotsSectionState extends ConsumerState<_SlotsSection> {
                 children: [
                   Icon(Icons.add, color: AppColors.gris, size: 16),
                   const SizedBox(width: 6),
-                  Text('Add a slot',
+                  Text('Ajouter un créneau',
                       style: GoogleFonts.dmSans(
                           color: AppColors.gris,
                           fontSize: 13,

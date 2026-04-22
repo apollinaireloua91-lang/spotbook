@@ -57,7 +57,7 @@ class _FavoriteHeartButtonState extends ConsumerState<FavoriteHeartButton>
     final isFav = ids.contains(widget.targetId);
 
     return Semantics(
-      label: isFav ? 'Remove from favorites' : 'Add to favorites',
+      label: isFav ? 'Retirer des favoris' : 'Ajouter aux favoris',
       child: GestureDetector(
         onTap: () {
           HapticFeedback.lightImpact();
