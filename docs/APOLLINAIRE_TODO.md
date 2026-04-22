@@ -204,3 +204,126 @@ Voir `git log --oneline agent/refonte-totale-premium` pour la liste complète.
 Branches affectées : `supabase/migrations/2026042110*` à `140*`,
 `supabase/functions/{purchase-tickets-atomic,join-waitlist-atomic,cancel-booking,cancellation-policy,send-message-notification}`,
 `lib/features/{auth,booking,chat,events,feed,profile}/**`, native configs.
+
+---
+
+## Migration emails Resend — tâches staged (2026-04-22)
+
+Contexte : Phase 0 Commit 1 de la migration `buildEmail` HTML → Resend
+templates (via nested `template: { id, variables }`). Détails complets dans
+`docs/EMAIL_MAPPING_AUDIT.md`. **Claude ne pousse aucune migration SQL ni
+deploy de fonction** — tout est listé ici pour exécution manuelle.
+
+### 15. SQL staged — à pousser APRÈS Commit 3 (nouveaux cron email)
+
+Les deux colonnes ci-dessous sont nécessaires aux nouveaux events `reminder_1h_before`
+et `remaining_payment_reminder` (décisions 4.3 et 4.5). **Ne PAS les créer avant
+que le code Commit 3 soit mergé** — sinon le cron s'exécuterait avec la nouvelle
+colonne mais sans l'email correspondant.
+
+```sql
+-- 15.a — Renommage flag H-2 → H-1 (décision 4.3 Option A)
+-- Le cron schedule-reminders/send-reminders utilise actuellement un delta 2h.
+-- On aligne sur l'alias Resend `rappel-1h-avant`.
+-- À pousser AU MÊME COMMIT que le changement de code (delta 2h → 1h) pour éviter
+-- les bookings en zombie (row avec nouveau flag mais ancien delta, ou l'inverse).
+ALTER TABLE bookings
+  RENAME COLUMN reminder_h2_sent TO reminder_h1_sent;
+
+-- 15.b — Flag solde restant à payer (décision 4.5 Option A)
+-- Cron J-1 pour bookings payment_mode='deposit' dont le RDV est dans ≤24h.
+-- Dedup via ce flag, remis à true après envoi du template `solde-restant-payer`.
+ALTER TABLE bookings
+  ADD COLUMN remaining_reminder_sent BOOLEAN NOT NULL DEFAULT false;
+
+CREATE INDEX IF NOT EXISTS idx_bookings_remaining_reminder_pending
+  ON bookings (scheduled_at)
+  WHERE payment_mode = 'deposit'
+    AND remaining_reminder_sent = false
+    AND status IN ('confirmed', 'pending_deposit');
+```
+
+**Vérifier avant push** :
+- [ ] `reminder_h2_sent` existe bien en DB (sinon adapter la migration — cf. décision 4.3).
+- [ ] Le nom réel de la colonne `payment_mode` (booking vs services vs payments).
+- [ ] Tester `supabase migration up --local` avant `supabase db push`.
+- [ ] Pas d'email `message_notification` → **pas** de table `email_log` à créer
+      (décision 4.7 annule le besoin initial de throttle 1/h/thread).
+
+### 16. Migration Supabase Auth → Resend (hors périmètre 4 commits)
+
+Templates Resend existants mais non câblés : `rinitialisation-mot-de-passe`,
+`vrification-email`. Supabase Auth utilise son SMTP built-in par défaut.
+
+- [ ] Évaluer si on bascule sur **Auth Email Hooks** (Supabase feature) pour
+      router via Resend → cohérence visuelle avec les transactional mails.
+- [ ] Si oui : créer une EF `send-auth-email` + config Auth Hook via dashboard
+      (jamais via `supabase config push` — cf. memory `feedback_no_config_push`).
+- [ ] Décision à prendre post-release : confort visuel vs risque de régression
+      sur un flow critique (reset mot de passe).
+
+### 17. Detection login suspect (`connexion-suspecte`)
+
+- [ ] Feature non implémentée. Template Resend existe côté dashboard mais
+      aucun backend ne détecte les logins inhabituels (IP inconnue, device
+      nouveau, pays différent).
+- [ ] Conception : trigger `auth.login` → table `login_events` avec IP+UA+country.
+      Heuristique : signaler si country ≠ dernier login réussi (fenêtre 30j).
+- [ ] **Post-v1** — pas dans la roadmap actuelle.
+
+### 18. Reschedule booking — feature backend manquante
+
+- [ ] Template Resend `rendez-vous-reprogramm` publié mais **aucune EF**
+      `reschedule-booking` n'existe, aucun champ DB pour proposer un nouveau
+      créneau sans annuler-re-créer.
+- [ ] Décision prise : **ne pas câbler l'email** tant que la feature backend
+      n'existe pas (décision 4.6).
+- [ ] Quand le backend sera ajouté (post-v1 ?) : mettre à jour
+      `resend_template_aliases.ts` en ajoutant `booking_rescheduled` dans
+      `EmailEventKey` et `RESEND_TEMPLATES`, retirer de `KNOWN_UNWIRED_ALIASES`.
+
+### 19. Rappel Stripe Connect incomplet (`rappel-stripe-connect`)
+
+- [ ] Cron journalier : pour chaque Pro avec `stripe_onboarded = false` depuis
+      > 48h, envoyer le template `rappel-stripe-connect` (pas encore dans
+      `RESEND_TEMPLATES` — à ajouter si on câble).
+- [ ] **Post-Commit 4** — priorité basse, mais améliore le conversion funnel
+      Pro → compte activé → paiements acceptés.
+- [ ] Nouvelle EF `pro-stripe-connect-reminder` + entrée crontab Supabase.
+
+### 20. Catering / devis — vérifier si feature existe
+
+- [ ] 4 templates Resend publiés : `soumission-reue`, `soumission-accepte-pro`,
+      `soumission-refuse-pro`, `soumission-expire`.
+- [ ] **Action** : vérifier en DB s'il existe une table `quotes` /
+      `catering_requests` / similaire. Grep repo pour usages du mot
+      « soumission » / « devis » / « quote ».
+- [ ] Si la feature existe mais n'est pas wired email → Commit 5 ou +.
+- [ ] Si la feature n'existe pas → les templates Resend peuvent rester en
+      draft en attendant.
+
+### 21. Fusion `schedule-reminders` vs `send-reminders` — risque prod
+
+Deux crons écrivent sur les **mêmes flags DB** (`reminder_j1_sent`,
+`reminder_h2_sent`/`_h1_sent`, `reminder_m30_sent`) sans coordination :
+
+- `schedule-reminders/index.ts` : email J-1 + push J-1/H-2 client+pro.
+- `send-reminders/index.ts` : push only 24h/2h/30min via insert `notifications`.
+
+Race potentielle : les deux tournent au même moment, flip le flag, envoient
+en double ou ratent un envoi si la course est perdue.
+
+- [ ] **Hors périmètre migration email**, mais à flagger comme risque.
+- [ ] Option A : fusionner dans `schedule-reminders` uniquement, retirer
+      `send-reminders` (ses inserts de notifications peuvent migrer).
+- [ ] Option B : garder les deux mais ajouter un verrou `pg_advisory_xact_lock`
+      sur `hashtext(booking_id::text)` avant de flip le flag.
+- [ ] Décider avant Commit 3 (le renommage H-2 → H-1 va toucher les deux).
+
+### 22. Cohérence `account_deactivated` avec `delete_account_rpc`
+
+- [ ] Template `compte-dsactiv` (id `0ee5e562…`) wire en Commit 4.
+- [ ] Déclenchement : **avant** l'appel Flutter à `delete_account_rpc` — sinon
+      la row `users` est purgée et on perd l'email destinataire.
+- [ ] Option implémentation : EF `request-account-deletion` qui envoie l'email
+      puis appelle le RPC. Éviter de séquencer côté client (fragile).
