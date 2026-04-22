@@ -42,12 +42,11 @@ class ConversationsNotifier extends Notifier<ConversationsState> {
   void _listenRealtime() {
     _rtSub = ref.read(realtimeManagerProvider).conversationStream.listen((event) {
       if (event is ConversationUpdated || event is InboxMessageReceived) {
-        // Refetch to get updated last_message + correct ordering
+        // Refetch to get the authoritative unread_count_{client,pro}
+        // from the conversations row + updated last_message / ordering.
+        // The derived `unreadMessageCountProvider` recomputes automatically
+        // from this state — no manual increment/decrement needed.
         _load();
-        // Bump unread badge
-        if (event is InboxMessageReceived) {
-          ref.read(unreadMessageCountProvider.notifier).increment();
-        }
       }
     });
   }
@@ -105,9 +104,23 @@ class ChatNotifier extends Notifier<ChatState> {
   String? _conversationId;
 
   @override
-  ChatState build() => const ChatState();
+  ChatState build() {
+    // Riverpod Notifier n'appelle jamais une méthode `dispose()` nommée —
+    // seul `ref.onDispose(...)` est invoqué. Sans ce hook, les channels
+    // Supabase (`messages:<id>`, `typing:<id>`) et le Timer restaient
+    // ouverts à chaque fermeture du chat → fuite cumulative (plusieurs
+    // WebSocket channels + callbacks encore routés vers un Notifier mort).
+    ref.onDispose(_teardownSubscriptions);
+    return const ChatState();
+  }
 
   Future<void> loadMessages(String conversationId) async {
+    // Si l'utilisateur rouvre le même chat (ou un autre dans la même session
+    // du Notifier), on retombe dans `loadMessages` → sans teardown préalable,
+    // `_subscribeRealtime` crée un SECOND channel sans unsubscribe du premier
+    // → doublons d'`onInsert` + fuite. On nettoie systématiquement.
+    _teardownSubscriptions();
+
     _conversationId = conversationId;
     state = state.copyWith(isLoading: true);
 
@@ -127,7 +140,13 @@ class ChatNotifier extends Notifier<ChatState> {
       onInsert: (msg) {
         if (!state.messages.any((m) => m.id == msg.id)) {
           state = state.copyWith(messages: [msg, ...state.messages]);
-          repo.markRead(conversationId);
+          // Si le message vient de l'autre participant, on marque
+          // immédiatement comme lu (on est sur la vue du chat, donc vu).
+          // Cela reset le compteur serveur → la liste conversations et le
+          // badge total recomputent via realtime `ConversationUpdated`.
+          if (msg.senderId != repo.currentUserId) {
+            repo.markRead(conversationId);
+          }
         }
       },
     );
@@ -176,10 +195,13 @@ class ChatNotifier extends Notifier<ChatState> {
     ref.read(chatRepositoryProvider).sendTypingIndicator(_conversationId!);
   }
 
-  void dispose() {
+  void _teardownSubscriptions() {
     _messagesChannel?.unsubscribe();
     _typingChannel?.unsubscribe();
     _typingTimer?.cancel();
+    _messagesChannel = null;
+    _typingChannel = null;
+    _typingTimer = null;
   }
 }
 
@@ -189,31 +211,16 @@ final chatProvider = NotifierProvider<ChatNotifier, ChatState>(
 );
 
 // ─── Unread message count ──────────────────────────────────
-
-class UnreadMessageCountNotifier extends Notifier<int> {
-  @override
-  int build() {
-    _load();
-    return 0;
-  }
-
-  Future<void> _load() async {
-    final repo = ref.read(chatRepositoryProvider);
-    final convs = await repo.getConversations();
-    // Count conversations with unread messages
-    state = convs.where((c) => c.unreadCount > 0).length;
-  }
-
-  void increment() => state = state + 1;
-
-  void decrement() {
-    if (state > 0) state = state - 1;
-  }
-
-  void reset() => state = 0;
-}
-
-final unreadMessageCountProvider =
-    NotifierProvider<UnreadMessageCountNotifier, int>(
-  UnreadMessageCountNotifier.new,
-);
+//
+// Dérivé de `conversationsProvider` — une conversation compte dans le badge
+// si `unreadCount > 0`. On évite ainsi toute divergence increment/decrement
+// manuels (ancienne implémentation dérivait après chaque InboxMessageReceived
+// mais ne décrémentait jamais sur markRead → badge qui gonflait à l'infini).
+// La source de vérité est le serveur (`conversations.unread_count_{client,pro}`
+// mis à jour par le trigger côté DB et remis à 0 par `mark_messages_read`).
+// Chaque ConversationUpdated realtime fait recharger conversationsProvider,
+// donc ce Provider recalcule automatiquement.
+final unreadMessageCountProvider = Provider<int>((ref) {
+  final state = ref.watch(conversationsProvider);
+  return state.conversations.where((c) => c.unreadCount > 0).length;
+});

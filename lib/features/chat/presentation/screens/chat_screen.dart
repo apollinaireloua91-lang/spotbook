@@ -93,7 +93,10 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     _msgCtrl.dispose();
     _scrollCtrl.dispose();
     _inputFocus.dispose();
-    ref.read(chatProvider.notifier).dispose();
+    // Plus de call manuel `chatProvider.notifier.dispose()` : le Notifier
+    // est auto-dispose, et son `ref.onDispose(_teardownSubscriptions)`
+    // (déclaré dans build()) se déclenche seul quand le dernier watcher
+    // s'en va. Appeler dispose() ici ferait double teardown.
     super.dispose();
   }
 
