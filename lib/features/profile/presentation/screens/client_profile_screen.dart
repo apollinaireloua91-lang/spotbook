@@ -18,12 +18,22 @@ import '../widgets/settings_list.dart';
 
 // ─── Providers ──────────────────────────────────────────────────────────────
 
+/// Garde-fou : sur iPhone physique avec réseau saturé ou Supabase lent,
+/// certains fetchs restent pending indéfiniment → spinner infini sur le
+/// Profil (observé en prod sur iPhone papi). Un TimeoutException propre
+/// fait tomber l'UI en _ErrorState avec bouton Réessayer, ce qui est
+/// infiniment mieux qu'un loading silencieux.
+const _profileLoadTimeout = Duration(seconds: 15);
+
 class ClientProfileNotifier extends AsyncNotifier<ClientProfile?> {
   @override
   Future<ClientProfile?> build() async {
     final uid = ref.read(profileRepositoryProvider).currentUserId;
     if (uid == null) return null;
-    return ref.read(profileRepositoryProvider).getClientProfile(uid);
+    return ref
+        .read(profileRepositoryProvider)
+        .getClientProfile(uid)
+        .timeout(_profileLoadTimeout);
   }
 }
 
@@ -41,7 +51,7 @@ final clientStatsProvider =
     repo.countFollowing(),
     repo.countClientTickets(),
     repo.countReviewsLeftByClient(),
-  ]);
+  ]).timeout(_profileLoadTimeout);
   return {
     'rdv': results[0],
     'following': results[1],
@@ -54,7 +64,7 @@ final clientStatsProvider =
 final clientFavProsProvider =
     FutureProvider.autoDispose<List<ClientFavoriteProItem>>((ref) async {
   final repo = ref.read(profileRepositoryProvider);
-  final data = await repo.getClientFavoritePros();
+  final data = await repo.getClientFavoritePros().timeout(_profileLoadTimeout);
   return data.map((e) => ClientFavoriteProItem.fromJson(e)).toList();
 });
 
@@ -62,7 +72,7 @@ final clientFavProsProvider =
 final clientHistoryProvider =
     FutureProvider.autoDispose<List<Map<String, dynamic>>>((ref) async {
   final repo = ref.read(profileRepositoryProvider);
-  return repo.getRecentClientHistory();
+  return repo.getRecentClientHistory().timeout(_profileLoadTimeout);
 });
 
 // ─── Screen ─────────────────────────────────────────────────────────────────
