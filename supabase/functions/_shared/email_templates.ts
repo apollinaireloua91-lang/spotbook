@@ -136,6 +136,7 @@ export interface BookingConfirmedData {
   deposit?: number;
   remaining?: number;
   bookingId: string;
+  qrCodeUrl?: string;
 }
 
 export function bookingConfirmed(d: BookingConfirmedData): EmailResult {
@@ -155,11 +156,28 @@ export function bookingConfirmed(d: BookingConfirmedData): EmailResult {
     paymentRows += infoRow("Restant &agrave; payer", fmtMoney(d.remaining));
   }
 
+  let qrBlock = "";
+  if (d.qrCodeUrl) {
+    qrBlock = `<table role="presentation" cellpadding="0" cellspacing="0" style="margin:24px auto;">
+  <tr>
+    <td align="center" style="background-color:#FFFFFF;border-radius:12px;padding:16px;">
+      <img src="${d.qrCodeUrl}" width="180" height="180" alt="QR Code rendez-vous" style="display:block;border:0;" />
+    </td>
+  </tr>
+  <tr>
+    <td align="center" style="padding-top:12px;">
+      <p style="margin:0;font-size:12px;color:#9090AA;line-height:18px;">Pr&eacute;sentez ce QR code le jour de votre rendez-vous.</p>
+    </td>
+  </tr>
+</table>`;
+  }
+
   const content = [
     heading("R&eacute;servation confirm&eacute;e &#x2713;"),
     para(`Bonjour ${d.clientName},`),
     para("Votre r&eacute;servation est confirm&eacute;e ! Voici les d&eacute;tails :"),
     infoCard(rows),
+    qrBlock,
     divider(),
     `<p style="margin:0 0 4px;font-size:13px;font-weight:600;color:#FFFFFF;">R&eacute;capitulatif du paiement</p>`,
     infoCard(paymentRows),
@@ -481,7 +499,18 @@ export function posReceipt(d: PosReceiptData): EmailResult {
 
 // ── Dispatcher ───────────────────────────────────────────────────────
 
+// Les clés suivantes sont à la fois :
+//   (a) les anciens noms historiques (`payment_receipt`, `booking_reminder`)
+//       encore référencés par d'anciens call sites pas migrés et par les
+//       tests manuels ;
+//   (b) les nouveaux `EmailEventKey` introduits dans
+//       `resend_template_aliases.ts` (décisions 4.1 / 4.2 / 4.3 — split
+//       receipt par mode, split cancellation vs refund, rename J-1).
+// Tous pointent vers les MÊMES builders HTML existants : le split métier
+// se fait côté Resend (templates différents) tandis que le fallback HTML
+// reste générique. Pas de nouvelle template HTML à écrire pour Commit 2.
 const builders: Record<string, (data: Record<string, unknown>) => EmailResult> = {
+  // Historiques
   booking_confirmed: (d) => bookingConfirmed(d as unknown as BookingConfirmedData),
   booking_cancelled: (d) => bookingCancelled(d as unknown as BookingCancelledData),
   payment_receipt: (d) => paymentReceipt(d as unknown as PaymentReceiptData),
@@ -490,6 +519,11 @@ const builders: Record<string, (data: Record<string, unknown>) => EmailResult> =
   welcome: (d) => welcome(d as unknown as WelcomeData),
   review_request: (d) => reviewRequest(d as unknown as ReviewRequestData),
   pos_receipt: (d) => posReceipt(d as unknown as PosReceiptData),
+  // Aliases — nouveaux EmailEventKey → builders existants (fallback HTML).
+  payment_receipt_full: (d) => paymentReceipt(d as unknown as PaymentReceiptData),
+  payment_receipt_deposit: (d) => paymentReceipt(d as unknown as PaymentReceiptData),
+  refund_completed: (d) => bookingCancelled(d as unknown as BookingCancelledData),
+  booking_reminder_j1: (d) => bookingReminder(d as unknown as BookingReminderData),
 };
 
 export function buildEmail(

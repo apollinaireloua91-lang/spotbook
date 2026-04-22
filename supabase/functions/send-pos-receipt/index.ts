@@ -31,9 +31,7 @@ import {
   sanitizeText,
   securityHeadersFor,
 } from "../_shared/security.ts";
-import { buildEmail } from "../_shared/email_templates.ts";
-
-const FROM = "Spotbook <noreply@getspotbook.app>";
+import { sendResendEmail } from "../_shared/send_resend_email.ts";
 
 function frenchDate(iso: string): string {
   // "20 avril 2026, 15 h 42" style, explicit French formatting.
@@ -180,60 +178,52 @@ serve(async (req) => {
       return jsonResponse({ error: "invalid_email" }, 400, undefined, req);
     }
 
-    const resendKey = Deno.env.get("RESEND_API_KEY");
-    if (!resendKey) {
-      console.error("RESEND_API_KEY not configured");
-      return jsonResponse(
-        { error: "email_service_unavailable" },
-        503,
-        undefined,
-        req,
-      );
-    }
-
-    const { subject, html } = buildEmail("pos_receipt", {
-      proName: sanitizeText(proName),
-      date: frenchDate(tx.created_at as string),
-      subtotalCents: tx.amount_subtotal_cents as number,
-      tipCents: tx.tip_cents as number,
-      tpsCents: tx.tps_cents as number,
-      tvqCents: tx.tvq_cents as number,
-      totalCents: tx.amount_total_cents as number,
-      cardBrand: (tx.payment_method_brand as string | null) ?? undefined,
-      cardLast4: (tx.payment_method_last4 as string | null) ?? undefined,
-      taxNumberTps:
-        (proProfile?.tax_number_tps as string | null) ?? undefined,
-      taxNumberTvq:
-        (proProfile?.tax_number_tvq as string | null) ?? undefined,
-      transactionId: tx.id as string,
-    });
-
-    const resendRes = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${resendKey}`,
-        "Content-Type": "application/json",
+    // Route via `sendResendEmail` pour uniformiser avec les autres EFs.
+    // `pos_receipt` est intentionnellement absent de `RESEND_TEMPLATES`
+    // (décision 4.4 — trop de variables dynamiques : subtotal/tip/TPS/TVQ/last4).
+    // Le wrapper détecte l'absence d'alias et tombe direct sur `buildEmail`
+    // pour générer le HTML local, puis POST à Resend avec subject/html.
+    const result = await sendResendEmail({
+      event: "pos_receipt",
+      to: targetEmail,
+      variables: {
+        proName: sanitizeText(proName),
+        date: frenchDate(tx.created_at as string),
+        subtotalCents: tx.amount_subtotal_cents as number,
+        tipCents: tx.tip_cents as number,
+        tpsCents: tx.tps_cents as number,
+        tvqCents: tx.tvq_cents as number,
+        totalCents: tx.amount_total_cents as number,
+        cardBrand: (tx.payment_method_brand as string | null) ?? undefined,
+        cardLast4: (tx.payment_method_last4 as string | null) ?? undefined,
+        taxNumberTps:
+          (proProfile?.tax_number_tps as string | null) ?? undefined,
+        taxNumberTvq:
+          (proProfile?.tax_number_tvq as string | null) ?? undefined,
+        transactionId: tx.id as string,
       },
-      body: JSON.stringify({
-        from: FROM,
-        to: [targetEmail],
-        subject,
-        html,
-      }),
     });
 
-    if (!resendRes.ok) {
-      const errBody = await resendRes.text();
-      console.error("Resend API error:", resendRes.status, errBody);
+    if (!result.ok) {
+      // Préserve la sémantique pré-migration : 503 si la clé Resend est
+      // absente (ops issue), 502 pour les autres échecs (Resend down, HTML
+      // rejected). Le flag `receipt_sent` reste false → l'utilisateur peut
+      // retenter depuis l'UI sans créer un doublon côté DB.
+      if (result.error === "api_key_missing") {
+        return jsonResponse(
+          { error: "email_service_unavailable" },
+          503,
+          undefined,
+          req,
+        );
+      }
       return jsonResponse(
-        { error: "email_send_failed", detail: resendRes.status },
+        { error: "email_send_failed", detail: result.error ?? "unknown" },
         502,
         undefined,
         req,
       );
     }
-
-    const resendData = await resendRes.json();
 
     const { error: updateErr } = await supabase
       .from("pos_transactions")
@@ -261,7 +251,7 @@ serve(async (req) => {
       {
         success: true,
         email_sent: true,
-        email_id: resendData.id,
+        email_id: result.emailId,
         sms_sent: false,
       },
       200,

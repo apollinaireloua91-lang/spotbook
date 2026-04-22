@@ -7,29 +7,7 @@ import {
   securityHeadersFor,
   sanitizeText,
 } from "../_shared/security.ts";
-
-/** Fire-and-forget email via send-email Edge Function. */
-async function sendEmail(
-  type: string,
-  to: string,
-  data: Record<string, unknown>,
-) {
-  try {
-    await fetch(
-      `${Deno.env.get("SUPABASE_URL")}/functions/v1/send-email`,
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ type, to, data }),
-      },
-    );
-  } catch (e) {
-    console.error("sendEmail failed:", type, e);
-  }
-}
+import { sendResendEmail } from "../_shared/send_resend_email.ts";
 
 /**
  * update-booking-status — Server-side booking state machine.
@@ -48,6 +26,33 @@ const VALID_TRANSITIONS: Record<string, Record<string, string>> = {
   // mark_remaining_paid is valid only on completed bookings
   completed: { mark_remaining_paid: "completed" },
 };
+
+// ── Type de résultat pour le select avec FK embeds ─────────────────────────
+// Cast explicite : Supabase SDK ne résout pas les FK embeds typés (bug connu
+// v2.x) — sans ce cast, tous les champs reviennent comme `GenericStringError`
+// et cascade dans l'ensemble du handler.
+interface BookingRow {
+  id: string;
+  status: string;
+  client_id: string;
+  pro_id: string;
+  service_id: string | null;
+  time_slot_id: string | null;
+  deposit_amount: number | null;
+  booking_code: string;
+  payment_mode: "full" | "deposit" | null;
+  remaining_amount: number | null;
+  remaining_payment_status: string | null;
+  stripe_payment_intent_id: string | null;
+  transfer_id: string | null;
+  services: { name: string | null } | null;
+  time_slots: { date: string | null; start_time: string | null } | null;
+  users: {
+    email: string | null;
+    raw_user_meta_data?: Record<string, unknown> | null;
+  } | null;
+  profiles_pro: { business_name: string | null } | null;
+}
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -104,7 +109,7 @@ serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
     );
 
-    const { data: booking, error: bErr } = await supabase
+    const { data: bookingRaw, error: bErr } = await supabase
       .from("bookings")
       .select(
         "id, status, client_id, pro_id, service_id, time_slot_id, deposit_amount, booking_code, " +
@@ -116,6 +121,10 @@ serve(async (req) => {
       )
       .eq("id", bookingId)
       .single();
+
+    // Cast explicite : Supabase SDK ne résout pas les FK embeds typés (bug
+    // connu v2.x).
+    const booking = bookingRaw as unknown as BookingRow | null;
 
     if (bErr || !booking) {
       return jsonResponse(
@@ -264,45 +273,62 @@ serve(async (req) => {
     });
 
     // ─── Email to client ─────────────────────────────────────────
-    const clientUser = booking.users as Record<string, unknown> | null;
-    const clientEmail = clientUser?.email as string | undefined;
-    const service = booking.services as Record<string, unknown> | null;
-    const slot = booking.time_slots as Record<string, unknown> | null;
-    const proProfile = booking.profiles_pro as Record<string, unknown> | null;
+    const clientEmail = booking.users?.email ?? undefined;
+    const service = booking.services;
+    const slot = booking.time_slots;
+    const proProfile = booking.profiles_pro;
 
     if (clientEmail) {
       if (newStatus === "confirmed") {
-        await sendEmail("booking_confirmed", clientEmail, {
-          clientName: clientUser?.raw_user_meta_data
-            ? (clientUser.raw_user_meta_data as Record<string, unknown>)?.full_name ?? ""
-            : "",
-          serviceName: service?.name ?? "Service",
-          providerName: proProfile?.business_name ?? "",
-          date: slot?.date ?? "",
-          time: slot?.start_time ?? "",
-          address: "",
-          amountPaid: booking.deposit_amount
-            ? Math.round(Number(booking.deposit_amount) * 100)
-            : 0,
-          bookingId: bookingId,
+        // NB : dédup `booking_confirmed` webhook vs update-booking-status est
+        // volontairement laissé DUPLICATE en Commit 2 — scission en
+        // `booking_accepted_by_pro` prévue pour Commit 3 (cf. audit §3.1).
+        const meta = booking.users?.raw_user_meta_data ?? null;
+        const clientName =
+          (meta && typeof meta === "object"
+            ? (meta as Record<string, unknown>).full_name
+            : "") ?? "";
+        await sendResendEmail({
+          event: "booking_confirmed",
+          to: clientEmail,
+          variables: {
+            clientName,
+            serviceName: service?.name ?? "Service",
+            providerName: proProfile?.business_name ?? "",
+            date: slot?.date ?? "",
+            time: slot?.start_time ?? "",
+            address: "",
+            amountPaid: booking.deposit_amount
+              ? Math.round(Number(booking.deposit_amount) * 100)
+              : 0,
+            bookingId: bookingId,
+          },
         });
       } else if (newStatus === "rejected") {
-        await sendEmail("booking_cancelled", clientEmail, {
-          clientName: "",
-          serviceName: service?.name ?? "Service",
-          providerName: proProfile?.business_name ?? "",
-          date: slot?.date ?? "",
-          refundAmount: booking.deposit_amount
-            ? Math.round(Number(booking.deposit_amount) * 100)
-            : undefined,
-          bookingId: bookingId,
+        await sendResendEmail({
+          event: "booking_cancelled",
+          to: clientEmail,
+          variables: {
+            clientName: "",
+            serviceName: service?.name ?? "Service",
+            providerName: proProfile?.business_name ?? "",
+            date: slot?.date ?? "",
+            refundAmount: booking.deposit_amount
+              ? Math.round(Number(booking.deposit_amount) * 100)
+              : undefined,
+            bookingId: bookingId,
+          },
         });
       } else if (newStatus === "completed") {
-        await sendEmail("review_request", clientEmail, {
-          clientName: "",
-          providerName: proProfile?.business_name ?? "votre prestataire",
-          serviceName: service?.name ?? "votre prestation",
-          bookingId: bookingId,
+        await sendResendEmail({
+          event: "review_request",
+          to: clientEmail,
+          variables: {
+            clientName: "",
+            providerName: proProfile?.business_name ?? "votre prestataire",
+            serviceName: service?.name ?? "votre prestation",
+            bookingId: bookingId,
+          },
         });
       }
     }

@@ -5,6 +5,27 @@ import {
   jsonResponse,
   securityHeadersFor,
 } from "../_shared/security.ts";
+import { sendResendEmail } from "../_shared/send_resend_email.ts";
+
+// ── Types de résultats pour les selects avec FK embeds ─────────────────────
+// Cast explicite : Supabase SDK ne résout pas les FK embeds typés (bug connu
+// v2.x) — sans ce cast, tous les champs reviennent comme `GenericStringError`
+// et cascade dans tout le fichier. On préserve donc la shape réelle ici.
+interface ReminderBookingJ1 {
+  id: string;
+  client_id: string;
+  time_slots: { pro_id: string; date: string; start_time: string } | null;
+  services: { name: string | null } | null;
+  profiles_pro: { business_name: string | null } | null;
+  users: { email: string | null } | null;
+}
+
+interface ReminderBookingH2 {
+  id: string;
+  client_id: string;
+  time_slots: { pro_id: string; date: string; start_time: string } | null;
+  services: { name: string | null } | null;
+}
 
 async function sendPush(
   supabaseUrl: string,
@@ -25,28 +46,6 @@ async function sendPush(
     },
     body: JSON.stringify(payload),
   });
-}
-
-/** Fire-and-forget email via send-email Edge Function. Never throws. */
-async function sendEmail(
-  supabaseUrl: string,
-  serviceKey: string,
-  type: string,
-  userId: string,
-  data: Record<string, unknown>,
-) {
-  try {
-    await fetch(`${supabaseUrl}/functions/v1/send-email`, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${serviceKey}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ type, userId, data }),
-    });
-  } catch (e) {
-    console.error("sendEmail non-blocking error:", e);
-  }
 }
 
 serve(async (req) => {
@@ -76,55 +75,66 @@ serve(async (req) => {
     tomorrow.setDate(tomorrow.getDate() + 1);
     const tomorrowStr = tomorrow.toISOString().split("T")[0];
 
-    const { data: tomorrowBookings } = await supabase
+    const { data: tomorrowBookingsRaw } = await supabase
       .from("bookings")
       .select(
         "id, client_id, time_slots(pro_id, date, start_time), services(name), " +
-        "profiles_pro!bookings_pro_id_fkey(business_name)"
+        "profiles_pro!bookings_pro_id_fkey(business_name), " +
+        // Ajout : l'email est nécessaire pour l'appel `sendResendEmail`
+        // (l'ancien `send-email` EF résolvait userId → email en interne).
+        "users!bookings_client_id_fkey(email)"
       )
       .eq("status", "confirmed")
       .is("reminder_j1_sent", null);
 
+    // Cast explicite : Supabase SDK ne résout pas les FK embeds typés (bug
+    // connu v2.x) — le résultat arrive comme `GenericStringError[]`.
+    const tomorrowBookings =
+      (tomorrowBookingsRaw as unknown as ReminderBookingJ1[] | null) ?? [];
+
     // Filter to tomorrow's date on joined time_slots
-    const j1Bookings = (tomorrowBookings ?? []).filter(
-      (b: Record<string, unknown>) => {
-        const slot = b.time_slots as Record<string, unknown> | null;
-        return slot && (slot.date as string) === tomorrowStr;
-      }
+    const j1Bookings = tomorrowBookings.filter(
+      (b) => b.time_slots?.date === tomorrowStr
     );
 
     for (const booking of j1Bookings) {
-      const slot = booking.time_slots as Record<string, unknown>;
-      const service = booking.services as Record<string, unknown> | null;
-      const serviceName = (service?.name as string) ?? "votre rendez-vous";
+      const slot = booking.time_slots;
+      if (!slot) continue;
+      const serviceName = booking.services?.name ?? "votre rendez-vous";
 
       // Push to client
       await sendPush(supabaseUrl, serviceKey, {
-        userId: booking.client_id as string,
+        userId: booking.client_id,
         title: "Rappel — Demain",
         body: `Votre rendez-vous « ${serviceName} » est demain à ${slot.start_time}`,
         type: "booking_reminder",
-        data: { bookingId: booking.id as string },
+        data: { bookingId: booking.id },
       });
 
       // Push to pro
       await sendPush(supabaseUrl, serviceKey, {
-        userId: slot.pro_id as string,
+        userId: slot.pro_id,
         title: "Rappel — Client demain",
         body: `Rendez-vous « ${serviceName} » demain à ${slot.start_time}`,
         type: "booking_reminder",
-        data: { bookingId: booking.id as string },
+        data: { bookingId: booking.id },
       });
 
       // Email — J-1 reminder to client only (avoid inbox flood for H-2)
-      const proProfile = booking.profiles_pro as Record<string, unknown> | null;
-      const proName = (proProfile?.business_name as string) ?? "";
-      await sendEmail(supabaseUrl, serviceKey, "booking_reminder", booking.client_id as string, {
-        serviceName,
-        proName,
-        date: slot.date as string,
-        time: slot.start_time as string,
-      });
+      const proName = booking.profiles_pro?.business_name ?? "";
+      const clientEmail = booking.users?.email ?? undefined;
+      if (clientEmail) {
+        await sendResendEmail({
+          event: "booking_reminder_j1",
+          to: clientEmail,
+          variables: {
+            serviceName,
+            proName,
+            date: slot.date,
+            time: slot.start_time,
+          },
+        });
+      }
 
       await supabase
         .from("bookings")
@@ -140,7 +150,7 @@ serve(async (req) => {
     const h2Time = twoHoursLater.toTimeString().slice(0, 5);
     const todayStr = now.toISOString().split("T")[0];
 
-    const { data: h2Bookings } = await supabase
+    const { data: h2BookingsRaw } = await supabase
       .from("bookings")
       .select(
         "id, client_id, time_slots!inner(pro_id, date, start_time), services(name)"
@@ -151,25 +161,30 @@ serve(async (req) => {
       .lte("time_slots.start_time", h2Time)
       .is("reminder_h2_sent", null);
 
-    for (const booking of h2Bookings ?? []) {
-      const slot = booking.time_slots as Record<string, unknown>;
-      const service = booking.services as Record<string, unknown> | null;
-      const serviceName = (service?.name as string) ?? "votre rendez-vous";
+    // Cast explicite : Supabase SDK ne résout pas les FK embeds typés (bug
+    // connu v2.x) — le résultat arrive comme `GenericStringError[]`.
+    const h2Bookings =
+      (h2BookingsRaw as unknown as ReminderBookingH2[] | null) ?? [];
+
+    for (const booking of h2Bookings) {
+      const slot = booking.time_slots;
+      if (!slot) continue;
+      const serviceName = booking.services?.name ?? "votre rendez-vous";
 
       await sendPush(supabaseUrl, serviceKey, {
-        userId: booking.client_id as string,
+        userId: booking.client_id,
         title: "Rappel — Dans 2h",
         body: `Votre rendez-vous « ${serviceName} » commence à ${slot.start_time}`,
         type: "booking_reminder",
-        data: { bookingId: booking.id as string },
+        data: { bookingId: booking.id },
       });
 
       await sendPush(supabaseUrl, serviceKey, {
-        userId: slot.pro_id as string,
+        userId: slot.pro_id,
         title: "Rappel — Client dans 2h",
         body: `Rendez-vous « ${serviceName} » à ${slot.start_time}`,
         type: "booking_reminder",
-        data: { bookingId: booking.id as string },
+        data: { bookingId: booking.id },
       });
 
       await supabase

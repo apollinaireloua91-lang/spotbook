@@ -6,28 +6,32 @@ import {
   securityHeaders,
   isValidUuid,
 } from "../_shared/security.ts";
+import { sendResendEmail } from "../_shared/send_resend_email.ts";
 
-/** Fire-and-forget email via send-email Edge Function. */
-async function sendEmail(
-  type: string,
-  to: string,
-  data: Record<string, unknown>,
-) {
-  try {
-    await fetch(
-      `${Deno.env.get("SUPABASE_URL")}/functions/v1/send-email`,
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ type, to, data }),
-      },
-    );
-  } catch (e) {
-    console.error("sendEmail failed:", type, e);
-  }
+// ── Types de résultats pour les selects avec FK embeds ─────────────────────
+// Cast explicite : Supabase SDK ne résout pas les FK embeds typés (bug connu
+// v2.x) — sans ce cast, tous les champs reviennent comme `GenericStringError`
+// et cascade dans tout le switch. On préserve la shape réelle de chaque query.
+interface BookingConfirmedRow {
+  client_id: string;
+  pro_id: string;
+  booking_code: string;
+  deposit_amount: number | null;
+  payment_mode: "full" | "deposit" | null;
+  remaining_amount: number | null;
+  services: { name: string | null } | null;
+  time_slots: { date: string | null; start_time: string | null } | null;
+  users: { email: string | null; full_name: string | null } | null;
+  profiles_pro: { business_name: string | null; address: string | null } | null;
+}
+
+interface RefundBookingRow {
+  id: string;
+  client_id: string;
+  booking_code: string;
+  deposit_amount: number | null;
+  services: { name: string | null } | null;
+  users: { email: string | null } | null;
 }
 
 serve(async (req) => {
@@ -269,13 +273,17 @@ serve(async (req) => {
             .single();
 
           if (buyerUser?.email) {
-            await sendEmail("ticket_purchased", buyerUser.email, {
-              clientName: buyerUser.full_name ?? "Client",
-              eventName: eventTitle,
-              eventDate: eventData?.event_date ?? "",
-              venue: eventData?.location ?? "",
-              ticketId: firstTicketId ?? "",
-              qrCodeUrl: firstQrCodeUrl ?? undefined,
+            await sendResendEmail({
+              event: "ticket_purchased",
+              to: buyerUser.email,
+              variables: {
+                clientName: buyerUser.full_name ?? "Client",
+                eventName: eventTitle,
+                eventDate: eventData?.event_date ?? "",
+                venue: eventData?.location ?? "",
+                ticketId: firstTicketId ?? "",
+                qrCodeUrl: firstQrCodeUrl ?? undefined,
+              },
             });
           }
 
@@ -361,16 +369,21 @@ serve(async (req) => {
         }
 
         // Push notification + email to client
-        const { data: booking } = await supabase
+        const { data: bookingRaw } = await supabase
           .from("bookings")
           .select(
             "client_id, pro_id, booking_code, deposit_amount, " +
+            "payment_mode, remaining_amount, " +
             "services(name), time_slots(date, start_time), " +
             "users!bookings_client_id_fkey(email, full_name), " +
             "profiles_pro!bookings_pro_id_fkey(business_name, address)"
           )
           .eq("id", bookingId)
           .single();
+
+        // Cast explicite : Supabase SDK ne résout pas les FK embeds typés
+        // (bug connu v2.x).
+        const booking = bookingRaw as unknown as BookingConfirmedRow | null;
 
         if (booking) {
           await supabase.from("notifications").insert([
@@ -393,36 +406,52 @@ serve(async (req) => {
           ]);
 
           // Email — booking confirmed (with QR code)
-          const clientUser = booking.users as Record<string, unknown> | null;
-          const clientEmail = clientUser?.email as string | undefined;
-          const clientName = clientUser?.full_name as string | undefined;
-          const service = booking.services as Record<string, unknown> | null;
-          const slot = booking.time_slots as Record<string, unknown> | null;
-          const proProfile = booking.profiles_pro as Record<string, unknown> | null;
+          const clientEmail = booking.users?.email ?? undefined;
+          const clientName = booking.users?.full_name ?? undefined;
+          const service = booking.services;
+          const slot = booking.time_slots;
+          const proProfile = booking.profiles_pro;
 
           if (clientEmail) {
-            await sendEmail("booking_confirmed", clientEmail, {
-              clientName: clientName ?? "Client",
-              serviceName: service?.name ?? "Service",
-              providerName: proProfile?.business_name ?? "",
-              date: slot?.date ?? "",
-              time: slot?.start_time ?? "",
-              address: proProfile?.address ?? "",
-              amountPaid: booking.deposit_amount
-                ? Math.round(Number(booking.deposit_amount) * 100)
-                : 0,
-              bookingId,
-              qrCodeUrl: bookingQrCodeUrl ?? undefined,
+            await sendResendEmail({
+              event: "booking_confirmed",
+              to: clientEmail,
+              variables: {
+                clientName: clientName ?? "Client",
+                serviceName: service?.name ?? "Service",
+                providerName: proProfile?.business_name ?? "",
+                date: slot?.date ?? "",
+                time: slot?.start_time ?? "",
+                address: proProfile?.address ?? "",
+                amountPaid: booking.deposit_amount
+                  ? Math.round(Number(booking.deposit_amount) * 100)
+                  : 0,
+                bookingId,
+                qrCodeUrl: bookingQrCodeUrl ?? undefined,
+              },
             });
 
-            // Payment receipt email
-            await sendEmail("payment_receipt", clientEmail, {
-              amount: booking.deposit_amount
-                ? Number(booking.deposit_amount).toFixed(2)
-                : "0",
-              currency: pi.currency?.toUpperCase() ?? "CAD",
-              description: `Acompte — ${service?.name ?? "Réservation"}`,
-              bookingCode: booking.booking_code,
+            // Payment receipt — scindé par mode (décision 4.2).
+            // full   → `payment_receipt_full`  template `reu-de-paiement`
+            // deposit → `payment_receipt_deposit` template `acompte-reu` (affiche le solde restant)
+            const isDeposit = booking.payment_mode === "deposit";
+            await sendResendEmail({
+              event: isDeposit ? "payment_receipt_deposit" : "payment_receipt_full",
+              to: clientEmail,
+              variables: {
+                amount: booking.deposit_amount
+                  ? Number(booking.deposit_amount).toFixed(2)
+                  : "0",
+                currency: pi.currency?.toUpperCase() ?? "CAD",
+                description: isDeposit
+                  ? `Acompte — ${service?.name ?? "Réservation"}`
+                  : `Paiement — ${service?.name ?? "Réservation"}`,
+                bookingCode: booking.booking_code,
+                // Exposé au template `acompte-reu` pour afficher le solde à payer.
+                remainingAmount: booking.remaining_amount
+                  ? Number(booking.remaining_amount).toFixed(2)
+                  : undefined,
+              },
             });
           }
         }
@@ -486,7 +515,7 @@ serve(async (req) => {
 
         if (!piId) break;
 
-        const { data: booking } = await supabase
+        const { data: refundBookingRaw } = await supabase
           .from("bookings")
           .select(
             "id, client_id, booking_code, deposit_amount, " +
@@ -494,6 +523,10 @@ serve(async (req) => {
           )
           .eq("stripe_payment_intent_id", piId)
           .single();
+
+        // Cast explicite : Supabase SDK ne résout pas les FK embeds typés
+        // (bug connu v2.x).
+        const booking = refundBookingRaw as unknown as RefundBookingRow | null;
 
         if (booking) {
           await supabase
@@ -516,18 +549,23 @@ serve(async (req) => {
             idempotency_key: `${event.id}:refund_completed:${booking.client_id}`,
           });
 
-          // Email — booking cancelled with refund
-          const refundUser = booking.users as Record<string, unknown> | null;
-          const refundEmail = refundUser?.email as string | undefined;
-          const refundService = booking.services as Record<string, unknown> | null;
+          // Email — remboursement confirmé (décision 4.1 Option B).
+          // Event distinct de `booking_cancelled` : l'annulation elle-même est
+          // notifiée au moment de l'action (cancel-booking / rejet pro) ; ce
+          // chemin-ci confirme uniquement que Stripe a traité le refund.
+          const refundEmail = booking.users?.email ?? undefined;
 
           if (refundEmail) {
-            await sendEmail("booking_cancelled", refundEmail, {
-              serviceName: refundService?.name ?? "Service",
-              bookingCode: booking.booking_code,
-              refundAmount: booking.deposit_amount
-                ? Number(booking.deposit_amount).toFixed(2)
-                : undefined,
+            await sendResendEmail({
+              event: "refund_completed",
+              to: refundEmail,
+              variables: {
+                serviceName: booking.services?.name ?? "Service",
+                bookingCode: booking.booking_code,
+                refundAmount: booking.deposit_amount
+                  ? Number(booking.deposit_amount).toFixed(2)
+                  : undefined,
+              },
             });
           }
         }
