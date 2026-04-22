@@ -74,7 +74,7 @@ class AuthRepository {
     }
 
     try {
-      return await _supabase.auth.signUp(
+      final response = await _supabase.auth.signUp(
         email: email,
         password: password,
         data: {
@@ -88,6 +88,25 @@ class AuthRepository {
           if (longitude != null) 'longitude': longitude,
         },
       );
+      // Le trigger DB `handle_new_auth_user` hardcode role='client' (voir
+      // migration 20260413121204). Pour un Pro, il faut donc réconcilier
+      // public.users.role APRÈS le signup. Sans ça :
+      //   - RLS policies basées sur public.users.role refusent les mutations
+      //     Pro (create event, post video, etc.)
+      //   - le router qui lit userMetadata['role'] voit 'pro' mais
+      //     realtime_bootstrap lit public.users.role='client' → channels
+      //     subscribed pour le mauvais rôle.
+      if (role != 'client' && response.user?.id != null) {
+        try {
+          await _supabase
+              .from('users')
+              .update({'role': role}).eq('id', response.user!.id);
+        } catch (_) {
+          // Non-critique — updateUserRole peut être retenté depuis le
+          // RoleSelectionScreen / onboarding si ça rate ici.
+        }
+      }
+      return response;
     } on AuthException catch (e) {
       if (e.message.contains('already registered')) {
         throw AuthException('This email is already registered');
