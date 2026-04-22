@@ -524,6 +524,32 @@ const builders: Record<string, (data: Record<string, unknown>) => EmailResult> =
   payment_receipt_deposit: (d) => paymentReceipt(d as unknown as PaymentReceiptData),
   refund_completed: (d) => bookingCancelled(d as unknown as BookingCancelledData),
   booking_reminder_j1: (d) => bookingReminder(d as unknown as BookingReminderData),
+  // Commit 3 — dédup booking_confirmed (scission par source).
+  // Ces deux alias HTML restent identiques au `bookingConfirmed` d'origine :
+  // le split métier est côté Resend (templates dédiés en dashboard si/quand
+  // Apollinaire les publie — cf. APOLLINAIRE_TODO §22). Tant que les alias
+  // Resend `booking-acceptee-par-pro` / `booking-paid-and-confirmed` n'existent
+  // pas, les deux events tombent sur ce builder HTML générique.
+  booking_accepted_by_pro: (d) =>
+    bookingConfirmed(d as unknown as BookingConfirmedData),
+  booking_paid_and_confirmed: (d) =>
+    bookingConfirmed(d as unknown as BookingConfirmedData),
+  // Commit 3 — Pro-facing events. Fallback vers builders Client existants :
+  // le fond est le même (info RDV + montant), les différences sémantiques
+  // (vocabulaire côté Pro vs Client) vivent dans les templates Resend.
+  pro_new_booking: (d) => bookingConfirmed(d as unknown as BookingConfirmedData),
+  pro_payment_received: (d) =>
+    paymentReceipt(d as unknown as PaymentReceiptData),
+  pro_cancellation_by_client: (d) =>
+    bookingCancelled(d as unknown as BookingCancelledData),
+  pro_payout_sent: (d) => paymentReceipt(d as unknown as PaymentReceiptData),
+  pro_transfer_reversed: (d) =>
+    bookingCancelled(d as unknown as BookingCancelledData),
+  // Commit 3 — Client events nouveaux.
+  payment_failed: (d) =>
+    bookingCancelled(d as unknown as BookingCancelledData),
+  appointment_cancelled_by_pro: (d) =>
+    bookingCancelled(d as unknown as BookingCancelledData),
 };
 
 export function buildEmail(

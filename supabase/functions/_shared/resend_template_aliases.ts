@@ -34,8 +34,10 @@
  * dashboard — one per payment mode.
  */
 export type EmailEventKey =
-  // ─── Client — currently ACTIVE in code (to migrate in Commit 2) ───
-  | "booking_confirmed"
+  // ─── Client — currently ACTIVE in code ───
+  | "booking_confirmed" // legacy — gardé pour compat tests ; remplacé par les 2 keys ci-dessous
+  | "booking_accepted_by_pro" // update-booking-status : Pro accepte, paiement PAS encore capturé
+  | "booking_paid_and_confirmed" // stripe-webhook PI succeeded : paiement capturé + RDV confirmé
   | "booking_cancelled"
   | "refund_completed"
   | "payment_receipt_full"
@@ -44,18 +46,18 @@ export type EmailEventKey =
   | "booking_reminder_j1"
   | "review_request"
   | "pos_receipt" // HTML-only — intentionally absent from RESEND_TEMPLATES
-  // ─── Client — to wire in Commit 3 ───
   | "payment_failed"
   | "appointment_cancelled_by_pro"
   | "remaining_payment_reminder"
   | "event_cancelled"
   | "event_reminder"
   | "reminder_1h_before"
-  // ─── Pro — to wire in Commit 3 ───
+  // ─── Pro ───
   | "pro_new_booking"
   | "pro_payment_received"
   | "pro_cancellation_by_client"
   | "pro_payout_sent"
+  | "pro_transfer_reversed" // refund > 48h : Stripe reverse le transfer déjà envoyé
   | "pro_new_review"
   // ─── Auth / onboarding — to wire in Commit 4 ───
   | "welcome"

@@ -280,16 +280,17 @@ serve(async (req) => {
 
     if (clientEmail) {
       if (newStatus === "confirmed") {
-        // NB : dédup `booking_confirmed` webhook vs update-booking-status est
-        // volontairement laissé DUPLICATE en Commit 2 — scission en
-        // `booking_accepted_by_pro` prévue pour Commit 3 (cf. audit §3.1).
+        // Commit 3 dédup : `booking_accepted_by_pro` signifie que le Pro a
+        // accepté la réservation (état `confirmed`) mais le paiement n'a PAS
+        // encore été capturé — la capture + email `booking_paid_and_confirmed`
+        // arrive plus tard via stripe-webhook payment_intent.succeeded.
         const meta = booking.users?.raw_user_meta_data ?? null;
         const clientName =
           (meta && typeof meta === "object"
             ? (meta as Record<string, unknown>).full_name
             : "") ?? "";
         await sendResendEmail({
-          event: "booking_confirmed",
+          event: "booking_accepted_by_pro",
           to: clientEmail,
           variables: {
             clientName,

@@ -8,6 +8,7 @@ import {
   jsonResponse,
   securityHeaders,
 } from "../_shared/security.ts";
+import { sendResendEmail } from "../_shared/send_resend_email.ts";
 
 const corsHeaders = securityHeaders;
 
@@ -31,6 +32,31 @@ const POLICY = {
     belowRefundFraction: 0.0,
   },
 } as const;
+
+// ── Type du row de query avec FK embeds ───────────────────────────────────
+// Cast explicite : Supabase SDK ne résout pas les FK embeds typés (bug connu
+// v2.x) — sans ce cast, tous les champs reviennent comme `GenericStringError`
+// et cascade dans l'ensemble du handler. Champs listés explicitement (au
+// lieu de `*`) pour documenter ce que le reste du handler consomme.
+interface CancelBookingRow {
+  id: string;
+  client_id: string;
+  pro_id: string;
+  status: string;
+  deposit_amount: number | null;
+  booking_code: string;
+  stripe_payment_intent_id: string | null;
+  transfer_id: string | null;
+  time_slot_id: string | null;
+  time_slots: { date: string | null; start_time: string | null } | null;
+  services: {
+    cancellation_policy: string | null;
+    name: string | null;
+  } | null;
+  client: { email: string | null } | null;
+  pro: { email: string | null } | null;
+  profiles_pro: { business_name: string | null } | null;
+}
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -97,11 +123,24 @@ serve(async (req) => {
     }
 
     // Fetch booking with service cancellation policy
-    const { data: booking, error: bErr } = await supabase
+    const { data: bookingRaw, error: bErr } = await supabase
       .from("bookings")
-      .select("*, time_slots(*), services(cancellation_policy)")
+      .select(
+        "id, client_id, pro_id, status, deposit_amount, booking_code, " +
+        "stripe_payment_intent_id, transfer_id, time_slot_id, " +
+        "time_slots(date, start_time), " +
+        "services(cancellation_policy, name), " +
+        "client:users!bookings_client_id_fkey(email), " +
+        "pro:users!bookings_pro_id_fkey(email), " +
+        "profiles_pro!bookings_pro_id_fkey(business_name)"
+      )
       .eq("id", bookingId)
       .single();
+
+    // Cast explicite : Supabase SDK ne résout pas les FK embeds typés (bug
+    // connu v2.x).
+    const booking = bookingRaw as unknown as CancelBookingRow | null;
+
     if (bErr || !booking) {
       return jsonResponse({ error: "booking_not_found" }, 404);
     }
@@ -122,7 +161,7 @@ serve(async (req) => {
 
     // Calculate hours until appointment
     const slotDate = new Date(
-      `${booking.time_slots.date}T${booking.time_slots.start_time}`
+      `${booking.time_slots?.date ?? ""}T${booking.time_slots?.start_time ?? "00:00:00"}`
     );
     const hoursUntil =
       (slotDate.getTime() - Date.now()) / (1000 * 60 * 60);
@@ -130,7 +169,7 @@ serve(async (req) => {
     // Determine cancellation policy via la table POLICY (haut du fichier).
     // 'flexible' a été retiré en migration 20260420170000 — toute valeur
     // non reconnue tombe sur 'moderate' par défaut.
-    const rawPolicy = (booking.services as Record<string, unknown> | null)?.cancellation_policy as string ?? "moderate";
+    const rawPolicy = booking.services?.cancellation_policy ?? "moderate";
     const policy = (rawPolicy === "strict" ? "strict" : "moderate") as keyof typeof POLICY;
     const params = POLICY[policy];
 
@@ -237,6 +276,53 @@ serve(async (req) => {
       .from("time_slots")
       .update({ is_available: true, locked_by: null })
       .eq("id", booking.time_slot_id);
+
+    // ─── Emails : notifier la contre-partie ──────────────────────────────
+    // Best-effort. Deux branches selon qui a initié l'annulation :
+    //   - user.id === booking.client_id → email au Pro (`pro_cancellation_by_client`)
+    //   - user.id === booking.pro_id    → email au Client (`appointment_cancelled_by_pro`)
+    try {
+      if (user.id === booking.client_id) {
+        const proEmail = booking.pro?.email ?? null;
+        if (proEmail) {
+          await sendResendEmail({
+            event: "pro_cancellation_by_client",
+            to: proEmail,
+            variables: {
+              bookingCode: booking.booking_code ?? "",
+              bookingId,
+              serviceName: booking.services?.name ?? "Service",
+              date: booking.time_slots?.date ?? "",
+              time: booking.time_slots?.start_time ?? "",
+              refundAmount: Math.round(refundAmount * 100),
+              refundFraction: fraction,
+            },
+          });
+        }
+      } else if (user.id === booking.pro_id) {
+        const clientEmail = booking.client?.email ?? null;
+        if (clientEmail) {
+          await sendResendEmail({
+            event: "appointment_cancelled_by_pro",
+            to: clientEmail,
+            variables: {
+              bookingCode: booking.booking_code ?? "",
+              bookingId,
+              serviceName: booking.services?.name ?? "votre prestation",
+              providerName: booking.profiles_pro?.business_name ?? "",
+              date: booking.time_slots?.date ?? "",
+              time: booking.time_slots?.start_time ?? "",
+              refundAmount: Math.round(refundAmount * 100),
+            },
+          });
+        }
+      }
+    } catch (emailErr) {
+      console.warn(
+        "cancel-booking email dispatch failed",
+        (emailErr as Error).message,
+      );
+    }
 
     // Réponse enrichie : UI peut afficher exactement ce qui a été retenu
     // (politique, seuil, fraction, montant). Évite que le client doive

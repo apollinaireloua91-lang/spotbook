@@ -34,6 +34,14 @@ interface RefundBookingRow {
   users: { email: string | null } | null;
 }
 
+interface PaymentFailedBookingRow {
+  time_slot_id: string | null;
+  client_id: string;
+  booking_code: string;
+  users: { email: string | null } | null;
+  services: { name: string | null } | null;
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { status: 200, headers: securityHeaders });
@@ -413,8 +421,14 @@ serve(async (req) => {
           const proProfile = booking.profiles_pro;
 
           if (clientEmail) {
+            // Dédup booking_confirmed (décision Commit 3) : scission explicite
+            // entre « Pro accepte la demande » (update-booking-status) et
+            // « paiement capturé + RDV verrouillé » (ici). Le template Resend
+            // `booking-paid-and-confirmed` n'existe pas encore côté dashboard —
+            // fallback HTML via `bookingConfirmed` en attendant (cf.
+            // APOLLINAIRE_TODO §22).
             await sendResendEmail({
-              event: "booking_confirmed",
+              event: "booking_paid_and_confirmed",
               to: clientEmail,
               variables: {
                 clientName: clientName ?? "Client",
@@ -454,6 +468,37 @@ serve(async (req) => {
               },
             });
           }
+
+          // ─── Email Pro : `pro_new_booking` ─────────────────────
+          // Résolu via query séparée (pro_id → users.email). Éviter le nested
+          // embed dans la query bookings pour ne pas casser l'inferrer de
+          // types (cf. commentaire sur BookingConfirmedRow).
+          const { data: proUser } = await supabase
+            .from("users")
+            .select("email, full_name")
+            .eq("id", booking.pro_id)
+            .maybeSingle();
+          const proEmail =
+            (proUser?.email as string | null | undefined) ?? undefined;
+          if (proEmail) {
+            await sendResendEmail({
+              event: "pro_new_booking",
+              to: proEmail,
+              variables: {
+                clientName: clientName ?? "Client",
+                serviceName: service?.name ?? "Service",
+                providerName: proProfile?.business_name ?? "",
+                date: slot?.date ?? "",
+                time: slot?.start_time ?? "",
+                address: proProfile?.address ?? "",
+                amountPaid: booking.deposit_amount
+                  ? Math.round(Number(booking.deposit_amount) * 100)
+                  : 0,
+                bookingCode: booking.booking_code,
+                bookingId,
+              },
+            });
+          }
         }
         break;
       }
@@ -464,12 +509,20 @@ serve(async (req) => {
         if (!bookingId) break;
         if (!isValidUuid(bookingId)) break;
 
-        // Fetch booking to get slot
-        const { data: booking } = await supabase
+        // Fetch booking to get slot + client email for notification
+        const { data: paymentFailedBookingRaw } = await supabase
           .from("bookings")
-          .select("time_slot_id, client_id, booking_code")
+          .select(
+            "time_slot_id, client_id, booking_code, " +
+            "users!bookings_client_id_fkey(email), services(name)"
+          )
           .eq("id", bookingId)
           .single();
+
+        // Cast explicite : Supabase SDK ne résout pas les FK embeds typés
+        // (bug connu v2.x).
+        const booking = paymentFailedBookingRaw as
+          unknown as PaymentFailedBookingRow | null;
 
         // Update booking status
         await supabase
@@ -502,6 +555,26 @@ serve(async (req) => {
             resource_id: bookingId,
             idempotency_key: `${event.id}:payment_failed:${booking.client_id}`,
           });
+
+          // Email client — `payment_failed` (alias `paiement-chou`).
+          const failedClientEmail = booking.users?.email ?? undefined;
+          if (failedClientEmail) {
+            await sendResendEmail({
+              event: "payment_failed",
+              to: failedClientEmail,
+              variables: {
+                serviceName: booking.services?.name ?? "Service",
+                bookingCode: booking.booking_code,
+                bookingId,
+                // `failure_reason` n'est pas toujours présent sur le PI côté
+                // Stripe (rate-limit, réseau) — on remonte ce qu'on a, le
+                // template affiche un fallback générique si vide.
+                reason:
+                  pi.last_payment_error?.message ??
+                  "Le paiement n'a pas pu être traité.",
+              },
+            });
+          }
         }
         break;
       }
@@ -711,6 +784,96 @@ serve(async (req) => {
             body: `Un virement lié à ${target.booking_code} a été annulé suite à un remboursement.`,
             resource_id: target.id,
             idempotency_key: `${event.id}:transfer_reversed:${target.pro_id}`,
+          });
+
+          // Email pro — `pro_transfer_reversed` (pas d'alias Resend publié,
+          // fallback HTML via `bookingCancelled`. Cf. APOLLINAIRE_TODO §22).
+          const { data: proUserRev } = await supabase
+            .from("users")
+            .select("email")
+            .eq("id", target.pro_id)
+            .maybeSingle();
+          const proEmailRev =
+            (proUserRev?.email as string | null | undefined) ?? undefined;
+          if (proEmailRev) {
+            await sendResendEmail({
+              event: "pro_transfer_reversed",
+              to: proEmailRev,
+              variables: {
+                bookingCode: target.booking_code,
+                amountReversed: transfer.amount_reversed != null
+                  ? (transfer.amount_reversed / 100).toFixed(2)
+                  : undefined,
+                currency: transfer.currency?.toUpperCase() ?? "CAD",
+                transferId: transfer.id,
+                bookingId: target.id,
+              },
+            });
+          }
+        }
+        break;
+      }
+
+      /** Payout settled : Stripe a déposé les fonds sur le compte bancaire du
+       * Pro (via le schedule de payout configuré au niveau de son compte
+       * Connect). Event distinct du `transfer` (qui, lui, déplace des fonds
+       * dans la balance Connect) : ici on notifie que l'argent est
+       * effectivement arrivé. Lookup indirect : payout → account → Pro. */
+      case "payout.paid": {
+        const payout = event.data.object as Stripe.Payout;
+        // Les events Connect portent `account` au niveau du wrapper, pas du
+        // payload. On remonte via `(event as any).account` pour éviter de
+        // dépendre d'un type strict Stripe absent de cette version SDK.
+        const connectAccountId =
+          (event as unknown as { account?: string }).account ?? undefined;
+        if (!connectAccountId) {
+          // Payout sur la plateforme elle-même (pas un Pro) — ignore.
+          break;
+        }
+
+        const { data: proProfile } = await supabase
+          .from("profiles_pro")
+          .select("id, business_name")
+          .eq("stripe_account_id", connectAccountId)
+          .maybeSingle();
+
+        const proId = proProfile?.id as string | undefined;
+        if (!proId) break;
+
+        const { data: proUserPayout } = await supabase
+          .from("users")
+          .select("email")
+          .eq("id", proId)
+          .maybeSingle();
+        const proEmailPayout =
+          (proUserPayout?.email as string | null | undefined) ?? undefined;
+
+        await supabase.rpc("log_audit_action", {
+          p_user_id: proId,
+          p_action: "pro_payout_sent",
+          p_resource_type: "payout",
+          p_resource_id: payout.id,
+          p_metadata: {
+            amount: payout.amount,
+            currency: payout.currency,
+            arrival_date: payout.arrival_date,
+          },
+        });
+
+        if (proEmailPayout) {
+          await sendResendEmail({
+            event: "pro_payout_sent",
+            to: proEmailPayout,
+            variables: {
+              amount: (payout.amount / 100).toFixed(2),
+              currency: payout.currency?.toUpperCase() ?? "CAD",
+              arrivalDate: payout.arrival_date
+                ? new Date(payout.arrival_date * 1000)
+                  .toISOString()
+                  .split("T")[0]
+                : "",
+              payoutId: payout.id,
+            },
           });
         }
         break;

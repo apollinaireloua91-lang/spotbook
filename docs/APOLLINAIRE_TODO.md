@@ -327,3 +327,53 @@ en double ou ratent un envoi si la course est perdue.
       la row `users` est purgée et on perd l'email destinataire.
 - [ ] Option implémentation : EF `request-account-deletion` qui envoie l'email
       puis appelle le RPC. Éviter de séquencer côté client (fragile).
+
+### 23. Aliases Resend manquants à créer (Commit 3)
+
+Commit 3 a câblé des `event` keys qui pointent vers des aliases Resend **pas
+encore publiés dans le dashboard**. Le wrapper `sendResendEmail` retombe
+automatiquement sur le builder HTML existant (`buildEmail`) — aucun blocage
+fonctionnel — mais l'expérience visuelle du template Resend est perdue tant
+que ces aliases ne sont pas créés.
+
+Templates à créer côté dashboard Resend puis à câbler dans
+`supabase/functions/_shared/resend_template_aliases.ts` (`RESEND_TEMPLATES`) :
+
+- [ ] `booking-acceptee-par-pro` → `EmailEventKey.booking_accepted_by_pro`
+      Déclencheur : `update-booking-status` quand le Pro accepte (status
+      `pending` → `confirmed`), paiement **pas** encore capturé.
+      Variables injectées : `clientName, serviceName, providerName, date,
+      time, address, amountPaid, bookingId`.
+- [ ] `booking-paid-and-confirmed` → `EmailEventKey.booking_paid_and_confirmed`
+      Déclencheur : `stripe-webhook payment_intent.succeeded` (booking).
+      Mêmes variables que `booking-acceptee-par-pro` — le paiement est cette
+      fois capturé + transfer auto-créé côté Stripe.
+- [ ] `pro-transfer-reversed` → `EmailEventKey.pro_transfer_reversed`
+      Déclencheur : `stripe-webhook transfer.reversed` (refund > 48h).
+      Variables : `bookingCode, bookingId, transferId, amount, currency`.
+
+> Tant que ces aliases n'existent pas, la fallback HTML réutilise les
+> builders existants (voir `email_templates.ts` — `booking_accepted_by_pro`
+> → `bookingConfirmed`, `pro_transfer_reversed` → `bookingCancelled`).
+
+### 24. EF `event-cancel` à créer
+
+Commit 3 a câblé l'event key `event_cancelled` côté template (alias
+`vnement-annul` déjà dans `RESEND_TEMPLATES`), mais **aucune EF ne
+l'appelle**. Pour fermer la boucle quand un Pro annule un événement :
+
+- [ ] Créer `supabase/functions/event-cancel/index.ts` :
+      1. Vérifier que `user.id === events.pro_id` (auth + RLS).
+      2. Transition `events.status` → `cancelled` (atomique, TOCTOU guard sur
+         le status actuel).
+      3. Refund tous les `tickets` non utilisés via `stripe.refunds.create`
+         avec idempotency key `event-refund-{ticket.id}`.
+      4. Si refund > 48h sur un ticket : `transfers.createReversal`.
+      5. `sendResendEmail({ event: "event_cancelled", to: holder.email, … })`
+         pour chaque détenteur de ticket (batch — un par ticket, pas par
+         order, car les billets peuvent être transférés nominativement).
+      6. Audit `event_cancelled` via `log_audit_action`.
+- [ ] Side-effect : mettre à jour les `waitlist` liées → notif push
+      `Vous n'êtes plus sur la liste d'attente`.
+- [ ] Scope hors migration email (infra métier). À faire **après** Commit 4
+      sauf si un Pro en a un besoin urgent avant.
