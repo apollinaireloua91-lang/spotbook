@@ -428,10 +428,17 @@ class BookingRepository {
     final uid = currentUserId;
     if (uid == null) return [];
 
+    // Cf. BOOKING_FLOW_REFONTE_PLAN §P2 : le Pro ne doit voir que les RDV
+    // effectivement confirmés (ou terminés / annulés après confirmation).
+    // Les `pending_payment` sont des réservations où le client n'a pas
+    // finalisé son paiement — les exposer côté Pro créait des RDV fantômes
+    // et de fausses notifications.
     final data = await _supabase
         .from('bookings')
         .select(_bookingSelect)
         .eq('pro_id', uid)
+        .neq('status', 'pending_payment')
+        .neq('status', 'payment_failed')
         .order('created_at', ascending: false);
 
     return (data as List)
@@ -514,7 +521,11 @@ class BookingRepository {
     double totalRevenue = 0;
 
     for (final b in list) {
-      if (b['status'] == 'confirmed' || b['status'] == 'pending_payment') {
+      // Le Pro ne doit voir comme "upcoming" que les RDV effectivement payés.
+      // Les `pending_payment` sont des réservations où le client n'a pas
+      // finalisé le paiement — les compter ici créait des "RDV fantômes"
+      // dans le dashboard (cf. BOOKING_FLOW_REFONTE_PLAN §P2).
+      if (b['status'] == 'confirmed') {
         upcoming++;
       }
       if (b['status'] == 'completed' || b['status'] == 'confirmed') {
@@ -542,11 +553,14 @@ class BookingRepository {
     final uid = currentUserId;
     if (uid == null) return [];
 
+    // Pas de `pending_payment` ici : le Pro ne doit voir que les RDV
+    // réellement confirmés (après `payment_intent.succeeded`). Voir
+    // BOOKING_FLOW_REFONTE_PLAN §P2.
     final data = await _supabase
         .from('bookings')
         .select(_bookingSelect)
         .eq('pro_id', uid)
-        .inFilter('status', ['confirmed', 'pending_payment'])
+        .eq('status', 'confirmed')
         .order('created_at', ascending: false)
         .limit(limit);
 

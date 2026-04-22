@@ -176,6 +176,28 @@ manuellement (cf. CLAUDE.md memory `feedback_no_config_push`).
 | 6 — Stripe Terminal SDK | nécessite device + SDK natif à intégrer |
 | 7 — Apple TTP runtime | bloqué par capability Apple (cf. §1) |
 
+---
+
+## Déploiements manuels requis (refonte booking 2026-04-22)
+
+- [ ] **Migration DB** : `supabase/migrations/20260422100000_bookings_push_only_on_confirmed.sql`
+      → à pousser avec `supabase db push` avant le prochain test iPhone.
+      Sans ça, le Pro continue de recevoir une notif push FCM "Nouvelle
+      réservation" dès qu'un client initie un booking (avant paiement),
+      même si le paiement n'est jamais finalisé.
+      Cf. `docs/BOOKING_FLOW_REFONTE_PLAN.md` §P2 + commit 2.
+
+- [ ] Vérifier **manuellement** après push : créer un booking test, vérifier
+      que le Pro ne reçoit PAS de push, puis confirmer le paiement et vérifier
+      que le push arrive alors. Si le trigger se déclenche deux fois ou pas
+      du tout, rollback avec :
+      ```sql
+      DROP TRIGGER IF EXISTS tr_bookings_push_on_confirmed ON bookings;
+      CREATE TRIGGER tr_bookings_push_after_insert
+        AFTER INSERT ON bookings FOR EACH ROW
+        EXECUTE FUNCTION tr_notify_new_booking_push();
+      ```
+
 ### Chantiers exécutés — récap commits
 
 Voir `git log --oneline agent/refonte-totale-premium` pour la liste complète.
