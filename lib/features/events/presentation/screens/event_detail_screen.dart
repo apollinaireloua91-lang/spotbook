@@ -769,7 +769,7 @@ class _AboutBlockState extends State<_AboutBlock> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _SectionHeader(title: 'About'),
+        _SectionHeader(title: 'À propos'),
         const SizedBox(height: 12),
         AnimatedCrossFade(
           duration: const Duration(milliseconds: 220),

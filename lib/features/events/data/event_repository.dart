@@ -168,13 +168,13 @@ class EventRepository {
       },
     );
     if (res.status != 200) {
-      final err = res.data is Map ? res.data['error'] : 'Payment failed';
-      throw Exception(err ?? 'Payment failed');
+      final err = res.data is Map ? res.data['error'] : 'Paiement échoué';
+      throw Exception(err ?? 'Paiement échoué');
     }
     final data = res.data as Map<String, dynamic>;
     final clientSecret = data['clientSecret'] as String?;
     if (clientSecret == null || clientSecret.isEmpty) {
-      throw Exception('No client secret returned');
+      throw Exception('Aucun client_secret reçu');
     }
     return clientSecret;
   }

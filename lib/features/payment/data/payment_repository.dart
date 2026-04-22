@@ -19,25 +19,28 @@ class PaymentRepository {
       body: {'bookingId': bookingId, 'payment_type': 'deposit'},
     );
     if (res.status != 200) {
-      final err = res.data is Map ? res.data['error'] : 'Payment failed';
-      throw Exception(err ?? 'Payment failed');
+      final err = res.data is Map ? res.data['error'] : 'Paiement échoué';
+      throw Exception(err ?? 'Paiement échoué');
     }
     final data = res.data as Map<String, dynamic>;
     final clientSecret = data['clientSecret'] as String?;
     if (clientSecret == null || clientSecret.isEmpty) {
-      throw Exception('No client secret returned');
+      throw Exception('Aucun client_secret reçu');
     }
     return clientSecret;
   }
 
   /// Calls stripe-connect-onboarding edge function to get the Stripe
   /// Account Link URL for Express onboarding.
-  Future<String> createStripeConnectLink() async {
+  ///
+  /// [country] is ISO 3166-1 alpha-2 (CA/FR/US). Required on first onboarding
+  /// because Stripe Express country is immutable after account creation.
+  Future<String> createStripeConnectLink({String? country}) async {
     await _supabase.auth.refreshSession();
 
     final res = await _supabase.functions.invoke(
       'stripe-connect-onboarding',
-      body: {},
+      body: country != null && country.isNotEmpty ? {'country': country} : {},
     );
     if (res.status != 200) {
       final err = res.data is Map ? res.data['error'] : 'Stripe Connect failed';
@@ -76,13 +79,13 @@ class PaymentRepository {
       body: {'submissionId': submissionId},
     );
     if (res.status != 200) {
-      final err = res.data is Map ? res.data['error'] : 'Payment failed';
-      throw Exception(err ?? 'Payment failed');
+      final err = res.data is Map ? res.data['error'] : 'Paiement échoué';
+      throw Exception(err ?? 'Paiement échoué');
     }
     final data = res.data as Map<String, dynamic>;
     final clientSecret = data['clientSecret'] as String?;
     if (clientSecret == null || clientSecret.isEmpty) {
-      throw Exception('No client secret returned');
+      throw Exception('Aucun client_secret reçu');
     }
     return clientSecret;
   }

@@ -129,7 +129,7 @@ class _PaymentReceiptScreenState extends ConsumerState<PaymentReceiptScreen>
           ),
           const SizedBox(height: 16),
           Text(
-            isPaid ? 'Payment confirmed' : 'Payment failed',
+            isPaid ? 'Paiement confirmé' : 'Paiement échoué',
             style: GoogleFonts.sora(
               color: isPaid ? AppColors.success : AppColors.error,
               fontSize: 18,
