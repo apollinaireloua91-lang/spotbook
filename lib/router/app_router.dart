@@ -126,8 +126,18 @@ final appRouter = GoRouter(
 
     // Allow public routes without a session.
     if (_publicPaths.contains(path)) {
-      // If user IS authenticated and tries to visit login/signup → redirect.
-      if (session != null && (path == '/login' || path.startsWith('/signup'))) {
+      // If user IS authenticated and tries to visit login/signup/role-picker
+      // → redirect vers le feed correspondant à son rôle. Sans cette garde,
+      // un Pro déjà loggé peut atterrir sur /select-account-type, choisir
+      // « Client », taper Continue → /signup/client → la redirect ci-dessous
+      // le renvoie quand même sur /pro/feed (parce que sa session est Pro).
+      // Résultat visible sur iPhone papi : « je choisis Client, ça m'ouvre
+      // quand même le compte Pro ». La bonne UX : si une session existe,
+      // l'utilisateur n'a rien à faire sur ces écrans.
+      final isAuthOnlyPath = path == '/login' ||
+          path.startsWith('/signup') ||
+          path == '/select-account-type';
+      if (session != null && isAuthOnlyPath) {
         final role = Supabase.instance.client.auth.currentUser
                 ?.userMetadata?['role'] as String?;
         return role == 'pro' ? '/pro/feed' : '/client/feed';
