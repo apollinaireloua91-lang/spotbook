@@ -19,16 +19,21 @@ class AppLocaleNotifier extends Notifier<Locale> {
       _scheduled = true;
       Future<void>.microtask(_hydrate);
     }
-    return const Locale('en');
+    // Français = défaut produit (CLAUDE.md). On ne laisse JAMAIS l'app démarrer
+    // en anglais sur un iPhone dont la langue système est EN — Spotbook est
+    // une app francophone-first (FR/CA/CI). L'utilisateur peut basculer EN
+    // via les paramètres, ce choix est persisté dans Hive et ré-appliqué
+    // au prochain lancement via _hydrate().
+    return const Locale('fr');
   }
 
   Future<void> _hydrate() async {
     try {
       final box = Hive.box<String>(_boxName);
-      final code = box.get(_key, defaultValue: 'en') ?? 'en';
-      state = Locale(code == 'fr' ? 'fr' : 'en');
+      final code = box.get(_key, defaultValue: 'fr') ?? 'fr';
+      state = Locale(code == 'en' ? 'en' : 'fr');
     } catch (_) {
-      state = const Locale('en');
+      state = const Locale('fr');
     }
   }
 
