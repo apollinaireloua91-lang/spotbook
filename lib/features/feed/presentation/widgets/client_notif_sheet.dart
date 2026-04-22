@@ -75,7 +75,7 @@ class ClientNotifSheet extends ConsumerWidget {
             child: Row(
               children: [
                 Text(
-                  'My notifications',
+                  'Mes notifications',
                   style: TextStyle(
                     color: AppColors.blanc,
                     fontSize: 17,

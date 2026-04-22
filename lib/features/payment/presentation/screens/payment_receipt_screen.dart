@@ -158,35 +158,35 @@ class _PaymentReceiptScreenState extends ConsumerState<PaymentReceiptScreen>
             child: Column(
               children: [
                 _receiptRow('Service', booking.serviceName ?? '—'),
-                _receiptRow('Provider', booking.proName ?? '—'),
+                _receiptRow('Professionnel', booking.proName ?? '—'),
                 if (booking.slotDate != null)
                   _receiptRow('Date', booking.slotDate!),
                 if (booking.slotStartTime != null)
                   _receiptRow(
-                    'Time',
+                    'Heure',
                     booking.slotEndTime != null
                         ? '${booking.slotStartTime} — ${booking.slotEndTime}'
                         : booking.slotStartTime!,
                   ),
                 if (booking.serviceDurationMinutes != null)
                   _receiptRow(
-                      'Duration', '${booking.serviceDurationMinutes} min'),
+                      'Durée', '${booking.serviceDurationMinutes} min'),
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 12),
                   child: Divider(color: AppColors.border, height: 1),
                 ),
                 _receiptRow(
-                  'Deposit',
+                  'Acompte',
                   currencyFormat(booking.depositAmount),
                   isBold: true,
                 ),
-                _receiptRow('Currency', booking.currency.toUpperCase()),
+                _receiptRow('Devise', booking.currency.toUpperCase()),
                 _receiptRow(
-                  'Payment date',
+                  'Date du paiement',
                   dateFormat.format(booking.createdAt.toLocal()),
                 ),
                 if (booking.bookingCode != null)
-                  _receiptRow('Booking code', booking.bookingCode!),
+                  _receiptRow('Code de réservation', booking.bookingCode!),
               ],
             ),
           ),

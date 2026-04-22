@@ -202,8 +202,8 @@ class _MasterToggleCard extends StatelessWidget {
                   ),
                   Text(
                     state.settings.acceptsBookings
-                        ? 'Clients can book'
-                        : 'Bookings disabled',
+                        ? 'Les clients peuvent réserver'
+                        : 'Réservations désactivées',
                     style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 12),
                   ),
                 ],

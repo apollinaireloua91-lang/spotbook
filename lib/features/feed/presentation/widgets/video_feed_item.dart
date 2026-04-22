@@ -438,7 +438,7 @@ class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
                               color: Colors.white, size: 14),
                           const SizedBox(width: 8),
                           Text(
-                            'Book Now',
+                            'Réserver',
                             style: GoogleFonts.dmSans(
                               color: Colors.white,
                               fontSize: 13,

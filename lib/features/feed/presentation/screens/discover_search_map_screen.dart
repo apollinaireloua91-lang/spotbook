@@ -747,7 +747,7 @@ class _ProBottomCard extends StatelessWidget {
                   const SizedBox(width: 12),
                   Expanded(
                     child: SpotbookButton.primary(
-                      label: 'Book',
+                      label: 'Réserver',
                       onPressed: () =>
                           context.push('/client/booking-flow/${pro.id}'),
                     ),

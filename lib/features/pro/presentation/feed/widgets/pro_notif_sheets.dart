@@ -153,10 +153,10 @@ class ProActivitySheet extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final s = ref.watch(_activityNotifProvider);
     return _SheetChrome(
-      title: 'Activity on my posts',
+      title: 'Activité sur mes publications',
       icon: Icons.notifications_outlined,
       iconColor: AppColors.rose,
-      child: _NotifList(items: s.items, isLoading: s.isLoading, emptyText: 'No recent activity'),
+      child: _NotifList(items: s.items, isLoading: s.isLoading, emptyText: 'Aucune activité récente'),
     );
   }
 }
@@ -172,10 +172,10 @@ class ProRdvSheet extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final s = ref.watch(_rdvNotifProvider);
     return _SheetChrome(
-      title: 'Bookings & Appointments',
+      title: 'Réservations & rendez-vous',
       icon: Icons.calendar_today_outlined,
       iconColor: AppColors.violet,
-      child: _NotifList(items: s.items, isLoading: s.isLoading, emptyText: 'No recent bookings'),
+      child: _NotifList(items: s.items, isLoading: s.isLoading, emptyText: 'Aucune réservation récente'),
     );
   }
 }
@@ -191,10 +191,10 @@ class ProTicketsSheet extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final s = ref.watch(_ticketsNotifProvider);
     return _SheetChrome(
-      title: 'Tickets sold',
+      title: 'Billets vendus',
       icon: Icons.confirmation_number_outlined,
       iconColor: AppColors.rose,
-      child: _NotifList(items: s.items, isLoading: s.isLoading, emptyText: 'No tickets sold recently'),
+      child: _NotifList(items: s.items, isLoading: s.isLoading, emptyText: 'Aucun billet vendu récemment'),
     );
   }
 }
@@ -210,10 +210,10 @@ class ProMessagesSheet extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final s = ref.watch(_messagesNotifProvider);
     return _SheetChrome(
-      title: 'Client messages',
+      title: 'Messages clients',
       icon: Icons.chat_bubble_outline,
       iconColor: AppColors.success,
-      child: _NotifList(items: s.items, isLoading: s.isLoading, emptyText: 'No recent messages'),
+      child: _NotifList(items: s.items, isLoading: s.isLoading, emptyText: 'Aucun message récent'),
     );
   }
 }

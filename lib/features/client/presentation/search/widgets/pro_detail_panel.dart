@@ -662,7 +662,7 @@ class _GlowBookButtonState extends State<_GlowBookButton>
               ),
               const SizedBox(width: 6),
               Text(
-                'Book',
+                'Réserver',
                 style: GoogleFonts.dmSans(
                   fontSize: 13,
                   fontWeight: FontWeight.w600,

@@ -160,7 +160,7 @@ class _CreatePromoCodeScreenState extends ConsumerState<CreatePromoCodeScreen> {
             child: Row(
               children: [
                 Text(
-                  'Your Codes',
+                  'Vos codes',
                   style: GoogleFonts.sora(
                     color: AppColors.blanc,
                     fontSize: 16,

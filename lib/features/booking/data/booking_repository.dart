@@ -401,8 +401,8 @@ class BookingRepository {
       headers: {'Authorization': 'Bearer $accessToken'},
     );
     if (res.status != 200) {
-      final err = res.data is Map ? res.data['error'] : 'Booking failed';
-      throw Exception(err ?? 'Booking failed');
+      final err = res.data is Map ? res.data['error'] : 'Échec de la réservation';
+      throw Exception(err ?? 'Échec de la réservation');
     }
     return res.data as Map<String, dynamic>;
   }

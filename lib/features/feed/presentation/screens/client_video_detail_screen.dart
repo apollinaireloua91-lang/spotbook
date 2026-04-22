@@ -314,7 +314,7 @@ class _ClientVideoDetailScreenState
                             borderRadius: BorderRadius.circular(24),
                           ),
                           child: Text(
-                            'Book',
+                            'Réserver',
                             style: GoogleFonts.dmSans(
                               color: AppColors.blanc,
                               fontWeight: FontWeight.bold,

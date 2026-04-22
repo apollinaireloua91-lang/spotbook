@@ -51,7 +51,7 @@ class TicketDetailScreen extends ConsumerWidget {
           ),
         ),
         title: Text(
-          'My Ticket',
+          'Mon billet',
           style: GoogleFonts.sora(
             color: AppColors.blanc,
             fontWeight: FontWeight.w700,
@@ -77,7 +77,7 @@ class TicketDetailScreen extends ConsumerWidget {
                 HapticFeedback.mediumImpact();
                 ShareBranding.shareWithLogo(
                   text:
-                      'My ticket for ${ticket.eventTitle ?? 'the event'} — Spotbook',
+                      'Mon billet pour ${ticket.eventTitle ?? 'l\'événement'} — Spotbook',
                 );
               },
             ),

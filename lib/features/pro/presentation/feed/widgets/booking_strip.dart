@@ -103,7 +103,7 @@ class BookingStrip extends StatelessWidget {
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: const Text(
-                    'Book',
+                    'Réserver',
                     style: TextStyle(
                       color: Colors.black,
                       fontSize: 11,
