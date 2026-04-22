@@ -5924,6 +5924,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Manage your ready-to-send messages'**
   String get quickRepliesMenuSubtitle;
+
+  /// No description provided for @statusCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed'**
+  String get statusCompleted;
+
+  /// No description provided for @statusPaymentPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment pending'**
+  String get statusPaymentPending;
+
+  /// No description provided for @viewDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'View details'**
+  String get viewDetails;
+
+  /// No description provided for @paidOnline.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid online'**
+  String get paidOnline;
+
+  /// No description provided for @balanceToPay.
+  ///
+  /// In en, this message translates to:
+  /// **'Balance to pay'**
+  String get balanceToPay;
+
+  /// No description provided for @balanceToCollect.
+  ///
+  /// In en, this message translates to:
+  /// **'Balance to collect'**
+  String get balanceToCollect;
 }
 
 class _AppLocalizationsDelegate

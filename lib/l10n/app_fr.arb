@@ -1267,5 +1267,11 @@
   "quickReplyErrorTooLong": "Maximum 200 caractères",
   "quickReplyErrorEmpty": "Le texte ne peut pas être vide",
   "quickRepliesMenuTitle": "Réponses rapides",
-  "quickRepliesMenuSubtitle": "Gérez vos messages prêts à envoyer"
+  "quickRepliesMenuSubtitle": "Gérez vos messages prêts à envoyer",
+  "statusCompleted": "Terminé",
+  "statusPaymentPending": "Paiement en attente",
+  "viewDetails": "Voir détails",
+  "paidOnline": "Payé en ligne",
+  "balanceToPay": "À régler",
+  "balanceToCollect": "À encaisser"
 }

@@ -3062,4 +3062,22 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get quickRepliesMenuSubtitle => 'Manage your ready-to-send messages';
+
+  @override
+  String get statusCompleted => 'Completed';
+
+  @override
+  String get statusPaymentPending => 'Payment pending';
+
+  @override
+  String get viewDetails => 'View details';
+
+  @override
+  String get paidOnline => 'Paid online';
+
+  @override
+  String get balanceToPay => 'Balance to pay';
+
+  @override
+  String get balanceToCollect => 'Balance to collect';
 }

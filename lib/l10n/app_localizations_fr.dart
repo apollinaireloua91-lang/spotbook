@@ -3095,4 +3095,22 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get quickRepliesMenuSubtitle => 'Gérez vos messages prêts à envoyer';
+
+  @override
+  String get statusCompleted => 'Terminé';
+
+  @override
+  String get statusPaymentPending => 'Paiement en attente';
+
+  @override
+  String get viewDetails => 'Voir détails';
+
+  @override
+  String get paidOnline => 'Payé en ligne';
+
+  @override
+  String get balanceToPay => 'À régler';
+
+  @override
+  String get balanceToCollect => 'À encaisser';
 }

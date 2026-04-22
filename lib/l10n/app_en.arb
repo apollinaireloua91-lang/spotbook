@@ -1267,5 +1267,11 @@
   "quickReplyErrorTooLong": "Max 200 characters",
   "quickReplyErrorEmpty": "Text cannot be empty",
   "quickRepliesMenuTitle": "Quick replies",
-  "quickRepliesMenuSubtitle": "Manage your ready-to-send messages"
+  "quickRepliesMenuSubtitle": "Manage your ready-to-send messages",
+  "statusCompleted": "Completed",
+  "statusPaymentPending": "Payment pending",
+  "viewDetails": "View details",
+  "paidOnline": "Paid online",
+  "balanceToPay": "Balance to pay",
+  "balanceToCollect": "Balance to collect"
 }
