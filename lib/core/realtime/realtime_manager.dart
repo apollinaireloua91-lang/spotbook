@@ -119,8 +119,18 @@ class RealtimeManager {
     debugPrint('[RealtimeManager] reconnected ($role) after lifecycle resume');
   }
 
-  /// Call on logout — tears down every channel and cleans up streams.
-  void dispose() {
+  /// Soft teardown — used on auth sign-out. Removes every Supabase channel
+  /// and clears the session pointers, but **keeps the StreamControllers
+  /// alive** so that after a sign-in on the same app instance, existing
+  /// listeners (BookingNotifier, ProDashboardNotifier, etc.) can keep
+  /// receiving events once `initialize()` re-subscribes.
+  ///
+  /// Closing the controllers here would throw
+  /// `StateError: Cannot add event after closing` the next time a realtime
+  /// callback fires on a reinitialised manager — see history for a latent
+  /// bug that affected every user who logged out then back in without
+  /// restarting the app.
+  void tearDown() {
     for (final ch in _channels) {
       _supabase.removeChannel(ch);
     }
@@ -128,6 +138,17 @@ class RealtimeManager {
     _initialised = false;
     _currentRole = null;
     _currentUserId = null;
+
+    debugPrint('[RealtimeManager] torn down — channels removed, '
+        'controllers kept alive');
+  }
+
+  /// Hard teardown — called only when the provider itself is disposed
+  /// (container-level). Closes every StreamController. After this, the
+  /// manager instance must not be reused: the provider will rebuild a
+  /// fresh one on the next read.
+  void dispose() {
+    tearDown();
 
     _feedController.close();
     _bookingController.close();
@@ -137,7 +158,7 @@ class RealtimeManager {
     _conversationController.close();
     _presenceController.close();
 
-    debugPrint('[RealtimeManager] disposed — all channels removed');
+    debugPrint('[RealtimeManager] disposed — stream controllers closed');
   }
 
   // ─── Feed (videos) ──────────────────────────────────────

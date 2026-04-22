@@ -89,8 +89,13 @@ final realtimeBootstrapProvider = Provider<void>((ref) {
     }
 
     if (event == AuthChangeEvent.signedOut) {
-      manager.dispose();
-      debugPrint('[RealtimeBootstrap] disposed on sign-out');
+      // Soft teardown: removes every channel and resets the session
+      // pointers, but keeps the typed StreamControllers alive so listeners
+      // survive a sign-out → sign-in cycle in the same app instance.
+      // Full `dispose()` (closing controllers) only runs when the provider
+      // itself is disposed (container-level).
+      manager.tearDown();
+      debugPrint('[RealtimeBootstrap] torn down on sign-out');
     }
   });
 
