@@ -12,11 +12,15 @@
 	<array>
 		<string>merchant.com.spotbook.app</string>
 	</array>
-	<!-- Tap to Pay on iPhone (Stripe Terminal) — nécessite approbation
-	     manuelle par Apple Developer Support après ouverture d'un ticket.
-	     Sans l'approbation côté Apple, builder avec cet entitlement sera
-	     refusé à l'upload App Store. Voir docs/APOLLINAIRE_TODO.md. -->
+	<!-- Tap to Pay on iPhone (Stripe Terminal) — DÉSACTIVÉ pour v1.0 launch.
+	     Nécessite approbation manuelle par Apple Developer Support après
+	     ouverture d'un ticket (1-4 semaines). Sans l'approbation côté Apple,
+	     builder avec cet entitlement sera refusé à l'upload App Store.
+	     À RÉACTIVER en v1.1 une fois le ticket Apple approuvé.
+	     Voir docs/APOLLINAIRE_TODO.md §1.
 	<key>com.apple.developer.proximity-reader.payment.acceptance</key>
 	<true/>
+	-->
+
 </dict>
 </plist>
