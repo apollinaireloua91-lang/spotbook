@@ -86,6 +86,17 @@ export const RESEND_TEMPLATES: Partial<Record<EmailEventKey, ResendTemplate>> =
       alias: "rservation-confirme",
       id: "b49bd62b-35f7-4694-87c7-489167f8a377",
     },
+    // ⚠ Aliases ci-dessous ont été générés automatiquement par Resend (les
+    //   diacritiques ont été strippés). On les garde tels quels — la stabilité
+    //   des aliases prime sur l'esthétique. Cf. en-tête du fichier.
+    booking_accepted_by_pro: {
+      alias: "rservation-accepte-par-le-pro",
+      id: "a01f7c58-5549-4a83-9159-b2bc5d52d25c",
+    },
+    booking_paid_and_confirmed: {
+      alias: "paiement-confirm-rdv-rserv",
+      id: "d4c6c70e-f06a-427c-8488-5032cbe129ce",
+    },
     booking_cancelled: {
       alias: "rservation-annule",
       id: "550764b8-12a8-4f0c-9202-af7274128db8",
