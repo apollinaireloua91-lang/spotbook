@@ -170,6 +170,10 @@ export const RESEND_TEMPLATES: Partial<Record<EmailEventKey, ResendTemplate>> =
       alias: "virement-envoy",
       id: "09e067f5-d062-49bc-b69b-82bff38702e4",
     },
+    pro_transfer_reversed: {
+      alias: "virement-annul-suite-remboursement",
+      id: "16f31ce1-52a5-4ca8-ac32-701de6c8f006",
+    },
     pro_new_review: {
       alias: "nouvel-avis-reu-pro",
       id: "d83e2185-d536-4354-941f-d091aa0bedc1",
