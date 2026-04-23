@@ -8,16 +8,16 @@
 
 ## 🔴 Bloqueurs de release — à faire avant soumission App Store / Play Store
 
-### 1. Capability Apple « Tap to Pay on iPhone » — différée v1.1
+### 1. Capability Apple « Tap to Pay on iPhone »
 
 > **Statut v1.0** : entitlement `com.apple.developer.proximity-reader.payment.acceptance`
-> **commenté** dans `ios/Runner/RunnerRelease.entitlements` (commit
-> `fix(ios): disable Tap-to-Pay entitlement for v1.0 launch`). Le build v1.0
-> est uploadable à App Store Connect sans cette approbation. Tap-to-Pay
-> reviendra en v1.1 une fois le ticket Apple validé.
+> **ACTIF** dans `ios/Runner/RunnerRelease.entitlements`. Tant que le ticket
+> Apple Developer Support n'est pas approuvé, **l'upload App Store Connect sera
+> REFUSÉ**. Décision utilisateur : ouvrir le ticket Apple AVANT d'attaquer
+> l'upload (1–4 semaines de délai).
 
 - [ ] **Ouvrir un ticket Apple Developer Support** (Code Level Support → onglet
-      « Capabilities ») dès l'upload v1.0 lancé, pour ne pas bloquer la v1.1.
+      « Capabilities »).
 - [ ] Demander l'ajout de la capability :
       `com.apple.developer.proximity-reader.payment.acceptance`
       sur l'App ID `com.getspotbook.spotbook` (Apple Team ID `QCBH2X6CKT`).
@@ -25,23 +25,16 @@
       sans contact pour prestations de service et événements, via Stripe
       Terminal SDK »).
 - [ ] **Délai typique** : 5–15 jours ouvrés (parfois jusqu'à 4 semaines).
-- [ ] Quand approuvé : **réactiver l'entitlement** en retirant le bloc commentaire
-      dans `ios/Runner/RunnerRelease.entitlements` (lignes 15–23) → repasser à :
-      ```xml
-      <key>com.apple.developer.proximity-reader.payment.acceptance</key>
-      <true/>
-      ```
-      puis bump `pubspec.yaml` (build number + version) et préparer une release v1.1.
-- [ ] **Tester en prod sur iPhone physique** (XS+ avec iOS 16.7+) : flow Stripe
-      Terminal `discoverReaders` → Tap-to-Pay reader → `collectPaymentMethod` →
-      `processPayment`. Vérifier qu'une carte sans contact réelle est acceptée.
-- [ ] Une fois la v1.1 validée : déplacer ce ticket vers les chantiers QA
-      (§5–§6 ci-dessous) et lever l'entrée bloqueur ici.
+- [ ] Sans cette approbation, tout build incluant l'entitlement échouera à
+      l'upload App Store Connect — voir `ios/Runner/RunnerRelease.entitlements`.
+- [ ] **Tester en prod sur iPhone physique** (XS+ avec iOS 16.7+) une fois
+      approuvé : flow Stripe Terminal `discoverReaders` → Tap-to-Pay reader →
+      `collectPaymentMethod` → `processPayment`. Vérifier qu'une carte sans
+      contact réelle est acceptée.
 
 **Référence** :
   - Stripe docs : https://stripe.com/docs/terminal/payments/setup-integration?reader=tap-to-pay
   - Apple : `ProximityReader` framework
-  - Commit qui a désactivé l'entitlement : `git log --all --grep "disable Tap-to-Pay"`
 
 ### 2. Activation Stripe Terminal côté dashboard
 
