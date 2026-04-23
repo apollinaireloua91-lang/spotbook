@@ -27,8 +27,7 @@ Navigation : go_router
 
 Backend    : Supabase (PostgreSQL + Auth + Realtime + Storage + Edge Functions)
 
-Auth       : Google OAuth (PREMIER) + Email/Mot de passe
-             // NOTE Apple Sign In : à ajouter en v1.1 (compte Apple Developer requis)
+Auth       : Google OAuth (PREMIER) + Apple Sign In (iOS natif) + Email/Mot de passe
 
 Paiements  : Stripe Connect UNIQUEMENT
 
@@ -435,8 +434,15 @@ Petits comportements qui déroutent si on ne les connaît pas.
    `BEGIN ... EXCEPTION WHEN undefined_table THEN NULL`. C'est volontaire,
    ne pas « nettoyer » sans vérifier les autres environnements.
 
-2. **Apple Sign In** — Pas encore implémenté (v1.1). Compte Apple Developer
-   payant requis avant activation. Voir docs/APOLLINAIRE_TODO.md §3.
+2. **Apple Sign In** — Implémenté end-to-end (flow natif iOS via
+   `sign_in_with_apple`). Code: `lib/features/auth/data/auth_repository.dart`
+   (`signInWithApple()` avec nonce SHA-256 + `signInWithIdToken`). Entitlement
+   `com.apple.developer.applesignin` actif sur Runner.entitlements +
+   RunnerRelease.entitlements. Provider Apple activé dans Supabase Dashboard
+   (Client ID = `com.getspotbook.spotbook` = bundle ID, pas de Service ID
+   séparé pour le flow natif iOS-only). Le `full_name` Apple n'est renvoyé
+   qu'à la PREMIÈRE connexion → persisté dans `profiles` à ce moment-là.
+   Test physique iOS (avec compte iCloud) requis pour validation finale.
 
 3. **Commission = 18 % bookings ≠ 12 % events** — Volontaire. Les événements
    sont des volumes plus importants, moins de risque d'annulation tardive.
