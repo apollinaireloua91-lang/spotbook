@@ -109,12 +109,22 @@ class ChatRepository {
 
     // Update conversation last_message
     await _supabase.from('conversations').update({
-      'last_message': content ?? '📷 Image',
+      'last_message': content ?? 'Photo',
       'last_message_at': DateTime.now().toIso8601String(),
     }).eq('id', conversationId);
 
-    // Notify recipient (fire-and-forget)
-    _notifyRecipient(conversationId, uid, content ?? '📷 Image');
+    // Notify recipient (fire-and-forget).
+    //
+    // ⚠ TRANSITOIRE : ce INSERT côté client doublonne ce que fait déjà le
+    // trigger DB `tr_messages_push_after_insert` → EF `send-push-notification`
+    // (qui insère lui aussi dans `notifications`). On garde l'INSERT Flutter
+    // tant que les GUC `app.settings.push_function_url` /
+    // `app.settings.service_role_key` ne sont pas configurés sur la base
+    // distante (sinon le trigger no-op silencieusement et le Pro ne voit
+    // strictement rien). Une fois la cascade trigger→EF validée en prod,
+    // supprimer `_notifyRecipient` (cf. APOLLINAIRE_TODO §«push notifications
+    // Pro» et docs/PRO_NOTIFICATIONS_AUDIT.md §3 bug #4).
+    _notifyRecipient(conversationId, uid, content ?? 'Photo');
 
     return MessageModel.fromJson(data);
   }
@@ -156,16 +166,20 @@ class ChatRepository {
           .select('full_name')
           .eq('id', senderId)
           .maybeSingle();
-      final senderName = sender?['full_name'] as String? ?? 'Someone';
+      final senderName = sender?['full_name'] as String? ?? 'Quelqu\'un';
 
       final body = preview.length > 80
           ? '${preview.substring(0, 80)}...'
           : preview;
 
+      // Type aligné avec celui que produit l'EF `send-push-notification`
+      // (`'message'`) afin que `notification_preferences.messages_enabled`
+      // filtre bien les deux sources, et que le handler push côté Flutter
+      // les regroupe sous le même switch.
       await _supabase.from('notifications').insert({
         'user_id': recipientId,
-        'type': 'new_message',
-        'title': 'New message from $senderName',
+        'type': 'message',
+        'title': 'Nouveau message de $senderName',
         'body': body,
         'data': {'conversation_id': conversationId},
         'is_read': false,
