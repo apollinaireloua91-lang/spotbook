@@ -102,6 +102,7 @@ import '../features/profile/presentation/bloc/public_provider_profile_bloc.dart'
 import '../features/profile/data/datasources/provider_profile_remote_datasource.dart';
 import '../features/profile/data/profile_repository.dart';
 import '../features/chat/data/chat_repository.dart';
+import 'auth_router_notifier.dart';
 import 'client_shell.dart';
 import 'pro_shell.dart';
 
@@ -120,6 +121,16 @@ const _publicPaths = <String>{
 
 final appRouter = GoRouter(
   initialLocation: '/',
+  // refreshListenable : ré-évalue tous les redirects à chaque changement
+  // d'auth state (signedIn, signedOut, tokenRefreshed, userUpdated...) ET
+  // à chaque mise à jour du rôle cached. Sans ça, le router ne réagissait
+  // qu'aux navigations explicites — une session expirant passivement
+  // (refresh token révoqué côté serveur) laissait l'utilisateur bloqué sur
+  // un écran authentifié mort jusqu'au cold start (cf. zone 6 de
+  // docs/AUTH_SECURITY_AUDIT.md). Les `context.go('/login')` manuels après
+  // signOut() restent en place (belt + suspenders) — ils gèrent le cas
+  // actif (logout explicite), refreshListenable gère le cas passif.
+  refreshListenable: AuthRouterNotifier.instance,
   redirect: (context, state) {
     final session = Supabase.instance.client.auth.currentSession;
     final path = state.matchedLocation;
@@ -138,8 +149,17 @@ final appRouter = GoRouter(
           path.startsWith('/signup') ||
           path == '/select-account-type';
       if (session != null && isAuthOnlyPath) {
-        final role = Supabase.instance.client.auth.currentUser
-                ?.userMetadata?['role'] as String?;
+        // Lecture AUTORITAIRE via AuthRouterNotifier (cache de
+        // public.users.role mis à jour par realtime_bootstrap après chaque
+        // signedIn). Avant 2026-04-24 on lisait userMetadata['role'], NULL
+        // pour les inscriptions OAuth → un Pro Google atterrissait sur
+        // /client/feed. Cf. docs/AUTH_SECURITY_AUDIT.md bug 7b.
+        // Si le cache est encore null (race au tout premier signedIn avant
+        // que _fetchUserRole termine), on laisse l'user sur l'écran courant
+        // — refreshListenable re-déclenchera la redirection dès que le
+        // bootstrap aura pushé la valeur.
+        final role = AuthRouterNotifier.instance.role;
+        if (role == null) return null;
         return role == 'pro' ? '/pro/feed' : '/client/feed';
       }
       return null;
@@ -376,14 +396,33 @@ final appRouter = GoRouter(
     GoRoute(
       path: '/pro/pos/reader',
       pageBuilder: (context, state) {
-        // PosAmount is the primary extra; fall back to an empty amount so
-        // the reader opens in idle rather than hard-crashing if the user
-        // deep-links here without going through amount entry.
+        // The reader accepts two shapes of `extra`:
+        //   1. A bare PosAmount (legacy: walk-in / standalone POS flow).
+        //   2. A Map<String,Object?> with keys {amount, bookingId, kind}
+        //      (booking-balance flow — collecting the solde of a deposit
+        //      booking via Tap to Pay). The Edge Function will validate
+        //      the booking server-side and override amount/tip/taxes.
         final extra = state.extra;
-        final amount = extra is PosAmount ? extra : const PosAmount();
+        PosAmount amount = const PosAmount();
+        String? bookingId;
+        String kind = 'standalone';
+        if (extra is PosAmount) {
+          amount = extra;
+        } else if (extra is Map<String, Object?>) {
+          final a = extra['amount'];
+          if (a is PosAmount) amount = a;
+          final b = extra['bookingId'];
+          if (b is String && b.isNotEmpty) bookingId = b;
+          final k = extra['kind'];
+          if (k is String && k.isNotEmpty) kind = k;
+        }
         return premiumPage(
           state: state,
-          child: PosReaderPage(amount: amount),
+          child: PosReaderPage(
+            amount: amount,
+            bookingId: bookingId,
+            kind: kind,
+          ),
         );
       },
     ),

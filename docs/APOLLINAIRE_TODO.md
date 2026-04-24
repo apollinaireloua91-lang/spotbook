@@ -523,3 +523,43 @@ l'appelle**. Pour fermer la boucle quand un Pro annule un événement :
       `Vous n'êtes plus sur la liste d'attente`.
 - [ ] Scope hors migration email (infra métier). À faire **après** Commit 4
       sauf si un Pro en a un besoin urgent avant.
+
+---
+
+## 13. Tests d'isolation de session (Phase B audit)
+
+> Voir `docs/AUTH_SECURITY_AUDIT.md` pour le diagnostic complet.
+> 5/7 zones validées, 2 bugs identifiés (Zones 6 + 7) — pas de bleed de
+> données entre users mais UX dégradée pour comptes Google/Apple OAuth.
+
+### Décision attendue d'Apollinaire
+
+- [ ] **Décider** : fixer les bugs Zone 7a + 7b avant launch (Phase B-bis,
+      ~30 min de code Claude) OU accepter la dette pour post-launch ?
+      - Bug 7a (Splash) : Pro Google-OAuth atterrit sur `/select-account-type`
+        au cold start au lieu de `/pro/feed`.
+      - Bug 7b (Router) : redirect post-login vers `/client/feed` au lieu de
+        `/pro/feed` pour Pro sans `userMetadata.role` (Google OAuth).
+      - Cause racine commune : lecture de `userMetadata['role']` au lieu de
+        `public.users.role`.
+- [ ] **Décider** : ajouter un `refreshListenable` au router (Zone 6) ou
+      laisser la convention `context.go('/login')` manuelle après chaque
+      `signOut()` ?
+
+### Tests à exécuter manuellement (iPhone physique recommandé)
+
+| # | Scénario | Résultat attendu | Si échec |
+|---|----------|------------------|----------|
+| 1 | User Pro (email) signOut → re-login User Client (email) sur le même device | Aucune donnée Pro visible. Notifications Client fraîches. | Bug Zone 3 (régression autoDispose) |
+| 2 | User Pro (Google) cold start | Atterrit sur `/pro/feed` | ❌ Bug 7a actuel — sera fixé par Phase B-bis |
+| 3 | User Pro signOut → kill app → reopen | Atterrit sur `/login`, jamais sur écran Pro | Bug Zone 1/2 (purge Keychain) |
+| 4 | Pro logué reçoit un push pendant que device A est offline → device A vient online après signOut | Push n'est PAS livré | Bug Zone 5 (FCM token DB pas null) |
+| 5 | User A logué sur device 1 et device 2 → User A signOut sur device 1 | Device 2 voit sa session expirée au prochain fetch | Bug Zone 2 (scope local au lieu de global) |
+| 6 | Pro édite manuellement `userMetadata.role = 'admin'` via Supabase JS console | Aucune route admin n'apparaît | Audit RLS séparé requis |
+
+### Garde-fou code-review (à ajouter au CONTRIBUTING / PR template)
+
+- [ ] Tout nouveau `NotifierProvider` qui cache de la donnée user-specific
+      (qui contient un `userId`, des bookings, des messages, etc.) DOIT
+      avoir `isAutoDispose: true`. Sans ça, bleed de données possible
+      entre user A → user B sur le même device.

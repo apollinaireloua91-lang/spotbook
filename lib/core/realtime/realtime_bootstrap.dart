@@ -7,6 +7,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../features/auth/data/auth_repository.dart';
 import '../../features/notifications/data/notification_repository.dart';
+import '../../router/auth_router_notifier.dart';
 import '../../shared/utils/push_notification_service.dart';
 import 'realtime_manager.dart';
 
@@ -75,6 +76,12 @@ final realtimeBootstrapProvider = Provider<void>((ref) {
         // OAuth sign-ins, and is editable by the user anyway (security best
         // practice: never base authorization on user_metadata).
         final role = await _fetchUserRole(user.id);
+        // Pousser dans le cache du router AVANT le reinitializeForRole. Si
+        // null on garde le cache à null → le router redirigera vers
+        // /select-account-type. Évite que le router lise une valeur stale
+        // (ex: ancien user 'pro') pendant que le nouveau user n'a pas
+        // encore son rôle fetché.
+        AuthRouterNotifier.instance.setRole(role);
         if (role == null) {
           debugPrint('[RealtimeBootstrap] role not set yet for ${user.id} — '
               'skipping realtime init (awaits RoleSelectionScreen → '
@@ -90,6 +97,10 @@ final realtimeBootstrapProvider = Provider<void>((ref) {
     }
 
     if (event == AuthChangeEvent.signedOut) {
+      // Purge du rôle cached — défense en profondeur. AuthRouterNotifier
+      // le purge déjà via son listener sur onAuthStateChange ; on duplique
+      // ici pour garantir l'ordre (clear AVANT teardown des channels).
+      AuthRouterNotifier.instance.setRole(null);
       // Soft teardown: removes every channel and resets the session
       // pointers, but keeps the typed StreamControllers alive so listeners
       // survive a sign-out → sign-in cycle in the same app instance.
@@ -107,6 +118,10 @@ final realtimeBootstrapProvider = Provider<void>((ref) {
     final user = Supabase.instance.client.auth.currentUser;
     if (user == null) return;
     final role = await _fetchUserRole(user.id);
+    // Pousser dans le cache router AVANT le check null, pour que la
+    // RoleSelectionScreen voie le router se ré-évaluer dès qu'elle a
+    // déclenché ce refresh.
+    AuthRouterNotifier.instance.setRole(role);
     if (role == null) return;
     ref.read(realtimeManagerProvider).reinitializeForRole(
           userId: user.id,

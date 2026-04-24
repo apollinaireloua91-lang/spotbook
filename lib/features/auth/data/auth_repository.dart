@@ -43,9 +43,42 @@ class AuthRepository {
   String? get currentUserId => currentUser?.id;
   String? get currentUserFullName =>
       currentUser?.userMetadata?['full_name'] as String?;
+  /// ⚠ NE PLUS UTILISER pour du routing — `userMetadata['role']` est NULL
+  /// pour les inscriptions Google/Apple OAuth et reste éditable par l'user
+  /// (security best practice : never base authorization on user_metadata).
+  /// Utiliser [fetchUserRoleAuthoritative] (lit `public.users.role`) ou le
+  /// cache exposé par `AuthRouterNotifier.instance.role`. Conservé ici
+  /// uniquement pour les usages d'affichage non-critiques (e.g. fallback
+  /// label si le fetch DB échoue).
   String? get currentUserRole =>
       currentUser?.userMetadata?['role'] as String?;
   bool get hasActiveSession => currentSession != null;
+
+  /// Lit le rôle (`'client'` ou `'pro'`) depuis `public.users.role` —
+  /// **source de vérité authoritaire**. Renvoie `null` si pas de session,
+  /// si la row n'existe pas, ou si l'appel échoue (le caller doit alors
+  /// router vers `/select-account-type`).
+  ///
+  /// Utilisé par le splash et par `realtime_bootstrap`. Le résultat est
+  /// poussé dans `AuthRouterNotifier.instance.setRole(...)` pour que le
+  /// router le lise sync.
+  Future<String?> fetchUserRoleAuthoritative() async {
+    final uid = currentUserId;
+    if (uid == null) return null;
+    try {
+      final row = await _supabase
+          .from('users')
+          .select('role')
+          .eq('id', uid)
+          .maybeSingle();
+      return row?['role'] as String?;
+    } catch (_) {
+      // Best-effort — pas d'exception bubblée. Network down ou RLS qui
+      // refuse → caller route vers /select-account-type ou retombe sur la
+      // valeur cached précédente.
+      return null;
+    }
+  }
 
   Stream<AuthState> get authStateStream => _supabase.auth.onAuthStateChange;
 

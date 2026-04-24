@@ -7,6 +7,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'core/realtime/realtime_bootstrap.dart';
 import 'l10n/app_localizations.dart';
 import 'router/app_router.dart';
+import 'router/auth_router_notifier.dart';
 import 'shared/locale/app_locale_notifier.dart';
 import 'shared/theme/app_colors.dart';
 import 'shared/theme/app_theme.dart';
@@ -36,6 +37,11 @@ class _SpotbookAppState extends ConsumerState<SpotbookApp> {
   @override
   void initState() {
     super.initState();
+    // Démarre l'écoute Supabase auth events utilisée par le router via
+    // refreshListenable. Doit être appelé APRÈS Supabase.initialize (fait
+    // dans main.dart avant runApp) — d'où le start ici plutôt qu'au
+    // module-load du singleton. Idempotent.
+    AuthRouterNotifier.instance.start();
     _authSub = Supabase.instance.client.auth.onAuthStateChange.listen((data) {
       if (data.event == AuthChangeEvent.passwordRecovery) {
         appRouter.go('/reset-password');
