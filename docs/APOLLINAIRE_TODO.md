@@ -2,7 +2,7 @@
 
 > Ce document liste les actions que **Claude ne peut pas exécuter**
 > (approbations manuelles, accès physique à un device, décisions business,
-> déploiements de production). Dernière mise à jour : **2026-04-21**.
+> déploiements de production). Dernière mise à jour : **2026-04-24**.
 
 ---
 
@@ -10,31 +10,53 @@
 
 ### 1. Capability Apple « Tap to Pay on iPhone »
 
-> **Statut v1.0** : entitlement `com.apple.developer.proximity-reader.payment.acceptance`
-> **ACTIF** dans `ios/Runner/RunnerRelease.entitlements`. Tant que le ticket
-> Apple Developer Support n'est pas approuvé, **l'upload App Store Connect sera
-> REFUSÉ**. Décision utilisateur : ouvrir le ticket Apple AVANT d'attaquer
-> l'upload (1–4 semaines de délai).
+> **Statut 2026-04-23** : capability **ACCORDÉE** par Apple (Hanumath Sai,
+> Wallet Entitlements — Case **#19552730**), avec restriction de distribution
+> dev-only en attendant validation des 3 vidéos de démo + check-list de
+> revue applicative. Entitlement
+> `com.apple.developer.proximity-reader.payment.acceptance` **ACTIF** dans
+> `ios/Runner/RunnerRelease.entitlements`.
+>
+> **🚨 Bundle ID typo en cours de correction** : la réponse d'Apple
+> référence `com.spotbook.spotbook` au lieu du vrai `com.getspotbook.spotbook`.
+> Mail de correction envoyé à Hanumath le **2026-04-23** (cf.
+> `docs/APPLE_REPLY_BUNDLE_ID_CORRECTION.md`). Ne PAS soumettre les vidéos
+> tant que le bon App ID n'a pas été confirmé par Apple.
 
-- [ ] **Ouvrir un ticket Apple Developer Support** (Code Level Support → onglet
-      « Capabilities »).
-- [ ] Demander l'ajout de la capability :
-      `com.apple.developer.proximity-reader.payment.acceptance`
-      sur l'App ID `com.getspotbook.spotbook` (Apple Team ID `QCBH2X6CKT`).
-- [ ] Joindre : lien App Store Connect + description du use case (« paiements
-      sans contact pour prestations de service et événements, via Stripe
-      Terminal SDK »).
-- [ ] **Délai typique** : 5–15 jours ouvrés (parfois jusqu'à 4 semaines).
-- [ ] Sans cette approbation, tout build incluant l'entitlement échouera à
-      l'upload App Store Connect — voir `ios/Runner/RunnerRelease.entitlements`.
+- [x] ~~Ouvrir un ticket Apple Developer Support~~ → fait (Case #19552730).
+- [x] ~~Demander la capability `com.apple.developer.proximity-reader.payment.acceptance`~~
+      → **accordée** (dev-only).
+- [ ] **Recevoir la confirmation d'Apple que la capability est bien sur
+      `com.getspotbook.spotbook`** (réponse au mail du 2026-04-23 attendue
+      sous 1-3 jours ouvrés). Escalader à J+5 sur le même fil si pas de retour.
+- [ ] Lire les 2 documents Apple Box :
+      `https://apple.box.com/v/ttpoirequirements`
+      → App Requirements + App Review Checklist
+- [ ] Tourner les **3 vidéos de démo** (iPhone physique, pas simulator) :
+      - New User Journey : création compte Pro + onboarding Stripe Connect
+        + premier encaissement Tap to Pay
+      - Existing User Flow : Pro existant qui se connecte → écran
+        d'encaissement
+      - Checkout Flow : focus UX paiement (saisie montant → tap → reçu)
+- [ ] Remplir l'App Review Requirements Checklist (joindre les 3 vidéos).
+- [ ] Renvoyer la check-list complétée à Apple sur le même fil
+      (Case #19552730) pour lever la restriction dev-only.
 - [ ] **Tester en prod sur iPhone physique** (XS+ avec iOS 16.7+) une fois
-      approuvé : flow Stripe Terminal `discoverReaders` → Tap-to-Pay reader →
-      `collectPaymentMethod` → `processPayment`. Vérifier qu'une carte sans
-      contact réelle est acceptée.
+      la restriction dev-only levée : flow Stripe Terminal `discoverReaders`
+      → Tap-to-Pay reader → `collectPaymentMethod` → `processPayment`.
+      Vérifier qu'une carte sans contact réelle est acceptée.
+
+**Bloquants côté code (pas encore intégré)** :
+- Edge Function `stripe-terminal-connection-token` : ✅ codée et committée
+  (`supabase/functions/stripe-terminal-connection-token/index.ts`).
+- SDK Flutter `mek_stripe_terminal` : ❌ pas encore dans `pubspec.yaml`.
+- Écran POS Pro `/pro/pos` : ❌ à coder (saisie montant → discover reader
+  → collect payment → afficher reçu).
 
 **Référence** :
   - Stripe docs : https://stripe.com/docs/terminal/payments/setup-integration?reader=tap-to-pay
   - Apple : `ProximityReader` framework
+  - Case Apple : #19552730 — Hanumath Sai, Wallet Entitlements
 
 ### 2. Activation Stripe Terminal côté dashboard
 
@@ -77,6 +99,72 @@
       demande CLAUDE.md (WidgetsFlutterBinding → Supabase → Firebase → Hive → runApp)
 - [ ] Si le crash est post-init : inspecter `SpotbookApp` + providers chargés
       en eager (bootstrap realtime, FCM, PostHog)
+
+### 4-bis. Push notifications Pro — GUC + migration + validation runtime
+
+> **Contexte** : Phase A — diagnostic complet dans
+> `docs/PRO_NOTIFICATIONS_AUDIT.md`. Le code Flutter et la migration SQL
+> ont été livrés (commits `fix(push)` 2026-04-24), mais **la cascade
+> push reste cassée tant que les GUC PostgreSQL ne sont pas configurées
+> sur la base distante**. Sans ces deux paramètres, la fonction
+> `fire_send_push_notification` exit silencieusement (RAISE LOG + RETURN).
+
+- [ ] **Configurer les GUC Postgres en prod** (Supabase Dashboard → SQL editor) :
+      ```sql
+      ALTER DATABASE postgres SET app.settings.push_function_url
+        = 'https://vvczayvrurgfabnkxfap.supabase.co/functions/v1/send-push-notification';
+      ALTER DATABASE postgres SET app.settings.service_role_key
+        = '<service_role_key>';
+      ```
+      Le service_role_key est dans Supabase Dashboard → Settings → API →
+      `service_role` `secret`. **Ne jamais commit ce secret.**
+- [ ] **Vérifier l'application des GUC** (même SQL editor) :
+      ```sql
+      SELECT current_setting('app.settings.push_function_url', true) AS url,
+             current_setting('app.settings.service_role_key', true) IS NOT NULL AS has_key;
+      ```
+      Si `url` est NULL ou `has_key` est `false` → la cascade reste cassée.
+- [ ] **Appliquer la migration** `20260424120000_fix_push_notification_route_per_role.sql` :
+      ```bash
+      supabase db push
+      ```
+- [ ] **Tester sur iPhone Pro physique** :
+      - Connecter un compte Pro et un compte client (sur 2 devices ou
+        2 comptes du même device).
+      - Depuis le client, ouvrir une conversation existante (ou créer
+        via flow réservation) et envoyer un message texte.
+      - **Vérifier sur le device Pro** :
+        - [ ] Push FCM reçue (banner OS) **app au foreground**.
+        - [ ] Push FCM reçue (banner OS) **app en background**.
+        - [ ] Tap sur le push → ouvre `/pro/messages` (et non `/client/messages`).
+        - [ ] Le banner Material en foreground (CTA « Voir le message »)
+              s'affiche dans l'app et navigue correctement au tap.
+        - [ ] Badge unread sur la nav bar Pro se met à jour live (sans
+              redémarrer l'app), via Realtime.
+- [ ] **Vérifier en DB** :
+      ```sql
+      SELECT user_id, type, title, push_sent, created_at
+      FROM notifications
+      WHERE user_id = '<pro_uid>'
+      ORDER BY created_at DESC
+      LIMIT 10;
+      ```
+      - Confirmer qu'il y a **2 rows** par message (1 du trigger via EF
+        avec `push_sent=true`, 1 de Flutter `_notifyRecipient` —
+        comportement transitoire).
+      - `push_sent` doit être `true` pour la row EF (sinon le FCM token
+        est probablement invalide/stale).
+- [ ] **Une fois validation runtime faite**, créer un commit qui
+      supprime `chat_repository._notifyRecipient` (et son call site
+      L117) pour éliminer les doublons. Voir commentaire en place dans
+      `lib/features/chat/data/chat_repository.dart:117` qui pointe vers
+      cette TODO.
+
+> **Diagnostic complet** : `docs/PRO_NOTIFICATIONS_AUDIT.md`.
+> **Commits Phase A** :
+>   - `fix(push)`: route FCM par rôle (migration SQL)
+>   - `fix(messages)`: aligner _notifyRecipient avec EF
+>   - `feat(push)`: wire FCM foreground/tap/cold-start handlers
 
 ---
 
