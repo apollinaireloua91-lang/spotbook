@@ -1,6 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
-import { encode as base64url } from "https://deno.land/std@0.168.0/encoding/base64url.ts";
 import {
   isValidUuid,
   jsonResponse,
@@ -8,6 +7,16 @@ import {
   securityHeadersFor,
   timingSafeEqual,
 } from "../_shared/security.ts";
+
+/// Encode bytes en base64url (RFC 4648 §5) — format attendu par le JWT
+/// signing de Google OAuth2. On garde un helper inline plutôt que
+/// `std/encoding/base64url` dont la signature `(data: string | ArrayBuffer)`
+/// rejette `Uint8Array<ArrayBuffer>` sous le TS actuel de Deno.
+function base64url(bytes: Uint8Array): string {
+  let bin = "";
+  for (let i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
+  return btoa(bin).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
 
 interface PushPayload {
   userId: string;
