@@ -1273,5 +1273,11 @@
   "viewDetails": "View details",
   "paidOnline": "Paid online",
   "balanceToPay": "Balance to pay",
-  "balanceToCollect": "Balance to collect"
+  "balanceToCollect": "Balance to collect",
+  "qrFullscreenTitle": "My QR Code",
+  "qrFullscreenHint": "Show this screen to the provider when you arrive.",
+  "qrOpenFullscreen": "Fullscreen",
+  "qrCloseFullscreen": "Close",
+  "qrUnavailableTitle": "QR not yet available",
+  "qrUnavailableSubtitle": "Your QR code will be generated as soon as payment is confirmed."
 }

@@ -3080,4 +3080,24 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get balanceToCollect => 'Balance to collect';
+
+  @override
+  String get qrFullscreenTitle => 'My QR Code';
+
+  @override
+  String get qrFullscreenHint =>
+      'Show this screen to the provider when you arrive.';
+
+  @override
+  String get qrOpenFullscreen => 'Fullscreen';
+
+  @override
+  String get qrCloseFullscreen => 'Close';
+
+  @override
+  String get qrUnavailableTitle => 'QR not yet available';
+
+  @override
+  String get qrUnavailableSubtitle =>
+      'Your QR code will be generated as soon as payment is confirmed.';
 }

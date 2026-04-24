@@ -3113,4 +3113,24 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get balanceToCollect => 'À encaisser';
+
+  @override
+  String get qrFullscreenTitle => 'Mon code QR';
+
+  @override
+  String get qrFullscreenHint =>
+      'Présentez cet écran au prestataire à votre arrivée.';
+
+  @override
+  String get qrOpenFullscreen => 'Plein écran';
+
+  @override
+  String get qrCloseFullscreen => 'Fermer';
+
+  @override
+  String get qrUnavailableTitle => 'QR pas encore disponible';
+
+  @override
+  String get qrUnavailableSubtitle =>
+      'Le code QR sera généré dès la confirmation de paiement.';
 }

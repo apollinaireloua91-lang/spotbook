@@ -5960,6 +5960,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Balance to collect'**
   String get balanceToCollect;
+
+  /// No description provided for @qrFullscreenTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'My QR Code'**
+  String get qrFullscreenTitle;
+
+  /// No description provided for @qrFullscreenHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Show this screen to the provider when you arrive.'**
+  String get qrFullscreenHint;
+
+  /// No description provided for @qrOpenFullscreen.
+  ///
+  /// In en, this message translates to:
+  /// **'Fullscreen'**
+  String get qrOpenFullscreen;
+
+  /// No description provided for @qrCloseFullscreen.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get qrCloseFullscreen;
+
+  /// No description provided for @qrUnavailableTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'QR not yet available'**
+  String get qrUnavailableTitle;
+
+  /// No description provided for @qrUnavailableSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your QR code will be generated as soon as payment is confirmed.'**
+  String get qrUnavailableSubtitle;
 }
 
 class _AppLocalizationsDelegate

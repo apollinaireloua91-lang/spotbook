@@ -4,7 +4,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:qr_flutter/qr_flutter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../core/services/app_config_provider.dart';
@@ -12,6 +11,7 @@ import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/utils/currency_formatter.dart';
 import '../../../../shared/utils/share_branding.dart';
+import '../../../../shared/widgets/qr_display_widget.dart';
 import '../../../../shared/widgets/spotbook_button.dart';
 import '../../../../shared/widgets/spotbook_loading_shimmer.dart';
 import '../../../chat/data/chat_repository.dart';
@@ -22,6 +22,7 @@ import '../../data/booking_repository.dart';
 import '../../../../shared/theme/theme_mode_notifier.dart';
 import '../../domain/booking_models.dart';
 import '../widgets/booking_status_presenter.dart';
+import 'booking_qr_screen.dart';
 
 /// Détail d\'un RDV — vue unifiée (client ou pro) selon `auth.uid()`.
 class BookingDetailScreen extends ConsumerStatefulWidget {
@@ -1802,73 +1803,37 @@ class _BookingQrSection extends StatelessWidget {
       ),
       child: Column(
         children: [
-          Text(
-            l.yourQrCode,
-            style: GoogleFonts.sora(
-              color: AppColors.blanc,
-              fontSize: 16,
-              fontWeight: FontWeight.w700,
-            ),
+          // Le QR partagé : tap = ouvre plein écran (UX scan-friendly).
+          // Le statut "déjà validé" est délégué au widget partagé via
+          // QrValidatedBadge ; sinon, helpText "présentez à l'arrivée".
+          QrDisplayWidget(
+            qrData: qrData,
+            size: 200,
+            title: l.yourQrCode,
+            statusBadge: booking.isScanned
+                ? QrValidatedBadge(label: l.qrAlreadyValidated)
+                : null,
+            helpText: booking.isScanned ? null : l.presentQrOnArrival,
+            onTap: () {
+              HapticFeedback.selectionClick();
+              showBookingQrFullscreen(context, booking: booking);
+            },
           ),
           const SizedBox(height: 16),
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: QrImageView(
-              data: qrData,
-              version: QrVersions.auto,
-              size: 200,
-              backgroundColor: Colors.white,
-              eyeStyle: const QrEyeStyle(
-                eyeShape: QrEyeShape.square,
-                color: Colors.black,
-              ),
-              dataModuleStyle: const QrDataModuleStyle(
-                dataModuleShape: QrDataModuleShape.square,
-                color: Colors.black,
-              ),
-            ),
-          ),
-          const SizedBox(height: 12),
-          if (booking.isScanned)
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              decoration: BoxDecoration(
-                color: AppColors.success.withValues(alpha: 0.12),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(Icons.check_circle, color: AppColors.success, size: 16),
-                  const SizedBox(width: 6),
-                  Text(
-                    l.qrAlreadyValidated,
-                    style: GoogleFonts.dmSans(
-                      color: AppColors.success,
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
-              ),
-            )
-          else
-            Text(
-              l.presentQrOnArrival,
-              textAlign: TextAlign.center,
-              style: GoogleFonts.dmSans(
-                color: AppColors.gris,
-                fontSize: 13,
-              ),
-            ),
-          const SizedBox(height: 16),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+          // Action row : Plein écran (primaire) + Partager
+          Wrap(
+            spacing: 10,
+            runSpacing: 10,
+            alignment: WrapAlignment.center,
             children: [
+              _QrActionButton(
+                icon: Icons.fullscreen_rounded,
+                label: l.qrOpenFullscreen,
+                onTap: () {
+                  HapticFeedback.lightImpact();
+                  showBookingQrFullscreen(context, booking: booking);
+                },
+              ),
               _QrActionButton(
                 icon: Icons.share_rounded,
                 label: l.share,

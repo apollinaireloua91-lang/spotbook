@@ -1273,5 +1273,11 @@
   "viewDetails": "Voir détails",
   "paidOnline": "Payé en ligne",
   "balanceToPay": "À régler",
-  "balanceToCollect": "À encaisser"
+  "balanceToCollect": "À encaisser",
+  "qrFullscreenTitle": "Mon code QR",
+  "qrFullscreenHint": "Présentez cet écran au prestataire à votre arrivée.",
+  "qrOpenFullscreen": "Plein écran",
+  "qrCloseFullscreen": "Fermer",
+  "qrUnavailableTitle": "QR pas encore disponible",
+  "qrUnavailableSubtitle": "Le code QR sera généré dès la confirmation de paiement."
 }

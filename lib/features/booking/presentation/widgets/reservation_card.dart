@@ -7,6 +7,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../domain/booking_models.dart';
+import '../screens/booking_qr_screen.dart';
 import 'booking_status_presenter.dart';
 
 // ─── Month / weekday abbreviations (fr) ─────────────────────────────────────
@@ -159,7 +160,7 @@ class _ReservationCardState extends State<ReservationCard>
                     ),
                   )
                 else if (widget.isUpcoming &&
-                    presentation.primaryCta == BookingPrimaryCta.message)
+                    presentation.primaryCta == BookingPrimaryCta.message) ...[
                   _ActionRow(
                     leading: _GhostButton(
                       label: l.cancel,
@@ -173,7 +174,17 @@ class _ReservationCardState extends State<ReservationCard>
                       icon: Icons.mail_outline_rounded,
                       onTap: widget.onContact,
                     ),
-                  )
+                  ),
+                  // Raccourci QR : ouvre directement le plein écran sans
+                  // passer par le booking detail. Visible uniquement pour
+                  // les RDV confirmés ayant déjà un QR signé (donc
+                  // payment_intent.succeeded a tourné).
+                  if (b.hasQrCode)
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 14),
+                      child: _QrShortcutRow(booking: b),
+                    ),
+                ]
                 else if (presentation.primaryCta == BookingPrimaryCta.viewDetails)
                   Padding(
                     padding: const EdgeInsets.fromLTRB(16, 0, 16, 14),
@@ -803,4 +814,69 @@ DateTime? _tryParseDate(String? date) {
 String? _formatHHMM(String? raw) {
   if (raw == null || raw.length < 5) return null;
   return raw.substring(0, 5);
+}
+
+/// Mini-CTA "Mon QR code" affichée sous l'_ActionRow pour les bookings
+/// confirmés ayant déjà un QR signé. Tap → BookingQrScreen plein écran.
+///
+/// On garde une apparence sobre (ghost button violet) pour ne pas dominer
+/// le primary "Message" juste au-dessus, mais avec une icône QR explicite
+/// pour qu'on devine immédiatement à quoi sert le bouton.
+class _QrShortcutRow extends StatelessWidget {
+  const _QrShortcutRow({required this.booking});
+
+  final BookingModel booking;
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: () {
+          HapticFeedback.lightImpact();
+          showBookingQrFullscreen(context, booking: booking);
+        },
+        borderRadius: BorderRadius.circular(10),
+        child: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+          decoration: BoxDecoration(
+            color: AppColors.violet.withValues(alpha: 0.08),
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(
+              color: AppColors.violet.withValues(alpha: 0.20),
+              width: 0.6,
+            ),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.qr_code_2_rounded,
+                color: AppColors.violetClair,
+                size: 18,
+              ),
+              const SizedBox(width: 8),
+              Text(
+                l.qrFullscreenTitle,
+                style: GoogleFonts.dmSans(
+                  color: AppColors.violetClair,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(width: 4),
+              Icon(
+                Icons.chevron_right_rounded,
+                color: AppColors.violetClair,
+                size: 18,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 }
