@@ -8,6 +8,7 @@ import {
   jsonResponse,
   securityHeaders,
 } from "../_shared/security.ts";
+import { currencyForCountry } from "../_shared/currency.ts";
 
 const corsHeaders = securityHeaders;
 
@@ -46,7 +47,7 @@ serve(async (req) => {
       return jsonResponse({ error: "unauthorized" }, 401);
     }
 
-    const { ticketTypeId, quantity } = await req.json();
+    const { ticketTypeId, quantity, purchaseNonce } = await req.json();
     if (
       !ticketTypeId ||
       !isValidUuid(String(ticketTypeId)) ||
@@ -60,10 +61,25 @@ serve(async (req) => {
       );
     }
 
-    // Fetch ticket type + event pro
+    // Idempotency : accepter un nonce client (UUID généré côté app au tap
+    // sur "Acheter") pour que les retries réseau renvoient le même PI.
+    // Fallback : fenêtre de 5 minutes pour éviter les doubles charges sur
+    // retries rapides si le client n'envoie pas de nonce (ancienne version).
+    const clientNonce =
+      typeof purchaseNonce === "string" &&
+      purchaseNonce.length >= 8 &&
+      purchaseNonce.length <= 64 &&
+      /^[A-Za-z0-9_\-]+$/.test(purchaseNonce)
+        ? purchaseNonce
+        : `bucket-${Math.floor(Date.now() / (5 * 60 * 1000))}`;
+
+    // Fetch ticket type + event (commission_rate/service_fee sont stockés
+    // au niveau event, pas hardcodés — permet de tuner par événement).
     const { data: ticketType, error: ttErr } = await supabase
       .from("ticket_types")
-      .select("*, events(pro_id, profiles_pro:pro_id(stripe_account_id))")
+      .select(
+        "*, events(pro_id, commission_rate, service_fee, profiles_pro:pro_id(stripe_account_id, country))",
+      )
       .eq("id", ticketTypeId)
       .single();
 
@@ -83,10 +99,17 @@ serve(async (req) => {
     if (!isValidAmount(Number(unitPrice))) {
       return jsonResponse({ error: "ticket amount invalide" }, 400);
     }
-    const serviceFeeCents = Math.round(2.50 * quantity * 100); // $2.50/ticket
+    // Commission + service fee lus depuis events (fallback défauts CLAUDE.md).
+    // Une borne 0 ≤ rate ≤ 1 évite qu'une valeur aberrante (ex: 2.5 au lieu
+    // de 0.25) vide involontairement le payout du pro.
+    const eventCommissionRaw = Number(ticketType.events?.commission_rate ?? 0.12);
+    const eventCommissionRate = Math.min(Math.max(eventCommissionRaw, 0), 1);
+    const eventServiceFee = Number(ticketType.events?.service_fee ?? 2.50);
+    const serviceFeeCents = Math.round(eventServiceFee * quantity * 100);
     const chargeAmount = totalCents + serviceFeeCents;
-    // 12% event commission + service fee — ALL goes to Spotbook
-    const commission = Math.round(totalCents * 0.12) + serviceFeeCents;
+    // commission events + service fee → Spotbook (application_fee)
+    const commission =
+      Math.round(totalCents * eventCommissionRate) + serviceFeeCents;
 
     const rateLimitResp = await fetch(
       `${Deno.env.get("SUPABASE_URL")}/functions/v1/rate-limiter`,
@@ -113,10 +136,12 @@ serve(async (req) => {
 
     const proStripeId =
       ticketType.events?.profiles_pro?.stripe_account_id;
+    const proCountry =
+      ticketType.events?.profiles_pro?.country as string | null | undefined;
 
     const params: Record<string, unknown> = {
       amount: chargeAmount,
-      currency: "cad",
+      currency: currencyForCountry(proCountry),
       metadata: {
         ticketTypeId,
         eventId: ticketType.event_id,
@@ -134,7 +159,7 @@ serve(async (req) => {
     const paymentIntent = await stripe.paymentIntents.create(
       params as Stripe.PaymentIntentCreateParams,
       {
-        idempotencyKey: `ticket-${ticketTypeId}-${user.id}-${quantity}-${crypto.randomUUID()}`,
+        idempotencyKey: `ticket-${ticketTypeId}-${user.id}-${quantity}-${clientNonce}`,
       }
     );
 

@@ -8,6 +8,7 @@ import {
   jsonResponse,
   securityHeaders,
 } from "../_shared/security.ts";
+import { currencyForCountry } from "../_shared/currency.ts";
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -49,10 +50,10 @@ serve(async (req) => {
       return jsonResponse({ error: "bookingId must be a valid UUID" }, 400);
     }
 
-    // Fetch booking
+    // Fetch booking (inclut country du pro pour devise cohérente)
     const { data: booking, error: bErr } = await supabase
       .from("bookings")
-      .select("*, profiles_pro(stripe_account_id, commission_rate)")
+      .select("*, profiles_pro(stripe_account_id, commission_rate, country)")
       .eq("id", bookingId)
       .single();
 
@@ -129,9 +130,15 @@ serve(async (req) => {
     // application_fee = commission + service fee — ALL goes to Spotbook
     const applicationFee = fullCommission + serviceFeeCents;
 
+    // Devise : on respecte celle persistée sur le booking (fixée à la création)
+    // et on retombe sur la devise du pays du pro. Pas de fallback "cad" en dur —
+    // un booking FR/US se retrouverait facturé en CAD sinon.
+    const bookingCurrency =
+      (booking.currency as string | null)?.toLowerCase() ||
+      currencyForCountry(pro?.country as string | null | undefined);
     const params: Record<string, unknown> = {
       amount: chargeAmount,
-      currency: (booking.currency || "cad").toLowerCase(),
+      currency: bookingCurrency,
       automatic_payment_methods: { enabled: true },
       metadata: {
         bookingId: booking.id,
@@ -151,11 +158,40 @@ serve(async (req) => {
       { idempotencyKey: `${bookingId}-deposit-${user.id}` }
     );
 
-    // Store PaymentIntent ID on booking
-    await supabase
+    // Store PaymentIntent ID on booking. Si l'UPDATE échoue après la création
+    // du PI, on cancel le PI (best-effort) pour éviter un charge orphelin.
+    const { error: updateErr } = await supabase
       .from("bookings")
       .update({ stripe_payment_intent_id: paymentIntent.id })
       .eq("id", bookingId);
+
+    if (updateErr) {
+      console.error(
+        JSON.stringify({
+          level: "error",
+          code: "ORPHAN_BOOKING",
+          message: "Stripe PaymentIntent created but booking.update failed",
+          bookingId,
+          paymentIntentId: paymentIntent.id,
+          dbError: updateErr.message,
+        }),
+      );
+      try {
+        await stripe.paymentIntents.cancel(paymentIntent.id, {
+          cancellation_reason: "abandoned",
+        });
+      } catch (cancelErr) {
+        console.error(
+          JSON.stringify({
+            level: "error",
+            code: "ORPHAN_BOOKING_CANCEL_FAILED",
+            paymentIntentId: paymentIntent.id,
+            error: (cancelErr as Error).message,
+          }),
+        );
+      }
+      return jsonResponse({ error: "internal_error" }, 500);
+    }
 
     return new Response(
       JSON.stringify({ clientSecret: paymentIntent.client_secret }),

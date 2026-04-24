@@ -8,6 +8,7 @@ import {
   jsonResponse,
   securityHeaders,
 } from "../_shared/security.ts";
+import { currencyForCountry } from "../_shared/currency.ts";
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -52,10 +53,10 @@ serve(async (req) => {
       );
     }
 
-    // Fetch submission with pro's Stripe account
+    // Fetch submission with pro's Stripe account + country (devise)
     const { data: submission, error: sErr } = await supabase
       .from("catering_submissions")
-      .select("*, profiles_pro(stripe_account_id, commission_rate)")
+      .select("*, profiles_pro(stripe_account_id, commission_rate, country)")
       .eq("id", submissionId)
       .single();
 
@@ -143,9 +144,13 @@ serve(async (req) => {
     const fullCommission = Math.round(totalPriceCents * commissionRate);
     const applicationFee = fullCommission + serviceFeeCents;
 
+    // Devise basée sur le pays du pro — pas de fallback "cad" en dur
+    const cateringCurrency = currencyForCountry(
+      pro?.country as string | null | undefined,
+    );
     const params: Record<string, unknown> = {
       amount: chargeAmount,
-      currency: "cad",
+      currency: cateringCurrency,
       automatic_payment_methods: { enabled: true },
       metadata: {
         submissionId: submission.id,
@@ -165,13 +170,45 @@ serve(async (req) => {
       { idempotencyKey: `catering-${submissionId}-deposit-${user.id}` }
     );
 
-    // Insert catering_deposits row
-    await supabase.from("catering_deposits").insert({
-      submission_id: submissionId,
-      amount: depositAmount,
-      stripe_payment_id: paymentIntent.id,
-      status: "pending",
-    });
+    // Insert catering_deposits row. Si l'INSERT échoue, on cancel le PI
+    // pour éviter un charge orphelin côté Stripe.
+    const { error: insertErr } = await supabase
+      .from("catering_deposits")
+      .insert({
+        submission_id: submissionId,
+        amount: depositAmount,
+        stripe_payment_id: paymentIntent.id,
+        status: "pending",
+      });
+
+    if (insertErr) {
+      console.error(
+        JSON.stringify({
+          level: "error",
+          code: "ORPHAN_CATERING_DEPOSIT",
+          message:
+            "Stripe PI created but catering_deposits insert failed",
+          submissionId,
+          paymentIntentId: paymentIntent.id,
+          dbError: insertErr.message,
+        }),
+      );
+      try {
+        await stripe.paymentIntents.cancel(paymentIntent.id, {
+          cancellation_reason: "abandoned",
+        });
+      } catch (cancelErr) {
+        console.error(
+          JSON.stringify({
+            level: "error",
+            code: "ORPHAN_CATERING_CANCEL_FAILED",
+            paymentIntentId: paymentIntent.id,
+            error: (cancelErr as Error).message,
+          }),
+        );
+      }
+      return jsonResponse({ error: "internal_error" }, 500);
+    }
 
     return new Response(
       JSON.stringify({ clientSecret: paymentIntent.client_secret }),

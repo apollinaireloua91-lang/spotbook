@@ -192,20 +192,70 @@ serve(async (req) => {
       .eq("id", slot.pro_id)
       .single();
 
+    // ── Tarification : commission Pro + frais de service client ───────────
+    // Source de vérité = `app_config` (jamais hardcodé côté Flutter / Edge).
+    // - commission_bookings : taux appliqué au sous-total de la prestation
+    //   (déduit du virement au Pro via application_fee_amount).
+    // - service_fee_client  : montant fixe FACTURÉ AU CLIENT (s'ajoute au
+    //   montant chargé), reversé intégralement à la plateforme via
+    //   application_fee_amount (donc le Pro touche bien `deposit × (1-commission)`).
+    //
+    // Fallbacks (0.18 / 2.50) alignés sur app_config_provider.dart.
+    const { data: cfgRows } = await supabase
+      .from("app_config")
+      .select("key, value")
+      .in("key", ["commission_bookings", "service_fee_client"]);
+    const cfgMap = new Map<string, string>();
+    for (const row of (cfgRows ?? []) as Array<{ key: string; value: string | null }>) {
+      cfgMap.set(row.key, row.value ?? "");
+    }
+    const configCommissionRate = Number(
+      cfgMap.get("commission_bookings") ?? "",
+    );
+    const serviceFeeClient = Number(cfgMap.get("service_fee_client") ?? "");
+
     // Create Stripe PaymentIntent — amount in cents
     const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") ?? "", {
       apiVersion: "2023-10-16",
     });
 
-    const amountCents = Math.round(depositAmount * 100);
     if (!isValidAmount(Number(depositAmount))) {
       return jsonResponse(
         { error: "deposit_amount doit être > 0 et < 99999" },
         400
       );
     }
-    const commissionRate = pro?.commission_rate ?? 0.18;
-    const applicationFee = Math.round(amountCents * commissionRate);
+    // Le Pro peut avoir un override individuel (`profiles_pro.commission_rate`).
+    // Sans override → on prend la valeur app_config, et en dernier recours 18 %.
+    const commissionRate =
+      Number.isFinite(Number(pro?.commission_rate))
+        ? Number(pro?.commission_rate)
+        : Number.isFinite(configCommissionRate) && configCommissionRate > 0
+          ? configCommissionRate
+          : 0.18;
+    const serviceFeeAmount =
+      Number.isFinite(serviceFeeClient) && serviceFeeClient >= 0
+        ? serviceFeeClient
+        : 2.5;
+
+    const depositCents = Math.round(depositAmount * 100);
+    const serviceFeeCents = Math.round(serviceFeeAmount * 100);
+    // Le client paie : acompte + frais de service.
+    const amountCents = depositCents + serviceFeeCents;
+    // L'application_fee = commission Pro (sur l'acompte) + 100 % du service fee.
+    // Ainsi : Pro reçoit = depositCents × (1 − commission). Plateforme garde
+    // commission + serviceFee. Cohérent avec calculate_booking_payment.
+    const commissionCents = Math.round(depositCents * commissionRate);
+    const applicationFee = commissionCents + serviceFeeCents;
+
+    // Sanity : application_fee doit rester strictement < amount, sinon Stripe
+    // rejette le PI (le Pro reçoit 0 ou un montant négatif).
+    if (applicationFee >= amountCents) {
+      return jsonResponse(
+        { error: "application_fee_exceeds_amount" },
+        400,
+      );
+    }
 
     const bookingCurrency = currencyForCountry(
       pro?.country as string | null | undefined,
@@ -220,6 +270,9 @@ serve(async (req) => {
         proId: slot.pro_id,
         type: paymentMode === "deposit" ? "deposit" : "full_payment",
         paymentMode,
+        deposit_cents: String(depositCents),
+        service_fee_cents: String(serviceFeeCents),
+        commission_cents: String(commissionCents),
       },
     };
 
@@ -236,16 +289,22 @@ serve(async (req) => {
       { idempotencyKey: `booking-${bookingId}-deposit` }
     );
 
-    // Store payment intent ID + currency on booking.
+    // Store payment intent ID + currency + ventilation tarifaire on booking.
     // La devise est persistée pour que process-payout et cancel-booking
     // utilisent la même devise que le PaymentIntent original.
+    // service_fee + commission_amount sont snapshot à l'instant du booking
+    // pour figer la grille tarifaire même si app_config change ensuite.
     // Si l'UPDATE échoue après la création du PI : on cancel le PI
     // (best-effort) + on log ORPHAN_BOOKING pour réconciliation manuelle.
     const { error: updateErr } = await supabase
       .from("bookings")
       .update({
         stripe_payment_intent_id: paymentIntent.id,
+        deposit_stripe_payment_intent_id: paymentIntent.id,
         currency: bookingCurrency,
+        service_fee: serviceFeeAmount,
+        commission_rate: commissionRate,
+        commission_amount: commissionCents / 100,
       })
       .eq("id", bookingId);
 
@@ -300,6 +359,9 @@ serve(async (req) => {
         depositAmount,
         remainingAmount,
         paymentMode,
+        serviceFee: serviceFeeAmount,
+        commissionRate,
+        clientChargedNow: amountCents / 100,
       }),
       {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
