@@ -336,7 +336,7 @@ class _BookingFlowV2ScreenState extends ConsumerState<BookingFlowV2Screen> {
           currency: _currency(state),
         );
       case 5:
-        return Step6Confirmation(state: state);
+        return Step6Confirmation(state: state, currency: _currency(state));
       default:
         return const SizedBox.shrink();
     }

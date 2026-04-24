@@ -563,3 +563,57 @@ l'appelle**. Pour fermer la boucle quand un Pro annule un événement :
       (qui contient un `userId`, des bookings, des messages, etc.) DOIT
       avoir `isAutoDispose: true`. Sans ça, bleed de données possible
       entre user A → user B sur le même device.
+
+---
+
+## 14. Réintégration POS / Tap to Pay (v1.1)
+
+> Voir `docs/POS_REMOVAL_AUDIT.md` pour la liste exhaustive des fichiers
+> archivés et la rationale.
+
+### État v1.0
+- POS + Tap to Pay **désactivés** pour la soumission App Store v1.0.
+- Code archivé (préservé dans git) :
+  - `lib/_archive/pos/` (20 fichiers Flutter)
+  - `supabase/functions/_archive/{create-pos-payment-intent,send-pos-receipt,refund-pos-transaction,stripe-terminal-connection-token}/`
+- Entitlement `com.apple.developer.proximity-reader.payment.acceptance`
+  retiré des deux `Runner*.entitlements`.
+- Dépendance `mek_stripe_terminal: ^4.6.3` retirée de `pubspec.yaml`.
+- Le bouton "Encaisser solde via Tap to Pay" est remplacé par "Marquer
+  payé manuellement" + encart Interac/cash côté client (cf.
+  `OnSiteBalanceNotice`).
+
+### Ce qui RESTE en DB / serveur
+- **Table `pos_transactions`** : conservée. Migrations
+  `20260420180000_create_pos_transactions.sql` et
+  `20260423120000_pos_transactions_booking_link.sql` non droppées.
+- **EF déjà déployées sur Supabase** : à supprimer manuellement par
+  Apollinaire après merge (ne sont plus appelables côté client mais
+  squattent le projet Supabase). Commande à lancer **manuellement** :
+  ```bash
+  supabase functions delete create-pos-payment-intent
+  supabase functions delete send-pos-receipt
+  supabase functions delete refund-pos-transaction
+  supabase functions delete stripe-terminal-connection-token
+  ```
+
+### Réactivation v1.1 (après approbation Apple)
+1. Vérifier l'entitlement `proximity-reader.payment.acceptance` sur
+   l'Apple Developer Console + provisioning profile régénéré.
+2. Vérifier la capability Stripe `card_present_payments` sur les comptes
+   Connect des Pros pilotes.
+3. `git mv lib/_archive/pos lib/features/pos`
+4. `git mv supabase/functions/_archive/{create-pos-payment-intent,send-pos-receipt,refund-pos-transaction,stripe-terminal-connection-token} supabase/functions/`
+5. Restaurer dans `pubspec.yaml` : `mek_stripe_terminal: ^4.6.3`
+6. Restaurer le feature flag `kStripeTerminalEnabled` + override
+   `posTerminalDataSourceProvider` dans `lib/main.dart`.
+7. Restaurer les imports + 6 routes `/pro/pos/*` dans
+   `lib/router/app_router.dart`.
+8. Restaurer `PosHeroCta` dans `pro_dashboard_screen.dart`.
+9. Restaurer le bouton "Encaisser solde via Tap to Pay" + helper
+   `_collectRemainingPaymentTapToPay` dans `booking_detail_screen.dart`.
+10. Restaurer les XML entitlements `proximity-reader.payment.acceptance`
+    dans `Runner.entitlements` et `RunnerRelease.entitlements`.
+11. `supabase functions deploy --no-verify-jwt` pour les 4 EF.
+12. Tester sur un iPhone physique avec un compte Stripe Connect ayant
+    `card_present_payments` activé.

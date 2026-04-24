@@ -1,22 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../../../../core/services/app_config_provider.dart';
 import '../../../../../shared/theme/app_colors.dart';
 import '../../../../../shared/widgets/spotbook_button.dart';
 import '../../../data/booking_notifier.dart';
+import '../../widgets/on_site_balance_notice.dart';
 
 /// Step 6 — Booking confirmed. Animated success with callout + CTAs.
-class Step6Confirmation extends StatefulWidget {
-  const Step6Confirmation({super.key, required this.state});
+class Step6Confirmation extends ConsumerStatefulWidget {
+  const Step6Confirmation({
+    super.key,
+    required this.state,
+    this.currency = 'CAD',
+  });
+
   final BookingFlowState state;
+  final String currency;
 
   @override
-  State<Step6Confirmation> createState() => _Step6ConfirmationState();
+  ConsumerState<Step6Confirmation> createState() => _Step6ConfirmationState();
 }
 
-class _Step6ConfirmationState extends State<Step6Confirmation>
+class _Step6ConfirmationState extends ConsumerState<Step6Confirmation>
     with SingleTickerProviderStateMixin {
   late final AnimationController _anim;
 
@@ -38,6 +47,17 @@ class _Step6ConfirmationState extends State<Step6Confirmation>
 
   @override
   Widget build(BuildContext context) {
+    // Compute solde-on-site values pour l'encart Interac/cash. Affiché
+    // uniquement si le service est en mode `deposit` ET qu'un solde reste
+    // dû. En mode `full`, remaining = 0 → pas d'encart.
+    final service = widget.state.selectedService;
+    final isDepositMode = service?.paymentMode == 'deposit';
+    final servicesTotal = widget.state.totalPrice;
+    final deposit = widget.state.depositPrice;
+    final remaining = servicesTotal - deposit;
+    final cfg = ref.watch(appConfigProvider).value ?? AppConfig.fallback;
+    final showOnSiteNotice = isDepositMode && remaining > 0;
+
     return Padding(
       padding: const EdgeInsets.all(24),
       child: Column(
@@ -151,6 +171,21 @@ class _Step6ConfirmationState extends State<Step6Confirmation>
               ),
             ),
           ),
+          if (showOnSiteNotice) ...[
+            const SizedBox(height: 16),
+            FadeTransition(
+              opacity: CurvedAnimation(
+                parent: _anim,
+                curve: const Interval(0.6, 1.0, curve: Curves.easeOut),
+              ),
+              child: OnSiteBalanceNotice(
+                depositAmount: deposit,
+                serviceFee: cfg.serviceFeeClient,
+                remainingAmount: remaining,
+                currency: widget.currency,
+              ),
+            ),
+          ],
           const Spacer(flex: 2),
           SizedBox(
             width: double.infinity,

@@ -17,6 +17,7 @@ import '../../../../shared/widgets/spotbook_loading_shimmer.dart';
 import '../../../chat/data/chat_repository.dart';
 import '../../../moderation/presentation/screens/booking_report_sheet.dart';
 import '../../data/booking_notifier.dart';
+import '../widgets/on_site_balance_notice.dart';
 import '../../data/booking_repository.dart';
 import '../../../../shared/theme/theme_mode_notifier.dart';
 import '../../domain/booking_models.dart';
@@ -319,12 +320,14 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
               onBack: () => context.pop(),
             );
           }
-          final commissionRate = (ref.watch(appConfigProvider).value ?? AppConfig.fallback).commissionBookings;
+          final cfg = ref.watch(appConfigProvider).value ?? AppConfig.fallback;
+          final commissionRate = cfg.commissionBookings;
           return _DetailBody(
             booking: booking,
             isProViewer: isProViewer,
             actionBusy: _actionBusy,
             commissionRate: commissionRate,
+            serviceFee: cfg.serviceFeeClient,
             onChat: () => _openChat(booking, isProViewer: isProViewer),
             onMarkCompleted: () => _markCompleted(booking),
             onReport: () => showBookingReportSheet(
@@ -406,6 +409,7 @@ class _DetailBody extends StatelessWidget {
     required this.isProViewer,
     required this.actionBusy,
     required this.commissionRate,
+    required this.serviceFee,
     required this.onChat,
     required this.onMarkCompleted,
     required this.onReport,
@@ -419,6 +423,7 @@ class _DetailBody extends StatelessWidget {
   final bool isProViewer;
   final bool actionBusy;
   final double commissionRate;
+  final double serviceFee;
   final VoidCallback onChat;
   final VoidCallback onMarkCompleted;
   final VoidCallback onReport;
@@ -547,6 +552,20 @@ class _DetailBody extends StatelessWidget {
                   padding: const EdgeInsets.only(top: 24),
                   child: _BookingQrSection(booking: booking),
                 ),
+              // Encart Interac/cash — vue client uniquement, tant qu'un solde
+              // reste dû en mains propres au pro. Tap to Pay désactivé v1.0.
+              if (!isProViewer &&
+                  booking.isDepositMode &&
+                  booking.hasRemainingPayment &&
+                  !booking.isRemainingPaid) ...[
+                const SizedBox(height: 16),
+                OnSiteBalanceNotice(
+                  depositAmount: booking.depositAmount,
+                  serviceFee: serviceFee,
+                  remainingAmount: booking.remainingAmount ?? 0,
+                  currency: booking.currency,
+                ),
+              ],
               const SizedBox(height: 24),
               _StatusTimeline(booking: booking),
               const SizedBox(height: 28),

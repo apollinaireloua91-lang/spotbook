@@ -13,6 +13,7 @@ import '../../../../../shared/utils/analytics_service.dart';
 import '../../../../../shared/utils/currency_formatter.dart';
 import '../../../../../shared/widgets/spotbook_button.dart';
 import '../../../data/booking_notifier.dart';
+import '../../widgets/on_site_balance_notice.dart';
 
 /// Step 5 — Payment.
 /// Creates the booking (atomic RPC) on mount, fetches the Stripe PaymentIntent
@@ -416,10 +417,11 @@ class _Step5PaymentState extends ConsumerState<Step5Payment> {
                       label: 'Commission Spotbook ($commissionPct%)',
                       value: fmt(commissionAmount),
                       muted: true),
-                  // Afficher « Solde sur place » uniquement si un solde
-                  // restera dû après le paiement en ligne. En mode `full`,
-                  // remaining vaut 0 — afficher « 0,00 $ Solde sur place »
-                  // est plus confusing qu'utile.
+                  // Solde sur place : ligne récap dans la liste pour rester
+                  // cohérent avec les autres _PaymentRow. Le détail Interac/
+                  // cash est rendu juste en-dessous via OnSiteBalanceNotice
+                  // pour expliciter les moyens de paiement acceptés (Tap to
+                  // Pay désactivé en v1.0).
                   if (!isFullPayment && remaining > 0) ...[
                     const SizedBox(height: 8),
                     _PaymentRow(
@@ -461,6 +463,20 @@ class _Step5PaymentState extends ConsumerState<Step5Payment> {
                 ],
               ),
             ),
+
+            // Encart Interac/cash : explicite les moyens de paiement acceptés
+            // pour le solde sur place. Tap to Pay (mek_stripe_terminal) est
+            // désactivé v1.0 — l'encaissement se fait uniquement par virement
+            // Interac ou cash. Le pro reçoit 100 % du solde en mains propres.
+            if (!isFullPayment && remaining > 0) ...[
+              const SizedBox(height: 12),
+              OnSiteBalanceNotice(
+                depositAmount: deposit,
+                serviceFee: serviceFee,
+                remainingAmount: remaining,
+                currency: widget.currency,
+              ),
+            ],
 
             if (errorText != null) ...[
               const SizedBox(height: 12),
