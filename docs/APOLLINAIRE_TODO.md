@@ -100,34 +100,64 @@
 - [ ] Si le crash est post-init : inspecter `SpotbookApp` + providers chargés
       en eager (bootstrap realtime, FCM, PostHog)
 
-### 4-bis. Push notifications Pro — GUC + migration + validation runtime
+### 4-bis. Push notifications Pro — Vault + migrations + validation runtime
 
 > **Contexte** : Phase A — diagnostic complet dans
-> `docs/PRO_NOTIFICATIONS_AUDIT.md`. Le code Flutter et la migration SQL
-> ont été livrés (commits `fix(push)` 2026-04-24), mais **la cascade
-> push reste cassée tant que les GUC PostgreSQL ne sont pas configurées
-> sur la base distante**. Sans ces deux paramètres, la fonction
-> `fire_send_push_notification` exit silencieusement (RAISE LOG + RETURN).
+> `docs/PRO_NOTIFICATIONS_AUDIT.md`. Le code Flutter et les migrations SQL
+> ont été livrés (commits `fix(push)` / `feat(push)` / `chore(push)`
+> 2026-04-24), mais **la cascade push reste cassée tant que les secrets
+> Vault ne sont pas créés sur la base distante**. Sans ces deux secrets,
+> la helper `fire_send_push_notification` exit silencieusement
+> (RAISE LOG + RETURN).
+>
+> **⚠ Update 2026-04-24** : la voie GUC (`ALTER DATABASE postgres SET
+> app.settings.X`) initialement prévue est **bloquée par Supabase Cloud**
+> (`permission denied (42501)` — superuser-only). On bascule sur Vault
+> (extension `supabase_vault`, vue `vault.decrypted_secrets`) — voir
+> migration `20260424130000_migrate_push_config_to_vault.sql`.
 
-- [ ] **Configurer les GUC Postgres en prod** (Supabase Dashboard → SQL editor) :
+- [ ] **Créer les secrets Vault en prod** (Supabase Dashboard → SQL editor) :
       ```sql
-      ALTER DATABASE postgres SET app.settings.push_function_url
-        = 'https://vvczayvrurgfabnkxfap.supabase.co/functions/v1/send-push-notification';
-      ALTER DATABASE postgres SET app.settings.service_role_key
-        = '<service_role_key>';
+      SELECT vault.create_secret(
+        '<service_role_key>',
+        'service_role_key',
+        'Service role key used by fire_send_push_notification helper'
+      );
+      SELECT vault.create_secret(
+        'https://vvczayvrurgfabnkxfap.supabase.co/functions/v1/send-push-notification',
+        'push_function_url',
+        'URL of the send-push-notification Edge Function'
+      );
       ```
-      Le service_role_key est dans Supabase Dashboard → Settings → API →
+      Le `service_role_key` est dans Supabase Dashboard → Settings → API →
       `service_role` `secret`. **Ne jamais commit ce secret.**
-- [ ] **Vérifier l'application des GUC** (même SQL editor) :
+- [ ] **Vérifier la présence des secrets** (même SQL editor) :
       ```sql
-      SELECT current_setting('app.settings.push_function_url', true) AS url,
-             current_setting('app.settings.service_role_key', true) IS NOT NULL AS has_key;
+      SELECT name FROM vault.secrets
+      WHERE name IN ('push_function_url', 'service_role_key');
       ```
-      Si `url` est NULL ou `has_key` est `false` → la cascade reste cassée.
-- [ ] **Appliquer la migration** `20260424120000_fix_push_notification_route_per_role.sql` :
+      Doit retourner **2 rows**. Si moins → re-créer le manquant.
+- [ ] **Vérifier que la helper lit bien les secrets** :
+      ```sql
+      -- Force un appel manuel sur ton propre user pour smoke-test :
+      SELECT public.fire_send_push_notification(
+        auth.uid(),
+        'Test Vault',
+        'Smoke test depuis SQL editor',
+        'message',
+        '{"route":"/notifications"}'::jsonb
+      );
+      -- Puis vérifier les logs Edge Functions :
+      --   Dashboard → Functions → send-push-notification → Logs
+      -- Doit montrer une invocation 200 dans les ~10 s suivantes.
+      ```
+- [ ] **Appliquer les deux migrations** dans l'ordre :
       ```bash
       supabase db push
       ```
+      Migrations concernées :
+        - `20260424120000_fix_push_notification_route_per_role.sql` (route /pro vs /client)
+        - `20260424130000_migrate_push_config_to_vault.sql` (Vault au lieu de GUC)
 - [ ] **Tester sur iPhone Pro physique** :
       - Connecter un compte Pro et un compte client (sur 2 devices ou
         2 comptes du même device).
