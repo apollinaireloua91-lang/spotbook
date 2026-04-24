@@ -2,19 +2,21 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>com.apple.developer.applesignin</key>
-	<array>
-		<string>Default</string>
-	</array>
-	<key>aps-environment</key>
-	<string>development</string>
-	<key>com.apple.developer.in-app-payments</key>
-	<array>
-		<string>merchant.com.spotbook.app</string>
-	</array>
-	<!-- Tap to Pay on iPhone (Stripe Terminal) — cf. RunnerRelease.entitlements.
-	     Ne fonctionnera en dev qu'après approbation Apple de la capability. -->
-	<key>com.apple.developer.proximity-reader.payment.acceptance</key>
-	<true/>
+    <key>com.apple.developer.applesignin</key>
+    <array>
+        <string>Default</string>
+    </array>
+
+    <key>aps-environment</key>
+    <string>development</string>
+
+    <key>com.apple.developer.in-app-payments</key>
+    <array>
+        <string>merchant.com.spotbook.app</string>
+    </array>
+
+    <!-- Tap to Pay on iPhone (Stripe Terminal) — Disabled for v1.0.
+         Re-enable in v1.1 after Apple approval of the
+         com.apple.developer.proximity-reader.payment.acceptance capability. -->
 </dict>
 </plist>
