@@ -7,6 +7,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../features/auth/data/auth_repository.dart';
 import '../../features/notifications/data/notification_repository.dart';
+import '../../shared/utils/push_notification_service.dart';
 import 'realtime_manager.dart';
 
 /// Subscription sur FCM `onTokenRefresh`. Doit être installée UNE SEULE FOIS
@@ -180,6 +181,15 @@ Future<void> _registerFcmToken(Ref ref) async {
           _fcmRefreshSub = null;
         });
       }
+
+      // Branche les handlers FCM (foreground banner + tap navigation +
+      // initial message). Idempotent : `wireHandlers()` ne double pas
+      // les listeners s'il est appelé plusieurs fois (par ex. à chaque
+      // auth event signedIn/tokenRefreshed). Sans ça, un push qui arrive
+      // pendant que l'app est ouverte est avalé silencieusement, et un
+      // tap sur push depuis le background n'amène nulle part.
+      PushNotificationService.instance.wireHandlers();
+      ref.onDispose(PushNotificationService.instance.dispose);
     }
   } catch (e) {
     debugPrint('[FCM] registration error: $e');

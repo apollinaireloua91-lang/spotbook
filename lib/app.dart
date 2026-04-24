@@ -12,6 +12,16 @@ import 'shared/theme/app_colors.dart';
 import 'shared/theme/app_theme.dart';
 import 'shared/utils/analytics_service.dart';
 
+/// Clé globale exposant le `ScaffoldMessenger` racine de l'app.
+///
+/// Permet aux services hors-widget (push notifications foreground, deep
+/// links, etc.) de poster un `MaterialBanner` ou un `SnackBar` sans
+/// disposer d'un `BuildContext` valide.
+///
+/// Branchée sur [MaterialApp.scaffoldMessengerKey] dans [_SpotbookAppState.build].
+final GlobalKey<ScaffoldMessengerState> rootScaffoldMessengerKey =
+    GlobalKey<ScaffoldMessengerState>();
+
 class SpotbookApp extends ConsumerStatefulWidget {
   const SpotbookApp({super.key});
 
@@ -72,6 +82,7 @@ class _SpotbookAppState extends ConsumerState<SpotbookApp> {
       darkTheme: AppTheme.dark,
       themeMode: ThemeMode.dark,
       routerConfig: appRouter,
+      scaffoldMessengerKey: rootScaffoldMessengerKey,
       locale: locale,
       supportedLocales: AppLocalizations.supportedLocales,
       localizationsDelegates: AppLocalizations.localizationsDelegates,

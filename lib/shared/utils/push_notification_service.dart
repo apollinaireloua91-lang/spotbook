@@ -1,125 +1,178 @@
+import 'dart:async';
+
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 
-import '../../features/notifications/data/notification_repository.dart';
+import '../../app.dart' show rootScaffoldMessengerKey;
+import '../../router/app_router.dart' show appRouter;
 import '../theme/app_colors.dart';
 
+/// Branche les handlers FCM pour les messages reçus en foreground,
+/// au tap depuis le background, et au cold start (via [getInitialMessage]).
+///
+/// Cycle de vie
+/// ────────────
+/// Instancié UNE SEULE FOIS depuis `realtime_bootstrap._registerFcmToken`
+/// après l'enregistrement du token FCM. Re-appeler `wireHandlers()` ne
+/// double pas les listeners (idempotent — guard via `_subs`).
+///
+/// L'enregistrement du token (`requestPermission` + `getToken` +
+/// `onTokenRefresh`) est géré séparément par `realtime_bootstrap` afin
+/// d'éviter les listeners en double — ne PAS le ré-implémenter ici.
+///
+/// Réception
+/// ─────────
+/// - **foreground** : poste un `MaterialBanner` non-bloquant via le
+///   `rootScaffoldMessengerKey` global, avec CTA « Voir le message »
+///   qui appelle [handleTap] sur la même `RemoteMessage`.
+/// - **background tap** : `onMessageOpenedApp` → [handleTap] qui
+///   navigue selon `data['route']` reçu du trigger PostgreSQL
+///   (cf. `tr_notify_new_message_push` : `/pro/messages` ou
+///   `/client/messages` selon `users.role` du destinataire).
+/// - **cold start** : `getInitialMessage()` → [handleTap].
+///
+/// La route est CONSOMMÉE telle quelle depuis `data['route']` ; aucune
+/// dérivation côté client → la source de vérité reste le trigger DB.
 class PushNotificationService {
-  PushNotificationService({required NotificationRepository repository})
-      : _repository = repository;
+  PushNotificationService._();
+  static final PushNotificationService instance = PushNotificationService._();
 
-  final NotificationRepository _repository;
-  final FirebaseMessaging _messaging = FirebaseMessaging.instance;
+  StreamSubscription<RemoteMessage>? _foregroundSub;
+  StreamSubscription<RemoteMessage>? _openedSub;
+  bool _initialMessageChecked = false;
 
-  Future<void> initialize(BuildContext context) async {
-    // Request permission
-    final settings = await _messaging.requestPermission(
-      alert: true,
-      badge: true,
-      sound: true,
-    );
+  /// Branche les 3 handlers FCM. Idempotent.
+  void wireHandlers() {
+    _foregroundSub ??= FirebaseMessaging.onMessage.listen(_showBanner);
+    _openedSub ??= FirebaseMessaging.onMessageOpenedApp.listen(handleTap);
 
-    if (settings.authorizationStatus == AuthorizationStatus.authorized ||
-        settings.authorizationStatus == AuthorizationStatus.provisional) {
-      final token = await _messaging.getToken();
-      if (token != null) {
-        await _repository.saveFcmToken(token);
-      }
-
-      _messaging.onTokenRefresh.listen((newToken) {
-        _repository.saveFcmToken(newToken);
+    if (!_initialMessageChecked) {
+      _initialMessageChecked = true;
+      FirebaseMessaging.instance.getInitialMessage().then((m) {
+        if (m != null) handleTap(m);
       });
-    }
-
-    // Foreground: show dialog (never system notification)
-    FirebaseMessaging.onMessage.listen((message) {
-      if (context.mounted) {
-        _showForegroundDialog(context, message);
-      }
-    });
-
-    // Background: navigate on tap
-    FirebaseMessaging.onMessageOpenedApp.listen((message) {
-      if (context.mounted) {
-        _navigateFromNotification(context, message);
-      }
-    });
-
-    // Terminated: check initial message
-    final initialMessage = await _messaging.getInitialMessage();
-    if (initialMessage != null && context.mounted) {
-      _navigateFromNotification(context, initialMessage);
     }
   }
 
-  void _showForegroundDialog(BuildContext context, RemoteMessage message) {
+  /// À appeler depuis `ref.onDispose` côté bootstrap.
+  void dispose() {
+    _foregroundSub?.cancel();
+    _foregroundSub = null;
+    _openedSub?.cancel();
+    _openedSub = null;
+    _initialMessageChecked = false;
+  }
+
+  // ─── Foreground UX ──────────────────────────────────────────────
+
+  void _showBanner(RemoteMessage message) {
+    final messenger = rootScaffoldMessengerKey.currentState;
+    if (messenger == null) {
+      // ScaffoldMessenger pas encore monté (cold start ?). On laisse
+      // tomber — le push sera dans la table notifications de toute
+      // façon, l'utilisateur le verra dans son inbox.
+      return;
+    }
+
     final title = message.notification?.title ?? 'Spotbook';
     final body = message.notification?.body ?? '';
+    final hasRoute = (message.data['route'] as String?)?.isNotEmpty ?? false;
 
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
+    messenger.clearMaterialBanners();
+    messenger.showMaterialBanner(
+      MaterialBanner(
         backgroundColor: AppColors.surface,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Text(
-          title,
-          style: TextStyle(color: AppColors.blanc, fontWeight: FontWeight.bold, fontSize: 16),
+        elevation: 4,
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        leading: Container(
+          width: 36,
+          height: 36,
+          decoration: BoxDecoration(
+            color: AppColors.violet.withValues(alpha: 0.16),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          alignment: Alignment.center,
+          child: Icon(Icons.notifications_rounded,
+              color: AppColors.violet, size: 20),
         ),
-        content: Text(
-          body,
-          style: TextStyle(color: AppColors.gris, fontSize: 14),
+        content: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              title,
+              style: TextStyle(
+                color: AppColors.blanc,
+                fontWeight: FontWeight.w600,
+                fontSize: 14,
+              ),
+            ),
+            if (body.isNotEmpty) ...[
+              const SizedBox(height: 2),
+              Text(
+                body,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  color: AppColors.gris,
+                  fontSize: 13,
+                ),
+              ),
+            ],
+          ],
         ),
         actions: [
           TextButton(
-            onPressed: () => ctx.pop(),
-            child: Text('OK', style: TextStyle(color: AppColors.blanc)),
+            onPressed: messenger.hideCurrentMaterialBanner,
+            child: Text(
+              'Ignorer',
+              style: TextStyle(color: AppColors.gris, fontSize: 13),
+            ),
           ),
-          if (message.data['type'] != null)
+          if (hasRoute)
             TextButton(
               onPressed: () {
-                ctx.pop();
-                _navigateFromNotification(context, message);
+                messenger.hideCurrentMaterialBanner();
+                handleTap(message);
               },
-              child: Text('Voir', style: TextStyle(color: AppColors.blanc, fontWeight: FontWeight.bold)),
+              child: Text(
+                'Voir le message',
+                style: TextStyle(
+                  color: AppColors.violet,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 13,
+                ),
+              ),
             ),
         ],
       ),
     );
+
+    // Auto-dismiss après 6 secondes (UX WhatsApp/Instagram).
+    Future.delayed(const Duration(seconds: 6), () {
+      messenger.hideCurrentMaterialBanner();
+    });
   }
 
-  void _navigateFromNotification(BuildContext context, RemoteMessage message) {
-    final type = message.data['type'] as String?;
-    final router = GoRouter.of(context);
+  // ─── Tap navigation ─────────────────────────────────────────────
 
-    switch (type) {
-      case 'booking_reminder':
-      case 'booking_update':
-        final bookingId = message.data['bookingId'] as String?;
-        if (bookingId != null) {
-          router.push('/booking/$bookingId');
-        }
-        break;
-      case 'chat':
-        final conversationId = message.data['conversationId'] as String?;
-        if (conversationId != null) {
-          router.push('/chat/$conversationId');
-        }
-        break;
-      case 'review_request':
-        final bookingId = message.data['bookingId'] as String?;
-        if (bookingId != null) {
-          router.push('/booking/$bookingId');
-        }
-        break;
-      case 'waitlist':
-        final eventId = message.data['eventId'] as String?;
-        if (eventId != null) {
-          router.push('/event/$eventId');
-        }
-        break;
-      default:
-        router.push('/notifications');
+  /// Navigue selon `data['route']` du payload FCM, ou fallback inbox.
+  ///
+  /// La route est SET par le trigger DB (cf. migration
+  /// `20260424120000_fix_push_notification_route_per_role.sql`) en
+  /// fonction de `users.role` du destinataire. Le client se contente
+  /// de la consommer.
+  void handleTap(RemoteMessage message) {
+    final route = message.data['route'] as String?;
+    if (route != null && route.isNotEmpty) {
+      try {
+        appRouter.go(route);
+      } catch (e) {
+        debugPrint('[Push] navigation failed for "$route": $e');
+        appRouter.go('/notifications');
+      }
+      return;
     }
+    appRouter.go('/notifications');
   }
 }
