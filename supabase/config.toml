@@ -486,3 +486,9 @@ verify_jwt = false
 
 [functions.stripe-return]
 verify_jwt = false
+
+# Gateway JWT check disabled — function verifies auth via isServiceRoleRequest() (SQL trigger
+# with Vault-stored service_role_key) or getUser() (user path, type=social only).
+# Supabase project uses ES256 JWTs; edge function relay only supports HS256.
+[functions.send-push-notification]
+verify_jwt = false
