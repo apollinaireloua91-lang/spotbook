@@ -2,6 +2,7 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
 import { encode as hexEncode } from "https://deno.land/std@0.168.0/encoding/hex.ts";
 import {
+  getQrSigningSecret,
   isValidUuid,
   jsonResponse,
   securityHeadersFor,
@@ -90,9 +91,8 @@ serve(async (req) => {
     if (denied) return denied;
 
     const data = `${ticket.id}|${ticket.event_id}|${ticket.user_id}|${ticket.purchased_at}`;
-    const secret = Deno.env.get("QR_SIGNING_SECRET") ?? "";
-    if (!secret || secret.length < 16) {
-      console.error("QR_SIGNING_SECRET manquant ou trop court (min 16 caractères)");
+    const secret = getQrSigningSecret();
+    if (!secret) {
       return jsonResponse({ error: "server_misconfigured" }, 500, undefined, req);
     }
     const qrHash = await hmacSha256(data, secret);
@@ -115,8 +115,10 @@ serve(async (req) => {
       const qrData = `${ticketId}|${qrHash}`;
       const pngBytes = generateQrPng(qrData, 8, 2);
 
-      // Ensure bucket exists (idempotent — error ignored if already created)
-      await supabase.storage.createBucket("ticket-qr-codes", { public: true });
+      // Bucket PRIVÉ : un QR est un bearer-token d'entrée, ne doit jamais
+      // être accessible publiquement. On crée le bucket sans public:true et
+      // on sert via signed URL à courte durée.
+      await supabase.storage.createBucket("ticket-qr-codes", { public: false });
 
       const filePath = `${ticketId}.png`;
       const { error: uploadErr } = await supabase.storage
@@ -129,10 +131,16 @@ serve(async (req) => {
       if (uploadErr) {
         console.error("QR PNG upload failed:", uploadErr.message);
       } else {
-        const { data: urlData } = supabase.storage
+        // Signed URL 1h — le client peut re-signer à la demande via
+        // get-qr-url. Expiration courte limite le blast radius si l'URL fuit.
+        const { data: signed, error: signErr } = await supabase.storage
           .from("ticket-qr-codes")
-          .getPublicUrl(filePath);
-        qrCodeUrl = urlData?.publicUrl;
+          .createSignedUrl(filePath, 60 * 60);
+        if (signErr) {
+          console.error("QR signed URL failed:", signErr.message);
+        } else {
+          qrCodeUrl = signed?.signedUrl;
+        }
       }
     } catch (qrErr) {
       // QR image generation is non-blocking — ticket is still valid without it

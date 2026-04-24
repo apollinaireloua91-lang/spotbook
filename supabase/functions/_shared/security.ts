@@ -48,6 +48,30 @@ export function jsonResponse(
   });
 }
 
+/**
+ * Longueur minimale du secret HMAC pour signer/valider les QR.
+ * 32 bytes = 256 bits d'entropie, conforme à la taille du digest SHA-256.
+ * Un secret plus court dégrade la résistance aux attaques préimages.
+ */
+export const QR_SIGNING_SECRET_MIN_LENGTH = 32;
+
+/**
+ * Récupère le secret de signature QR, retourne null si absent ou trop court.
+ * Centralisé pour éviter des seuils incohérents entre signers et validators
+ * (bug passé : signer acceptait 16 chars, validator exigeait 32 → hash
+ * valides refusés comme "server_misconfigured").
+ */
+export function getQrSigningSecret(): string | null {
+  const secret = Deno.env.get("QR_SIGNING_SECRET") ?? "";
+  if (!secret || secret.length < QR_SIGNING_SECRET_MIN_LENGTH) {
+    console.error(
+      `QR_SIGNING_SECRET manquant ou trop court (min ${QR_SIGNING_SECRET_MIN_LENGTH} caractères)`,
+    );
+    return null;
+  }
+  return secret;
+}
+
 /** Timing-safe string comparison to prevent timing attacks on secret comparisons. */
 export function timingSafeEqual(a: string, b: string): boolean {
   if (a.length !== b.length) return false;
@@ -118,7 +142,7 @@ type RateLimitInput = {
 const LIMITS: Record<RateLimitInput["scope"], { max: number; windowMs: number }> =
   {
     login: { max: 5, windowMs: 15 * 60 * 1000 },
-    signup: { max: 3, windowMs: 30 * 60 * 1000 },
+    signup: { max: 10, windowMs: 30 * 60 * 1000 },
     otp: { max: 3, windowMs: 10 * 60 * 1000 },
     payment: { max: 3, windowMs: 60 * 60 * 1000 },
     upload: { max: 20, windowMs: 60 * 60 * 1000 },

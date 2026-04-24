@@ -152,6 +152,94 @@ serve(async (req) => {
       case "payment_intent.succeeded": {
         const pi = event.data.object as Stripe.PaymentIntent;
 
+        // ─── POS FLOW (Tap to Pay — standalone or booking-balance) ────────
+        // Reconnu via metadata.source = 'spotbook_pos'. Met à jour la ligne
+        // pos_transactions, et — pour `booking_balance` — marque le solde
+        // booking comme encaissé (on-site). Les flux suivants (tip, ticket,
+        // booking deposit) sont distincts et identifiés par d'autres clés
+        // metadata, donc on `break` après pour ne pas cascader.
+        if (pi.metadata.source === "spotbook_pos") {
+          const charge = pi.latest_charge && typeof pi.latest_charge === "string"
+            ? null
+            : (pi.latest_charge as Stripe.Charge | null);
+          const card = charge?.payment_method_details?.card_present
+            ?? charge?.payment_method_details?.card
+            ?? null;
+
+          // Update pos_transactions row (RLS bypassed via service-role).
+          await supabase
+            .from("pos_transactions")
+            .update({
+              status: "succeeded",
+              payment_method_type: charge?.payment_method_details?.type ?? null,
+              payment_method_brand: card?.brand ?? null,
+              payment_method_last4: card?.last4 ?? null,
+            })
+            .eq("stripe_payment_intent_id", pi.id);
+
+          // Booking-balance : flip le booking au state "fully_paid".
+          if (pi.metadata.spotbook_type === "booking_balance") {
+            const bookingId = pi.metadata.bookingId;
+            if (bookingId && isValidUuid(bookingId)) {
+              await supabase
+                .from("bookings")
+                .update({
+                  remaining_payment_status: "paid_on_site",
+                  remaining_paid_at: new Date().toISOString(),
+                  payment_status: "fully_paid",
+                  remaining_paid: true,
+                  remaining_stripe_payment_intent_id: pi.id,
+                })
+                .eq("id", bookingId);
+
+              await supabase.rpc("log_audit_action", {
+                p_user_id: pi.metadata.pro_id ?? null,
+                p_action: "booking_balance_collected_pos",
+                p_resource_type: "booking",
+                p_resource_id: bookingId,
+                p_metadata: {
+                  payment_intent_id: pi.id,
+                  amount: pi.amount,
+                  currency: pi.currency,
+                },
+              });
+
+              // Notification au client : son solde a bien été prélevé.
+              const { data: bk } = await supabase
+                .from("bookings")
+                .select(
+                  "client_id, booking_code, services(name), users!bookings_client_id_fkey(email)",
+                )
+                .eq("id", bookingId)
+                .maybeSingle();
+              const bkRow = bk as
+                | {
+                    client_id: string;
+                    booking_code: string;
+                    services: { name: string | null } | null;
+                    users: { email: string | null } | null;
+                  }
+                | null;
+              if (bkRow) {
+                await supabase.from("notifications").insert({
+                  user_id: bkRow.client_id,
+                  type: "balance_collected",
+                  title: "Solde encaissé",
+                  body: `Le solde de la réservation ${bkRow.booking_code} a été réglé sur place.`,
+                  resource_id: bookingId,
+                  idempotency_key: `${event.id}:balance_collected:${bkRow.client_id}`,
+                });
+              }
+            } else {
+              console.error(
+                "spotbook_pos booking_balance succeeded without valid bookingId metadata:",
+                pi.id,
+              );
+            }
+          }
+          break;
+        }
+
         // ─── TIP FLOW (priority #3) ──────────────────────────
         // Tip PaymentIntents are created by the `process-tip` function with
         // metadata.spotbook_type = 'tip'. On success, mark the tip row as
@@ -505,6 +593,25 @@ serve(async (req) => {
 
       case "payment_intent.payment_failed": {
         const pi = event.data.object as Stripe.PaymentIntent;
+
+        // POS first : marquer la pos_transactions comme `failed` et logger
+        // la raison (decline_code / message Stripe). On ne touche PAS au
+        // booking — un échec POS sur un solde laisse la réservation telle
+        // quelle (le Pro réessaye, ou marque manuellement).
+        if (pi.metadata.source === "spotbook_pos") {
+          await supabase
+            .from("pos_transactions")
+            .update({
+              status: "failed",
+              failure_reason:
+                pi.last_payment_error?.message ??
+                pi.last_payment_error?.code ??
+                "payment_failed",
+            })
+            .eq("stripe_payment_intent_id", pi.id);
+          break;
+        }
+
         const bookingId = pi.metadata.bookingId;
         if (!bookingId) break;
         if (!isValidUuid(bookingId)) break;

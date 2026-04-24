@@ -2,9 +2,11 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
 import { encode as hexEncode } from "https://deno.land/std@0.168.0/encoding/hex.ts";
 import {
+  getQrSigningSecret,
   isValidUuid,
   jsonResponse,
   securityHeadersFor,
+  timingSafeEqual,
 } from "../_shared/security.ts";
 
 async function hmacSha256(data: string, secret: string): Promise<string> {
@@ -69,9 +71,8 @@ serve(async (req) => {
       );
     }
 
-    const secret = Deno.env.get("QR_SIGNING_SECRET") ?? "";
-    if (!secret || secret.length < 32) {
-      console.error("QR_SIGNING_SECRET manquant ou trop court");
+    const secret = getQrSigningSecret();
+    if (!secret) {
       return jsonResponse({ error: "server_misconfigured" }, 500, undefined, req);
     }
 
@@ -103,28 +104,37 @@ serve(async (req) => {
     const data = `${ticket.id}|${ticket.event_id}|${ticket.user_id}|${ticket.purchased_at}`;
     const expectedHash = await hmacSha256(data, secret);
 
-    if (qrHash !== expectedHash) {
+    if (!timingSafeEqual(String(qrHash), expectedHash)) {
       return jsonResponse({ valid: false, reason: "invalid_hash" }, 200, undefined, req);
     }
 
-    if (ticket.scanned_at) {
+    // Atomic compare-and-swap : un seul scanneur peut gagner la course.
+    // Deux scans simultanés du même billet ne peuvent pas tous deux réussir.
+    const scannedAt = new Date().toISOString();
+    const { data: swapRows, error: swapErr } = await supabase
+      .from("tickets")
+      .update({ scanned_at: scannedAt, status: "used" })
+      .eq("id", ticketId)
+      .is("scanned_at", null)
+      .select("id");
+
+    if (swapErr) {
+      console.error("validate-qr-ticket scan swap failed:", swapErr.message);
+      return jsonResponse({ error: "internal_error" }, 500, undefined, req);
+    }
+
+    if (!swapRows?.length) {
       return jsonResponse(
         {
           valid: false,
           reason: "already_used",
-          scannedAt: ticket.scanned_at,
+          scannedAt: ticket.scanned_at ?? scannedAt,
         },
         200,
         undefined,
         req,
       );
     }
-
-    const scannedAt = new Date().toISOString();
-    await supabase
-      .from("tickets")
-      .update({ scanned_at: scannedAt, status: "used" })
-      .eq("id", ticketId);
     await supabase.rpc("log_audit_action", {
       p_user_id: user.id,
       p_action: "ticket_scanned",
