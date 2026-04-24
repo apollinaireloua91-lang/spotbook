@@ -124,7 +124,9 @@ void main() async {
 
     await SpotbookVideoPlayer.initAudioState();
 
-    runApp(const ProviderScope(child: SpotbookApp()));
+    runApp(
+      const ProviderScope(child: SpotbookApp()),
+    );
   }
 
   if (sentryDsn.isNotEmpty) {

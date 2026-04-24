@@ -9,6 +9,12 @@
 # packages, and plugins designed to encourage good coding practices.
 include: package:flutter_lints/flutter.yaml
 
+analyzer:
+  exclude:
+    # Code archivé en attente de réintégration v1.1 (POS / Tap to Pay).
+    # Voir docs/POS_REMOVAL_AUDIT.md.
+    - lib/_archive/**
+
 linter:
   # The lint rules applied to this project can be customized in the
   # section below to disable rules from the `package:flutter_lints/flutter.yaml`

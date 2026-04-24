@@ -90,13 +90,6 @@ import '../features/payment/presentation/screens/provider_payout_history_screen.
 import '../features/profile/presentation/screens/provider_settings_screen.dart';
 import '../features/soumission/presentation/screens/soumissions_list_screen.dart';
 import '../features/soumission/presentation/screens/create_soumission_screen.dart';
-import '../features/pos/domain/pos_models.dart';
-import '../features/pos/presentation/pages/pos_amount_page.dart';
-import '../features/pos/presentation/pages/pos_error_page.dart';
-import '../features/pos/presentation/pages/pos_history_page.dart';
-import '../features/pos/presentation/pages/pos_reader_page.dart';
-import '../features/pos/presentation/pages/pos_success_page.dart';
-import '../features/pos/presentation/pages/pos_transaction_detail_page.dart';
 import '../features/profile/presentation/screens/provider_public_profile_client_view_screen.dart';
 import '../features/profile/presentation/bloc/public_provider_profile_bloc.dart';
 import '../features/profile/data/datasources/provider_profile_remote_datasource.dart';
@@ -385,96 +378,10 @@ final appRouter = GoRouter(
       ),
     ),
 
-    // ─── POS (Tap to Pay) ────────────────────────────────────────────────
-    GoRoute(
-      path: '/pro/pos/amount',
-      pageBuilder: (context, state) => premiumPage(
-        state: state,
-        child: const PosAmountPage(),
-      ),
-    ),
-    GoRoute(
-      path: '/pro/pos/reader',
-      pageBuilder: (context, state) {
-        // The reader accepts two shapes of `extra`:
-        //   1. A bare PosAmount (legacy: walk-in / standalone POS flow).
-        //   2. A Map<String,Object?> with keys {amount, bookingId, kind}
-        //      (booking-balance flow — collecting the solde of a deposit
-        //      booking via Tap to Pay). The Edge Function will validate
-        //      the booking server-side and override amount/tip/taxes.
-        final extra = state.extra;
-        PosAmount amount = const PosAmount();
-        String? bookingId;
-        String kind = 'standalone';
-        if (extra is PosAmount) {
-          amount = extra;
-        } else if (extra is Map<String, Object?>) {
-          final a = extra['amount'];
-          if (a is PosAmount) amount = a;
-          final b = extra['bookingId'];
-          if (b is String && b.isNotEmpty) bookingId = b;
-          final k = extra['kind'];
-          if (k is String && k.isNotEmpty) kind = k;
-        }
-        return premiumPage(
-          state: state,
-          child: PosReaderPage(
-            amount: amount,
-            bookingId: bookingId,
-            kind: kind,
-          ),
-        );
-      },
-    ),
-    GoRoute(
-      path: '/pro/pos/success',
-      pageBuilder: (context, state) {
-        final extra = state.extra;
-        final map = extra is Map<String, Object?> ? extra : const {};
-        final amount = map['amount'] is PosAmount
-            ? map['amount'] as PosAmount
-            : const PosAmount();
-        final result =
-            map['result'] is PosPaymentResult? ? map['result'] as PosPaymentResult? : null;
-        return premiumPage(
-          state: state,
-          child: PosSuccessPage(amount: amount, result: result),
-        );
-      },
-    ),
-    GoRoute(
-      path: '/pro/pos/error',
-      pageBuilder: (context, state) {
-        final extra = state.extra;
-        final map = extra is Map<String, Object?> ? extra : const {};
-        final amount = map['amount'] is PosAmount
-            ? map['amount'] as PosAmount
-            : const PosAmount();
-        final result =
-            map['result'] is PosPaymentResult? ? map['result'] as PosPaymentResult? : null;
-        return premiumPage(
-          state: state,
-          child: PosErrorPage(amount: amount, result: result),
-        );
-      },
-    ),
-    GoRoute(
-      path: '/pro/pos/history',
-      pageBuilder: (context, state) => premiumPage(
-        state: state,
-        child: const PosHistoryPage(),
-      ),
-    ),
-    GoRoute(
-      path: '/pro/pos/transaction/:id',
-      pageBuilder: (context, state) {
-        final id = state.pathParameters['id'] ?? '';
-        return premiumPage(
-          state: state,
-          child: PosTransactionDetailPage(transactionId: id),
-        );
-      },
-    ),
+    // ─── POS (Tap to Pay) — désactivé v1.0, archivé dans lib/_archive/pos.
+    //     Réintégration v1.1 après approbation Apple de la capability
+    //     com.apple.developer.proximity-reader.payment.acceptance.
+
     GoRoute(
       path: '/pro/loyalty',
       pageBuilder: (context, state) {

@@ -54,6 +54,8 @@ dependencies:
 
   google_sign_in: ^6.2.1
 
+  sign_in_with_apple: ^6.1.2
+
   flutter_web_auth_2: ^4.1.0
 
 
@@ -61,6 +63,9 @@ dependencies:
 
   flutter_stripe: ^12.4.0
 
+  # Tap to Pay on iPhone — désactivé v1.0 (mek_stripe_terminal retiré).
+  # Réintégration v1.1 après approbation Apple de la capability
+  # com.apple.developer.proximity-reader.payment.acceptance.
 
   # Video
 
@@ -108,6 +113,8 @@ dependencies:
   hive_flutter: ^1.1.0
 
   flutter_secure_storage: ^10.0.0
+
+  shared_preferences: ^2.2.2  # migration one-shot depuis ancien stockage session Supabase
 
 
   # Utilitaires

@@ -1247,9 +1247,11 @@ class _Actions extends StatelessWidget {
             ),
             const SizedBox(height: 12),
           ],
+          // Solde collection — v1.0 : encaissement manuel (Interac / cash)
+          // uniquement. Tap to Pay archivé en attente d'approbation Apple.
           if (onMarkRemainingPaid != null) ...[
-            SpotbookButton.primary(
-              label: 'Marquer le solde comme payé',
+            SpotbookButton.outlined(
+              label: 'Marquer payé manuellement',
               isLoading: busy,
               onPressed: busy ? null : onMarkRemainingPaid,
             ),
