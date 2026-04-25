@@ -1318,5 +1318,11 @@
   "cateringForfaitNamePriceRequired": "Name and price are required",
   "soumissionAddAtLeastOneItem": "Add at least one item",
   "soumissionSentSuccess": "Quote sent to client!",
-  "bookingNotFound": "Booking not found"
+  "bookingNotFound": "Booking not found",
+  "commonErrorWithDetail": "Error: {error}",
+  "@commonErrorWithDetail": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  }
 }

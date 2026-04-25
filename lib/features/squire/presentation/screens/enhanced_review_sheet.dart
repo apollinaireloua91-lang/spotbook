@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/widgets/spotbook_button.dart';
 import '../../data/squire_repository.dart';
@@ -88,7 +89,7 @@ class _EnhancedReviewSheetState extends ConsumerState<EnhancedReviewSheet> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Erreur : $e')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.commonErrorWithDetail(e.toString()))),
         );
         setState(() => _saving = false);
       }

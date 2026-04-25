@@ -1318,5 +1318,11 @@
   "cateringForfaitNamePriceRequired": "Le nom et le prix sont obligatoires",
   "soumissionAddAtLeastOneItem": "Ajoutez au moins un item",
   "soumissionSentSuccess": "Soumission envoyée au client !",
-  "bookingNotFound": "Réservation introuvable"
+  "bookingNotFound": "Réservation introuvable",
+  "commonErrorWithDetail": "Erreur : {error}",
+  "@commonErrorWithDetail": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  }
 }

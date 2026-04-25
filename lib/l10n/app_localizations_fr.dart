@@ -3225,4 +3225,9 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get soumissionSentSuccess => 'Soumission envoyée au client !';
+
+  @override
+  String commonErrorWithDetail(String error) {
+    return 'Erreur : $error';
+  }
 }

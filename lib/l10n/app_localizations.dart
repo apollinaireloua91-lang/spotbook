@@ -6164,6 +6164,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Quote sent to client!'**
   String get soumissionSentSuccess;
+
+  /// No description provided for @commonErrorWithDetail.
+  ///
+  /// In en, this message translates to:
+  /// **'Error: {error}'**
+  String commonErrorWithDetail(String error);
 }
 
 class _AppLocalizationsDelegate

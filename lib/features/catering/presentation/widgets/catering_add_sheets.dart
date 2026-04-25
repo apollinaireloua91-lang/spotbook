@@ -99,7 +99,8 @@ class _AddDishSheetState extends State<_AddDishSheet> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             backgroundColor: AppColors.error,
-            content: Text('Erreur : $e', style: TextStyle(color: AppColors.blanc)),
+            content: Text(AppLocalizations.of(context)!.commonErrorWithDetail(e.toString()),
+                style: TextStyle(color: AppColors.blanc)),
           ),
         );
       }
@@ -291,7 +292,8 @@ class _AddPackageSheetState extends State<_AddPackageSheet> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             backgroundColor: AppColors.error,
-            content: Text('Erreur : $e', style: TextStyle(color: AppColors.blanc)),
+            content: Text(AppLocalizations.of(context)!.commonErrorWithDetail(e.toString()),
+                style: TextStyle(color: AppColors.blanc)),
           ),
         );
       }

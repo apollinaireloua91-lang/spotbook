@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/theme/theme_mode_notifier.dart';
 import '../../../../shared/widgets/empty_state.dart';
@@ -62,7 +63,7 @@ class _WalkInQueueScreenState extends ConsumerState<WalkInQueueScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Erreur : $e')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.commonErrorWithDetail(e.toString()))),
         );
       }
     }
@@ -78,7 +79,7 @@ class _WalkInQueueScreenState extends ConsumerState<WalkInQueueScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Erreur : $e')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.commonErrorWithDetail(e.toString()))),
         );
       }
     }

@@ -115,7 +115,7 @@ class _CreateSoumissionScreenState
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Erreur : $e'),
+            content: Text(AppLocalizations.of(context)!.commonErrorWithDetail(e.toString())),
             backgroundColor: AppColors.error,
           ),
         );

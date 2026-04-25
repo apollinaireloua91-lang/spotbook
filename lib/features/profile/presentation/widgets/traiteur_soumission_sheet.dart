@@ -176,7 +176,7 @@ class _SoumissionSheetState extends State<_SoumissionSheet> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             backgroundColor: AppColors.error,
-            content: Text('Erreur : $e',
+            content: Text(AppLocalizations.of(context)!.commonErrorWithDetail(e.toString()),
                 style: TextStyle(color: AppColors.blanc)),
           ),
         );

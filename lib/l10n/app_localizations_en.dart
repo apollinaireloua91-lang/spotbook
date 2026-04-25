@@ -3190,4 +3190,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get soumissionSentSuccess => 'Quote sent to client!';
+
+  @override
+  String commonErrorWithDetail(String error) {
+    return 'Error: $error';
+  }
 }
