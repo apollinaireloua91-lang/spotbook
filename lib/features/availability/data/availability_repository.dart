@@ -116,8 +116,7 @@ class AvailabilityRepository {
     } catch (e) {
       // Log but don't fail the save — the UI already shows "saved"
       // and the cron will reconcile.
-      // ignore: avoid_print
-      print('generate-slots trigger failed (non-blocking): $e');
+      debugPrint('generate-slots trigger failed (non-blocking): $e');
     }
   }
 

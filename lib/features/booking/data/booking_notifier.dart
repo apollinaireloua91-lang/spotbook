@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -253,8 +254,7 @@ class BookingFlowNotifier extends Notifier<BookingFlowState> {
       );
       state = state.copyWith(timeSlots: slots, isLoading: false);
     } catch (e, st) {
-      // ignore: avoid_print
-      print('[booking] computeSlotsForDate failed, falling back: $e\n$st');
+      debugPrint('[booking] computeSlotsForDate failed, falling back: $e\n$st');
       try {
         // Fallback: simple rules-based slots (no exceptions, no lunch, no bookings)
         final slots = await _repo.computeSlotsSimple(
@@ -263,8 +263,7 @@ class BookingFlowNotifier extends Notifier<BookingFlowState> {
         );
         state = state.copyWith(timeSlots: slots, isLoading: false);
       } catch (e2, st2) {
-        // ignore: avoid_print
-        print('[booking] computeSlotsSimple also failed: $e2\n$st2');
+        debugPrint('[booking] computeSlotsSimple also failed: $e2\n$st2');
         state = state.copyWith(
           timeSlots: const [],
           isLoading: false,
