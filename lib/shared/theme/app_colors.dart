@@ -308,4 +308,35 @@ abstract final class AppColors {
   static Color get pulseGlow => isDark
       ? const Color(0xFF8E05C2).withAlpha(60)
       : const Color(0xFF8039C5).withAlpha(30);
+
+  // ═════════════════════════════════════════════════════════════════════════
+  // CATEGORY COLORS — single source of truth for service category accents
+  // ═════════════════════════════════════════════════════════════════════════
+  //
+  // Used by map markers, category chips, search filters. Hex values stay
+  // identical across light/dark on purpose — these are brand-style category
+  // tokens (orange = barbier, rose = manucure, etc.) and need to remain
+  // recognizable on both backgrounds.
+  //
+  // [fallback] is returned when [category] is null/empty/unmatched. Defaults
+  // to [violet] (used by map markers); the search list passes [gris] instead.
+  static Color categoryColor(String? category, {Color? fallback}) {
+    final fb = fallback ?? violet;
+    if (category == null || category.isEmpty) return fb;
+    final key = category.toLowerCase();
+    if (key.contains('barb') || key.contains('coiff')) return const Color(0xFFFF6B35);
+    if (key.contains('nail') || key.contains('manu')) return const Color(0xFFE91E90);
+    if (key.contains('mass')) return const Color(0xFFEC4899);
+    if (key.contains('esth') || key.contains('beaut') || key.contains('bien')) return rose;
+    if (key.contains('coach') || key.contains('fit')) return success;
+    if (key.contains('photo') || key.contains('vidéa')) return violet;
+    if (key.contains('traiteur') || key.contains('cuisine') || key.contains('chef')) return catering;
+    if (key.contains('tattoo') || key.contains('tatou')) return error;
+    if (key.contains('dj') || key.contains('musiq')) return const Color(0xFF8B5CF6);
+    if (key.contains('plomb')) return const Color(0xFF3B82F6);
+    if (key.contains('electr')) return const Color(0xFFEAB308);
+    if (key.contains('mode') || key.contains('design')) return roseClair;
+    if (key.contains('évén') || key.contains('wedding')) return rose;
+    return fb;
+  }
 }

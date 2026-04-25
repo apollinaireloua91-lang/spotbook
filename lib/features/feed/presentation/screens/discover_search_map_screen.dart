@@ -52,22 +52,9 @@ LatLng _proMapLatLng(ProviderSearchResult pro, LatLng anchor) {
   return LatLng(anchor.latitude + dx, anchor.longitude + dy);
 }
 
-/// Category → marker color (local to avoid cross-feature import).
-Color _categoryColor(String? category) {
-  if (category == null || category.isEmpty) return AppColors.violet;
-  final key = category.toLowerCase();
-  if (key.contains('barb') || key.contains('coiff')) return const Color(0xFFFF6B35);
-  if (key.contains('nail') || key.contains('manu')) return const Color(0xFFE91E90);
-  if (key.contains('mass')) return const Color(0xFFEC4899);
-  if (key.contains('esth') || key.contains('beaut')) return AppColors.rose;
-  if (key.contains('coach') || key.contains('fit')) return AppColors.success;
-  if (key.contains('photo')) return AppColors.violet;
-  if (key.contains('traiteur') || key.contains('cuisine')) return AppColors.catering;
-  if (key.contains('tattoo') || key.contains('tatou')) return AppColors.error;
-  if (key.contains('dj') || key.contains('musiq')) return const Color(0xFF8B5CF6);
-  if (key.contains('mode')) return AppColors.roseClair;
-  return AppColors.violet;
-}
+/// Category → marker color. Delegates to the shared [AppColors.categoryColor]
+/// helper so the map and the search list share a single source of truth.
+Color _categoryColor(String? category) => AppColors.categoryColor(category);
 
 class DiscoverSearchMapScreen extends ConsumerStatefulWidget {
   const DiscoverSearchMapScreen({super.key});
@@ -217,7 +204,7 @@ class _DiscoverSearchMapScreenState
       canvas.drawCircle(
         ui.Offset(px * 0.76, px * 0.24),
         px * 0.1,
-        ui.Paint()..color = const Color(0xFF22C55E),
+        ui.Paint()..color = AppColors.success,
       );
       canvas.drawCircle(
         ui.Offset(px * 0.76, px * 0.24),
