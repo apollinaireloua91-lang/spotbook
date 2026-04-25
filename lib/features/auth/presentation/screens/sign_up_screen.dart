@@ -674,7 +674,11 @@ class _Step1EmailPassword extends StatelessWidget {
               keyboardType: TextInputType.emailAddress,
               validator: (v) {
                 if (v == null || v.isEmpty) return l.fieldRequired;
-                if (!v.contains('@')) return 'E-mail invalide';
+                // Validation simple mais correcte : RFC 5322 lite — un local-part,
+                // un @, un domaine avec au moins un point. `a@`, `@x.com`,
+                // `foo@x` doivent tous être rejetés.
+                final emailRegex = RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$');
+                if (!emailRegex.hasMatch(v.trim())) return l.authEmailInvalid;
                 return null;
               },
             ),

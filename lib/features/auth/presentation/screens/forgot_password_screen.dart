@@ -151,7 +151,10 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                   validator: (value) {
                     final v = value?.trim() ?? '';
                     if (v.isEmpty) return l.authEmailRequired;
-                    if (!v.contains('@') || !v.contains('.')) {
+                    // Validateur unifié avec sign-up : local@domain.tld minimum.
+                    final emailRegex =
+                        RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$');
+                    if (!emailRegex.hasMatch(v)) {
                       return l.authEmailInvalid;
                     }
                     return null;

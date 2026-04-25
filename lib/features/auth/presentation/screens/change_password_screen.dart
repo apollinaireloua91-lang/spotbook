@@ -33,11 +33,17 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
 
   Future<void> _submit(AppLocalizations l10n) async {
     if (_next.text != _confirm.text) {
-      _toast(l10n.proConfirmPassword, error: true);
+      _toast(l10n.authPasswordsDontMatch, error: true);
       return;
     }
-    if (_next.text.length < 8) {
-      _toast(l10n.error, error: true);
+    // Mêmes règles que sign-up : ≥ 8 caractères + au moins une lettre +
+    // au moins un chiffre. Sans cette parité, un user peut contourner la
+    // policy en passant par /settings/change-password.
+    final next = _next.text;
+    final hasLetter = next.contains(RegExp(r'[A-Za-z]'));
+    final hasDigit = next.contains(RegExp(r'\d'));
+    if (next.length < 8 || !hasLetter || !hasDigit) {
+      _toast(l10n.authPasswordComplexity, error: true);
       return;
     }
     setState(() => _loading = true);

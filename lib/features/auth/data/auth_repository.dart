@@ -94,10 +94,15 @@ class AuthRepository {
     double? latitude,
     double? longitude,
   }) async {
+    // Normaliser l'email AVANT toute opération : sinon "Foo@x.com" et
+    // "foo@x.com" peuvent contourner le rate-limiter (qui lowercase) ET
+    // créer deux comptes distincts en DB. La normalisation doit être la
+    // même partout (rate-limiter, signUp, audit logs).
+    final normalizedEmail = email.trim().toLowerCase();
     try {
       await _supabase.functions.invoke(
         'rate-limiter',
-        body: {'type': 'signup', 'email': email.toLowerCase()},
+        body: {'type': 'signup', 'email': normalizedEmail},
       );
     } on FunctionException catch (e) {
       if (e.status == 429) {
@@ -108,7 +113,7 @@ class AuthRepository {
 
     try {
       final response = await _supabase.auth.signUp(
-        email: email,
+        email: normalizedEmail,
         password: password,
         data: {
           'full_name': fullName,
@@ -160,7 +165,7 @@ class AuthRepository {
       // Le compte est bien créé, l'user doit juste confirmer l'email.
       if (response.session == null && response.user != null) {
         throw AuthException(
-          'Un e-mail de confirmation a été envoyé à $email. '
+          'Un e-mail de confirmation a été envoyé à $normalizedEmail. '
           'Confirme ton e-mail puis connecte-toi.',
         );
       }
@@ -178,11 +183,12 @@ class AuthRepository {
     required String email,
     required String password,
   }) async {
+    final normalizedEmail = email.trim().toLowerCase();
     try {
       try {
         await _supabase.functions.invoke(
           'rate-limiter',
-          body: {'type': 'login', 'email': email.toLowerCase()},
+          body: {'type': 'login', 'email': normalizedEmail},
         );
       } on FunctionException catch (e) {
         if (e.status == 429) {
@@ -191,7 +197,7 @@ class AuthRepository {
       }
 
       final response = await _supabase.auth.signInWithPassword(
-        email: email,
+        email: normalizedEmail,
         password: password,
       );
       final uid = response.user?.id;
@@ -384,10 +390,11 @@ class AuthRepository {
   }
 
   Future<void> resetPassword(String email) async {
+    final normalizedEmail = email.trim().toLowerCase();
     try {
       await _supabase.functions.invoke(
         'rate-limiter',
-        body: {'type': 'otp', 'email': email.toLowerCase()},
+        body: {'type': 'otp', 'email': normalizedEmail},
       );
     } on FunctionException catch (e) {
       if (e.status == 429) {
@@ -395,7 +402,7 @@ class AuthRepository {
       }
     }
     await _supabase.auth.resetPasswordForEmail(
-      email,
+      normalizedEmail,
       redirectTo: 'app.spotbook://reset-callback',
     );
   }
@@ -625,10 +632,11 @@ class AuthRepository {
   }
 
   Future<void> signInWithMagicLink(String email) async {
+    final normalizedEmail = email.trim().toLowerCase();
     try {
       await _supabase.functions.invoke(
         'rate-limiter',
-        body: {'type': 'otp', 'email': email.toLowerCase()},
+        body: {'type': 'otp', 'email': normalizedEmail},
       );
     } on FunctionException catch (e) {
       if (e.status == 429) {
@@ -636,16 +644,30 @@ class AuthRepository {
       }
     }
     await _supabase.auth.signInWithOtp(
-      email: email,
+      email: normalizedEmail,
       emailRedirectTo: 'app.spotbook://login-callback',
       shouldCreateUser: false,
     );
   }
 
   Future<void> resendConfirmationEmail(String email) async {
+    // Sans rate-limit : un attaquant peut spammer la boîte mail d'un user
+    // (DoS UX) et tester l'existence d'un compte (enumeration). On gate
+    // sur le même bucket "otp" que magic link / reset password.
+    final normalizedEmail = email.trim().toLowerCase();
+    try {
+      await _supabase.functions.invoke(
+        'rate-limiter',
+        body: {'type': 'otp', 'email': normalizedEmail},
+      );
+    } on FunctionException catch (e) {
+      if (e.status == 429) {
+        throw AuthException('Trop de tentatives. Réessayez plus tard.');
+      }
+    }
     await _supabase.auth.resend(
       type: OtpType.signup,
-      email: email,
+      email: normalizedEmail,
     );
   }
 
