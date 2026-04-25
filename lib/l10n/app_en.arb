@@ -1313,5 +1313,10 @@
       "error": { "type": "String" }
     }
   },
-  "cateringQuoteGuestCountRequired": "Please enter the number of guests"
+  "cateringQuoteGuestCountRequired": "Please enter the number of guests",
+  "cateringDishNameRequired": "Please enter a dish name",
+  "cateringForfaitNamePriceRequired": "Name and price are required",
+  "soumissionAddAtLeastOneItem": "Add at least one item",
+  "soumissionSentSuccess": "Quote sent to client!",
+  "bookingNotFound": "Booking not found"
 }

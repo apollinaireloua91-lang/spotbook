@@ -3212,4 +3212,17 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get cateringQuoteGuestCountRequired =>
       'Veuillez entrer le nombre d\'invités';
+
+  @override
+  String get cateringDishNameRequired => 'Veuillez saisir un nom de plat';
+
+  @override
+  String get cateringForfaitNamePriceRequired =>
+      'Le nom et le prix sont obligatoires';
+
+  @override
+  String get soumissionAddAtLeastOneItem => 'Ajoutez au moins un item';
+
+  @override
+  String get soumissionSentSuccess => 'Soumission envoyée au client !';
 }

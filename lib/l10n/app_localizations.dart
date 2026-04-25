@@ -6140,6 +6140,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Please enter the number of guests'**
   String get cateringQuoteGuestCountRequired;
+
+  /// No description provided for @cateringDishNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a dish name'**
+  String get cateringDishNameRequired;
+
+  /// No description provided for @cateringForfaitNamePriceRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Name and price are required'**
+  String get cateringForfaitNamePriceRequired;
+
+  /// No description provided for @soumissionAddAtLeastOneItem.
+  ///
+  /// In en, this message translates to:
+  /// **'Add at least one item'**
+  String get soumissionAddAtLeastOneItem;
+
+  /// No description provided for @soumissionSentSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Quote sent to client!'**
+  String get soumissionSentSuccess;
 }
 
 class _AppLocalizationsDelegate

@@ -90,7 +90,7 @@ class _PaymentReceiptScreenState extends ConsumerState<PaymentReceiptScreen>
                   CircularProgressIndicator(color: AppColors.violet))
           : _booking == null
               ? Center(
-                  child: Text('Réservation introuvable',
+                  child: Text(AppLocalizations.of(context)!.bookingNotFound,
                       style: TextStyle(color: AppColors.gris)))
               : FadeTransition(
                   opacity: _fadeAnim,

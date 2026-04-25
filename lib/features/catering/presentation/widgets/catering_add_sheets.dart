@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../data/catering_repository.dart';
 
@@ -66,7 +67,8 @@ class _AddDishSheetState extends State<_AddDishSheet> {
         SnackBar(
           backgroundColor: AppColors.error,
           content:
-              Text('Veuillez saisir un nom de plat', style: TextStyle(color: AppColors.blanc)),
+              Text(AppLocalizations.of(context)!.cateringDishNameRequired,
+                  style: TextStyle(color: AppColors.blanc)),
         ),
       );
       return;
@@ -249,7 +251,7 @@ class _AddPackageSheetState extends State<_AddPackageSheet> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           backgroundColor: AppColors.error,
-          content: Text('Le nom et le prix sont obligatoires',
+          content: Text(AppLocalizations.of(context)!.cateringForfaitNamePriceRequired,
               style: TextStyle(color: AppColors.blanc)),
         ),
       );

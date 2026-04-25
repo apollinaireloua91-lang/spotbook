@@ -3178,4 +3178,16 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get cateringQuoteGuestCountRequired =>
       'Please enter the number of guests';
+
+  @override
+  String get cateringDishNameRequired => 'Please enter a dish name';
+
+  @override
+  String get cateringForfaitNamePriceRequired => 'Name and price are required';
+
+  @override
+  String get soumissionAddAtLeastOneItem => 'Add at least one item';
+
+  @override
+  String get soumissionSentSuccess => 'Quote sent to client!';
 }

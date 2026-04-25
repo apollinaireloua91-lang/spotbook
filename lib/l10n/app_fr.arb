@@ -1313,5 +1313,10 @@
       "error": { "type": "String" }
     }
   },
-  "cateringQuoteGuestCountRequired": "Veuillez entrer le nombre d'invités"
+  "cateringQuoteGuestCountRequired": "Veuillez entrer le nombre d'invités",
+  "cateringDishNameRequired": "Veuillez saisir un nom de plat",
+  "cateringForfaitNamePriceRequired": "Le nom et le prix sont obligatoires",
+  "soumissionAddAtLeastOneItem": "Ajoutez au moins un item",
+  "soumissionSentSuccess": "Soumission envoyée au client !",
+  "bookingNotFound": "Réservation introuvable"
 }

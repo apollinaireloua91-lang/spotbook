@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/theme/theme_mode_notifier.dart';
 import '../../../../shared/utils/currency_formatter.dart';
@@ -61,7 +62,7 @@ class _CreateSoumissionScreenState
     if (_items.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('Ajoutez au moins un item'),
+          content: Text(AppLocalizations.of(context)!.soumissionAddAtLeastOneItem),
           backgroundColor: AppColors.error,
         ),
       );
@@ -103,7 +104,7 @@ class _CreateSoumissionScreenState
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('Soumission envoyée au client !'),
+            content: Text(AppLocalizations.of(context)!.soumissionSentSuccess),
             backgroundColor: AppColors.success,
             behavior: SnackBarBehavior.floating,
           ),
