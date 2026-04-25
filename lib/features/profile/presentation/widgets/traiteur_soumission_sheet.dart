@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/utils/currency_formatter.dart';
 import '../../../../shared/widgets/address_autocomplete_field.dart';
@@ -126,7 +127,7 @@ class _SoumissionSheetState extends State<_SoumissionSheet> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           backgroundColor: AppColors.error,
-          content: Text('Veuillez entrer le nombre d\'invités',
+          content: Text(AppLocalizations.of(context)!.cateringQuoteGuestCountRequired,
               style: TextStyle(color: AppColors.blanc)),
         ),
       );

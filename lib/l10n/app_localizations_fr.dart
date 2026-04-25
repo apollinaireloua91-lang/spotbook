@@ -3203,4 +3203,13 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get videoBlockProAction => 'Bloquer ce pro';
+
+  @override
+  String videoCaptureLoadFailed(String error) {
+    return 'Impossible de charger la vidéo : $error';
+  }
+
+  @override
+  String get cateringQuoteGuestCountRequired =>
+      'Veuillez entrer le nombre d\'invités';
 }

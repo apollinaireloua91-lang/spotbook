@@ -1306,5 +1306,12 @@
   "favoriteRemoveConfirmTitle": "Retirer des favoris ?",
   "commonNo": "Non",
   "commonYes": "Oui",
-  "videoBlockProAction": "Bloquer ce pro"
+  "videoBlockProAction": "Bloquer ce pro",
+  "videoCaptureLoadFailed": "Impossible de charger la vidéo : {error}",
+  "@videoCaptureLoadFailed": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "cateringQuoteGuestCountRequired": "Veuillez entrer le nombre d'invités"
 }

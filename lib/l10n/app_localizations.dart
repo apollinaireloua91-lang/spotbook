@@ -6128,6 +6128,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Block this pro'**
   String get videoBlockProAction;
+
+  /// No description provided for @videoCaptureLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Cannot load video: {error}'**
+  String videoCaptureLoadFailed(String error);
+
+  /// No description provided for @cateringQuoteGuestCountRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter the number of guests'**
+  String get cateringQuoteGuestCountRequired;
 }
 
 class _AppLocalizationsDelegate

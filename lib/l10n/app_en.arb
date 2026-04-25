@@ -1306,5 +1306,12 @@
   "favoriteRemoveConfirmTitle": "Remove from favorites?",
   "commonNo": "No",
   "commonYes": "Yes",
-  "videoBlockProAction": "Block this pro"
+  "videoBlockProAction": "Block this pro",
+  "videoCaptureLoadFailed": "Cannot load video: {error}",
+  "@videoCaptureLoadFailed": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "cateringQuoteGuestCountRequired": "Please enter the number of guests"
 }

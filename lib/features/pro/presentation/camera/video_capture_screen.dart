@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/theme/theme_mode_notifier.dart';
 import 'video_preview_screen.dart';
@@ -61,7 +62,7 @@ class _VideoCaptureScreenState extends ConsumerState<VideoCaptureScreen> {
       setState(() => _isPicking = false);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Impossible de charger la vidéo : $e'),
+          content: Text(AppLocalizations.of(context)!.videoCaptureLoadFailed(e.toString())),
           backgroundColor: AppColors.error,
         ),
       );

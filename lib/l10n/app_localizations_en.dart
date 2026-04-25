@@ -3169,4 +3169,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get videoBlockProAction => 'Block this pro';
+
+  @override
+  String videoCaptureLoadFailed(String error) {
+    return 'Cannot load video: $error';
+  }
+
+  @override
+  String get cateringQuoteGuestCountRequired =>
+      'Please enter the number of guests';
 }
