@@ -3148,4 +3148,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get proSearchEmptyCta => 'Be the first to publish!';
+
+  @override
+  String get availabilityDayOff => 'Day off';
+
+  @override
+  String get availabilityAddSlot => 'Add a slot';
 }

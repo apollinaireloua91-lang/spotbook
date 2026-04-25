@@ -1299,5 +1299,7 @@
   "feedEmptyTitle": "No videos yet",
   "feedEmptySubtitle": "Videos from professionals will appear here",
   "proSearchErrorGeneric": "Search error",
-  "proSearchEmptyCta": "Be the first to publish!"
+  "proSearchEmptyCta": "Be the first to publish!",
+  "availabilityDayOff": "Day off",
+  "availabilityAddSlot": "Add a slot"
 }

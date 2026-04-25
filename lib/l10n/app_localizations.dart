@@ -6086,6 +6086,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Be the first to publish!'**
   String get proSearchEmptyCta;
+
+  /// No description provided for @availabilityDayOff.
+  ///
+  /// In en, this message translates to:
+  /// **'Day off'**
+  String get availabilityDayOff;
+
+  /// No description provided for @availabilityAddSlot.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a slot'**
+  String get availabilityAddSlot;
 }
 
 class _AppLocalizationsDelegate

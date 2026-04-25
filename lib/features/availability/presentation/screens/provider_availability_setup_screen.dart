@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/theme/theme_mode_notifier.dart';
 import '../../../../shared/widgets/spotbook_button.dart';
@@ -318,7 +319,7 @@ class _DayCard extends StatelessWidget {
                 children: [
                   Icon(Icons.bedtime_outlined, color: AppColors.gris, size: 14),
                   const SizedBox(width: 6),
-                  Text('Jour de repos',
+                  Text(AppLocalizations.of(context)!.availabilityDayOff,
                       style: TextStyle(color: AppColors.gris, fontSize: 13)),
                 ],
               ),
@@ -435,7 +436,7 @@ class _SlotsSectionState extends ConsumerState<_SlotsSection> {
                 children: [
                   Icon(Icons.add, color: AppColors.gris, size: 16),
                   const SizedBox(width: 6),
-                  Text('Ajouter un créneau',
+                  Text(AppLocalizations.of(context)!.availabilityAddSlot,
                       style: GoogleFonts.dmSans(
                           color: AppColors.gris,
                           fontSize: 13,

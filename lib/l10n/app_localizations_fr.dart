@@ -3182,4 +3182,10 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get proSearchEmptyCta => 'Soyez le premier à publier !';
+
+  @override
+  String get availabilityDayOff => 'Jour de repos';
+
+  @override
+  String get availabilityAddSlot => 'Ajouter un créneau';
 }

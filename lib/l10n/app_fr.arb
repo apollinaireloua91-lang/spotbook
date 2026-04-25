@@ -1299,5 +1299,7 @@
   "feedEmptyTitle": "Aucune vidéo",
   "feedEmptySubtitle": "Les vidéos des professionnels apparaîtront ici",
   "proSearchErrorGeneric": "Erreur de recherche",
-  "proSearchEmptyCta": "Soyez le premier à publier !"
+  "proSearchEmptyCta": "Soyez le premier à publier !",
+  "availabilityDayOff": "Jour de repos",
+  "availabilityAddSlot": "Ajouter un créneau"
 }
