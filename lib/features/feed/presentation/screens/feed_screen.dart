@@ -124,11 +124,7 @@ class _FeedScreenState extends ConsumerState<FeedScreen> {
                 const SizedBox(height: 24),
                 DecoratedBox(
                   decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [Color(0xFF700B97), Color(0xFF8E05C2)],
-                    ),
+                    gradient: AppColors.gradientAccent,
                     borderRadius: BorderRadius.circular(14),
                     boxShadow: [
                       BoxShadow(
