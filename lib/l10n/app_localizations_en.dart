@@ -3136,4 +3136,16 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get qrUnavailableSubtitle =>
       'Your QR code will be generated as soon as payment is confirmed.';
+
+  @override
+  String get feedEmptyTitle => 'No videos yet';
+
+  @override
+  String get feedEmptySubtitle => 'Videos from professionals will appear here';
+
+  @override
+  String get proSearchErrorGeneric => 'Search error';
+
+  @override
+  String get proSearchEmptyCta => 'Be the first to publish!';
 }

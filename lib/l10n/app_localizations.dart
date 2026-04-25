@@ -6062,6 +6062,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Your QR code will be generated as soon as payment is confirmed.'**
   String get qrUnavailableSubtitle;
+
+  /// No description provided for @feedEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No videos yet'**
+  String get feedEmptyTitle;
+
+  /// No description provided for @feedEmptySubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Videos from professionals will appear here'**
+  String get feedEmptySubtitle;
+
+  /// No description provided for @proSearchErrorGeneric.
+  ///
+  /// In en, this message translates to:
+  /// **'Search error'**
+  String get proSearchErrorGeneric;
+
+  /// No description provided for @proSearchEmptyCta.
+  ///
+  /// In en, this message translates to:
+  /// **'Be the first to publish!'**
+  String get proSearchEmptyCta;
 }
 
 class _AppLocalizationsDelegate

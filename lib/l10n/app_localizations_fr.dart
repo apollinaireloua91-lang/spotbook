@@ -3169,4 +3169,17 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get qrUnavailableSubtitle =>
       'Le code QR sera généré dès la confirmation de paiement.';
+
+  @override
+  String get feedEmptyTitle => 'Aucune vidéo';
+
+  @override
+  String get feedEmptySubtitle =>
+      'Les vidéos des professionnels apparaîtront ici';
+
+  @override
+  String get proSearchErrorGeneric => 'Erreur de recherche';
+
+  @override
+  String get proSearchEmptyCta => 'Soyez le premier à publier !';
 }

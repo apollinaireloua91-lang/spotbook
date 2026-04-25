@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/theme/app_typography.dart';
 import '../../../../shared/theme/theme_mode_notifier.dart';
@@ -59,7 +60,7 @@ class _ProSearchScreenState extends ConsumerState<ProSearchScreen> {
       setState(() => _isSearching = false);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: const Text('Erreur de recherche'), backgroundColor: AppColors.error),
+          SnackBar(content: Text(AppLocalizations.of(context)!.proSearchErrorGeneric), backgroundColor: AppColors.error),
         );
       }
     }
@@ -612,10 +613,10 @@ class _InspirationsSectionState extends ConsumerState<_InspirationsSection>
             Icon(Icons.video_library_outlined, size: 48,
                 color: AppColors.grisInactif),
             const SizedBox(height: 12),
-            Text('Aucune vidéo',
+            Text(AppLocalizations.of(context)!.feedEmptyTitle,
                 style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 14)),
             const SizedBox(height: 4),
-            Text('Soyez le premier à publier !',
+            Text(AppLocalizations.of(context)!.proSearchEmptyCta,
                 style: GoogleFonts.dmSans(
                     color: AppColors.violet, fontSize: 13, fontWeight: FontWeight.w600)),
           ],

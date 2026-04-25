@@ -1295,5 +1295,9 @@
   "qrOpenFullscreen": "Plein écran",
   "qrCloseFullscreen": "Fermer",
   "qrUnavailableTitle": "QR pas encore disponible",
-  "qrUnavailableSubtitle": "Le code QR sera généré dès la confirmation de paiement."
+  "qrUnavailableSubtitle": "Le code QR sera généré dès la confirmation de paiement.",
+  "feedEmptyTitle": "Aucune vidéo",
+  "feedEmptySubtitle": "Les vidéos des professionnels apparaîtront ici",
+  "proSearchErrorGeneric": "Erreur de recherche",
+  "proSearchEmptyCta": "Soyez le premier à publier !"
 }

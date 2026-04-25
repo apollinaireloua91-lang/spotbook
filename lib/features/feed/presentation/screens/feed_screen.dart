@@ -189,13 +189,13 @@ class _FeedScreenState extends ConsumerState<FeedScreen> {
                     size: 40, color: AppColors.violet.withAlpha(180)),
               ),
               const SizedBox(height: 20),
-              Text('Aucune vidéo',
+              Text(AppLocalizations.of(context)!.feedEmptyTitle,
                   style: GoogleFonts.sora(
                       color: Colors.white,
                       fontSize: 18,
                       fontWeight: FontWeight.w600)),
               const SizedBox(height: 8),
-              Text('Les vidéos des professionnels apparaîtront ici',
+              Text(AppLocalizations.of(context)!.feedEmptySubtitle,
                   style: GoogleFonts.dmSans(
                       color: Colors.white.withAlpha(120), fontSize: 14)),
             ],
