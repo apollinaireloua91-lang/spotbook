@@ -1951,6 +1951,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get manageServices => 'Manage services';
 
   @override
+  String get bookingStatusCompleted => 'Completed';
+
+  @override
+  String get bookingStatusCancelled => 'Cancelled';
+
+  @override
   String get markAsDone => 'Mark as done';
 
   @override

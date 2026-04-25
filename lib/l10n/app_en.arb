@@ -629,6 +629,8 @@
   "logoutConfirmMessage": "Are you sure you want to log out?",
   "logoutConfirmTitle": "Log out?",
   "manageServices": "Manage services",
+  "bookingStatusCompleted": "Completed",
+  "bookingStatusCancelled": "Cancelled",
   "markAsDone": "Mark as done",
   "markAsDoneMessage": "Mark this appointment as completed?",
   "markAsDoneTitle": "Mark as done?",

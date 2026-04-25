@@ -1978,6 +1978,12 @@ class AppLocalizationsFr extends AppLocalizations {
   String get manageServices => 'Gérer les services';
 
   @override
+  String get bookingStatusCompleted => 'Terminé';
+
+  @override
+  String get bookingStatusCancelled => 'Annulé';
+
+  @override
   String get markAsDone => 'Marquer comme terminé';
 
   @override

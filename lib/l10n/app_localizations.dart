@@ -3872,6 +3872,18 @@ abstract class AppLocalizations {
   /// **'Manage services'**
   String get manageServices;
 
+  /// No description provided for @bookingStatusCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed'**
+  String get bookingStatusCompleted;
+
+  /// No description provided for @bookingStatusCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled'**
+  String get bookingStatusCancelled;
+
   /// No description provided for @markAsDone.
   ///
   /// In en, this message translates to:

@@ -85,6 +85,24 @@ class _ProRdvScreenState extends ConsumerState<ProRdvScreen>
       return d != null && !d.isBefore(monthStart);
     }).length;
 
+    // Upcoming bookings (next 3, future only, non-cancelled/completed)
+    final today = DateTime(now.year, now.month, now.day);
+    final upcomingBookings = (state.bookings.where((b) {
+      final d = DateTime.tryParse(b.slotDate ?? '');
+      if (d == null) return false;
+      if (d.isBefore(today)) return false;
+      return b.status == 'confirmed' ||
+          b.status == 'pending' ||
+          b.status == 'pending_payment';
+    }).toList()
+          ..sort((a, b) {
+            final cmp = (a.slotDate ?? '').compareTo(b.slotDate ?? '');
+            if (cmp != 0) return cmp;
+            return (a.slotStartTime ?? '').compareTo(b.slotStartTime ?? '');
+          }))
+        .take(3)
+        .toList();
+
     // Week revenue
     final monday = now.subtract(Duration(days: now.weekday - 1));
     final weekBookings = state.bookings.where((b) {
@@ -176,7 +194,12 @@ class _ProRdvScreenState extends ConsumerState<ProRdvScreen>
                 monthCount: monthBookings,
               ),
 
-              const SizedBox(height: 20),
+              const SizedBox(height: 22),
+
+              // ── Upcoming Bookings ──
+              _UpcomingSection(bookings: upcomingBookings),
+
+              const SizedBox(height: 22),
 
               // ── Calendar Week Strip ──
               _CalendarWeekStrip(
@@ -782,8 +805,8 @@ class _TimeSlotCard extends StatelessWidget {
   String _statusLabel(AppLocalizations l) => switch (booking.status) {
         'confirmed' => '✓ ${l.confirmed}',
         'pending_payment' || 'pending' => '⏳ ${l.pending}',
-        'completed' => '✓ ${l.markAsDone}',
-        _ => l.cancel,
+        'completed' => '✓ ${l.bookingStatusCompleted}',
+        _ => l.bookingStatusCancelled,
       };
 
   Color get _badgeBg => switch (booking.status) {
@@ -1383,4 +1406,368 @@ class _DailyRevenue {
   final String dayLabel;
   final double amount;
   final bool isToday;
+}
+
+// ═════════════════════════════════════════════════════════════════════════════
+// UPCOMING SECTION — Next 3 bookings across days (moved from dashboard)
+// ═════════════════════════════════════════════════════════════════════════════
+
+class _UpcomingSection extends StatelessWidget {
+  const _UpcomingSection({required this.bookings});
+
+  final List<BookingModel> bookings;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Section header
+        Row(
+          children: [
+            Container(
+              width: 3,
+              height: 12,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(2),
+                gradient: AppColors.gradientAccent,
+              ),
+            ),
+            const SizedBox(width: 8),
+            Text(
+              'À VENIR',
+              style: GoogleFonts.sora(
+                fontSize: 10,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 2,
+                color: AppColors.gris,
+              ),
+            ),
+            if (bookings.isNotEmpty) ...[
+              const SizedBox(width: 8),
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                decoration: BoxDecoration(
+                  color: AppColors.violet.withAlpha(24),
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: Text(
+                  '${bookings.length}',
+                  style: GoogleFonts.sora(
+                    fontSize: 9,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.violetClair,
+                    fontFeatures: const [FontFeature.tabularFigures()],
+                  ),
+                ),
+              ),
+            ],
+            const Spacer(),
+          ],
+        ),
+        const SizedBox(height: 12),
+        if (bookings.isEmpty)
+          const _UpcomingEmpty()
+        else
+          ...List.generate(bookings.length, (i) {
+            return Padding(
+              padding: EdgeInsets.only(
+                  bottom: i == bookings.length - 1 ? 0 : 8),
+              child: _UpcomingTile(booking: bookings[i]),
+            );
+          }),
+      ],
+    );
+  }
+}
+
+class _UpcomingEmpty extends StatelessWidget {
+  const _UpcomingEmpty();
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: AppColors.border, width: 0.5),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 32,
+            height: 32,
+            decoration: BoxDecoration(
+              color: AppColors.violet.withAlpha(20),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Icon(
+              Icons.event_available_outlined,
+              color: AppColors.violetClair,
+              size: 16,
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  l.noUpcomingAppointments,
+                  style: GoogleFonts.dmSans(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.blanc,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  l.upcomingAppointmentsHint,
+                  style: GoogleFonts.dmSans(
+                    fontSize: 10,
+                    color: AppColors.grisInactif,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _UpcomingTile extends StatelessWidget {
+  const _UpcomingTile({required this.booking});
+
+  final BookingModel booking;
+
+  Color _statusColor() => switch (booking.status) {
+        'confirmed' => AppColors.success,
+        'pending_payment' || 'pending' => AppColors.catering,
+        'completed' => AppColors.violet,
+        'cancelled' || 'cancelled_full_refund' => AppColors.rose,
+        _ => AppColors.gris,
+      };
+
+  String _statusLabel(AppLocalizations l) => switch (booking.status) {
+        'confirmed' => l.confirmed,
+        'pending_payment' || 'pending' => l.pending,
+        'completed' => l.bookingStatusCompleted,
+        'cancelled' || 'cancelled_full_refund' => l.bookingStatusCancelled,
+        _ => booking.status,
+      };
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
+    final parsed = DateTime.tryParse(booking.slotDate ?? '');
+    final dayNum = parsed != null ? parsed.day.toString() : '--';
+    final monthAbbr = parsed != null
+        ? DateFormat('MMM', 'fr_CA')
+            .format(parsed)
+            .toUpperCase()
+            .replaceAll('.', '')
+        : '';
+    final time = (booking.slotStartTime != null &&
+            booking.slotStartTime!.length >= 5)
+        ? booking.slotStartTime!.substring(0, 5)
+        : '--:--';
+    final name = booking.clientName ?? 'Client';
+    final statusColor = _statusColor();
+
+    return GestureDetector(
+      onTap: () {
+        HapticFeedback.selectionClick();
+        context.push('/booking/${booking.id}');
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          color: AppColors.surfaceAlt,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: AppColors.border, width: 0.5),
+        ),
+        child: IntrinsicHeight(
+          child: Row(
+            children: [
+              // Date stub
+              Container(
+                width: 56,
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                decoration: BoxDecoration(
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(14),
+                    bottomLeft: Radius.circular(14),
+                  ),
+                  border: Border(
+                    right: BorderSide(
+                      color: AppColors.border,
+                      width: 0.5,
+                    ),
+                  ),
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      dayNum,
+                      style: GoogleFonts.sora(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.blanc,
+                        height: 1.0,
+                        fontFeatures: const [FontFeature.tabularFigures()],
+                      ),
+                    ),
+                    const SizedBox(height: 3),
+                    Text(
+                      monthAbbr,
+                      style: GoogleFonts.dmSans(
+                        fontSize: 9,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 1.6,
+                        color: AppColors.violetClair,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              // Content
+              Expanded(
+                child: Padding(
+                  padding:
+                      const EdgeInsets.fromLTRB(12, 10, 12, 10),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              name,
+                              style: GoogleFonts.dmSans(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w700,
+                                color: AppColors.blanc,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          _StatusDot(
+                            color: statusColor,
+                            label: _statusLabel(l),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 4),
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.schedule_rounded,
+                            size: 11,
+                            color: AppColors.grisInactif,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            time,
+                            style: GoogleFonts.dmSans(
+                              fontSize: 10,
+                              fontWeight: FontWeight.w500,
+                              color: AppColors.gris,
+                              fontFeatures: const [
+                                FontFeature.tabularFigures()
+                              ],
+                            ),
+                          ),
+                          if (booking.serviceName != null) ...[
+                            Text(
+                              '  ·  ',
+                              style: GoogleFonts.dmSans(
+                                fontSize: 10,
+                                color: AppColors.grisInactif,
+                              ),
+                            ),
+                            Flexible(
+                              child: Text(
+                                booking.serviceName!,
+                                style: GoogleFonts.dmSans(
+                                  fontSize: 10,
+                                  color: AppColors.gris,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
+                          const Spacer(),
+                          Text(
+                            '\$${booking.totalAmount.toStringAsFixed(0)}',
+                            style: GoogleFonts.sora(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w700,
+                              color: AppColors.blanc,
+                              fontFeatures: const [
+                                FontFeature.tabularFigures()
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _StatusDot extends StatelessWidget {
+  const _StatusDot({required this.color, required this.label});
+
+  final Color color;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          width: 6,
+          height: 6,
+          decoration: BoxDecoration(
+            color: color,
+            shape: BoxShape.circle,
+            boxShadow: [
+              BoxShadow(
+                color: color.withAlpha(80),
+                blurRadius: 6,
+                spreadRadius: 0,
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(width: 5),
+        Text(
+          label,
+          style: GoogleFonts.dmSans(
+            fontSize: 9,
+            fontWeight: FontWeight.w700,
+            letterSpacing: 0.4,
+            color: color,
+          ),
+        ),
+      ],
+    );
+  }
 }

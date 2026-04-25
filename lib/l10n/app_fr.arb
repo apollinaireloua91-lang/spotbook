@@ -629,6 +629,8 @@
   "logoutConfirmMessage": "Voulez-vous vraiment vous déconnecter ?",
   "logoutConfirmTitle": "Se déconnecter ?",
   "manageServices": "Gérer les services",
+  "bookingStatusCompleted": "Terminé",
+  "bookingStatusCancelled": "Annulé",
   "markAsDone": "Marquer comme terminé",
   "markAsDoneMessage": "Marquer ce rendez-vous comme terminé ?",
   "markAsDoneTitle": "Marquer comme terminé ?",
