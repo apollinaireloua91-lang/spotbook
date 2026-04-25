@@ -13,6 +13,7 @@ import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/theme/app_typography.dart';
 import '../../../../shared/theme/theme_mode_notifier.dart';
+import '../../../../shared/utils/currency_formatter.dart';
 import '../../../../shared/widgets/animated_counter.dart';
 import '../../data/booking_notifier.dart';
 import '../../data/booking_repository.dart';
@@ -238,6 +239,9 @@ class _ProRdvScreenState extends ConsumerState<ProRdvScreen>
               // ── Revenue Section ──
               _RevenueSection(
                 weekRevenue: weekRevenue,
+                weekCurrency: weekBookings.isNotEmpty
+                    ? weekBookings.first.currency
+                    : 'CAD',
                 weekClientCount: weekClientCount,
                 weekData: weekData,
               ),
@@ -966,7 +970,11 @@ class _TimeSlotCard extends StatelessWidget {
                                 Icon(Icons.attach_money,
                                     size: 11, color: AppColors.grisInactif),
                                 Text(
-                                  '\$${booking.totalAmount.toStringAsFixed(0)}',
+                                  CurrencyFormatter.formatAmount(
+                                    booking.totalAmount,
+                                    currency: booking.currency,
+                                    decimalDigits: 0,
+                                  ),
                                   style: GoogleFonts.dmSans(
                                     fontSize: 9,
                                     color: AppColors.grisInactif,
@@ -989,7 +997,7 @@ class _TimeSlotCard extends StatelessWidget {
                                       borderRadius: BorderRadius.circular(4),
                                     ),
                                     child: Text(
-                                      'Acompte \$${booking.depositAmount.toStringAsFixed(0)}',
+                                      'Acompte ${CurrencyFormatter.formatAmount(booking.depositAmount, currency: booking.currency, decimalDigits: 0)}',
                                       style: GoogleFonts.dmSans(
                                         fontSize: 8,
                                         fontWeight: FontWeight.w600,
@@ -1010,7 +1018,7 @@ class _TimeSlotCard extends StatelessWidget {
                                     child: Text(
                                       booking.isRemainingPaid
                                           ? l.balanceMarkedPaid
-                                          : 'Dû \$${(booking.remainingAmount ?? 0).toStringAsFixed(0)}',
+                                          : 'Dû ${CurrencyFormatter.formatAmount(booking.remainingAmount ?? 0, currency: booking.currency, decimalDigits: 0)}',
                                       style: GoogleFonts.dmSans(
                                         fontSize: 8,
                                         fontWeight: FontWeight.w600,
@@ -1225,11 +1233,13 @@ class _EmptyDayState extends StatelessWidget {
 class _RevenueSection extends StatefulWidget {
   const _RevenueSection({
     required this.weekRevenue,
+    required this.weekCurrency,
     required this.weekClientCount,
     required this.weekData,
   });
 
   final double weekRevenue;
+  final String weekCurrency;
   final int weekClientCount;
   final List<_DailyRevenue> weekData;
 
@@ -1309,7 +1319,11 @@ class _RevenueSectionState extends State<_RevenueSection>
             children: [
               // Revenue amount
               Text(
-                '\$${widget.weekRevenue.toStringAsFixed(0)}',
+                CurrencyFormatter.formatAmount(
+                  widget.weekRevenue,
+                  currency: widget.weekCurrency,
+                  decimalDigits: 0,
+                ),
                 style: GoogleFonts.sora(
                   fontSize: 24,
                   fontWeight: FontWeight.w800,
@@ -1707,7 +1721,11 @@ class _UpcomingTile extends StatelessWidget {
                           ],
                           const Spacer(),
                           Text(
-                            '\$${booking.totalAmount.toStringAsFixed(0)}',
+                            CurrencyFormatter.formatAmount(
+                              booking.totalAmount,
+                              currency: booking.currency,
+                              decimalDigits: 0,
+                            ),
                             style: GoogleFonts.sora(
                               fontSize: 11,
                               fontWeight: FontWeight.w700,
