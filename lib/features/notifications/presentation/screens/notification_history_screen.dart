@@ -69,8 +69,16 @@ class NotificationHistoryScreen extends ConsumerWidget {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(Icons.notifications_off_outlined, color: AppColors.gris, size: 48),
-                      const SizedBox(height: 12),
+                      Container(
+                        width: 72,
+                        height: 72,
+                        decoration: BoxDecoration(
+                          color: AppColors.violet.withAlpha(15),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Icon(Icons.notifications_off_outlined, color: AppColors.violet.withAlpha(120), size: 36),
+                      ),
+                      const SizedBox(height: 16),
                       Text(l.notificationsEmpty,
                           style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 15)),
                     ],
@@ -155,6 +163,7 @@ class _NotificationTileState extends ConsumerState<_NotificationTile>
         return Icons.event_note;
       case 'chat':
       case 'new_message':
+      case 'message':
         return Icons.chat_bubble_outline;
       case 'review_request':
         return Icons.star_border;
@@ -168,6 +177,29 @@ class _NotificationTileState extends ConsumerState<_NotificationTile>
         return Icons.videocam_outlined;
       default:
         return Icons.notifications_outlined;
+    }
+  }
+
+  Color _colorForType(String type) {
+    switch (type) {
+      case 'booking_reminder':
+      case 'booking_update':
+        return AppColors.violet;
+      case 'chat':
+      case 'new_message':
+      case 'message':
+        return AppColors.success;
+      case 'review_request':
+        return AppColors.warning;
+      case 'waitlist':
+        return AppColors.violetClair;
+      case 'follow':
+      case 'like':
+        return AppColors.rose;
+      case 'video_ready':
+        return AppColors.violetClair;
+      default:
+        return AppColors.gris;
     }
   }
 
@@ -207,8 +239,17 @@ class _NotificationTileState extends ConsumerState<_NotificationTile>
               color: n.isRead ? AppColors.surface : AppColors.surfaceAlt,
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
-                color: n.isRead ? AppColors.border : AppColors.blanc.withValues(alpha: 0.1),
+                color: n.isRead ? AppColors.border : AppColors.violet.withAlpha(60),
               ),
+              boxShadow: n.isRead
+                  ? null
+                  : [
+                      BoxShadow(
+                        color: AppColors.violet.withAlpha(10),
+                        blurRadius: 12,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
             ),
             child: Row(
               children: [
@@ -216,10 +257,17 @@ class _NotificationTileState extends ConsumerState<_NotificationTile>
                   width: 40,
                   height: 40,
                   decoration: BoxDecoration(
-                    color: AppColors.fond,
+                    gradient: LinearGradient(
+                      colors: [
+                        _colorForType(n.type).withAlpha(30),
+                        _colorForType(n.type).withAlpha(12),
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Icon(_iconForType(n.type), color: AppColors.blanc, size: 20),
+                  child: Icon(_iconForType(n.type), color: _colorForType(n.type), size: 20),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -255,8 +303,15 @@ class _NotificationTileState extends ConsumerState<_NotificationTile>
                     width: 8,
                     height: 8,
                     decoration: BoxDecoration(
-                      color: AppColors.blanc,
+                      color: AppColors.violet,
                       shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppColors.violet.withAlpha(120),
+                          blurRadius: 6,
+                          spreadRadius: 1,
+                        ),
+                      ],
                     ),
                   ),
                 ],
@@ -284,6 +339,7 @@ class _NotificationTileState extends ConsumerState<_NotificationTile>
         break;
       case 'chat':
       case 'new_message':
+      case 'message':
         final convId = (n.data['conversationId'] ?? n.data['conversation_id']) as String?;
         if (convId != null) context.push('/chat/$convId');
         break;
