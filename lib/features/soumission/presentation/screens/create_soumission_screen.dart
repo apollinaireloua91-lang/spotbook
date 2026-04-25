@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/theme/theme_mode_notifier.dart';
+import '../../../../shared/utils/currency_formatter.dart';
 import '../../../../shared/widgets/spotbook_button.dart';
 import '../../data/soumission_repository.dart';
 import '../../domain/soumission_model.dart';
@@ -275,7 +276,7 @@ class _CreateSoumissionScreenState
                   ),
                   const Spacer(),
                   Text(
-                    '\$${(_subtotalCents / 100).toStringAsFixed(2)}',
+                    CurrencyFormatter.formatAmount(_subtotalCents / 100),
                     style: GoogleFonts.sora(
                       color: AppColors.blanc,
                       fontSize: 18,

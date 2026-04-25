@@ -7,6 +7,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/theme/theme_mode_notifier.dart';
+import '../../../../shared/utils/currency_formatter.dart';
 import '../../../../shared/widgets/spotbook_card.dart';
 import '../../data/event_notifier.dart';
 import '../../domain/event_models.dart';
@@ -358,7 +359,11 @@ class _EventCard extends StatelessWidget {
 // ─── Stats row ────────────────────────────────────────────────────────────────
 
 class _StatsRow extends StatelessWidget {
-  const _StatsRow({this.ticketsSold, this.totalTickets, this.revenue});
+  const _StatsRow({
+    this.ticketsSold,
+    this.totalTickets,
+    this.revenue,
+  });
   final int? ticketsSold;
   final int? totalTickets;
   final double? revenue;
@@ -418,7 +423,7 @@ class _StatsRow extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  '\$${revenue!.toStringAsFixed(0)}',
+                  CurrencyFormatter.formatAmount(revenue!, decimalDigits: 0),
                   style: GoogleFonts.sora(
                     color: AppColors.blanc,
                     fontSize: 15,

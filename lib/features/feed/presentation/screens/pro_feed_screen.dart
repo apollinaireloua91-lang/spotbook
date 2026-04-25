@@ -7,11 +7,11 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:share_plus/share_plus.dart';
 
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/theme/app_typography.dart';
 import '../../../../shared/theme/theme_mode_notifier.dart';
+import '../../../../shared/utils/share_branding.dart';
 import '../../../../shared/utils/time_ago.dart';
 import '../../../../shared/widgets/spotbook_avatar.dart';
 import '../../../../shared/widgets/spotbook_bottom_sheet.dart';
@@ -23,24 +23,13 @@ import '../../domain/video_model.dart';
 import '../widgets/like_animation.dart';
 import '../widgets/spotify_music_sheet.dart';
 
-// ─── Double-tap heart animation (overlay ~600ms, spec TikTok) ─────────
+// ─── Double-tap heart animation — TikTok-style at tap position ────────
 
-class _DoubleTapHeartNotifier extends Notifier<bool> {
-  @override
-  bool build() => false;
-
-  void trigger() {
-    state = true;
-    Future.delayed(const Duration(milliseconds: 600), () {
-      state = false;
-    });
-  }
+class _HeartEntry {
+  _HeartEntry({required this.position}) : key = UniqueKey();
+  final Offset position;
+  final Key key;
 }
-
-final _doubleTapHeartProvider =
-    NotifierProvider<_DoubleTapHeartNotifier, bool>(
-  _DoubleTapHeartNotifier.new,
-);
 
 // ═════════════════════════════════════════════════════════════════════
 // PRO FEED SCREEN — TikTok-style full-screen vertical swipe
@@ -58,6 +47,8 @@ class _ProFeedScreenState extends ConsumerState<ProFeedScreen> {
   final _bgKey = GlobalKey<_PostBackgroundState>();
   bool _isPaused = false;
   bool _showPlayPauseIcon = false;
+  final List<_HeartEntry> _hearts = [];
+  Offset? _lastDoubleTapPosition;
 
   @override
   void dispose() {
@@ -86,7 +77,12 @@ class _ProFeedScreenState extends ConsumerState<ProFeedScreen> {
     if (!video.isLiked) {
       _toggleLike(video, index);
     }
-    ref.read(_doubleTapHeartProvider.notifier).trigger();
+    final pos = _lastDoubleTapPosition ??
+        Offset(
+          MediaQuery.sizeOf(context).width / 2,
+          MediaQuery.sizeOf(context).height / 2,
+        );
+    setState(() => _hearts.add(_HeartEntry(position: pos)));
   }
 
   @override
@@ -94,7 +90,6 @@ class _ProFeedScreenState extends ConsumerState<ProFeedScreen> {
     ref.watch(themeModeProvider);
     final feed = ref.watch(proOwnFeedProvider);
     final badges = ref.watch(proFeedBadgesProvider);
-    final showHeart = ref.watch(_doubleTapHeartProvider);
 
     if (feed.isLoading) {
       return Scaffold(
@@ -145,6 +140,8 @@ class _ProFeedScreenState extends ConsumerState<ProFeedScreen> {
                     if (mounted) setState(() => _showPlayPauseIcon = false);
                   });
                 },
+                onDoubleTapDown: (details) =>
+                    _lastDoubleTapPosition = details.globalPosition,
                 onDoubleTap: () => _onDoubleTap(video, index),
                 child: _PostBackground(
                   key: index == currentIndex ? _bgKey : null,
@@ -220,8 +217,22 @@ class _ProFeedScreenState extends ConsumerState<ProFeedScreen> {
               ),
             ),
 
-          // ── Double-tap heart animation ────────────────────────
-          if (showHeart) const IgnorePointer(child: Center(child: LikeAnimation())),
+          // ── Double-tap heart animation — spawned at tap position ──
+          for (final heart in _hearts)
+            Positioned(
+              left: heart.position.dx - 100,
+              top: heart.position.dy - 100,
+              child: IgnorePointer(
+                child: LikeAnimation(
+                  key: heart.key,
+                  onComplete: () {
+                    if (mounted) {
+                      setState(() => _hearts.remove(heart));
+                    }
+                  },
+                ),
+              ),
+            ),
         ],
       ),
     );
@@ -1408,9 +1419,7 @@ class _ShareSheetContent extends StatelessWidget {
                 bg: AppColors.brandTikTok,
                 label: 'TikTok',
                 icon: Icons.music_note,
-                onTap: () => SharePlus.instance.share(
-                  ShareParams(text: link),
-                ),
+                onTap: () => ShareBranding.shareWithLogo(text: link),
               ),
             ),
             const SizedBox(width: 10),
@@ -1419,9 +1428,7 @@ class _ShareSheetContent extends StatelessWidget {
                 bg: AppColors.rose,
                 label: 'Instagram',
                 icon: Icons.camera_alt_outlined,
-                onTap: () => SharePlus.instance.share(
-                  ShareParams(text: link),
-                ),
+                onTap: () => ShareBranding.shareWithLogo(text: link),
               ),
             ),
           ],
@@ -1434,9 +1441,7 @@ class _ShareSheetContent extends StatelessWidget {
                 bg: AppColors.brandWhatsApp,
                 label: 'WhatsApp',
                 icon: Icons.chat,
-                onTap: () => SharePlus.instance.share(
-                  ShareParams(text: link),
-                ),
+                onTap: () => ShareBranding.shareWithLogo(text: link),
               ),
             ),
             const SizedBox(width: 10),

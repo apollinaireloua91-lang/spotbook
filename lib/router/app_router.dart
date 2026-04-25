@@ -2,10 +2,12 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../core/animations/premium_transitions.dart';
+import '../features/auth/data/auth_repository.dart';
 
 import '../features/pro/presentation/camera/video_capture_screen.dart';
 import '../features/pro/presentation/camera/video_preview_screen.dart';
@@ -95,9 +97,9 @@ import '../features/profile/presentation/bloc/public_provider_profile_bloc.dart'
 import '../features/profile/data/datasources/provider_profile_remote_datasource.dart';
 import '../features/profile/data/profile_repository.dart';
 import '../features/chat/data/chat_repository.dart';
-import 'auth_router_notifier.dart';
 import 'client_shell.dart';
 import 'pro_shell.dart';
+import 'user_role_provider.dart';
 
 /// Routes that don't require authentication.
 const _publicPaths = <String>{
@@ -112,74 +114,120 @@ const _publicPaths = <String>{
   '/reset-password',
 };
 
-final appRouter = GoRouter(
-  initialLocation: '/',
-  // refreshListenable : ré-évalue tous les redirects à chaque changement
-  // d'auth state (signedIn, signedOut, tokenRefreshed, userUpdated...) ET
-  // à chaque mise à jour du rôle cached. Sans ça, le router ne réagissait
-  // qu'aux navigations explicites — une session expirant passivement
-  // (refresh token révoqué côté serveur) laissait l'utilisateur bloqué sur
-  // un écran authentifié mort jusqu'au cold start (cf. zone 6 de
-  // docs/AUTH_SECURITY_AUDIT.md). Les `context.go('/login')` manuels après
-  // signOut() restent en place (belt + suspenders) — ils gèrent le cas
-  // actif (logout explicite), refreshListenable gère le cas passif.
-  refreshListenable: AuthRouterNotifier.instance,
-  redirect: (context, state) {
-    final session = Supabase.instance.client.auth.currentSession;
-    final path = state.matchedLocation;
+/// Bridge Riverpod → `ChangeNotifier` pour alimenter `refreshListenable`.
+///
+/// GoRouter n'accepte qu'un `Listenable` ; on écoute `userRoleProvider`
+/// (rôle authoritative) **et** `authStateProvider` (sessions/refresh/logout
+/// passif) pour que chaque transition déclenche une ré-évaluation des
+/// redirects. Équivalent de l'ancien singleton `AuthRouterNotifier` — mais
+/// sans état propre : la valeur vit dans `userRoleProvider`, ce notifier
+/// n'est plus qu'un pont.
+class _GoRouterRefreshNotifier extends ChangeNotifier {
+  _GoRouterRefreshNotifier(Ref ref) {
+    _roleSub = ref.listen<String?>(
+      userRoleProvider,
+      (_, __) => notifyListeners(),
+    );
+    // AsyncValue<AuthState> — notifie sur signedIn / signedOut /
+    // tokenRefreshed / userUpdated / initialSession (passive expiry).
+    _authSub = ref.listen(
+      authStateProvider,
+      (_, __) => notifyListeners(),
+    );
+  }
 
-    // Allow public routes without a session.
-    if (_publicPaths.contains(path)) {
-      // If user IS authenticated and tries to visit login/signup/role-picker
-      // → redirect vers le feed correspondant à son rôle. Sans cette garde,
-      // un Pro déjà loggé peut atterrir sur /select-account-type, choisir
-      // « Client », taper Continue → /signup/client → la redirect ci-dessous
-      // le renvoie quand même sur /pro/feed (parce que sa session est Pro).
-      // Résultat visible sur iPhone papi : « je choisis Client, ça m'ouvre
-      // quand même le compte Pro ». La bonne UX : si une session existe,
-      // l'utilisateur n'a rien à faire sur ces écrans.
-      final isAuthOnlyPath = path == '/login' ||
-          path.startsWith('/signup') ||
-          path == '/select-account-type';
-      if (session != null && isAuthOnlyPath) {
-        // Lecture AUTORITAIRE via AuthRouterNotifier (cache de
-        // public.users.role mis à jour par realtime_bootstrap après chaque
-        // signedIn). Avant 2026-04-24 on lisait userMetadata['role'], NULL
-        // pour les inscriptions OAuth → un Pro Google atterrissait sur
-        // /client/feed. Cf. docs/AUTH_SECURITY_AUDIT.md bug 7b.
-        // Si le cache est encore null (race au tout premier signedIn avant
-        // que _fetchUserRole termine), on laisse l'user sur l'écran courant
-        // — refreshListenable re-déclenchera la redirection dès que le
-        // bootstrap aura pushé la valeur.
-        final role = AuthRouterNotifier.instance.role;
-        if (role == null) return null;
-        return role == 'pro' ? '/pro/feed' : '/client/feed';
+  late final ProviderSubscription<String?> _roleSub;
+  late final ProviderSubscription _authSub;
+
+  @override
+  void dispose() {
+    _roleSub.close();
+    _authSub.close();
+    super.dispose();
+  }
+}
+
+/// Provider qui construit le `GoRouter` de l'application.
+///
+/// Mettre `ref.watch(goRouterProvider)` dans le widget racine (`app.dart`)
+/// pour que `MaterialApp.router` utilise une instance stable.
+///
+/// Pourquoi un provider plutôt qu'un `final` top-level : permet au
+/// `redirect` de lire `userRoleProvider` via la closure `ref`, et au
+/// bridge refresh de vivre dans le `ProviderContainer` (auto-disposé avec
+/// l'app).
+final goRouterProvider = Provider<GoRouter>((ref) {
+  final refresh = _GoRouterRefreshNotifier(ref);
+  ref.onDispose(refresh.dispose);
+
+  return GoRouter(
+    initialLocation: '/',
+    // refreshListenable : ré-évalue tous les redirects à chaque changement
+    // d'auth state (signedIn, signedOut, tokenRefreshed, userUpdated...) ET
+    // à chaque mise à jour du rôle via userRoleProvider. Sans ça, le router
+    // ne réagissait qu'aux navigations explicites — une session expirant
+    // passivement (refresh token révoqué côté serveur) laissait l'user
+    // bloqué sur un écran authentifié mort jusqu'au cold start
+    // (cf. zone 6 de docs/AUTH_SECURITY_AUDIT.md). Les `context.go('/login')`
+    // manuels après signOut() restent en place (belt + suspenders) — ils
+    // gèrent le cas actif (logout explicite), refreshListenable le cas passif.
+    refreshListenable: refresh,
+    redirect: (context, state) {
+      final session = Supabase.instance.client.auth.currentSession;
+      final path = state.matchedLocation;
+
+      // Allow public routes without a session.
+      if (_publicPaths.contains(path)) {
+        // If user IS authenticated and tries to visit login/signup/role-picker
+        // → redirect vers le feed correspondant à son rôle. Sans cette garde,
+        // un Pro déjà loggé peut atterrir sur /select-account-type, choisir
+        // « Client », taper Continue → /signup/client → la redirect ci-dessous
+        // le renvoie quand même sur /pro/feed (parce que sa session est Pro).
+        // Résultat visible sur iPhone papi : « je choisis Client, ça m'ouvre
+        // quand même le compte Pro ». La bonne UX : si une session existe,
+        // l'utilisateur n'a rien à faire sur ces écrans.
+        final isAuthOnlyPath = path == '/login' ||
+            path.startsWith('/signup') ||
+            path == '/select-account-type';
+        if (session != null && isAuthOnlyPath) {
+          // Lecture AUTORITAIRE via userRoleProvider (cache de
+          // public.users.role mis à jour par realtime_bootstrap après chaque
+          // signedIn). Avant 2026-04-24 on lisait userMetadata['role'], NULL
+          // pour les inscriptions OAuth → un Pro Google atterrissait sur
+          // /client/feed. Cf. docs/AUTH_SECURITY_AUDIT.md bug 7b.
+          // Si le cache est encore null (race au tout premier signedIn avant
+          // que _fetchUserRole termine), on laisse l'user sur l'écran courant
+          // — refreshListenable re-déclenchera la redirection dès que le
+          // bootstrap aura pushé la valeur.
+          final role = ref.read(userRoleProvider);
+          if (role == null) return null;
+          return role == 'pro' ? '/pro/feed' : '/client/feed';
+        }
+        return null;
       }
-      return null;
-    }
 
-    // Onboarding post-signup paths (complete-profile, interests, location, etc.)
-    // are allowed if there's a session even though profile may be incomplete.
-    final onboardingPaths = <String>{
-      '/complete-profile',
-      '/client/interests',
-      '/client/goals',
-      '/client/location',
-      '/pro/business-details',
-      '/pro/interests',
-      '/become-pro',
-    };
-    if (onboardingPaths.contains(path)) {
+      // Onboarding post-signup paths (complete-profile, interests, location...)
+      // are allowed if there's a session even though profile may be incomplete.
+      final onboardingPaths = <String>{
+        '/complete-profile',
+        '/client/interests',
+        '/client/goals',
+        '/client/location',
+        '/pro/business-details',
+        '/pro/interests',
+        '/become-pro',
+      };
+      if (onboardingPaths.contains(path)) {
+        if (session == null) return '/login';
+        return null;
+      }
+
+      // All other routes require an active session.
       if (session == null) return '/login';
-      return null;
-    }
 
-    // All other routes require an active session.
-    if (session == null) return '/login';
-
-    return null; // Allow navigation.
-  },
-  routes: [
+      return null; // Allow navigation.
+    },
+    routes: [
     GoRoute(
       path: '/',
       builder: (context, state) => const SplashScreen(),
@@ -928,9 +976,10 @@ final appRouter = GoRouter(
       },
     ),
   ],
-  // Fallback explicite : évite l'écran blanc sur route invalide.
-  errorBuilder: (context, state) => _RouterErrorScreen(error: state.error),
-);
+    // Fallback explicite : évite l'écran blanc sur route invalide.
+    errorBuilder: (context, state) => _RouterErrorScreen(error: state.error),
+  );
+});
 
 /// Écran de secours affiché lorsqu'une navigation pointe vers une
 /// route non déclarée. Évite l'écran blanc silencieux.

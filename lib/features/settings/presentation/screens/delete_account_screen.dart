@@ -57,20 +57,90 @@ class DeleteAccountScreen extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const SizedBox(height: 24),
-                  Icon(Icons.warning_amber_outlined, color: AppColors.error, size: 48),
-                  const SizedBox(height: 16),
-                  Text(l.deleteAccountIrreversible, style: GoogleFonts.sora(color: AppColors.blanc, fontSize: 22, fontWeight: FontWeight.bold)),
-                  const SizedBox(height: 12),
-                  Text(l.deleteAccountDescription, style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 15, height: 1.5)),
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(24),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          AppColors.error.withAlpha(15),
+                          AppColors.error.withAlpha(5),
+                        ],
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                      ),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: AppColors.error.withAlpha(40)),
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppColors.error.withAlpha(10),
+                          blurRadius: 20,
+                          spreadRadius: 0,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      children: [
+                        Container(
+                          width: 72,
+                          height: 72,
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [
+                                AppColors.error.withAlpha(30),
+                                AppColors.error.withAlpha(12),
+                              ],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            ),
+                            borderRadius: BorderRadius.circular(20),
+                            boxShadow: [
+                              BoxShadow(
+                                color: AppColors.error.withAlpha(25),
+                                blurRadius: 20,
+                                spreadRadius: 2,
+                              ),
+                            ],
+                          ),
+                          child: Icon(Icons.warning_amber_rounded, color: AppColors.error, size: 36),
+                        ),
+                        const SizedBox(height: 16),
+                        Text(l.deleteAccountIrreversible, style: GoogleFonts.sora(color: AppColors.blanc, fontSize: 22, fontWeight: FontWeight.bold), textAlign: TextAlign.center),
+                        const SizedBox(height: 12),
+                        Text(l.deleteAccountDescription, style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 15, height: 1.5), textAlign: TextAlign.center),
+                      ],
+                    ),
+                  ),
                   const SizedBox(height: 32),
+                  const SizedBox(height: 8),
                   GestureDetector(
                     onTap: n.toggleConfirm,
-                    child: Row(children: [
-                      Container(width: 24, height: 24, decoration: BoxDecoration(borderRadius: BorderRadius.circular(6), border: Border.all(color: s.confirmed ? AppColors.error : AppColors.border, width: 2), color: s.confirmed ? AppColors.error : Colors.transparent),
-                        child: s.confirmed ? Icon(Icons.check, color: AppColors.blanc, size: 16) : null),
-                      const SizedBox(width: 12),
-                      Expanded(child: Text(l.deleteAccountConfirmCheckbox, style: GoogleFonts.dmSans(color: AppColors.blanc, fontSize: 15))),
-                    ]),
+                    child: Container(
+                      padding: const EdgeInsets.all(14),
+                      decoration: BoxDecoration(
+                        color: s.confirmed ? AppColors.error.withAlpha(12) : AppColors.surface,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: s.confirmed ? AppColors.error.withAlpha(60) : AppColors.border,
+                        ),
+                      ),
+                      child: Row(children: [
+                        AnimatedContainer(
+                          duration: const Duration(milliseconds: 200),
+                          width: 24,
+                          height: 24,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(6),
+                            border: Border.all(color: s.confirmed ? AppColors.error : AppColors.border, width: 2),
+                            color: s.confirmed ? AppColors.error : Colors.transparent,
+                          ),
+                          child: s.confirmed ? Icon(Icons.check, color: AppColors.blanc, size: 16) : null,
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(child: Text(l.deleteAccountConfirmCheckbox, style: GoogleFonts.dmSans(color: s.confirmed ? AppColors.error : AppColors.blanc, fontSize: 15, fontWeight: s.confirmed ? FontWeight.w600 : FontWeight.normal))),
+                      ]),
+                    ),
                   ),
                 ],
               ),

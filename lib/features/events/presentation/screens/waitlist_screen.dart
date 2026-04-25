@@ -90,10 +90,27 @@ class WaitlistScreen extends ConsumerWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              state.joined ? Icons.check_circle : Icons.hourglass_top,
-              color: state.joined ? AppColors.success : AppColors.blanc,
-              size: 64,
+            Container(
+              width: 88,
+              height: 88,
+              decoration: BoxDecoration(
+                color: state.joined
+                    ? AppColors.success.withAlpha(20)
+                    : AppColors.violet.withAlpha(20),
+                borderRadius: BorderRadius.circular(24),
+                boxShadow: [
+                  BoxShadow(
+                    color: (state.joined ? AppColors.success : AppColors.violet).withAlpha(30),
+                    blurRadius: 20,
+                    spreadRadius: 2,
+                  ),
+                ],
+              ),
+              child: Icon(
+                state.joined ? Icons.check_circle : Icons.hourglass_top,
+                color: state.joined ? AppColors.success : AppColors.violet,
+                size: 44,
+              ),
             ),
             const SizedBox(height: 24),
             Text(
@@ -118,23 +135,31 @@ class WaitlistScreen extends ConsumerWidget {
               SizedBox(
                 width: double.infinity,
                 height: 52,
-                child: ElevatedButton(
-                  onPressed: state.isJoining
-                      ? null
-                      : () {
-                          HapticFeedback.mediumImpact();
-                          ref.read(_waitlistProvider.notifier).join(ticketTypeId);
-                        },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.blanc,
-                    foregroundColor: AppColors.fond,
-                    disabledBackgroundColor: AppColors.surfaceAlt,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    gradient: state.isJoining ? null : AppColors.gradientAccent,
+                    color: state.isJoining ? AppColors.surfaceAlt : null,
+                    borderRadius: BorderRadius.circular(14),
+                    boxShadow: state.isJoining ? null : AppColors.primaryButtonShadow,
                   ),
-                  child: state.isJoining
-                      ? SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: AppColors.gris, strokeWidth: 2))
-                      : Text(l.joinWaitlist,
-                          style: GoogleFonts.dmSans(fontWeight: FontWeight.bold, fontSize: 16)),
+                  child: ElevatedButton(
+                    onPressed: state.isJoining
+                        ? null
+                        : () {
+                            HapticFeedback.mediumImpact();
+                            ref.read(_waitlistProvider.notifier).join(ticketTypeId);
+                          },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.transparent,
+                      shadowColor: Colors.transparent,
+                      disabledBackgroundColor: Colors.transparent,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                    ),
+                    child: state.isJoining
+                        ? SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: AppColors.gris, strokeWidth: 2))
+                        : Text(l.joinWaitlist,
+                            style: GoogleFonts.dmSans(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+                  ),
                 ),
               ),
             if (state.joined)

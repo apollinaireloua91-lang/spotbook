@@ -6,7 +6,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:video_player/video_player.dart';
 
-import '../../../../router/auth_router_notifier.dart';
+import '../../../../router/user_role_provider.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../data/auth_repository.dart';
 
@@ -113,10 +113,10 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
       // Lecture AUTORITAIRE depuis public.users.role (et non
       // userMetadata['role'], qui est NULL pour les inscriptions Google/
       // Apple OAuth — cf. docs/AUTH_SECURITY_AUDIT.md bug 7a). Le résultat
-      // est aussi pushé dans AuthRouterNotifier pour que le router (qui
-      // doit redirect en sync) lise la même valeur.
+      // est aussi pushé dans userRoleProvider pour que le router (qui doit
+      // redirect en sync via refreshListenable) lise la même valeur.
       final role = await repo.fetchUserRoleAuthoritative();
-      AuthRouterNotifier.instance.setRole(role);
+      ref.read(userRoleProvider.notifier).setRole(role);
 
       if (!mounted) return;
       switch (role) {

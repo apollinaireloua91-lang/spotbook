@@ -94,7 +94,7 @@ class _MyBookingsScreenState extends ConsumerState<MyBookingsScreen>
               decoration: BoxDecoration(
                 color: AppColors.surface,
                 borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: AppColors.border, width: 0.5),
+                border: Border.all(color: AppColors.glassBorder, width: 0.5),
               ),
               child: Icon(Icons.arrow_back_ios_new, color: AppColors.blanc, size: 16),
             ),
@@ -110,44 +110,59 @@ class _MyBookingsScreenState extends ConsumerState<MyBookingsScreen>
         ),
         centerTitle: true,
         actions: [
-          GestureDetector(
-            onTap: _onFilterTap,
-            child: Container(
-              margin: const EdgeInsets.only(right: 16),
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              decoration: BoxDecoration(
-                color: _filter.isActive
-                    ? AppColors.violet.withAlpha(30)
-                    : AppColors.surface,
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(
-                  color: _filter.isActive
-                      ? AppColors.violet
-                      : AppColors.border,
-                ),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    Icons.tune,
-                    size: 14,
-                    color: _filter.isActive
-                        ? AppColors.violet
-                        : AppColors.gris,
-                  ),
-                  const SizedBox(width: 4),
-                  Text(
-                    l.filterLabel,
-                    style: GoogleFonts.dmSans(
+          Padding(
+            padding: const EdgeInsets.only(right: 16),
+            child: GestureDetector(
+              onTap: _onFilterTap,
+              child: Center(
+                child: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: AppColors.surface,
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
                       color: _filter.isActive
-                          ? AppColors.violet
-                          : AppColors.gris,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
+                          ? AppColors.violetClair.withAlpha(120)
+                          : AppColors.glassBorder,
+                      width: 0.5,
                     ),
                   ),
-                ],
+                  child: Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      Icon(
+                        Icons.tune_rounded,
+                        size: 16,
+                        color: _filter.isActive
+                            ? AppColors.violetClair
+                            : AppColors.blanc,
+                      ),
+                      if (_filter.isActive)
+                        Positioned(
+                          top: -1,
+                          right: -1,
+                          child: Container(
+                            width: 7,
+                            height: 7,
+                            decoration: BoxDecoration(
+                              color: AppColors.violetClair,
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: AppColors.fond,
+                                width: 1,
+                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: AppColors.violetClair.withAlpha(120),
+                                  blurRadius: 4,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
               ),
             ),
           ),
@@ -175,24 +190,10 @@ class _MyBookingsScreenState extends ConsumerState<MyBookingsScreen>
                 children: [
                   Text(l.tabUpcoming),
                   if (bookingsState.upcoming.isNotEmpty) ...[
-                    const SizedBox(width: 6),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 6,
-                        vertical: 1,
-                      ),
-                      decoration: BoxDecoration(
-                        color: AppColors.violet,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Text(
-                        '${bookingsState.upcoming.length}',
-                        style: GoogleFonts.dmSans(
-                          color: AppColors.textOnPrimary,
-                          fontSize: 11,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
+                    const SizedBox(width: 8),
+                    _CountChip(
+                      count: bookingsState.upcoming.length,
+                      tint: AppColors.violetClair,
                     ),
                   ],
                 ],
@@ -205,24 +206,10 @@ class _MyBookingsScreenState extends ConsumerState<MyBookingsScreen>
                 children: [
                   Text(l.tabTickets),
                   if (ticketsState.tickets.isNotEmpty) ...[
-                    const SizedBox(width: 6),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 6,
-                        vertical: 1,
-                      ),
-                      decoration: BoxDecoration(
-                        color: AppColors.rose,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Text(
-                        '${ticketsState.tickets.length}',
-                        style: GoogleFonts.dmSans(
-                          color: AppColors.textOnPrimary,
-                          fontSize: 11,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
+                    const SizedBox(width: 8),
+                    _CountChip(
+                      count: ticketsState.tickets.length,
+                      tint: AppColors.rose,
                     ),
                   ],
                 ],
@@ -574,6 +561,35 @@ class _EmptyBookingsStateState extends State<_EmptyBookingsState>
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+// ─── Tab count chip — hairline outlined, dot + number ─────────────────────────
+
+class _CountChip extends StatelessWidget {
+  const _CountChip({required this.count, required this.tint});
+  final int count;
+  final Color tint;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+      decoration: BoxDecoration(
+        color: tint.withAlpha(22),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: tint.withAlpha(70), width: 0.5),
+      ),
+      child: Text(
+        '$count',
+        style: GoogleFonts.dmSans(
+          color: tint,
+          fontSize: 11,
+          fontWeight: FontWeight.w700,
+          fontFeatures: const [FontFeature.tabularFigures()],
+        ),
       ),
     );
   }

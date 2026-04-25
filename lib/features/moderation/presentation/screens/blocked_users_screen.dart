@@ -111,8 +111,30 @@ class BlockedUsersScreen extends ConsumerWidget {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(Icons.block, color: AppColors.gris, size: 48),
-                      const SizedBox(height: 12),
+                      Container(
+                        width: 80,
+                        height: 80,
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              AppColors.success.withAlpha(25),
+                              AppColors.success.withAlpha(8),
+                            ],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                          borderRadius: BorderRadius.circular(24),
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppColors.success.withAlpha(20),
+                              blurRadius: 20,
+                              spreadRadius: 2,
+                            ),
+                          ],
+                        ),
+                        child: Icon(Icons.check_circle_outline, color: AppColors.success, size: 40),
+                      ),
+                      const SizedBox(height: 16),
                       Text(l.blockedUsersEmpty,
                           style: GoogleFonts.dmSans(color: AppColors.gris, fontSize: 15)),
                     ],
@@ -134,18 +156,34 @@ class BlockedUsersScreen extends ConsumerWidget {
                         color: AppColors.surface,
                         borderRadius: BorderRadius.circular(16),
                         border: Border.all(color: AppColors.border),
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppColors.fond.withAlpha(30),
+                            blurRadius: 6,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
                       ),
                       child: Row(
                         children: [
-                          CircleAvatar(
-                            radius: 22,
-                            backgroundColor: AppColors.surfaceAlt,
-                            backgroundImage: block.blockedAvatarUrl != null
-                                ? CachedNetworkImageProvider(block.blockedAvatarUrl!)
-                                : null,
-                            child: block.blockedAvatarUrl == null
-                                ? Icon(Icons.person, color: AppColors.gris, size: 20)
-                                : null,
+                          Container(
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: AppColors.error.withAlpha(60),
+                                width: 2,
+                              ),
+                            ),
+                            child: CircleAvatar(
+                              radius: 22,
+                              backgroundColor: AppColors.surfaceAlt,
+                              backgroundImage: block.blockedAvatarUrl != null
+                                  ? CachedNetworkImageProvider(block.blockedAvatarUrl!)
+                                  : null,
+                              child: block.blockedAvatarUrl == null
+                                  ? Icon(Icons.person, color: AppColors.gris, size: 20)
+                                  : null,
+                            ),
                           ),
                           const SizedBox(width: 12),
                           Expanded(
@@ -160,18 +198,20 @@ class BlockedUsersScreen extends ConsumerWidget {
                           ),
                           SizedBox(
                             height: 36,
-                            child: OutlinedButton(
+                            child: OutlinedButton.icon(
                               onPressed: () {
                                 HapticFeedback.mediumImpact();
                                 ref.read(_blockedProvider.notifier).unblock(block.blockedId);
                               },
+                              icon: Icon(Icons.block, size: 14, color: AppColors.error),
+                              label: Text(l.blockedUsersUnblock,
+                                  style: GoogleFonts.dmSans(color: AppColors.error, fontSize: 13, fontWeight: FontWeight.w600)),
                               style: OutlinedButton.styleFrom(
-                                side: BorderSide(color: AppColors.border),
+                                side: BorderSide(color: AppColors.error.withAlpha(80)),
                                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                                padding: const EdgeInsets.symmetric(horizontal: 16),
+                                padding: const EdgeInsets.symmetric(horizontal: 12),
+                                backgroundColor: AppColors.error.withAlpha(15),
                               ),
-                              child: Text(l.blockedUsersUnblock,
-                                  style: GoogleFonts.dmSans(color: AppColors.blanc, fontSize: 13, fontWeight: FontWeight.w500)),
                             ),
                           ),
                         ],

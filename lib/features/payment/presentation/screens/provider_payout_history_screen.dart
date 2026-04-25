@@ -8,6 +8,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/theme/theme_mode_notifier.dart';
+import '../../../../shared/utils/currency_formatter.dart';
 import '../../../../shared/widgets/spotbook_app_bar.dart';
 
 // ─── Model ──────────────────────────────────────────────
@@ -222,7 +223,8 @@ class _PayoutCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  '${payout.amount.toStringAsFixed(2)} ${payout.currency}',
+                  CurrencyFormatter.formatAmount(payout.amount,
+                      currency: payout.currency),
                   style: GoogleFonts.sora(
                     color: AppColors.blanc,
                     fontWeight: FontWeight.bold,

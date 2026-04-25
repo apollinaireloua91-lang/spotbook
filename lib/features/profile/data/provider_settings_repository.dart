@@ -77,7 +77,7 @@ class ProviderSettingsRepository {
     return ProSettingsSnapshot(
       email: email,
       phone: proRes?['tel'] as String?,
-      cancellationPolicy: (settingsRow['cancellation_policy'] as String?) ?? 'flexible',
+      cancellationPolicy: (settingsRow['cancellation_policy'] as String?) ?? 'moderate',
       minAdvanceHours: (settingsRow['min_advance_hours'] as int?) ?? 24,
       minGapMinutes: (settingsRow['min_gap_minutes'] as int?) ?? 0,
       maxBookingsPerDay: (settingsRow['max_bookings_per_day'] as int?) ?? 10,

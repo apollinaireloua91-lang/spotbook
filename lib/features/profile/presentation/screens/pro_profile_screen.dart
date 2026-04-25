@@ -6,11 +6,10 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:share_plus/share_plus.dart';
-
 import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/theme/theme_mode_notifier.dart';
+import '../../../../shared/utils/share_branding.dart';
 import '../../../../shared/utils/time_ago.dart';
 import '../../../../shared/widgets/spotbook_loading_shimmer.dart';
 import '../../../booking/data/booking_repository.dart';
@@ -202,9 +201,7 @@ class _PremiumProfileScaffoldState
     final name = p.businessName.trim().isEmpty ? 'ce pro' : p.businessName;
     final url = 'https://spotbook.app/pro/${p.id}';
     final message = 'Découvre $name sur Spotbook\n$url';
-    await SharePlus.instance.share(
-      ShareParams(text: message, subject: name),
-    );
+    await ShareBranding.shareWithLogo(text: message, subject: name);
   }
 
   void _openMoreMenu() {

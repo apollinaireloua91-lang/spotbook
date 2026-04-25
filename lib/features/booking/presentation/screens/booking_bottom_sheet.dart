@@ -14,6 +14,7 @@ import '../../../../core/services/app_config_provider.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/utils/analytics_service.dart';
+import '../../../../shared/utils/currency_formatter.dart';
 import '../../../../shared/widgets/confetti_overlay.dart';
 import '../../../profile/domain/profile_models.dart';
 import '../../data/booking_notifier.dart';
@@ -1235,8 +1236,10 @@ class _Step4Summary extends ConsumerWidget {
               children: [
                 _PriceRow(
                   label: state.selectedService?.name ?? 'Service',
-                  value:
-                      '${state.selectedService?.price.toStringAsFixed(2) ?? '0'} CA\$',
+                  value: CurrencyFormatter.formatAmount(
+                    state.selectedService?.price ?? 0,
+                    currency: state.selectedService?.currency,
+                  ),
                 ),
                 if (state.promoApplied && state.promoCode != null) ...[
                   const SizedBox(height: 8),
@@ -1244,24 +1247,33 @@ class _Step4Summary extends ConsumerWidget {
                     label: 'Promo (${state.promoCode!.code})',
                     value: state.promoCode!.discountType == 'percentage'
                         ? '-${state.promoCode!.discountValue.toStringAsFixed(0)}%'
-                        : '-${state.promoCode!.discountValue.toStringAsFixed(2)} CA\$',
+                        : '-${CurrencyFormatter.formatAmount(state.promoCode!.discountValue, currency: state.selectedService?.currency)}',
                     valueColor: AppColors.success,
                   ),
                   const SizedBox(height: 4),
                   _PriceRow(
                     label: l.subtotal,
-                    value: '${state.totalPrice.toStringAsFixed(2)} CA\$',
+                    value: CurrencyFormatter.formatAmount(
+                      state.totalPrice,
+                      currency: state.selectedService?.currency,
+                    ),
                   ),
                 ],
                 Divider(color: AppColors.border, height: 20),
                 _PriceRow(
                   label: l.depositPercent,
-                  value: '${depositAmount.toStringAsFixed(2)} CA\$',
+                  value: CurrencyFormatter.formatAmount(
+                    depositAmount,
+                    currency: state.selectedService?.currency,
+                  ),
                 ),
                 const SizedBox(height: 8),
                 _PriceRow(
                   label: l.serviceFee,
-                  value: '${serviceFee.toStringAsFixed(2)} CA\$',
+                  value: CurrencyFormatter.formatAmount(
+                    serviceFee,
+                    currency: state.selectedService?.currency,
+                  ),
                 ),
                 Divider(color: AppColors.border, height: 20),
                 Row(
@@ -1276,7 +1288,10 @@ class _Step4Summary extends ConsumerWidget {
                       ),
                     ),
                     Text(
-                      '${clientPaysNow.toStringAsFixed(2)} CA\$',
+                      CurrencyFormatter.formatAmount(
+                        clientPaysNow,
+                        currency: state.selectedService?.currency,
+                      ),
                       style: GoogleFonts.dmSans(
                         color: AppColors.blanc,
                         fontSize: 15,
@@ -1301,7 +1316,7 @@ class _Step4Summary extends ConsumerWidget {
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
-                          '${l.remainingOnDay} : ${remainingAmount.toStringAsFixed(2)} CA\$',
+                          '${l.remainingOnDay} : ${CurrencyFormatter.formatAmount(remainingAmount, currency: state.selectedService?.currency)}',
                           style: GoogleFonts.dmSans(
                             color: AppColors.violetClair,
                             fontSize: 13,
@@ -1324,7 +1339,7 @@ class _Step4Summary extends ConsumerWidget {
           final clientPaysNow =
               state.depositPrice + appConfig.serviceFeeClient;
           return _CtaButton(
-            label: '${l.payButtonPrefix} ${clientPaysNow.toStringAsFixed(2)} CA\$',
+            label: '${l.payButtonPrefix} ${CurrencyFormatter.formatAmount(clientPaysNow, currency: state.selectedService?.currency)}',
             onPressed: () =>
                 ref.read(bookingFlowProvider.notifier).nextStep(),
           );

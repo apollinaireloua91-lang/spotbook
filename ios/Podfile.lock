@@ -137,6 +137,9 @@ PODS:
   - local_auth_darwin (0.0.1):
     - Flutter
     - FlutterMacOS
+  - mek_stripe_terminal (1.0.0):
+    - Flutter
+    - StripeTerminal (~> 4.6.0)
   - mobile_scanner (7.0.0):
     - Flutter
     - FlutterMacOS
@@ -157,7 +160,7 @@ PODS:
   - PINCache/Core (3.0.4):
     - PINOperation (~> 1.2.3)
   - PINOperation (1.2.3)
-  - PostHog (3.48.3)
+  - PostHog (3.55.1)
   - posthog_flutter (0.0.1):
     - Flutter
     - FlutterMacOS
@@ -173,6 +176,8 @@ PODS:
   - shared_preferences_foundation (0.0.1):
     - Flutter
     - FlutterMacOS
+  - sign_in_with_apple (0.0.1):
+    - Flutter
   - sqflite_darwin (0.0.4):
     - Flutter
     - FlutterMacOS
@@ -234,6 +239,7 @@ PODS:
     - StripeCore (= 25.6.4)
     - StripePayments (= 25.6.4)
     - StripeUICore (= 25.6.4)
+  - StripeTerminal (4.6.1)
   - StripeUICore (25.6.4):
     - StripeCore (= 25.6.4)
   - TOCropViewController (2.7.4)
@@ -265,6 +271,7 @@ DEPENDENCIES:
   - image_cropper (from `.symlinks/plugins/image_cropper/ios`)
   - image_picker_ios (from `.symlinks/plugins/image_picker_ios/ios`)
   - local_auth_darwin (from `.symlinks/plugins/local_auth_darwin/darwin`)
+  - mek_stripe_terminal (from `.symlinks/plugins/mek_stripe_terminal/ios`)
   - mobile_scanner (from `.symlinks/plugins/mobile_scanner/darwin`)
   - package_info_plus (from `.symlinks/plugins/package_info_plus/ios`)
   - permission_handler_apple (from `.symlinks/plugins/permission_handler_apple/ios`)
@@ -272,6 +279,7 @@ DEPENDENCIES:
   - sentry_flutter (from `.symlinks/plugins/sentry_flutter/ios`)
   - share_plus (from `.symlinks/plugins/share_plus/ios`)
   - shared_preferences_foundation (from `.symlinks/plugins/shared_preferences_foundation/darwin`)
+  - sign_in_with_apple (from `.symlinks/plugins/sign_in_with_apple/ios`)
   - sqflite_darwin (from `.symlinks/plugins/sqflite_darwin/darwin`)
   - stripe_ios (from `.symlinks/plugins/stripe_ios/ios`)
   - url_launcher_ios (from `.symlinks/plugins/url_launcher_ios/ios`)
@@ -312,6 +320,7 @@ SPEC REPOS:
     - StripePayments
     - StripePaymentSheet
     - StripePaymentsUI
+    - StripeTerminal
     - StripeUICore
     - TOCropViewController
 
@@ -350,6 +359,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/image_picker_ios/ios"
   local_auth_darwin:
     :path: ".symlinks/plugins/local_auth_darwin/darwin"
+  mek_stripe_terminal:
+    :path: ".symlinks/plugins/mek_stripe_terminal/ios"
   mobile_scanner:
     :path: ".symlinks/plugins/mobile_scanner/darwin"
   package_info_plus:
@@ -364,6 +375,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/share_plus/ios"
   shared_preferences_foundation:
     :path: ".symlinks/plugins/shared_preferences_foundation/darwin"
+  sign_in_with_apple:
+    :path: ".symlinks/plugins/sign_in_with_apple/ios"
   sqflite_darwin:
     :path: ".symlinks/plugins/sqflite_darwin/darwin"
   stripe_ios:
@@ -412,19 +425,21 @@ SPEC CHECKSUMS:
   image_cropper: c4326ea50132b1e1564499e5d32a84f01fb03537
   image_picker_ios: e0ece4aa2a75771a7de3fa735d26d90817041326
   local_auth_darwin: c3ee6cce0a8d56be34c8ccb66ba31f7f180aaebb
+  mek_stripe_terminal: d317573feabf753651c1c184c2dae07950d50030
   mobile_scanner: 9157936403f5a0644ca3779a38ff8404c5434a93
   nanopb: fad817b59e0457d11a5dfbde799381cd727c1275
   package_info_plus: af8e2ca6888548050f16fa2f1938db7b5a5df499
   permission_handler_apple: 4ed2196e43d0651e8ff7ca3483a069d469701f2d
   PINCache: d9a87a0ff397acffe9e2f0db972ac14680441158
   PINOperation: fb563bcc9c32c26d6c78aaff967d405aa2ee74a7
-  PostHog: 38e00e9376b90f0d92de958105029e4736ffe7f9
+  PostHog: fdc697d6d759d95d0dec66cc7276a244d67adf43
   posthog_flutter: 789630788986be1f728624d10f4b4e753f83c39f
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
   Sentry: d587a8fe91ca13503ecd69a1905f3e8a0fcf61be
   sentry_flutter: 31101687061fb85211ebab09ce6eb8db4e9ba74f
   share_plus: 50da8cb520a8f0f65671c6c6a99b3617ed10a58a
   shared_preferences_foundation: 7036424c3d8ec98dfe75ff1667cb0cd531ec82bb
+  sign_in_with_apple: c5dcc141574c8c54d5ac99dd2163c0c72ad22418
   sqflite_darwin: 20b2a3a3b70e43edae938624ce550a3cbf66a3d0
   Stripe: 7cb1009980324c6c16b6a4af5843b8ef54549065
   stripe_ios: eebee52319de946cc0da2d6ddc98a89b04cec95e
@@ -435,6 +450,7 @@ SPEC CHECKSUMS:
   StripePayments: 4de3976a0d5f626cfc8ad4e010aff1cbda8dc1e5
   StripePaymentSheet: 29443db7e8635e2d3a00758f1ecebbb17a24ff19
   StripePaymentsUI: 37551e684263db449368ccac27438947e1b45f84
+  StripeTerminal: 542aee71cf148da0d30cf1a67bf19e8bf4e06567
   StripeUICore: f1e43a68ab1e1428f8738df821eb64efac1d871a
   TOCropViewController: 80b8985ad794298fb69d3341de183f33d1853654
   url_launcher_ios: 7a95fa5b60cc718a708b8f2966718e93db0cef1b

@@ -212,7 +212,7 @@ IconData categoryIcon(String category) {
   return Icons.storefront_outlined;
 }
 
-// Mock data removed — all data comes from Supabase via ClientSearchCubit.
+// Mock data removed — all data comes from Supabase via ClientSearchNotifier.
 // Kept as comment for reference during development.
 
 /*

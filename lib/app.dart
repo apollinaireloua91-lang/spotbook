@@ -7,7 +7,6 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'core/realtime/realtime_bootstrap.dart';
 import 'l10n/app_localizations.dart';
 import 'router/app_router.dart';
-import 'router/auth_router_notifier.dart';
 import 'shared/locale/app_locale_notifier.dart';
 import 'shared/theme/app_colors.dart';
 import 'shared/theme/app_theme.dart';
@@ -37,14 +36,12 @@ class _SpotbookAppState extends ConsumerState<SpotbookApp> {
   @override
   void initState() {
     super.initState();
-    // Démarre l'écoute Supabase auth events utilisée par le router via
-    // refreshListenable. Doit être appelé APRÈS Supabase.initialize (fait
-    // dans main.dart avant runApp) — d'où le start ici plutôt qu'au
-    // module-load du singleton. Idempotent.
-    AuthRouterNotifier.instance.start();
+    // `passwordRecovery` arrive via un deep-link magic-link Supabase.
+    // On ne peut pas utiliser `context.go` ici (pas de BuildContext mounted
+    // dans le listener) → on récupère le routeur depuis le container.
     _authSub = Supabase.instance.client.auth.onAuthStateChange.listen((data) {
       if (data.event == AuthChangeEvent.passwordRecovery) {
-        appRouter.go('/reset-password');
+        ref.read(goRouterProvider).go('/reset-password');
       }
     });
   }
@@ -87,7 +84,7 @@ class _SpotbookAppState extends ConsumerState<SpotbookApp> {
       theme: AppTheme.dark,
       darkTheme: AppTheme.dark,
       themeMode: ThemeMode.dark,
-      routerConfig: appRouter,
+      routerConfig: ref.watch(goRouterProvider),
       scaffoldMessengerKey: rootScaffoldMessengerKey,
       locale: locale,
       supportedLocales: AppLocalizations.supportedLocales,

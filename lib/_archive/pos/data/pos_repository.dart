@@ -22,6 +22,11 @@ class PosRepository {
   /// Calls `create-pos-payment-intent` which validates the payload, creates
   /// the Stripe PaymentIntent + a matching `pos_transactions` row (status
   /// `pending`), and returns the Terminal SDK client_secret.
+  ///
+  /// When [bookingId] is provided, [kind] MUST be `'booking_balance'` — the
+  /// edge function rewrites `amount_subtotal_cents` to the booking's
+  /// `remaining_amount` so the client side can pass a placeholder safely.
+  /// For walk-in sales leave both nulls (defaults to `'standalone'`).
   Future<PosPaymentIntentRef> createPaymentIntent({
     required int amountSubtotalCents,
     required int tipCents,
@@ -31,6 +36,8 @@ class PosRepository {
     String? customerEmail,
     String? customerPhone,
     String currency = 'cad',
+    String? bookingId,
+    String kind = 'standalone',
   }) async {
     final res = await _supabase.functions.invoke(
       'create-pos-payment-intent',
@@ -43,6 +50,8 @@ class PosRepository {
         'customer_email': customerEmail,
         'customer_phone': customerPhone,
         'client_request_id': clientRequestId,
+        if (bookingId != null) 'booking_id': bookingId,
+        'kind': kind,
       },
     );
     final data = res.data;

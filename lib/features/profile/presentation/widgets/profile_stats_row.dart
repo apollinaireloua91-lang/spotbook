@@ -5,7 +5,10 @@ import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/widgets/animated_counter.dart';
 
-/// Client profile stats row with 4 count-up animated counters.
+/// Editorial stats ledger — no container card, just hairline rules top
+/// and bottom with four oversized numerals and capped-letter labels.
+///
+/// Inspired by newspaper typographic ledgers / Aman stat cards.
 class ProfileStatsRow extends StatelessWidget {
   const ProfileStatsRow({
     super.key,
@@ -23,40 +26,50 @@ class ProfileStatsRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
+    // Used below — `l` is required so the caps-labels come from the
+    // localized strings.
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16),
-      padding: const EdgeInsets.symmetric(vertical: 16),
+      margin: const EdgeInsets.fromLTRB(20, 6, 20, 0),
+      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 4),
       decoration: BoxDecoration(
-        color: AppColors.card,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border, width: 0.5),
+        border: Border(
+          top: BorderSide(
+            color: AppColors.blanc.withAlpha(26),
+            width: 0.5,
+          ),
+          bottom: BorderSide(
+            color: AppColors.blanc.withAlpha(26),
+            width: 0.5,
+          ),
+        ),
       ),
       child: IntrinsicHeight(
         child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            _StatItem(
-                value: totalRdv,
-                label: 'RDV',
-                icon: Icons.calendar_today_rounded,
-                color: AppColors.violet),
-            _Divider(),
-            _StatItem(
-                value: totalFollowing,
-                label: l.followingLabel,
-                icon: Icons.people_outline_rounded,
-                color: AppColors.rose),
-            _Divider(),
-            _StatItem(
-                value: totalEvents,
-                label: l.eventsTab,
-                icon: Icons.confirmation_number_outlined,
-                color: AppColors.violetClair),
-            _Divider(),
-            _StatItem(
-                value: totalReviews,
-                label: l.reviewsTab,
-                icon: Icons.star_outline_rounded,
-                color: AppColors.starGold),
+            _StatCell(
+              value: totalRdv,
+              label: 'RDV',
+              accent: AppColors.violetClair,
+            ),
+            const _LedgerDivider(),
+            _StatCell(
+              value: totalFollowing,
+              label: l.followingLabel,
+              accent: AppColors.rose,
+            ),
+            const _LedgerDivider(),
+            _StatCell(
+              value: totalEvents,
+              label: l.eventsTab,
+              accent: AppColors.violetClair,
+            ),
+            const _LedgerDivider(),
+            _StatCell(
+              value: totalReviews,
+              label: l.reviewsTab,
+              accent: AppColors.starGold,
+            ),
           ],
         ),
       ),
@@ -64,18 +77,16 @@ class ProfileStatsRow extends StatelessWidget {
   }
 }
 
-class _StatItem extends StatelessWidget {
-  const _StatItem({
+class _StatCell extends StatelessWidget {
+  const _StatCell({
     required this.value,
     required this.label,
-    required this.color,
-    this.icon,
+    required this.accent,
   });
 
   final int value;
   final String label;
-  final Color color;
-  final IconData? icon;
+  final Color accent;
 
   @override
   Widget build(BuildContext context) {
@@ -83,28 +94,46 @@ class _StatItem extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          if (icon != null) ...[
-            Icon(icon, color: color.withAlpha(120), size: 16),
-            const SizedBox(height: 4),
-          ],
           AnimatedCounter(
             value: value,
-            style: GoogleFonts.dmSans(
+            style: GoogleFonts.sora(
               color: AppColors.blanc,
-              fontSize: 20,
-              fontWeight: FontWeight.w800,
+              fontSize: 26,
+              fontWeight: FontWeight.w700,
+              letterSpacing: -0.8,
+              height: 1.0,
+              fontFeatures: const [FontFeature.tabularFigures()],
             ),
-            duration: const Duration(milliseconds: 600),
+            duration: const Duration(milliseconds: 700),
           ),
-          const SizedBox(height: 2),
-          Text(
-            label,
-            style: GoogleFonts.dmSans(
-              color: AppColors.textSecondary,
-              fontSize: 10,
-              fontWeight: FontWeight.w500,
-            ),
-            textAlign: TextAlign.center,
+          const SizedBox(height: 8),
+          // Accent dot + caps label pairing — quiet but anchors each cell.
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                width: 3,
+                height: 3,
+                decoration: BoxDecoration(
+                  color: accent,
+                  shape: BoxShape.circle,
+                ),
+              ),
+              const SizedBox(width: 5),
+              Flexible(
+                child: Text(
+                  label.toUpperCase(),
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                  style: GoogleFonts.dmSans(
+                    color: AppColors.grisInactif,
+                    fontSize: 9,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 1.6,
+                  ),
+                ),
+              ),
+            ],
           ),
         ],
       ),
@@ -112,13 +141,15 @@ class _StatItem extends StatelessWidget {
   }
 }
 
-class _Divider extends StatelessWidget {
+class _LedgerDivider extends StatelessWidget {
+  const _LedgerDivider();
+
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 1,
-      height: 28,
-      color: AppColors.border,
+      width: 0.5,
+      height: 32,
+      color: AppColors.blanc.withAlpha(20),
     );
   }
 }

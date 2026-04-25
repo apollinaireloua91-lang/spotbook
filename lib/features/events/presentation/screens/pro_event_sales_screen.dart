@@ -342,7 +342,7 @@ class _Body extends StatelessWidget {
             SpotbookButton.primary(
               label: l.scanTickets,
               icon: Icons.qr_code_scanner,
-              onPressed: () => context.push('/scanner/$eventId'),
+              onPressed: () => context.push('/pro/scanner-unified?eventId=$eventId'),
             ),
             const SizedBox(height: 10),
             SpotbookButton.secondary(

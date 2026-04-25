@@ -7,6 +7,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/theme/theme_mode_notifier.dart';
+import '../../../../shared/utils/currency_formatter.dart';
 import '../../../profile/presentation/notifiers/pro_settings_notifier.dart';
 
 // ═════════════════════════════════════════════════════════════════════════════
@@ -319,14 +320,26 @@ class _DepositSettingsScreenState extends ConsumerState<DepositSettingsScreen> {
                                       const EdgeInsets.symmetric(vertical: 10),
                                   decoration: BoxDecoration(
                                     color: isSelected
-                                        ? AppColors.violet
+                                        ? null
                                         : AppColors.surface,
+                                    gradient: isSelected
+                                        ? AppColors.gradientAccent
+                                        : null,
                                     borderRadius: BorderRadius.circular(10),
                                     border: Border.all(
                                       color: isSelected
-                                          ? AppColors.violet
+                                          ? Colors.transparent
                                           : AppColors.border,
                                     ),
+                                    boxShadow: isSelected
+                                        ? [
+                                            BoxShadow(
+                                              color: AppColors.violet.withAlpha(40),
+                                              blurRadius: 8,
+                                              spreadRadius: 0,
+                                            ),
+                                          ]
+                                        : null,
                                   ),
                                   child: Center(
                                     child: Text(
@@ -461,8 +474,7 @@ class _DepositSettingsScreenState extends ConsumerState<DepositSettingsScreen> {
                           children: [
                             _PreviewRow(
                               label: l.depositServiceTotal,
-                              value:
-                                  '\$${examplePrice.toStringAsFixed(2)}',
+                              value: CurrencyFormatter.formatAmount(examplePrice),
                             ),
                             const SizedBox(height: 8),
                             Divider(color: AppColors.border, height: 1),
@@ -471,12 +483,12 @@ class _DepositSettingsScreenState extends ConsumerState<DepositSettingsScreen> {
                               label:
                                   l.depositAmountLabel(_depositPercentage.toInt()),
                               value:
-                                  '\$${exampleDeposit.toStringAsFixed(2)}',
+                                  CurrencyFormatter.formatAmount(exampleDeposit),
                             ),
                             const SizedBox(height: 4),
                             _PreviewRow(
                               label: l.depositServiceFee,
-                              value: '\$2.50',
+                              value: CurrencyFormatter.formatAmount(2.50),
                               isSmall: true,
                             ),
                             const SizedBox(height: 8),
@@ -495,7 +507,7 @@ class _DepositSettingsScreenState extends ConsumerState<DepositSettingsScreen> {
                                   ),
                                 ),
                                 Text(
-                                  '\$${(exampleDeposit + 2.50).toStringAsFixed(2)}',
+                                  CurrencyFormatter.formatAmount(exampleDeposit + 2.50),
                                   style: GoogleFonts.sora(
                                     color: AppColors.violet,
                                     fontSize: 16,
@@ -520,6 +532,8 @@ class _DepositSettingsScreenState extends ConsumerState<DepositSettingsScreen> {
                                   Expanded(
                                     child: Text(
                                       l.depositRemainingOnDay(exampleRemaining.toStringAsFixed(2)),
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
                                       style: GoogleFonts.dmSans(
                                         color: AppColors.violet,
                                         fontSize: 11,

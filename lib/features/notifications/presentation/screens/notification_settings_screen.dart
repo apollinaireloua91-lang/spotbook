@@ -61,7 +61,7 @@ class NotificationSettingsScreen extends ConsumerWidget {
           : ListView(
               padding: const EdgeInsets.fromLTRB(20, 16, 20, 100),
               children: [
-                _SectionLabel(label: l.notifSectionAppointments),
+                _SectionLabel(label: l.notifSectionAppointments, icon: Icons.calendar_today),
                 const SizedBox(height: 8),
                 _ToggleTile(
                   title: l.notifReminders,
@@ -76,7 +76,7 @@ class NotificationSettingsScreen extends ConsumerWidget {
                   dbKey: 'booking_update_enabled',
                 ),
                 const SizedBox(height: 24),
-                _SectionLabel(label: l.notifSectionCommunication),
+                _SectionLabel(label: l.notifSectionCommunication, icon: Icons.chat_bubble_outline),
                 const SizedBox(height: 8),
                 _ToggleTile(
                   title: l.notifMessages,
@@ -91,7 +91,7 @@ class NotificationSettingsScreen extends ConsumerWidget {
                   dbKey: 'review_request_enabled',
                 ),
                 const SizedBox(height: 24),
-                _SectionLabel(label: l.notifSectionEvents),
+                _SectionLabel(label: l.notifSectionEvents, icon: Icons.celebration_outlined),
                 const SizedBox(height: 8),
                 _ToggleTile(
                   title: l.notifWaitlist,
@@ -100,7 +100,7 @@ class NotificationSettingsScreen extends ConsumerWidget {
                   dbKey: 'waitlist_enabled',
                 ),
                 const SizedBox(height: 24),
-                _SectionLabel(label: l.notifSectionOther),
+                _SectionLabel(label: l.notifSectionOther, icon: Icons.more_horiz),
                 const SizedBox(height: 8),
                 _ToggleTile(
                   title: l.notifMarketing,
@@ -119,19 +119,37 @@ class NotificationSettingsScreen extends ConsumerWidget {
 // ═════════════════════════════════════════════════════════════════════════════
 
 class _SectionLabel extends StatelessWidget {
-  const _SectionLabel({required this.label});
+  const _SectionLabel({required this.label, this.icon});
   final String label;
+  final IconData? icon;
 
   @override
   Widget build(BuildContext context) {
-    return Text(
-      label,
-      style: GoogleFonts.dmSans(
-        color: AppColors.gris,
-        fontSize: 11,
-        fontWeight: FontWeight.w600,
-        letterSpacing: 1.5,
-      ),
+    return Row(
+      children: [
+        Container(
+          width: 3,
+          height: 12,
+          decoration: BoxDecoration(
+            gradient: AppColors.gradientAccent,
+            borderRadius: BorderRadius.circular(2),
+          ),
+        ),
+        const SizedBox(width: 8),
+        if (icon != null) ...[
+          Icon(icon, color: AppColors.violet, size: 14),
+          const SizedBox(width: 6),
+        ],
+        Text(
+          label,
+          style: GoogleFonts.dmSans(
+            color: AppColors.gris,
+            fontSize: 11,
+            fontWeight: FontWeight.w600,
+            letterSpacing: 1.5,
+          ),
+        ),
+      ],
     );
   }
 }

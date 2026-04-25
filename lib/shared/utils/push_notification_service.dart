@@ -2,9 +2,9 @@ import 'dart:async';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../app.dart' show rootScaffoldMessengerKey;
-import '../../router/app_router.dart' show appRouter;
 import '../theme/app_colors.dart';
 
 /// Branche les handlers FCM pour les messages reçus en foreground,
@@ -40,9 +40,16 @@ class PushNotificationService {
   StreamSubscription<RemoteMessage>? _foregroundSub;
   StreamSubscription<RemoteMessage>? _openedSub;
   bool _initialMessageChecked = false;
+  GoRouter? _router;
 
   /// Branche les 3 handlers FCM. Idempotent.
-  void wireHandlers() {
+  ///
+  /// Le [router] est injecté depuis `realtime_bootstrap` via
+  /// `ref.read(goRouterProvider)`. Stocké comme champ pour que [handleTap]
+  /// (appelé hors `BuildContext` depuis un listener FCM) puisse naviguer
+  /// sans dépendre d'un global.
+  void wireHandlers(GoRouter router) {
+    _router ??= router;
     _foregroundSub ??= FirebaseMessaging.onMessage.listen(_showBanner);
     _openedSub ??= FirebaseMessaging.onMessageOpenedApp.listen(handleTap);
 
@@ -61,6 +68,7 @@ class PushNotificationService {
     _openedSub?.cancel();
     _openedSub = null;
     _initialMessageChecked = false;
+    _router = null;
   }
 
   // ─── Foreground UX ──────────────────────────────────────────────
@@ -163,16 +171,24 @@ class PushNotificationService {
   /// fonction de `users.role` du destinataire. Le client se contente
   /// de la consommer.
   void handleTap(RemoteMessage message) {
+    final router = _router;
+    if (router == null) {
+      // wireHandlers() pas encore appelé — anomalie (push reçu avant que
+      // le bootstrap n'ait injecté le GoRouter). On laisse tomber : la
+      // notif est déjà persistée en DB, l'user la verra dans son inbox.
+      debugPrint('[Push] handleTap called before wireHandlers — ignored');
+      return;
+    }
     final route = message.data['route'] as String?;
     if (route != null && route.isNotEmpty) {
       try {
-        appRouter.go(route);
+        router.go(route);
       } catch (e) {
         debugPrint('[Push] navigation failed for "$route": $e');
-        appRouter.go('/notifications');
+        router.go('/notifications');
       }
       return;
     }
-    appRouter.go('/notifications');
+    router.go('/notifications');
   }
 }

@@ -47,9 +47,9 @@ class AuthRepository {
   /// pour les inscriptions Google/Apple OAuth et reste éditable par l'user
   /// (security best practice : never base authorization on user_metadata).
   /// Utiliser [fetchUserRoleAuthoritative] (lit `public.users.role`) ou le
-  /// cache exposé par `AuthRouterNotifier.instance.role`. Conservé ici
-  /// uniquement pour les usages d'affichage non-critiques (e.g. fallback
-  /// label si le fetch DB échoue).
+  /// cache exposé par `userRoleProvider`. Conservé ici uniquement pour les
+  /// usages d'affichage non-critiques (e.g. fallback label si le fetch DB
+  /// échoue).
   String? get currentUserRole =>
       currentUser?.userMetadata?['role'] as String?;
   bool get hasActiveSession => currentSession != null;
@@ -60,8 +60,8 @@ class AuthRepository {
   /// router vers `/select-account-type`).
   ///
   /// Utilisé par le splash et par `realtime_bootstrap`. Le résultat est
-  /// poussé dans `AuthRouterNotifier.instance.setRole(...)` pour que le
-  /// router le lise sync.
+  /// poussé dans `ref.read(userRoleProvider.notifier).setRole(...)` pour
+  /// que le router le lise sync via son bridge refreshListenable.
   Future<String?> fetchUserRoleAuthoritative() async {
     final uid = currentUserId;
     if (uid == null) return null;

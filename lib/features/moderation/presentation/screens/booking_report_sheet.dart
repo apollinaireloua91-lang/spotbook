@@ -107,19 +107,41 @@ class _BookingReportSheetState extends ConsumerState<_BookingReportSheet> {
                     margin: const EdgeInsets.symmetric(vertical: 4),
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                     decoration: BoxDecoration(
-                      color: isSelected ? AppColors.surfaceAlt : AppColors.fond,
+                      color: isSelected ? AppColors.error.withAlpha(12) : AppColors.fond,
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
-                        color: isSelected ? AppColors.blanc : AppColors.border,
+                        color: isSelected ? AppColors.error.withAlpha(80) : AppColors.border,
                       ),
                     ),
-                    child: Text(
-                      reason,
-                      style: GoogleFonts.dmSans(
-                        color: isSelected ? AppColors.blanc : AppColors.gris,
-                        fontSize: 15,
-                        fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-                      ),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 20,
+                          height: 20,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: isSelected ? AppColors.error : AppColors.gris.withAlpha(80),
+                              width: 2,
+                            ),
+                            color: isSelected ? AppColors.error : Colors.transparent,
+                          ),
+                          child: isSelected
+                              ? Icon(Icons.check, color: AppColors.blanc, size: 12)
+                              : null,
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            reason,
+                            style: GoogleFonts.dmSans(
+                              color: isSelected ? AppColors.blanc : AppColors.gris,
+                              fontSize: 15,
+                              fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 );
@@ -160,59 +182,87 @@ class _BookingReportSheetState extends ConsumerState<_BookingReportSheet> {
               SizedBox(
                 width: double.infinity,
                 height: 52,
-                child: ElevatedButton(
-                  onPressed: reportState.selectedReason == null || reportState.isSubmitting
-                      ? null
-                      : () async {
-                          HapticFeedback.mediumImpact();
-                          final details = _detailsCtrl.text.trim();
-                          try {
-                            await ref.read(reportNotifierProvider.notifier).submitReport(
-                                  targetId: widget.bookingId,
-                                  targetType: 'booking',
-                                  details: details.isEmpty ? null : details,
-                                );
-                            if (context.mounted) {
-                              Navigator.of(context).pop();
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(
-                                    l.bookingReportSentConfirmation,
-                                  ),
-                                  backgroundColor: AppColors.success,
-                                ),
-                              );
-                            }
-                          } catch (e) {
-                            if (context.mounted) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(e.toString()),
-                                  backgroundColor: AppColors.error,
-                                ),
-                              );
-                            }
-                          }
-                        },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.error,
-                    foregroundColor: AppColors.blanc,
-                    disabledBackgroundColor: AppColors.surfaceAlt,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    gradient: reportState.selectedReason != null && !reportState.isSubmitting
+                        ? LinearGradient(
+                            colors: [AppColors.error, AppColors.error.withAlpha(200)],
+                            begin: Alignment.centerLeft,
+                            end: Alignment.centerRight,
+                          )
+                        : null,
+                    color: reportState.selectedReason == null || reportState.isSubmitting
+                        ? AppColors.surfaceAlt
+                        : null,
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: reportState.selectedReason != null && !reportState.isSubmitting
+                        ? [
+                            BoxShadow(
+                              color: AppColors.error.withAlpha(40),
+                              blurRadius: 12,
+                              offset: const Offset(0, 4),
+                            ),
+                          ]
+                        : null,
                   ),
-                  child: reportState.isSubmitting
-                      ? SizedBox(
-                          height: 20,
-                          width: 20,
-                          child: CircularProgressIndicator(
-                            color: AppColors.blanc,
-                            strokeWidth: 2,
+                  child: ElevatedButton(
+                    onPressed: reportState.selectedReason == null || reportState.isSubmitting
+                        ? null
+                        : () async {
+                            HapticFeedback.mediumImpact();
+                            final details = _detailsCtrl.text.trim();
+                            try {
+                              await ref.read(reportNotifierProvider.notifier).submitReport(
+                                    targetId: widget.bookingId,
+                                    targetType: 'booking',
+                                    details: details.isEmpty ? null : details,
+                                  );
+                              if (context.mounted) {
+                                Navigator.of(context).pop();
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                      l.bookingReportSentConfirmation,
+                                    ),
+                                    backgroundColor: AppColors.success,
+                                  ),
+                                );
+                              }
+                            } catch (e) {
+                              if (context.mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(e.toString()),
+                                    backgroundColor: AppColors.error,
+                                  ),
+                                );
+                              }
+                            }
+                          },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.transparent,
+                      shadowColor: Colors.transparent,
+                      disabledBackgroundColor: Colors.transparent,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    ),
+                    child: reportState.isSubmitting
+                        ? SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(
+                              color: AppColors.blanc,
+                              strokeWidth: 2,
+                            ),
+                          )
+                        : Text(
+                            l.reportSubmitButton,
+                            style: GoogleFonts.dmSans(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                              color: reportState.selectedReason != null ? Colors.white : AppColors.gris,
+                            ),
                           ),
-                        )
-                      : Text(
-                          l.reportSubmitButton,
-                          style: GoogleFonts.dmSans(fontWeight: FontWeight.bold, fontSize: 16),
-                        ),
+                  ),
                 ),
               ),
             ],

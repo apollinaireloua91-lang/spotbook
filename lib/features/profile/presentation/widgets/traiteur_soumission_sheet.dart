@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../shared/theme/app_colors.dart';
+import '../../../../shared/utils/currency_formatter.dart';
 import '../../../../shared/widgets/address_autocomplete_field.dart';
 import '../../../catering/data/catering_repository.dart';
 import '../../../catering/domain/catering_models.dart';
@@ -732,7 +733,7 @@ class _DepositPreview extends StatelessWidget {
           const SizedBox(height: 6),
           _PreviewLine(
             label: 'Total estimé',
-            value: '\$${totalEstimate.toStringAsFixed(0)}',
+            value: CurrencyFormatter.formatAmount(totalEstimate, decimalDigits: 0),
           ),
           const SizedBox(height: 8),
           Container(height: 1, color: AppColors.catering.withAlpha(38)),
@@ -751,7 +752,7 @@ class _DepositPreview extends StatelessWidget {
               AnimatedSwitcher(
                 duration: const Duration(milliseconds: 200),
                 child: Text(
-                  '\$${depositAmount.toStringAsFixed(0)}',
+                  CurrencyFormatter.formatAmount(depositAmount, decimalDigits: 0),
                   key: ValueKey(depositAmount),
                   style: GoogleFonts.dmSans(
                     fontSize: 14,

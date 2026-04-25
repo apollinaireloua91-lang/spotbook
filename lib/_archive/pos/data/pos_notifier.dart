@@ -142,11 +142,18 @@ class PosPaymentNotifier extends AsyncNotifier<PosPaymentState> {
   /// Starts a fresh Tap to Pay collection. [clientRequestId] must be a
   /// client-generated UUID v4 — it drives Stripe idempotency so a retry
   /// never double-charges.
+  ///
+  /// When [bookingId] is provided, [kind] MUST be `'booking_balance'` and
+  /// the Edge Function will rewrite `amount_subtotal_cents` to the
+  /// booking's `remaining_amount` (with tip/tps/tvq forced to 0). For
+  /// walk-in sales, leave both at their defaults (standalone).
   Future<void> collect({
     required PosAmount amount,
     required String clientRequestId,
     String? customerEmail,
     String? customerPhone,
+    String? bookingId,
+    String kind = 'standalone',
   }) async {
     state = const AsyncLoading();
     try {
@@ -160,6 +167,8 @@ class PosPaymentNotifier extends AsyncNotifier<PosPaymentState> {
         clientRequestId: clientRequestId,
         customerEmail: customerEmail,
         customerPhone: customerPhone,
+        bookingId: bookingId,
+        kind: kind,
       );
 
       state = AsyncData(PosPaymentState(

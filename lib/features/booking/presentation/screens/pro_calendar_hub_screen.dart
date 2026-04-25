@@ -108,7 +108,7 @@ class ProCalendarHubScreen extends ConsumerWidget {
                               label: 'Scanner QR',
                               onTap: () {
                                 HapticFeedback.lightImpact();
-                                context.push('/pro/scanner-picker');
+                                context.push('/pro/scanner-unified');
                               },
                             ),
                           ),

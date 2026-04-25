@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -9,11 +8,10 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:video_compress/video_compress.dart';
 import 'package:video_player/video_player.dart';
 
-import '../../../../core/services/cloudflare_stream_service.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/theme/theme_mode_notifier.dart';
 import '../../../auth/data/category_repository.dart';
-import 'cubit/video_upload_cubit.dart';
+import 'data/video_upload_notifier.dart';
 
 /// Preview screen shown after recording or picking a video.
 ///
@@ -44,17 +42,18 @@ class _VideoPreviewScreenState extends ConsumerState<VideoPreviewScreen> {
   List<Map<String, dynamic>> _events = [];
   final List<String> _hashtags = [];
 
-  late final VideoUploadCubit _cubit;
   late final VideoPlayerController _videoCtrl;
   bool _videoReady = false;
 
   @override
   void initState() {
     super.initState();
-    _cubit = VideoUploadCubit(
-      cfService: CloudflareStreamService(Supabase.instance.client),
-    );
-    _cubit.setStep(UploadStep.previewing);
+    // Mark pipeline as "previewing" — ref.read is allowed in initState.
+    Future.microtask(() {
+      if (mounted) {
+        ref.read(videoUploadProvider.notifier).setStep(UploadStep.previewing);
+      }
+    });
     _initVideoPreview();
     _loadVideoDuration();
     _loadProData();
@@ -134,18 +133,18 @@ class _VideoPreviewScreenState extends ConsumerState<VideoPreviewScreen> {
   Future<void> _publish() async {
     if (!_isValid) return;
 
-    await _cubit.publishVideo(
-      videoFile: widget.videoFile,
-      title: _titleCtrl.text.trim(),
-      description: _descCtrl.text.trim(),
-      category: _selectedCategory!,
-      duration: _videoDuration,
-      hashtags: _hashtags,
-      serviceId: _linkedServiceId,
-      eventId: _linkedEventId,
-      spotifyTrackTitle: _spotifyTitle,
-      spotifyTrackArtist: _spotifyArtist,
-    );
+    await ref.read(videoUploadProvider.notifier).publishVideo(
+          videoFile: widget.videoFile,
+          title: _titleCtrl.text.trim(),
+          description: _descCtrl.text.trim(),
+          category: _selectedCategory!,
+          duration: _videoDuration,
+          hashtags: _hashtags,
+          serviceId: _linkedServiceId,
+          eventId: _linkedEventId,
+          spotifyTrackTitle: _spotifyTitle,
+          spotifyTrackArtist: _spotifyArtist,
+        );
   }
 
   @override
@@ -154,43 +153,42 @@ class _VideoPreviewScreenState extends ConsumerState<VideoPreviewScreen> {
     _titleCtrl.dispose();
     _descCtrl.dispose();
     _hashtagCtrl.dispose();
-    _cubit.close();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     ref.watch(themeModeProvider);
-    return BlocProvider.value(
-      value: _cubit,
-      child: BlocConsumer<VideoUploadCubit, VideoUploadState>(
-        listener: (context, state) {
-          if (state.step == UploadStep.done) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: const Text('Vidéo publiée !'),
-                backgroundColor: AppColors.success,
-              ),
-            );
-            context.go('/pro/feed');
-          } else if (state.step == UploadStep.error) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.errorMessage ?? 'Erreur inconnue'),
-                backgroundColor: AppColors.error,
-                action: SnackBarAction(
-                  label: 'Réessayer',
-                  textColor: AppColors.textOnPrimary,
-                  onPressed: _publish,
-                ),
-              ),
-            );
-          }
-        },
-        builder: (context, state) {
-          final isWorking = state.isWorking;
 
-          return Scaffold(
+    // Side-effects on pipeline transitions (done / error).
+    ref.listen<VideoUploadState>(videoUploadProvider, (prev, state) {
+      if (state.step == UploadStep.done) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Vidéo publiée !'),
+            backgroundColor: AppColors.success,
+          ),
+        );
+        context.go('/pro/feed');
+      } else if (state.step == UploadStep.error) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(state.errorMessage ?? 'Erreur inconnue'),
+            backgroundColor: AppColors.error,
+            action: SnackBarAction(
+              label: 'Réessayer',
+              textColor: AppColors.textOnPrimary,
+              onPressed: _publish,
+            ),
+          ),
+        );
+      }
+    });
+
+    final state = ref.watch(videoUploadProvider);
+    final isWorking = state.isWorking;
+
+    return Scaffold(
             backgroundColor: AppColors.fond,
             appBar: AppBar(
               backgroundColor: AppColors.fond,
@@ -521,9 +519,6 @@ class _VideoPreviewScreenState extends ConsumerState<VideoPreviewScreen> {
               ),
             ),
           );
-        },
-      ),
-    );
   }
 
   String _progressLabel(VideoUploadState state) {

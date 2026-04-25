@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../shared/theme/app_colors.dart';
+import '../../../../shared/utils/currency_formatter.dart';
 import '../../domain/catering_models.dart';
 
 // ═════════════════════════════════════════════════════════════════════════════
@@ -209,7 +210,7 @@ class _MenuItemCard extends StatelessWidget {
                   if (item.pricePerPerson != null) ...[
                     const SizedBox(height: 2),
                     Text(
-                      '\$${item.pricePerPerson!.toStringAsFixed(0)}/person',
+                      '${CurrencyFormatter.formatAmount(item.pricePerPerson!, decimalDigits: 0)}/person',
                       style: GoogleFonts.dmSans(
                         fontSize: 9,
                         fontWeight: FontWeight.w600,
@@ -327,7 +328,7 @@ class _ForfaitCard extends StatelessWidget {
                 ),
               ),
               Text(
-                '\$${forfait.pricePerPerson.toStringAsFixed(0)} /pers.',
+                '${CurrencyFormatter.formatAmount(forfait.pricePerPerson, decimalDigits: 0)} /pers.',
                 style: GoogleFonts.dmSans(
                   fontSize: 14,
                   fontWeight: FontWeight.w700,

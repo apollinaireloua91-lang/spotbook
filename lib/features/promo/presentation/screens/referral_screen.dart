@@ -3,11 +3,11 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:share_plus/share_plus.dart';
 import 'package:shimmer/shimmer.dart';
 
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/theme/theme_mode_notifier.dart';
+import '../../../../shared/utils/share_branding.dart';
 import '../../data/promo_repository.dart';
 import '../../domain/promo_models.dart';
 
@@ -198,10 +198,8 @@ class ReferralScreen extends ConsumerWidget {
                                 child: ElevatedButton.icon(
                                   onPressed: () {
                                     HapticFeedback.mediumImpact();
-                                    SharePlus.instance.share(
-                                      ShareParams(
-                                        text: 'Rejoins Spotbook avec mon code ${state.code} et gagne 10 CA\$ de crédit !',
-                                      ),
+                                    ShareBranding.shareWithLogo(
+                                      text: 'Rejoins Spotbook avec mon code ${state.code} et gagne 10 CA\$ de crédit !',
                                     );
                                   },
                                   icon: const Icon(Icons.share, size: 18),

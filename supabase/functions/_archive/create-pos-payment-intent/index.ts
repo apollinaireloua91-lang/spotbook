@@ -40,6 +40,8 @@ const DEFAULT_COMMISSION_RATE = 0.18;
 // Stripe's minimum charge in CAD is 50 ¢.
 const STRIPE_MIN_CHARGE_CENTS = 50;
 
+type PosKind = "standalone" | "booking_balance";
+
 interface PosPayload {
   amount_subtotal_cents: number;
   tip_cents: number;
@@ -49,6 +51,9 @@ interface PosPayload {
   customer_email: string | null;
   customer_phone: string | null;
   client_request_id: string;
+  /** When set, the PI collects the remaining balance of this booking. */
+  booking_id: string | null;
+  kind: PosKind;
 }
 
 function parsePayload(raw: unknown): { ok: true; value: PosPayload } | { ok: false; error: string } {
@@ -89,6 +94,28 @@ function parsePayload(raw: unknown): { ok: true; value: PosPayload } | { ok: fal
       ? b.customer_phone.trim()
       : null;
 
+  // Optional booking-balance flow.
+  const bookingIdRaw = b.booking_id;
+  let bookingId: string | null = null;
+  if (bookingIdRaw != null && bookingIdRaw !== "") {
+    if (typeof bookingIdRaw !== "string" || !isValidUuid(bookingIdRaw)) {
+      return { ok: false, error: "booking_id must be a valid UUID" };
+    }
+    bookingId = bookingIdRaw;
+  }
+  const kindRaw = typeof b.kind === "string" ? b.kind : "standalone";
+  if (kindRaw !== "standalone" && kindRaw !== "booking_balance") {
+    return { ok: false, error: "kind must be 'standalone' or 'booking_balance'" };
+  }
+  const kind = kindRaw as PosKind;
+  // DB-level CHECK consistency : kind = booking_balance ⇔ booking_id present.
+  if (kind === "booking_balance" && !bookingId) {
+    return { ok: false, error: "booking_id required when kind = booking_balance" };
+  }
+  if (kind === "standalone" && bookingId) {
+    return { ok: false, error: "booking_id forbidden when kind = standalone" };
+  }
+
   return {
     ok: true,
     value: {
@@ -100,6 +127,8 @@ function parsePayload(raw: unknown): { ok: true; value: PosPayload } | { ok: fal
       customer_email: customerEmail,
       customer_phone: customerPhone,
       client_request_id: clientRequestId,
+      booking_id: bookingId,
+      kind,
     },
   };
 }
@@ -141,16 +170,10 @@ serve(async (req) => {
     }
     const p = parsed.value;
 
-    const amountTotalCents =
-      p.amount_subtotal_cents + p.tip_cents + p.tps_cents + p.tvq_cents;
-    if (amountTotalCents < STRIPE_MIN_CHARGE_CENTS) {
-      return jsonResponse(
-        { error: `amount_total_cents must be >= ${STRIPE_MIN_CHARGE_CENTS}` },
-        400,
-        undefined,
-        req,
-      );
-    }
+    // Note : la borne basse Stripe (≥ 50 ¢) est revérifiée APRÈS l'éventuel
+    // override booking-balance plus bas (le subtotal sert alors à
+    // `recomputedTotalCents`). On ne court-circuite pas ici pour éviter de
+    // rejeter à tort un payload booking-balance qui passe un placeholder.
 
     // Service-role client for privileged reads + inserts.
     const supabase = createClient(
@@ -180,13 +203,119 @@ serve(async (req) => {
       );
     }
 
+    // ─── Booking-balance validation ────────────────────────────────────────
+    // En mode `booking_balance`, le PI encaisse le solde d'une réservation
+    // existante. On rejoue côté serveur la validité (ownership, statut,
+    // mode acompte, solde dû non encore encaissé). On override aussi
+    // amount_subtotal_cents pour qu'il corresponde à `remaining_amount` —
+    // le client UI peut fournir une valeur cohérente, mais la DB reste
+    // source de vérité (évite qu'un Pro malicieux/buggy passe un montant
+    // arbitraire).
+    let bookingRow:
+      | {
+          id: string;
+          pro_id: string;
+          status: string;
+          payment_mode: string | null;
+          remaining_amount: number | null;
+          remaining_payment_status: string | null;
+          currency: string | null;
+        }
+      | null = null;
+    let amountSubtotalCents = p.amount_subtotal_cents;
+    if (p.kind === "booking_balance" && p.booking_id) {
+      const { data: bk, error: bkErr } = await supabase
+        .from("bookings")
+        .select(
+          "id, pro_id, status, payment_mode, remaining_amount, remaining_payment_status, currency",
+        )
+        .eq("id", p.booking_id)
+        .maybeSingle();
+      if (bkErr) {
+        console.error("booking lookup error:", bkErr);
+        return jsonResponse({ error: "internal_error" }, 500, undefined, req);
+      }
+      if (!bk) {
+        return jsonResponse({ error: "booking_not_found" }, 404, undefined, req);
+      }
+      bookingRow = bk as typeof bookingRow;
+      if (bookingRow!.pro_id !== user.id) {
+        return jsonResponse(
+          { error: "not_booking_owner" },
+          403,
+          undefined,
+          req,
+        );
+      }
+      if (
+        bookingRow!.status !== "confirmed" &&
+        bookingRow!.status !== "completed"
+      ) {
+        return jsonResponse(
+          { error: "booking_not_collectable", detail: bookingRow!.status },
+          409,
+          undefined,
+          req,
+        );
+      }
+      if (bookingRow!.payment_mode !== "deposit") {
+        return jsonResponse(
+          { error: "booking_not_in_deposit_mode" },
+          409,
+          undefined,
+          req,
+        );
+      }
+      if (bookingRow!.remaining_payment_status === "paid_on_site") {
+        return jsonResponse(
+          { error: "balance_already_collected" },
+          409,
+          undefined,
+          req,
+        );
+      }
+      const remaining = Number(bookingRow!.remaining_amount ?? 0);
+      if (!Number.isFinite(remaining) || remaining <= 0) {
+        return jsonResponse(
+          { error: "no_remaining_balance" },
+          409,
+          undefined,
+          req,
+        );
+      }
+      // Rejoue le subtotal côté serveur — pas de pourboire ni de TPS/TVQ
+      // dans le flux solde (le client a déjà payé ses frais de service à la
+      // création du booking, et le total prestation est figé dans le booking).
+      amountSubtotalCents = Math.round(remaining * 100);
+      // Tip / taxes ignorés pour cohérence — on force à 0.
+      p.tip_cents = 0;
+      p.tps_cents = 0;
+      p.tvq_cents = 0;
+    }
+
+    const recomputedTotalCents =
+      amountSubtotalCents + p.tip_cents + p.tps_cents + p.tvq_cents;
+    if (recomputedTotalCents < STRIPE_MIN_CHARGE_CENTS) {
+      return jsonResponse(
+        { error: `amount_total_cents must be >= ${STRIPE_MIN_CHARGE_CENTS}` },
+        400,
+        undefined,
+        req,
+      );
+    }
+
     const commissionRate = Number(pro.commission_rate ?? DEFAULT_COMMISSION_RATE);
-    const commissionCents = Math.round(amountTotalCents * commissionRate);
-    const applicationFeeCents = commissionCents + POS_FIXED_SERVICE_FEE_CENTS;
+    const commissionCents = Math.round(recomputedTotalCents * commissionRate);
+    // Standalone POS (walk-in) → 50 ¢ surcharge plateforme. Booking-balance
+    // → pas de surcharge supplémentaire (le client a déjà payé `service_fee`
+    // au moment du booking, ce serait du double-dipping).
+    const fixedFeeCents =
+      p.kind === "booking_balance" ? 0 : POS_FIXED_SERVICE_FEE_CENTS;
+    const applicationFeeCents = commissionCents + fixedFeeCents;
 
     // Sanity: application_fee must be strictly less than amount — otherwise
     // the transfer to the Pro is negative and Stripe rejects the PI.
-    if (applicationFeeCents >= amountTotalCents) {
+    if (applicationFeeCents >= recomputedTotalCents) {
       return jsonResponse(
         { error: "application_fee_exceeds_amount" },
         400,
@@ -203,7 +332,7 @@ serve(async (req) => {
     // card_present + Terminal SDK handles PM collection on-device.
     const pi = await stripe.paymentIntents.create(
       {
-        amount: amountTotalCents,
+        amount: recomputedTotalCents,
         currency: p.currency,
         payment_method_types: ["card_present"],
         capture_method: "automatic",
@@ -212,12 +341,16 @@ serve(async (req) => {
         receipt_email: p.customer_email ?? undefined,
         metadata: {
           source: "spotbook_pos",
+          spotbook_type: p.kind,
           pro_id: user.id,
           tip_cents: String(p.tip_cents),
           tps_cents: String(p.tps_cents),
           tvq_cents: String(p.tvq_cents),
-          subtotal_cents: String(p.amount_subtotal_cents),
+          subtotal_cents: String(amountSubtotalCents),
+          commission_cents: String(commissionCents),
+          fixed_fee_cents: String(fixedFeeCents),
           client_request_id: p.client_request_id,
+          ...(p.booking_id ? { bookingId: p.booking_id } : {}),
         },
       },
       // Deterministic idempotency so a client retry never double-charges.
@@ -231,16 +364,18 @@ serve(async (req) => {
       .insert({
         pro_id: user.id,
         stripe_payment_intent_id: pi.id,
-        amount_subtotal_cents: p.amount_subtotal_cents,
+        amount_subtotal_cents: amountSubtotalCents,
         tip_cents: p.tip_cents,
         tps_cents: p.tps_cents,
         tvq_cents: p.tvq_cents,
-        amount_total_cents: amountTotalCents,
+        amount_total_cents: recomputedTotalCents,
         application_fee_cents: applicationFeeCents,
         currency: p.currency,
         status: "pending",
         customer_email: p.customer_email,
         customer_phone: p.customer_phone,
+        booking_id: p.booking_id,
+        kind: p.kind,
       })
       .select("id")
       .single();

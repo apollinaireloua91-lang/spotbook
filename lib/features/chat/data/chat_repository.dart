@@ -113,80 +113,11 @@ class ChatRepository {
       'last_message_at': DateTime.now().toIso8601String(),
     }).eq('id', conversationId);
 
-    // Notify recipient (fire-and-forget).
-    //
-    // ⚠ TRANSITOIRE : ce INSERT côté client doublonne ce que fait déjà le
-    // trigger DB `tr_messages_push_after_insert` → EF `send-push-notification`
-    // (qui insère lui aussi dans `notifications`). On garde l'INSERT Flutter
-    // tant que les GUC `app.settings.push_function_url` /
-    // `app.settings.service_role_key` ne sont pas configurés sur la base
-    // distante (sinon le trigger no-op silencieusement et le Pro ne voit
-    // strictement rien). Une fois la cascade trigger→EF validée en prod,
-    // supprimer `_notifyRecipient` (cf. APOLLINAIRE_TODO §«push notifications
-    // Pro» et docs/PRO_NOTIFICATIONS_AUDIT.md §3 bug #4).
-    _notifyRecipient(conversationId, uid, content ?? 'Photo');
+    // Push + notification row + unread_count bump sont intégralement gérés
+    // côté DB par les triggers `tr_messages_push_after_insert` (→ EF
+    // send-push-notification) et `tr_unread_count`. Rien à faire ici.
 
     return MessageModel.fromJson(data);
-  }
-
-  /// Insert a notification for the other user in the conversation.
-  Future<void> _notifyRecipient(
-    String conversationId,
-    String senderId,
-    String preview,
-  ) async {
-    try {
-      final conv = await _supabase
-          .from('conversations')
-          .select('client_id, pro_id')
-          .eq('id', conversationId)
-          .maybeSingle();
-      if (conv == null) return;
-
-      final recipientId = conv['client_id'] == senderId
-          ? conv['pro_id'] as String
-          : conv['client_id'] as String;
-
-      // Bump unread count for the recipient
-      final isRecipientClient = conv['client_id'] == recipientId;
-      final unreadCol =
-          isRecipientClient ? 'unread_count_client' : 'unread_count_pro';
-      await _supabase.rpc('increment_field', params: {
-        'table_name': 'conversations',
-        'field_name': unreadCol,
-        'row_id': conversationId,
-      }).catchError((_) {
-        // Fallback: plain update if RPC doesn't exist
-        return null;
-      });
-
-      // Get sender name
-      final sender = await _supabase
-          .from('users')
-          .select('full_name')
-          .eq('id', senderId)
-          .maybeSingle();
-      final senderName = sender?['full_name'] as String? ?? 'Quelqu\'un';
-
-      final body = preview.length > 80
-          ? '${preview.substring(0, 80)}...'
-          : preview;
-
-      // Type aligné avec celui que produit l'EF `send-push-notification`
-      // (`'message'`) afin que `notification_preferences.messages_enabled`
-      // filtre bien les deux sources, et que le handler push côté Flutter
-      // les regroupe sous le même switch.
-      await _supabase.from('notifications').insert({
-        'user_id': recipientId,
-        'type': 'message',
-        'title': 'Nouveau message de $senderName',
-        'body': body,
-        'data': {'conversation_id': conversationId},
-        'is_read': false,
-      });
-    } catch (_) {
-      // Non-critical — message was already sent successfully
-    }
   }
 
   Future<String> uploadChatImage(String conversationId, Uint8List bytes) async {

@@ -359,15 +359,28 @@ class _SettingsSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.fromLTRB(20, 24, 20, 8),
-          child: Text(
-            title,
-            style: GoogleFonts.dmSans(
-              color: AppColors.gris,
-              fontSize: 11,
-              fontWeight: FontWeight.w600,
-              letterSpacing: 2,
-            ),
+          padding: const EdgeInsets.fromLTRB(20, 28, 20, 10),
+          child: Row(
+            children: [
+              Container(
+                width: 3,
+                height: 12,
+                decoration: BoxDecoration(
+                  gradient: AppColors.gradientAccent,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Text(
+                title,
+                style: GoogleFonts.dmSans(
+                  color: AppColors.gris,
+                  fontSize: 11,
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: 2,
+                ),
+              ),
+            ],
           ),
         ),
         ...items,
@@ -396,7 +409,10 @@ class _SettingsItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onTap,
+      onTap: () {
+        HapticFeedback.lightImpact();
+        onTap();
+      },
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
         decoration: BoxDecoration(
@@ -406,7 +422,22 @@ class _SettingsItem extends StatelessWidget {
         ),
         child: Row(
           children: [
-            Icon(icon, color: AppColors.blanc, size: 22),
+            Container(
+              width: 36,
+              height: 36,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    AppColors.violet.withAlpha(22),
+                    AppColors.violet.withAlpha(10),
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Icon(icon, color: AppColors.violet, size: 20),
+            ),
             const SizedBox(width: 14),
             Expanded(
               child: Column(

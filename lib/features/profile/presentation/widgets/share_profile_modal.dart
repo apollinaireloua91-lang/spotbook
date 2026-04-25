@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:qr_flutter/qr_flutter.dart';
-import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
+import '../../../../shared/utils/share_branding.dart';
 import '../../../../shared/widgets/spotbook_bottom_sheet.dart';
 
 /// Bottom sheet : QR profil + partage (copier, SMS, WhatsApp, Instagram, natif).
@@ -79,8 +79,9 @@ class ShareProfileModal extends StatelessWidget {
   }
 
   Future<void> _shareNative() async {
-    await SharePlus.instance.share(
-      ShareParams(text: '$displayName on Spotbook\n$profileUrl'),
+    await ShareBranding.shareWithLogo(
+      text: '$displayName on Spotbook\n$profileUrl',
+      subject: displayName,
     );
   }
 

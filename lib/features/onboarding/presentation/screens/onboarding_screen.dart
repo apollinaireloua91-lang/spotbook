@@ -9,6 +9,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../../shared/theme/app_colors.dart';
+import '../../../../shared/utils/currency_formatter.dart';
 
 /// Clé unique pour persister le flag « onboarding vu ». On écrit à la fois
 /// dans SharedPreferences (source de vérité depuis 2026-04-21) et dans
@@ -984,7 +985,7 @@ class _GrowPageState extends State<_GrowPage>
                               Curves.easeOutCubic.transform(_entry.value);
                           final n = (2847 * v).toInt();
                           return Text(
-                            '\$${_formatNumber(n)}',
+                            CurrencyFormatter.formatAmount(n, decimalDigits: 0),
                             style: GoogleFonts.sora(
                               color: AppColors.blanc,
                               fontSize: 32,
@@ -1080,12 +1081,6 @@ class _GrowPageState extends State<_GrowPage>
     );
   }
 
-  static String _formatNumber(int n) {
-    return n.toString().replaceAllMapped(
-          RegExp(r'(\d)(?=(\d{3})+$)'),
-          (m) => '${m[1]},',
-        );
-  }
 }
 
 // ─── Mini stat widget ──────────────────────────

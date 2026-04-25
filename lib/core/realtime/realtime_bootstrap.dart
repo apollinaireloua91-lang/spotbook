@@ -7,7 +7,8 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../features/auth/data/auth_repository.dart';
 import '../../features/notifications/data/notification_repository.dart';
-import '../../router/auth_router_notifier.dart';
+import '../../router/app_router.dart';
+import '../../router/user_role_provider.dart';
 import '../../shared/utils/push_notification_service.dart';
 import 'realtime_manager.dart';
 
@@ -81,7 +82,7 @@ final realtimeBootstrapProvider = Provider<void>((ref) {
         // /select-account-type. Évite que le router lise une valeur stale
         // (ex: ancien user 'pro') pendant que le nouveau user n'a pas
         // encore son rôle fetché.
-        AuthRouterNotifier.instance.setRole(role);
+        ref.read(userRoleProvider.notifier).setRole(role);
         if (role == null) {
           debugPrint('[RealtimeBootstrap] role not set yet for ${user.id} — '
               'skipping realtime init (awaits RoleSelectionScreen → '
@@ -97,10 +98,10 @@ final realtimeBootstrapProvider = Provider<void>((ref) {
     }
 
     if (event == AuthChangeEvent.signedOut) {
-      // Purge du rôle cached — défense en profondeur. AuthRouterNotifier
-      // le purge déjà via son listener sur onAuthStateChange ; on duplique
+      // Purge du rôle cached — défense en profondeur. UserRoleNotifier
+      // le purge déjà via son listener sur authStateProvider ; on duplique
       // ici pour garantir l'ordre (clear AVANT teardown des channels).
-      AuthRouterNotifier.instance.setRole(null);
+      ref.read(userRoleProvider.notifier).setRole(null);
       // Soft teardown: removes every channel and resets the session
       // pointers, but keeps the typed StreamControllers alive so listeners
       // survive a sign-out → sign-in cycle in the same app instance.
@@ -121,7 +122,7 @@ final realtimeBootstrapProvider = Provider<void>((ref) {
     // Pousser dans le cache router AVANT le check null, pour que la
     // RoleSelectionScreen voie le router se ré-évaluer dès qu'elle a
     // déclenché ce refresh.
-    AuthRouterNotifier.instance.setRole(role);
+    ref.read(userRoleProvider.notifier).setRole(role);
     if (role == null) return;
     ref.read(realtimeManagerProvider).reinitializeForRole(
           userId: user.id,
@@ -203,7 +204,12 @@ Future<void> _registerFcmToken(Ref ref) async {
       // auth event signedIn/tokenRefreshed). Sans ça, un push qui arrive
       // pendant que l'app est ouverte est avalé silencieusement, et un
       // tap sur push depuis le background n'amène nulle part.
-      PushNotificationService.instance.wireHandlers();
+      //
+      // Le router est injecté ici (plus d'appRouter global) : le singleton
+      // `PushNotificationService` le stocke pour que son `handleTap`
+      // fonctionne hors BuildContext.
+      PushNotificationService.instance
+          .wireHandlers(ref.read(goRouterProvider));
       ref.onDispose(PushNotificationService.instance.dispose);
     }
   } catch (e) {

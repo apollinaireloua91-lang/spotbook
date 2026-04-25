@@ -178,6 +178,7 @@ class ServiceEntity {
     this.description,
     this.durationMinutes = 60,
     required this.price,
+    this.currency = 'CAD',
     this.isActive = true,
   });
 
@@ -186,6 +187,7 @@ class ServiceEntity {
   final String? description;
   final int durationMinutes;
   final double price;
+  final String currency;
   final bool isActive;
 
   factory ServiceEntity.fromJson(Map<String, dynamic> json) => ServiceEntity(
@@ -194,6 +196,7 @@ class ServiceEntity {
         description: json['description'] as String?,
         durationMinutes: json['duration_minutes'] as int? ?? 60,
         price: (json['price'] as num?)?.toDouble() ?? 0,
+        currency: json['currency'] as String? ?? 'CAD',
         isActive: json['is_active'] as bool? ?? true,
       );
 

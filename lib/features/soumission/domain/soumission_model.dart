@@ -1,3 +1,5 @@
+import '../../../shared/utils/currency_formatter.dart';
+
 /// A line item within a soumission (quote).
 class SoumissionLineItem {
   const SoumissionLineItem({
@@ -82,7 +84,7 @@ class Soumission {
       status == 'expired' ||
       (validUntil != null && validUntil!.isBefore(DateTime.now()) && status != 'paid');
 
-  String get displayTotal => '\$${(totalCents / 100).toStringAsFixed(2)}';
+  String get displayTotal => CurrencyFormatter.formatAmount(totalCents / 100);
 
   factory Soumission.fromJson(Map<String, dynamic> json) {
     final rawItems = json['line_items'];

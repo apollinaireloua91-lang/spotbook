@@ -13,6 +13,7 @@ import 'package:intl/intl.dart';
 
 import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
+import '../../../../shared/utils/currency_formatter.dart';
 import '../../../../shared/widgets/auth_required_redirect.dart';
 import '../../../../shared/widgets/spotbook_snackbar.dart';
 import '../../../auth/data/auth_repository.dart';
@@ -1690,7 +1691,11 @@ class _ProSelfServiceCard extends StatelessWidget {
               borderRadius: BorderRadius.circular(8),
             ),
             child: Text(
-              '\$${service.price.toStringAsFixed(0)}',
+              CurrencyFormatter.formatAmount(
+                service.price,
+                currency: service.currency,
+                decimalDigits: 0,
+              ),
               style: GoogleFonts.sora(
                 fontSize: 13,
                 fontWeight: FontWeight.w700,
@@ -1847,7 +1852,13 @@ class _ProSelfEventCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
-                  '\$${event.minPrice.toStringAsFixed(0)}',
+                  CurrencyFormatter.formatAmount(
+                    event.minPrice,
+                    currency: event.ticketTypes.isNotEmpty
+                        ? event.ticketTypes.first.currency
+                        : null,
+                    decimalDigits: 0,
+                  ),
                   style: GoogleFonts.sora(
                     fontSize: 13,
                     fontWeight: FontWeight.w700,

@@ -9,10 +9,12 @@ import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/locale/app_locale_notifier.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/theme/theme_mode_notifier.dart';
+import '../../../../shared/utils/currency_formatter.dart';
 import '../../../../shared/widgets/spotbook_bottom_sheet.dart';
 import '../../../../shared/widgets/spotbook_button.dart';
 import '../../../../shared/widgets/spotbook_card.dart';
 import '../../../../shared/widgets/spotbook_loading_shimmer.dart';
+import '../../../../core/services/app_config_provider.dart';
 import '../../../auth/data/auth_repository.dart';
 import '../../../feed/data/spotify_link_notifier.dart';
 import '../../../feed/data/spotify_oauth_service.dart';
@@ -26,7 +28,7 @@ class ProviderSettingsScreen extends ConsumerWidget {
 
   static const _advanceHours = [2, 6, 12, 24, 48];
   static const _gapMinutes = [0, 15, 30, 60];
-  static const _policies = ['flexible', 'moderate', 'strict'];
+  static const _policies = ['moderate', 'strict'];
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -196,12 +198,11 @@ class _SettingsBody extends ConsumerWidget {
                 value: ProviderSettingsScreen._policies
                         .contains(data.cancellationPolicy)
                     ? data.cancellationPolicy
-                    : 'flexible',
+                    : 'moderate',
                 items: ProviderSettingsScreen._policies,
                 display: (v) => switch (v) {
-                  'moderate' => l10n.proSettingsPolicyModerate,
                   'strict' => l10n.proSettingsPolicyStrict,
-                  _ => l10n.proSettingsPolicyFlexible,
+                  _ => l10n.proSettingsPolicyModerate,
                 },
                 onChanged: (v) {
                   if (v == null) return;
@@ -214,7 +215,7 @@ class _SettingsBody extends ConsumerWidget {
                 policy: ProviderSettingsScreen._policies
                         .contains(data.cancellationPolicy)
                     ? data.cancellationPolicy
-                    : 'flexible',
+                    : 'moderate',
               ),
               Divider(color: AppColors.border, height: 24),
               _DropdownRow<int>(
@@ -321,6 +322,13 @@ class _SettingsBody extends ConsumerWidget {
                 value: '',
                 showChevron: true,
                 onTap: () => context.push('/pro/analytics'),
+              ),
+              Divider(color: AppColors.border, height: 1),
+              _Tile(
+                label: l10n.quickRepliesMenuTitle,
+                value: '',
+                showChevron: true,
+                onTap: () => context.push('/pro/quick-replies'),
               ),
             ],
           ),
@@ -1021,20 +1029,15 @@ class _PolicyDescription extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final (icon, text) = switch (policy) {
-      'moderate' => (
-        Icons.schedule_outlined,
-        'Les clients peuvent annuler jusqu\'à 24 heures avant le rendez-vous pour un remboursement complet. '
-            'En deçà de 24h, 50% de l\'acompte est conservé.',
-      ),
       'strict' => (
         Icons.lock_outline,
         'Aucun remboursement une fois la réservation confirmée. La totalité de l\'acompte est conservée '
             'quel que soit le moment où le client annule.',
       ),
       _ => (
-        Icons.check_circle_outline,
-        'Les clients peuvent annuler jusqu\'à 12 heures avant le rendez-vous pour un remboursement complet. '
-            'En deçà de 12h, l\'acompte est conservé.',
+        Icons.schedule_outlined,
+        'Les clients peuvent annuler jusqu\'à 24 heures avant le rendez-vous pour un remboursement complet. '
+            'En deçà de 24h, 50% de l\'acompte est conservé.',
       ),
     };
 
@@ -1066,11 +1069,28 @@ class _PolicyDescription extends StatelessWidget {
   }
 }
 
-class _CommissionBreakdown extends StatelessWidget {
+/// Displays current commission + service-fee rates.
+///
+/// Reads live values from [appConfigProvider] (table `app_config`) so
+/// changes pushed via Supabase reflect immediately without a release.
+/// Falls back to [AppConfig.fallback] if the query is still loading or
+/// has errored — values match production defaults so the user is never
+/// shown blank/incorrect numbers.
+class _CommissionBreakdown extends ConsumerWidget {
   const _CommissionBreakdown();
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final config = ref.watch(appConfigProvider).value ?? AppConfig.fallback;
+    final bookingsPct = (config.commissionBookings * 100).round();
+    final eventsPct = (config.commissionEvents * 100).round();
+    final cateringPct = (config.commissionCatering * 100).round();
+    // Both bookings and catering use the same rate today — surface them on
+    // a single line if they match, otherwise split into two so the Pro can
+    // see catering's distinct cut if it's ever decoupled.
+    final bookingsLineLabel = bookingsPct == cateringPct
+        ? 'Réservations & Traiteur'
+        : 'Réservations';
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
@@ -1091,20 +1111,28 @@ class _CommissionBreakdown extends StatelessWidget {
           ),
           const SizedBox(height: 10),
           _CommissionLine(
-            label: 'Réservations & Traiteur',
-            value: '18%',
+            label: bookingsLineLabel,
+            value: '$bookingsPct%',
             icon: Icons.calendar_today_outlined,
           ),
+          if (bookingsPct != cateringPct) ...[
+            const SizedBox(height: 6),
+            _CommissionLine(
+              label: 'Traiteur',
+              value: '$cateringPct%',
+              icon: Icons.restaurant_outlined,
+            ),
+          ],
           const SizedBox(height: 6),
           _CommissionLine(
             label: 'Billets d\'événements',
-            value: '12%',
+            value: '$eventsPct%',
             icon: Icons.confirmation_number_outlined,
           ),
           const SizedBox(height: 6),
           _CommissionLine(
             label: 'Frais de service client',
-            value: '\$2.50 / réservation',
+            value: '${CurrencyFormatter.formatAmount(config.serviceFeeClient)} / réservation',
             icon: Icons.person_outline,
           ),
           const SizedBox(height: 10),

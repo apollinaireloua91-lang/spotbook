@@ -93,9 +93,12 @@ class _ReviewSheetState extends State<ReviewSheet> {
             color: AppColors.surface,
             borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
           ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
+          // SingleChildScrollView : le TextField (maxLines: 4) peut faire
+          // déborder quand le clavier s'ouvre. Le scroll absorbe l'overflow.
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
               // Handle
               Container(
                 width: 36,
@@ -222,6 +225,7 @@ class _ReviewSheetState extends State<ReviewSheet> {
                 ),
               ),
             ],
+          ),
           ),
         ),
 

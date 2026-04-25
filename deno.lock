@@ -56,7 +56,8 @@
     "packageJson": {
       "dependencies": [
         "npm:@google/stitch-sdk@^0.0.3",
-        "npm:firebase@^12.11.0"
+        "npm:firebase@^12.11.0",
+        "npm:jsonwebtoken@^9.0.3"
       ]
     }
   }

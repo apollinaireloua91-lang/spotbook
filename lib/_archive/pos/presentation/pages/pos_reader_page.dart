@@ -51,13 +51,30 @@ class PosReaderPage extends ConsumerStatefulWidget {
     required this.amount,
     this.customerEmail,
     this.customerPhone,
+    this.bookingId,
+    this.kind = 'standalone',
   });
 
   /// Amount captured on the previous screen (`PosAmountPage`). Passed via
   /// `go_router` `extra` — always non-null by contract.
+  ///
+  /// For `kind == 'booking_balance'`, the `amount` is a *placeholder* — the
+  /// Edge Function authoritatively rewrites the subtotal to the booking's
+  /// `remaining_amount`. We still pass it so the AmountBadge can show the
+  /// expected solde while the SDK collects.
   final PosAmount amount;
   final String? customerEmail;
   final String? customerPhone;
+
+  /// When set, this collection settles the remaining balance of the given
+  /// booking. The Edge Function validates ownership and overrides
+  /// amount/tip/taxes server-side.
+  final String? bookingId;
+
+  /// Discriminator forwarded to the Edge Function: `'standalone'` (default,
+  /// walk-in POS) or `'booking_balance'` (solde collection on a deposit
+  /// booking). Must align with [bookingId] presence.
+  final String kind;
 
   @override
   ConsumerState<PosReaderPage> createState() => _PosReaderPageState();
@@ -98,6 +115,8 @@ class _PosReaderPageState extends ConsumerState<PosReaderPage> {
           clientRequestId: _clientRequestId,
           customerEmail: widget.customerEmail,
           customerPhone: widget.customerPhone,
+          bookingId: widget.bookingId,
+          kind: widget.kind,
         );
   }
 

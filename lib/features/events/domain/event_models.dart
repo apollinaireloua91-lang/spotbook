@@ -76,6 +76,7 @@ class TicketTypeModel {
     required this.eventId,
     required this.name,
     required this.price,
+    this.currency = 'CAD',
     required this.quantity,
     this.soldCount = 0,
   });
@@ -84,6 +85,7 @@ class TicketTypeModel {
   final String eventId;
   final String name;
   final double price;
+  final String currency;
   final int quantity;
   final int soldCount;
 
@@ -96,6 +98,7 @@ class TicketTypeModel {
       eventId: json['event_id'] as String,
       name: json['name'] as String? ?? '',
       price: (json['price'] as num?)?.toDouble() ?? 0,
+      currency: json['currency'] as String? ?? 'CAD',
       quantity: json['quantity'] as int? ?? 0,
       soldCount: json['sold_count'] as int? ?? 0,
     );

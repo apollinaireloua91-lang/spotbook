@@ -3,11 +3,11 @@ import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:qr_flutter/qr_flutter.dart';
-import 'package:share_plus/share_plus.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
+import '../../../../shared/utils/share_branding.dart';
 import '../../../../shared/widgets/spotbook_button.dart';
 
 class ProQrCodeScreen extends StatelessWidget {
@@ -56,7 +56,7 @@ class ProQrCodeScreen extends StatelessWidget {
           IconButton(
             icon: Icon(Icons.share_outlined, color: AppColors.blanc),
             onPressed: () =>
-                SharePlus.instance.share(ShareParams(text: profileUrl)),
+                ShareBranding.shareWithLogo(text: profileUrl),
           ),
         ],
       ),
@@ -198,7 +198,7 @@ class ProQrCodeScreen extends StatelessWidget {
                 label: l.shareMyProfile,
                 icon: Icons.share_outlined,
                 onPressed: () =>
-                    SharePlus.instance.share(ShareParams(text: profileUrl)),
+                    ShareBranding.shareWithLogo(text: profileUrl),
               ),
               const SizedBox(height: 12),
               SpotbookButton.secondary(

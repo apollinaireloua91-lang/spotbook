@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
@@ -189,9 +190,19 @@ class _FilterSheetState extends State<FilterSheet> {
           // Header
           Row(
             children: [
+              Container(
+                width: 36,
+                height: 36,
+                decoration: BoxDecoration(
+                  color: AppColors.violet.withAlpha(18),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(Icons.filter_list, color: AppColors.violet, size: 20),
+              ),
+              const SizedBox(width: 10),
               Text(
                 l.filterLabel,
-                style: TextStyle(
+                style: GoogleFonts.sora(
                   color: AppColors.blanc,
                   fontSize: 18,
                   fontWeight: FontWeight.w700,
@@ -200,12 +211,19 @@ class _FilterSheetState extends State<FilterSheet> {
               const Spacer(),
               GestureDetector(
                 onTap: _reset,
-                child: Text(
-                  l.resetFilters,
-                  style: TextStyle(
-                    color: AppColors.violetClair,
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  decoration: BoxDecoration(
+                    color: AppColors.violetClair.withAlpha(15),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    l.resetFilters,
+                    style: GoogleFonts.dmSans(
+                      color: AppColors.violetClair,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
               ),
@@ -357,14 +375,15 @@ class _FilterSheetState extends State<FilterSheet> {
               width: double.infinity,
               padding: const EdgeInsets.symmetric(vertical: 14),
               decoration: BoxDecoration(
-                color: AppColors.violet,
-                borderRadius: BorderRadius.circular(12),
+                gradient: AppColors.gradientAccent,
+                borderRadius: BorderRadius.circular(14),
+                boxShadow: AppColors.primaryButtonShadow,
               ),
               child: Center(
                 child: Text(
                   l.applyTheFilters,
-                  style: TextStyle(
-                    color: AppColors.blanc,
+                  style: GoogleFonts.dmSans(
+                    color: Colors.white,
                     fontSize: 15,
                     fontWeight: FontWeight.w700,
                   ),

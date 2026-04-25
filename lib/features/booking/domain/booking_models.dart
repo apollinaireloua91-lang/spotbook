@@ -305,8 +305,13 @@ class BookingModel {
   bool get isPast => status == 'completed';
   bool get hasRemainingPayment =>
       isDepositMode && (remainingAmount ?? 0) > 0;
+  /// True once the on-site solde has been collected (Tap to Pay or manual)
+  /// or explicitly waived. The DB column never stores `'paid'` — historical
+  /// values are `'paid_on_site'` (POS / manual mark) and `'waived'` (Pro
+  /// chose to absorb the difference). Anything else means still due.
   bool get isRemainingPaid =>
-      remainingPaymentStatus == 'paid';
+      remainingPaymentStatus == 'paid_on_site' ||
+      remainingPaymentStatus == 'waived';
 
   factory BookingModel.fromJson(Map<String, dynamic> json) {
     final service = json['services'] as Map<String, dynamic>?;

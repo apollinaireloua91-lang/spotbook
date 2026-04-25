@@ -1,3 +1,10 @@
+// The `TODO(post-crash)` markers below are intentional grep anchors — they
+// enumerate every method that needs a real Stripe Terminal SDK binding once
+// the iOS crash is resolved and the Apple capability approval lands. Keep
+// them in the code (searchable via `grep -r "TODO(post-crash)"`) but silence
+// the analyzer's `todo` lint so they don't pollute the Problems tab.
+// ignore_for_file: todo
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../domain/pos_models.dart';

@@ -4,10 +4,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
-import 'package:share_plus/share_plus.dart';
 
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/theme/theme_mode_notifier.dart';
+import '../../../../shared/utils/share_branding.dart';
 import '../../../../shared/widgets/spotbook_button.dart';
 import '../../data/soumission_repository.dart';
 import '../../domain/soumission_model.dart';
@@ -73,7 +73,7 @@ class SoumissionsListScreen extends ConsumerWidget {
               itemBuilder: (_, i) => _SoumissionCard(
                 soumission: soumissions[i],
                 onShare: () => _share(context, soumissions[i]),
-                onTap: () {},
+                onTap: () => _share(context, soumissions[i]),
               ),
             ),
           );
@@ -97,10 +97,9 @@ class SoumissionsListScreen extends ConsumerWidget {
 
   void _share(BuildContext context, Soumission s) {
     final url = 'https://getspotbook.app/quote/${s.shareToken}';
-    SharePlus.instance.share(
-      ShareParams(
-        text: 'Voici votre soumission "${s.title}" — $url',
-      ),
+    ShareBranding.shareWithLogo(
+      text: 'Voici votre soumission "${s.title}" — $url',
+      subject: s.title,
     );
   }
 }

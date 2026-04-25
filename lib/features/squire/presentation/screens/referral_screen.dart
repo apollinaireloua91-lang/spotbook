@@ -3,11 +3,11 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:share_plus/share_plus.dart';
 
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/theme/theme_mode_notifier.dart';
 import '../../../../shared/utils/currency_formatter.dart';
+import '../../../../shared/utils/share_branding.dart';
 import '../../../../shared/widgets/spotbook_button.dart';
 import '../../../../shared/widgets/spotbook_card.dart';
 import '../../../../shared/widgets/spotbook_loading_shimmer.dart';
@@ -75,7 +75,7 @@ class _ReferralScreenState extends ConsumerState<SquireReferralScreen> {
     final text =
         'Découvre Spotbook avec mon code ${_myCode!.referralCode} et on reçoit chacun '
         '${CurrencyFormatter.formatAmount(_myCode!.rewardDollars)} sur notre prochaine réservation !';
-    await SharePlus.instance.share(ShareParams(text: text));
+    await ShareBranding.shareWithLogo(text: text);
   }
 
   int get _completedCount =>

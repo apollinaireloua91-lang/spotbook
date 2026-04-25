@@ -8,6 +8,7 @@ import '../../../../core/services/app_config_provider.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/theme/theme_mode_notifier.dart';
+import '../../../../shared/utils/currency_formatter.dart';
 
 // ═════════════════════════════════════════════════════════════════════════════
 // COMMISSIONS SCREEN — Premium breakdown of Spotbook fees for Pros
@@ -188,7 +189,7 @@ class CommissionsScreen extends ConsumerWidget {
                     ),
                     child: Center(
                       child: Text(
-                        '\$${cfg.serviceFeeClient.toStringAsFixed(2)}',
+                        CurrencyFormatter.formatAmount(cfg.serviceFeeClient),
                         style: GoogleFonts.dmSans(
                           color: Colors.white,
                           fontSize: 13,
@@ -249,11 +250,11 @@ class CommissionsScreen extends ConsumerWidget {
                 children: [
                   _ExampleRow(
                     label: l.commissionsServicePrice,
-                    value: '\$${examplePrice.toStringAsFixed(2)}',
+                    value: CurrencyFormatter.formatAmount(examplePrice),
                   ),
                   _ExampleRow(
                     label: l.commissionsSpotbookCommission(bookingPct),
-                    value: '-\$${exampleCommission.toStringAsFixed(2)}',
+                    value: '-${CurrencyFormatter.formatAmount(exampleCommission)}',
                     isNegative: true,
                   ),
                   Padding(
@@ -262,7 +263,7 @@ class CommissionsScreen extends ConsumerWidget {
                   ),
                   _ExampleRow(
                     label: l.commissionsYouReceive,
-                    value: '\$${examplePro.toStringAsFixed(2)}',
+                    value: CurrencyFormatter.formatAmount(examplePro),
                     isBold: true,
                     isPrimary: true,
                   ),
@@ -271,17 +272,17 @@ class CommissionsScreen extends ConsumerWidget {
                   const SizedBox(height: 8),
                   _ExampleRow(
                     label: l.commissionsClientPaysService,
-                    value: '\$${examplePrice.toStringAsFixed(2)}',
+                    value: CurrencyFormatter.formatAmount(examplePrice),
                   ),
                   _ExampleRow(
                     label: l.commissionsClientPaysFee,
-                    value: '+\$${cfg.serviceFeeClient.toStringAsFixed(2)}',
+                    value: '+${CurrencyFormatter.formatAmount(cfg.serviceFeeClient)}',
                   ),
                   const SizedBox(height: 4),
                   _ExampleRow(
                     label: l.commissionsClientTotal,
-                    value:
-                        '\$${(examplePrice + cfg.serviceFeeClient).toStringAsFixed(2)}',
+                    value: CurrencyFormatter.formatAmount(
+                        examplePrice + cfg.serviceFeeClient),
                     isBold: true,
                   ),
                 ],
@@ -365,6 +366,13 @@ class _CommissionCard extends StatelessWidget {
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(14),
         border: Border.all(color: AppColors.border),
+        boxShadow: [
+          BoxShadow(
+            color: color.withAlpha(8),
+            blurRadius: 12,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -373,7 +381,14 @@ class _CommissionCard extends StatelessWidget {
             width: 48,
             height: 48,
             decoration: BoxDecoration(
-              color: color.withAlpha(30),
+              gradient: LinearGradient(
+                colors: [
+                  color.withAlpha(35),
+                  color.withAlpha(15),
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(icon, color: color, size: 22),
