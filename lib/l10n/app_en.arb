@@ -631,6 +631,20 @@
   "manageServices": "Manage services",
   "bookingStatusCompleted": "Completed",
   "bookingStatusCancelled": "Cancelled",
+  "uploadScreenEditorialSubtitle": "One video, one category, one description — your service finds its audience.",
+  "uploadVideoEmptyDropzoneTitle": "Select a video",
+  "uploadVideoReady": "Video ready",
+  "uploadVideoTapToChange": "Tap to change",
+  "uploadVideoFieldValid": "Perfect",
+  "uploadVideoFieldMinChars": "Min {count} characters",
+  "@uploadVideoFieldMinChars": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "uploadVideoUploading": "Uploading…",
+  "uploadVideoPublishing": "Publishing",
+  "addVideoChooseSource": "Choose a source",
   "markAsDone": "Mark as done",
   "markAsDoneMessage": "Mark this appointment as completed?",
   "markAsDoneTitle": "Mark as done?",

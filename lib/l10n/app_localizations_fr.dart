@@ -1984,6 +1984,36 @@ class AppLocalizationsFr extends AppLocalizations {
   String get bookingStatusCancelled => 'Annulé';
 
   @override
+  String get uploadScreenEditorialSubtitle =>
+      'Une vidéo, une catégorie, une description — votre prestation trouve son audience.';
+
+  @override
+  String get uploadVideoEmptyDropzoneTitle => 'Sélectionnez une vidéo';
+
+  @override
+  String get uploadVideoReady => 'Vidéo prête';
+
+  @override
+  String get uploadVideoTapToChange => 'Toucher pour changer';
+
+  @override
+  String get uploadVideoFieldValid => 'Parfait';
+
+  @override
+  String uploadVideoFieldMinChars(int count) {
+    return 'Min $count caractères';
+  }
+
+  @override
+  String get uploadVideoUploading => 'Téléversement…';
+
+  @override
+  String get uploadVideoPublishing => 'Publication en cours';
+
+  @override
+  String get addVideoChooseSource => 'Choisissez une source';
+
+  @override
   String get markAsDone => 'Marquer comme terminé';
 
   @override

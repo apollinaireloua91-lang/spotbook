@@ -3884,6 +3884,60 @@ abstract class AppLocalizations {
   /// **'Cancelled'**
   String get bookingStatusCancelled;
 
+  /// No description provided for @uploadScreenEditorialSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'One video, one category, one description — your service finds its audience.'**
+  String get uploadScreenEditorialSubtitle;
+
+  /// No description provided for @uploadVideoEmptyDropzoneTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a video'**
+  String get uploadVideoEmptyDropzoneTitle;
+
+  /// No description provided for @uploadVideoReady.
+  ///
+  /// In en, this message translates to:
+  /// **'Video ready'**
+  String get uploadVideoReady;
+
+  /// No description provided for @uploadVideoTapToChange.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to change'**
+  String get uploadVideoTapToChange;
+
+  /// No description provided for @uploadVideoFieldValid.
+  ///
+  /// In en, this message translates to:
+  /// **'Perfect'**
+  String get uploadVideoFieldValid;
+
+  /// No description provided for @uploadVideoFieldMinChars.
+  ///
+  /// In en, this message translates to:
+  /// **'Min {count} characters'**
+  String uploadVideoFieldMinChars(int count);
+
+  /// No description provided for @uploadVideoUploading.
+  ///
+  /// In en, this message translates to:
+  /// **'Uploading…'**
+  String get uploadVideoUploading;
+
+  /// No description provided for @uploadVideoPublishing.
+  ///
+  /// In en, this message translates to:
+  /// **'Publishing'**
+  String get uploadVideoPublishing;
+
+  /// No description provided for @addVideoChooseSource.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a source'**
+  String get addVideoChooseSource;
+
   /// No description provided for @markAsDone.
   ///
   /// In en, this message translates to:

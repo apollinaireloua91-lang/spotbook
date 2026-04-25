@@ -1205,30 +1205,74 @@ class _QuickActions extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
-    return Row(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _QuickActionBtn(
-          icon: Icons.design_services_outlined,
-          label: l.servicesQuickAction,
-          onTap: () => context.push('/pro/services'),
+        // Editorial eyebrow rule
+        Row(
+          children: [
+            Container(
+              width: 18,
+              height: 2,
+              decoration: BoxDecoration(
+                gradient: AppColors.gradientAccent,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            const SizedBox(width: 8),
+            Text(
+              'STUDIO',
+              style: GoogleFonts.dmSans(
+                color: AppColors.gris,
+                fontSize: 10,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 2.4,
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Container(
+                height: 0.5,
+                color: AppColors.blanc.withAlpha(24),
+              ),
+            ),
+          ],
         ),
-        const SizedBox(width: 8),
-        _QuickActionBtn(
-          icon: Icons.event_outlined,
-          label: l.eventsQuickAction,
-          onTap: () => context.push('/pro/events'),
-        ),
-        const SizedBox(width: 8),
-        _QuickActionBtn(
-          icon: Icons.bar_chart_rounded,
-          label: l.revenueQuickAction,
-          onTap: () => context.push('/pro/revenue'),
-        ),
-        const SizedBox(width: 8),
-        _QuickActionBtn(
-          icon: Icons.schedule_outlined,
-          label: l.availabilityQuickAction,
-          onTap: () => context.push('/pro/availability'),
+        const SizedBox(height: 14),
+        Row(
+          children: [
+            _QuickActionBtn(
+              icon: Icons.design_services_outlined,
+              label: l.servicesQuickAction,
+              accent: AppColors.violet,
+              accentLight: AppColors.violetClair,
+              onTap: () => context.push('/pro/services'),
+            ),
+            const SizedBox(width: 10),
+            _QuickActionBtn(
+              icon: Icons.event_outlined,
+              label: l.eventsQuickAction,
+              accent: AppColors.rose,
+              accentLight: AppColors.roseClair,
+              onTap: () => context.push('/pro/events'),
+            ),
+            const SizedBox(width: 10),
+            _QuickActionBtn(
+              icon: Icons.bar_chart_rounded,
+              label: l.revenueQuickAction,
+              accent: AppColors.violet,
+              accentLight: AppColors.violetClair,
+              onTap: () => context.push('/pro/revenue'),
+            ),
+            const SizedBox(width: 10),
+            _QuickActionBtn(
+              icon: Icons.schedule_outlined,
+              label: l.availabilityQuickAction,
+              accent: AppColors.rose,
+              accentLight: AppColors.roseClair,
+              onTap: () => context.push('/pro/availability'),
+            ),
+          ],
         ),
       ],
     );
@@ -1239,11 +1283,15 @@ class _QuickActionBtn extends StatefulWidget {
   const _QuickActionBtn({
     required this.icon,
     required this.label,
+    required this.accent,
+    required this.accentLight,
     required this.onTap,
   });
 
   final IconData icon;
   final String label;
+  final Color accent;
+  final Color accentLight;
   final VoidCallback onTap;
 
   @override
@@ -1254,7 +1302,6 @@ class _QuickActionBtnState extends State<_QuickActionBtn>
     with SingleTickerProviderStateMixin {
   late final AnimationController _ctrl;
   late final Animation<double> _scaleAnim;
-  late final Animation<double> _tiltAnim;
 
   @override
   void initState() {
@@ -1263,10 +1310,7 @@ class _QuickActionBtnState extends State<_QuickActionBtn>
       vsync: this,
       duration: const Duration(milliseconds: 150),
     );
-    _scaleAnim = Tween<double>(begin: 1.0, end: 0.92).animate(
-      CurvedAnimation(parent: _ctrl, curve: Curves.easeInOut),
-    );
-    _tiltAnim = Tween<double>(begin: 0, end: 0.06).animate(
+    _scaleAnim = Tween<double>(begin: 1.0, end: 0.94).animate(
       CurvedAnimation(parent: _ctrl, curve: Curves.easeInOut),
     );
   }
@@ -1290,53 +1334,80 @@ class _QuickActionBtnState extends State<_QuickActionBtn>
         onTapCancel: () => _ctrl.reverse(),
         child: AnimatedBuilder(
           animation: _ctrl,
-          builder: (context, child) {
-            return Transform.scale(
-              scale: _scaleAnim.value,
-              child: Transform(
-                alignment: Alignment.center,
-                transform: Matrix4.identity()
-                  ..setEntry(3, 2, 0.002)
-                  ..rotateX(_tiltAnim.value),
-                child: child,
-              ),
-            );
-          },
+          builder: (context, child) => Transform.scale(
+            scale: _scaleAnim.value,
+            child: child,
+          ),
+          // Gradient hairline outline wrapper
           child: Container(
-            padding: const EdgeInsets.symmetric(vertical: 16),
+            padding: const EdgeInsets.all(0.6),
             decoration: BoxDecoration(
-              color: AppColors.surfaceAlt,
-              borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: AppColors.border, width: 0.5),
-              boxShadow: [
-                BoxShadow(
-                  color: AppColors.shadowCard,
-                  blurRadius: 8,
-                  offset: const Offset(0, 2),
-                ),
-              ],
+              borderRadius: BorderRadius.circular(18),
+              gradient: LinearGradient(
+                colors: [
+                  widget.accent.withAlpha(90),
+                  widget.accentLight.withAlpha(50),
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
             ),
-            child: Column(
-              children: [
-                Container(
-                  width: 36,
-                  height: 36,
-                  decoration: BoxDecoration(
-                    color: AppColors.violet.withAlpha(15),
-                    borderRadius: BorderRadius.circular(10),
+            child: Container(
+              padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 6),
+              decoration: BoxDecoration(
+                color: AppColors.surface.withAlpha(220),
+                borderRadius: BorderRadius.circular(17),
+                boxShadow: [
+                  BoxShadow(
+                    color: widget.accent.withAlpha(30),
+                    blurRadius: 16,
+                    spreadRadius: -4,
+                    offset: const Offset(0, 6),
                   ),
-                  child: Icon(widget.icon, color: AppColors.violet, size: 18),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  widget.label,
-                  style: GoogleFonts.dmSans(
-                    fontSize: 10,
-                    color: AppColors.gris,
-                    fontWeight: FontWeight.w600,
+                ],
+              ),
+              child: Column(
+                children: [
+                  // Gradient icon tile
+                  Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      gradient: LinearGradient(
+                        colors: [widget.accent, widget.accentLight],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: widget.accent.withAlpha(90),
+                          blurRadius: 14,
+                          spreadRadius: -2,
+                        ),
+                      ],
+                    ),
+                    child: Icon(
+                      widget.icon,
+                      color: AppColors.blanc,
+                      size: 19,
+                    ),
                   ),
-                ),
-              ],
+                  const SizedBox(height: 10),
+                  Text(
+                    widget.label,
+                    textAlign: TextAlign.center,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: GoogleFonts.dmSans(
+                      fontSize: 10.5,
+                      color: AppColors.blanc,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 0.2,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -1446,75 +1517,27 @@ class _VideosRow extends StatelessWidget {
   }
 
   void _showVideoSourceSheet(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     showModalBottomSheet(
       context: context,
-      backgroundColor: AppColors.surface,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (_) => SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                width: 40,
-                height: 4,
-                decoration: BoxDecoration(
-                  color: AppColors.grisInactif,
-                  borderRadius: BorderRadius.circular(2),
-                ),
-              ),
-              const SizedBox(height: 20),
-              Text(
-                AppLocalizations.of(context)!.addVideoTitle,
-                style: GoogleFonts.sora(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.blanc,
-                ),
-              ),
-              const SizedBox(height: 20),
-              ListTile(
-                leading: Icon(Icons.videocam, color: AppColors.violet),
-                title: Text(
-                  AppLocalizations.of(context)!.recordVideo,
-                  style: GoogleFonts.dmSans(color: AppColors.blanc),
-                ),
-                subtitle: Text(
-                  AppLocalizations.of(context)!.recordVideoSubtitle,
-                  style: GoogleFonts.dmSans(
-                    color: AppColors.gris,
-                    fontSize: 12,
-                  ),
-                ),
-                onTap: () {
-                  Navigator.pop(context);
-                  context.push('/pro/camera');
-                },
-              ),
-              ListTile(
-                leading: Icon(Icons.upload_file, color: AppColors.violet),
-                title: Text(
-                  AppLocalizations.of(context)!.uploadVideo,
-                  style: GoogleFonts.dmSans(color: AppColors.blanc),
-                ),
-                subtitle: Text(
-                  AppLocalizations.of(context)!.uploadVideoSubtitle,
-                  style: GoogleFonts.dmSans(
-                    color: AppColors.gris,
-                    fontSize: 12,
-                  ),
-                ),
-                onTap: () {
-                  Navigator.pop(context);
-                  context.push('/upload-video');
-                },
-              ),
-            ],
-          ),
-        ),
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (_) => _AddVideoSheet(
+        title: l.addVideoTitle,
+        recordLabel: l.recordVideo,
+        recordSubtitle: l.recordVideoSubtitle,
+        uploadLabel: l.uploadVideo,
+        uploadSubtitle: l.uploadVideoSubtitle,
+        onRecord: () {
+          Navigator.pop(context);
+          HapticFeedback.mediumImpact();
+          context.push('/pro/camera');
+        },
+        onUpload: () {
+          Navigator.pop(context);
+          HapticFeedback.mediumImpact();
+          context.push('/upload-video');
+        },
       ),
     );
   }
@@ -2205,6 +2228,268 @@ class _EmptySection extends StatelessWidget {
             ),
           ],
         ],
+      ),
+    );
+  }
+}
+
+// ═════════════════════════════════════════════════════════════════════════════
+// ADD VIDEO BOTTOM SHEET — editorial, gradient-outlined source picker
+// ═════════════════════════════════════════════════════════════════════════════
+
+class _AddVideoSheet extends StatelessWidget {
+  const _AddVideoSheet({
+    required this.title,
+    required this.recordLabel,
+    required this.recordSubtitle,
+    required this.uploadLabel,
+    required this.uploadSubtitle,
+    required this.onRecord,
+    required this.onUpload,
+  });
+
+  final String title;
+  final String recordLabel;
+  final String recordSubtitle;
+  final String uploadLabel;
+  final String uploadSubtitle;
+  final VoidCallback onRecord;
+  final VoidCallback onUpload;
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.surfaceAlt,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+        border: Border(
+          top: BorderSide(color: AppColors.blanc.withAlpha(24), width: 0.5),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.violet.withAlpha(40),
+            blurRadius: 48,
+            spreadRadius: -4,
+            offset: const Offset(0, -8),
+          ),
+        ],
+      ),
+      child: SafeArea(
+        top: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 14, 20, 20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Grab handle
+              Center(
+                child: Container(
+                  width: 44,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: AppColors.blanc.withAlpha(40),
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 22),
+
+              // Eyebrow
+              Row(
+                children: [
+                  Container(
+                    width: 18,
+                    height: 2,
+                    decoration: BoxDecoration(
+                      gradient: AppColors.gradientAccent,
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    'STUDIO',
+                    style: GoogleFonts.dmSans(
+                      color: AppColors.gris,
+                      fontSize: 10,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 2.4,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+
+              // Display title
+              Text(
+                title,
+                style: GoogleFonts.sora(
+                  color: AppColors.blanc,
+                  fontSize: 24,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: -0.8,
+                  height: 1.1,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                l.addVideoChooseSource,
+                style: GoogleFonts.dmSans(
+                  color: AppColors.gris,
+                  fontSize: 13,
+                  height: 1.4,
+                ),
+              ),
+              const SizedBox(height: 22),
+
+              // Source options
+              _SourceCard(
+                icon: Icons.videocam_rounded,
+                tag: 'LIVE',
+                label: recordLabel,
+                subtitle: recordSubtitle,
+                accent: AppColors.violet,
+                accentLight: AppColors.violetClair,
+                onTap: onRecord,
+              ),
+              const SizedBox(height: 12),
+              _SourceCard(
+                icon: Icons.file_upload_outlined,
+                tag: 'LIBRARY',
+                label: uploadLabel,
+                subtitle: uploadSubtitle,
+                accent: AppColors.rose,
+                accentLight: AppColors.roseClair,
+                onTap: onUpload,
+              ),
+              const SizedBox(height: 4),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _SourceCard extends StatelessWidget {
+  const _SourceCard({
+    required this.icon,
+    required this.tag,
+    required this.label,
+    required this.subtitle,
+    required this.accent,
+    required this.accentLight,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String tag;
+  final String label;
+  final String subtitle;
+  final Color accent;
+  final Color accentLight;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
+      child: Container(
+        padding: const EdgeInsets.all(0.6),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(18),
+          color: AppColors.blanc.withAlpha(18),
+        ),
+        child: Container(
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(17),
+            color: AppColors.surface.withAlpha(220),
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 52,
+                height: 52,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(14),
+                  gradient: LinearGradient(
+                    colors: [accent, accentLight],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: accent.withAlpha(90),
+                      blurRadius: 16,
+                      spreadRadius: -2,
+                    ),
+                  ],
+                ),
+                child: Icon(icon, color: AppColors.blanc, size: 24),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Container(
+                          width: 4,
+                          height: 4,
+                          decoration: BoxDecoration(
+                            color: accentLight,
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                        const SizedBox(width: 6),
+                        Text(
+                          tag,
+                          style: GoogleFonts.dmSans(
+                            color: accentLight,
+                            fontSize: 9,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: 2.0,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      label,
+                      style: GoogleFonts.sora(
+                        color: AppColors.blanc,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: -0.2,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      subtitle,
+                      style: GoogleFonts.dmSans(
+                        color: AppColors.gris,
+                        fontSize: 12,
+                        height: 1.35,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 8),
+              Icon(
+                Icons.arrow_forward_rounded,
+                color: AppColors.blanc.withAlpha(150),
+                size: 18,
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
