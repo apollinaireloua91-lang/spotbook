@@ -1301,5 +1301,10 @@
   "proSearchErrorGeneric": "Search error",
   "proSearchEmptyCta": "Be the first to publish!",
   "availabilityDayOff": "Day off",
-  "availabilityAddSlot": "Add a slot"
+  "availabilityAddSlot": "Add a slot",
+  "paymentReceiptTitle": "Payment receipt",
+  "favoriteRemoveConfirmTitle": "Remove from favorites?",
+  "commonNo": "No",
+  "commonYes": "Yes",
+  "videoBlockProAction": "Block this pro"
 }

@@ -3188,4 +3188,19 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get availabilityAddSlot => 'Ajouter un créneau';
+
+  @override
+  String get paymentReceiptTitle => 'Reçu de paiement';
+
+  @override
+  String get favoriteRemoveConfirmTitle => 'Retirer des favoris ?';
+
+  @override
+  String get commonNo => 'Non';
+
+  @override
+  String get commonYes => 'Oui';
+
+  @override
+  String get videoBlockProAction => 'Bloquer ce pro';
 }

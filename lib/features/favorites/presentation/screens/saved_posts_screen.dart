@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shimmer/shimmer.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/theme/theme_mode_notifier.dart';
 import '../../../../shared/utils/cloudflare_stream_urls.dart';
@@ -48,16 +49,18 @@ class _SavedPostsScreenState extends ConsumerState<SavedPostsScreen> {
       builder: (ctx) => AlertDialog(
         backgroundColor: AppColors.surface,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Text('Retirer des favoris ?',
+        title: Text(AppLocalizations.of(context)!.favoriteRemoveConfirmTitle,
             style: GoogleFonts.sora(color: AppColors.blanc)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: Text('Non', style: GoogleFonts.dmSans(color: AppColors.gris)),
+            child: Text(AppLocalizations.of(context)!.commonNo,
+                style: GoogleFonts.dmSans(color: AppColors.gris)),
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: Text('Oui', style: GoogleFonts.dmSans(color: AppColors.error)),
+            child: Text(AppLocalizations.of(context)!.commonYes,
+                style: GoogleFonts.dmSans(color: AppColors.error)),
           ),
         ],
       ),

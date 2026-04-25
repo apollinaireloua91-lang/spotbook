@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/theme/theme_mode_notifier.dart';
 import '../../../../shared/utils/currency_formatter.dart';
@@ -78,7 +79,7 @@ class _PaymentReceiptScreenState extends ConsumerState<PaymentReceiptScreen>
             },
           ),
         ),
-        title: Text('Reçu de paiement',
+        title: Text(AppLocalizations.of(context)!.paymentReceiptTitle,
             style:
                 GoogleFonts.sora(color: AppColors.blanc, fontWeight: FontWeight.bold)),
         centerTitle: true,

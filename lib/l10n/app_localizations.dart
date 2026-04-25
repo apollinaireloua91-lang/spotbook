@@ -6098,6 +6098,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Add a slot'**
   String get availabilityAddSlot;
+
+  /// No description provided for @paymentReceiptTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment receipt'**
+  String get paymentReceiptTitle;
+
+  /// No description provided for @favoriteRemoveConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove from favorites?'**
+  String get favoriteRemoveConfirmTitle;
+
+  /// No description provided for @commonNo.
+  ///
+  /// In en, this message translates to:
+  /// **'No'**
+  String get commonNo;
+
+  /// No description provided for @commonYes.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes'**
+  String get commonYes;
+
+  /// No description provided for @videoBlockProAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Block this pro'**
+  String get videoBlockProAction;
 }
 
 class _AppLocalizationsDelegate

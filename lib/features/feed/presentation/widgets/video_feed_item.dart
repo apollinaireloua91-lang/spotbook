@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/theme/app_colors.dart';
 import '../../../../shared/utils/analytics_service.dart';
 import '../../../../shared/widgets/bookmark_bounce.dart';
@@ -232,7 +233,7 @@ class _VideoFeedItemState extends ConsumerState<VideoFeedItem> {
               ListTile(
                 contentPadding: EdgeInsets.zero,
                 leading: Icon(Icons.block, color: AppColors.error),
-                title: Text('Bloquer ce pro',
+                title: Text(AppLocalizations.of(context)!.videoBlockProAction,
                     style: TextStyle(color: AppColors.error)),
                 onTap: () {
                   ctx.pop();

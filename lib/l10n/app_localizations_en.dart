@@ -3154,4 +3154,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get availabilityAddSlot => 'Add a slot';
+
+  @override
+  String get paymentReceiptTitle => 'Payment receipt';
+
+  @override
+  String get favoriteRemoveConfirmTitle => 'Remove from favorites?';
+
+  @override
+  String get commonNo => 'No';
+
+  @override
+  String get commonYes => 'Yes';
+
+  @override
+  String get videoBlockProAction => 'Block this pro';
 }

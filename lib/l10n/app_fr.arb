@@ -1301,5 +1301,10 @@
   "proSearchErrorGeneric": "Erreur de recherche",
   "proSearchEmptyCta": "Soyez le premier à publier !",
   "availabilityDayOff": "Jour de repos",
-  "availabilityAddSlot": "Ajouter un créneau"
+  "availabilityAddSlot": "Ajouter un créneau",
+  "paymentReceiptTitle": "Reçu de paiement",
+  "favoriteRemoveConfirmTitle": "Retirer des favoris ?",
+  "commonNo": "Non",
+  "commonYes": "Oui",
+  "videoBlockProAction": "Bloquer ce pro"
 }
