@@ -97,6 +97,76 @@ export function assertServiceRoleOnly(req: Request): Response | null {
   return null;
 }
 
+/**
+ * Cron-style auth backed by a Vault-stored shared secret (cf. migration
+ * 20260425100200_get_cron_shared_secret_rpc + Vault entry `cron_service_role_key`).
+ *
+ * Why we have this in addition to `assertServiceRoleOnly`:
+ *   The hosted Supabase API gateway has been rolling out a JWT migration that
+ *   rejects legacy HS256 service_role JWTs at the edge with
+ *   `UNAUTHORIZED_LEGACY_JWT`. Functions deployed with `verify_jwt = false`
+ *   can still receive any Authorization header — but `SUPABASE_SERVICE_ROLE_KEY`
+ *   env var is now opaque (could be the new `sb_secret_…` format or a re-issued
+ *   JWT) and pg_cron can't easily replicate it.
+ *
+ *   This helper uses a Vault-stored secret as the shared key between cron and
+ *   Edge Function. The cron reads it with `decrypted_secret`; the function
+ *   reads it via the `get_cron_shared_secret()` RPC. Both sides see the same
+ *   value → the comparison passes regardless of what Supabase is doing with
+ *   gateway-side keys.
+ *
+ * Use this for cron-only Edge Functions deployed with `verify_jwt = false`.
+ * The function name is part of the contract — keep stable.
+ */
+let _cachedCronSecret: string | null = null;
+
+export async function assertCronAuthFromVault(
+  req: Request,
+): Promise<Response | null> {
+  const auth = req.headers.get("Authorization") ?? "";
+
+  if (!_cachedCronSecret) {
+    const url = Deno.env.get("SUPABASE_URL") ?? "";
+    const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
+    if (!url || !serviceKey) {
+      console.error(
+        "[assertCronAuthFromVault] missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY env vars",
+      );
+      return jsonResponse(
+        { error: "server_misconfigured" },
+        500,
+        undefined,
+        req,
+      );
+    }
+
+    // Lazy import — the supabase-js client is heavy; only paid when first cron hits.
+    const { createClient } = await import(
+      "https://esm.sh/@supabase/supabase-js@2.39.3"
+    );
+    const client = createClient(url, serviceKey);
+    const { data, error } = await client.rpc("get_cron_shared_secret");
+    if (error || typeof data !== "string" || data.length === 0) {
+      console.error(
+        "[assertCronAuthFromVault] failed to read shared secret from Vault:",
+        error,
+      );
+      return jsonResponse(
+        { error: "server_misconfigured" },
+        500,
+        undefined,
+        req,
+      );
+    }
+    _cachedCronSecret = data;
+  }
+
+  if (!timingSafeEqual(auth, `Bearer ${_cachedCronSecret}`)) {
+    return jsonResponse({ error: "forbidden" }, 403, undefined, req);
+  }
+  return null;
+}
+
 export const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 export const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 

@@ -1,20 +1,65 @@
-// ════════════════════════════════════════════════════════════════════════════
-// send-reminders — Priority #4 (cron-triggered)
-// ────────────────────────────────────────────────────────────────────────────
-// Runs every 15 minutes (via pg_cron or external scheduler).
-// Finds upcoming bookings that haven't received their 24h / 2h / 30min
-// reminder yet and dispatches push notifications + emails.
+// send-reminders — Cron-only Edge Function (verify_jwt=false on the gateway).
 //
-// Security: service_role only.
-// ════════════════════════════════════════════════════════════════════════════
+// Auth pattern: Vault-stored shared secret. Both pg_cron and this function
+// read `cron_service_role_key` from Vault (function via the
+// public.get_cron_shared_secret() RPC). Bypassing the gateway lets us avoid
+// the UNAUTHORIZED_LEGACY_JWT errors that started appearing once Supabase
+// migrated this project to asymmetric JWT signing.
+//
+// Logic (unchanged from the original send-reminders):
+//   - Runs every 15 minutes
+//   - Finds upcoming bookings that haven't received their 24h / 2h / 30min
+//     reminder yet
+//   - Inserts notification rows (push pipeline picks these up downstream)
+//   - Marks the bookings.reminder_*_sent timestamps idempotently
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
-import {
-  assertServiceRoleOnly,
-  jsonResponse,
-  securityHeadersFor,
-} from "../_shared/security.ts";
+
+function securityHeadersFor(): Record<string, string> {
+  return {
+    "Access-Control-Allow-Origin": "https://getspotbook.app",
+    "Access-Control-Allow-Headers":
+      "authorization, x-client-info, apikey, content-type",
+    "X-Content-Type-Options": "nosniff",
+    "X-Frame-Options": "DENY",
+  };
+}
+
+function jsonResponse(data: unknown, status = 200): Response {
+  return new Response(JSON.stringify(data), {
+    status,
+    headers: { ...securityHeadersFor(), "Content-Type": "application/json" },
+  });
+}
+
+function timingSafeEqual(a: string, b: string): boolean {
+  if (a.length !== b.length) return false;
+  let r = 0;
+  for (let i = 0; i < a.length; i++) r |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  return r === 0;
+}
+
+let _cachedCronSecret: string | null = null;
+async function assertCronAuth(req: Request): Promise<Response | null> {
+  const auth = req.headers.get("Authorization") ?? "";
+  if (!_cachedCronSecret) {
+    const url = Deno.env.get("SUPABASE_URL") ?? "";
+    const key = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
+    if (!url || !key) return jsonResponse({ error: "server_misconfigured" }, 500);
+    const c = createClient(url, key);
+    const { data, error } = await c.rpc("get_cron_shared_secret");
+    if (error || typeof data !== "string" || !data.length) {
+      console.error("[send-reminders] vault read failed:", error);
+      return jsonResponse({ error: "server_misconfigured" }, 500);
+    }
+    _cachedCronSecret = data;
+  }
+  if (!timingSafeEqual(auth, `Bearer ${_cachedCronSecret}`)) {
+    return jsonResponse({ error: "forbidden" }, 403);
+  }
+  return null;
+}
 
 interface BookingForReminder {
   id: string;
@@ -25,18 +70,10 @@ interface BookingForReminder {
   status: string;
 }
 
-/**
- * Returns the ISO datetime for the booking's start, combining date+time.
- */
 function bookingStartAt(b: BookingForReminder): Date {
   return new Date(`${b.date}T${b.start_time}`);
 }
 
-/**
- * Attempts to send a push notification + email via existing `send-email` and
- * the push notification table. We insert into `notifications` which triggers
- * the existing push pipeline.
- */
 async function dispatchReminder(opts: {
   admin: ReturnType<typeof createClient>;
   userId: string;
@@ -57,11 +94,11 @@ async function dispatchReminder(opts: {
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
-    return new Response("ok", { status: 200, headers: securityHeadersFor(req) });
+    return new Response("ok", { status: 200, headers: securityHeadersFor() });
   }
 
   try {
-    const forbidden = assertServiceRoleOnly(req);
+    const forbidden = await assertCronAuth(req);
     if (forbidden) return forbidden;
 
     const admin = createClient(
@@ -70,14 +107,11 @@ serve(async (req) => {
     );
 
     const now = new Date();
-    const in24h = new Date(now.getTime() + 24 * 3600 * 1000);
-    const in2h = new Date(now.getTime() + 2 * 3600 * 1000);
-    const in30m = new Date(now.getTime() + 30 * 60 * 1000);
     const todayIso = now.toISOString().split("T")[0];
 
     let sent24 = 0, sent2 = 0, sent30 = 0;
 
-    // ── 24h reminders ────────────────────────────────────────
+    // ── 24h reminders ──
     {
       const { data: rows } = await admin
         .from("bookings")
@@ -90,7 +124,6 @@ serve(async (req) => {
       for (const b of (rows ?? []) as BookingForReminder[]) {
         const startAt = bookingStartAt(b);
         const diffMs = startAt.getTime() - now.getTime();
-        // Fire if booking is within 22-26 hours from now
         if (diffMs <= 26 * 3600 * 1000 && diffMs >= 22 * 3600 * 1000) {
           await dispatchReminder({
             admin,
@@ -110,7 +143,7 @@ serve(async (req) => {
       }
     }
 
-    // ── 2h reminders ─────────────────────────────────────────
+    // ── 2h reminders ──
     {
       const { data: rows } = await admin
         .from("bookings")
@@ -142,7 +175,7 @@ serve(async (req) => {
       }
     }
 
-    // ── 30 min reminders ─────────────────────────────────────
+    // ── 30 min reminders (client + pro) ──
     {
       const { data: rows } = await admin
         .from("bookings")
@@ -164,7 +197,6 @@ serve(async (req) => {
             bookingId: b.id,
             kind: "reminder_30min",
           });
-          // Also remind the pro (next client incoming)
           await dispatchReminder({
             admin,
             userId: b.pro_id,
@@ -186,14 +218,9 @@ serve(async (req) => {
       }
     }
 
-    return jsonResponse(
-      { ok: true, sent24, sent2, sent30 },
-      200,
-      undefined,
-      req,
-    );
+    return jsonResponse({ ok: true, sent24, sent2, sent30 });
   } catch (err) {
-    console.error("send-reminders error", err);
-    return jsonResponse({ error: "internal_error" }, 500, undefined, req);
+    console.error("[send-reminders] error", err);
+    return jsonResponse({ error: "internal_error" }, 500);
   }
 });

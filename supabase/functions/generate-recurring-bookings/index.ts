@@ -1,31 +1,65 @@
-// ════════════════════════════════════════════════════════════════════════════
-// generate-recurring-bookings — Priority #7 (cron-triggered)
-// ────────────────────────────────────────────────────────────────────────────
-// Runs daily. For each active recurring_bookings row whose next_booking_date
-// is within the next 7 days, attempt to generate the next individual booking.
+// generate-recurring-bookings — Cron-only Edge Function (verify_jwt=false).
+// Auth: Vault-stored shared secret via get_cron_shared_secret() RPC.
 //
-// Notes:
-//   - Does NOT charge payment — the recurring model charges 24h before each
-//     occurrence via a separate job (not in scope of this MVP).
-//   - Skips if a booking already exists for the slot.
-//   - Advances next_booking_date by frequency_weeks after success.
-// ════════════════════════════════════════════════════════════════════════════
+// Logic (unchanged): for each active recurring_bookings whose
+// next_booking_date <= now+7d, attempt to create the next individual booking,
+// then advance next_booking_date by frequency_weeks.
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
-import {
-  assertServiceRoleOnly,
-  jsonResponse,
-  securityHeadersFor,
-} from "../_shared/security.ts";
+
+function securityHeadersFor(): Record<string, string> {
+  return {
+    "Access-Control-Allow-Origin": "https://getspotbook.app",
+    "Access-Control-Allow-Headers":
+      "authorization, x-client-info, apikey, content-type",
+    "X-Content-Type-Options": "nosniff",
+    "X-Frame-Options": "DENY",
+  };
+}
+
+function jsonResponse(data: unknown, status = 200): Response {
+  return new Response(JSON.stringify(data), {
+    status,
+    headers: { ...securityHeadersFor(), "Content-Type": "application/json" },
+  });
+}
+
+function timingSafeEqual(a: string, b: string): boolean {
+  if (a.length !== b.length) return false;
+  let r = 0;
+  for (let i = 0; i < a.length; i++) r |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  return r === 0;
+}
+
+let _cachedCronSecret: string | null = null;
+async function assertCronAuth(req: Request): Promise<Response | null> {
+  const auth = req.headers.get("Authorization") ?? "";
+  if (!_cachedCronSecret) {
+    const url = Deno.env.get("SUPABASE_URL") ?? "";
+    const key = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
+    if (!url || !key) return jsonResponse({ error: "server_misconfigured" }, 500);
+    const c = createClient(url, key);
+    const { data, error } = await c.rpc("get_cron_shared_secret");
+    if (error || typeof data !== "string" || !data.length) {
+      console.error("[generate-recurring-bookings] vault read failed:", error);
+      return jsonResponse({ error: "server_misconfigured" }, 500);
+    }
+    _cachedCronSecret = data;
+  }
+  if (!timingSafeEqual(auth, `Bearer ${_cachedCronSecret}`)) {
+    return jsonResponse({ error: "forbidden" }, 403);
+  }
+  return null;
+}
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
-    return new Response("ok", { status: 200, headers: securityHeadersFor(req) });
+    return new Response("ok", { status: 200, headers: securityHeadersFor() });
   }
 
   try {
-    const forbidden = assertServiceRoleOnly(req);
+    const forbidden = await assertCronAuth(req);
     if (forbidden) return forbidden;
 
     const admin = createClient(
@@ -58,7 +92,6 @@ serve(async (req) => {
       frequency_weeks: number;
       next_booking_date: string;
     }>) {
-      // Check for existing booking at the same slot
       const { data: existing } = await admin
         .from("bookings")
         .select("id")
@@ -71,7 +104,6 @@ serve(async (req) => {
       if (existing) {
         skipped++;
       } else {
-        // Fetch service details
         const { data: svc } = await admin
           .from("services")
           .select("id, price, duration_minutes, currency")
@@ -86,10 +118,7 @@ serve(async (req) => {
         const startTime = r.start_time;
         const [h, m] = startTime.split(":").map(Number);
         const endMin = h * 60 + m + (svc.duration_minutes as number);
-        const endTime =
-          `${String(Math.floor(endMin / 60)).padStart(2, "0")}:${
-            String(endMin % 60).padStart(2, "0")
-          }:00`;
+        const endTime = `${String(Math.floor(endMin / 60)).padStart(2, "0")}:${String(endMin % 60).padStart(2, "0")}:00`;
 
         const { data: newBooking, error } = await admin
           .from("bookings")
@@ -110,11 +139,10 @@ serve(async (req) => {
           .single();
 
         if (error) {
-          console.error("recurring booking insert failed", error);
+          console.error("[generate-recurring-bookings] insert failed:", error);
           continue;
         }
 
-        // Advance next_booking_date by frequency_weeks
         const nextDate = new Date(`${r.next_booking_date}T00:00:00`);
         nextDate.setDate(nextDate.getDate() + r.frequency_weeks * 7);
         const nextIso = nextDate.toISOString().split("T")[0];
@@ -131,14 +159,9 @@ serve(async (req) => {
       }
     }
 
-    return jsonResponse(
-      { ok: true, generated, skipped },
-      200,
-      undefined,
-      req,
-    );
+    return jsonResponse({ ok: true, generated, skipped });
   } catch (err) {
-    console.error("generate-recurring-bookings error", err);
-    return jsonResponse({ error: "internal_error" }, 500, undefined, req);
+    console.error("[generate-recurring-bookings] error", err);
+    return jsonResponse({ error: "internal_error" }, 500);
   }
 });

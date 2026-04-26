@@ -62,7 +62,14 @@ export type EmailEventKey =
   // ─── Auth / onboarding — to wire in Commit 4 ───
   | "welcome"
   | "account_deactivated"
-  | "pro_stripe_connect_activated";
+  | "pro_stripe_connect_activated"
+  // ─── Catering quotes (soumissions) — wired 2026-04-25 ───
+  | "soumission_reue" // sent to client when Pro shares quote
+  | "soumission_accepte_pro" // sent to Pro when client accepts
+  | "soumission_refuse_pro" // sent to Pro when client refuses
+  | "soumission_expire" // sent to Pro when valid_until passes without response
+  // ─── Stripe Connect onboarding nudge — wired 2026-04-25 ───
+  | "rappel_stripe_connect"; // sent to Pro who started but didn't finish onboarding
 
 /**
  * A single Resend template entry. `id` is the canonical key used by the
@@ -192,6 +199,30 @@ export const RESEND_TEMPLATES: Partial<Record<EmailEventKey, ResendTemplate>> =
       alias: "stripe-connect-activ",
       id: "d55b142d-102c-4b48-a79d-65e0809fef8c",
     },
+
+    // Catering quotes (soumissions) — wired 2026-04-25
+    soumission_reue: {
+      alias: "soumission-reue",
+      id: "026c39d1-5d68-4a51-b986-ff03c206ab77",
+    },
+    soumission_accepte_pro: {
+      alias: "soumission-accepte-pro",
+      id: "f635a9d3-7c72-49ea-9901-83ce4a51dc3c",
+    },
+    soumission_refuse_pro: {
+      alias: "soumission-refuse-pro",
+      id: "8b0f89f0-903e-4239-abea-a8b748b0abc4",
+    },
+    soumission_expire: {
+      alias: "soumission-expire",
+      id: "8aa3115f-b7a2-4119-8b59-14676941f6e1",
+    },
+
+    // Stripe Connect onboarding nudge — wired 2026-04-25
+    rappel_stripe_connect: {
+      alias: "rappel-stripe-connect",
+      id: "53874409-39e8-4bb2-98ac-93ec34a93fea",
+    },
   };
 
 /**
@@ -201,20 +232,20 @@ export const RESEND_TEMPLATES: Partial<Record<EmailEventKey, ResendTemplate>> =
  * context on each one.
  */
 export const KNOWN_UNWIRED_ALIASES = [
-  // Supabase Auth Email Hook migration — planned post-launch
+  // Supabase Auth Email Hook migration — planned post-launch.
+  // Requires switching Supabase Auth from native template to an Edge Function
+  // hook (https://supabase.com/docs/guides/auth/auth-hooks). High-risk for
+  // login flows → kept for a dedicated commit with separate validation.
   "rinitialisation-mot-de-passe",
   "vrification-email",
-  // Heuristic suspicious-login detection — not implemented
+  // Heuristic suspicious-login detection — not implemented.
+  // Needs IP/device-fingerprint baseline + rule engine (e.g., new country,
+  // new device, time-of-day anomaly). Not in scope for launch.
   "connexion-suspecte",
-  // Reschedule feature — backend flow doesn't exist yet
+  // Reschedule feature — backend flow doesn't exist yet.
+  // The booking_models do not yet support a `reschedule_request` lifecycle;
+  // adding the email without the underlying flow would dead-letter.
   "rendez-vous-reprogramm",
-  // Stripe Connect incomplete-onboarding cron — post-Commit 4
-  "rappel-stripe-connect",
-  // Catering / quote feature — not in backend scope yet
-  "soumission-reue",
-  "soumission-accepte-pro",
-  "soumission-refuse-pro",
-  "soumission-expire",
 ] as const;
 
 /** Resend drafts to ignore (never used for sending). */

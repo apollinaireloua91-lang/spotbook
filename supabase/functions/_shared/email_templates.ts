@@ -417,7 +417,187 @@ export function reviewRequest(d: ReviewRequestData): EmailResult {
   };
 }
 
-// 8. POS receipt — in-person Tap to Pay transaction
+// 8a. Soumission (Catering quote) — sent to client when Pro shares
+export interface SoumissionReceivedData {
+  client_name?: string;
+  pro_name: string;
+  title: string;
+  total_formatted: string;
+  valid_until?: string;
+  view_url: string;
+}
+
+export function soumissionReceived(d: SoumissionReceivedData): EmailResult {
+  const greeting = d.client_name ? `Bonjour ${d.client_name},` : "Bonjour,";
+  const validity = d.valid_until
+    ? para(`<span style="font-size:13px;color:#9090AA;">Valide jusqu'au ${d.valid_until}.</span>`)
+    : "";
+
+  const rows = [
+    infoRow("Prestataire", d.pro_name),
+    infoRow("Objet", d.title),
+    infoRow(
+      "Total TTC",
+      `<strong style="color:#FFFFFF;">${d.total_formatted}</strong>`,
+    ),
+  ].join("");
+
+  const content = [
+    heading("Nouvelle soumission"),
+    para(greeting),
+    para(`<strong style="color:#FFFFFF;">${d.pro_name}</strong> vous a envoy&eacute; une soumission&nbsp;:`),
+    infoCard(rows),
+    validity,
+    btn("Voir la soumission", d.view_url),
+  ].join("\n");
+
+  return {
+    subject: `Soumission : ${d.title}`,
+    html: layout(`Soumission : ${d.title}`, `Devis de ${d.pro_name}`, content),
+  };
+}
+
+// 8b. Soumission accepted — sent to Pro
+export interface SoumissionDecisionData {
+  pro_name: string;
+  client_name: string;
+  title: string;
+  total_formatted: string;
+  reason?: string; // refusal reason — optional
+  dashboard_url: string;
+}
+
+export function soumissionAccepted(d: SoumissionDecisionData): EmailResult {
+  const rows = [
+    infoRow("Client", d.client_name),
+    infoRow("Objet", d.title),
+    infoRow(
+      "Total accept&eacute;",
+      `<strong style="color:#22C55E;">${d.total_formatted}</strong>`,
+    ),
+  ].join("");
+
+  const content = [
+    heading("Soumission accept&eacute;e &#x2713;"),
+    para(`Bonjour ${d.pro_name},`),
+    para(`<strong style="color:#FFFFFF;">${d.client_name}</strong> a accept&eacute; votre soumission. Vous pouvez maintenant la finaliser depuis votre dashboard.`),
+    infoCard(rows),
+    btn("Voir la soumission", d.dashboard_url),
+  ].join("\n");
+
+  return {
+    subject: `Soumission accept&eacute;e : ${d.title}`,
+    html: layout(
+      `Soumission acceptée`,
+      `${d.client_name} a accepté votre devis`,
+      content,
+    ),
+  };
+}
+
+// 8c. Soumission refused — sent to Pro
+export function soumissionRefused(d: SoumissionDecisionData): EmailResult {
+  const rows = [
+    infoRow("Client", d.client_name),
+    infoRow("Objet", d.title),
+    infoRow("Total propos&eacute;", d.total_formatted),
+  ].join("");
+
+  const reasonBlock = d.reason
+    ? [
+        divider(),
+        `<p style="margin:0 0 4px;font-size:13px;font-weight:600;color:#FFFFFF;">Raison communiqu&eacute;e</p>`,
+        para(`<em>${d.reason}</em>`),
+      ].join("\n")
+    : "";
+
+  const content = [
+    heading("Soumission refus&eacute;e"),
+    para(`Bonjour ${d.pro_name},`),
+    para(`<strong style="color:#FFFFFF;">${d.client_name}</strong> a refus&eacute; votre soumission.`),
+    infoCard(rows),
+    reasonBlock,
+    btn("Voir le d&eacute;tail", d.dashboard_url),
+  ].join("\n");
+
+  return {
+    subject: `Soumission refus&eacute;e : ${d.title}`,
+    html: layout(
+      `Soumission refusée`,
+      `${d.client_name} n'a pas accepté votre devis`,
+      content,
+    ),
+  };
+}
+
+// 8d. Soumission expired — sent to Pro
+export interface SoumissionExpiredData {
+  pro_name: string;
+  client_name: string;
+  title: string;
+  total_formatted: string;
+  expired_at: string;
+  dashboard_url: string;
+}
+
+export function soumissionExpired(d: SoumissionExpiredData): EmailResult {
+  const rows = [
+    infoRow("Client", d.client_name),
+    infoRow("Objet", d.title),
+    infoRow("Total propos&eacute;", d.total_formatted),
+    infoRow("Expir&eacute;e le", d.expired_at),
+  ].join("");
+
+  const content = [
+    heading("Soumission expir&eacute;e"),
+    para(`Bonjour ${d.pro_name},`),
+    para(`Votre soumission &agrave; <strong style="color:#FFFFFF;">${d.client_name}</strong> a expir&eacute; sans r&eacute;ponse. Vous pouvez la dupliquer pour relancer.`),
+    infoCard(rows),
+    btn("Ouvrir la soumission", d.dashboard_url),
+  ].join("\n");
+
+  return {
+    subject: `Soumission expir&eacute;e : ${d.title}`,
+    html: layout(
+      `Soumission expirée`,
+      `Pas de réponse de ${d.client_name}`,
+      content,
+    ),
+  };
+}
+
+// 8e. Stripe Connect onboarding nudge — sent to Pro
+export interface StripeConnectReminderData {
+  pro_name: string;
+  business_name?: string;
+  reminder_number: number;
+  max_reminders: number;
+  onboarding_url: string;
+}
+
+export function stripeConnectReminder(d: StripeConnectReminderData): EmailResult {
+  const progress = `${d.reminder_number} / ${d.max_reminders}`;
+  const content = [
+    heading("Finalisez votre compte Stripe &#x1F4B3;"),
+    para(`Bonjour ${d.pro_name},`),
+    para("Vous avez commenc&eacute; la configuration de votre compte Stripe Connect, mais l'onboarding n'est pas termin&eacute;."),
+    para("Sans cette &eacute;tape, vous ne pouvez pas recevoir de paiement de vos clients via Spotbook."),
+    divider(),
+    para(`<span style="font-size:13px;color:#9090AA;">Rappel ${progress}</span>`),
+    btn("Terminer l'onboarding", d.onboarding_url),
+  ].join("\n");
+
+  return {
+    subject: "Finalisez votre compte Stripe Connect",
+    html: layout(
+      "Finalisez votre compte Stripe Connect",
+      "Quelques minutes pour pouvoir recevoir des paiements",
+      content,
+    ),
+  };
+}
+
+// 9. POS receipt — in-person Tap to Pay transaction
 export interface PosReceiptData {
   proName: string;
   date: string;
@@ -550,6 +730,20 @@ const builders: Record<string, (data: Record<string, unknown>) => EmailResult> =
     bookingCancelled(d as unknown as BookingCancelledData),
   appointment_cancelled_by_pro: (d) =>
     bookingCancelled(d as unknown as BookingCancelledData),
+  // 2026-04-25 — Catering quote (soumissions) lifecycle + Stripe Connect nudge.
+  // These have dedicated builders since the Resend templates may be edited
+  // independently and we don't want a fallback that says "Réservation
+  // annulée" on a soumission email by accident.
+  soumission_reue: (d) =>
+    soumissionReceived(d as unknown as SoumissionReceivedData),
+  soumission_accepte_pro: (d) =>
+    soumissionAccepted(d as unknown as SoumissionDecisionData),
+  soumission_refuse_pro: (d) =>
+    soumissionRefused(d as unknown as SoumissionDecisionData),
+  soumission_expire: (d) =>
+    soumissionExpired(d as unknown as SoumissionExpiredData),
+  rappel_stripe_connect: (d) =>
+    stripeConnectReminder(d as unknown as StripeConnectReminderData),
 };
 
 export function buildEmail(
